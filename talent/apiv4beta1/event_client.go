@@ -39,12 +39,13 @@ type EventCallOptions struct {
 	CreateClientEvent []gax.CallOption
 }
 
-func defaultEventClientOptions() []option.ClientOption {
+func defaultEventGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -57,32 +58,85 @@ func defaultEventCallOptions() *EventCallOptions {
 	}
 }
 
+// internalEventClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+type internalEventClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateClientEvent(context.Context, *talentpb.CreateClientEventRequest, ...gax.CallOption) (*talentpb.ClientEvent, error)
+}
+
 // EventClient is a client for interacting with Cloud Talent Solution API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service handles client event report.
+type EventClient struct {
+	// The internal transport-dependent client.
+	internalClient internalEventClient
+
+	// The call options for this service.
+	CallOptions *EventCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *EventClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *EventClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *EventClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateClientEvent report events issued when end user interacts with customer’s application
+// that uses Cloud Talent Solution. You may inspect the created events in
+// self service
+// tools (at https://console.cloud.google.com/talent-solution/overview).
+// Learn
+// more (at https://cloud.google.com/talent-solution/docs/management-tools)
+// about self service tools.
+func (c *EventClient) CreateClientEvent(ctx context.Context, req *talentpb.CreateClientEventRequest, opts ...gax.CallOption) (*talentpb.ClientEvent, error) {
+	return c.internalClient.CreateClientEvent(ctx, req, opts...)
+}
+
+// eventGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type EventClient struct {
+type eventGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing EventClient
+	CallOptions **EventCallOptions
+
 	// The gRPC API client.
 	eventClient talentpb.EventServiceClient
-
-	// The call options for this service.
-	CallOptions *EventCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewEventClient creates a new event service client.
+// NewEventClient creates a new event service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A service handles client event report.
 func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventClient, error) {
-	clientOpts := defaultEventClientOptions()
-
+	clientOpts := defaultEventGRPCClientOptions()
 	if newEventClientHook != nil {
 		hookOpts, err := newEventClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -100,48 +154,44 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 	if err != nil {
 		return nil, err
 	}
-	c := &EventClient{
+	client := EventClient{CallOptions: defaultEventCallOptions()}
+
+	c := &eventGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultEventCallOptions(),
-
-		eventClient: talentpb.NewEventServiceClient(connPool),
+		eventClient:      talentpb.NewEventServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EventClient) Connection() *grpc.ClientConn {
+func (c *eventGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *EventClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EventClient) setGoogleClientInfo(keyval ...string) {
+func (c *eventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateClientEvent report events issued when end user interacts with customer’s application
-// that uses Cloud Talent Solution. You may inspect the created events in
-// self service
-// tools (at https://console.cloud.google.com/talent-solution/overview).
-// Learn
-// more (at https://cloud.google.com/talent-solution/docs/management-tools)
-// about self service tools.
-func (c *EventClient) CreateClientEvent(ctx context.Context, req *talentpb.CreateClientEventRequest, opts ...gax.CallOption) (*talentpb.ClientEvent, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *eventGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *eventGRPCClient) CreateClientEvent(ctx context.Context, req *talentpb.CreateClientEventRequest, opts ...gax.CallOption) (*talentpb.ClientEvent, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -149,7 +199,7 @@ func (c *EventClient) CreateClientEvent(ctx context.Context, req *talentpb.Creat
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateClientEvent[0:len(c.CallOptions.CreateClientEvent):len(c.CallOptions.CreateClientEvent)], opts...)
+	opts = append((*c.CallOptions).CreateClientEvent[0:len((*c.CallOptions).CreateClientEvent):len((*c.CallOptions).CreateClientEvent)], opts...)
 	var resp *talentpb.ClientEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

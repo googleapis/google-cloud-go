@@ -30,19 +30,19 @@ func ExampleNewSessionEntityTypesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListSessionEntityTypesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
 }
 
 func ExampleSessionEntityTypesClient_GetSessionEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleSessionEntityTypesClient_GetSessionEntityType() {
 }
 
 func ExampleSessionEntityTypesClient_CreateSessionEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleSessionEntityTypesClient_CreateSessionEntityType() {
 }
 
 func ExampleSessionEntityTypesClient_UpdateSessionEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleSessionEntityTypesClient_DeleteSessionEntityType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.

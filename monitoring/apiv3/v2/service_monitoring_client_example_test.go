@@ -30,18 +30,19 @@ func ExampleNewServiceMonitoringClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleServiceMonitoringClient_CreateService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleServiceMonitoringClient_CreateService() {
 }
 
 func ExampleServiceMonitoringClient_GetService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +75,12 @@ func ExampleServiceMonitoringClient_GetService() {
 }
 
 func ExampleServiceMonitoringClient_ListServices() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleServiceMonitoringClient_ListServices() {
 }
 
 func ExampleServiceMonitoringClient_UpdateService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleServiceMonitoringClient_DeleteService() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleServiceMonitoringClient_DeleteService() {
 }
 
 func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
 }
 
 func ExampleServiceMonitoringClient_GetServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
@@ -178,14 +174,12 @@ func ExampleServiceMonitoringClient_GetServiceLevelObjective() {
 }
 
 func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListServiceLevelObjectivesRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
 }
 
 func ExampleServiceMonitoringClient_UpdateServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
@@ -230,6 +223,7 @@ func ExampleServiceMonitoringClient_DeleteServiceLevelObjective() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.

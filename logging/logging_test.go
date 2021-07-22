@@ -19,10 +19,13 @@ package logging_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -41,6 +44,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
+	logpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -244,6 +248,183 @@ func TestContextFunc(t *testing.T) {
 	got2 := atomic.LoadInt32(&cleanupCalls)
 	if got1 != 1 || got1 != got2 {
 		t.Errorf("got %d calls to context func, %d calls to cleanup func; want 1, 1", got1, got2)
+	}
+}
+
+func TestToLogEntry(t *testing.T) {
+	u := &url.URL{Scheme: "http"}
+	tests := []struct {
+		name      string
+		in        logging.Entry
+		want      logpb.LogEntry
+		wantError error
+	}{
+		{
+			name: "BlankLogEntry",
+			in:   logging.Entry{},
+			want: logpb.LogEntry{},
+		}, {
+			name: "Already set Trace",
+			in:   logging.Entry{Trace: "t1"},
+			want: logpb.LogEntry{Trace: "t1"},
+		}, {
+			name: "No X-Trace-Context header",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{URL: u, Header: http.Header{"foo": {"bar"}}},
+				},
+			},
+			want: logpb.LogEntry{},
+		}, {
+			name: "X-Trace-Context header with all fields",
+			in: logging.Entry{
+				TraceSampled: false,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
+				SpanId:       "000000000000004a",
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with all fields; TraceSampled explicitly set",
+			in: logging.Entry{
+				TraceSampled: true,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
+				SpanId:       "000000000000004a",
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with all fields; TraceSampled from Header",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
+				SpanId:       "000000000000004a",
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with blank trace",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"/0;o=1"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				TraceSampled: true,
+			},
+		}, {
+			name: "X-Trace-Context header with blank span",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		}, {
+			name: "X-Trace-Context header with missing traceSampled aka ?o=*",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+					},
+				},
+			},
+			want: logpb.LogEntry{
+				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
+			},
+		}, {
+			name: "X-Trace-Context header with all blank fields",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {""}},
+					},
+				},
+			},
+			want: logpb.LogEntry{},
+		}, {
+			name: "Invalid X-Trace-Context header but already set TraceID",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"t3"}},
+					},
+				},
+				Trace: "t4",
+			},
+			want: logpb.LogEntry{
+				Trace: "t4",
+			},
+		}, {
+			name: "Already set TraceID and SpanID",
+			in:   logging.Entry{Trace: "t1", SpanID: "007"},
+			want: logpb.LogEntry{
+				Trace:  "t1",
+				SpanId: "007",
+			},
+		}, {
+			name: "Empty request produces an error",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					RequestSize: 128,
+				},
+			},
+			wantError: errors.New("logging: HTTPRequest must have a non-nil Request"),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			e, err := logging.ToLogEntry(test.in, "projects/P")
+			if err != nil && test.wantError == nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.in, err)
+			}
+			if err == nil && test.wantError != nil {
+				t.Fatalf("Error is expected: %+v: %v", test.in, test.wantError)
+			}
+			if test.wantError != nil {
+				return
+			}
+			if got := e.Trace; got != test.want.Trace {
+				t.Errorf("TraceId: %+v: got %q, want %q", test.in, got, test.want.Trace)
+			}
+			if got := e.SpanId; got != test.want.SpanId {
+				t.Errorf("SpanId: %+v: got %q, want %q", test.in, got, test.want.SpanId)
+			}
+			if got := e.TraceSampled; got != test.want.TraceSampled {
+				t.Errorf("TraceSampled: %+v: got %t, want %t", test.in, got, test.want.TraceSampled)
+			}
+		})
 	}
 }
 
@@ -623,5 +804,36 @@ func TestSeverityUnmarshal(t *testing.T) {
 	}
 	if entry.Severity != logging.Error {
 		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Error)
+	}
+}
+
+func TestSeverityAsNumberUnmarshal(t *testing.T) {
+	j := []byte(fmt.Sprintf(`{"logName": "test-log","severity": %d, "payload": "test"}`, logging.Info))
+	var entry logging.Entry
+	err := json.Unmarshal(j, &entry)
+	if err != nil {
+		t.Fatalf("en.Unmarshal: %v", err)
+	}
+	if entry.Severity != logging.Info {
+		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Info)
+	}
+}
+
+func TestSeverityMarshalThenUnmarshal(t *testing.T) {
+	entry := logging.Entry{Severity: logging.Warning, Payload: "test"}
+	j, err := json.Marshal(entry)
+	if err != nil {
+		t.Fatalf("en.Marshal: %v", err)
+	}
+
+	var entryU logging.Entry
+
+	err = json.Unmarshal(j, &entryU)
+	if err != nil {
+		t.Fatalf("en.Unmarshal: %v", err)
+	}
+
+	if entryU.Severity != logging.Warning {
+		t.Fatalf("Severity: got %v, want %v", entryU.Severity, logging.Warning)
 	}
 }

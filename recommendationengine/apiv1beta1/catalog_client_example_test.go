@@ -30,18 +30,19 @@ func ExampleNewCatalogClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCatalogClient_CreateCatalogItem() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.CreateCatalogItemRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleCatalogClient_CreateCatalogItem() {
 }
 
 func ExampleCatalogClient_GetCatalogItem() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.GetCatalogItemRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +75,12 @@ func ExampleCatalogClient_GetCatalogItem() {
 }
 
 func ExampleCatalogClient_ListCatalogItems() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.ListCatalogItemsRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleCatalogClient_ListCatalogItems() {
 }
 
 func ExampleCatalogClient_UpdateCatalogItem() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.UpdateCatalogItemRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleCatalogClient_DeleteCatalogItem() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.DeleteCatalogItemRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleCatalogClient_DeleteCatalogItem() {
 }
 
 func ExampleCatalogClient_ImportCatalogItems() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.ImportCatalogItemsRequest{
 		// TODO: Fill request struct fields.

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,27 +32,25 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListSettings                []gax.CallOption
-	SearchSettingValues         []gax.CallOption
-	GetSettingValue             []gax.CallOption
-	LookupEffectiveSettingValue []gax.CallOption
-	CreateSettingValue          []gax.CallOption
-	UpdateSettingValue          []gax.CallOption
-	DeleteSettingValue          []gax.CallOption
+	ListSettings  []gax.CallOption
+	GetSetting    []gax.CallOption
+	UpdateSetting []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("resourcesettings.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("resourcesettings.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://resourcesettings.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -74,7 +71,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		SearchSettingValues: []gax.CallOption{
+		GetSetting: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -86,55 +83,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetSettingValue: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		LookupEffectiveSettingValue: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateSettingValue: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateSettingValue: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteSettingValue: []gax.CallOption{
+		UpdateSetting: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -149,33 +98,122 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Resource Settings API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListSettings(context.Context, *resourcesettingspb.ListSettingsRequest, ...gax.CallOption) *SettingIterator
+	GetSetting(context.Context, *resourcesettingspb.GetSettingRequest, ...gax.CallOption) (*resourcesettingspb.Setting, error)
+	UpdateSetting(context.Context, *resourcesettingspb.UpdateSettingRequest, ...gax.CallOption) (*resourcesettingspb.Setting, error)
+}
+
 // Client is a client for interacting with Resource Settings API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// An interface to interact with resource settings and setting values throughout
+// the resource hierarchy.
+//
+// Services may surface a number of settings for users to control how their
+// resources behave. Values of settings applied on a given Cloud resource are
+// evaluated hierarchically and inherited by all descendants of that resource.
+//
+// For all requests, returns a google.rpc.Status with
+// google.rpc.Code.PERMISSION_DENIED if the IAM check fails or the parent
+// resource is not in a Cloud Organization.
+// For all requests, returns a google.rpc.Status with
+// google.rpc.Code.INVALID_ARGUMENT if the request is malformed.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListSettings lists all the settings that are available on the Cloud resource parent.
+func (c *Client) ListSettings(ctx context.Context, req *resourcesettingspb.ListSettingsRequest, opts ...gax.CallOption) *SettingIterator {
+	return c.internalClient.ListSettings(ctx, req, opts...)
+}
+
+// GetSetting gets a setting.
+//
+// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
+// setting does not exist.
+func (c *Client) GetSetting(ctx context.Context, req *resourcesettingspb.GetSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	return c.internalClient.GetSetting(ctx, req, opts...)
+}
+
+// UpdateSetting updates a setting.
+//
+// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
+// setting does not exist.
+// Returns a google.rpc.Status with google.rpc.Code.FAILED_PRECONDITION if
+// the setting is flagged as read only.
+// Returns a google.rpc.Status with google.rpc.Code.ABORTED if the etag
+// supplied in the request does not match the persisted etag of the setting
+// value.
+//
+// On success, the response will contain only name, local_value and
+// etag.  The metadata and effective_value cannot be updated through
+// this API.
+//
+// Note: the supplied setting will perform a full overwrite of the
+// local_value field.
+func (c *Client) UpdateSetting(ctx context.Context, req *resourcesettingspb.UpdateSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	return c.internalClient.UpdateSetting(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Resource Settings API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client resourcesettingspb.ResourceSettingsServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new resource settings service client.
+// NewClient creates a new resource settings service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // An interface to interact with resource settings and setting values throughout
 // the resource hierarchy.
 //
 // Services may surface a number of settings for users to control how their
-// resources behave. Setting values applied on a given Cloud resource are
+// resources behave. Values of settings applied on a given Cloud resource are
 // evaluated hierarchically and inherited by all descendants of that resource.
 //
 // For all requests, returns a google.rpc.Status with
@@ -184,8 +222,7 @@ type Client struct {
 // For all requests, returns a google.rpc.Status with
 // google.rpc.Code.INVALID_ARGUMENT if the request is malformed.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -203,45 +240,47 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: resourcesettingspb.NewResourceSettingsServiceClient(connPool),
+		client:           resourcesettingspb.NewResourceSettingsServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListSettings lists all the settings that are available on the Cloud resource parent.
-func (c *Client) ListSettings(ctx context.Context, req *resourcesettingspb.ListSettingsRequest, opts ...gax.CallOption) *SettingIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.ListSettingsRequest, opts ...gax.CallOption) *SettingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSettings[0:len(c.CallOptions.ListSettings):len(c.CallOptions.ListSettings)], opts...)
+	opts = append((*c.CallOptions).ListSettings[0:len((*c.CallOptions).ListSettings):len((*c.CallOptions).ListSettings)], opts...)
 	it := &SettingIterator{}
 	req = proto.Clone(req).(*resourcesettingspb.ListSettingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcesettingspb.Setting, string, error) {
@@ -278,53 +317,7 @@ func (c *Client) ListSettings(ctx context.Context, req *resourcesettingspb.ListS
 	return it
 }
 
-// SearchSettingValues searches for all setting values that exist on the resource parent. The
-// setting values are not limited to those of a particular setting.
-func (c *Client) SearchSettingValues(ctx context.Context, req *resourcesettingspb.SearchSettingValuesRequest, opts ...gax.CallOption) *SettingValueIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchSettingValues[0:len(c.CallOptions.SearchSettingValues):len(c.CallOptions.SearchSettingValues)], opts...)
-	it := &SettingValueIterator{}
-	req = proto.Clone(req).(*resourcesettingspb.SearchSettingValuesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcesettingspb.SettingValue, string, error) {
-		var resp *resourcesettingspb.SearchSettingValuesResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.client.SearchSettingValues(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetSettingValues(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
-}
-
-// GetSettingValue gets a setting value.
-//
-// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// setting value does not exist.
-func (c *Client) GetSettingValue(ctx context.Context, req *resourcesettingspb.GetSettingValueRequest, opts ...gax.CallOption) (*resourcesettingspb.SettingValue, error) {
+func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.GetSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -332,11 +325,11 @@ func (c *Client) GetSettingValue(ctx context.Context, req *resourcesettingspb.Ge
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetSettingValue[0:len(c.CallOptions.GetSettingValue):len(c.CallOptions.GetSettingValue)], opts...)
-	var resp *resourcesettingspb.SettingValue
+	opts = append((*c.CallOptions).GetSetting[0:len((*c.CallOptions).GetSetting):len((*c.CallOptions).GetSetting)], opts...)
+	var resp *resourcesettingspb.Setting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.GetSettingValue(ctx, req, settings.GRPC...)
+		resp, err = c.client.GetSetting(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -345,129 +338,25 @@ func (c *Client) GetSettingValue(ctx context.Context, req *resourcesettingspb.Ge
 	return resp, nil
 }
 
-// LookupEffectiveSettingValue computes the effective setting value of a setting at the Cloud resource
-// parent. The effective setting value is the calculated setting value at a
-// Cloud resource and evaluates to one of the following options in the given
-// order (the next option is used if the previous one does not exist):
-//
-// the setting value on the given resource
-//
-// the setting value on the given resource’s nearest ancestor
-//
-// the setting’s default value
-//
-// an empty setting value, defined as a SettingValue with all fields
-// unset
-//
-// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// setting does not exist.
-func (c *Client) LookupEffectiveSettingValue(ctx context.Context, req *resourcesettingspb.LookupEffectiveSettingValueRequest, opts ...gax.CallOption) (*resourcesettingspb.SettingValue, error) {
+func (c *gRPCClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.UpdateSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "setting.name", url.QueryEscape(req.GetSetting().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LookupEffectiveSettingValue[0:len(c.CallOptions.LookupEffectiveSettingValue):len(c.CallOptions.LookupEffectiveSettingValue)], opts...)
-	var resp *resourcesettingspb.SettingValue
+	opts = append((*c.CallOptions).UpdateSetting[0:len((*c.CallOptions).UpdateSetting):len((*c.CallOptions).UpdateSetting)], opts...)
+	var resp *resourcesettingspb.Setting
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.client.LookupEffectiveSettingValue(ctx, req, settings.GRPC...)
+		resp, err = c.client.UpdateSetting(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// CreateSettingValue creates a setting value.
-//
-// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// setting does not exist.
-// Returns a google.rpc.Status with google.rpc.Code.ALREADY_EXISTS if the
-// setting value already exists on the given Cloud resource.
-// Returns a google.rpc.Status with google.rpc.Code.FAILED_PRECONDITION if
-// the setting is flagged as read only.
-func (c *Client) CreateSettingValue(ctx context.Context, req *resourcesettingspb.CreateSettingValueRequest, opts ...gax.CallOption) (*resourcesettingspb.SettingValue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateSettingValue[0:len(c.CallOptions.CreateSettingValue):len(c.CallOptions.CreateSettingValue)], opts...)
-	var resp *resourcesettingspb.SettingValue
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.CreateSettingValue(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// UpdateSettingValue updates a setting value.
-//
-// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// setting or the setting value does not exist.
-// Returns a google.rpc.Status with google.rpc.Code.FAILED_PRECONDITION if
-// the setting is flagged as read only.
-// Returns a google.rpc.Status with google.rpc.Code.ABORTED if the etag
-// supplied in the request does not match the persisted etag of the setting
-// value.
-//
-// Note: the supplied setting value will perform a full overwrite of all
-// fields.
-func (c *Client) UpdateSettingValue(ctx context.Context, req *resourcesettingspb.UpdateSettingValueRequest, opts ...gax.CallOption) (*resourcesettingspb.SettingValue, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "setting_value.name", url.QueryEscape(req.GetSettingValue().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSettingValue[0:len(c.CallOptions.UpdateSettingValue):len(c.CallOptions.UpdateSettingValue)], opts...)
-	var resp *resourcesettingspb.SettingValue
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateSettingValue(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// DeleteSettingValue deletes a setting value. If the setting value does not exist, the operation
-// is a no-op.
-//
-// Returns a google.rpc.Status with google.rpc.Code.NOT_FOUND if the
-// setting or the setting value does not exist. The setting value will not
-// exist if a prior call to DeleteSettingValue for the setting value already
-// returned a success code.
-// Returns a google.rpc.Status with google.rpc.Code.FAILED_PRECONDITION if
-// the setting is flagged as read only.
-func (c *Client) DeleteSettingValue(ctx context.Context, req *resourcesettingspb.DeleteSettingValueRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteSettingValue[0:len(c.CallOptions.DeleteSettingValue):len(c.CallOptions.DeleteSettingValue)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteSettingValue(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
 }
 
 // SettingIterator manages a stream of *resourcesettingspb.Setting.
@@ -512,53 +401,6 @@ func (it *SettingIterator) bufLen() int {
 }
 
 func (it *SettingIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SettingValueIterator manages a stream of *resourcesettingspb.SettingValue.
-type SettingValueIterator struct {
-	items    []*resourcesettingspb.SettingValue
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*resourcesettingspb.SettingValue, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SettingValueIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SettingValueIterator) Next() (*resourcesettingspb.SettingValue, error) {
-	var item *resourcesettingspb.SettingValue
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SettingValueIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SettingValueIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -16,9 +16,12 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal"
@@ -27,6 +30,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 const (
@@ -54,8 +58,20 @@ type Client struct {
 	bqs       *bq.Service
 }
 
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
+
 // NewClient constructs a new Client which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
+//
+// If the project ID is set to DetectProjectID, NewClient will attempt to detect
+// the project ID from credentials.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
@@ -66,6 +82,14 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
 	}
+
+	if projectID == DetectProjectID {
+		projectID, err = detectProjectID(ctx, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to detect project: %v", err)
+		}
+	}
+
 	c := &Client{
 		projectID: projectID,
 		bqs:       bqs,
@@ -73,11 +97,28 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return c, nil
 }
 
+// Project returns the project ID or number for this instance of the client, which may have
+// either been explicitly specified or autodetected.
+func (c *Client) Project() string {
+	return c.projectID
+}
+
 // Close closes any resources held by the client.
 // Close should be called when the client is no longer needed.
 // It need not be called at program exit.
 func (c *Client) Close() error {
 	return nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("credentials did not provide a valid ProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 // Calls the Jobs.Insert RPC and returns a Job.
@@ -166,6 +207,12 @@ func runWithRetry(ctx context.Context, call func() error) error {
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
 func retryableError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if err == io.ErrUnexpectedEOF {
+		return true
+	}
 	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
 	// Due to Go's default being higher for streams-per-connection than is accepted by the
 	// BQ backend, it's possible to get streams refused immediately after a connection is
@@ -174,13 +221,32 @@ func retryableError(err error) bool {
 	if err.Error() == "http2: stream closed" {
 		return true
 	}
-	e, ok := err.(*googleapi.Error)
-	if !ok {
-		return false
+
+	switch e := err.(type) {
+	case *googleapi.Error:
+		// We received a structured error from backend.
+		var reason string
+		if len(e.Errors) > 0 {
+			reason = e.Errors[0].Reason
+		}
+		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded" {
+			return true
+		}
+	case *url.Error:
+		retryable := []string{"connection refused", "connection reset"}
+		for _, s := range retryable {
+			if strings.Contains(e.Error(), s) {
+				return true
+			}
+		}
+	case interface{ Temporary() bool }:
+		if e.Temporary() {
+			return true
+		}
 	}
-	var reason string
-	if len(e.Errors) > 0 {
-		reason = e.Errors[0].Reason
+	// Unwrap is only supported in go1.13.x+
+	if e, ok := err.(interface{ Unwrap() error }); ok {
+		return retryableError(e.Unwrap())
 	}
-	return e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded"
+	return false
 }

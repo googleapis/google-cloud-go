@@ -31,19 +31,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListQueues() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ListQueuesRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleClient_ListQueues() {
 }
 
 func ExampleClient_GetQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.GetQueueRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleClient_GetQueue() {
 }
 
 func ExampleClient_CreateQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.CreateQueueRequest{
 		// TODO: Fill request struct fields.
@@ -103,13 +101,12 @@ func ExampleClient_CreateQueue() {
 }
 
 func ExampleClient_UpdateQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.UpdateQueueRequest{
 		// TODO: Fill request struct fields.
@@ -128,6 +125,7 @@ func ExampleClient_DeleteQueue() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteQueueRequest{
 		// TODO: Fill request struct fields.
@@ -139,13 +137,12 @@ func ExampleClient_DeleteQueue() {
 }
 
 func ExampleClient_PurgeQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.PurgeQueueRequest{
 		// TODO: Fill request struct fields.
@@ -159,13 +156,12 @@ func ExampleClient_PurgeQueue() {
 }
 
 func ExampleClient_PauseQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.PauseQueueRequest{
 		// TODO: Fill request struct fields.
@@ -179,13 +175,12 @@ func ExampleClient_PauseQueue() {
 }
 
 func ExampleClient_ResumeQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ResumeQueueRequest{
 		// TODO: Fill request struct fields.
@@ -199,13 +194,12 @@ func ExampleClient_ResumeQueue() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -219,13 +213,12 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -239,13 +232,12 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -259,14 +251,12 @@ func ExampleClient_TestIamPermissions() {
 }
 
 func ExampleClient_ListTasks() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ListTasksRequest{
 		// TODO: Fill request struct fields.
@@ -286,13 +276,12 @@ func ExampleClient_ListTasks() {
 }
 
 func ExampleClient_GetTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.GetTaskRequest{
 		// TODO: Fill request struct fields.
@@ -306,13 +295,12 @@ func ExampleClient_GetTask() {
 }
 
 func ExampleClient_CreateTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
@@ -331,6 +319,7 @@ func ExampleClient_DeleteTask() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
@@ -342,13 +331,12 @@ func ExampleClient_DeleteTask() {
 }
 
 func ExampleClient_RunTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.RunTaskRequest{
 		// TODO: Fill request struct fields.

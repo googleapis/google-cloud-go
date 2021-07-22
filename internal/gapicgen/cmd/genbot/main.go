@@ -28,16 +28,6 @@ import (
 	"cloud.google.com/go/internal/gapicgen"
 )
 
-type prStatus uint8
-
-func (ps prStatus) Has(status prStatus) bool { return ps&status != 0 }
-
-const (
-	noOpenPRs prStatus = 1 << iota
-	openGenprotoPR
-	openGocloudPR
-)
-
 func main() {
 	log.SetFlags(0)
 	if err := gapicgen.VerifyAllToolsExist([]string{"git", "go", "protoc"}); err != nil {
@@ -51,31 +41,43 @@ func main() {
 	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
 	githubEmail := flag.String("githubEmail", os.Getenv("GITHUB_EMAIL"), "The email address of the author.")
 	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
+	forceAll := flag.Bool("forceAll", strToBool(os.Getenv("GENBOT_FORCE_ALL")), "Enables regenerating everything regardless of changes in googleapis.")
 
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	googleapisDiscoDir := flag.String("googleapis-disco-dir", os.Getenv("GOOGLEAPIS_DISCO_DIR"), "Directory where sources of googleapis/googleapis-discovery resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gocloudDir := flag.String("gocloud-dir", os.Getenv("GOCLOUD_DIR"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", os.Getenv("GENPROTO_DIR"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", os.Getenv("PROTO_DIR"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gapicToGenerate := flag.String("gapic", os.Getenv("GAPIC_TO_GENERATE"), `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
 	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
+	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
 
 	flag.Parse()
 
 	if *localMode {
 		if err := genLocal(ctx, localConfig{
-			googleapisDir:   *googleapisDir,
-			gocloudDir:      *gocloudDir,
-			genprotoDir:     *genprotoDir,
-			protoDir:        *protoDir,
-			gapicToGenerate: *gapicToGenerate,
-			onlyGapics:      *onlyGapics,
+			googleapisDir:      *googleapisDir,
+			googleapisDiscoDir: *googleapisDiscoDir,
+			gocloudDir:         *gocloudDir,
+			genprotoDir:        *genprotoDir,
+			protoDir:           *protoDir,
+			gapicToGenerate:    *gapicToGenerate,
+			onlyGapics:         *onlyGapics,
+			regenOnly:          *regenOnly,
+			forceAll:           *forceAll,
 		}); err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
-	if err := genBot(ctx, *githubAccessToken, *githubUsername, *githubName, *githubEmail); err != nil {
+	if err := genBot(ctx, botConfig{
+		githubAccessToken: *githubAccessToken,
+		githubUsername:    *githubUsername,
+		githubName:        *githubName,
+		githubEmail:       *githubEmail,
+		forceAll:          *forceAll,
+	}); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -25,6 +25,7 @@ package spansql
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -149,6 +150,52 @@ func (co ColumnOptions) SQL() string {
 			str += "allow_commit_timestamp = true"
 		} else {
 			str += "allow_commit_timestamp = null"
+		}
+	}
+	str += ")"
+	return str
+}
+
+func (ad AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + ad.Name.SQL() + " " + ad.Alteration.SQL()
+}
+
+func (sdo SetDatabaseOptions) SQL() string {
+	return "SET " + sdo.Options.SQL()
+}
+
+func (do DatabaseOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if do.OptimizerVersion != nil {
+		hasOpt = true
+		if *do.OptimizerVersion == 0 {
+			str += "optimizer_version=null"
+
+		} else {
+			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
+		}
+	}
+	if do.VersionRetentionPeriod != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
+		if *do.VersionRetentionPeriod == "" {
+			str += "version_retention_period=null"
+		} else {
+			str += fmt.Sprintf("version_retention_period='%s'", *do.VersionRetentionPeriod)
+		}
+	}
+	if do.EnableKeyVisualizer != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
+		if *do.EnableKeyVisualizer {
+			str += "enable_key_visualizer=true"
+		} else {
+			str += "enable_key_visualizer=null"
 		}
 	}
 	str += ")"
@@ -319,6 +366,19 @@ func (sel Select) addSQL(sb *strings.Builder) {
 
 func (sft SelectFromTable) SQL() string {
 	str := sft.Table.SQL()
+	if len(sft.Hints) > 0 {
+		str += "@{"
+		kvs := make([]string, len(sft.Hints))
+		i := 0
+		for k, v := range sft.Hints {
+			kvs[i] = fmt.Sprintf("%s=%s", k, v)
+			i++
+		}
+		sort.Strings(kvs)
+		str += strings.Join(kvs, ",")
+		str += "}"
+	}
+
 	if sft.Alias != "" {
 		str += " AS " + sft.Alias.SQL()
 	}

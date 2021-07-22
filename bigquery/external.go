@@ -90,7 +90,7 @@ type ExternalDataConfig struct {
 	// when reading data.
 	MaxBadRecords int64
 
-	// Additional options for CSV, GoogleSheets and Bigtable formats.
+	// Additional options for CSV, GoogleSheets, Bigtable, and Parquet formats.
 	Options ExternalDataConfigOptions
 
 	// HivePartitioningOptions allows use of Hive partitioning based on the
@@ -100,18 +100,16 @@ type ExternalDataConfig struct {
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	q := bq.ExternalDataConfiguration{
-		SourceFormat:        string(e.SourceFormat),
-		SourceUris:          e.SourceURIs,
-		Autodetect:          e.AutoDetect,
-		Compression:         string(e.Compression),
-		IgnoreUnknownValues: e.IgnoreUnknownValues,
-		MaxBadRecords:       e.MaxBadRecords,
+		SourceFormat:            string(e.SourceFormat),
+		SourceUris:              e.SourceURIs,
+		Autodetect:              e.AutoDetect,
+		Compression:             string(e.Compression),
+		IgnoreUnknownValues:     e.IgnoreUnknownValues,
+		MaxBadRecords:           e.MaxBadRecords,
+		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
-	}
-	if e.HivePartitioningOptions != nil {
-		q.HivePartitioningOptions = e.HivePartitioningOptions.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
@@ -121,13 +119,14 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 
 func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfig, error) {
 	e := &ExternalDataConfig{
-		SourceFormat:        DataFormat(q.SourceFormat),
-		SourceURIs:          q.SourceUris,
-		AutoDetect:          q.Autodetect,
-		Compression:         Compression(q.Compression),
-		IgnoreUnknownValues: q.IgnoreUnknownValues,
-		MaxBadRecords:       q.MaxBadRecords,
-		Schema:              bqToSchema(q.Schema),
+		SourceFormat:            DataFormat(q.SourceFormat),
+		SourceURIs:              q.SourceUris,
+		AutoDetect:              q.Autodetect,
+		Compression:             Compression(q.Compression),
+		IgnoreUnknownValues:     q.IgnoreUnknownValues,
+		MaxBadRecords:           q.MaxBadRecords,
+		Schema:                  bqToSchema(q.Schema),
+		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 	}
 	switch {
 	case q.CsvOptions != nil:
@@ -140,9 +139,8 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
-	}
-	if q.HivePartitioningOptions != nil {
-		e.HivePartitioningOptions = bqToHivePartitioningOptions(q.HivePartitioningOptions)
+	case q.ParquetOptions != nil:
+		e.Options = bqToParquetOptions(q.ParquetOptions)
 	}
 	return e, nil
 }
@@ -418,6 +416,36 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 		b.Qualifier = string(bytes)
 	}
 	return b, nil
+}
+
+// ParquetOptions are additional options for Parquet external data sources.
+type ParquetOptions struct {
+	// EnumAsString indicates whether to infer Parquet ENUM logical type as
+	// STRING instead of BYTES by default.
+	EnumAsString bool
+
+	// EnableListInference indicates whether to use schema inference
+	// specifically for Parquet LIST logical type.
+	EnableListInference bool
+}
+
+func (o *ParquetOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	if o != nil {
+		c.ParquetOptions = &bq.ParquetOptions{
+			EnumAsString:        o.EnumAsString,
+			EnableListInference: o.EnableListInference,
+		}
+	}
+}
+
+func bqToParquetOptions(q *bq.ParquetOptions) *ParquetOptions {
+	if q == nil {
+		return nil
+	}
+	return &ParquetOptions{
+		EnumAsString:        q.EnumAsString,
+		EnableListInference: q.EnableListInference,
+	}
 }
 
 // HivePartitioningMode is used in conjunction with HivePartitioningOptions.

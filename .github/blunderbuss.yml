@@ -20,9 +20,9 @@ assign_issues_by:
 - labels:
   - 'api: spanner'
   to:
-  - skuruppu
+  - hengfengli
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - nicolezhu
+  - googleapis/api-logging

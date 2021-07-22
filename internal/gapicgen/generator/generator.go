@@ -21,38 +21,36 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
+
+	"cloud.google.com/go/internal/gapicgen/git"
 )
 
 // Config contains inputs needed to generate sources.
 type Config struct {
-	GoogleapisDir     string
-	GenprotoDir       string
-	GapicDir          string
-	ProtoDir          string
-	GapicToGenerate   string
-	OnlyGenerateGapic bool
-	LocalMode         bool
+	GoogleapisDir      string
+	GoogleapisDiscoDir string
+	GenprotoDir        string
+	GapicDir           string
+	ProtoDir           string
+	GapicToGenerate    string
+	OnlyGenerateGapic  bool
+	LocalMode          bool
+	RegenOnly          bool
+	ForceAll           bool
 }
 
 // Generate generates genproto and gapics.
-func Generate(ctx context.Context, conf *Config) ([]*ChangeInfo, error) {
+func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 	if !conf.OnlyGenerateGapic {
-		protoGenerator := NewGenprotoGenerator(conf.GenprotoDir, conf.GoogleapisDir, conf.ProtoDir)
+		protoGenerator := NewGenprotoGenerator(conf)
 		if err := protoGenerator.Regen(ctx); err != nil {
 			return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
 		}
 	}
-	gapicGenerator := NewGapicGenerator(conf.GoogleapisDir, conf.ProtoDir, conf.GapicDir, conf.GenprotoDir, conf.GapicToGenerate)
-	if err := gapicGenerator.Regen(ctx); err != nil {
-		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
-	}
 
-	var changes []*ChangeInfo
+	var changes []*git.ChangeInfo
 	if !conf.LocalMode {
 		var err error
 		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
@@ -63,21 +61,36 @@ func Generate(ctx context.Context, conf *Config) ([]*ChangeInfo, error) {
 			return nil, err
 		}
 	}
+	var modifiedPkgs []string
+	for _, v := range changes {
+		if v.Package != "" {
+			modifiedPkgs = append(modifiedPkgs, v.PackageDir)
+		}
+	}
+
+	gapicGenerator := NewGapicGenerator(conf, modifiedPkgs)
+	if err := gapicGenerator.Regen(ctx); err != nil {
+		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
+	}
 
 	return changes, nil
 }
 
-func gatherChanges(googleapisDir, genprotoDir string) ([]*ChangeInfo, error) {
+func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error) {
 	// Get the last processed googleapis hash.
 	lastHash, err := ioutil.ReadFile(filepath.Join(genprotoDir, "regen.txt"))
 	if err != nil {
 		return nil, err
 	}
-	commits, err := CommitsSinceHash(googleapisDir, string(lastHash), false)
+	commits, err := git.CommitsSinceHash(googleapisDir, string(lastHash), false)
 	if err != nil {
 		return nil, err
 	}
-	changes, err := ParseChangeInfo(googleapisDir, commits)
+	gapicPkgs := make(map[string]string)
+	for _, v := range microgenGapicConfigs {
+		gapicPkgs[v.inputDirectoryPath] = v.importPath
+	}
+	changes, err := git.ParseChangeInfo(googleapisDir, commits, gapicPkgs)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +101,7 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*ChangeInfo, error) {
 // recordGoogleapisHash parses the latest commit in googleapis and records it to
 // regen.txt in go-genproto.
 func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
-	commits, err := CommitsSinceHash(googleapisDir, "HEAD", true)
+	commits, err := git.CommitsSinceHash(googleapisDir, "HEAD", true)
 	if err != nil {
 		return err
 	}
@@ -105,44 +118,4 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 		return err
 	}
 	return nil
-}
-
-// build attempts to build all packages recursively from the given directory.
-func build(dir string) error {
-	log.Println("building generated code")
-	c := command("go", "build", "./...")
-	c.Dir = dir
-	return c.Run()
-}
-
-// vet runs linters on all .go files recursively from the given directory.
-func vet(dir string) error {
-	log.Println("vetting generated code")
-	c := command("goimports", "-w", ".")
-	c.Dir = dir
-	if err := c.Run(); err != nil {
-		return err
-	}
-
-	c = command("gofmt", "-s", "-d", "-w", "-l", ".")
-	c.Dir = dir
-	return c.Run()
-}
-
-type cmdWrapper struct {
-	*exec.Cmd
-}
-
-// command wraps a exec.Command to add some logging about commands being run.
-// The commands stdout/stderr default to os.Stdout/os.Stderr respectfully.
-func command(name string, arg ...string) *cmdWrapper {
-	c := &cmdWrapper{exec.Command(name, arg...)}
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c
-}
-
-func (cw *cmdWrapper) Run() error {
-	log.Printf(">>>> %v <<<<", strings.Join(cw.Cmd.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
-	return cw.Cmd.Run()
 }

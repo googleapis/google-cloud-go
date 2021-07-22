@@ -113,7 +113,7 @@ func TestBQToTableMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqToTableMetadata(test.in)
+		got, err := bqToTableMetadata(test.in, &Client{})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -397,6 +397,12 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 			want: &bq.Table{
 				RequirePartitionFilter: true,
 				ForceSendFields:        []string{"RequirePartitionFilter"},
+			},
+		},
+		{
+			tm: TableMetadataToUpdate{Clustering: &Clustering{Fields: []string{"foo", "bar"}}},
+			want: &bq.Table{
+				Clustering: &bq.Clustering{Fields: []string{"foo", "bar"}},
 			},
 		},
 	} {

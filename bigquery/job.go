@@ -63,6 +63,11 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return bqToJob(bqjob, c)
 }
 
+// ProjectID returns the job's associated project.
+func (j *Job) ProjectID() string {
+	return j.projectID
+}
+
 // ID returns the job's ID.
 func (j *Job) ID() string {
 	return j.jobID
@@ -229,6 +234,23 @@ func (j *Job) Cancel(ctx context.Context) error {
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
 		_, err := call.Do()
+		return err
+	})
+}
+
+// Delete deletes the job.
+func (j *Job) Delete(ctx context.Context) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Delete")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	call := j.c.bqs.Jobs.Delete(j.projectID, j.jobID).Context(ctx)
+	if j.location != "" {
+		call = call.Location(j.location)
+	}
+	setClientHeader(call.Header())
+
+	return runWithRetry(ctx, func() (err error) {
+		err = call.Do()
 		return err
 	})
 }
@@ -413,6 +435,10 @@ type QueryStatistics struct {
 	// The number of rows affected by a DML statement. Present only for DML
 	// statements INSERT, UPDATE or DELETE.
 	NumDMLAffectedRows int64
+
+	// DMLStats provides statistics about the row mutations performed by
+	// DML statements.
+	DMLStats *DMLStatistics
 
 	// Describes a timeline of job execution.
 	Timeline []*QueryTimelineSample
@@ -643,6 +669,27 @@ func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
 	}
 }
 
+// DMLStatistics contains counts of row mutations triggered by a DML query statement.
+type DMLStatistics struct {
+	// Rows added by the statement.
+	InsertedRowCount int64
+	// Rows removed by the statement.
+	DeletedRowCount int64
+	// Rows changed by the statement.
+	UpdatedRowCount int64
+}
+
+func bqToDMLStatistics(q *bq.DmlStatistics) *DMLStatistics {
+	if q == nil {
+		return nil
+	}
+	return &DMLStatistics{
+		InsertedRowCount: q.InsertedRowCount,
+		DeletedRowCount:  q.DeletedRowCount,
+		UpdatedRowCount:  q.UpdatedRowCount,
+	}
+}
+
 func (*ExtractStatistics) implementsStatistics() {}
 func (*LoadStatistics) implementsStatistics()    {}
 func (*QueryStatistics) implementsStatistics()   {}
@@ -866,6 +913,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
 			TotalBytesProcessedAccuracy:   s.Query.TotalBytesProcessedAccuracy,
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
+			DMLStats:                      bqToDMLStatistics(s.Query.DmlStats),
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,

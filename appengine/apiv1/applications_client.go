@@ -45,12 +45,13 @@ type ApplicationsCallOptions struct {
 	RepairApplication []gax.CallOption
 }
 
-func defaultApplicationsClientOptions() []option.ClientOption {
+func defaultApplicationsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -66,37 +67,149 @@ func defaultApplicationsCallOptions() *ApplicationsCallOptions {
 	}
 }
 
+// internalApplicationsClient is an interface that defines the methods availaible from App Engine Admin API.
+type internalApplicationsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	GetApplication(context.Context, *appenginepb.GetApplicationRequest, ...gax.CallOption) (*appenginepb.Application, error)
+	CreateApplication(context.Context, *appenginepb.CreateApplicationRequest, ...gax.CallOption) (*CreateApplicationOperation, error)
+	CreateApplicationOperation(name string) *CreateApplicationOperation
+	UpdateApplication(context.Context, *appenginepb.UpdateApplicationRequest, ...gax.CallOption) (*UpdateApplicationOperation, error)
+	UpdateApplicationOperation(name string) *UpdateApplicationOperation
+	RepairApplication(context.Context, *appenginepb.RepairApplicationRequest, ...gax.CallOption) (*RepairApplicationOperation, error)
+	RepairApplicationOperation(name string) *RepairApplicationOperation
+}
+
 // ApplicationsClient is a client for interacting with App Engine Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages App Engine applications.
+type ApplicationsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalApplicationsClient
+
+	// The call options for this service.
+	CallOptions *ApplicationsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ApplicationsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ApplicationsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ApplicationsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// GetApplication gets information about an application.
+func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
+	return c.internalClient.GetApplication(ctx, req, opts...)
+}
+
+// CreateApplication creates an App Engine application for a Google Cloud Platform project.
+// Required fields:
+//
+//   id - The ID of the target Cloud Platform project.
+//
+//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
+//
+// For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
+func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
+	return c.internalClient.CreateApplication(ctx, req, opts...)
+}
+
+// CreateApplicationOperation returns a new CreateApplicationOperation from a given name.
+// The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
+func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
+	return c.internalClient.CreateApplicationOperation(name)
+}
+
+// UpdateApplication updates the specified Application resource.
+// You can update the following fields:
+//
+//   auth_domain - Google authentication domain for controlling user access to the application.
+//
+//   default_cookie_expiration - Cookie expiration policy for the application.
+func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
+	return c.internalClient.UpdateApplication(ctx, req, opts...)
+}
+
+// UpdateApplicationOperation returns a new UpdateApplicationOperation from a given name.
+// The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
+func (c *ApplicationsClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
+	return c.internalClient.UpdateApplicationOperation(name)
+}
+
+// RepairApplication recreates the required App Engine features for the specified App Engine
+// application, for example a Cloud Storage bucket or App Engine service
+// account.
+// Use this method if you receive an error message about a missing feature,
+// for example, Error retrieving the App Engine service account.
+// If you have deleted your App Engine service account, this will
+// not be able to recreate it. Instead, you should attempt to use the
+// IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params={ (at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B)“name”%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D .
+// If the deletion was recent, the numeric ID can be found in the Cloud
+// Console Activity Log.
+func (c *ApplicationsClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
+	return c.internalClient.RepairApplication(ctx, req, opts...)
+}
+
+// RepairApplicationOperation returns a new RepairApplicationOperation from a given name.
+// The name must be that of a previously created RepairApplicationOperation, possibly from a different process.
+func (c *ApplicationsClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
+	return c.internalClient.RepairApplicationOperation(name)
+}
+
+// applicationsGRPCClient is a client for interacting with App Engine Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ApplicationsClient struct {
+type applicationsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ApplicationsClient
+	CallOptions **ApplicationsCallOptions
+
 	// The gRPC API client.
 	applicationsClient appenginepb.ApplicationsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *ApplicationsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewApplicationsClient creates a new applications client.
+// NewApplicationsClient creates a new applications client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages App Engine applications.
 func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationsClient, error) {
-	clientOpts := defaultApplicationsClientOptions()
-
+	clientOpts := defaultApplicationsGRPCClientOptions()
 	if newApplicationsClientHook != nil {
 		hookOpts, err := newApplicationsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -114,16 +227,19 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 	if err != nil {
 		return nil, err
 	}
-	c := &ApplicationsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultApplicationsCallOptions(),
+	client := ApplicationsClient{CallOptions: defaultApplicationsCallOptions()}
 
+	c := &applicationsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		applicationsClient: appenginepb.NewApplicationsClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -133,36 +249,36 @@ func NewApplicationsClient(ctx context.Context, opts ...option.ClientOption) (*A
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ApplicationsClient) Connection() *grpc.ClientConn {
+func (c *applicationsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ApplicationsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ApplicationsClient) setGoogleClientInfo(keyval ...string) {
+func (c *applicationsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GetApplication gets information about an application.
-func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *applicationsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *applicationsGRPCClient) GetApplication(ctx context.Context, req *appenginepb.GetApplicationRequest, opts ...gax.CallOption) (*appenginepb.Application, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetApplication[0:len(c.CallOptions.GetApplication):len(c.CallOptions.GetApplication)], opts...)
+	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	var resp *appenginepb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -175,17 +291,9 @@ func (c *ApplicationsClient) GetApplication(ctx context.Context, req *appenginep
 	return resp, nil
 }
 
-// CreateApplication creates an App Engine application for a Google Cloud Platform project.
-// Required fields:
-//
-//   id - The ID of the target Cloud Platform project.
-//
-//   location - The region (at https://cloud.google.com/appengine/docs/locations) where you want the App Engine application located.
-//
-// For more information about App Engine applications, see Managing Projects, Applications, and Billing (at https://cloud.google.com/appengine/docs/standard/python/console/).
-func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
+func (c *applicationsGRPCClient) CreateApplication(ctx context.Context, req *appenginepb.CreateApplicationRequest, opts ...gax.CallOption) (*CreateApplicationOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CreateApplication[0:len(c.CallOptions.CreateApplication):len(c.CallOptions.CreateApplication)], opts...)
+	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -196,20 +304,14 @@ func (c *ApplicationsClient) CreateApplication(ctx context.Context, req *appengi
 		return nil, err
 	}
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateApplication updates the specified Application resource.
-// You can update the following fields:
-//
-//   auth_domain - Google authentication domain for controlling user access to the application.
-//
-//   default_cookie_expiration - Cookie expiration policy for the application.
-func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
+func (c *applicationsGRPCClient) UpdateApplication(ctx context.Context, req *appenginepb.UpdateApplicationRequest, opts ...gax.CallOption) (*UpdateApplicationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateApplication[0:len(c.CallOptions.UpdateApplication):len(c.CallOptions.UpdateApplication)], opts...)
+	opts = append((*c.CallOptions).UpdateApplication[0:len((*c.CallOptions).UpdateApplication):len((*c.CallOptions).UpdateApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -220,24 +322,14 @@ func (c *ApplicationsClient) UpdateApplication(ctx context.Context, req *appengi
 		return nil, err
 	}
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// RepairApplication recreates the required App Engine features for the specified App Engine
-// application, for example a Cloud Storage bucket or App Engine service
-// account.
-// Use this method if you receive an error message about a missing feature,
-// for example, Error retrieving the App Engine service account.
-// If you have deleted your App Engine service account, this will
-// not be able to recreate it. Instead, you should attempt to use the
-// IAM undelete API if possible at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params={ (at https://cloud.google.com/iam/reference/rest/v1/projects.serviceAccounts/undelete?apix_params=%7B)“name”%3A"projects%2F-%2FserviceAccounts%2Funique_id"%2C"resource"%3A%7B%7D%7D .
-// If the deletion was recent, the numeric ID can be found in the Cloud
-// Console Activity Log.
-func (c *ApplicationsClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
+func (c *applicationsGRPCClient) RepairApplication(ctx context.Context, req *appenginepb.RepairApplicationRequest, opts ...gax.CallOption) (*RepairApplicationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RepairApplication[0:len(c.CallOptions.RepairApplication):len(c.CallOptions.RepairApplication)], opts...)
+	opts = append((*c.CallOptions).RepairApplication[0:len((*c.CallOptions).RepairApplication):len((*c.CallOptions).RepairApplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -248,7 +340,7 @@ func (c *ApplicationsClient) RepairApplication(ctx context.Context, req *appengi
 		return nil, err
 	}
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -259,9 +351,9 @@ type CreateApplicationOperation struct {
 
 // CreateApplicationOperation returns a new CreateApplicationOperation from a given name.
 // The name must be that of a previously created CreateApplicationOperation, possibly from a different process.
-func (c *ApplicationsClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
+func (c *applicationsGRPCClient) CreateApplicationOperation(name string) *CreateApplicationOperation {
 	return &CreateApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -328,9 +420,9 @@ type RepairApplicationOperation struct {
 
 // RepairApplicationOperation returns a new RepairApplicationOperation from a given name.
 // The name must be that of a previously created RepairApplicationOperation, possibly from a different process.
-func (c *ApplicationsClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
+func (c *applicationsGRPCClient) RepairApplicationOperation(name string) *RepairApplicationOperation {
 	return &RepairApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -397,9 +489,9 @@ type UpdateApplicationOperation struct {
 
 // UpdateApplicationOperation returns a new UpdateApplicationOperation from a given name.
 // The name must be that of a previously created UpdateApplicationOperation, possibly from a different process.
-func (c *ApplicationsClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
+func (c *applicationsGRPCClient) UpdateApplicationOperation(name string) *UpdateApplicationOperation {
 	return &UpdateApplicationOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

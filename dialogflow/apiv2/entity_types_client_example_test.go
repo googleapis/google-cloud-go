@@ -30,19 +30,19 @@ func ExampleNewEntityTypesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEntityTypesClient_ListEntityTypes() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleEntityTypesClient_ListEntityTypes() {
 }
 
 func ExampleEntityTypesClient_GetEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleEntityTypesClient_GetEntityType() {
 }
 
 func ExampleEntityTypesClient_CreateEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleEntityTypesClient_CreateEntityType() {
 }
 
 func ExampleEntityTypesClient_UpdateEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 }
 
 func ExampleEntityTypesClient_BatchUpdateEntityTypes() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchUpdateEntityTypesRequest{
 		// TODO: Fill request struct fields.
@@ -163,13 +160,12 @@ func ExampleEntityTypesClient_BatchUpdateEntityTypes() {
 }
 
 func ExampleEntityTypesClient_BatchDeleteEntityTypes() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchDeleteEntityTypesRequest{
 		// TODO: Fill request struct fields.
@@ -186,13 +182,12 @@ func ExampleEntityTypesClient_BatchDeleteEntityTypes() {
 }
 
 func ExampleEntityTypesClient_BatchCreateEntities() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchCreateEntitiesRequest{
 		// TODO: Fill request struct fields.
@@ -209,13 +204,12 @@ func ExampleEntityTypesClient_BatchCreateEntities() {
 }
 
 func ExampleEntityTypesClient_BatchUpdateEntities() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchUpdateEntitiesRequest{
 		// TODO: Fill request struct fields.
@@ -232,13 +226,12 @@ func ExampleEntityTypesClient_BatchUpdateEntities() {
 }
 
 func ExampleEntityTypesClient_BatchDeleteEntities() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchDeleteEntitiesRequest{
 		// TODO: Fill request struct fields.

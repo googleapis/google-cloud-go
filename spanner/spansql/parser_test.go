@@ -32,7 +32,7 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias AS aka FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
+		{`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -111,6 +111,34 @@ func TestParseQuery(t *testing.T) {
 						RHS: Param("userID"),
 					},
 					ListAliases: []ID{"count"},
+				},
+			},
+		},
+		// with single table hint
+		{`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "Packages", Hints: map[string]string{"FORCE_INDEX": "PackagesIdx"}}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("package_idx"),
+						RHS: Param("packageIdx"),
+					},
+				},
+			},
+		},
+		// with multiple table hints
+		{`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "Packages", Hints: map[string]string{"FORCE_INDEX": "PackagesIdx", "GROUPBY_SCAN_OPTIMIZATION": "TRUE"}}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("package_idx"),
+						RHS: Param("packageIdx"),
+					},
 				},
 			},
 		},
@@ -410,7 +438,7 @@ func TestParseDDL(t *testing.T) {
 		-- Table with generated column.
 		CREATE TABLE GenCol (
 			Name STRING(MAX) NOT NULL,
-			NameLen INT64 AS (CHAR_LENGTH(Name)) STORED,
+			NameLen INT64 AS (char_length(Name)) STORED,
 		) PRIMARY KEY (Name);
 
 		-- Trailing comment at end of file.
@@ -611,6 +639,36 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)`,
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&AlterDatabase{
+					Name: "dbname",
+					Alteration: SetDatabaseOptions{
+						Options: DatabaseOptions{
+							OptimizerVersion:       func(i int) *int { return &i }(2),
+							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
+		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&AlterDatabase{
+					Name: "dbname",
+					Alteration: SetDatabaseOptions{
+						Options: DatabaseOptions{
+							OptimizerVersion:       func(i int) *int { return &i }(0),
+							VersionRetentionPeriod: func(s string) *string { return &s }(""),
+							EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

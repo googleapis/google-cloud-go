@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	datacatalog "cloud.google.com/go/datacatalog/apiv1"
 	"cloud.google.com/go/httpreplay"
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
@@ -43,6 +44,7 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
 const replayFilename = "bigquery.replay"
@@ -50,10 +52,11 @@ const replayFilename = "bigquery.replay"
 var record = flag.Bool("record", false, "record RPCs")
 
 var (
-	client        *Client
-	storageClient *storage.Client
-	dataset       *Dataset
-	schema        = Schema{
+	client                 *Client
+	storageClient          *storage.Client
+	policyTagManagerClient *datacatalog.PolicyTagManagerClient
+	dataset                *Dataset
+	schema                 = Schema{
 		{Name: "name", Type: StringFieldType},
 		{Name: "nums", Type: IntegerFieldType, Repeated: true},
 		{Name: "rec", Type: RecordFieldType, Schema: Schema{
@@ -119,6 +122,10 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx)
+		if err != nil {
+			log.Fatal(err)
+		}
 		cleanup := initTestState(client, t)
 		return func() {
 			cleanup()
@@ -142,6 +149,7 @@ func initIntegrationTest() func() {
 		}
 		bqOpts := []option.ClientOption{option.WithTokenSource(ts)}
 		sOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl))}
+		ptmOpts := []option.ClientOption{option.WithTokenSource(testutil.TokenSource(ctx, "https://www.googleapis.com/auth/cloud-platform"))}
 		cleanup := func() {}
 		now := time.Now().UTC()
 		if *record {
@@ -179,6 +187,7 @@ func initIntegrationTest() func() {
 			// incompatible with gRPC options.
 			bqOpts = append(bqOpts, grpcHeadersChecker.CallOptions()...)
 			sOpts = append(sOpts, grpcHeadersChecker.CallOptions()...)
+			ptmOpts = append(ptmOpts, grpcHeadersChecker.CallOptions()...)
 		}
 		var err error
 		client, err = NewClient(ctx, projID, bqOpts...)
@@ -189,6 +198,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
+		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
 	}
@@ -218,6 +228,24 @@ func initTestState(client *Client, t time.Time) func() {
 	}
 }
 
+func TestIntegration_DetectProjectID(t *testing.T) {
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+		t.Errorf("test NewClient: %v", err)
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.Project())
+	}
+}
+
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
@@ -237,6 +265,36 @@ func TestIntegration_TableCreate(t *testing.T) {
 	if !hasStatusCode(err, http.StatusBadRequest) {
 		t.Fatalf("want a 400 error, got %v", err)
 	}
+}
+
+func TestIntegration_TableCreateWithConstraints(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	table := dataset.Table("constraints")
+	schema := Schema{
+		{Name: "str_col", Type: StringFieldType, MaxLength: 10},
+		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
+		{Name: "num_col", Type: NumericFieldType, Precision: 20},
+		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+	}
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("table create error: %v", err)
+	}
+
+	meta, err := table.Metadata(context.Background())
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+
 }
 
 func TestIntegration_TableCreateView(t *testing.T) {
@@ -394,6 +452,96 @@ func TestIntegration_TableMetadata(t *testing.T) {
 				t.Errorf("metadata.Clustering: got %v, want %v", got, want)
 			}
 		}
+	}
+
+}
+
+func TestIntegration_SnapshotAndRestore(t *testing.T) {
+
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// instantiate a base table via a CTAS
+	baseTableID := tableIDs.New()
+	qualified := fmt.Sprintf("`%s`.%s.%s", testutil.ProjID(), dataset.DatasetID, baseTableID)
+	sql := fmt.Sprintf(`
+		CREATE TABLE %s
+		(
+			sample_value INT64,
+			groupid STRING,
+		)
+		AS
+		SELECT
+		CAST(RAND() * 100 AS INT64),
+		CONCAT("group", CAST(CAST(RAND()*10 AS INT64) AS STRING))
+		FROM
+		UNNEST(GENERATE_ARRAY(0,999))
+`, qualified)
+	if _, err := runQueryJob(ctx, sql); err != nil {
+		t.Fatalf("couldn't instantiate base table: %v", err)
+	}
+
+	// Create a snapshot.  We'll select our snapshot time explicitly to validate the snapshot time is the same.
+	targetTime := time.Now()
+	snapshotID := tableIDs.New()
+	copier := dataset.Table(snapshotID).CopierFrom(dataset.Table(fmt.Sprintf("%s@%d", baseTableID, targetTime.UnixNano()/1e6)))
+	copier.OperationType = SnapshotOperation
+	job, err := copier.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run snapshot: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling snapshot failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("snapshot failed in error: %v", status.Err())
+	}
+
+	// verify metadata on the snapshot
+	meta, err := dataset.Table(snapshotID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata from snapshot: %v", err)
+	}
+	if meta.Type != Snapshot {
+		t.Errorf("expected snapshot table type, got %s", meta.Type)
+	}
+	want := &SnapshotDefinition{
+		BaseTableReference: dataset.Table(baseTableID),
+		SnapshotTime:       targetTime,
+	}
+	if diff := testutil.Diff(meta.SnapshotDefinition, want, cmp.AllowUnexported(Table{}), cmpopts.IgnoreUnexported(Client{}), cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
+		t.Fatalf("SnapshotDefinition differs.  got=-, want=+:\n%s", diff)
+	}
+
+	// execute a restore using the snapshot.
+	restoreID := tableIDs.New()
+	restorer := dataset.Table(restoreID).CopierFrom(dataset.Table(snapshotID))
+	restorer.OperationType = RestoreOperation
+	job, err = restorer.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run restore: %v", err)
+	}
+	status, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling restore failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("restore failed in error: %v", status.Err())
+	}
+
+	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get restored table metadata: %v", err)
+	}
+
+	if meta.NumBytes != restoreMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, restoreMeta.NumBytes)
+	}
+	if meta.NumRows != restoreMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
 	}
 
 }
@@ -724,7 +872,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	sql := fmt.Sprintf(`
 			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -886,6 +1034,88 @@ func TestIntegration_Tables(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+// setupPolicyTag is a helper for setting up policy tags in the datacatalog service.
+//
+// It returns a string for a policy tag identifier and a cleanup function, or an error.
+func setupPolicyTag(ctx context.Context) (string, func(), error) {
+	location := "us"
+	req := &datacatalogpb.CreateTaxonomyRequest{
+		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), location),
+		Taxonomy: &datacatalogpb.Taxonomy{
+			DisplayName: "google-cloud-go bigquery testing taxonomy",
+			Description: "Taxonomy created for google-cloud-go integration tests",
+			ActivatedPolicyTypes: []datacatalogpb.Taxonomy_PolicyType{
+				datacatalogpb.Taxonomy_FINE_GRAINED_ACCESS_CONTROL,
+			},
+		},
+	}
+	resp, err := policyTagManagerClient.CreateTaxonomy(ctx, req)
+	if err != nil {
+		return "", nil, fmt.Errorf("datacatalog.CreateTaxonomy: %v", err)
+	}
+	taxonomyID := resp.GetName()
+	cleanupFunc := func() {
+		policyTagManagerClient.DeleteTaxonomy(ctx, &datacatalogpb.DeleteTaxonomyRequest{
+			Name: taxonomyID,
+		})
+	}
+
+	tagReq := &datacatalogpb.CreatePolicyTagRequest{
+		Parent: resp.GetName(),
+		PolicyTag: &datacatalogpb.PolicyTag{
+			DisplayName: "ExamplePolicyTag",
+		},
+	}
+	tagResp, err := policyTagManagerClient.CreatePolicyTag(ctx, tagReq)
+	if err != nil {
+		// we're failed to create tags, but we did create taxonomy. clean it up and signal error.
+		cleanupFunc()
+		return "", nil, fmt.Errorf("datacatalog.CreatePolicyTag: %v", err)
+	}
+	return tagResp.GetName(), cleanupFunc, nil
+}
+
+func TestIntegration_ColumnACLs(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	testSchema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "ssn", Type: StringFieldType},
+		{Name: "acct_balance", Type: NumericFieldType},
+	}
+	table := newTable(t, testSchema)
+	defer table.Delete(ctx)
+
+	tagID, cleanupFunc, err := setupPolicyTag(ctx)
+	if err != nil {
+		t.Fatalf("failed to setup policy tag resources: %v", err)
+	}
+	defer cleanupFunc()
+	// amend the test schema to add a policy tag
+	testSchema[1].PolicyTags = &PolicyTagList{
+		Names: []string{tagID},
+	}
+
+	// Test: Amend an existing schema with a policy tag.
+	_, err = table.Update(ctx, TableMetadataToUpdate{
+		Schema: testSchema,
+	}, "")
+	if err != nil {
+		t.Errorf("update with policyTag failed: %v", err)
+	}
+
+	// Test: Create a new table with a policy tag defined.
+	newTable := dataset.Table(tableIDs.New())
+	if err = newTable.Create(ctx, &TableMetadata{
+		Schema:      schema,
+		Description: "foo",
+	}); err != nil {
+		t.Errorf("failed to create new table with policy tag: %v", err)
 	}
 }
 
@@ -1058,7 +1288,7 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		END`,
 		routine.FullyQualifiedName())
 
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -1077,6 +1307,44 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 	checkReadAndTotalRows(t,
 		"expect result set from procedure",
 		it, [][]Value{{int64(10)}})
+}
+
+func TestIntegration_RoutineUserTVF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	inMeta := &RoutineMetadata{
+		Type:     "TABLE_VALUED_FUNCTION",
+		Language: "SQL",
+		Arguments: []*RoutineArgument{
+			{Name: "filter",
+				DataType: &StandardSQLDataType{TypeKind: "INT64"},
+			}},
+		ReturnTableType: &StandardSQLTableType{
+			Columns: []*StandardSQLField{
+				{Name: "x", Type: &StandardSQLDataType{TypeKind: "INT64"}},
+			},
+		},
+		Body: "SELECT x FROM UNNEST([1,2,3]) x WHERE x = filter",
+	}
+	if err := routine.Create(ctx, inMeta); err != nil {
+		t.Fatalf("routine create: %v", err)
+	}
+	defer routine.Delete(ctx)
+
+	meta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Now, compare the input meta to the output meta
+	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
+		t.Errorf("routine metadata differs, got=-, want=+\n%s", diff)
+	}
 }
 
 func TestIntegration_InsertErrors(t *testing.T) {
@@ -1110,9 +1378,11 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want := "Request payload size exceeds the limit"
-	if !strings.Contains(e.Message, want) {
-		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	if e.Code != http.StatusRequestEntityTooLarge {
+		want := "Request payload size exceeds the limit"
+		if !strings.Contains(e.Message, want) {
+			t.Errorf("Error didn't contain expected message (%s): %#v", want, e)
+		}
 	}
 	// Case 2: Very Large Request
 	// Request so large it gets rejected by intermediate infra (3x 10MB rows)
@@ -1127,8 +1397,8 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
-	if e.Code != http.StatusBadRequest {
-		t.Errorf("Wanted HTTP 400, got %d", e.Code)
+	if e.Code != http.StatusBadRequest && e.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("Wanted HTTP 400 or 413, got %d", e.Code)
 	}
 }
 
@@ -1678,6 +1948,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 }
 
 func TestIntegration_Load(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4418")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -1743,7 +2014,8 @@ func TestIntegration_DML(t *testing.T) {
 							   ('b', [1], STRUCT<BOOL>(FALSE)),
 							   ('c', [2], STRUCT<BOOL>(TRUE))`,
 		table.DatasetID, table.TableID)
-	if err := runQueryJob(ctx, sql); err != nil {
+	stats, err := runQueryJob(ctx, sql)
+	if err != nil {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
@@ -1752,11 +2024,23 @@ func TestIntegration_DML(t *testing.T) {
 		{"c", []Value{int64(2)}, []Value{true}},
 	}
 	checkRead(t, "DML", table.Read(ctx), wantRows)
+	if stats == nil {
+		t.Fatalf("no query stats")
+	}
+	if stats.DMLStats == nil {
+		t.Fatalf("no dml stats")
+	}
+	wantRowCount := int64(len(wantRows))
+	if stats.DMLStats.InsertedRowCount != wantRowCount {
+		t.Fatalf("dml stats mismatch.  got %d inserted rows, want %d", stats.DMLStats.InsertedRowCount, wantRowCount)
+	}
 }
 
 // runQueryJob is useful for running queries where no row data is returned (DDL/DML).
-func runQueryJob(ctx context.Context, sql string) error {
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+func runQueryJob(ctx context.Context, sql string) (*QueryStatistics, error) {
+	var stats *QueryStatistics
+	var err error
+	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := client.Query(sql).Run(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
@@ -1771,8 +2055,15 @@ func runQueryJob(ctx context.Context, sql string) error {
 			}
 			return false, err
 		}
+		status := job.LastStatus()
+		if status.Statistics != nil {
+			if qStats, ok := status.Statistics.Details.(*QueryStatistics); ok {
+				stats = qStats
+			}
+		}
 		return true, nil
 	})
+	return stats, err
 }
 
 func TestIntegration_TimeTypes(t *testing.T) {
@@ -1812,7 +2103,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 		"VALUES ('%s', '%s', '%s', '%s')",
 		table.DatasetID, table.TableID,
 		d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
-	if err := runQueryJob(ctx, query); err != nil {
+	if _, err := runQueryJob(ctx, query); err != nil {
 		t.Fatal(err)
 	}
 	wantRows = append(wantRows, wantRows[0])
@@ -2236,7 +2527,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	sql := fmt.Sprintf(`INSERT %s.%s (name, num)
 		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
 		table.DatasetID, table.TableID)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	// Extract to a GCS object as CSV.
@@ -2460,6 +2751,29 @@ func TestIntegration_ListJobs(t *testing.T) {
 	}
 }
 
+func TestIntegration_DeleteJob(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo")
+	q.Location = "us-east1"
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	_, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job completion failure: %v", err)
+	}
+
+	if err := job.Delete(ctx); err != nil {
+		t.Fatalf("job.Delete failed: %v", err)
+	}
+}
+
 const tokyo = "asia-northeast1"
 
 func TestIntegration_Location(t *testing.T) {
@@ -2639,7 +2953,7 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 	FROM
 	  UNNEST(GENERATE_ARRAY(0,999))
 	`, qualified)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
 
@@ -2767,7 +3081,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
 		)`, modelRef)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer model.Delete(ctx)
@@ -2950,7 +3264,7 @@ func TestIntegration_RoutineComplexTypes(t *testing.T) {
 			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
 		  )`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -3010,7 +3324,7 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 	sql := fmt.Sprintf(`
 		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)

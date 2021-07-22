@@ -30,19 +30,19 @@ func ExampleNewConversationProfilesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleConversationProfilesClient_ListConversationProfiles() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListConversationProfilesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleConversationProfilesClient_ListConversationProfiles() {
 }
 
 func ExampleConversationProfilesClient_GetConversationProfile() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetConversationProfileRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleConversationProfilesClient_GetConversationProfile() {
 }
 
 func ExampleConversationProfilesClient_CreateConversationProfile() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateConversationProfileRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleConversationProfilesClient_CreateConversationProfile() {
 }
 
 func ExampleConversationProfilesClient_UpdateConversationProfile() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateConversationProfileRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteConversationProfileRequest{
 		// TODO: Fill request struct fields.

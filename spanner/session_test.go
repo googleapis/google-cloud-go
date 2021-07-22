@@ -1139,6 +1139,16 @@ func TestErrorOnPrepareSession(t *testing.T) {
 		})
 		sp := client.idleSessions
 
+		// Wait until session creation has seized.
+		waitFor(t, func() error {
+			sp.mu.Lock()
+			defer sp.mu.Unlock()
+			if sp.createReqs != 0 {
+				return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
+			}
+			return nil
+		})
+
 		// Wait until the health checker has tried to write-prepare a session.
 		// This will cause the session pool to write some errors to the log that
 		// preparing sessions failed.
@@ -1968,7 +1978,8 @@ func getSessionsPerChannel(sp *sessionPool) map[string]int {
 		// Get the pointer to the actual underlying gRPC ClientConn and use
 		// that as the key in the map.
 		val := reflect.ValueOf(s.client).Elem()
-		connPool := val.FieldByName("connPool").Elem().Elem()
+		internalClient := val.FieldByName("internalClient").Elem().Elem()
+		connPool := internalClient.FieldByName("connPool").Elem().Elem()
 		conn := connPool.Field(0).Pointer()
 		key := fmt.Sprintf("%v", conn)
 		sessionsPerChannel[key] = sessionsPerChannel[key] + 1

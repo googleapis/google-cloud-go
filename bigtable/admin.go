@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -115,8 +116,74 @@ func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
-func (ac *AdminClient) backupPath(cluster, backup string) string {
-	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, instance, cluster, backup)
+}
+
+// EncryptionInfo represents the encryption info of a table.
+type EncryptionInfo struct {
+	Status        *Status
+	Type          EncryptionType
+	KMSKeyVersion string
+}
+
+func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
+	return &EncryptionInfo{
+		Status:        pbInfo.EncryptionStatus,
+		Type:          EncryptionType(pbInfo.EncryptionType.Number()),
+		KMSKeyVersion: pbInfo.KmsKeyVersion,
+	}
+}
+
+// Status references google.golang.org/grpc/status.
+// It represents an RPC status code, message, and details of EncryptionInfo.
+// https://pkg.go.dev/google.golang.org/grpc/internal/status
+type Status = status.Status
+
+// EncryptionType is the type of encryption for an instance.
+type EncryptionType int32
+
+const (
+	// EncryptionTypeUnspecified is the type was not specified, though data at rest remains encrypted.
+	EncryptionTypeUnspecified EncryptionType = iota
+	// GoogleDefaultEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is fully managed by Google. No key
+	// version or status will be populated. This is the default state.
+	GoogleDefaultEncryption
+	// CustomerManagedEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is managed by the customer.
+	// The in-use version of the key and its status are populated for
+	// CMEK-protected tables.
+	// CMEK-protected backups are pinned to the key version that was in use at
+	// the time the backup was taken. This key version is populated but its
+	// status is not tracked and is reported as `UNKNOWN`.
+	CustomerManagedEncryption
+)
+
+// EncryptionInfoByCluster is a map of cluster name to EncryptionInfo
+type EncryptionInfoByCluster map[string][]*EncryptionInfo
+
+// EncryptionInfo gets the current encryption info for the table across all of the clusters.
+// The returned map will be keyed by cluster id and contain a status for all of the keys in use.
+func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
+	if err != nil {
+		return nil, err
+	}
+	encryptionInfo := EncryptionInfoByCluster{}
+	for key, cs := range res.ClusterStates {
+		for _, pbInfo := range cs.EncryptionInfo {
+			info := EncryptionInfo{}
+			info.Status = pbInfo.EncryptionStatus
+			info.Type = EncryptionType(pbInfo.EncryptionType.Number())
+			info.KMSKeyVersion = pbInfo.KmsKeyVersion
+			encryptionInfo[key] = append(encryptionInfo[key], &info)
+		}
+	}
+
+	return encryptionInfo, nil
 }
 
 // Tables returns a list of the tables in the instance.
@@ -247,12 +314,12 @@ type FamilyInfo struct {
 	GCPolicy string
 }
 
-// TableInfo retrieves information about a table.
-func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
+		View: view,
 	}
 
 	var res *btapb.Table
@@ -262,6 +329,17 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
 	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// TableInfo retrieves information about a table.
+func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table, btapb.Table_SCHEMA_VIEW)
 	if err != nil {
 		return nil, err
 	}
@@ -609,7 +687,7 @@ func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 
 // BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
 func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
-	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, backup))
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, ac.instance, backup))
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
@@ -957,26 +1035,71 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
-	InstanceID, ClusterID, Zone string
-	NumNodes                    int32
-	StorageType                 StorageType
+	// InstanceID specifies the unique name of the instance. Required.
+	InstanceID string
+
+	// ClusterID specifies the unique name of the cluster. Required.
+	ClusterID string
+
+	// Zone specifies the location where this cluster's nodes and storage reside.
+	// For best performance, clients should be located as close as possible to this
+	// cluster. Required.
+	Zone string
+
+	// NumNodes specifies the number of nodes allocated to this cluster. More
+	// nodes enable higher throughput and more consistent performance. Required.
+	NumNodes int32
+
+	// StorageType specifies the type of storage used by this cluster to serve
+	// its parent instance's tables, unless explicitly overridden. Required.
+	StorageType StorageType
+
+	// KMSKeyName is the name of the KMS customer managed encryption key (CMEK)
+	// to use for at-rest encryption of data in this cluster.  If omitted,
+	// Google's default encryption will be used. If specified, the requirements
+	// for this key are:
+	// 1) The Cloud Bigtable service account associated with the
+	//    project that contains the cluster must be granted the
+	//    ``cloudkms.cryptoKeyEncrypterDecrypter`` role on the
+	//    CMEK.
+	// 2) Only regional keys can be used and the region of the
+	//    CMEK key must match the region of the cluster.
+	// 3) All clusters within an instance must use the same CMEK
+	//    key.
+	// Optional. Immutable.
+	KMSKeyName string
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
+	ec := btapb.Cluster_EncryptionConfig{}
+	ec.KmsKeyName = cc.KMSKeyName
 	return &btapb.Cluster{
 		ServeNodes:         cc.NumNodes,
 		DefaultStorageType: cc.StorageType.proto(),
 		Location:           "projects/" + project + "/locations/" + cc.Zone,
+		EncryptionConfig:   &ec,
 	}
 }
 
 // ClusterInfo represents information about a cluster.
 type ClusterInfo struct {
-	Name        string      // name of the cluster
-	Zone        string      // GCP zone of the cluster (e.g. "us-central1-a")
-	ServeNodes  int         // number of allocated serve nodes
-	State       string      // state of the cluster
-	StorageType StorageType // the storage type of the cluster
+	// Name is the name of the cluster.
+	Name string
+
+	// Zone is the GCP zone of the cluster (e.g. "us-central1-a").
+	Zone string
+
+	// ServeNodes is the number of allocated serve nodes.
+	ServeNodes int
+
+	// State is the state of the cluster.
+	State string
+
+	// StorageType is the storage type of the cluster.
+	StorageType StorageType
+
+	// KMSKeyName is the customer managed encryption key for the cluster.
+	KMSKeyName string
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1035,16 +1158,22 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	if err != nil {
 		return nil, err
 	}
+
 	var cis []*ClusterInfo
 	for _, c := range res.Clusters {
 		nameParts := strings.Split(c.Name, "/")
 		locParts := strings.Split(c.Location, "/")
+		kmsKeyName := ""
+		if c.EncryptionConfig != nil {
+			kmsKeyName = c.EncryptionConfig.KmsKeyName
+		}
 		cis = append(cis, &ClusterInfo{
 			Name:        nameParts[len(nameParts)-1],
 			Zone:        locParts[len(locParts)-1],
 			ServeNodes:  int(c.ServeNodes),
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
+			KMSKeyName:  kmsKeyName,
 		})
 	}
 	if len(res.FailedLocations) > 0 {
@@ -1058,7 +1187,9 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 // GetCluster fetches a cluster in an instance
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.GetClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
+	req := &btapb.GetClusterRequest{
+		Name: fmt.Sprintf("projects/%s/instances/%s/clusters/%s", iac.project, instanceID, clusterID),
+	}
 	var c *btapb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
@@ -1069,6 +1200,10 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		return nil, err
 	}
 
+	kmsKeyName := ""
+	if c.EncryptionConfig != nil {
+		kmsKeyName = c.EncryptionConfig.KmsKeyName
+	}
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	cis := &ClusterInfo{
@@ -1077,6 +1212,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		ServeNodes:  int(c.ServeNodes),
 		State:       c.State.String(),
 		StorageType: storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:  kmsKeyName,
 	}
 	return cis, nil
 }
@@ -1456,15 +1592,24 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 }
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
+// To restore a table to a different instance, see RestoreTableFrom.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := ac.backupPath(cluster, backup)
+	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
+}
 
+// RestoreTableFrom creates a new table in the admin's instance by restoring from the given backup and instance.
+// To restore within the same instance, see RestoreTable.
+// sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
+// tableName (ex. "my-restored-table") will be the name of the newly created table.
+// backupName (ex. "my-backup") is the name of the backup to restore.
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	parent := ac.instancePrefix()
+	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
 	req := &btapb.RestoreTableRequest{
-		Parent:  prefix,
+		Parent:  parent,
 		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
 	if err != nil {
@@ -1569,16 +1714,19 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
+	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
+	bi := BackupInfo{
+		Name:           name,
+		SourceTable:    tableID,
+		SizeBytes:      backup.SizeBytes,
+		StartTime:      startTime,
+		EndTime:        endTime,
+		ExpireTime:     expireTime,
+		State:          backup.State.String(),
+		EncryptionInfo: encryptionInfo,
+	}
 
-	return &BackupInfo{
-		Name:        name,
-		SourceTable: tableID,
-		SizeBytes:   backup.SizeBytes,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		ExpireTime:  expireTime,
-		State:       backup.State.String(),
-	}, nil
+	return &bi, nil
 }
 
 // BackupIterator is an EntryIterator that iterates over log entries.
@@ -1607,19 +1755,20 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 
 // BackupInfo contains backup metadata. This struct is read-only.
 type BackupInfo struct {
-	Name        string
-	SourceTable string
-	SizeBytes   int64
-	StartTime   time.Time
-	EndTime     time.Time
-	ExpireTime  time.Time
-	State       string
+	Name           string
+	SourceTable    string
+	SizeBytes      int64
+	StartTime      time.Time
+	EndTime        time.Time
+	ExpireTime     time.Time
+	State          string
+	EncryptionInfo *EncryptionInfo
 }
 
 // BackupInfo gets backup metadata.
 func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
@@ -1641,7 +1790,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 // DeleteBackup deletes a backup in a cluster.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.DeleteBackupRequest{
 		Name: backupPath,
@@ -1653,7 +1802,7 @@ func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string)
 // UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
 func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	expireTimestamp, err := ptypes.TimestampProto(expireTime)
 	if err != nil {
