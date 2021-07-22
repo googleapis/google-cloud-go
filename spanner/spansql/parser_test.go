@@ -114,6 +114,34 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// with single table hint
+		{`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "Packages", Hints: map[string]string{"FORCE_INDEX": "PackagesIdx"}}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("package_idx"),
+						RHS: Param("packageIdx"),
+					},
+				},
+			},
+		},
+		// with multiple table hints
+		{`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "Packages", Hints: map[string]string{"FORCE_INDEX": "PackagesIdx", "GROUPBY_SCAN_OPTIMIZATION": "TRUE"}}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("package_idx"),
+						RHS: Param("packageIdx"),
+					},
+				},
+			},
+		},
 		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
 			Query{
 				Select: Select{

@@ -74,7 +74,13 @@ func Build(dir string) error {
 	log.Println("building generated code")
 	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
-	return c.Run()
+	if _, err := c.Output(); err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Printf("Error Output: %s", ee.Stderr)
+		}
+		return err
+	}
+	return nil
 }
 
 // Vet runs linters on all .go files recursively from the given directory.
@@ -89,4 +95,17 @@ func Vet(dir string) error {
 	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()
+}
+
+// CurrentMod returns the module name of the provided directory.
+func CurrentMod(dir string) (string, error) {
+	log.Println("detecting current module")
+	c := execv.Command("go", "list", "-m")
+	c.Dir = dir
+	var out []byte
+	var err error
+	if out, err = c.Output(); err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }
