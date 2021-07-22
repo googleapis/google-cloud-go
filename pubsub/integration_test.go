@@ -1812,12 +1812,12 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 		{
 			desc:       "avro schema",
 			schemaType: SchemaAvro,
-			path:       "testdata/us-states.avsc",
+			path:       "testdata/schema/us-states.avsc",
 		},
 		{
 			desc:       "protocol buffer schema",
 			schemaType: SchemaProtocolBuffer,
-			path:       "testdata/us-states.proto",
+			path:       "testdata/schema/us-states.proto",
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -1846,7 +1846,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
-			got, err = c.Schema(ctx, schemaPath, SchemaViewFull)
+			got, err = c.Schema(ctx, schemaID, SchemaViewFull)
 			if err != nil {
 				t.Fatalf("SchemaClient.Schema error: %v", err)
 			}
@@ -1854,7 +1854,7 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
 			}
 
-			err = c.DeleteSchema(ctx, schemaPath)
+			err = c.DeleteSchema(ctx, schemaID)
 			if err != nil {
 				t.Fatalf("SchemaClient.DeleteSchema error: %v", err)
 			}

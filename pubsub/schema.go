@@ -155,7 +155,7 @@ func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s Sche
 	return protoToSchemaConfig(pbs), nil
 }
 
-// Schema retrieves the configuration of a schema.
+// Schema retrieves the configuration of a schema given a schemaID and a view.
 func (c *SchemaClient) Schema(ctx context.Context, schemaID string, view SchemaView) (*SchemaConfig, error) {
 	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", c.projectID, schemaID)
 	req := &pb.GetSchemaRequest{
@@ -197,7 +197,7 @@ func (s *SchemaIterator) Next() (*SchemaConfig, error) {
 	return protoToSchemaConfig(pbs), nil
 }
 
-// DeleteSchema deletes an existing schema.
+// DeleteSchema deletes an existing schema given a schema ID.
 func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaID string) error {
 	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", s.projectID, schemaID)
 	return s.sc.DeleteSchema(ctx, &pb.DeleteSchemaRequest{
