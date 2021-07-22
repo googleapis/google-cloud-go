@@ -100,6 +100,10 @@ type PublishSettings struct {
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
 	BufferedByteLimit int
+
+	// MessageRetentinDuration indicates the minimum duration to retain a message after
+	// it is published to the topic.
+	MessageRetentionDuration time.Duration
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -214,6 +218,8 @@ type TopicConfigToUpdate struct {
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
+
+	MessageRetentionDuration time.Duration
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
