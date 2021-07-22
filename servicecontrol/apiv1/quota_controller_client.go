@@ -140,7 +140,7 @@ type quotaControllerGRPCClient struct {
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Quota Control API (at https://cloud.google.com/service-control/overview)
+// Google Quota Control API (at /service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

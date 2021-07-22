@@ -168,7 +168,7 @@ type serviceControllerGRPCClient struct {
 // NewServiceControllerClient creates a new service controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Service Control API (at https://cloud.google.com/service-control/overview)
+// Google Service Control API (at /service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

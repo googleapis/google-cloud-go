@@ -160,8 +160,7 @@ type answerRecordsGRPCClient struct {
 // NewAnswerRecordsClient creates a new answer records client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing
-// AnswerRecords.
+// Service for managing AnswerRecords.
 func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*AnswerRecordsClient, error) {
 	clientOpts := defaultAnswerRecordsGRPCClientOptions()
 	if newAnswerRecordsClientHook != nil {
