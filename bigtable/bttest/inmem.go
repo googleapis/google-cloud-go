@@ -1124,6 +1124,8 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	i := 0
 	tbl.rows.Ascend(func(it btree.Item) bool {
 		row := it.(*row)
+		row.mu.Lock()
+		defer row.mu.Unlock()
 		if i == tbl.rows.Len()-1 || rand.Int31n(100) == 0 {
 			resp := &btpb.SampleRowKeysResponse{
 				RowKey:      []byte(row.key),

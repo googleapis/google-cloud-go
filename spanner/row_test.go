@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"encoding/base64"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -417,6 +418,9 @@ func TestColumnTypeErr(t *testing.T) {
 			etc = f.Type.ArrayElementType.Code
 		}
 		wantErr := errDecodeColumn(i, errTypeMismatch(tc, etc, badDst))
+		if strings.Contains(f.Name, "STRUCT_ARRAY") {
+			wantErr = errDecodeColumn(i, fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(tc, etc, badDst)))
+		}
 		if gotErr := row.Column(i, badDst); !testEqual(gotErr, wantErr) {
 			t.Errorf("Column(%v): decoding into destination with wrong type %T returns error %v, want %v",
 				i, badDst, gotErr, wantErr)
@@ -1685,7 +1689,11 @@ func TestRowToString(t *testing.T) {
 	}
 	got := r.String()
 	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
-	if !testEqual(r.String(), want) {
+	// In protobuf-go, the encoder will add an additional space based on a
+	// deterministically random boolean value.
+	wantWithTwoSpaces := `{fields: [name:"F1"  type:{code:STRING} name:"F2"  type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
+
+	if !testEqual(r.String(), want) && !testEqual(r.String(), wantWithTwoSpaces) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
