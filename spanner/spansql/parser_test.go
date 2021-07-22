@@ -83,6 +83,28 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT date, timestamp as timestamp FROM Packages WHERE date = DATE '2014-09-27' AND timestamp = TIMESTAMP '2014-09-27 12:30:00'`,
+			Query{
+				Select: Select{
+					List: []Expr{ID("date"), ID("timestamp")},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
+					Where: LogicalOp{
+						Op: And,
+						LHS: ComparisonOp{
+							Op:  Eq,
+							LHS: ID("date"),
+							RHS: DateLiteral{Year: 2014, Month: 9, Day: 27},
+						},
+						RHS: ComparisonOp{
+							Op:  Eq,
+							LHS: ID("timestamp"),
+							RHS: TimestampLiteral(timef(t, "2006-01-02 15:04:05", "2014-09-27 12:30:00")),
+						},
+					},
+					ListAliases: []ID{"", "timestamp"},
+				},
+			},
+		},
 		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
@@ -336,7 +358,14 @@ func TestParseExpr(t *testing.T) {
 
 		// Date and timestamp literals:
 		{`DATE '2014-09-27'`, DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27})},
+		{`TIMESTAMP '2014-09-27 12:30:00'`, TimestampLiteral(timef(t, "2006-01-02 15:04:05", "2014-09-27 12:30:00"))},
 
+		// date and timestamp funclit
+		{`DATE('2014-09-27')`, Func{Name: "DATE", Args: []Expr{StringLiteral("2014-09-27")}}},
+		{`TIMESTAMP('2014-09-27 12:30:00')`, Func{Name: "TIMESTAMP", Args: []Expr{StringLiteral("2014-09-27 12:30:00")}}},
+		// date and timestamp identifier
+		{`DATE = '2014-09-27'`, ComparisonOp{LHS: ID("DATE"), Op: Eq, RHS: StringLiteral("2014-09-27")}},
+		{`TIMESTAMP = '2014-09-27 12:30:00'`, ComparisonOp{LHS: ID("TIMESTAMP"), Op: Eq, RHS: StringLiteral("2014-09-27 12:30:00")}},
 		// Array literals:
 		// https://cloud.google.com/spanner/docs/lexical#array_literals
 		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
@@ -795,4 +824,12 @@ func TestParseFailures(t *testing.T) {
 			t.Errorf("%s: parsing [%s] succeeded, should have failed", test.desc, test.in)
 		}
 	}
+}
+
+func timef(t *testing.T, format, s string) time.Time {
+	ti, err := time.ParseInLocation(format, string(s), defaultLocation)
+	if err != nil {
+		t.Errorf("parsing %s [%s] time.ParseInLocation failed.", s, format)
+	}
+	return ti
 }

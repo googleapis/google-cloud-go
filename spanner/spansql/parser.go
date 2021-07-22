@@ -2714,11 +2714,15 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		p.back()
 		return p.parseArrayLit()
 	case tok.caseEqual("DATE"):
-		p.back()
-		return p.parseDateLit()
+		if !p.sniff("=") && !p.sniff(",") && !p.sniff("FROM") && !p.sniff("AS") {
+			p.back()
+			return p.parseDateLit()
+		}
 	case tok.caseEqual("TIMESTAMP"):
-		p.back()
-		return p.parseTimestampLit()
+		if !p.sniff("=") && !p.sniff(",") && !p.sniff("FROM") && !p.sniff("AS") {
+			p.back()
+			return p.parseTimestampLit()
+		}
 	}
 
 	// TODO: struct literals
