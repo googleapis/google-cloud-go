@@ -747,6 +747,9 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	// TODO: Remove this once v2 rollout is complete.
+	t.SkipNow()
+
 	ctx := context.Background()
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
@@ -800,6 +803,9 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
+	// TODO: Remove this once v2 rollout is complete.
+	t.SkipNow()
+
 	ctx := context.Background()
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
