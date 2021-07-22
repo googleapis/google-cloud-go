@@ -490,9 +490,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 
 	var err error
 	for len(p[n:]) > 0 {
-		// TODO: Should we use remain here? because it doesn't change in
-		// execution of this function.
-		if usedLeftovers && r.remain > 0 {
+		if usedLeftovers && (r.size-r.seen) > 0 {
 			// Free up the previously opened stream so we can create a new one
 			// starting at the offset after reading the leftovers.
 			r.closeStream()
