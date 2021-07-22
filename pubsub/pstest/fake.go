@@ -114,9 +114,14 @@ type GServer struct {
 
 // NewServer creates a new fake server running in the current process.
 func NewServer(opts ...ServerReactorOption) *Server {
-	srv, err := testutil.NewServer()
+	return NewServerWithPort(0, opts...)
+}
+
+// NewServerWithPort creates a new fake server running in the current process at the specified port.
+func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
-		panic(fmt.Sprintf("pstest.NewServer: %v", err))
+		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
 	}
 	reactorOptions := ReactorOptions{}
 	for _, opt := range opts {
