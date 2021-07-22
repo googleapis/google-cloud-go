@@ -506,12 +506,16 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
 			return fmt.Errorf("decode: %v", err)
 		}
+		docURL, err := docURL(g.googleCloudDir, conf.importPath)
+		if err != nil {
+			return fmt.Errorf("unable to build docs URL: %v", err)
+		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
 			Description:       yamlConfig.Title,
 			Language:          "Go",
 			ClientLibraryType: "generated",
-			DocsURL:           docURL(conf.importPath),
+			DocsURL:           docURL,
 			ReleaseLevel:      conf.releaseLevel,
 		}
 		entries[conf.importPath] = entry
@@ -596,6 +600,12 @@ func (g *GapicGenerator) findModifiedDirs() ([]string, error) {
 	return dirList, nil
 }
 
-func docURL(importPath string) string {
-	return "https://cloud.google.com/go/docs/reference/" + importPath[:20] + "latest/" + importPath[20:]
+func docURL(cloudDir, importPath string) (string, error) {
+	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+	if err != nil {
+		return "", err
+	}
+	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
+	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }

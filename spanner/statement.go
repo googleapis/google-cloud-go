@@ -17,7 +17,6 @@ limitations under the License.
 package spanner
 
 import (
-	"errors"
 	"fmt"
 
 	proto3 "github.com/golang/protobuf/ptypes/struct"
@@ -48,11 +47,6 @@ func NewStatement(sql string) Statement {
 	return Statement{SQL: sql, Params: map[string]interface{}{}}
 }
 
-var (
-	errNilParam = errors.New("use T(nil), not nil")
-	errNoType   = errors.New("no type information")
-)
-
 // convertParams converts a statement's parameters into proto Param and
 // ParamTypes.
 func (s *Statement) convertParams() (*structpb.Struct, map[string]*sppb.Type, error) {
@@ -61,18 +55,14 @@ func (s *Statement) convertParams() (*structpb.Struct, map[string]*sppb.Type, er
 	}
 	paramTypes := map[string]*sppb.Type{}
 	for k, v := range s.Params {
-		if v == nil {
-			return nil, nil, errBindParam(k, v, errNilParam)
-		}
 		val, t, err := encodeValue(v)
 		if err != nil {
 			return nil, nil, errBindParam(k, v, err)
 		}
-		if t == nil { // should not happen, because of nil check above
-			return nil, nil, errBindParam(k, v, errNoType)
-		}
 		params.Fields[k] = val
-		paramTypes[k] = t
+		if t != nil {
+			paramTypes[k] = t
+		}
 	}
 
 	return params, paramTypes, nil
