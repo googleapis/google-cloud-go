@@ -275,7 +275,9 @@ func TestSampleRowKeys(t *testing.T) {
 	}
 }
 
-func TestTableRowsConcurrent(t *testing.T) {
+type AntagonistFunction func(s *server, attempts int, tblName string, finished chan (bool))
+
+func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 	s := &server{
 		tables: make(map[string]*table),
 	}
@@ -324,18 +326,7 @@ func TestTableRowsConcurrent(t *testing.T) {
 		}
 		finished <- true
 	}()
-	go func() {
-		for i := 0; i < attempts; i++ {
-			req := &btapb.DropRowRangeRequest{
-				Name:   tbl.Name,
-				Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
-			}
-			if _, err = s.DropRowRange(ctx, req); err != nil {
-				t.Fatalf("Dropping all rows: %v", err)
-			}
-		}
-		finished <- true
-	}()
+	go antagonist(s, attempts, tbl.Name, finished)
 	for i := 0; i < 2; i++ {
 		select {
 		case <-finished:
@@ -343,6 +334,69 @@ func TestTableRowsConcurrent(t *testing.T) {
 			t.Fatalf("Timeout waiting for task %d\n", i)
 		}
 	}
+}
+
+func TestSampleRowKeysVsDropRowRange(t *testing.T) {
+	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
+		ctx := context.Background()
+		for i := 0; i < attempts; i++ {
+			req := &btapb.DropRowRangeRequest{
+				Name:   tblName,
+				Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
+			}
+			if _, err := s.DropRowRange(ctx, req); err != nil {
+				t.Fatalf("Dropping all rows: %v", err)
+			}
+		}
+		finished <- true
+	})
+}
+
+func TestSampleRowKeysVsModifyColumnFamilies(t *testing.T) {
+	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
+		ctx := context.Background()
+		for i := 0; i < attempts; i++ {
+			req := &btapb.ModifyColumnFamiliesRequest{
+				Name: tblName,
+				Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+					Id:  "cf2",
+					Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
+				}},
+			}
+			if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
+				t.Fatalf("Creating column family cf2: %v", err)
+			}
+			rowCount := 100
+			for i := 0; i < rowCount; i++ {
+				req := &btpb.MutateRowRequest{
+					TableName: tblName,
+					RowKey:    []byte("row-" + strconv.Itoa(i)),
+					Mutations: []*btpb.Mutation{{
+						Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+							FamilyName:      "cf2",
+							ColumnQualifier: []byte("col"),
+							TimestampMicros: 1000,
+							Value:           []byte("value"),
+						}},
+					}},
+				}
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					t.Fatalf("Populating table: %v", err)
+				}
+			}
+			req = &btapb.ModifyColumnFamiliesRequest{
+				Name: tblName,
+				Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+					Id:  "cf2",
+					Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{Drop: true},
+				}},
+			}
+			if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
+				t.Fatalf("Dropping column family cf2: %v", err)
+			}
+		}
+		finished <- true
+	})
 }
 
 func TestModifyColumnFamilies(t *testing.T) {
