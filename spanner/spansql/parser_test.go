@@ -105,6 +105,13 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT UNIX_DATE(DATE "2008-12-25")`,
+			Query{
+				Select: Select{
+					List: []Expr{Func{Name: "UNIX_DATE", Args: []Expr{DateLiteral{Year: 2008, Month: 12, Day: 25}}}},
+				},
+			},
+		},
 		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
