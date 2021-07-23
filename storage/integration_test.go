@@ -777,17 +777,20 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		t.Error(err)
 	}
 	defer r.Close()
-	buf := make([]byte, len(content))
-	n, err := r.Read(buf)
-	if err != nil && err != io.EOF {
+
+	b := new(bytes.Buffer)
+	b.Grow(len(content))
+
+	n, err := io.Copy(b, r)
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	if n == 0 && err != io.EOF {
+	if n == 0 {
 		t.Error("Expected to have read more than 0 bytes")
 	}
 
-	got := string(buf)
+	got := b.String()
 	want := string(content)
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got(-),want(+):\n%s", diff)
