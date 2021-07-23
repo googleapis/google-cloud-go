@@ -2435,6 +2435,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	sql := `
 	-- Declare a variable to hold names as an array.
 	DECLARE top_names ARRAY<STRING>;
+	BEGIN TRANSACTION;
 	-- Build an array of the top 100 names from the year 2017.
 	SET top_names = (
 	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
@@ -2449,6 +2450,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	  SELECT word
 	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
 	);
+	COMMIT TRANSACTION;
 	`
 	q := client.Query(sql)
 	job, err := q.Run(ctx)
@@ -2505,6 +2507,12 @@ func TestIntegration_Scripting(t *testing.T) {
 		}
 		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
 			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
+		}
+		if cStatus.Statistics.TransactionInfo == nil {
+			t.Errorf("child job %q didn't have transaction info present", cj.ID())
+		}
+		if cStatus.Statistics.TransactionInfo.TransactionID == "" {
+			t.Errorf("child job %q didn't have transactionID present", cj.ID())
 		}
 	}
 
