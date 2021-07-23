@@ -756,24 +756,15 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		t.Error(err)
 	}
 	defer client.Close()
-	bkt := client.Bucket(grpcBucket)
 
-	objName := uidSpace.New()
-	obj := bkt.Object(objName)
-	contents := []byte("Hello, world this is a grpc request")
+	content := []byte("Hello, world this is a grpc request")
 
-	if err := retry(ctx, func() error {
-		w := obj.NewWriter(ctx)
-		if _, err := w.Write(contents); err != nil {
-			return fmt.Errorf("Failed to write contents: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			return fmt.Errorf("Failed to close writer: %v", err)
-		}
-		return nil
-	}, nil); err != nil {
+	var name string
+	if name, err = writeTestData(ctx, grpcBucket, content); err != nil {
 		t.Fatal(err)
 	}
+
+	obj := client.Bucket(grpcBucket).Object(name)
 	defer func() {
 		if err := obj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -786,7 +777,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		t.Error(err)
 	}
 	defer r.Close()
-	buf := make([]byte, len(contents))
+	buf := make([]byte, len(content))
 	n, err := r.Read(buf)
 	if err != nil && err != io.EOF {
 		t.Error(err)
@@ -797,7 +788,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	}
 
 	got := string(buf)
-	want := string(contents)
+	want := string(content)
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got(-),want(+):\n%s", diff)
 	}
@@ -814,24 +805,14 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	}
 	defer client.Close()
 
-	bkt := client.Bucket(grpcBucket)
+	content := []byte("Hello, world this is a grpc request")
 
-	objName := uidSpace.New()
-	obj := bkt.Object(objName)
-	contents := []byte("Hello, world this is a grpc request")
-
-	if err := retry(ctx, func() error {
-		w := obj.NewWriter(ctx)
-		if _, err := w.Write(contents); err != nil {
-			return fmt.Errorf("Failed to write contents: %v", err)
-		}
-		if err := w.Close(); err != nil {
-			return fmt.Errorf("Failed to close writer: %v", err)
-		}
-		return nil
-	}, nil); err != nil {
+	var name string
+	if name, err = writeTestData(ctx, grpcBucket, content); err != nil {
 		t.Fatal(err)
 	}
+
+	obj := client.Bucket(grpcBucket).Object(name)
 	defer func() {
 		if err := obj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -844,7 +825,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	}
 	defer r.Close()
 
-	bufSize := len(contents)
+	bufSize := len(content)
 	buf := make([]byte, bufSize)
 	chunk := 3
 	offset := 0
@@ -862,7 +843,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	}
 
 	got := string(buf)
-	want := string(contents)
+	want := string(content)
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got(-),want(+):\n%s", diff)
 	}
@@ -4119,4 +4100,27 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
+}
+
+// writeTestData creates a new HTTP client with each call, and writes the given
+// content to a new Object (with a randomly generated name) in the given Bucket.
+// The Object name is returned upon a successful write.
+func writeTestData(ctx context.Context, bucket string, content []byte) (string, error) {
+	// Create a new HTTP-based client each time.
+	client, err := NewClient(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer client.Close()
+
+	obj := client.Bucket(bucket).Object(uidSpace.New())
+	w := obj.NewWriter(ctx)
+	if _, err := w.Write(content); err != nil {
+		return "", err
+	}
+	if err := w.Close(); err != nil {
+		return "", err
+	}
+
+	return obj.ObjectName(), nil
 }
