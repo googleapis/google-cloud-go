@@ -16,7 +16,9 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -76,10 +78,11 @@ type ManagedStream struct {
 	cancel context.CancelFunc
 	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
-	mu      sync.Mutex
-	arc     *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
-	err     error                                     // terminal error
-	pending chan *pendingWrite                        // writes awaiting status
+	mu          sync.Mutex
+	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
+	err         error                                     // terminal error
+	pending     chan *pendingWrite                        // writes awaiting status
+	streamSetup *sync.Once                                // handles amending the first request in a new stream
 }
 
 // enables testing
@@ -160,7 +163,7 @@ func (ms *ManagedStream) Finalize(ctx context.Context) (int64, error) {
 	return resp.GetRowCount(), nil
 }
 
-// getStream returns either a valid client or permanent error.
+// getStream returns either a valid ARC client stream or permanent error.
 func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
@@ -200,15 +203,15 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 			// and fire up the associated receive processor.
 			ch := make(chan *pendingWrite)
 			go recvProcessor(ms.ctx, arc, ch)
+			// also, replace sync.Once for starting a new stream, as we need to do this for every new connection
+			ms.streamSetup = new(sync.Once)
 			return arc, ch, nil
 		}
 		return arc, nil, err
 	}
 }
 
-// call serves as a closure that forwards the call to a (possibly reopened) AppendRowsClient), and the associated
-// pendingWrite channel for the ARC connection.
-func (ms *ManagedStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite) error, opts ...gax.CallOption) error {
+func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error {
 	var settings gax.CallSettings
 	for _, opt := range opts {
 		opt.Resolve(&settings)
@@ -227,7 +230,25 @@ func (ms *ManagedStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient, c
 		if err != nil {
 			return err
 		}
-		err = f(*arc, ch)
+		var req *storagepb.AppendRowsRequest
+		ms.streamSetup.Do(func() {
+			log.Println("firing streamSetup")
+			reqCopy := *pw.request
+			reqCopy.WriteStream = ms.streamSettings.streamID
+			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+				ProtoDescriptor: ms.schemaDescriptor,
+			}
+			reqCopy.TraceId = ms.streamSettings.TracePrefix
+			req = &reqCopy
+		})
+
+		var err error
+		if req == nil {
+			err = (*arc).Send(pw.request)
+		} else {
+			// we had to amend the initial request
+			err = (*arc).Send(req)
+		}
 		if err != nil {
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
@@ -240,38 +261,23 @@ func (ms *ManagedStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient, c
 			ms.err = err
 			ms.mu.Unlock()
 		}
-		return err
-	}
-}
-
-func (ms *ManagedStream) append(pw *pendingWrite) error {
-	return ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient, ch chan *pendingWrite) error {
-		// TODO: we should only send stream ID and schema for the first message in a new stream, but
-		// we've decoupled the individual appends from caring about state of the connection.  We likely
-		// need to do this via a mutex-guarded state flag.
-		pw.request.WriteStream = ms.streamSettings.streamID
-		pw.request.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: ms.schemaDescriptor,
-		}
-		err := arc.Send(pw.request)
 		if err == nil {
 			ch <- pw
 		}
 		return err
-	})
+	}
 }
 
 func (ms *ManagedStream) Close() error {
-	err := ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient, ch chan *pendingWrite) error {
-		err := arc.CloseSend()
-		if err == nil {
-			close(ch)
-		}
-		return err
-	})
 	ms.mu.Lock()
+	if ms.arc == nil {
+		return fmt.Errorf("no stream exists")
+	}
+	err := (*ms.arc).CloseSend()
+	if err == nil {
+		close(ms.pending)
+	}
 	ms.err = io.EOF
-	close(ms.pending)
 	ms.mu.Unlock()
 	return err
 }

@@ -21,6 +21,8 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 func TestManagedStream_OpenWithRetry(t *testing.T) {
@@ -83,11 +85,99 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	}
 }
 
-func TestManagedStream_GetStream(t *testing.T) {
+func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 
+	var testARC *testAppendRowsClient
+	testARC = &testAppendRowsClient{
+		recvF: func() (*storagepb.AppendRowsResponse, error) {
+			return &storagepb.AppendRowsResponse{
+				Response: &storagepb.AppendRowsResponse_AppendResult_{},
+			}, nil
+		},
+		sendF: func(req *storagepb.AppendRowsRequest) error {
+			testARC.requests = append(testARC.requests, req)
+			return nil
+		},
+	}
+	schema := &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+
+	ms := &ManagedStream{
+		ctx: context.Background(),
+		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			testARC.openCount = testARC.openCount + 1
+			return testARC, nil
+		},
+		streamSettings: defaultStreamSettings(),
+	}
+	ms.streamSettings.streamID = "FOO"
+	ms.streamSettings.TracePrefix = "TRACE"
+	ms.schemaDescriptor = schema
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+		[]byte("bar"),
+	}
+
+	wantReqs := 3
+
+	for i := 0; i < wantReqs; i++ {
+		_, err := ms.AppendRows(fakeData, NoStreamOffset)
+		if err != nil {
+			t.Errorf("AppendRows; %v", err)
+		}
+	}
+
+	if testARC.openCount != 1 {
+		t.Errorf("expected a single open, got %d", testARC.openCount)
+	}
+
+	if len(testARC.requests) != wantReqs {
+		t.Errorf("expected %d requests, got %d", wantReqs, len(testARC.requests))
+	}
+
+	for k, v := range testARC.requests {
+		if v == nil {
+			t.Errorf("request %d was nil", k)
+		}
+		if k == 0 {
+			if v.GetTraceId() == "" {
+				t.Errorf("expected TraceId on first request, was empty")
+			}
+			if v.GetWriteStream() == "" {
+				t.Errorf("expected WriteStream on first request, was empty")
+			}
+			if v.GetProtoRows().GetWriterSchema().GetProtoDescriptor() == nil {
+				t.Errorf("expected WriterSchema on first request, was empty")
+			}
+
+		} else {
+			if v.GetTraceId() != "" {
+				t.Errorf("expected no TraceID on request %d, got %s", k, v.GetTraceId())
+			}
+			if v.GetWriteStream() != "" {
+				t.Errorf("expected no WriteStream on request %d, got %s", k, v.GetWriteStream())
+			}
+			if v.GetProtoRows().GetWriterSchema().GetProtoDescriptor() != nil {
+				t.Errorf("expected test WriterSchema on request %d, got %s", k, v.GetProtoRows().GetWriterSchema().GetProtoDescriptor().String())
+			}
+		}
+	}
 }
 
 type testAppendRowsClient struct {
 	storagepb.BigQueryWrite_AppendRowsClient
-	err error
+	openCount int
+	requests  []*storagepb.AppendRowsRequest
+	sendF     func(*storagepb.AppendRowsRequest) error
+	recvF     func() (*storagepb.AppendRowsResponse, error)
+}
+
+func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
+	return tarc.sendF(req)
+}
+
+func (tarc *testAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
+	return tarc.recvF()
 }
