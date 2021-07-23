@@ -85,6 +85,8 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 
 // newRangeReaderWithGRPC creates a new Reader with the given range that uses
 // gRPC to read Object content.
+//
+// This is an experimental API and not intended for public use.
 func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.newRangeReaderWithGRPC")
 	defer func() { trace.EndSpan(ctx, err) }()

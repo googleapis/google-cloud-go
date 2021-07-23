@@ -97,6 +97,9 @@ type Client struct {
 	// ReadHost is the default host used on the reader.
 	readHost string
 
+	// gc is an optional gRPC-based, GAPIC client.
+	//
+	// This is an experimental field and not intended for public use.
 	gc *gapic.Client
 }
 
@@ -163,6 +166,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // newClientWithGRPC creates a new Storage client that initializes a gRPC-based client
 // for media upload and download operations.
+//
+// This is an experimental API and not intended for public use.
 func newClientWithGRPC(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	c, err := NewClient(ctx, opts...)
 	if err != nil {
