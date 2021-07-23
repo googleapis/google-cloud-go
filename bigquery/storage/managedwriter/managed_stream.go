@@ -164,6 +164,8 @@ func (ms *ManagedStream) Finalize(ctx context.Context) (int64, error) {
 }
 
 // getStream returns either a valid ARC client stream or permanent error.
+//
+// Calling getStream locks the mutex.
 func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
@@ -186,7 +188,8 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 }
 
 // openWithRetry is responsible for navigating the (re)opening of the underlying stream connection.
-// The expectation is this is only ever invoked when the caller has the mutex lock.
+//
+// Only getStream() should call this, and thus the calling code has the mutex lock.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	r := defaultRetryer{}
 	for {
@@ -203,7 +206,8 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 			// and fire up the associated receive processor.
 			ch := make(chan *pendingWrite)
 			go recvProcessor(ms.ctx, arc, ch)
-			// also, replace sync.Once for starting a new stream, as we need to do this for every new connection
+			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
+			// for every new connection.
 			ms.streamSetup = new(sync.Once)
 			return arc, ch, nil
 		}
@@ -269,14 +273,21 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 }
 
 func (ms *ManagedStream) Close() error {
-	ms.mu.Lock()
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+
+	arc, ch, err := ms.getStream(arc)
+	if err != nil {
+		return err
+	}
 	if ms.arc == nil {
 		return fmt.Errorf("no stream exists")
 	}
-	err := (*ms.arc).CloseSend()
+	err = (*arc).CloseSend()
 	if err == nil {
-		close(ms.pending)
+		close(ch)
 	}
+	ms.mu.Lock()
 	ms.err = io.EOF
 	ms.mu.Unlock()
 	return err
@@ -294,6 +305,9 @@ func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResul
 }
 
 // recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
+//
+// The receive processor only deals with a single instance of a connection/channel, and thus should never interact
+// with the mutex lock.
 func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
 	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
 	// ensure that pending writes get acknowledged with a terminal state.

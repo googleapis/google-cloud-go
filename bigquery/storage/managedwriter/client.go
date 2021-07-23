@@ -67,6 +67,8 @@ func (c *Client) Close() error {
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.
+//
+// Context here is retained for use by the underlying streaming connections the managed stream may create.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
