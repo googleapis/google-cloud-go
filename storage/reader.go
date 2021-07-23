@@ -80,9 +80,6 @@ type ReaderObjectAttrs struct {
 //
 // The caller must call Close on the returned Reader when done reading.
 func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
-	if o.c.gc != nil {
-		return o.newRangeReaderWithGRPC(ctx, 0, 0)
-	}
 	return o.NewRangeReader(ctx, 0, -1)
 }
 
@@ -99,9 +96,12 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	if err = o.validate(); err != nil {
 		return
 	}
+
+	// A negative length means "read to the end of the object", but the
+	// read_limit field it corresponds to uses zero to mean the same thing. Thus
+	// we coerce the length to 0 to read to the end of the object.
 	if length < 0 {
-		err = fmt.Errorf("length must be non-negative")
-		return
+		length = 0
 	}
 
 	req := &storagepb.ReadObjectRequest{
@@ -163,6 +163,10 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
 	defer func() { trace.EndSpan(ctx, err) }()
+
+	if o.c.gc != nil {
+		return o.newRangeReaderWithGRPC(ctx, offset, length)
+	}
 
 	if err := o.validate(); err != nil {
 		return nil, err

@@ -780,7 +780,8 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		}
 	}()
 
-	r, err := obj.NewReader(ctx)
+	// Using a negative length to indicate reading to the end.
+	r, err := obj.NewRangeReader(ctx, 0, -1)
 	if err != nil {
 		t.Error(err)
 	}
