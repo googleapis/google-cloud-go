@@ -231,6 +231,12 @@ func parseMessageMetadata(ctx context.Context, t *testing.T, result *pubsub.Publ
 	return metadata
 }
 
+func makeMsgTracker(msgs []string) *test.MsgTracker {
+	msgTracker := test.NewMsgTracker()
+	msgTracker.Add(msgs...)
+	return msgTracker
+}
+
 const maxPrintMsgLen = 70
 
 func truncateMsg(msg string) string {
@@ -542,9 +548,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, pubSettings, topicPath, "ordering", messageCount, 0)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Checks that subscriber flow control works.
@@ -556,11 +560,9 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "subscriber_flow_control", messageCount, 0)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
 		customSettings := recvSettings
 		customSettings.MaxOutstandingMessages = maxOutstandingMessages
-		receiveAllMessages(t, msgTracker, customSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), customSettings, subscriptionPath)
 	})
 
 	// Verifies that large messages can be sent and received.
@@ -572,9 +574,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "large_messages", messageCount, messageSize)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Verifies that cancelling the context passed to NewPublisherClient can shut
@@ -590,10 +590,11 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		if _, err := result.Get(ctx); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Publish() got err: %v, want code: %v", err, wantCode)
 		}
+
+		publisher.Stop()
 		if err := xerrors.Unwrap(publisher.Error()); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Error() got err: %v, want code: %v", err, wantCode)
 		}
-		publisher.Stop()
 	})
 
 	// Verifies that cancelling the context passed to NewSubscriberClient can shut
@@ -677,9 +678,7 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "routing_no_key", messageCount, 0)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Tests messages published with ordering key.
@@ -720,8 +719,7 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "partition_assignment", messageCount, 0)
 
 		// Start multiple subscribers that use partition assignment.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
+		msgTracker := makeMsgTracker(msgs)
 
 		messageReceiver := func(ctx context.Context, msg *pubsub.Message) {
 			msg.Ack()
@@ -787,9 +785,7 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	recvSettings.Partitions = partitionNumbers(partitionCount)
 
 	for _, subscription := range subscriptionPaths {
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscription)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscription)
 	}
 }
 
@@ -814,7 +810,7 @@ func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, 
 func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
 	t.Helper()
 
-	err := seekOp.Wait(ctx)
+	_, err := seekOp.Wait(ctx)
 	if err != nil {
 		t.Errorf("Operation.Wait() got err: %v", err)
 		return
@@ -844,8 +840,8 @@ func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscripti
 }
 
 func TestIntegration_SeekSubscription(t *testing.T) {
-	const partitionCount = 2
-	const messageCount = 50
+	const partitionCount = 4
+	const messageCount = 50 * partitionCount
 	region, topicPath, subscriptionPath := initResourcePaths(t)
 	ctx := context.Background()
 	recvSettings := DefaultReceiveSettings
@@ -866,8 +862,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	t.Run("SeekToBeginning", func(t *testing.T) {
 		// Publish the first batch of messages.
 		msgBatch1 := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch1", messageCount, 0)
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgBatch1...)
+		msgTracker := makeMsgTracker(msgBatch1)
 
 		// Keep the subscriber alive to test the subscriber client's handling of
 		// out-of-band seek notifications from the server.
@@ -916,6 +911,13 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 		}
 	})
 
+	t.Run("VerifyCommits", func(t *testing.T) {
+		// Verifies that cursors are committed correctly post-seek in the previous
+		// test. Only newly published messages should be received.
+		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "verify-commits", 5*partitionCount, 0)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
+	})
+
 	t.Run("SeekToEnd", func(t *testing.T) {
 		// Publish batch 2, but do not receive messages in order to test seeking to
 		// head/end.
@@ -932,10 +934,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 		// Publish batch 3 and verify that messages are only received from batch 3
 		// (batch 2 skipped).
 		msgBatch3 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
-
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgBatch3...)
-		publishTimes3 = receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		publishTimes3 = receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
 
 		if seekOp != nil {
 			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
@@ -952,9 +951,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 		}
 
 		// Verify that messages are received from batch 3.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgBatch3...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
 
 		if seekOp != nil {
 			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
