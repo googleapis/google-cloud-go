@@ -1084,7 +1084,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 			ct.Interleave.OnDelete = od
 		}
 	}
-	if p.eat(",", "ROW") {
+	if p.eat(",", "ROW", "DELETION", "POLICY") {
 		rdp, err := p.parseRowDeletionPolicy()
 		if err != nil {
 			return nil, err
@@ -1245,7 +1245,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			return a, nil
 		}
 
-		if p.eat("ROW") {
+		if p.eat("ROW", "DELETION", "POLICY") {
 			rdp, err := p.parseRowDeletionPolicy()
 			if err != nil {
 				return nil, err
@@ -1321,7 +1321,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 		return a, nil
 	case tok.caseEqual("REPLACE"):
-		if p.eat("ROW") {
+		if p.eat("ROW", "DELETION", "POLICY") {
 			rdp, err := p.parseRowDeletionPolicy()
 			if err != nil {
 				return nil, err
@@ -2997,7 +2997,7 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 }
 
 func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
-	if err := p.expect("DELETION", "POLICY", "(", "OLDER_THAN", "("); err != nil {
+	if err := p.expect("(", "OLDER_THAN", "("); err != nil {
 		return RowDeletionPolicy{}, err
 	}
 	cname, err := p.parseTableOrIndexOrColumnName()
