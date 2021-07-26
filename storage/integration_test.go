@@ -759,8 +759,16 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 
 	content := []byte("Hello, world this is a grpc request")
 
-	var name string
-	if name, err = writeTestData(ctx, grpcBucket, content); err != nil {
+	// Create an HTTP client to upload test data.
+	hc, err := NewClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hc.Close()
+
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucket).Object(name)
+	if err = writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
 
@@ -810,8 +818,16 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 
 	content := []byte("Hello, world this is a grpc request")
 
-	var name string
-	if name, err = writeTestData(ctx, grpcBucket, content); err != nil {
+	// Create an HTTP client to upload test data.
+	hc, err := NewClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hc.Close()
+
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucket).Object(name)
+	if err = writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
 
@@ -4103,27 +4119,4 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		time.Sleep(200 * time.Millisecond)
 	}
-}
-
-// writeTestData creates a new HTTP client with each call, and writes the given
-// content to a new Object (with a randomly generated name) in the given Bucket.
-// The Object name is returned upon a successful write.
-func writeTestData(ctx context.Context, bucket string, content []byte) (string, error) {
-	// Create a new HTTP-based client each time.
-	client, err := NewClient(ctx)
-	if err != nil {
-		return "", err
-	}
-	defer client.Close()
-
-	obj := client.Bucket(bucket).Object(uidSpace.New())
-	w := obj.NewWriter(ctx)
-	if _, err := w.Write(content); err != nil {
-		return "", err
-	}
-	if err := w.Close(); err != nil {
-		return "", err
-	}
-
-	return obj.ObjectName(), nil
 }
