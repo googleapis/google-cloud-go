@@ -70,7 +70,7 @@ func WithTracePrefix(prefix string) WriterOption {
 	}
 }
 
-// WithDescriptor describes the format of messages you'll be sending to the service.
+// WithSchemaDescriptor describes the format of messages you'll be sending to the service.
 func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.schemaDescriptor = dp

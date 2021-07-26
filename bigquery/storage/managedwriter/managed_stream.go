@@ -270,6 +270,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 	}
 }
 
+// Close closes a managed stream.
 func (ms *ManagedStream) Close() error {
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
