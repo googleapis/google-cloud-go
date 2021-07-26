@@ -71,6 +71,7 @@ type ManagedStream struct {
 	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string
 	c                *Client
+	fc               *flowController
 
 	// aspects of the stream client
 	ctx    context.Context // retained context for the stream
@@ -204,7 +205,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new chan
 			// and fire up the associated receive processor.
 			ch := make(chan *pendingWrite)
-			go recvProcessor(ms.ctx, arc, ch)
+			go recvProcessor(ms.ctx, arc, ms.fc, ch)
 			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
 			// for every new connection.
 			ms.streamSetup = new(sync.Once)
@@ -293,11 +294,17 @@ func (ms *ManagedStream) Close() error {
 }
 
 // AppendRows sends the append requests to the service, and returns one AppendResult per row.
-func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResult, error) {
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) ([]*AppendResult, error) {
 	pw := newPendingWrite(data, offset)
+	// check flow control
+	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
+		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
+		pw.markDone(NoStreamOffset, err, nil)
+	}
+	// proceed to call
 	if err := ms.append(pw); err != nil {
-		// pending write is DOA, mark it done.
-		pw.markDone(NoStreamOffset, err)
+		// pending write is DOA.
+		pw.markDone(NoStreamOffset, err, ms.fc)
 		return nil, err
 	}
 	return pw.results, nil
@@ -307,7 +314,7 @@ func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResul
 //
 // The receive processor only deals with a single instance of a connection/channel, and thus should never interact
 // with the mutex lock.
-func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, fc *flowController, ch <-chan *pendingWrite) {
 	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
 	// ensure that pending writes get acknowledged with a terminal state.
 	for {
@@ -319,7 +326,7 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 				if !ok {
 					return
 				}
-				pw.markDone(NoStreamOffset, ctx.Err())
+				pw.markDone(NoStreamOffset, ctx.Err(), fc)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {
@@ -330,19 +337,20 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				nextWrite.markDone(NoStreamOffset, err)
+				nextWrite.markDone(NoStreamOffset, err, fc)
 			}
 
 			if status := resp.GetError(); status != nil {
-				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status))
+				fc.release(nextWrite.reqSize)
+				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}
 			success := resp.GetAppendResult()
 			off := success.GetOffset()
 			if off != nil {
-				nextWrite.markDone(off.GetValue(), nil)
+				nextWrite.markDone(off.GetValue(), nil, fc)
 			}
-			nextWrite.markDone(NoStreamOffset, nil)
+			nextWrite.markDone(NoStreamOffset, nil, fc)
 		}
 	}
 }

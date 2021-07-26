@@ -119,10 +119,13 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 				streamName = resp.GetName()
 			}
 			ms.streamSettings.streamID = streamName
-			// TODO(followup CLs): instantiate an appendstream client, flow controller, etc.
 		}
 	}
-
+	if ms.streamSettings != nil {
+		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
+	} else {
+		ms.fc = newFlowController(0, 0)
+	}
 	return ms, nil
 }
 
