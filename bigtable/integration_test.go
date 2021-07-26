@@ -2681,13 +2681,13 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	client, err := testEnv.NewClient()
 	if err != nil {
-		t.Logf("Error creating client:", err)
+		t.Logf("Error creating client: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
-		t.Logf("Error creating admin client:", err)
+		t.Logf("Error creating admin client: %v", err)
 
 		return nil, nil, nil, nil, "", nil, err
 	}
@@ -2702,7 +2702,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
-		t.Logf("Error creating table:", err)
+		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
@@ -2711,7 +2711,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	})
 	if err != nil {
 		cancel()
-		t.Logf("Error creating column family:", err)
+		t.Logf("Error creating column family: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
