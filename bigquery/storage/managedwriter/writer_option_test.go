@@ -15,6 +15,7 @@
 package managedwriter
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -110,7 +111,8 @@ func TestWriterOptions(t *testing.T) {
 		}
 
 		if diff := cmp.Diff(got, tc.want,
-			cmp.AllowUnexported(ManagedStream{}, streamSettings{})); diff != "" {
+			cmp.AllowUnexported(ManagedStream{}, streamSettings{}),
+			cmp.AllowUnexported(sync.Mutex{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}
 	}
