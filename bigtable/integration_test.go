@@ -2706,7 +2706,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		return nil, nil, nil, nil, "", nil, err
 	}
 
-	err := retryOnUnavailable(ctx, func() error {
+	err = retryOnUnavailable(ctx, func() error {
 		return adminClient.CreateColumnFamily(ctx, tableName, "follows")
 	})
 	if err != nil {
