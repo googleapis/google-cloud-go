@@ -106,7 +106,7 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 
 // markDone propagates finalization of an append request to associated
 // AppendResult references.
-func (pw *pendingWrite) markDone(startOffset int64, err error) {
+func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowController) {
 	curOffset := startOffset
 	for _, ar := range pw.results {
 		if err != nil {
@@ -124,4 +124,8 @@ func (pw *pendingWrite) markDone(startOffset int64, err error) {
 	}
 	// Clear the reference to the request.
 	pw.request = nil
+	// if there's a flow controller, signal release.
+	if fc != nil {
+		fc.release(pw.reqSize)
+	}
 }

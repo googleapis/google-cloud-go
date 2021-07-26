@@ -87,6 +87,8 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 
 func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 
+	ctx := context.Background()
+
 	var testARC *testAppendRowsClient
 	testARC = &testAppendRowsClient{
 		recvF: func() (*storagepb.AppendRowsResponse, error) {
@@ -104,12 +106,13 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	}
 
 	ms := &ManagedStream{
-		ctx: context.Background(),
+		ctx: ctx,
 		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			testARC.openCount = testARC.openCount + 1
 			return testARC, nil
 		},
 		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(0, 0),
 	}
 	ms.streamSettings.streamID = "FOO"
 	ms.streamSettings.TracePrefix = "TRACE"
@@ -123,7 +126,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	wantReqs := 3
 
 	for i := 0; i < wantReqs; i++ {
-		_, err := ms.AppendRows(fakeData, NoStreamOffset)
+		_, err := ms.AppendRows(ctx, fakeData, NoStreamOffset)
 		if err != nil {
 			t.Errorf("AppendRows; %v", err)
 		}
