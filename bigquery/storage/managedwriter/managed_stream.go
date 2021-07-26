@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -236,7 +235,6 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 		}
 		var req *storagepb.AppendRowsRequest
 		ms.streamSetup.Do(func() {
-			log.Println("firing streamSetup")
 			reqCopy := *pw.request
 			reqCopy.WriteStream = ms.streamSettings.streamID
 			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
