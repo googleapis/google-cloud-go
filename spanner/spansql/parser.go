@@ -933,13 +933,15 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
-func (p *parser) expect(want string) *parseError {
-	tok := p.next()
-	if tok.err != nil {
-		return tok.err
-	}
-	if !tok.caseEqual(want) {
-		return p.errorf("got %q while expecting %q", tok.value, want)
+func (p *parser) expect(want ...string) *parseError {
+	for _, w := range want {
+		tok := p.next()
+		if tok.err != nil {
+			return tok.err
+		}
+		if !tok.caseEqual(w) {
+			return p.errorf("got %q while expecting %q", tok.value, w)
+		}
 	}
 	return nil
 }
