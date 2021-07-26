@@ -16,8 +16,14 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
+	"io"
+	"sync"
 
+	"github.com/googleapis/gax-go/v2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -62,9 +68,24 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
 	streamSettings   *streamSettings
+	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string
 	c                *Client
+
+	// aspects of the stream client
+	ctx    context.Context // retained context for the stream
+	cancel context.CancelFunc
+	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+
+	mu          sync.Mutex
+	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
+	err         error                                     // terminal error
+	pending     chan *pendingWrite                        // writes awaiting status
+	streamSetup *sync.Once                                // handles amending the first request in a new stream
 }
+
+// enables testing
+type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
 // streamSettings govern behavior of the append stream RPCs.
 type streamSettings struct {
@@ -139,4 +160,189 @@ func (ms *ManagedStream) Finalize(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	return resp.GetRowCount(), nil
+}
+
+// getStream returns either a valid ARC client stream or permanent error.
+//
+// Calling getStream locks the mutex.
+func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
+	ms.mu.Lock()
+	defer ms.mu.Unlock()
+	if ms.err != nil {
+		return nil, nil, ms.err
+	}
+	ms.err = ms.ctx.Err()
+	if ms.err != nil {
+		return nil, nil, ms.err
+	}
+
+	// Always return the retained ARC if the arg differs.
+	if arc != ms.arc {
+		return ms.arc, ms.pending, nil
+	}
+
+	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
+	*ms.arc, ms.pending, ms.err = ms.openWithRetry()
+	return ms.arc, ms.pending, ms.err
+}
+
+// openWithRetry is responsible for navigating the (re)opening of the underlying stream connection.
+//
+// Only getStream() should call this, and thus the calling code has the mutex lock.
+func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
+	r := defaultRetryer{}
+	for {
+		arc, err := ms.open()
+		bo, shouldRetry := r.Retry(err)
+		if err != nil && shouldRetry {
+			if err := gax.Sleep(ms.ctx, bo); err != nil {
+				return nil, nil, err
+			}
+			continue
+		}
+		if err == nil {
+			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new chan
+			// and fire up the associated receive processor.
+			ch := make(chan *pendingWrite)
+			go recvProcessor(ms.ctx, arc, ch)
+			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
+			// for every new connection.
+			ms.streamSetup = new(sync.Once)
+			return arc, ch, nil
+		}
+		return arc, nil, err
+	}
+}
+
+func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error {
+	var settings gax.CallSettings
+	for _, opt := range opts {
+		opt.Resolve(&settings)
+	}
+	var r gax.Retryer = &defaultRetryer{}
+	if settings.Retry != nil {
+		r = settings.Retry()
+	}
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+	var ch chan *pendingWrite
+	var err error
+
+	for {
+		arc, ch, err = ms.getStream(arc)
+		if err != nil {
+			return err
+		}
+		var req *storagepb.AppendRowsRequest
+		ms.streamSetup.Do(func() {
+			reqCopy := *pw.request
+			reqCopy.WriteStream = ms.streamSettings.streamID
+			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+				ProtoDescriptor: ms.schemaDescriptor,
+			}
+			reqCopy.TraceId = ms.streamSettings.TracePrefix
+			req = &reqCopy
+		})
+
+		var err error
+		if req == nil {
+			err = (*arc).Send(pw.request)
+		} else {
+			// we had to amend the initial request
+			err = (*arc).Send(req)
+		}
+		if err != nil {
+			bo, shouldRetry := r.Retry(err)
+			if shouldRetry {
+				if err := gax.Sleep(ms.ctx, bo); err != nil {
+					return err
+				}
+				continue
+			}
+			ms.mu.Lock()
+			ms.err = err
+			ms.mu.Unlock()
+		}
+		if err == nil {
+			ch <- pw
+		}
+		return err
+	}
+}
+
+// Close closes a managed stream.
+func (ms *ManagedStream) Close() error {
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+
+	arc, ch, err := ms.getStream(arc)
+	if err != nil {
+		return err
+	}
+	if ms.arc == nil {
+		return fmt.Errorf("no stream exists")
+	}
+	err = (*arc).CloseSend()
+	if err == nil {
+		close(ch)
+	}
+	ms.mu.Lock()
+	ms.err = io.EOF
+	ms.mu.Unlock()
+	return err
+}
+
+// AppendRows sends the append requests to the service, and returns one AppendResult per row.
+func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResult, error) {
+	pw := newPendingWrite(data, offset)
+	if err := ms.append(pw); err != nil {
+		// pending write is DOA, mark it done.
+		pw.markDone(NoStreamOffset, err)
+		return nil, err
+	}
+	return pw.results, nil
+}
+
+// recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
+//
+// The receive processor only deals with a single instance of a connection/channel, and thus should never interact
+// with the mutex lock.
+func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
+	// ensure that pending writes get acknowledged with a terminal state.
+	for {
+		select {
+		case <-ctx.Done():
+			// Context is done, so we're not going to get further updates.  Mark all work failed with the context error.
+			for {
+				pw, ok := <-ch
+				if !ok {
+					return
+				}
+				pw.markDone(NoStreamOffset, ctx.Err())
+			}
+		case nextWrite, ok := <-ch:
+			if !ok {
+				// Channel closed, all elements processed.
+				return
+			}
+
+			// block until we get a corresponding response or err from stream.
+			resp, err := arc.Recv()
+			if err != nil {
+				nextWrite.markDone(NoStreamOffset, err)
+			}
+
+			if status := resp.GetError(); status != nil {
+				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status))
+				continue
+			}
+			success := resp.GetAppendResult()
+			off := success.GetOffset()
+			if off != nil {
+				nextWrite.markDone(off.GetValue(), nil)
+			}
+			nextWrite.markDone(NoStreamOffset, nil)
+		}
+	}
 }
