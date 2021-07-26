@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -139,6 +140,7 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64) (int64, er
 			Value: offset,
 		},
 	}
+	log.Printf("flush req: %s", req.String())
 	resp, err := ms.c.rawClient.FlushRows(ctx, req)
 	if err != nil {
 		return 0, err
@@ -349,8 +351,9 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			off := success.GetOffset()
 			if off != nil {
 				nextWrite.markDone(off.GetValue(), nil, fc)
+			} else {
+				nextWrite.markDone(NoStreamOffset, nil, fc)
 			}
-			nextWrite.markDone(NoStreamOffset, nil, fc)
 		}
 	}
 }
