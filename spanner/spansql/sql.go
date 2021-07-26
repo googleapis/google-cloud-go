@@ -140,6 +140,7 @@ func (ardp AddRowDeletionPolicy) SQL() string {
 func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 	return "REPLACE " + rrdp.RowDeletionPolicy.SQL()
 }
+
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
