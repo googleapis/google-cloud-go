@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package managedwriter will be a thick client around the storage API's BigQueryWriteClient.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.  This library is in a pre-alpha
-// state, and breaking changes are frequent.
-//
-// Currently, the BigQueryWriteClient this library targets is exposed in the storage v1beta2 endpoint, and is
-// a successor to the streaming interface.  API method tabledata.insertAll is the primary backend method, and
-// the Inserter abstraction is the equivalent to this in the cloud.google.com/go/bigquery package.
-package managedwriter
+syntax = "proto3";
+package testdata;
+option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
+
+
+// SimpleMessage represents a simple message that transmits a string and int64 value.
+message SimpleMessage {
+    // name is a simple scalar string.
+    string name = 1;
+    // value is a simple int64 value.
+    int64 value = 2;
+}
+
+
