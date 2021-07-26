@@ -812,11 +812,11 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	ctx := context.Background()
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	defer client.Close()
 
-	content := []byte("Hello, world this is a grpc request")
+	content := bytes.Repeat([]byte("a"), 4<<10)
 
 	// Create an HTTP client to upload test data.
 	hc, err := NewClient(ctx)
