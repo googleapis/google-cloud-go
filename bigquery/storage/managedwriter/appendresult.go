@@ -124,7 +124,8 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	}
 	// Clear the reference to the request.
 	pw.request = nil
-	// if there's a flow controller, signal release.
+	// if there's a flow controller, signal release.  The only time this should be nil is when
+	// encountering issues with flow control during enqueuing the initial request.
 	if fc != nil {
 		fc.release(pw.reqSize)
 	}

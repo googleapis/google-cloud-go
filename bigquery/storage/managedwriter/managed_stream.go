@@ -298,6 +298,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset i
 	pw := newPendingWrite(data, offset)
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
+		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
 		pw.markDone(NoStreamOffset, err, nil)
 	}
 	// proceed to call
