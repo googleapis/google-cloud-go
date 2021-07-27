@@ -554,10 +554,11 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		if _, err := result.Get(ctx); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Publish() got err: %v, want code: %v", err, wantCode)
 		}
+
+		publisher.Stop()
 		if err := xerrors.Unwrap(publisher.Error()); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Error() got err: %v, want code: %v", err, wantCode)
 		}
-		publisher.Stop()
 	})
 
 	// Verifies that cancelling the context passed to NewSubscriberClient can shut
