@@ -906,6 +906,17 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
+// sniffTokenType reports whether the next token type is as specified.
+func (p *parser) sniffTokenType(want tokenType) bool {
+	orig := *p
+	defer func() { *p = orig }()
+
+	if p.next().typ == want {
+		return true
+	}
+	return false
+}
+
 // eat reports whether the next N tokens are as specified,
 // then consumes them.
 func (p *parser) eat(want ...string) bool {
@@ -2714,11 +2725,15 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		p.back()
 		return p.parseArrayLit()
 	case tok.caseEqual("DATE"):
-		p.back()
-		return p.parseDateLit()
+		if p.sniffTokenType(stringToken) {
+			p.back()
+			return p.parseDateLit()
+		}
 	case tok.caseEqual("TIMESTAMP"):
-		p.back()
-		return p.parseTimestampLit()
+		if p.sniffTokenType(stringToken) {
+			p.back()
+			return p.parseTimestampLit()
+		}
 	}
 
 	// TODO: struct literals
