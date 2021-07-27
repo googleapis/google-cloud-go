@@ -17,7 +17,6 @@ package managedwriter
 import (
 	"context"
 	"fmt"
-	"log"
 	"testing"
 	"time"
 
@@ -123,7 +122,7 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 	return messageDescriptor, protodesc.ToDescriptorProto(messageDescriptor)
 }
 
-func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
+func TestIntegration_ManagedWriter_DefaultStream(t *testing.T) {
 	mwClient, bqClient := getTestClients(context.Background(), t)
 	defer mwClient.Close()
 	defer bqClient.Close()
@@ -325,7 +324,9 @@ func TestIntegration_ManagedWriter_BufferedStream(t *testing.T) {
 	if err != nil {
 		t.Errorf("couldn't get stream info: %v", err)
 	}
-	log.Printf("info id: %s type: %s", info.GetName(), info.GetType().String())
+	if info.GetType().String() != string(ms.StreamType()) {
+		t.Errorf("mismatch on stream type, got %s want %s", info.GetType(), ms.StreamType())
+	}
 
 	// prevalidate we have no data in table.
 	validateRowCount(ctx, t, bqClient, testTable, 0)
@@ -341,7 +342,6 @@ func TestIntegration_ManagedWriter_BufferedStream(t *testing.T) {
 	// First, send the test rows individually, validate, then advance.
 	var expectedRows int64
 	for k, mesg := range testData {
-		log.Printf("starting %d", k)
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -362,7 +362,7 @@ func TestIntegration_ManagedWriter_BufferedStream(t *testing.T) {
 		if err != nil {
 			t.Errorf("failed to flush offset to %d: %v", offset, err)
 		}
-		expectedRows = flushOffset
+		expectedRows = flushOffset + 1
 		validateRowCount(ctx, t, bqClient, testTable, expectedRows)
 	}
 }

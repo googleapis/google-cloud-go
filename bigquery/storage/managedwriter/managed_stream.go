@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -140,7 +139,6 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64) (int64, er
 			Value: offset,
 		},
 	}
-	log.Printf("flush req: %s", req.String())
 	resp, err := ms.c.rawClient.FlushRows(ctx, req)
 	if err != nil {
 		return 0, err
