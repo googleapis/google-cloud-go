@@ -744,6 +744,36 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	}
 }
 
+func TestIntegration_ConditionalDownload(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	o := client.Bucket(bucketName).Object("condread")
+	defer o.Delete(ctx)
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("foo"))
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().Metageneration
+
+	if _, err := o.Generation(gen + 1).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with nonexistent Generation")
+	}
+	if _, err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+		t.Fatalf("Download failed: %v", err)
+	}
+}
+
 func TestIntegration_Objects(t *testing.T) {
 	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()

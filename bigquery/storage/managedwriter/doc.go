@@ -14,7 +14,8 @@
 
 // Package managedwriter will be a thick client around the storage API's BigQueryWriteClient.
 //
-// It is EXPERIMENTAL and subject to change or removal without notice.
+// It is EXPERIMENTAL and subject to change or removal without notice.  This library is in a pre-alpha
+// state, and breaking changes are frequent.
 //
 // Currently, the BigQueryWriteClient this library targets is exposed in the storage v1beta2 endpoint, and is
 // a successor to the streaming interface.  API method tabledata.insertAll is the primary backend method, and
