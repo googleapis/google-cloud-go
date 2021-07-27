@@ -815,8 +815,8 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	hc := testConfig(ctx, t)
 	defer hc.Close()
 
-	// Use a larger blob to test chunking logic.
-	content := bytes.Repeat([]byte("a"), 4<<10)
+	// Use a larger blob to test chunking logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
 
 	// Upload test data.
 	name := uidSpace.New()
@@ -847,7 +847,9 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 
 	bufSize := len(content)
 	buf := make([]byte, bufSize)
-	chunk := 3
+
+	// Read in 4KB chunks.
+	chunk := 4 << 10
 	offset := 0
 	for {
 		end := math.Min(float64(offset+chunk), float64(bufSize))
