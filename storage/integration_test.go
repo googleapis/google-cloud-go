@@ -751,6 +751,11 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	t.SkipNow()
 
 	ctx := context.Background()
+
+	// Create an HTTP client to upload test data.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
 		t.Error(err)
@@ -758,13 +763,6 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	defer client.Close()
 
 	content := []byte("Hello, world this is a grpc request")
-
-	// Create an HTTP client to upload test data.
-	hc, err := NewClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hc.Close()
 
 	name := uidSpace.New()
 	ho := hc.Bucket(grpcBucket).Object(name)
@@ -810,20 +808,19 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	t.SkipNow()
 
 	ctx := context.Background()
+
+	// Create an HTTP client to upload test data.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer client.Close()
 
+	// Use a larger blob to test chunking logic.
 	content := bytes.Repeat([]byte("a"), 4<<10)
-
-	// Create an HTTP client to upload test data.
-	hc, err := NewClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer hc.Close()
 
 	name := uidSpace.New()
 	ho := hc.Bucket(grpcBucket).Object(name)
