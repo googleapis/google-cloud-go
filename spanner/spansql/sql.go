@@ -56,6 +56,9 @@ func (ct CreateTable) SQL() string {
 	if il := ct.Interleave; il != nil {
 		str += ",\n  INTERLEAVE IN PARENT " + il.Parent.SQL() + " ON DELETE " + il.OnDelete.SQL()
 	}
+	if rdp := ct.RowDeletionPolicy; rdp != nil {
+		str += ",\n  " + rdp.SQL()
+	}
 	return str
 }
 
@@ -130,6 +133,17 @@ func (ac AlterColumn) SQL() string {
 	return "ALTER COLUMN " + ac.Name.SQL() + " " + ac.Alteration.SQL()
 }
 
+func (ardp AddRowDeletionPolicy) SQL() string {
+	return "ADD " + ardp.RowDeletionPolicy.SQL()
+}
+
+func (rrdp ReplaceRowDeletionPolicy) SQL() string {
+	return "REPLACE " + rrdp.RowDeletionPolicy.SQL()
+}
+
+func (drdp DropRowDeletionPolicy) SQL() string {
+	return "DROP ROW DELETION POLICY"
+}
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -244,6 +258,10 @@ func (tc TableConstraint) SQL() string {
 	}
 	str += tc.Constraint.SQL()
 	return str
+}
+
+func (rdp RowDeletionPolicy) SQL() string {
+	return "ROW DELETION POLICY ( OLDER_THAN ( " + rdp.Column.SQL() + ", INTERVAL " + strconv.FormatInt(rdp.NumDays, 10) + " DAY ))"
 }
 
 func (fk ForeignKey) SQL() string {
