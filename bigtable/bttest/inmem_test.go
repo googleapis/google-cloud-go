@@ -2033,3 +2033,40 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
 	}
 }
+
+func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
+	row := &row{
+		key: "row",
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					"col1": {{ts: 1000, value: []byte("val2")}},
+					"col2": {
+						{ts: 1000, value: []byte("val2")},
+						{ts: 1000, value: []byte("val3")},
+					},
+				},
+				colNames: []string{"col1", "col2"},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter *btpb.RowFilter
+		want   bool
+	}{
+		// The regexp-based filters perform whole-string, case-sensitive matches.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{1}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{2}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{3}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{4}}, false},
+	} {
+		got, err := filterRow(test.filter, row.copy())
+		if err != nil {
+			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+		}
+		if got != test.want {
+			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
+	}
+}
