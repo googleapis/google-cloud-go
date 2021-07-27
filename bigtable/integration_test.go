@@ -45,6 +45,8 @@ import (
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -2644,6 +2646,23 @@ func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, b
 	return false
 }
 
+// Retries a function if it has an unavailable code for up to 30s using a backoff
+func retryOnUnavailable(ctx context.Context, inner func() error) error {
+	err := internal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
+		err = inner()
+		if err == nil {
+			return true, nil
+		}
+		s, ok := status.FromError(err)
+		if !ok {
+			return false, err
+		}
+		// Retry on Unavailable
+		return s.Code() != codes.Unavailable, err
+	})
+	return err
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2662,11 +2681,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	client, err := testEnv.NewClient()
 	if err != nil {
+		t.Logf("Error creating client: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
+		t.Logf("Error creating admin client: %v", err)
+
 		return nil, nil, nil, nil, "", nil, err
 	}
 
@@ -2680,10 +2702,16 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
+		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
+
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamily(ctx, tableName, "follows")
+	})
+	if err != nil {
 		cancel()
+		t.Logf("Error creating column family: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
