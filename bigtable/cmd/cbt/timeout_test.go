@@ -49,7 +49,7 @@ func TestTimeout(t *testing.T) {
 
 	_, deadlineSet := ctxt.ctx.Deadline()
 	if deadlineSet {
-		t.Errorf("Deadline set with no timeout")
+		t.Errorf("Deadline set with no timeout in config")
 	}
 
 	config.Timeout = time.Duration(42e9)
@@ -58,7 +58,7 @@ func TestTimeout(t *testing.T) {
 
 	deadline, deadlineSet := ctxt.ctx.Deadline()
 	if !deadlineSet {
-		t.Errorf("Deadline set with no timeout")
+		t.Errorf("No deadline set, even though the config set one")
 	}
 	timeout := deadline.Sub(now).Nanoseconds()
 	if !(timeout > 42e9 && timeout < 43e9) {
