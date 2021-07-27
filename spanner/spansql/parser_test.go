@@ -477,6 +477,17 @@ func TestParseDDL(t *testing.T) {
 			NameLen INT64 AS (char_length(Name)) STORED,
 		) PRIMARY KEY (Name);
 
+		-- Table with row deletion policy.
+		CREATE TABLE WithRowDeletionPolicy (
+			Name STRING(MAX) NOT NULL,
+			DelTimestamp TIMESTAMP NOT NULL,
+		) PRIMARY KEY (Name)
+		, ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
+
+		ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY;
+		ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
+		ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -628,6 +639,44 @@ func TestParseDDL(t *testing.T) {
 				PrimaryKey: []KeyPart{{Column: "Name"}},
 				Position:   line(44),
 			},
+			&CreateTable{
+				Name: "WithRowDeletionPolicy",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(51)},
+					{Name: "DelTimestamp", Type: Type{Base: Timestamp}, NotNull: true, Position: line(52)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				RowDeletionPolicy: &RowDeletionPolicy{
+					Column:  ID("DelTimestamp"),
+					NumDays: 30,
+				},
+				Position: line(50),
+			},
+			&AlterTable{
+				Name:       "WithRowDeletionPolicy",
+				Alteration: DropRowDeletionPolicy{},
+				Position:   line(56),
+			},
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: AddRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(57),
+			},
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: ReplaceRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(58),
+			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
@@ -647,9 +696,10 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(38), End: line(38), Text: []string{"leading multi comment immediately after inline comment"}},
 
 			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
+			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(60), End: line(60), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
