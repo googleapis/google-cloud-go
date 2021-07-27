@@ -163,17 +163,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
+// clientOptions carries the set of client options for HTTP and gRPC clients.
+type clientOptions struct {
+	HTTPOpts []option.ClientOption
+	GRPCOpts []option.ClientOption
+}
+
 // newClientWithGRPC creates a new Storage client that initializes a gRPC-based client
 // for media upload and download operations.
 //
 // This is an experimental API and not intended for public use.
-func newClientWithGRPC(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	c, err := NewClient(ctx, opts...)
+func newClientWithGRPC(ctx context.Context, opts *clientOptions) (*Client, error) {
+	if opts == nil {
+		opts = &clientOptions{}
+	}
+	c, err := NewClient(ctx, opts.HTTPOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	g, err := gapic.NewClient(ctx, opts...)
+	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
 	if err != nil {
 		return nil, err
 	}

@@ -766,7 +766,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	}
 
 	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx)
+	client, err := newClientWithGRPC(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -826,7 +826,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	}
 
 	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx)
+	client, err := newClientWithGRPC(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
