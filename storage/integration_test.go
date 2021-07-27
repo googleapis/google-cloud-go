@@ -756,19 +756,21 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	hc := testConfig(ctx, t)
 	defer hc.Close()
 
-	client, err := newClientWithGRPC(ctx)
-	if err != nil {
-		t.Error(err)
-	}
-	defer client.Close()
-
 	content := []byte("Hello, world this is a grpc request")
 
+	// Upload test data.
 	name := uidSpace.New()
 	ho := hc.Bucket(grpcBucket).Object(name)
-	if err = writeObject(ctx, ho, "text/plain", content); err != nil {
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
+
+	// Initialize gRPC client for Read testing.
+	client, err := newClientWithGRPC(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
 
 	obj := client.Bucket(grpcBucket).Object(name)
 	defer func() {
@@ -813,20 +815,22 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	hc := testConfig(ctx, t)
 	defer hc.Close()
 
+	// Use a larger blob to test chunking logic.
+	content := bytes.Repeat([]byte("a"), 4<<10)
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucket).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+
+	// Initialize gRPC client for Read testing.
 	client, err := newClientWithGRPC(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer client.Close()
-
-	// Use a larger blob to test chunking logic.
-	content := bytes.Repeat([]byte("a"), 4<<10)
-
-	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucket).Object(name)
-	if err = writeObject(ctx, ho, "text/plain", content); err != nil {
-		t.Fatal(err)
-	}
 
 	obj := client.Bucket(grpcBucket).Object(name)
 	defer func() {
