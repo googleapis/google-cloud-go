@@ -33,11 +33,12 @@ import (
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
-	Name        ID
-	Columns     []ColumnDef
-	Constraints []TableConstraint
-	PrimaryKey  []KeyPart
-	Interleave  *Interleave
+	Name              ID
+	Columns           []ColumnDef
+	Constraints       []TableConstraint
+	PrimaryKey        []KeyPart
+	Interleave        *Interleave
+	RowDeletionPolicy *RowDeletionPolicy
 
 	Position Position // position of the "CREATE" token
 }
@@ -88,6 +89,12 @@ type Constraint interface {
 type Interleave struct {
 	Parent   ID
 	OnDelete OnDelete
+}
+
+// RowDeletionPolicy represents an row deletion policy clause of a CREATE, ALTER TABLE statement.
+type RowDeletionPolicy struct {
+	Column  ID
+	NumDays int64
 }
 
 // CreateIndex represents a CREATE INDEX statement.
@@ -162,18 +169,22 @@ func (at *AlterTable) clearOffset() {
 }
 
 // TableAlteration is satisfied by AddColumn, DropColumn, AddConstraint,
-// DropConstraint, SetOnDelete and AlterColumn.
+// DropConstraint, SetOnDelete and AlterColumn,
+// AddRowDeletionPolicy, ReplaceRowDeletionPolicy, DropRowDeletionPolicy.
 type TableAlteration interface {
 	isTableAlteration()
 	SQL() string
 }
 
-func (AddColumn) isTableAlteration()      {}
-func (DropColumn) isTableAlteration()     {}
-func (AddConstraint) isTableAlteration()  {}
-func (DropConstraint) isTableAlteration() {}
-func (SetOnDelete) isTableAlteration()    {}
-func (AlterColumn) isTableAlteration()    {}
+func (AddColumn) isTableAlteration()                {}
+func (DropColumn) isTableAlteration()               {}
+func (AddConstraint) isTableAlteration()            {}
+func (DropConstraint) isTableAlteration()           {}
+func (SetOnDelete) isTableAlteration()              {}
+func (AlterColumn) isTableAlteration()              {}
+func (AddRowDeletionPolicy) isTableAlteration()     {}
+func (ReplaceRowDeletionPolicy) isTableAlteration() {}
+func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type AddColumn struct{ Def ColumnDef }
 type DropColumn struct{ Name ID }
@@ -184,6 +195,9 @@ type AlterColumn struct {
 	Name       ID
 	Alteration ColumnAlteration
 }
+type AddRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+type ReplaceRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+type DropRowDeletionPolicy struct{}
 
 // ColumnAlteration is satisfied by SetColumnType and SetColumnOptions.
 type ColumnAlteration interface {
