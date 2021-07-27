@@ -136,6 +136,27 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name: "WithRowDeletionPolicy",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+					{Name: "DelTimestamp", Type: Type{Base: Timestamp}, NotNull: true, Position: line(3)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				RowDeletionPolicy: &RowDeletionPolicy{
+					Column:  ID("DelTimestamp"),
+					NumDays: 30,
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE WithRowDeletionPolicy (
+  Name STRING(MAX) NOT NULL,
+  DelTimestamp TIMESTAMP NOT NULL,
+) PRIMARY KEY(Name),
+  ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`,
+			reparseDDL,
+		},
+		{
 			&DropTable{
 				Name:     "Ta",
 				Position: line(1),
@@ -228,6 +249,43 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"ALTER TABLE Ta ALTER COLUMN Ci SET OPTIONS (allow_commit_timestamp = null)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name:       "WithRowDeletionPolicy",
+				Alteration: DropRowDeletionPolicy{},
+				Position:   line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: AddRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "WithRowDeletionPolicy",
+				Alteration: ReplaceRowDeletionPolicy{
+					RowDeletionPolicy: RowDeletionPolicy{
+						Column:  ID("DelTimestamp"),
+						NumDays: 30,
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))",
 			reparseDDL,
 		},
 		{

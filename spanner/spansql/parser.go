@@ -933,13 +933,15 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
-func (p *parser) expect(want string) *parseError {
-	tok := p.next()
-	if tok.err != nil {
-		return tok.err
-	}
-	if !tok.caseEqual(want) {
-		return p.errorf("got %q while expecting %q", tok.value, want)
+func (p *parser) expect(want ...string) *parseError {
+	for _, w := range want {
+		tok := p.next()
+		if tok.err != nil {
+			return tok.err
+		}
+		if !tok.caseEqual(w) {
+			return p.errorf("got %q while expecting %q", tok.value, w)
+		}
 	}
 	return nil
 }
@@ -1081,6 +1083,13 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 			}
 			ct.Interleave.OnDelete = od
 		}
+	}
+	if p.eat(",", "ROW", "DELETION", "POLICY") {
+		rdp, err := p.parseRowDeletionPolicy()
+		if err != nil {
+			return nil, err
+		}
+		ct.RowDeletionPolicy = &rdp
 	}
 
 	return ct, nil
@@ -1236,6 +1245,15 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			return a, nil
 		}
 
+		if p.eat("ROW", "DELETION", "POLICY") {
+			rdp, err := p.parseRowDeletionPolicy()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddRowDeletionPolicy{RowDeletionPolicy: rdp}
+			return a, nil
+		}
+
 		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
@@ -1253,6 +1271,11 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 				return nil, err
 			}
 			a.Alteration = DropConstraint{Name: name}
+			return a, nil
+		}
+
+		if p.eat("ROW", "DELETION", "POLICY") {
+			a.Alteration = DropRowDeletionPolicy{}
 			return a, nil
 		}
 
@@ -1297,7 +1320,17 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			Alteration: ca,
 		}
 		return a, nil
+	case tok.caseEqual("REPLACE"):
+		if p.eat("ROW", "DELETION", "POLICY") {
+			rdp, err := p.parseRowDeletionPolicy()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = ReplaceRowDeletionPolicy{RowDeletionPolicy: rdp}
+			return a, nil
+		}
 	}
+	return a, nil
 }
 
 func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
@@ -2961,6 +2994,37 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 		return 0, err
 	}
 	return NoActionOnDelete, nil
+}
+
+func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
+	if err := p.expect("(", "OLDER_THAN", "("); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	cname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	if err := p.expect(",", "INTERVAL"); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return RowDeletionPolicy{}, tok.err
+	}
+	if tok.typ != int64Token {
+		return RowDeletionPolicy{}, p.errorf("got %q, expected int64 token", tok.value)
+	}
+	n, serr := strconv.ParseInt(tok.value, tok.int64Base, 64)
+	if serr != nil {
+		return RowDeletionPolicy{}, p.errorf("%v", serr)
+	}
+	if err := p.expect("DAY", ")", ")"); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	return RowDeletionPolicy{
+		Column:  cname,
+		NumDays: n,
+	}, nil
 }
 
 // parseCommaList parses a comma-separated list enclosed by bra and ket,
