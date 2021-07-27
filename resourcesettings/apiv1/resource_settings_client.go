@@ -50,6 +50,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("resourcesettings.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://resourcesettings.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -70,8 +71,30 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetSetting:    []gax.CallOption{},
-		UpdateSetting: []gax.CallOption{},
+		GetSetting: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateSetting: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -295,6 +318,11 @@ func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.L
 }
 
 func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.GetSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSetting[0:len((*c.CallOptions).GetSetting):len((*c.CallOptions).GetSetting)], opts...)
@@ -311,6 +339,11 @@ func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.Get
 }
 
 func (c *gRPCClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.UpdateSettingRequest, opts ...gax.CallOption) (*resourcesettingspb.Setting, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "setting.name", url.QueryEscape(req.GetSetting().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSetting[0:len((*c.CallOptions).UpdateSetting):len((*c.CallOptions).UpdateSetting)], opts...)

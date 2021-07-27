@@ -612,7 +612,10 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 				offset -= len(cs)
 			}
 		}
-		return true, nil
+		// If we get here, we have to have consumed all of the cells,
+		// otherwise, we would have returned above.  We're not generating
+		// a row, so false.
+		return false, nil
 	case *btpb.RowFilter_RowSampleFilter:
 		// The row sample filter "matches all cells from a row with probability
 		// p, and matches no cells from the row with probability 1-p."
@@ -1140,6 +1143,8 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	i := 0
 	tbl.rows.Ascend(func(it btree.Item) bool {
 		row := it.(*row)
+		row.mu.Lock()
+		defer row.mu.Unlock()
 		if i == tbl.rows.Len()-1 || rand.Int31n(100) == 0 {
 			resp := &btpb.SampleRowKeysResponse{
 				RowKey:      []byte(row.key),

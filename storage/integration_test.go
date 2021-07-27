@@ -627,9 +627,14 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("updating PublicAccessPrevention changed UBLA setting")
 	}
 
-	// Now, making object public or making bucket public should succeed.
-	a = o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err != nil {
+	// Now, making object public or making bucket public should succeed. Run with
+	// retry because ACL settings may take time to propagate.
+	if err := retry(ctx,
+		func() error {
+			a = o.ACL()
+			return a.Set(ctx, AllUsers, RoleReader)
+		},
+		nil); err != nil {
 		t.Errorf("ACL.Set: making object public failed: %v", err)
 	}
 	policy, err = bkt.IAM().V3().Policy(ctx)
@@ -736,6 +741,36 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				t.Fatalf("Body length mismatch, got %d want %d", got, want)
 			}
 		})
+	}
+}
+
+func TestIntegration_ConditionalDownload(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	o := client.Bucket(bucketName).Object("condread")
+	defer o.Delete(ctx)
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("foo"))
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().Metageneration
+
+	if _, err := o.Generation(gen + 1).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with nonexistent Generation")
+	}
+	if _, err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+		t.Fatalf("Download failed: %v", err)
 	}
 }
 

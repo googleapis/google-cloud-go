@@ -372,6 +372,9 @@ type JobStatistics struct {
 
 	// ReservationUsage attributes slot consumption to reservations.
 	ReservationUsage []*ReservationUsage
+
+	// TransactionInfo indicates the transaction ID associated with the job, if any.
+	TransactionInfo *TransactionInfo
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -435,6 +438,10 @@ type QueryStatistics struct {
 	// The number of rows affected by a DML statement. Present only for DML
 	// statements INSERT, UPDATE or DELETE.
 	NumDMLAffectedRows int64
+
+	// DMLStats provides statistics about the row mutations performed by
+	// DML statements.
+	DMLStats *DMLStatistics
 
 	// Describes a timeline of job execution.
 	Timeline []*QueryTimelineSample
@@ -665,6 +672,27 @@ func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
 	}
 }
 
+// DMLStatistics contains counts of row mutations triggered by a DML query statement.
+type DMLStatistics struct {
+	// Rows added by the statement.
+	InsertedRowCount int64
+	// Rows removed by the statement.
+	DeletedRowCount int64
+	// Rows changed by the statement.
+	UpdatedRowCount int64
+}
+
+func bqToDMLStatistics(q *bq.DmlStatistics) *DMLStatistics {
+	if q == nil {
+		return nil
+	}
+	return &DMLStatistics{
+		InsertedRowCount: q.InsertedRowCount,
+		DeletedRowCount:  q.DeletedRowCount,
+		UpdatedRowCount:  q.UpdatedRowCount,
+	}
+}
+
 func (*ExtractStatistics) implementsStatistics() {}
 func (*LoadStatistics) implementsStatistics()    {}
 func (*QueryStatistics) implementsStatistics()   {}
@@ -855,6 +883,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
 		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
+		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
 	}
 	switch {
 	case s.Extract != nil:
@@ -888,6 +917,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
 			TotalBytesProcessedAccuracy:   s.Query.TotalBytesProcessedAccuracy,
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
+			DMLStats:                      bqToDMLStatistics(s.Query.DmlStats),
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,
@@ -956,4 +986,19 @@ func timelineFromProto(timeline []*bq.QueryTimelineSample) []*QueryTimelineSampl
 		})
 	}
 	return res
+}
+
+// TransactionInfo contains information about a multi-statement transaction that may have associated with a job.
+type TransactionInfo struct {
+	// TransactionID is the system-generated identifier for the transaction.
+	TransactionID string
+}
+
+func bqToTransactionInfo(in *bq.TransactionInfo) *TransactionInfo {
+	if in == nil {
+		return nil
+	}
+	return &TransactionInfo{
+		TransactionID: in.TransactionId,
+	}
 }

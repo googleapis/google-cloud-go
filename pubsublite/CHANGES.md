@@ -1,5 +1,18 @@
 # Changes
 
+## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.2...pubsublite/v1.0.0) (2021-07-08)
+
+
+### Bug Fixes
+
+* **pubsublite:** hide CreateSubscriptionOption.apply ([#4344](https://www.github.com/googleapis/google-cloud-go/issues/4344)) ([f31fac6](https://www.github.com/googleapis/google-cloud-go/commit/f31fac6c2674a1bb9180a75ae7dbeda55721482d))
+* **pubsublite:** lower gRPC keepalive timeouts ([#4378](https://www.github.com/googleapis/google-cloud-go/issues/4378)) ([35d98c8](https://www.github.com/googleapis/google-cloud-go/commit/35d98c8cad3a71400c2b47218a0fb9c80154e613))
+
+
+### Documentation
+
+* **pubsublite:** promote pubsublite to stable ([#4301](https://www.github.com/googleapis/google-cloud-go/issues/4301)) ([c841d7f](https://www.github.com/googleapis/google-cloud-go/commit/c841d7feb48fc66e90ec7e63f35002712d5e6dbf))
+
 ### [0.10.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.1...pubsublite/v0.10.2) (2021-06-29)
 
 
