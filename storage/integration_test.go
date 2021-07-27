@@ -791,11 +791,10 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 
 	n, err := io.Copy(b, r)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	if n == 0 {
-		t.Error("Expected to have read more than 0 bytes")
+		t.Fatal("Expected to have read more than 0 bytes")
 	}
 
 	got := b.String()
@@ -841,7 +840,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 
 	r, err := obj.NewReader(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	defer r.Close()
 
@@ -857,9 +856,8 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 		if err == io.EOF {
 			break
 		}
-		if err != nil && err != io.EOF {
-			t.Error(err)
-			t.FailNow()
+		if err != nil {
+			t.Fatal(err)
 		}
 		offset += n
 	}
