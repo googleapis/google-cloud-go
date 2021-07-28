@@ -74,7 +74,6 @@ func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*M
 }
 
 func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
-
 	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
@@ -122,6 +121,9 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		}
 	}
 	if ms.streamSettings != nil {
+		if ms.ctx != nil {
+			ms.ctx = keyContextWithStreamID(ms.ctx, ms.streamSettings.streamID)
+		}
 		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
 	} else {
 		ms.fc = newFlowController(0, 0)
