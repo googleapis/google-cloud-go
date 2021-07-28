@@ -78,21 +78,21 @@ func validateRowCount(ctx context.Context, t *testing.T, client *bigquery.Client
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
 	if err != nil {
-		t.Errorf("failed to issue validation query %s: %v", description, err)
+		t.Errorf("failed to issue validation query %q: %v", description, err)
 		return
 	}
 	var rowdata []bigquery.Value
 	err = it.Next(&rowdata)
 	if err != nil {
-		t.Errorf("error fetching validation results %s: %v", description, err)
+		t.Errorf("error fetching validation results %q: %v", description, err)
 		return
 	}
 	count, ok := rowdata[0].(int64)
 	if !ok {
-		t.Errorf("got unexpected data from validation query %s: %v", description, rowdata[0])
+		t.Errorf("got unexpected data from validation query %q: %v", description, rowdata[0])
 	}
 	if count != expectedRows {
-		t.Errorf("rows mismatch from %s, expected rows: got %d want %d", description, count, expectedRows)
+		t.Errorf("rows mismatch from %q, expected rows: got %d want %d", description, count, expectedRows)
 	}
 }
 
@@ -104,7 +104,7 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (
 	}
 	return dataset, func() {
 		if err := dataset.DeleteWithContents(ctx); err != nil {
-			t.Logf("could not cleanup dataset %s: %v", dataset.DatasetID, err)
+			t.Logf("could not cleanup dataset %q: %v", dataset.DatasetID, err)
 		}
 	}, nil
 }
@@ -170,7 +170,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	// prep a suitable destination table.
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
-		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
 	}
 	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
 	// to send as the stream's schema.
