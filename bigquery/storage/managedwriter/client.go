@@ -158,7 +158,10 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 // BatchCommit is used to commit one or more PendingStream streams belonging to the same table
 // as a single transaction.  Streams must be finalized before committing.
 //
-// TODO: this currently exposes the raw proto response, but a future CL will wrap this with a nicer type.
+// If the returned response contains stream errors, this indicates that the batch commit failed and no data was
+// committed.
+//
+// TODO: currently returns the raw response.  Determine how we want to surface StreamErrors.
 func (c *Client) BatchCommit(ctx context.Context, parentTable string, streamNames []string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
 
 	// determine table from first streamName, as all must share the same table.
@@ -183,9 +186,10 @@ func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storag
 	return c.rawClient.GetWriteStream(ctx, req)
 }
 
-// tableParentFromStreamName return the corresponding parent table
-// identifier given a fully qualified streamname.
-func tableParentFromStreamName(streamName string) string {
+// TableParentFromStreamName is a utility function for extracting the parent table
+// prefix from a stream name.  When an invalid stream ID is passed, this simply returns
+// the original stream name.
+func TableParentFromStreamName(streamName string) string {
 	// Stream IDs have the following prefix:
 	// projects/{project}/datasets/{dataset}/tables/{table}/blah
 	parts := strings.SplitN(streamName, "/", 7)
