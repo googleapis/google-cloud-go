@@ -78,6 +78,10 @@ func (e EventTime) setRequest(req *pb.SeekSubscriptionRequest) {
 // SeekSubscriptionOption is reserved for future options.
 type SeekSubscriptionOption interface{}
 
+// SeekSubscriptionResult is the result of a seek subscription operation.
+// Currently empty.
+type SeekSubscriptionResult struct{}
+
 // OperationMetadata stores metadata for long-running operations.
 type OperationMetadata struct {
 	// The target of the operation. For example, targets of seeks are
@@ -143,10 +147,13 @@ func (s *SeekSubscriptionOperation) Metadata() (*OperationMetadata, error) {
 
 // Wait polls until the seek operation is complete and returns one of the
 // following:
-//  - nil if the operation is complete and succeeded.
-//  - failure reason if the operation is complete and failed.
-//  - error if polling the operation status failed due to a non-retryable error.
-func (s *SeekSubscriptionOperation) Wait(ctx context.Context) error {
-	_, err := s.op.Wait(ctx)
-	return err
+//  - A SeekSubscriptionResult and nil error if the operation is complete and
+//    succeeded.
+//  - Error containing failure reason if the operation is complete and failed.
+//  - Error if polling the operation status failed due to a non-retryable error.
+func (s *SeekSubscriptionOperation) Wait(ctx context.Context) (*SeekSubscriptionResult, error) {
+	if _, err := s.op.Wait(ctx); err != nil {
+		return nil, err
+	}
+	return &SeekSubscriptionResult{}, nil
 }

@@ -601,8 +601,12 @@ func TestAdminSeekSubscription(t *testing.T) {
 				t.Errorf("Metadata() got: -, want: +\n%s", diff)
 			}
 
-			if err := op.Wait(ctx); err != nil {
+			result, err := op.Wait(ctx)
+			if err != nil {
 				t.Fatalf("Wait() got err: %v", err)
+			}
+			if result == nil {
+				t.Error("SeekSubscriptionResult was nil")
 			}
 			if got, want := op.Done(), true; got != want {
 				t.Errorf("Done() got %v, want %v", got, want)
@@ -632,7 +636,8 @@ func TestAdminSeekSubscription(t *testing.T) {
 				t.Errorf("Metadata() got: -, want: +\n%s", diff)
 			}
 
-			if gotErr, wantErr := op.Wait(ctx), status.Error(codes.Aborted, ""); !test.ErrorEqual(gotErr, wantErr) {
+			_, gotErr := op.Wait(ctx)
+			if wantErr := status.Error(codes.Aborted, ""); !test.ErrorEqual(gotErr, wantErr) {
 				t.Fatalf("Wait() got err: %v, want err: %v", gotErr, wantErr)
 			}
 			if got, want := op.Done(), true; got != want {

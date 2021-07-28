@@ -191,7 +191,7 @@ func ExampleAdminClient_SeekSubscription() {
 
 	// Optional: Wait for the seek operation to complete, which indicates when
 	// subscribers for all partitions are receiving messages from the seek target.
-	err = seekOp.Wait(ctx)
+	_, err = seekOp.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
