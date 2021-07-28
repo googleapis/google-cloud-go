@@ -186,8 +186,6 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-
-	// prevalidate we have no data in table.
 	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	testData := []*testdata.SimpleMessage{
@@ -243,7 +241,6 @@ func testDefaultStream_DynamicJSON(ctx context.Context, t *testing.T, mwClient *
 
 	md, descriptorProto := setupDynamicDescriptors(t, testSimpleSchema)
 
-	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
@@ -252,6 +249,7 @@ func testDefaultStream_DynamicJSON(ctx context.Context, t *testing.T, mwClient *
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
+	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	sampleData := [][]byte{
 		[]byte(`{"name": "one", "value": 1}`),
@@ -260,9 +258,6 @@ func testDefaultStream_DynamicJSON(ctx context.Context, t *testing.T, mwClient *
 		[]byte(`{"name": "four", "value": 4}`),
 		[]byte(`{"name": "five", "value": 5}`),
 	}
-
-	// prevalidate we have no data in table.
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	var results []*AppendResult
 	for k, v := range sampleData {
@@ -292,16 +287,13 @@ func testDefaultStream_DynamicJSON(ctx context.Context, t *testing.T, mwClient *
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
-	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
-	// to send as the stream's schema.
+
 	m := &testdata.SimpleMessage{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
-	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(BufferedStream),
@@ -319,7 +311,6 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		t.Errorf("mismatch on stream type, got %s want %s", info.GetType(), ms.StreamType())
 	}
 
-	// prevalidate we have no data in table.
 	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	testData := []*testdata.SimpleMessage{
@@ -330,7 +321,6 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		{Name: "five", Value: 2},
 	}
 
-	// First, send the test rows individually, validate, then advance.
 	var expectedRows int64
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
@@ -359,14 +349,11 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 }
 
 func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
-
-	// prep a suitable destination table.
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
-	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
-	// to send as the stream's schema.
+
 	m := &testdata.SimpleMessage{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
@@ -379,8 +366,6 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-
-	// prevalidate we have no data in table.
 	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	testData := []*testdata.SimpleMessage{
@@ -391,7 +376,6 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 		{Name: "five", Value: 2},
 	}
 
-	// First, send the test rows individually.
 	var results []*AppendResult
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
@@ -411,18 +395,14 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 }
 
 func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
-
-	// prep a suitable destination table.
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
-	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
-	// to send as the stream's schema.
+
 	m := &testdata.SimpleMessage{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
-	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(PendingStream),
@@ -431,8 +411,6 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-
-	// prevalidate we have no data in table.
 	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
 
 	testData := []*testdata.SimpleMessage{
@@ -443,7 +421,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		{Name: "five", Value: 2},
 	}
 
-	// First, send the test rows individually.
+	// Send data.
 	var results []*AppendResult
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
@@ -459,6 +437,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	results[0].Ready()
 	wantRows := int64(len(testData))
 
+	// Mark stream complete.
 	trackedOffset, err := ms.Finalize(ctx)
 	if err != nil {
 		t.Errorf("Finalize: %v", err)
@@ -468,6 +447,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		t.Errorf("Finalize mismatched offset, got %d want %d", trackedOffset, wantRows)
 	}
 
+	// Commit stream and validate.
 	resp, err := mwClient.BatchCommit(ctx, tableParentFromStreamName(ms.StreamName()), []string{ms.StreamName()})
 	if err != nil {
 		t.Errorf("client.BatchCommit: %v", err)
