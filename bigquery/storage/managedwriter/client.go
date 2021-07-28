@@ -143,7 +143,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		}
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
-		ms.destinationTable = tableParentFromStreamName(ms.streamSettings.streamID)
+		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
 	}
 	if ms.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
@@ -170,7 +170,7 @@ func (c *Client) BatchCommit(ctx context.Context, parentTable string, streamName
 	}
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
-		Parent:       tableParentFromStreamName(streamNames[0]),
+		Parent:       TableParentFromStreamName(streamNames[0]),
 		WriteStreams: streamNames,
 	}
 	return c.rawClient.BatchCommitWriteStreams(ctx, req)
