@@ -349,8 +349,9 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			off := success.GetOffset()
 			if off != nil {
 				nextWrite.markDone(off.GetValue(), nil, fc)
+			} else {
+				nextWrite.markDone(NoStreamOffset, nil, fc)
 			}
-			nextWrite.markDone(NoStreamOffset, nil, fc)
 		}
 	}
 }
