@@ -51,12 +51,12 @@ type internalFirewallsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteFirewallRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteFirewallRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetFirewallRequest, ...gax.CallOption) (*computepb.Firewall, error)
-	Insert(context.Context, *computepb.InsertFirewallRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertFirewallRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListFirewallsRequest, ...gax.CallOption) (*computepb.FirewallList, error)
-	Patch(context.Context, *computepb.PatchFirewallRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateFirewallRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchFirewallRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateFirewallRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // FirewallsClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *FirewallsClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified firewall.
-func (c *FirewallsClient) Delete(ctx context.Context, req *computepb.DeleteFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallsClient) Delete(ctx context.Context, req *computepb.DeleteFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *FirewallsClient) Get(ctx context.Context, req *computepb.GetFirewallReq
 }
 
 // Insert creates a firewall rule in the specified project using the data included in the request.
-func (c *FirewallsClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallsClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *FirewallsClient) List(ctx context.Context, req *computepb.ListFirewalls
 }
 
 // Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *FirewallsClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallsClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
-func (c *FirewallsClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallsClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *firewallsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified firewall.
-func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
@@ -228,7 +228,11 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified firewall.
@@ -269,7 +273,7 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 }
 
 // Insert creates a firewall rule in the specified project using the data included in the request.
-func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of firewall rules available to the specified project.
@@ -376,7 +384,7 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 }
 
 // Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,11 +431,15 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
-func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
@@ -474,5 +486,9 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

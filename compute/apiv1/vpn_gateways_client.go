@@ -54,12 +54,12 @@ type internalVpnGatewaysClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListVpnGatewaysRequest, ...gax.CallOption) (*computepb.VpnGatewayAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetVpnGatewayRequest, ...gax.CallOption) (*computepb.VpnGateway, error)
 	GetStatus(context.Context, *computepb.GetStatusVpnGatewayRequest, ...gax.CallOption) (*computepb.VpnGatewaysGetStatusResponse, error)
-	Insert(context.Context, *computepb.InsertVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListVpnGatewaysRequest, ...gax.CallOption) (*computepb.VpnGatewayList, error)
-	SetLabels(context.Context, *computepb.SetLabelsVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsVpnGatewayRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -103,7 +103,7 @@ func (c *VpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.A
 }
 
 // Delete deletes the specified VPN gateway.
-func (c *VpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -118,7 +118,7 @@ func (c *VpnGatewaysClient) GetStatus(ctx context.Context, req *computepb.GetSta
 }
 
 // Insert creates a VPN gateway in the specified project and region using the data included in the request.
-func (c *VpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -128,7 +128,7 @@ func (c *VpnGatewaysClient) List(ctx context.Context, req *computepb.ListVpnGate
 }
 
 // SetLabels sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
-func (c *VpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
@@ -261,7 +261,7 @@ func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified VPN gateway.
-func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
@@ -301,7 +301,11 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
@@ -379,7 +383,7 @@ func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a VPN gateway in the specified project and region using the data included in the request.
-func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
@@ -426,7 +430,11 @@ func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of VPN gateways available to the specified project and region.
@@ -486,7 +494,7 @@ func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpn
 }
 
 // SetLabels sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
-func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -533,7 +541,11 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

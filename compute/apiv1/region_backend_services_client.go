@@ -52,13 +52,13 @@ type internalRegionBackendServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionBackendServiceRequest, ...gax.CallOption) (*computepb.BackendService, error)
 	GetHealth(context.Context, *computepb.GetHealthRegionBackendServiceRequest, ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error)
-	Insert(context.Context, *computepb.InsertRegionBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionBackendServicesRequest, ...gax.CallOption) (*computepb.BackendServiceList, error)
-	Patch(context.Context, *computepb.PatchRegionBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateRegionBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchRegionBackendServiceRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateRegionBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionBackendServicesClient is a client for interacting with Google Compute Engine API.
@@ -96,7 +96,7 @@ func (c *RegionBackendServicesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified regional BackendService resource.
-func (c *RegionBackendServicesClient) Delete(ctx context.Context, req *computepb.DeleteRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionBackendServicesClient) Delete(ctx context.Context, req *computepb.DeleteRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -111,7 +111,7 @@ func (c *RegionBackendServicesClient) GetHealth(ctx context.Context, req *comput
 }
 
 // Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
-func (c *RegionBackendServicesClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionBackendServicesClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -121,12 +121,12 @@ func (c *RegionBackendServicesClient) List(ctx context.Context, req *computepb.L
 }
 
 // Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *RegionBackendServicesClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionBackendServicesClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
-func (c *RegionBackendServicesClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionBackendServicesClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -195,7 +195,7 @@ func (c *regionBackendServicesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified regional BackendService resource.
-func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService())
 
@@ -235,7 +235,11 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified regional BackendService resource.
@@ -320,7 +324,7 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 }
 
 // Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
-func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -367,7 +371,11 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of regional BackendService resources available to the specified project in the given region.
@@ -427,7 +435,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 }
 
 // Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -474,11 +482,15 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
-func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -525,5 +537,9 @@ func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

@@ -49,9 +49,9 @@ type internalRegionNotificationEndpointsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionNotificationEndpointRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionNotificationEndpointRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionNotificationEndpointRequest, ...gax.CallOption) (*computepb.NotificationEndpoint, error)
-	Insert(context.Context, *computepb.InsertRegionNotificationEndpointRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionNotificationEndpointRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionNotificationEndpointsRequest, ...gax.CallOption) (*computepb.NotificationEndpointList, error)
 }
 
@@ -90,7 +90,7 @@ func (c *RegionNotificationEndpointsClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified NotificationEndpoint in the given region
-func (c *RegionNotificationEndpointsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionNotificationEndpointsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -100,7 +100,7 @@ func (c *RegionNotificationEndpointsClient) Get(ctx context.Context, req *comput
 }
 
 // Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
-func (c *RegionNotificationEndpointsClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionNotificationEndpointsClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -174,7 +174,7 @@ func (c *regionNotificationEndpointsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified NotificationEndpoint in the given region
-func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
@@ -214,7 +214,11 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified NotificationEndpoint resource in the given region.
@@ -255,7 +259,7 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 }
 
 // Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
-func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNotificationEndpointResource()
 	jsonReq, err := m.Marshal(body)
@@ -302,7 +306,11 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists the NotificationEndpoints for a project in the given region.

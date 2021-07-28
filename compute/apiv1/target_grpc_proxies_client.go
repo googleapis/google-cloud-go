@@ -50,11 +50,11 @@ type internalTargetGrpcProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteTargetGrpcProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetGrpcProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetGrpcProxyRequest, ...gax.CallOption) (*computepb.TargetGrpcProxy, error)
-	Insert(context.Context, *computepb.InsertTargetGrpcProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetGrpcProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetGrpcProxiesRequest, ...gax.CallOption) (*computepb.TargetGrpcProxyList, error)
-	Patch(context.Context, *computepb.PatchTargetGrpcProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchTargetGrpcProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetGrpcProxiesClient is a client for interacting with Google Compute Engine API.
@@ -92,7 +92,7 @@ func (c *TargetGrpcProxiesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetGrpcProxy in the given scope
-func (c *TargetGrpcProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetGrpcProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -102,7 +102,7 @@ func (c *TargetGrpcProxiesClient) Get(ctx context.Context, req *computepb.GetTar
 }
 
 // Insert creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.
-func (c *TargetGrpcProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetGrpcProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -112,7 +112,7 @@ func (c *TargetGrpcProxiesClient) List(ctx context.Context, req *computepb.ListT
 }
 
 // Patch patches the specified TargetGrpcProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *TargetGrpcProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetGrpcProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -181,7 +181,7 @@ func (c *targetGrpcProxiesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetGrpcProxy in the given scope
-func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
@@ -221,7 +221,11 @@ func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetGrpcProxy resource in the given scope.
@@ -262,7 +266,7 @@ func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.
-func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -309,7 +313,11 @@ func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists the TargetGrpcProxies for a project in the given scope.
@@ -369,7 +377,7 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 }
 
 // Patch patches the specified TargetGrpcProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -416,5 +424,9 @@ func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

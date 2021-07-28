@@ -52,11 +52,11 @@ type internalInterconnectAttachmentsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListInterconnectAttachmentsRequest, ...gax.CallOption) (*computepb.InterconnectAttachmentAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteInterconnectAttachmentRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteInterconnectAttachmentRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInterconnectAttachmentRequest, ...gax.CallOption) (*computepb.InterconnectAttachment, error)
-	Insert(context.Context, *computepb.InsertInterconnectAttachmentRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInterconnectAttachmentRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInterconnectAttachmentsRequest, ...gax.CallOption) (*computepb.InterconnectAttachmentList, error)
-	Patch(context.Context, *computepb.PatchInterconnectAttachmentRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchInterconnectAttachmentRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InterconnectAttachmentsClient is a client for interacting with Google Compute Engine API.
@@ -99,7 +99,7 @@ func (c *InterconnectAttachmentsClient) AggregatedList(ctx context.Context, req 
 }
 
 // Delete deletes the specified interconnect attachment.
-func (c *InterconnectAttachmentsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectAttachmentsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -109,7 +109,7 @@ func (c *InterconnectAttachmentsClient) Get(ctx context.Context, req *computepb.
 }
 
 // Insert creates an InterconnectAttachment in the specified project using the data included in the request.
-func (c *InterconnectAttachmentsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectAttachmentsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -119,7 +119,7 @@ func (c *InterconnectAttachmentsClient) List(ctx context.Context, req *computepb
 }
 
 // Patch updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InterconnectAttachmentsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectAttachmentsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -247,7 +247,7 @@ func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, 
 }
 
 // Delete deletes the specified interconnect attachment.
-func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/interconnectAttachments/%v", req.GetProject(), req.GetRegion(), req.GetInterconnectAttachment())
 
@@ -287,7 +287,11 @@ func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified interconnect attachment.
@@ -328,7 +332,7 @@ func (c *interconnectAttachmentsRESTClient) Get(ctx context.Context, req *comput
 }
 
 // Insert creates an InterconnectAttachment in the specified project using the data included in the request.
-func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
 	jsonReq, err := m.Marshal(body)
@@ -378,7 +382,11 @@ func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of interconnect attachments contained within the specified region.
@@ -438,7 +446,7 @@ func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *compu
 }
 
 // Patch updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
 	jsonReq, err := m.Marshal(body)
@@ -485,5 +493,9 @@ func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

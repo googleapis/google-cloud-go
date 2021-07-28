@@ -58,19 +58,19 @@ type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	DisableXpnHost(context.Context, *computepb.DisableXpnHostProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DisableXpnResource(context.Context, *computepb.DisableXpnResourceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	EnableXpnHost(context.Context, *computepb.EnableXpnHostProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	EnableXpnResource(context.Context, *computepb.EnableXpnResourceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	DisableXpnHost(context.Context, *computepb.DisableXpnHostProjectRequest, ...gax.CallOption) (*Operation, error)
+	DisableXpnResource(context.Context, *computepb.DisableXpnResourceProjectRequest, ...gax.CallOption) (*Operation, error)
+	EnableXpnHost(context.Context, *computepb.EnableXpnHostProjectRequest, ...gax.CallOption) (*Operation, error)
+	EnableXpnResource(context.Context, *computepb.EnableXpnResourceProjectRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetProjectRequest, ...gax.CallOption) (*computepb.Project, error)
 	GetXpnHost(context.Context, *computepb.GetXpnHostProjectRequest, ...gax.CallOption) (*computepb.Project, error)
 	GetXpnResources(context.Context, *computepb.GetXpnResourcesProjectsRequest, ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error)
 	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) (*computepb.XpnHostList, error)
-	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*Operation, error)
+	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ProjectsClient is a client for interacting with Google Compute Engine API.
@@ -108,22 +108,22 @@ func (c *ProjectsClient) Connection() *grpc.ClientConn {
 }
 
 // DisableXpnHost disable this project as a shared VPC host project.
-func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnHost(ctx, req, opts...)
 }
 
 // DisableXpnResource disable a service resource (also known as service project) associated with this host project.
-func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnResource(ctx, req, opts...)
 }
 
 // EnableXpnHost enable this project as a shared VPC host project.
-func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnHost(ctx, req, opts...)
 }
 
 // EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
-func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
@@ -148,27 +148,27 @@ func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXp
 }
 
 // MoveDisk moves a persistent disk from one zone to another.
-func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
 // MoveInstance moves an instance and its attached persistent disks from one zone to another.
-func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
-func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
 }
 
 // SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
-func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDefaultNetworkTier(ctx, req, opts...)
 }
 
 // SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
-func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUsageExportBucket(ctx, req, opts...)
 }
 
@@ -237,7 +237,7 @@ func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // DisableXpnHost disable this project as a shared VPC host project.
-func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
@@ -277,11 +277,15 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DisableXpnResource disable a service resource (also known as service project) associated with this host project.
-func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsDisableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -328,11 +332,15 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // EnableXpnHost enable this project as a shared VPC host project.
-func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
 
@@ -372,11 +380,15 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
-func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsEnableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,7 +435,11 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Project resource.
@@ -620,7 +636,7 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 }
 
 // MoveDisk moves a persistent disk from one zone to another.
-func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -667,11 +683,15 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // MoveInstance moves an instance and its attached persistent disks from one zone to another.
-func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -718,11 +738,15 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
-func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
 	jsonReq, err := m.Marshal(body)
@@ -769,11 +793,15 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
-func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetDefaultNetworkTierRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -820,11 +848,15 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
-func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUsageExportLocationResource()
 	jsonReq, err := m.Marshal(body)
@@ -871,5 +903,9 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

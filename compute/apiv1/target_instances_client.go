@@ -51,9 +51,9 @@ type internalTargetInstancesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListTargetInstancesRequest, ...gax.CallOption) (*computepb.TargetInstanceAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteTargetInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetInstanceRequest, ...gax.CallOption) (*computepb.TargetInstance, error)
-	Insert(context.Context, *computepb.InsertTargetInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetInstancesRequest, ...gax.CallOption) (*computepb.TargetInstanceList, error)
 }
 
@@ -97,7 +97,7 @@ func (c *TargetInstancesClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified TargetInstance resource.
-func (c *TargetInstancesClient) Delete(ctx context.Context, req *computepb.DeleteTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetInstancesClient) Delete(ctx context.Context, req *computepb.DeleteTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -107,7 +107,7 @@ func (c *TargetInstancesClient) Get(ctx context.Context, req *computepb.GetTarge
 }
 
 // Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
-func (c *TargetInstancesClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetInstancesClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -240,7 +240,7 @@ func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *com
 }
 
 // Delete deletes the specified TargetInstance resource.
-func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances/%v", req.GetProject(), req.GetZone(), req.GetTargetInstance())
 
@@ -280,7 +280,11 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
@@ -321,7 +325,7 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 }
 
 // Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
-func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetInstanceResource()
 	jsonReq, err := m.Marshal(body)
@@ -368,7 +372,11 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of TargetInstance resources available to the specified project and zone.

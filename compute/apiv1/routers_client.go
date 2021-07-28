@@ -56,15 +56,15 @@ type internalRoutersClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListRoutersRequest, ...gax.CallOption) (*computepb.RouterAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteRouterRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRouterRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRouterRequest, ...gax.CallOption) (*computepb.Router, error)
 	GetNatMappingInfo(context.Context, *computepb.GetNatMappingInfoRoutersRequest, ...gax.CallOption) (*computepb.VmEndpointNatMappingsList, error)
 	GetRouterStatus(context.Context, *computepb.GetRouterStatusRouterRequest, ...gax.CallOption) (*computepb.RouterStatusResponse, error)
-	Insert(context.Context, *computepb.InsertRouterRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRouterRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRoutersRequest, ...gax.CallOption) (*computepb.RouterList, error)
-	Patch(context.Context, *computepb.PatchRouterRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchRouterRequest, ...gax.CallOption) (*Operation, error)
 	Preview(context.Context, *computepb.PreviewRouterRequest, ...gax.CallOption) (*computepb.RoutersPreviewResponse, error)
-	Update(context.Context, *computepb.UpdateRouterRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Update(context.Context, *computepb.UpdateRouterRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RoutersClient is a client for interacting with Google Compute Engine API.
@@ -107,7 +107,7 @@ func (c *RoutersClient) AggregatedList(ctx context.Context, req *computepb.Aggre
 }
 
 // Delete deletes the specified Router resource.
-func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -127,7 +127,7 @@ func (c *RoutersClient) GetRouterStatus(ctx context.Context, req *computepb.GetR
 }
 
 // Insert creates a Router resource in the specified project and region using the data included in the request.
-func (c *RoutersClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutersClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -137,7 +137,7 @@ func (c *RoutersClient) List(ctx context.Context, req *computepb.ListRoutersRequ
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *RoutersClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutersClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -147,7 +147,7 @@ func (c *RoutersClient) Preview(ctx context.Context, req *computepb.PreviewRoute
 }
 
 // Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
-func (c *RoutersClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutersClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -275,7 +275,7 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 }
 
 // Delete deletes the specified Router resource.
-func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
@@ -315,7 +315,11 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Router resource. Gets a list of available routers by making a list() request.
@@ -449,7 +453,7 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 }
 
 // Insert creates a Router resource in the specified project and region using the data included in the request.
-func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
@@ -496,7 +500,11 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of Router resources available to the specified project.
@@ -556,7 +564,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
@@ -603,7 +611,11 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Preview preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
@@ -651,7 +663,7 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 }
 
 // Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
-func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
@@ -698,5 +710,9 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

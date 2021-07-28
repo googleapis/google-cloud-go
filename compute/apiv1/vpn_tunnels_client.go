@@ -51,9 +51,9 @@ type internalVpnTunnelsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListVpnTunnelsRequest, ...gax.CallOption) (*computepb.VpnTunnelAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteVpnTunnelRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteVpnTunnelRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetVpnTunnelRequest, ...gax.CallOption) (*computepb.VpnTunnel, error)
-	Insert(context.Context, *computepb.InsertVpnTunnelRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertVpnTunnelRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListVpnTunnelsRequest, ...gax.CallOption) (*computepb.VpnTunnelList, error)
 }
 
@@ -97,7 +97,7 @@ func (c *VpnTunnelsClient) AggregatedList(ctx context.Context, req *computepb.Ag
 }
 
 // Delete deletes the specified VpnTunnel resource.
-func (c *VpnTunnelsClient) Delete(ctx context.Context, req *computepb.DeleteVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnTunnelsClient) Delete(ctx context.Context, req *computepb.DeleteVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -107,7 +107,7 @@ func (c *VpnTunnelsClient) Get(ctx context.Context, req *computepb.GetVpnTunnelR
 }
 
 // Insert creates a VpnTunnel resource in the specified project and region using the data included in the request.
-func (c *VpnTunnelsClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnTunnelsClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -240,7 +240,7 @@ func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computep
 }
 
 // Delete deletes the specified VpnTunnel resource.
-func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v", req.GetProject(), req.GetRegion(), req.GetVpnTunnel())
 
@@ -280,7 +280,11 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
@@ -321,7 +325,7 @@ func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTun
 }
 
 // Insert creates a VpnTunnel resource in the specified project and region using the data included in the request.
-func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnTunnelResource()
 	jsonReq, err := m.Marshal(body)
@@ -368,7 +372,11 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of VpnTunnel resources contained in the specified project and region.

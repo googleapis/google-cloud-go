@@ -51,12 +51,12 @@ type internalRegionAutoscalersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionAutoscalerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionAutoscalerRequest, ...gax.CallOption) (*computepb.Autoscaler, error)
-	Insert(context.Context, *computepb.InsertRegionAutoscalerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionAutoscalersRequest, ...gax.CallOption) (*computepb.RegionAutoscalerList, error)
-	Patch(context.Context, *computepb.PatchRegionAutoscalerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateRegionAutoscalerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionAutoscalersClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *RegionAutoscalersClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified autoscaler.
-func (c *RegionAutoscalersClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionAutoscalersClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *RegionAutoscalersClient) Get(ctx context.Context, req *computepb.GetReg
 }
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
-func (c *RegionAutoscalersClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionAutoscalersClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *RegionAutoscalersClient) List(ctx context.Context, req *computepb.ListR
 }
 
 // Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *RegionAutoscalersClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionAutoscalersClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // Update updates an autoscaler in the specified project using the data included in the request.
-func (c *RegionAutoscalersClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionAutoscalersClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *regionAutoscalersRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified autoscaler.
-func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
@@ -228,7 +228,11 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified autoscaler.
@@ -269,7 +273,7 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
-func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of autoscalers contained within the specified region.
@@ -376,7 +384,7 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 }
 
 // Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
@@ -426,11 +434,15 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates an autoscaler in the specified project using the data included in the request.
-func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
@@ -480,5 +492,9 @@ func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

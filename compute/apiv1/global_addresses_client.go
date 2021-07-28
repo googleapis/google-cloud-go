@@ -49,9 +49,9 @@ type internalGlobalAddressesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteGlobalAddressRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetGlobalAddressRequest, ...gax.CallOption) (*computepb.Address, error)
-	Insert(context.Context, *computepb.InsertGlobalAddressRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertGlobalAddressRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListGlobalAddressesRequest, ...gax.CallOption) (*computepb.AddressList, error)
 }
 
@@ -90,7 +90,7 @@ func (c *GlobalAddressesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified address resource.
-func (c *GlobalAddressesClient) Delete(ctx context.Context, req *computepb.DeleteGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalAddressesClient) Delete(ctx context.Context, req *computepb.DeleteGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -100,7 +100,7 @@ func (c *GlobalAddressesClient) Get(ctx context.Context, req *computepb.GetGloba
 }
 
 // Insert creates an address resource in the specified project by using the data included in the request.
-func (c *GlobalAddressesClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalAddressesClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -174,7 +174,7 @@ func (c *globalAddressesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified address resource.
-func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/addresses/%v", req.GetProject(), req.GetAddress())
 
@@ -214,7 +214,11 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified address resource. Gets a list of available addresses by making a list() request.
@@ -255,7 +259,7 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 }
 
 // Insert creates an address resource in the specified project by using the data included in the request.
-func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalAddressRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAddressResource()
 	jsonReq, err := m.Marshal(body)
@@ -302,7 +306,11 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of global addresses.

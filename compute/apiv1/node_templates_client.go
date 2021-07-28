@@ -54,10 +54,10 @@ type internalNodeTemplatesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListNodeTemplatesRequest, ...gax.CallOption) (*computepb.NodeTemplateAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteNodeTemplateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteNodeTemplateRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNodeTemplateRequest, ...gax.CallOption) (*computepb.NodeTemplate, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyNodeTemplateRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertNodeTemplateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertNodeTemplateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListNodeTemplatesRequest, ...gax.CallOption) (*computepb.NodeTemplateList, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNodeTemplateRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNodeTemplateRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -103,7 +103,7 @@ func (c *NodeTemplatesClient) AggregatedList(ctx context.Context, req *computepb
 }
 
 // Delete deletes the specified NodeTemplate resource.
-func (c *NodeTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteNodeTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -118,7 +118,7 @@ func (c *NodeTemplatesClient) GetIamPolicy(ctx context.Context, req *computepb.G
 }
 
 // Insert creates a NodeTemplate resource in the specified project using the data included in the request.
-func (c *NodeTemplatesClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeTemplatesClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -261,7 +261,7 @@ func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *compu
 }
 
 // Delete deletes the specified NodeTemplate resource.
-func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v", req.GetProject(), req.GetRegion(), req.GetNodeTemplate())
 
@@ -301,7 +301,11 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified node template. Gets a list of available node templates by making a list() request.
@@ -386,7 +390,7 @@ func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *compute
 }
 
 // Insert creates a NodeTemplate resource in the specified project using the data included in the request.
-func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeTemplateResource()
 	jsonReq, err := m.Marshal(body)
@@ -433,7 +437,11 @@ func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of node templates available to the specified project.

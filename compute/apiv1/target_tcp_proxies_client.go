@@ -51,12 +51,12 @@ type internalTargetTcpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteTargetTcpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetTcpProxyRequest, ...gax.CallOption) (*computepb.TargetTcpProxy, error)
-	Insert(context.Context, *computepb.InsertTargetTcpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetTcpProxiesRequest, ...gax.CallOption) (*computepb.TargetTcpProxyList, error)
-	SetBackendService(context.Context, *computepb.SetBackendServiceTargetTcpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetProxyHeader(context.Context, *computepb.SetProxyHeaderTargetTcpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetBackendService(context.Context, *computepb.SetBackendServiceTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetProxyHeader(context.Context, *computepb.SetProxyHeaderTargetTcpProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetTcpProxiesClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *TargetTcpProxiesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetTcpProxy resource.
-func (c *TargetTcpProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetTcpProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *TargetTcpProxiesClient) Get(ctx context.Context, req *computepb.GetTarg
 }
 
 // Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
-func (c *TargetTcpProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetTcpProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *TargetTcpProxiesClient) List(ctx context.Context, req *computepb.ListTa
 }
 
 // SetBackendService changes the BackendService for TargetTcpProxy.
-func (c *TargetTcpProxiesClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetTcpProxiesClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetBackendService(ctx, req, opts...)
 }
 
 // SetProxyHeader changes the ProxyHeaderType for TargetTcpProxy.
-func (c *TargetTcpProxiesClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetTcpProxiesClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetProxyHeader(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetTcpProxy resource.
-func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v", req.GetProject(), req.GetTargetTcpProxy())
 
@@ -228,7 +228,11 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
@@ -269,7 +273,7 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
-func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of TargetTcpProxy resources available to the specified project.
@@ -376,7 +384,7 @@ func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 }
 
 // SetBackendService changes the BackendService for TargetTcpProxy.
-func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetBackendServiceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,11 +431,15 @@ func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetProxyHeader changes the ProxyHeaderType for TargetTcpProxy.
-func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetProxyHeaderRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -474,5 +486,9 @@ func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

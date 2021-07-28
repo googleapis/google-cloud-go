@@ -56,16 +56,16 @@ type internalImagesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteImageRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Deprecate(context.Context, *computepb.DeprecateImageRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteImageRequest, ...gax.CallOption) (*Operation, error)
+	Deprecate(context.Context, *computepb.DeprecateImageRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetImageRequest, ...gax.CallOption) (*computepb.Image, error)
 	GetFromFamily(context.Context, *computepb.GetFromFamilyImageRequest, ...gax.CallOption) (*computepb.Image, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyImageRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertImageRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertImageRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListImagesRequest, ...gax.CallOption) (*computepb.ImageList, error)
-	Patch(context.Context, *computepb.PatchImageRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchImageRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyImageRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetLabels(context.Context, *computepb.SetLabelsImageRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsImageRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsImageRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -104,14 +104,14 @@ func (c *ImagesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified image.
-func (c *ImagesClient) Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ImagesClient) Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // Deprecate sets the deprecation status of an image.
 //
 // If an empty request body is given, clears the deprecation status instead.
-func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Deprecate(ctx, req, opts...)
 }
 
@@ -131,7 +131,7 @@ func (c *ImagesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPo
 }
 
 // Insert creates an image in the specified project using the data included in the request.
-func (c *ImagesClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ImagesClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -141,7 +141,7 @@ func (c *ImagesClient) List(ctx context.Context, req *computepb.ListImagesReques
 }
 
 // Patch patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
-func (c *ImagesClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ImagesClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -151,7 +151,7 @@ func (c *ImagesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPo
 }
 
 // SetLabels sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
-func (c *ImagesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ImagesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
@@ -225,7 +225,7 @@ func (c *imagesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified image.
-func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
@@ -265,13 +265,17 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Deprecate sets the deprecation status of an image.
 //
 // If an empty request body is given, clears the deprecation status instead.
-func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDeprecationStatusResource()
 	jsonReq, err := m.Marshal(body)
@@ -318,7 +322,11 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified image. Gets a list of available images by making a list() request.
@@ -440,7 +448,7 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 }
 
 // Insert creates an image in the specified project using the data included in the request.
-func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
 	jsonReq, err := m.Marshal(body)
@@ -490,7 +498,11 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
@@ -550,7 +562,7 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 }
 
 // Patch patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
-func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
 	jsonReq, err := m.Marshal(body)
@@ -597,7 +609,11 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -645,7 +661,7 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 }
 
 // SetLabels sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
-func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -685,7 +701,11 @@ func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabe
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

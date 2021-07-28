@@ -51,12 +51,12 @@ type internalRegionHealthChecksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionHealthCheckRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionHealthCheckRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionHealthCheckRequest, ...gax.CallOption) (*computepb.HealthCheck, error)
-	Insert(context.Context, *computepb.InsertRegionHealthCheckRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionHealthCheckRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionHealthChecksRequest, ...gax.CallOption) (*computepb.HealthCheckList, error)
-	Patch(context.Context, *computepb.PatchRegionHealthCheckRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateRegionHealthCheckRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchRegionHealthCheckRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateRegionHealthCheckRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionHealthChecksClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *RegionHealthChecksClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified HealthCheck resource.
-func (c *RegionHealthChecksClient) Delete(ctx context.Context, req *computepb.DeleteRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionHealthChecksClient) Delete(ctx context.Context, req *computepb.DeleteRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *RegionHealthChecksClient) Get(ctx context.Context, req *computepb.GetRe
 }
 
 // Insert creates a HealthCheck resource in the specified project using the data included in the request.
-func (c *RegionHealthChecksClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionHealthChecksClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *RegionHealthChecksClient) List(ctx context.Context, req *computepb.List
 }
 
 // Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *RegionHealthChecksClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionHealthChecksClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // Update updates a HealthCheck resource in the specified project using the data included in the request.
-func (c *RegionHealthChecksClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionHealthChecksClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *regionHealthChecksRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified HealthCheck resource.
-func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
@@ -228,7 +228,11 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
@@ -269,7 +273,7 @@ func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.G
 }
 
 // Insert creates a HealthCheck resource in the specified project using the data included in the request.
-func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of HealthCheck resources available to the specified project.
@@ -376,7 +384,7 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 }
 
 // Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,11 +431,15 @@ func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates a HealthCheck resource in the specified project using the data included in the request.
-func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
@@ -474,5 +486,9 @@ func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

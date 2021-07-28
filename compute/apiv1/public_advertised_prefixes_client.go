@@ -50,11 +50,11 @@ type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeletePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeletePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.PublicAdvertisedPrefix, error)
-	Insert(context.Context, *computepb.InsertPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListPublicAdvertisedPrefixesRequest, ...gax.CallOption) (*computepb.PublicAdvertisedPrefixList, error)
-	Patch(context.Context, *computepb.PatchPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // PublicAdvertisedPrefixesClient is a client for interacting with Google Compute Engine API.
@@ -92,7 +92,7 @@ func (c *PublicAdvertisedPrefixesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified PublicAdvertisedPrefix
-func (c *PublicAdvertisedPrefixesClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -102,7 +102,7 @@ func (c *PublicAdvertisedPrefixesClient) Get(ctx context.Context, req *computepb
 }
 
 // Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
-func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -112,7 +112,7 @@ func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computep
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -181,7 +181,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified PublicAdvertisedPrefix
-func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
@@ -221,7 +221,11 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified PublicAdvertisedPrefix resource.
@@ -262,7 +266,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 }
 
 // Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
-func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -309,7 +313,11 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists the PublicAdvertisedPrefixes for a project.
@@ -369,7 +377,7 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -416,5 +424,9 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

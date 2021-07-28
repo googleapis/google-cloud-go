@@ -52,12 +52,12 @@ type internalRegionUrlMapsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionUrlMapRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionUrlMapRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionUrlMapRequest, ...gax.CallOption) (*computepb.UrlMap, error)
-	Insert(context.Context, *computepb.InsertRegionUrlMapRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionUrlMapRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionUrlMapsRequest, ...gax.CallOption) (*computepb.UrlMapList, error)
-	Patch(context.Context, *computepb.PatchRegionUrlMapRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateRegionUrlMapRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchRegionUrlMapRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateRegionUrlMapRequest, ...gax.CallOption) (*Operation, error)
 	Validate(context.Context, *computepb.ValidateRegionUrlMapRequest, ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error)
 }
 
@@ -96,7 +96,7 @@ func (c *RegionUrlMapsClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified UrlMap resource.
-func (c *RegionUrlMapsClient) Delete(ctx context.Context, req *computepb.DeleteRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionUrlMapsClient) Delete(ctx context.Context, req *computepb.DeleteRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -106,7 +106,7 @@ func (c *RegionUrlMapsClient) Get(ctx context.Context, req *computepb.GetRegionU
 }
 
 // Insert creates a UrlMap resource in the specified project using the data included in the request.
-func (c *RegionUrlMapsClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionUrlMapsClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -116,12 +116,12 @@ func (c *RegionUrlMapsClient) List(ctx context.Context, req *computepb.ListRegio
 }
 
 // Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *RegionUrlMapsClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionUrlMapsClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // Update updates the specified UrlMap resource with the data included in the request.
-func (c *RegionUrlMapsClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionUrlMapsClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -195,7 +195,7 @@ func (c *regionUrlMapsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified UrlMap resource.
-func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
@@ -235,7 +235,11 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
@@ -276,7 +280,7 @@ func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetReg
 }
 
 // Insert creates a UrlMap resource in the specified project using the data included in the request.
-func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
@@ -323,7 +327,11 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of UrlMap resources available to the specified project in the specified region.
@@ -383,7 +391,7 @@ func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListR
 }
 
 // Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
@@ -430,11 +438,15 @@ func (c *regionUrlMapsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates the specified UrlMap resource with the data included in the request.
-func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
@@ -481,7 +493,11 @@ func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.Upd
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.

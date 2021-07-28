@@ -51,12 +51,12 @@ type internalRegionTargetHttpsProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.TargetHttpsProxy, error)
-	Insert(context.Context, *computepb.InsertRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionTargetHttpsProxiesRequest, ...gax.CallOption) (*computepb.TargetHttpsProxyList, error)
-	SetSslCertificates(context.Context, *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetUrlMap(context.Context, *computepb.SetUrlMapRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetSslCertificates(context.Context, *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetUrlMap(context.Context, *computepb.SetUrlMapRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionTargetHttpsProxiesClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *RegionTargetHttpsProxiesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetHttpsProxy resource.
-func (c *RegionTargetHttpsProxiesClient) Delete(ctx context.Context, req *computepb.DeleteRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionTargetHttpsProxiesClient) Delete(ctx context.Context, req *computepb.DeleteRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *RegionTargetHttpsProxiesClient) Get(ctx context.Context, req *computepb
 }
 
 // Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
-func (c *RegionTargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionTargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *RegionTargetHttpsProxiesClient) List(ctx context.Context, req *computep
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
-func (c *RegionTargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionTargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
-func (c *RegionTargetHttpsProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionTargetHttpsProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUrlMap(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified TargetHttpsProxy resource.
-func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
@@ -228,7 +228,11 @@ func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
@@ -269,7 +273,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *compu
 }
 
 // Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
-func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
@@ -376,7 +384,7 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
-func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionTargetHttpsProxiesSetSslCertificatesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,11 +431,15 @@ func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Cont
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
-func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -474,5 +486,9 @@ func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

@@ -58,18 +58,18 @@ type internalNodeGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddNodes(context.Context, *computepb.AddNodesNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddNodes(context.Context, *computepb.AddNodesNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListNodeGroupsRequest, ...gax.CallOption) (*computepb.NodeGroupAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DeleteNodes(context.Context, *computepb.DeleteNodesNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteNodeGroupRequest, ...gax.CallOption) (*Operation, error)
+	DeleteNodes(context.Context, *computepb.DeleteNodesNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNodeGroupRequest, ...gax.CallOption) (*computepb.NodeGroup, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyNodeGroupRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListNodeGroupsRequest, ...gax.CallOption) (*computepb.NodeGroupList, error)
 	ListNodes(context.Context, *computepb.ListNodesNodeGroupsRequest, ...gax.CallOption) (*computepb.NodeGroupsListNodes, error)
-	Patch(context.Context, *computepb.PatchNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNodeGroupRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetNodeTemplate(context.Context, *computepb.SetNodeTemplateNodeGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetNodeTemplate(context.Context, *computepb.SetNodeTemplateNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNodeGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -108,7 +108,7 @@ func (c *NodeGroupsClient) Connection() *grpc.ClientConn {
 }
 
 // AddNodes adds specified number of nodes to the node group.
-func (c *NodeGroupsClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddNodes(ctx, req, opts...)
 }
 
@@ -118,12 +118,12 @@ func (c *NodeGroupsClient) AggregatedList(ctx context.Context, req *computepb.Ag
 }
 
 // Delete deletes the specified NodeGroup resource.
-func (c *NodeGroupsClient) Delete(ctx context.Context, req *computepb.DeleteNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) Delete(ctx context.Context, req *computepb.DeleteNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // DeleteNodes deletes specified nodes from the node group.
-func (c *NodeGroupsClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteNodes(ctx, req, opts...)
 }
 
@@ -138,7 +138,7 @@ func (c *NodeGroupsClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 }
 
 // Insert creates a NodeGroup resource in the specified project using the data included in the request.
-func (c *NodeGroupsClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -153,7 +153,7 @@ func (c *NodeGroupsClient) ListNodes(ctx context.Context, req *computepb.ListNod
 }
 
 // Patch updates the specified node group.
-func (c *NodeGroupsClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -163,7 +163,7 @@ func (c *NodeGroupsClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 }
 
 // SetNodeTemplate updates the node template of the node group.
-func (c *NodeGroupsClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NodeGroupsClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetNodeTemplate(ctx, req, opts...)
 }
 
@@ -237,7 +237,7 @@ func (c *nodeGroupsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddNodes adds specified number of nodes to the node group.
-func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsAddNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -284,7 +284,11 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
@@ -347,7 +351,7 @@ func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computep
 }
 
 // Delete deletes the specified NodeGroup resource.
-func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
@@ -387,11 +391,15 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DeleteNodes deletes specified nodes from the node group.
-func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsDeleteNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -438,7 +446,11 @@ func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.D
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request. Note: the “nodes” field should not be used. Use nodeGroups.listNodes instead.
@@ -523,7 +535,7 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 }
 
 // Insert creates a NodeGroup resource in the specified project using the data included in the request.
-func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
@@ -573,7 +585,11 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of node groups available to the specified project. Note: use nodeGroups.listNodes for more details about each group.
@@ -689,7 +705,7 @@ func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.Lis
 }
 
 // Patch updates the specified node group.
-func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
@@ -736,7 +752,11 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -784,7 +804,7 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 }
 
 // SetNodeTemplate updates the node template of the node group.
-func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsSetNodeTemplateRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -831,7 +851,11 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

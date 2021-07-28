@@ -56,17 +56,17 @@ type internalTargetPoolsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddHealthCheck(context.Context, *computepb.AddHealthCheckTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AddInstance(context.Context, *computepb.AddInstanceTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddHealthCheck(context.Context, *computepb.AddHealthCheckTargetPoolRequest, ...gax.CallOption) (*Operation, error)
+	AddInstance(context.Context, *computepb.AddInstanceTargetPoolRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListTargetPoolsRequest, ...gax.CallOption) (*computepb.TargetPoolAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetPoolRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetPoolRequest, ...gax.CallOption) (*computepb.TargetPool, error)
 	GetHealth(context.Context, *computepb.GetHealthTargetPoolRequest, ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error)
-	Insert(context.Context, *computepb.InsertTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetPoolRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetPoolsRequest, ...gax.CallOption) (*computepb.TargetPoolList, error)
-	RemoveHealthCheck(context.Context, *computepb.RemoveHealthCheckTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
-	RemoveInstance(context.Context, *computepb.RemoveInstanceTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetBackup(context.Context, *computepb.SetBackupTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
+	RemoveHealthCheck(context.Context, *computepb.RemoveHealthCheckTargetPoolRequest, ...gax.CallOption) (*Operation, error)
+	RemoveInstance(context.Context, *computepb.RemoveInstanceTargetPoolRequest, ...gax.CallOption) (*Operation, error)
+	SetBackup(context.Context, *computepb.SetBackupTargetPoolRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetPoolsClient is a client for interacting with Google Compute Engine API.
@@ -104,12 +104,12 @@ func (c *TargetPoolsClient) Connection() *grpc.ClientConn {
 }
 
 // AddHealthCheck adds health check URLs to a target pool.
-func (c *TargetPoolsClient) AddHealthCheck(ctx context.Context, req *computepb.AddHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) AddHealthCheck(ctx context.Context, req *computepb.AddHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddHealthCheck(ctx, req, opts...)
 }
 
 // AddInstance adds an instance to a target pool.
-func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddInstanceTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddInstance(ctx, req, opts...)
 }
 
@@ -119,7 +119,7 @@ func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.A
 }
 
 // Delete deletes the specified target pool.
-func (c *TargetPoolsClient) Delete(ctx context.Context, req *computepb.DeleteTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) Delete(ctx context.Context, req *computepb.DeleteTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -134,7 +134,7 @@ func (c *TargetPoolsClient) GetHealth(ctx context.Context, req *computepb.GetHea
 }
 
 // Insert creates a target pool in the specified project and region using the data included in the request.
-func (c *TargetPoolsClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -144,17 +144,17 @@ func (c *TargetPoolsClient) List(ctx context.Context, req *computepb.ListTargetP
 }
 
 // RemoveHealthCheck removes health check URL from a target pool.
-func (c *TargetPoolsClient) RemoveHealthCheck(ctx context.Context, req *computepb.RemoveHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) RemoveHealthCheck(ctx context.Context, req *computepb.RemoveHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveHealthCheck(ctx, req, opts...)
 }
 
 // RemoveInstance removes instance URL from a target pool.
-func (c *TargetPoolsClient) RemoveInstance(ctx context.Context, req *computepb.RemoveInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) RemoveInstance(ctx context.Context, req *computepb.RemoveInstanceTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveInstance(ctx, req, opts...)
 }
 
 // SetBackup changes a backup target pool’s configurations.
-func (c *TargetPoolsClient) SetBackup(ctx context.Context, req *computepb.SetBackupTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetPoolsClient) SetBackup(ctx context.Context, req *computepb.SetBackupTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetBackup(ctx, req, opts...)
 }
 
@@ -223,7 +223,7 @@ func (c *targetPoolsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddHealthCheck adds health check URLs to a target pool.
-func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *computepb.AddHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *computepb.AddHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsAddHealthCheckRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -270,11 +270,15 @@ func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AddInstance adds an instance to a target pool.
-func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.AddInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.AddInstanceTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsAddInstanceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -321,7 +325,11 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves an aggregated list of target pools.
@@ -384,7 +392,7 @@ func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified target pool.
-func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools/%v", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
@@ -424,7 +432,11 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified target pool. Gets a list of available target pools by making a list() request.
@@ -509,7 +521,7 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a target pool in the specified project and region using the data included in the request.
-func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolResource()
 	jsonReq, err := m.Marshal(body)
@@ -556,7 +568,11 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of target pools available to the specified project and region.
@@ -616,7 +632,7 @@ func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTar
 }
 
 // RemoveHealthCheck removes health check URL from a target pool.
-func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *computepb.RemoveHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *computepb.RemoveHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsRemoveHealthCheckRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -663,11 +679,15 @@ func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // RemoveInstance removes instance URL from a target pool.
-func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *computepb.RemoveInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *computepb.RemoveInstanceTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsRemoveInstanceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -714,11 +734,15 @@ func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetBackup changes a backup target pool’s configurations.
-func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.SetBackupTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.SetBackupTargetPoolRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -768,5 +792,9 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

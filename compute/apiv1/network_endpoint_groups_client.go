@@ -55,11 +55,11 @@ type internalNetworkEndpointGroupsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListNetworkEndpointGroupsRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroupAggregatedList, error)
-	AttachNetworkEndpoints(context.Context, *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DetachNetworkEndpoints(context.Context, *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AttachNetworkEndpoints(context.Context, *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
+	DetachNetworkEndpoints(context.Context, *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroup, error)
-	Insert(context.Context, *computepb.InsertNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListNetworkEndpointGroupsRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error)
 	ListNetworkEndpoints(context.Context, *computepb.ListNetworkEndpointsNetworkEndpointGroupsRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroupsListNetworkEndpoints, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -105,17 +105,17 @@ func (c *NetworkEndpointGroupsClient) AggregatedList(ctx context.Context, req *c
 }
 
 // AttachNetworkEndpoints attach a list of network endpoints to the specified network endpoint group.
-func (c *NetworkEndpointGroupsClient) AttachNetworkEndpoints(ctx context.Context, req *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NetworkEndpointGroupsClient) AttachNetworkEndpoints(ctx context.Context, req *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AttachNetworkEndpoints(ctx, req, opts...)
 }
 
 // Delete deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
-func (c *NetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // DetachNetworkEndpoints detach a list of network endpoints from the specified network endpoint group.
-func (c *NetworkEndpointGroupsClient) DetachNetworkEndpoints(ctx context.Context, req *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NetworkEndpointGroupsClient) DetachNetworkEndpoints(ctx context.Context, req *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DetachNetworkEndpoints(ctx, req, opts...)
 }
 
@@ -125,7 +125,7 @@ func (c *NetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
-func (c *NetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *NetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -268,7 +268,7 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 }
 
 // AttachNetworkEndpoints attach a list of network endpoints to the specified network endpoint group.
-func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Context, req *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Context, req *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupsAttachEndpointsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -315,11 +315,15 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
-func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
@@ -359,11 +363,15 @@ func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DetachNetworkEndpoints detach a list of network endpoints from the specified network endpoint group.
-func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Context, req *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Context, req *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupsDetachEndpointsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -410,7 +418,11 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
@@ -451,7 +463,7 @@ func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computep
 }
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
-func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
 	jsonReq, err := m.Marshal(body)
@@ -498,7 +510,11 @@ func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of network endpoint groups that are located in the specified project and zone.

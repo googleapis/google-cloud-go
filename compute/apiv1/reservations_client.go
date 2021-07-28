@@ -55,12 +55,12 @@ type internalReservationsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListReservationsRequest, ...gax.CallOption) (*computepb.ReservationAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteReservationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteReservationRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetReservationRequest, ...gax.CallOption) (*computepb.Reservation, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyReservationRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertReservationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertReservationRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListReservationsRequest, ...gax.CallOption) (*computepb.ReservationList, error)
-	Resize(context.Context, *computepb.ResizeReservationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Resize(context.Context, *computepb.ResizeReservationRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyReservationRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsReservationRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
@@ -105,7 +105,7 @@ func (c *ReservationsClient) AggregatedList(ctx context.Context, req *computepb.
 }
 
 // Delete deletes the specified reservation.
-func (c *ReservationsClient) Delete(ctx context.Context, req *computepb.DeleteReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ReservationsClient) Delete(ctx context.Context, req *computepb.DeleteReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -120,7 +120,7 @@ func (c *ReservationsClient) GetIamPolicy(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a new reservation. For more information, read Reserving zonal resources.
-func (c *ReservationsClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ReservationsClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -130,7 +130,7 @@ func (c *ReservationsClient) List(ctx context.Context, req *computepb.ListReserv
 }
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
-func (c *ReservationsClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ReservationsClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
@@ -268,7 +268,7 @@ func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *comput
 }
 
 // Delete deletes the specified reservation.
-func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
@@ -308,7 +308,11 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get retrieves information about the specified reservation.
@@ -393,7 +397,7 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 }
 
 // Insert creates a new reservation. For more information, read Reserving zonal resources.
-func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationResource()
 	jsonReq, err := m.Marshal(body)
@@ -440,7 +444,11 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List a list of all the reservations that have been configured for the specified project in specified zone.
@@ -500,7 +508,7 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 }
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
-func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationsResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -547,7 +555,11 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.

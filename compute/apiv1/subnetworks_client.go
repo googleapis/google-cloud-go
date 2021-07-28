@@ -58,16 +58,16 @@ type internalSubnetworksClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListSubnetworksRequest, ...gax.CallOption) (*computepb.SubnetworkAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
-	ExpandIpCidrRange(context.Context, *computepb.ExpandIpCidrRangeSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteSubnetworkRequest, ...gax.CallOption) (*Operation, error)
+	ExpandIpCidrRange(context.Context, *computepb.ExpandIpCidrRangeSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSubnetworkRequest, ...gax.CallOption) (*computepb.Subnetwork, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicySubnetworkRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSubnetworksRequest, ...gax.CallOption) (*computepb.SubnetworkList, error)
 	ListUsable(context.Context, *computepb.ListUsableSubnetworksRequest, ...gax.CallOption) (*computepb.UsableSubnetworksAggregatedList, error)
-	Patch(context.Context, *computepb.PatchSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicySubnetworkRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetPrivateIpGoogleAccess(context.Context, *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetPrivateIpGoogleAccess(context.Context, *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsSubnetworkRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -111,12 +111,12 @@ func (c *SubnetworksClient) AggregatedList(ctx context.Context, req *computepb.A
 }
 
 // Delete deletes the specified subnetwork.
-func (c *SubnetworksClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // ExpandIpCidrRange expands the IP CIDR range of the subnetwork to a specified value.
-func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.ExpandIpCidrRange(ctx, req, opts...)
 }
 
@@ -131,7 +131,7 @@ func (c *SubnetworksClient) GetIamPolicy(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a subnetwork in the specified project using the data included in the request.
-func (c *SubnetworksClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -146,7 +146,7 @@ func (c *SubnetworksClient) ListUsable(ctx context.Context, req *computepb.ListU
 }
 
 // Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
-func (c *SubnetworksClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -156,7 +156,7 @@ func (c *SubnetworksClient) SetIamPolicy(ctx context.Context, req *computepb.Set
 }
 
 // SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
-func (c *SubnetworksClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetPrivateIpGoogleAccess(ctx, req, opts...)
 }
 
@@ -289,7 +289,7 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified subnetwork.
-func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
@@ -329,11 +329,15 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // ExpandIpCidrRange expands the IP CIDR range of the subnetwork to a specified value.
-func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksExpandIpCidrRangeRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -380,7 +384,11 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
@@ -465,7 +473,7 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 }
 
 // Insert creates a subnetwork in the specified project using the data included in the request.
-func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
@@ -512,7 +520,11 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of subnetworks available to the specified project.
@@ -628,7 +640,7 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 }
 
 // Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
-func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
@@ -678,7 +690,11 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -726,7 +742,7 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 }
 
 // SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
-func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksSetPrivateIpGoogleAccessRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -773,7 +789,11 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

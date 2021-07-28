@@ -65,26 +65,26 @@ type internalInstanceGroupManagersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AbandonInstances(context.Context, *computepb.AbandonInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AbandonInstances(context.Context, *computepb.AbandonInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListInstanceGroupManagersRequest, ...gax.CallOption) (*computepb.InstanceGroupManagerAggregatedList, error)
-	ApplyUpdatesToInstances(context.Context, *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	CreateInstances(context.Context, *computepb.CreateInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DeleteInstances(context.Context, *computepb.DeleteInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DeletePerInstanceConfigs(context.Context, *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	ApplyUpdatesToInstances(context.Context, *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	CreateInstances(context.Context, *computepb.CreateInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	DeleteInstances(context.Context, *computepb.DeleteInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	DeletePerInstanceConfigs(context.Context, *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.InstanceGroupManager, error)
-	Insert(context.Context, *computepb.InsertInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstanceGroupManagersRequest, ...gax.CallOption) (*computepb.InstanceGroupManagerList, error)
 	ListErrors(context.Context, *computepb.ListErrorsInstanceGroupManagersRequest, ...gax.CallOption) (*computepb.InstanceGroupManagersListErrorsResponse, error)
 	ListManagedInstances(context.Context, *computepb.ListManagedInstancesInstanceGroupManagersRequest, ...gax.CallOption) (*computepb.InstanceGroupManagersListManagedInstancesResponse, error)
 	ListPerInstanceConfigs(context.Context, *computepb.ListPerInstanceConfigsInstanceGroupManagersRequest, ...gax.CallOption) (*computepb.InstanceGroupManagersListPerInstanceConfigsResp, error)
-	Patch(context.Context, *computepb.PatchInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	PatchPerInstanceConfigs(context.Context, *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	RecreateInstances(context.Context, *computepb.RecreateInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Resize(context.Context, *computepb.ResizeInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetInstanceTemplate(context.Context, *computepb.SetInstanceTemplateInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetTargetPools(context.Context, *computepb.SetTargetPoolsInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
-	UpdatePerInstanceConfigs(context.Context, *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	PatchPerInstanceConfigs(context.Context, *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	RecreateInstances(context.Context, *computepb.RecreateInstancesInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	Resize(context.Context, *computepb.ResizeInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	SetInstanceTemplate(context.Context, *computepb.SetInstanceTemplateInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	SetTargetPools(context.Context, *computepb.SetTargetPoolsInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
+	UpdatePerInstanceConfigs(context.Context, *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InstanceGroupManagersClient is a client for interacting with Google Compute Engine API.
@@ -126,7 +126,7 @@ func (c *InstanceGroupManagersClient) Connection() *grpc.ClientConn {
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *InstanceGroupManagersClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AbandonInstances(ctx, req, opts...)
 }
 
@@ -136,17 +136,17 @@ func (c *InstanceGroupManagersClient) AggregatedList(ctx context.Context, req *c
 }
 
 // ApplyUpdatesToInstances applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
-func (c *InstanceGroupManagersClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.ApplyUpdatesToInstances(ctx, req, opts...)
 }
 
 // CreateInstances creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
-func (c *InstanceGroupManagersClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateInstances(ctx, req, opts...)
 }
 
 // Delete deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
-func (c *InstanceGroupManagersClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -155,12 +155,12 @@ func (c *InstanceGroupManagersClient) Delete(ctx context.Context, req *computepb
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *InstanceGroupManagersClient) DeleteInstances(ctx context.Context, req *computepb.DeleteInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) DeleteInstances(ctx context.Context, req *computepb.DeleteInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteInstances(ctx, req, opts...)
 }
 
 // DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.
-func (c *InstanceGroupManagersClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeletePerInstanceConfigs(ctx, req, opts...)
 }
 
@@ -172,7 +172,7 @@ func (c *InstanceGroupManagersClient) Get(ctx context.Context, req *computepb.Ge
 // Insert creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 //
 // A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
-func (c *InstanceGroupManagersClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -197,12 +197,12 @@ func (c *InstanceGroupManagersClient) ListPerInstanceConfigs(ctx context.Context
 }
 
 // Patch updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InstanceGroupManagersClient) Patch(ctx context.Context, req *computepb.PatchInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) Patch(ctx context.Context, req *computepb.PatchInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
-func (c *InstanceGroupManagersClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchPerInstanceConfigs(ctx, req, opts...)
 }
 
@@ -211,7 +211,7 @@ func (c *InstanceGroupManagersClient) PatchPerInstanceConfigs(ctx context.Contex
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *InstanceGroupManagersClient) RecreateInstances(ctx context.Context, req *computepb.RecreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) RecreateInstances(ctx context.Context, req *computepb.RecreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RecreateInstances(ctx, req, opts...)
 }
 
@@ -224,22 +224,22 @@ func (c *InstanceGroupManagersClient) RecreateInstances(ctx context.Context, req
 // This list is subject to change.
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-func (c *InstanceGroupManagersClient) Resize(ctx context.Context, req *computepb.ResizeInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) Resize(ctx context.Context, req *computepb.ResizeInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
 // SetInstanceTemplate specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group’s updatePolicy.type to PROACTIVE.
-func (c *InstanceGroupManagersClient) SetInstanceTemplate(ctx context.Context, req *computepb.SetInstanceTemplateInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) SetInstanceTemplate(ctx context.Context, req *computepb.SetInstanceTemplateInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetInstanceTemplate(ctx, req, opts...)
 }
 
 // SetTargetPools modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group.
-func (c *InstanceGroupManagersClient) SetTargetPools(ctx context.Context, req *computepb.SetTargetPoolsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) SetTargetPools(ctx context.Context, req *computepb.SetTargetPoolsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetTargetPools(ctx, req, opts...)
 }
 
 // UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
-func (c *InstanceGroupManagersClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupManagersClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdatePerInstanceConfigs(ctx, req, opts...)
 }
 
@@ -312,7 +312,7 @@ func (c *instanceGroupManagersRESTClient) Connection() *grpc.ClientConn {
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersAbandonInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -359,7 +359,11 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves the list of managed instance groups and groups them by zone.
@@ -422,7 +426,7 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 }
 
 // ApplyUpdatesToInstances applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
-func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersApplyUpdatesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -462,11 +466,15 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // CreateInstances creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
-func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersCreateInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -513,11 +521,15 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
-func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -557,7 +569,11 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DeleteInstances flags the specified instances in the managed instance group for immediate deletion. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
@@ -565,7 +581,7 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, req *computepb.DeleteInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, req *computepb.DeleteInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersDeleteInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -612,11 +628,15 @@ func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, r
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.
-func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersDeletePerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
@@ -656,7 +676,11 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
@@ -699,7 +723,7 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 // Insert creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
 //
 // A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
-func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResource()
 	jsonReq, err := m.Marshal(body)
@@ -746,7 +770,11 @@ func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of managed instance groups that are contained within the specified project and zone.
@@ -974,7 +1002,7 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 }
 
 // Patch updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *computepb.PatchInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *computepb.PatchInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResource()
 	jsonReq, err := m.Marshal(body)
@@ -1021,11 +1049,15 @@ func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
-func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersPatchPerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
@@ -1072,7 +1104,11 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // RecreateInstances flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group’s current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
@@ -1080,7 +1116,7 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 //
 // You can specify a maximum of 1000 instances with this method per request.
-func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context, req *computepb.RecreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context, req *computepb.RecreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersRecreateInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1127,7 +1163,11 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Resize resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
@@ -1139,7 +1179,7 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 // This list is subject to change.
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *computepb.ResizeInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *computepb.ResizeInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v/resize", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -1182,11 +1222,15 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetInstanceTemplate specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group’s updatePolicy.type to PROACTIVE.
-func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Context, req *computepb.SetInstanceTemplateInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Context, req *computepb.SetInstanceTemplateInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersSetInstanceTemplateRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1233,11 +1277,15 @@ func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Contex
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetTargetPools modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group.
-func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, req *computepb.SetTargetPoolsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, req *computepb.SetTargetPoolsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersSetTargetPoolsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1284,11 +1332,15 @@ func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, re
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
-func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersUpdatePerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
@@ -1335,5 +1387,9 @@ func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.C
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

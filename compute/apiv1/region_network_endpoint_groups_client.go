@@ -49,9 +49,9 @@ type internalRegionNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroup, error)
-	Insert(context.Context, *computepb.InsertRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionNetworkEndpointGroupsRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error)
 }
 
@@ -90,7 +90,7 @@ func (c *RegionNetworkEndpointGroupsClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
-func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionNetworkEndpointGroupsClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -100,7 +100,7 @@ func (c *RegionNetworkEndpointGroupsClient) Get(ctx context.Context, req *comput
 }
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
-func (c *RegionNetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionNetworkEndpointGroupsClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -174,7 +174,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
-func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEndpointGroup())
 
@@ -214,7 +214,11 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
@@ -255,7 +259,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 }
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
-func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
 	jsonReq, err := m.Marshal(body)
@@ -302,7 +306,11 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of regional network endpoint groups available to the specified project in the given region.

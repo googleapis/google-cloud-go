@@ -49,9 +49,9 @@ type internalRoutesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRouteRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRouteRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRouteRequest, ...gax.CallOption) (*computepb.Route, error)
-	Insert(context.Context, *computepb.InsertRouteRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRouteRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRoutesRequest, ...gax.CallOption) (*computepb.RouteList, error)
 }
 
@@ -90,7 +90,7 @@ func (c *RoutesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified Route resource.
-func (c *RoutesClient) Delete(ctx context.Context, req *computepb.DeleteRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutesClient) Delete(ctx context.Context, req *computepb.DeleteRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -100,7 +100,7 @@ func (c *RoutesClient) Get(ctx context.Context, req *computepb.GetRouteRequest, 
 }
 
 // Insert creates a Route resource in the specified project using the data included in the request.
-func (c *RoutesClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RoutesClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -174,7 +174,7 @@ func (c *routesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified Route resource.
-func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
@@ -214,7 +214,11 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Route resource. Gets a list of available routes by making a list() request.
@@ -255,7 +259,7 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 }
 
 // Insert creates a Route resource in the specified project using the data included in the request.
-func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouteResource()
 	jsonReq, err := m.Marshal(body)
@@ -302,7 +306,11 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of Route resources available to the specified project.
