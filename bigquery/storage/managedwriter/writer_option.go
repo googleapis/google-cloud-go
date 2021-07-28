@@ -62,7 +62,7 @@ func WithMaxInflightBytes(n int) WriterOption {
 	}
 }
 
-// WithTracePrefix allows instruments requests to the service with a custom trace prefix.
+// WithTraceID allows instruments requests to the service with a custom trace prefix.
 // This is generally for diagnostic purposes only.
 func WithTraceID(traceID string) WriterOption {
 	return func(ms *ManagedStream) {
