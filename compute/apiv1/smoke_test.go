@@ -82,7 +82,7 @@ func TestCreateGetListInstance(t *testing.T) {
 	waitZonalRequest := &computepb.WaitZoneOperationRequest{
 		Project:   projectId,
 		Zone:      defaultZone,
-		Operation: insert.GetName(),
+		Operation: insert.Proto().GetName(),
 	}
 	_, err = zonesClient.Wait(ctx, waitZonalRequest)
 	if err != nil {
@@ -198,7 +198,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 
 	waitGlobalRequest := &computepb.WaitGlobalOperationRequest{
 		Project:   projectId,
-		Operation: insert.GetName(),
+		Operation: insert.Proto().GetName(),
 	}
 	_, err = globalCLient.Wait(ctx, waitGlobalRequest)
 	if err != nil {
@@ -218,7 +218,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	}
 	waitGlobalRequestRemove := &computepb.WaitGlobalOperationRequest{
 		Project:   projectId,
-		Operation: rule.GetName(),
+		Operation: rule.Proto().GetName(),
 	}
 	_, err = globalCLient.Wait(ctx, waitGlobalRequestRemove)
 	if err != nil {

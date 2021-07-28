@@ -52,7 +52,7 @@ type internalRegionInstanceGroupsClient interface {
 	Get(context.Context, *computepb.GetRegionInstanceGroupRequest, ...gax.CallOption) (*computepb.InstanceGroup, error)
 	List(context.Context, *computepb.ListRegionInstanceGroupsRequest, ...gax.CallOption) (*computepb.RegionInstanceGroupList, error)
 	ListInstances(context.Context, *computepb.ListInstancesRegionInstanceGroupsRequest, ...gax.CallOption) (*computepb.RegionInstanceGroupsListInstances, error)
-	SetNamedPorts(context.Context, *computepb.SetNamedPortsRegionInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetNamedPorts(context.Context, *computepb.SetNamedPortsRegionInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionInstanceGroupsClient is a client for interacting with Google Compute Engine API.
@@ -105,7 +105,7 @@ func (c *RegionInstanceGroupsClient) ListInstances(ctx context.Context, req *com
 }
 
 // SetNamedPorts sets the named ports for the specified regional instance group.
-func (c *RegionInstanceGroupsClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionInstanceGroupsClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetNamedPorts(ctx, req, opts...)
 }
 
@@ -330,7 +330,7 @@ func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req 
 }
 
 // SetNamedPorts sets the named ports for the specified regional instance group.
-func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -377,5 +377,9 @@ func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

@@ -55,16 +55,16 @@ type internalSecurityPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddRule(context.Context, *computepb.AddRuleSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddRule(context.Context, *computepb.AddRuleSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSecurityPolicyRequest, ...gax.CallOption) (*computepb.SecurityPolicy, error)
 	GetRule(context.Context, *computepb.GetRuleSecurityPolicyRequest, ...gax.CallOption) (*computepb.SecurityPolicyRule, error)
-	Insert(context.Context, *computepb.InsertSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSecurityPoliciesRequest, ...gax.CallOption) (*computepb.SecurityPolicyList, error)
 	ListPreconfiguredExpressionSets(context.Context, *computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest, ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error)
-	Patch(context.Context, *computepb.PatchSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	PatchRule(context.Context, *computepb.PatchRuleSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	RemoveRule(context.Context, *computepb.RemoveRuleSecurityPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
+	PatchRule(context.Context, *computepb.PatchRuleSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
+	RemoveRule(context.Context, *computepb.RemoveRuleSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // SecurityPoliciesClient is a client for interacting with Google Compute Engine API.
@@ -102,12 +102,12 @@ func (c *SecurityPoliciesClient) Connection() *grpc.ClientConn {
 }
 
 // AddRule inserts a rule into a security policy.
-func (c *SecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
 // Delete deletes the specified policy.
-func (c *SecurityPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -122,7 +122,7 @@ func (c *SecurityPoliciesClient) GetRule(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a new policy in the specified project using the data included in the request.
-func (c *SecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -137,17 +137,17 @@ func (c *SecurityPoliciesClient) ListPreconfiguredExpressionSets(ctx context.Con
 }
 
 // Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
-func (c *SecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // PatchRule patches a rule at the specified priority.
-func (c *SecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
 
 // RemoveRule deletes a rule at the specified priority.
-func (c *SecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SecurityPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
@@ -216,7 +216,7 @@ func (c *securityPoliciesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddRule inserts a rule into a security policy.
-func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
@@ -256,11 +256,15 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified policy.
-func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v", req.GetProject(), req.GetSecurityPolicy())
 
@@ -300,7 +304,11 @@ func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get list all of the ordered rules present in a single specified policy.
@@ -385,7 +393,7 @@ func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 }
 
 // Insert creates a new policy in the specified project using the data included in the request.
-func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -432,7 +440,11 @@ func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List list all the policies that have been configured for the specified project.
@@ -548,7 +560,7 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 }
 
 // Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
-func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -595,11 +607,15 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // PatchRule patches a rule at the specified priority.
-func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
@@ -646,11 +662,15 @@ func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // RemoveRule deletes a rule at the specified priority.
-func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v/removeRule", req.GetProject(), req.GetSecurityPolicy())
 
@@ -690,5 +710,9 @@ func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

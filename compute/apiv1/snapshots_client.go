@@ -52,12 +52,12 @@ type internalSnapshotsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteSnapshotRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSnapshotRequest, ...gax.CallOption) (*computepb.Snapshot, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
 	List(context.Context, *computepb.ListSnapshotsRequest, ...gax.CallOption) (*computepb.SnapshotList, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetLabels(context.Context, *computepb.SetLabelsSnapshotRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsSnapshotRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -98,7 +98,7 @@ func (c *SnapshotsClient) Connection() *grpc.ClientConn {
 // Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 //
 // For more information, see Deleting snapshots.
-func (c *SnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SnapshotsClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -123,7 +123,7 @@ func (c *SnapshotsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIa
 }
 
 // SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
-func (c *SnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SnapshotsClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
@@ -199,7 +199,7 @@ func (c *snapshotsRESTClient) Connection() *grpc.ClientConn {
 // Delete deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
 //
 // For more information, see Deleting snapshots.
-func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
@@ -239,7 +239,11 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
@@ -424,7 +428,7 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 }
 
 // SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
-func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -464,7 +468,11 @@ func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

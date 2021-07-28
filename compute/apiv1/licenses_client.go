@@ -52,10 +52,10 @@ type internalLicensesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteLicenseRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteLicenseRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetLicenseRequest, ...gax.CallOption) (*computepb.License, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyLicenseRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertLicenseRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertLicenseRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListLicensesRequest, ...gax.CallOption) (*computepb.LicensesListResponse, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyLicenseRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsLicenseRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -96,7 +96,7 @@ func (c *LicensesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
-func (c *LicensesClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *LicensesClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -111,7 +111,7 @@ func (c *LicensesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIam
 }
 
 // Insert create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
-func (c *LicensesClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *LicensesClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -195,7 +195,7 @@ func (c *licensesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
-func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
 
@@ -235,7 +235,11 @@ func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLi
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
@@ -320,7 +324,7 @@ func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.Ge
 }
 
 // Insert create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
-func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetLicenseResource()
 	jsonReq, err := m.Marshal(body)
@@ -367,7 +371,11 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.

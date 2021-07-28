@@ -320,3 +320,13 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	return rsp, unm.Unmarshal(buf, rsp)
 }
+
+// Operation represents a long running operation for this API.
+type Operation struct {
+	proto *computepb.Operation
+}
+
+// Proto returns the raw type this wraps.
+func (o *Operation) Proto() *computepb.Operation {
+	return o.proto
+}

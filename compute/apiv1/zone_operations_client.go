@@ -49,9 +49,9 @@ type internalZoneOperationsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteZoneOperationRequest, ...gax.CallOption) (*computepb.DeleteZoneOperationResponse, error)
-	Get(context.Context, *computepb.GetZoneOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Get(context.Context, *computepb.GetZoneOperationRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListZoneOperationsRequest, ...gax.CallOption) (*computepb.OperationList, error)
-	Wait(context.Context, *computepb.WaitZoneOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Wait(context.Context, *computepb.WaitZoneOperationRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ZoneOperationsClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *ZoneOperationsClient) Delete(ctx context.Context, req *computepb.Delete
 }
 
 // Get retrieves the specified zone-specific Operations resource.
-func (c *ZoneOperationsClient) Get(ctx context.Context, req *computepb.GetZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ZoneOperationsClient) Get(ctx context.Context, req *computepb.GetZoneOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
@@ -110,7 +110,7 @@ func (c *ZoneOperationsClient) List(ctx context.Context, req *computepb.ListZone
 //   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
 //
 //   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
-func (c *ZoneOperationsClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ZoneOperationsClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Wait(ctx, req, opts...)
 }
 
@@ -216,7 +216,7 @@ func (c *zoneOperationsRESTClient) Delete(ctx context.Context, req *computepb.De
 }
 
 // Get retrieves the specified zone-specific Operations resource.
-func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZoneOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations/%v", req.GetProject(), req.GetZone(), req.GetOperation())
 
@@ -249,7 +249,11 @@ func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of Operation resources contained within the specified zone.
@@ -315,7 +319,7 @@ func (c *zoneOperationsRESTClient) List(ctx context.Context, req *computepb.List
 //   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
 //
 //   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
-func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitZoneOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/operations/%v/wait", req.GetProject(), req.GetZone(), req.GetOperation())
 
@@ -348,5 +352,9 @@ func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wait
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

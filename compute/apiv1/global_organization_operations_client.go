@@ -48,7 +48,7 @@ type internalGlobalOrganizationOperationsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteGlobalOrganizationOperationRequest, ...gax.CallOption) (*computepb.DeleteGlobalOrganizationOperationResponse, error)
-	Get(context.Context, *computepb.GetGlobalOrganizationOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Get(context.Context, *computepb.GetGlobalOrganizationOperationRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListGlobalOrganizationOperationsRequest, ...gax.CallOption) (*computepb.OperationList, error)
 }
 
@@ -92,7 +92,7 @@ func (c *GlobalOrganizationOperationsClient) Delete(ctx context.Context, req *co
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *GlobalOrganizationOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalOrganizationOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
@@ -210,7 +210,7 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
@@ -250,7 +250,11 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of Operation resources contained within the specified organization.

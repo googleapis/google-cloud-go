@@ -51,12 +51,12 @@ type internalInterconnectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteInterconnectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInterconnectRequest, ...gax.CallOption) (*computepb.Interconnect, error)
 	GetDiagnostics(context.Context, *computepb.GetDiagnosticsInterconnectRequest, ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error)
-	Insert(context.Context, *computepb.InsertInterconnectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInterconnectRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInterconnectsRequest, ...gax.CallOption) (*computepb.InterconnectList, error)
-	Patch(context.Context, *computepb.PatchInterconnectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchInterconnectRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InterconnectsClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *InterconnectsClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified interconnect.
-func (c *InterconnectsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectsClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -109,7 +109,7 @@ func (c *InterconnectsClient) GetDiagnostics(ctx context.Context, req *computepb
 }
 
 // Insert creates a Interconnect in the specified project using the data included in the request.
-func (c *InterconnectsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectsClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -119,7 +119,7 @@ func (c *InterconnectsClient) List(ctx context.Context, req *computepb.ListInter
 }
 
 // Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InterconnectsClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *interconnectsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified interconnect.
-func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
@@ -228,7 +228,11 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
@@ -306,7 +310,7 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 }
 
 // Insert creates a Interconnect in the specified project using the data included in the request.
-func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
 	jsonReq, err := m.Marshal(body)
@@ -353,7 +357,11 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of interconnect available to the specified project.
@@ -413,7 +421,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 }
 
 // Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
 	jsonReq, err := m.Marshal(body)
@@ -460,5 +468,9 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

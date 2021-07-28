@@ -56,17 +56,17 @@ type internalBackendServicesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddSignedUrlKey(context.Context, *computepb.AddSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddSignedUrlKey(context.Context, *computepb.AddSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListBackendServicesRequest, ...gax.CallOption) (*computepb.BackendServiceAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteBackendServiceRequest, ...gax.CallOption) (*Operation, error)
+	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetBackendServiceRequest, ...gax.CallOption) (*computepb.BackendService, error)
 	GetHealth(context.Context, *computepb.GetHealthBackendServiceRequest, ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error)
-	Insert(context.Context, *computepb.InsertBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListBackendServicesRequest, ...gax.CallOption) (*computepb.BackendServiceList, error)
-	Patch(context.Context, *computepb.PatchBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Update(context.Context, *computepb.UpdateBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchBackendServiceRequest, ...gax.CallOption) (*Operation, error)
+	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
+	Update(context.Context, *computepb.UpdateBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // BackendServicesClient is a client for interacting with Google Compute Engine API.
@@ -104,7 +104,7 @@ func (c *BackendServicesClient) Connection() *grpc.ClientConn {
 }
 
 // AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
-func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
@@ -114,12 +114,12 @@ func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified BackendService resource.
-func (c *BackendServicesClient) Delete(ctx context.Context, req *computepb.DeleteBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) Delete(ctx context.Context, req *computepb.DeleteBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend service.
-func (c *BackendServicesClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
 
@@ -138,7 +138,7 @@ func (c *BackendServicesClient) GetHealth(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
-func (c *BackendServicesClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -148,17 +148,17 @@ func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBac
 }
 
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *BackendServicesClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
-func (c *BackendServicesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
 
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
-func (c *BackendServicesClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *BackendServicesClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
@@ -227,7 +227,7 @@ func (c *backendServicesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
-func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
 	jsonReq, err := m.Marshal(body)
@@ -274,7 +274,11 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
@@ -337,7 +341,7 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 }
 
 // Delete deletes the specified BackendService resource.
-func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
@@ -377,11 +381,15 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend service.
-func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendService())
 
@@ -424,7 +432,11 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified BackendService resource. Gets a list of available backend services.
@@ -513,7 +525,7 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 }
 
 // Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
-func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -560,7 +572,11 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of BackendService resources available to the specified project.
@@ -620,7 +636,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 }
 
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -667,11 +683,15 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
-func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -718,11 +738,15 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
-func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
@@ -769,5 +793,9 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

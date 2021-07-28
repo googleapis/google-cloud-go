@@ -87,14 +87,14 @@ type internalInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddAccessConfig(context.Context, *computepb.AddAccessConfigInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddAccessConfig(context.Context, *computepb.AddAccessConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
+	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListInstancesRequest, ...gax.CallOption) (*computepb.InstanceAggregatedList, error)
-	AttachDisk(context.Context, *computepb.AttachDiskInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	BulkInsert(context.Context, *computepb.BulkInsertInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DeleteAccessConfig(context.Context, *computepb.DeleteAccessConfigInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DetachDisk(context.Context, *computepb.DetachDiskInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AttachDisk(context.Context, *computepb.AttachDiskInstanceRequest, ...gax.CallOption) (*Operation, error)
+	BulkInsert(context.Context, *computepb.BulkInsertInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*Operation, error)
+	DeleteAccessConfig(context.Context, *computepb.DeleteAccessConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
+	DetachDisk(context.Context, *computepb.DetachDiskInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInstanceRequest, ...gax.CallOption) (*computepb.Instance, error)
 	GetEffectiveFirewalls(context.Context, *computepb.GetEffectiveFirewallsInstanceRequest, ...gax.CallOption) (*computepb.InstancesGetEffectiveFirewallsResponse, error)
 	GetGuestAttributes(context.Context, *computepb.GetGuestAttributesInstanceRequest, ...gax.CallOption) (*computepb.GuestAttributes, error)
@@ -102,33 +102,33 @@ type internalInstancesClient interface {
 	GetScreenshot(context.Context, *computepb.GetScreenshotInstanceRequest, ...gax.CallOption) (*computepb.Screenshot, error)
 	GetSerialPortOutput(context.Context, *computepb.GetSerialPortOutputInstanceRequest, ...gax.CallOption) (*computepb.SerialPortOutput, error)
 	GetShieldedInstanceIdentity(context.Context, *computepb.GetShieldedInstanceIdentityInstanceRequest, ...gax.CallOption) (*computepb.ShieldedInstanceIdentity, error)
-	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) (*computepb.InstanceList, error)
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) (*computepb.InstanceListReferrers, error)
-	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetDeletionProtection(context.Context, *computepb.SetDeletionProtectionInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetDiskAutoDelete(context.Context, *computepb.SetDiskAutoDeleteInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetDeletionProtection(context.Context, *computepb.SetDeletionProtectionInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetDiskAutoDelete(context.Context, *computepb.SetDiskAutoDeleteInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyInstanceRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetLabels(context.Context, *computepb.SetLabelsInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetMachineResources(context.Context, *computepb.SetMachineResourcesInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetMachineType(context.Context, *computepb.SetMachineTypeInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetMetadata(context.Context, *computepb.SetMetadataInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetMinCpuPlatform(context.Context, *computepb.SetMinCpuPlatformInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetScheduling(context.Context, *computepb.SetSchedulingInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetServiceAccount(context.Context, *computepb.SetServiceAccountInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetShieldedInstanceIntegrityPolicy(context.Context, *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetTags(context.Context, *computepb.SetTagsInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SimulateMaintenanceEvent(context.Context, *computepb.SimulateMaintenanceEventInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Start(context.Context, *computepb.StartInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	StartWithEncryptionKey(context.Context, *computepb.StartWithEncryptionKeyInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Stop(context.Context, *computepb.StopInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetMachineResources(context.Context, *computepb.SetMachineResourcesInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetMachineType(context.Context, *computepb.SetMachineTypeInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetMetadata(context.Context, *computepb.SetMetadataInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetMinCpuPlatform(context.Context, *computepb.SetMinCpuPlatformInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetScheduling(context.Context, *computepb.SetSchedulingInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetServiceAccount(context.Context, *computepb.SetServiceAccountInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetShieldedInstanceIntegrityPolicy(context.Context, *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetTags(context.Context, *computepb.SetTagsInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SimulateMaintenanceEvent(context.Context, *computepb.SimulateMaintenanceEventInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Start(context.Context, *computepb.StartInstanceRequest, ...gax.CallOption) (*Operation, error)
+	StartWithEncryptionKey(context.Context, *computepb.StartWithEncryptionKeyInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Stop(context.Context, *computepb.StopInstanceRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
-	Update(context.Context, *computepb.UpdateInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	UpdateAccessConfig(context.Context, *computepb.UpdateAccessConfigInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	UpdateDisplayDevice(context.Context, *computepb.UpdateDisplayDeviceInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	UpdateNetworkInterface(context.Context, *computepb.UpdateNetworkInterfaceInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	UpdateShieldedInstanceConfig(context.Context, *computepb.UpdateShieldedInstanceConfigInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Update(context.Context, *computepb.UpdateInstanceRequest, ...gax.CallOption) (*Operation, error)
+	UpdateAccessConfig(context.Context, *computepb.UpdateAccessConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
+	UpdateDisplayDevice(context.Context, *computepb.UpdateDisplayDeviceInstanceRequest, ...gax.CallOption) (*Operation, error)
+	UpdateNetworkInterface(context.Context, *computepb.UpdateNetworkInterfaceInstanceRequest, ...gax.CallOption) (*Operation, error)
+	UpdateShieldedInstanceConfig(context.Context, *computepb.UpdateShieldedInstanceConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InstancesClient is a client for interacting with Google Compute Engine API.
@@ -166,12 +166,12 @@ func (c *InstancesClient) Connection() *grpc.ClientConn {
 }
 
 // AddAccessConfig adds an access config to an instance’s network interface.
-func (c *InstancesClient) AddAccessConfig(ctx context.Context, req *computepb.AddAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) AddAccessConfig(ctx context.Context, req *computepb.AddAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddAccessConfig(ctx, req, opts...)
 }
 
 // AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
-func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
@@ -181,27 +181,27 @@ func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.Agg
 }
 
 // AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
-func (c *InstancesClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AttachDisk(ctx, req, opts...)
 }
 
 // BulkInsert creates multiple instances. Count specifies the number of instances to create.
-func (c *InstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
 // Delete deletes the specified Instance resource. For more information, see Deleting an instance.
-func (c *InstancesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // DeleteAccessConfig deletes an access config from an instance’s network interface.
-func (c *InstancesClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeleteAccessConfig(ctx, req, opts...)
 }
 
 // DetachDisk detaches a disk from an instance.
-func (c *InstancesClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DetachDisk(ctx, req, opts...)
 }
 
@@ -241,7 +241,7 @@ func (c *InstancesClient) GetShieldedInstanceIdentity(ctx context.Context, req *
 }
 
 // Insert creates an instance resource in the specified project using the data included in the request.
-func (c *InstancesClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -256,22 +256,22 @@ func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.List
 }
 
 // RemoveResourcePolicies removes resource policies from an instance.
-func (c *InstancesClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveResourcePolicies(ctx, req, opts...)
 }
 
 // Reset performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
-func (c *InstancesClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Reset(ctx, req, opts...)
 }
 
 // SetDeletionProtection sets deletion protection on the instance.
-func (c *InstancesClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDeletionProtection(ctx, req, opts...)
 }
 
 // SetDiskAutoDelete sets the auto-delete flag for a disk attached to an instance.
-func (c *InstancesClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDiskAutoDelete(ctx, req, opts...)
 }
 
@@ -281,67 +281,67 @@ func (c *InstancesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIa
 }
 
 // SetLabels sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
-func (c *InstancesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
 // SetMachineResources changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
-func (c *InstancesClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMachineResources(ctx, req, opts...)
 }
 
 // SetMachineType changes the machine type for a stopped instance to the machine type specified in the request.
-func (c *InstancesClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMachineType(ctx, req, opts...)
 }
 
 // SetMetadata sets metadata for the specified instance to the data included in the request.
-func (c *InstancesClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMetadata(ctx, req, opts...)
 }
 
 // SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
-func (c *InstancesClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetMinCpuPlatform(ctx, req, opts...)
 }
 
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states.
-func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetScheduling(ctx, req, opts...)
 }
 
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
-func (c *InstancesClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetServiceAccount(ctx, req, opts...)
 }
 
 // SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InstancesClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetShieldedInstanceIntegrityPolicy(ctx, req, opts...)
 }
 
 // SetTags sets network tags for the specified instance to the data included in the request.
-func (c *InstancesClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetTags(ctx, req, opts...)
 }
 
 // SimulateMaintenanceEvent simulates a maintenance event on the instance.
-func (c *InstancesClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SimulateMaintenanceEvent(ctx, req, opts...)
 }
 
 // Start starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
-func (c *InstancesClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Start(ctx, req, opts...)
 }
 
 // StartWithEncryptionKey starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
-func (c *InstancesClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.StartWithEncryptionKey(ctx, req, opts...)
 }
 
 // Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
-func (c *InstancesClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Stop(ctx, req, opts...)
 }
 
@@ -351,27 +351,27 @@ func (c *InstancesClient) TestIamPermissions(ctx context.Context, req *computepb
 }
 
 // Update updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See  Updating a running instance for a list of updatable instance properties.
-func (c *InstancesClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
 
 // UpdateAccessConfig updates the specified access config from an instance’s network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InstancesClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateAccessConfig(ctx, req, opts...)
 }
 
 // UpdateDisplayDevice updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InstancesClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateDisplayDevice(ctx, req, opts...)
 }
 
 // UpdateNetworkInterface updates an instance’s network interface. This method can only update an interface’s alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
-func (c *InstancesClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateNetworkInterface(ctx, req, opts...)
 }
 
 // UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *InstancesClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstancesClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdateShieldedInstanceConfig(ctx, req, opts...)
 }
 
@@ -440,7 +440,7 @@ func (c *instancesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddAccessConfig adds an access config to an instance’s network interface.
-func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computepb.AddAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computepb.AddAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAccessConfigResource()
 	jsonReq, err := m.Marshal(body)
@@ -490,11 +490,15 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
-func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesAddResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -541,7 +545,11 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves aggregated list of all of the instances in your project across all regions and zones.
@@ -604,7 +612,7 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 }
 
 // AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
-func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAttachedDiskResource()
 	jsonReq, err := m.Marshal(body)
@@ -654,11 +662,15 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // BulkInsert creates multiple instances. Count specifies the number of instances to create.
-func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
 	jsonReq, err := m.Marshal(body)
@@ -705,11 +717,15 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified Instance resource. For more information, see Deleting an instance.
-func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -749,11 +765,15 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DeleteAccessConfig deletes an access config from an instance’s network interface.
-func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -799,11 +819,15 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DetachDisk detaches a disk from an instance.
-func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/detachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -846,7 +870,11 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Instance resource. Gets a list of available instances by making a list() request.
@@ -1143,7 +1171,7 @@ func (c *instancesRESTClient) GetShieldedInstanceIdentity(ctx context.Context, r
 }
 
 // Insert creates an instance resource in the specified project using the data included in the request.
-func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
 	jsonReq, err := m.Marshal(body)
@@ -1193,7 +1221,11 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of instances contained within the specified zone.
@@ -1309,7 +1341,7 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 }
 
 // RemoveResourcePolicies removes resource policies from an instance.
-func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesRemoveResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1356,11 +1388,15 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Reset performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
-func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reset", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1400,11 +1436,15 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetDeletionProtection sets deletion protection on the instance.
-func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDeletionProtection", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -1447,11 +1487,15 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetDiskAutoDelete sets the auto-delete flag for a disk attached to an instance.
-func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDiskAutoDelete", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1497,7 +1541,11 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -1545,7 +1593,7 @@ func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 }
 
 // SetLabels sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
-func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1592,11 +1640,15 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetMachineResources changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
-func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineResourcesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1643,11 +1695,15 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetMachineType changes the machine type for a stopped instance to the machine type specified in the request.
-func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineTypeRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1694,11 +1750,15 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetMetadata sets metadata for the specified instance to the data included in the request.
-func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
 	jsonReq, err := m.Marshal(body)
@@ -1745,11 +1805,15 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
-func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMinCpuPlatformRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1796,11 +1860,15 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states.
-func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSchedulingResource()
 	jsonReq, err := m.Marshal(body)
@@ -1847,11 +1915,15 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
-func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetServiceAccountRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -1898,11 +1970,15 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceIntegrityPolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -1949,11 +2025,15 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetTags sets network tags for the specified instance to the data included in the request.
-func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTagsResource()
 	jsonReq, err := m.Marshal(body)
@@ -2000,11 +2080,15 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SimulateMaintenanceEvent simulates a maintenance event on the instance.
-func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -2037,11 +2121,15 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Start starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
-func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/start", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -2081,11 +2169,15 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // StartWithEncryptionKey starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
-func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesStartWithEncryptionKeyRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -2132,11 +2224,15 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
-func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -2176,7 +2272,11 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -2224,7 +2324,7 @@ func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 }
 
 // Update updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See  Updating a running instance for a list of updatable instance properties.
-func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
 	jsonReq, err := m.Marshal(body)
@@ -2277,11 +2377,15 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // UpdateAccessConfig updates the specified access config from an instance’s network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAccessConfigResource()
 	jsonReq, err := m.Marshal(body)
@@ -2331,11 +2435,15 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // UpdateDisplayDevice updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisplayDeviceResource()
 	jsonReq, err := m.Marshal(body)
@@ -2382,11 +2490,15 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // UpdateNetworkInterface updates an instance’s network interface. This method can only update an interface’s alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
-func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkInterfaceResource()
 	jsonReq, err := m.Marshal(body)
@@ -2436,11 +2548,15 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
-func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceConfigResource()
 	jsonReq, err := m.Marshal(body)
@@ -2487,5 +2603,9 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

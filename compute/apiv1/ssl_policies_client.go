@@ -51,12 +51,12 @@ type internalSslPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteSslPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSslPolicyRequest, ...gax.CallOption) (*computepb.SslPolicy, error)
-	Insert(context.Context, *computepb.InsertSslPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSslPoliciesRequest, ...gax.CallOption) (*computepb.SslPoliciesList, error)
 	ListAvailableFeatures(context.Context, *computepb.ListAvailableFeaturesSslPoliciesRequest, ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error)
-	Patch(context.Context, *computepb.PatchSslPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchSslPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // SslPoliciesClient is a client for interacting with Google Compute Engine API.
@@ -94,7 +94,7 @@ func (c *SslPoliciesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
-func (c *SslPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SslPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -104,7 +104,7 @@ func (c *SslPoliciesClient) Get(ctx context.Context, req *computepb.GetSslPolicy
 }
 
 // Insert returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
-func (c *SslPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SslPoliciesClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -119,7 +119,7 @@ func (c *SslPoliciesClient) ListAvailableFeatures(ctx context.Context, req *comp
 }
 
 // Patch patches the specified SSL policy with the data included in the request.
-func (c *SslPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SslPoliciesClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -188,7 +188,7 @@ func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
-func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
@@ -228,7 +228,11 @@ func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get lists all of the ordered rules present in a single specified policy.
@@ -269,7 +273,7 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 }
 
 // Insert returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
-func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -316,7 +320,11 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists all the SSL policies that have been configured for the specified project.
@@ -432,7 +440,7 @@ func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *
 }
 
 // Patch patches the specified SSL policy with the data included in the request.
-func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -479,5 +487,9 @@ func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

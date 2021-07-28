@@ -58,18 +58,18 @@ type internalDisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesDiskRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListDisksRequest, ...gax.CallOption) (*computepb.DiskAggregatedList, error)
-	CreateSnapshot(context.Context, *computepb.CreateSnapshotDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
+	CreateSnapshot(context.Context, *computepb.CreateSnapshotDiskRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteDiskRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetDiskRequest, ...gax.CallOption) (*computepb.Disk, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyDiskRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertDiskRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListDisksRequest, ...gax.CallOption) (*computepb.DiskList, error)
-	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Resize(context.Context, *computepb.ResizeDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
+	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesDiskRequest, ...gax.CallOption) (*Operation, error)
+	Resize(context.Context, *computepb.ResizeDiskRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyDiskRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetLabels(context.Context, *computepb.SetLabelsDiskRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetLabels(context.Context, *computepb.SetLabelsDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -108,7 +108,7 @@ func (c *DisksClient) Connection() *grpc.ClientConn {
 }
 
 // AddResourcePolicies adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
-func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
@@ -118,12 +118,12 @@ func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.Aggrega
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk.
-func (c *DisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
 // Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
-func (c *DisksClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -138,7 +138,7 @@ func (c *DisksClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPol
 }
 
 // Insert creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
-func (c *DisksClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -148,12 +148,12 @@ func (c *DisksClient) List(ctx context.Context, req *computepb.ListDisksRequest,
 }
 
 // RemoveResourcePolicies removes resource policies from a disk.
-func (c *DisksClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveResourcePolicies(ctx, req, opts...)
 }
 
 // Resize resizes the specified persistent disk. You can only increase the size of the disk.
-func (c *DisksClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Resize(ctx, req, opts...)
 }
 
@@ -163,7 +163,7 @@ func (c *DisksClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPol
 }
 
 // SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
-func (c *DisksClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *DisksClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
@@ -237,7 +237,7 @@ func (c *disksRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddResourcePolicies adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
-func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksAddResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -284,7 +284,11 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves an aggregated list of persistent disks.
@@ -347,7 +351,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk.
-func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
 	jsonReq, err := m.Marshal(body)
@@ -397,11 +401,15 @@ func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.Cre
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
-func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
 
@@ -441,7 +449,11 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
@@ -526,7 +538,7 @@ func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIa
 }
 
 // Insert creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
-func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
 	jsonReq, err := m.Marshal(body)
@@ -576,7 +588,11 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of persistent disks contained within the specified zone.
@@ -636,7 +652,7 @@ func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequ
 }
 
 // RemoveResourcePolicies removes resource policies from a disk.
-func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksRemoveResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -683,11 +699,15 @@ func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Resize resizes the specified persistent disk. You can only increase the size of the disk.
-func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -734,7 +754,11 @@ func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskR
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -782,7 +806,7 @@ func (c *disksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIa
 }
 
 // SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
-func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -829,7 +853,11 @@ func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabel
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

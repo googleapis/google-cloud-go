@@ -53,12 +53,12 @@ type internalTargetHttpProxiesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListTargetHttpProxiesRequest, ...gax.CallOption) (*computepb.TargetHttpProxyAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteTargetHttpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetHttpProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetHttpProxyRequest, ...gax.CallOption) (*computepb.TargetHttpProxy, error)
-	Insert(context.Context, *computepb.InsertTargetHttpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetHttpProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetHttpProxiesRequest, ...gax.CallOption) (*computepb.TargetHttpProxyList, error)
-	Patch(context.Context, *computepb.PatchTargetHttpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetUrlMap(context.Context, *computepb.SetUrlMapTargetHttpProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchTargetHttpProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetUrlMap(context.Context, *computepb.SetUrlMapTargetHttpProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetHttpProxiesClient is a client for interacting with Google Compute Engine API.
@@ -101,7 +101,7 @@ func (c *TargetHttpProxiesClient) AggregatedList(ctx context.Context, req *compu
 }
 
 // Delete deletes the specified TargetHttpProxy resource.
-func (c *TargetHttpProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -111,7 +111,7 @@ func (c *TargetHttpProxiesClient) Get(ctx context.Context, req *computepb.GetTar
 }
 
 // Insert creates a TargetHttpProxy resource in the specified project using the data included in the request.
-func (c *TargetHttpProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -121,12 +121,12 @@ func (c *TargetHttpProxiesClient) List(ctx context.Context, req *computepb.ListT
 }
 
 // Patch patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==)
-func (c *TargetHttpProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // SetUrlMap changes the URL map for TargetHttpProxy.
-func (c *TargetHttpProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUrlMap(ctx, req, opts...)
 }
 
@@ -254,7 +254,7 @@ func (c *targetHttpProxiesRESTClient) AggregatedList(ctx context.Context, req *c
 }
 
 // Delete deletes the specified TargetHttpProxy resource.
-func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
@@ -294,7 +294,11 @@ func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.
@@ -335,7 +339,7 @@ func (c *targetHttpProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a TargetHttpProxy resource in the specified project using the data included in the request.
-func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -382,7 +386,11 @@ func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of TargetHttpProxy resources available to the specified project.
@@ -442,7 +450,7 @@ func (c *targetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.L
 }
 
 // Patch patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==)
-func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -489,11 +497,15 @@ func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetUrlMap changes the URL map for TargetHttpProxy.
-func (c *targetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -540,5 +552,9 @@ func (c *targetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

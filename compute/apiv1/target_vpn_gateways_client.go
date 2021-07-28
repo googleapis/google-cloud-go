@@ -51,9 +51,9 @@ type internalTargetVpnGatewaysClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListTargetVpnGatewaysRequest, ...gax.CallOption) (*computepb.TargetVpnGatewayAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteTargetVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetVpnGatewayRequest, ...gax.CallOption) (*computepb.TargetVpnGateway, error)
-	Insert(context.Context, *computepb.InsertTargetVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetVpnGatewaysRequest, ...gax.CallOption) (*computepb.TargetVpnGatewayList, error)
 }
 
@@ -97,7 +97,7 @@ func (c *TargetVpnGatewaysClient) AggregatedList(ctx context.Context, req *compu
 }
 
 // Delete deletes the specified target VPN gateway.
-func (c *TargetVpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetVpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -107,7 +107,7 @@ func (c *TargetVpnGatewaysClient) Get(ctx context.Context, req *computepb.GetTar
 }
 
 // Insert creates a target VPN gateway in the specified project and region using the data included in the request.
-func (c *TargetVpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetVpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -240,7 +240,7 @@ func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *c
 }
 
 // Delete deletes the specified target VPN gateway.
-func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetTargetVpnGateway())
 
@@ -280,7 +280,11 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
@@ -321,7 +325,7 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a target VPN gateway in the specified project and region using the data included in the request.
-func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
@@ -368,7 +372,11 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of target VPN gateways available to the specified project and region.

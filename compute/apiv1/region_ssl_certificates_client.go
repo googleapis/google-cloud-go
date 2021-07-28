@@ -49,9 +49,9 @@ type internalRegionSslCertificatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteRegionSslCertificateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteRegionSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificate, error)
-	Insert(context.Context, *computepb.InsertRegionSslCertificateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionSslCertificatesRequest, ...gax.CallOption) (*computepb.SslCertificateList, error)
 }
 
@@ -90,7 +90,7 @@ func (c *RegionSslCertificatesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified SslCertificate resource in the region.
-func (c *RegionSslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionSslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -100,7 +100,7 @@ func (c *RegionSslCertificatesClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a SslCertificate resource in the specified project and region using the data included in the request
-func (c *RegionSslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionSslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -174,7 +174,7 @@ func (c *regionSslCertificatesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified SslCertificate resource in the region.
-func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
@@ -214,7 +214,11 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
@@ -255,7 +259,7 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 }
 
 // Insert creates a SslCertificate resource in the specified project and region using the data included in the request
-func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
 	jsonReq, err := m.Marshal(body)
@@ -302,7 +306,11 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of SslCertificate resources available to the specified project in the specified region.

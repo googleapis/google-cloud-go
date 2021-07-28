@@ -53,11 +53,11 @@ type internalPacketMirroringsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListPacketMirroringsRequest, ...gax.CallOption) (*computepb.PacketMirroringAggregatedList, error)
-	Delete(context.Context, *computepb.DeletePacketMirroringRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeletePacketMirroringRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetPacketMirroringRequest, ...gax.CallOption) (*computepb.PacketMirroring, error)
-	Insert(context.Context, *computepb.InsertPacketMirroringRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertPacketMirroringRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListPacketMirroringsRequest, ...gax.CallOption) (*computepb.PacketMirroringList, error)
-	Patch(context.Context, *computepb.PatchPacketMirroringRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchPacketMirroringRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsPacketMirroringRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -101,7 +101,7 @@ func (c *PacketMirroringsClient) AggregatedList(ctx context.Context, req *comput
 }
 
 // Delete deletes the specified PacketMirroring resource.
-func (c *PacketMirroringsClient) Delete(ctx context.Context, req *computepb.DeletePacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PacketMirroringsClient) Delete(ctx context.Context, req *computepb.DeletePacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -111,7 +111,7 @@ func (c *PacketMirroringsClient) Get(ctx context.Context, req *computepb.GetPack
 }
 
 // Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
-func (c *PacketMirroringsClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PacketMirroringsClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -121,7 +121,7 @@ func (c *PacketMirroringsClient) List(ctx context.Context, req *computepb.ListPa
 }
 
 // Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *PacketMirroringsClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PacketMirroringsClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -254,7 +254,7 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 }
 
 // Delete deletes the specified PacketMirroring resource.
-func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.DeletePacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.DeletePacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
@@ -294,7 +294,11 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified PacketMirroring resource.
@@ -335,7 +339,7 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
-func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
@@ -382,7 +386,11 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of PacketMirroring resources available to the specified project and region.
@@ -442,7 +450,7 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 }
 
 // Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
@@ -489,7 +497,11 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.

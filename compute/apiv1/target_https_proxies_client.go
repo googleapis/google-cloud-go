@@ -56,15 +56,15 @@ type internalTargetHttpsProxiesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListTargetHttpsProxiesRequest, ...gax.CallOption) (*computepb.TargetHttpsProxyAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.TargetHttpsProxy, error)
-	Insert(context.Context, *computepb.InsertTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListTargetHttpsProxiesRequest, ...gax.CallOption) (*computepb.TargetHttpsProxyList, error)
-	Patch(context.Context, *computepb.PatchTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetQuicOverride(context.Context, *computepb.SetQuicOverrideTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetSslCertificates(context.Context, *computepb.SetSslCertificatesTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetSslPolicy(context.Context, *computepb.SetSslPolicyTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetUrlMap(context.Context, *computepb.SetUrlMapTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetQuicOverride(context.Context, *computepb.SetQuicOverrideTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetSslCertificates(context.Context, *computepb.SetSslCertificatesTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetSslPolicy(context.Context, *computepb.SetSslPolicyTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
+	SetUrlMap(context.Context, *computepb.SetUrlMapTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // TargetHttpsProxiesClient is a client for interacting with Google Compute Engine API.
@@ -107,7 +107,7 @@ func (c *TargetHttpsProxiesClient) AggregatedList(ctx context.Context, req *comp
 }
 
 // Delete deletes the specified TargetHttpsProxy resource.
-func (c *TargetHttpsProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -117,7 +117,7 @@ func (c *TargetHttpsProxiesClient) Get(ctx context.Context, req *computepb.GetTa
 }
 
 // Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
-func (c *TargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -127,27 +127,27 @@ func (c *TargetHttpsProxiesClient) List(ctx context.Context, req *computepb.List
 }
 
 // Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==)
-func (c *TargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // SetQuicOverride sets the QUIC override policy for TargetHttpsProxy.
-func (c *TargetHttpsProxiesClient) SetQuicOverride(ctx context.Context, req *computepb.SetQuicOverrideTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) SetQuicOverride(ctx context.Context, req *computepb.SetQuicOverrideTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetQuicOverride(ctx, req, opts...)
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
-func (c *TargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
 // SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
-func (c *TargetHttpsProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
 }
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
-func (c *TargetHttpsProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *TargetHttpsProxiesClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUrlMap(ctx, req, opts...)
 }
 
@@ -275,7 +275,7 @@ func (c *targetHttpsProxiesRESTClient) AggregatedList(ctx context.Context, req *
 }
 
 // Delete deletes the specified TargetHttpsProxy resource.
-func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpsProxies/%v", req.GetProject(), req.GetTargetHttpsProxy())
 
@@ -315,7 +315,11 @@ func (c *targetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified TargetHttpsProxy resource. Gets a list of available target HTTPS proxies by making a list() request.
@@ -356,7 +360,7 @@ func (c *targetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.G
 }
 
 // Insert creates a TargetHttpsProxy resource in the specified project using the data included in the request.
-func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -403,7 +407,11 @@ func (c *targetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of TargetHttpsProxy resources available to the specified project.
@@ -463,7 +471,7 @@ func (c *targetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.
 }
 
 // Patch patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==)
-func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
 	jsonReq, err := m.Marshal(body)
@@ -510,11 +518,15 @@ func (c *targetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetQuicOverride sets the QUIC override policy for TargetHttpsProxy.
-func (c *targetHttpsProxiesRESTClient) SetQuicOverride(ctx context.Context, req *computepb.SetQuicOverrideTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) SetQuicOverride(ctx context.Context, req *computepb.SetQuicOverrideTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxiesSetQuicOverrideRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -561,11 +573,15 @@ func (c *targetHttpsProxiesRESTClient) SetQuicOverride(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
-func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxiesSetSslCertificatesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -612,11 +628,15 @@ func (c *targetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, r
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetSslPolicy sets the SSL policy for TargetHttpsProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the HTTPS proxy load balancer. They do not affect the connection between the load balancer and the backends.
-func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -663,11 +683,15 @@ func (c *targetHttpsProxiesRESTClient) SetSslPolicy(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
-func (c *targetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *targetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
@@ -714,5 +738,9 @@ func (c *targetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

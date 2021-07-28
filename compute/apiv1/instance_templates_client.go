@@ -52,10 +52,10 @@ type internalInstanceTemplatesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteInstanceTemplateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteInstanceTemplateRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInstanceTemplateRequest, ...gax.CallOption) (*computepb.InstanceTemplate, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyInstanceTemplateRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertInstanceTemplateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInstanceTemplateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstanceTemplatesRequest, ...gax.CallOption) (*computepb.InstanceTemplateList, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyInstanceTemplateRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceTemplateRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -96,7 +96,7 @@ func (c *InstanceTemplatesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
-func (c *InstanceTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceTemplatesClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -111,7 +111,7 @@ func (c *InstanceTemplatesClient) GetIamPolicy(ctx context.Context, req *compute
 }
 
 // Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
-func (c *InstanceTemplatesClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceTemplatesClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -195,7 +195,7 @@ func (c *instanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
-func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
@@ -235,7 +235,11 @@ func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified instance template. Gets a list of available instance templates by making a list() request.
@@ -320,7 +324,7 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 }
 
 // Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
-func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
 	jsonReq, err := m.Marshal(body)
@@ -367,7 +371,11 @@ func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of instance templates that are contained within the specified project.

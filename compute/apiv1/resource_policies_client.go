@@ -54,10 +54,10 @@ type internalResourcePoliciesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListResourcePoliciesRequest, ...gax.CallOption) (*computepb.ResourcePolicyAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteResourcePolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteResourcePolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetResourcePolicyRequest, ...gax.CallOption) (*computepb.ResourcePolicy, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyResourcePolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertResourcePolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertResourcePolicyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListResourcePoliciesRequest, ...gax.CallOption) (*computepb.ResourcePolicyList, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyResourcePolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsResourcePolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
@@ -103,7 +103,7 @@ func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *comput
 }
 
 // Delete deletes the specified resource policy.
-func (c *ResourcePoliciesClient) Delete(ctx context.Context, req *computepb.DeleteResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ResourcePoliciesClient) Delete(ctx context.Context, req *computepb.DeleteResourcePolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -118,7 +118,7 @@ func (c *ResourcePoliciesClient) GetIamPolicy(ctx context.Context, req *computep
 }
 
 // Insert creates a new resource policy.
-func (c *ResourcePoliciesClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ResourcePoliciesClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -261,7 +261,7 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 }
 
 // Delete deletes the specified resource policy.
-func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteResourcePolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
@@ -301,7 +301,11 @@ func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get retrieves all information of the specified resource policy.
@@ -386,7 +390,7 @@ func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 }
 
 // Insert creates a new resource policy.
-func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourcePolicyResource()
 	jsonReq, err := m.Marshal(body)
@@ -433,7 +437,11 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List a list all the resource policies that have been configured for the specified project in specified region.

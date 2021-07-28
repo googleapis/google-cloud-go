@@ -51,9 +51,9 @@ type internalSslCertificatesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListSslCertificatesRequest, ...gax.CallOption) (*computepb.SslCertificateAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteSslCertificateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSslCertificateRequest, ...gax.CallOption) (*computepb.SslCertificate, error)
-	Insert(context.Context, *computepb.InsertSslCertificateRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertSslCertificateRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSslCertificatesRequest, ...gax.CallOption) (*computepb.SslCertificateList, error)
 }
 
@@ -97,7 +97,7 @@ func (c *SslCertificatesClient) AggregatedList(ctx context.Context, req *compute
 }
 
 // Delete deletes the specified SslCertificate resource.
-func (c *SslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SslCertificatesClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -107,7 +107,7 @@ func (c *SslCertificatesClient) Get(ctx context.Context, req *computepb.GetSslCe
 }
 
 // Insert creates a SslCertificate resource in the specified project using the data included in the request.
-func (c *SslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SslCertificatesClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -240,7 +240,7 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 }
 
 // Delete deletes the specified SslCertificate resource.
-func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
@@ -280,7 +280,11 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
@@ -321,7 +325,7 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 }
 
 // Insert creates a SslCertificate resource in the specified project using the data included in the request.
-func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
 	jsonReq, err := m.Marshal(body)
@@ -368,7 +372,11 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of SslCertificate resources available to the specified project.

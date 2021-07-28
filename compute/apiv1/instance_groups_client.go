@@ -54,15 +54,15 @@ type internalInstanceGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddInstances(context.Context, *computepb.AddInstancesInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddInstances(context.Context, *computepb.AddInstancesInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 	AggregatedList(context.Context, *computepb.AggregatedListInstanceGroupsRequest, ...gax.CallOption) (*computepb.InstanceGroupAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetInstanceGroupRequest, ...gax.CallOption) (*computepb.InstanceGroup, error)
-	Insert(context.Context, *computepb.InsertInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstanceGroupsRequest, ...gax.CallOption) (*computepb.InstanceGroupList, error)
 	ListInstances(context.Context, *computepb.ListInstancesInstanceGroupsRequest, ...gax.CallOption) (*computepb.InstanceGroupsListInstances, error)
-	RemoveInstances(context.Context, *computepb.RemoveInstancesInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetNamedPorts(context.Context, *computepb.SetNamedPortsInstanceGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
+	RemoveInstances(context.Context, *computepb.RemoveInstancesInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
+	SetNamedPorts(context.Context, *computepb.SetNamedPortsInstanceGroupRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // InstanceGroupsClient is a client for interacting with Google Compute Engine API.
@@ -100,7 +100,7 @@ func (c *InstanceGroupsClient) Connection() *grpc.ClientConn {
 }
 
 // AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
-func (c *InstanceGroupsClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupsClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddInstances(ctx, req, opts...)
 }
 
@@ -110,7 +110,7 @@ func (c *InstanceGroupsClient) AggregatedList(ctx context.Context, req *computep
 }
 
 // Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information.
-func (c *InstanceGroupsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupsClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -122,7 +122,7 @@ func (c *InstanceGroupsClient) Get(ctx context.Context, req *computepb.GetInstan
 }
 
 // Insert creates an instance group in the specified project using the parameters that are included in the request.
-func (c *InstanceGroupsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupsClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -141,12 +141,12 @@ func (c *InstanceGroupsClient) ListInstances(ctx context.Context, req *computepb
 // RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances.
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
-func (c *InstanceGroupsClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupsClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveInstances(ctx, req, opts...)
 }
 
 // SetNamedPorts sets the named ports for the specified instance group.
-func (c *InstanceGroupsClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *InstanceGroupsClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetNamedPorts(ctx, req, opts...)
 }
 
@@ -215,7 +215,7 @@ func (c *instanceGroupsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
-func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsAddInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -262,7 +262,11 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AggregatedList retrieves the list of instance groups and sorts them by zone.
@@ -325,7 +329,7 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 }
 
 // Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information.
-func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
@@ -365,7 +369,11 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request.
@@ -408,7 +416,7 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 }
 
 // Insert creates an instance group in the specified project using the parameters that are included in the request.
-func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupResource()
 	jsonReq, err := m.Marshal(body)
@@ -455,7 +463,11 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves the list of zonal instance group resources contained within the specified zone.
@@ -582,7 +594,7 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 // RemoveInstances removes one or more instances from the specified instance group, but does not delete those instances.
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
-func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsRemoveInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -629,11 +641,15 @@ func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetNamedPorts sets the named ports for the specified instance group.
-func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -680,5 +696,9 @@ func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

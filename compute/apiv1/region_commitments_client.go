@@ -51,7 +51,7 @@ type internalRegionCommitmentsClient interface {
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListRegionCommitmentsRequest, ...gax.CallOption) (*computepb.CommitmentAggregatedList, error)
 	Get(context.Context, *computepb.GetRegionCommitmentRequest, ...gax.CallOption) (*computepb.Commitment, error)
-	Insert(context.Context, *computepb.InsertRegionCommitmentRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertRegionCommitmentRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionCommitmentsRequest, ...gax.CallOption) (*computepb.CommitmentList, error)
 }
 
@@ -100,7 +100,7 @@ func (c *RegionCommitmentsClient) Get(ctx context.Context, req *computepb.GetReg
 }
 
 // Insert creates a commitment in the specified project using the data included in the request.
-func (c *RegionCommitmentsClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionCommitmentsClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -270,7 +270,7 @@ func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a commitment in the specified project using the data included in the request.
-func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCommitmentResource()
 	jsonReq, err := m.Marshal(body)
@@ -317,7 +317,11 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of commitments contained within the specified region.

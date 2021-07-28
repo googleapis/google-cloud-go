@@ -50,11 +50,11 @@ type internalGlobalPublicDelegatedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*computepb.PublicDelegatedPrefix, error)
-	Insert(context.Context, *computepb.InsertGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListGlobalPublicDelegatedPrefixesRequest, ...gax.CallOption) (*computepb.PublicDelegatedPrefixList, error)
-	Patch(context.Context, *computepb.PatchGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Patch(context.Context, *computepb.PatchGlobalPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // GlobalPublicDelegatedPrefixesClient is a client for interacting with Google Compute Engine API.
@@ -92,7 +92,7 @@ func (c *GlobalPublicDelegatedPrefixesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified global PublicDelegatedPrefix.
-func (c *GlobalPublicDelegatedPrefixesClient) Delete(ctx context.Context, req *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalPublicDelegatedPrefixesClient) Delete(ctx context.Context, req *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -102,7 +102,7 @@ func (c *GlobalPublicDelegatedPrefixesClient) Get(ctx context.Context, req *comp
 }
 
 // Insert creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
-func (c *GlobalPublicDelegatedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalPublicDelegatedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
@@ -112,7 +112,7 @@ func (c *GlobalPublicDelegatedPrefixesClient) List(ctx context.Context, req *com
 }
 
 // Patch patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *GlobalPublicDelegatedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *GlobalPublicDelegatedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -181,7 +181,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn 
 }
 
 // Delete deletes the specified global PublicDelegatedPrefix.
-func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())
 
@@ -221,7 +221,11 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified global PublicDelegatedPrefix resource.
@@ -262,7 +266,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 }
 
 // Insert creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
-func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -309,7 +313,11 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists the global PublicDelegatedPrefixes for a project.
@@ -369,7 +377,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 }
 
 // Patch patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -416,5 +424,9 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
