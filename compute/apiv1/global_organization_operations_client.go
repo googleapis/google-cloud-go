@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -135,8 +134,8 @@ func NewGlobalOrganizationOperationsRESTClient(ctx context.Context, opts ...opti
 
 func defaultGlobalOrganizationOperationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -168,12 +167,6 @@ func (c *globalOrganizationOperationsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified Operations resource.
 func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.DeleteGlobalOrganizationOperationResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
@@ -184,7 +177,7 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -218,12 +211,6 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
@@ -234,7 +221,7 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,12 +255,6 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 
 // List retrieves a list of Operation resources contained within the specified organization.
 func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOrganizationOperationsRequest, opts ...gax.CallOption) (*computepb.OperationList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations")
 
@@ -299,7 +280,7 @@ func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

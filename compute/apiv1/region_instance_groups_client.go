@@ -142,8 +142,8 @@ func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.Clien
 
 func defaultRegionInstanceGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,16 +175,10 @@ func (c *regionInstanceGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified instance group resource.
 func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroup())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -218,12 +212,6 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 
 // List retrieves the list of instance group resources contained within the specified region.
 func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.RegionInstanceGroupList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups", req.GetProject(), req.GetRegion())
 
@@ -246,7 +234,7 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -280,7 +268,7 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 
 // ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
 func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.RegionInstanceGroupsListInstances, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupsListInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -343,7 +331,7 @@ func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req 
 
 // SetNamedPorts sets the named ports for the specified regional instance group.
 func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

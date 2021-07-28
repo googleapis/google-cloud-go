@@ -177,8 +177,8 @@ func NewReservationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 
 func defaultReservationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -210,12 +210,6 @@ func (c *reservationsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of reservations.
 func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListReservationsRequest, opts ...gax.CallOption) (*computepb.ReservationAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/reservations", req.GetProject())
 
@@ -241,7 +235,7 @@ func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -275,12 +269,6 @@ func (c *reservationsRESTClient) AggregatedList(ctx context.Context, req *comput
 
 // Delete deletes the specified reservation.
 func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
@@ -291,7 +279,7 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -325,16 +313,10 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 
 // Get retrieves information about the specified reservation.
 func (c *reservationsRESTClient) Get(ctx context.Context, req *computepb.GetReservationRequest, opts ...gax.CallOption) (*computepb.Reservation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -368,12 +350,6 @@ func (c *reservationsRESTClient) Get(ctx context.Context, req *computepb.GetRese
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -384,7 +360,7 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -418,7 +394,7 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 
 // Insert creates a new reservation. For more information, read Reserving zonal resources.
 func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -469,12 +445,6 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 
 // List a list of all the reservations that have been configured for the specified project in specified zone.
 func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListReservationsRequest, opts ...gax.CallOption) (*computepb.ReservationList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations", req.GetProject(), req.GetZone())
 
@@ -497,7 +467,7 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -531,7 +501,7 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationsResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -582,7 +552,7 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -626,7 +596,7 @@ func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *reservationsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsReservationRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

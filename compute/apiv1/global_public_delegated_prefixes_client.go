@@ -149,8 +149,8 @@ func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...opt
 
 func defaultGlobalPublicDelegatedPrefixesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn 
 
 // Delete deletes the specified global PublicDelegatedPrefix.
 func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())
 
@@ -198,7 +192,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +226,10 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Delete(ctx context.Context, re
 
 // Get returns the specified global PublicDelegatedPrefix resource.
 func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.PublicDelegatedPrefix, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicDelegatedPrefixes/%v", req.GetProject(), req.GetPublicDelegatedPrefix())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +263,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *
 
 // Insert creates a global PublicDelegatedPrefix in the specified project using the parameters that are included in the request.
 func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -326,12 +314,6 @@ func (c *globalPublicDelegatedPrefixesRESTClient) Insert(ctx context.Context, re
 
 // List lists the global PublicDelegatedPrefixes for a project.
 func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListGlobalPublicDelegatedPrefixesRequest, opts ...gax.CallOption) (*computepb.PublicDelegatedPrefixList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicDelegatedPrefixes", req.GetProject())
 
@@ -354,7 +336,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -388,7 +370,7 @@ func (c *globalPublicDelegatedPrefixesRESTClient) List(ctx context.Context, req 
 
 // Patch patches the specified global PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *globalPublicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

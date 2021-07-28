@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"encoding/base64"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -417,6 +418,9 @@ func TestColumnTypeErr(t *testing.T) {
 			etc = f.Type.ArrayElementType.Code
 		}
 		wantErr := errDecodeColumn(i, errTypeMismatch(tc, etc, badDst))
+		if strings.Contains(f.Name, "STRUCT_ARRAY") {
+			wantErr = errDecodeColumn(i, fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(tc, etc, badDst)))
+		}
 		if gotErr := row.Column(i, badDst); !testEqual(gotErr, wantErr) {
 			t.Errorf("Column(%v): decoding into destination with wrong type %T returns error %v, want %v",
 				i, badDst, gotErr, wantErr)
@@ -1668,6 +1672,28 @@ func TestToStructEmbedded(t *testing.T) {
 	}
 	want := S2{S1: S1{F1: "v1"}, F2: "v2"}
 	if !testEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+}
+
+func TestRowToString(t *testing.T) {
+	r := Row{
+		[]*sppb.StructType_Field{
+			{Name: "F1", Type: stringType()},
+			{Name: "F2", Type: stringType()},
+		},
+		[]*proto3.Value{
+			stringProto("v1"),
+			stringProto("v2"),
+		},
+	}
+	got := r.String()
+	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
+	// In protobuf-go, the encoder will add an additional space based on a
+	// deterministically random boolean value.
+	wantWithTwoSpaces := `{fields: [name:"F1"  type:{code:STRING} name:"F2"  type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
+
+	if !testEqual(r.String(), want) && !testEqual(r.String(), wantWithTwoSpaces) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 }

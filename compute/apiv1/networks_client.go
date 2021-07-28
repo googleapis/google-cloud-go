@@ -191,8 +191,8 @@ func NewNetworksRESTClient(ctx context.Context, opts ...option.ClientOption) (*N
 
 func defaultNetworksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -224,7 +224,7 @@ func (c *networksRESTClient) Connection() *grpc.ClientConn {
 
 // AddPeering adds a peering to the specified network.
 func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddPeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksAddPeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -275,12 +275,6 @@ func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddP
 
 // Delete deletes the specified network.
 func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
@@ -291,7 +285,7 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -325,16 +319,10 @@ func (c *networksRESTClient) Delete(ctx context.Context, req *computepb.DeleteNe
 
 // Get returns the specified network. Gets a list of available networks by making a list() request.
 func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkRequest, opts ...gax.CallOption) (*computepb.Network, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v", req.GetProject(), req.GetNetwork())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -368,16 +356,10 @@ func (c *networksRESTClient) Get(ctx context.Context, req *computepb.GetNetworkR
 
 // GetEffectiveFirewalls returns the effective firewalls on a given network.
 func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *computepb.GetEffectiveFirewallsNetworkRequest, opts ...gax.CallOption) (*computepb.NetworksGetEffectiveFirewallsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/getEffectiveFirewalls", req.GetProject(), req.GetNetwork())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -411,7 +393,7 @@ func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *com
 
 // Insert creates a network in the specified project using the data included in the request.
 func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -462,12 +444,6 @@ func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNe
 
 // List retrieves the list of networks available to the specified project.
 func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetworksRequest, opts ...gax.CallOption) (*computepb.NetworkList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
@@ -490,7 +466,7 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -524,12 +500,6 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 
 // ListPeeringRoutes lists the peering routes exchanged over peering connection.
 func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *computepb.ListPeeringRoutesNetworksRequest, opts ...gax.CallOption) (*computepb.ExchangedPeeringRoutesList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/listPeeringRoutes", req.GetProject(), req.GetNetwork())
 
@@ -561,7 +531,7 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -595,7 +565,7 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 
 // Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -646,7 +616,7 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 
 // RemovePeering removes a peering from the specified network.
 func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.RemovePeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksRemovePeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -697,12 +667,6 @@ func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.R
 
 // SwitchToCustomMode switches the network mode from auto subnet mode to custom subnet mode.
 func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *computepb.SwitchToCustomModeNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/switchToCustomMode", req.GetProject(), req.GetNetwork())
 
@@ -713,7 +677,7 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -747,7 +711,7 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 
 // UpdatePeering updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes
 func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksUpdatePeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

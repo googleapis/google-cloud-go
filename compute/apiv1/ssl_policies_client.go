@@ -156,8 +156,8 @@ func NewSslPoliciesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultSslPoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *sslPoliciesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified SSL policy. The SSL policy resource can be deleted only if it is not in use by any TargetHttpsProxy or TargetSslProxy resources.
 func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
@@ -205,7 +199,7 @@ func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *sslPoliciesRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // Get lists all of the ordered rules present in a single specified policy.
 func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPolicyRequest, opts ...gax.CallOption) (*computepb.SslPolicy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslPolicies/%v", req.GetProject(), req.GetSslPolicy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +270,7 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 
 // Insert returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
 func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +321,6 @@ func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 // List lists all the SSL policies that have been configured for the specified project.
 func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslPolicies", req.GetProject())
 
@@ -361,7 +343,7 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -395,12 +377,6 @@ func (c *sslPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSsl
 
 // ListAvailableFeatures lists all features that can be specified in the SSL policy when using custom profile.
 func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *computepb.ListAvailableFeaturesSslPoliciesRequest, opts ...gax.CallOption) (*computepb.SslPoliciesListAvailableFeaturesResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslPolicies/listAvailableFeatures", req.GetProject())
 
@@ -423,7 +399,7 @@ func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -457,7 +433,7 @@ func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *
 
 // Patch patches the specified SSL policy with the data included in the request.
 func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

@@ -142,8 +142,8 @@ func NewRegionSslCertificatesRESTClient(ctx context.Context, opts ...option.Clie
 
 func defaultRegionSslCertificatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,12 +175,6 @@ func (c *regionSslCertificatesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified SslCertificate resource in the region.
 func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
@@ -191,7 +185,7 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -225,16 +219,10 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 
 // Get returns the specified SslCertificate resource in the specified region. Get a list of available SSL certificates by making a list() request.
 func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates/%v", req.GetProject(), req.GetRegion(), req.GetSslCertificate())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +256,7 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 
 // Insert creates a SslCertificate resource in the specified project and region using the data included in the request
 func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -319,12 +307,6 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 
 // List retrieves the list of SslCertificate resources available to the specified project in the specified region.
 func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListRegionSslCertificatesRequest, opts ...gax.CallOption) (*computepb.SslCertificateList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/sslCertificates", req.GetProject(), req.GetRegion())
 
@@ -347,7 +329,7 @@ func (c *regionSslCertificatesRESTClient) List(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

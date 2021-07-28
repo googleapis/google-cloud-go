@@ -142,8 +142,8 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,12 +175,6 @@ func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of commitments.
 func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) (*computepb.CommitmentAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/commitments", req.GetProject())
 
@@ -206,7 +200,7 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -240,16 +234,10 @@ func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *c
 
 // Get returns the specified commitment resource. Gets a list of available commitments by making a list() request.
 func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.GetRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Commitment, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments/%v", req.GetProject(), req.GetRegion(), req.GetCommitment())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -283,7 +271,7 @@ func (c *regionCommitmentsRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a commitment in the specified project using the data included in the request.
 func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionCommitmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCommitmentResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -334,12 +322,6 @@ func (c *regionCommitmentsRESTClient) Insert(ctx context.Context, req *computepb
 
 // List retrieves a list of commitments contained within the specified region.
 func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.ListRegionCommitmentsRequest, opts ...gax.CallOption) (*computepb.CommitmentList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/commitments", req.GetProject(), req.GetRegion())
 
@@ -362,7 +344,7 @@ func (c *regionCommitmentsRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

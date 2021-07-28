@@ -142,8 +142,8 @@ func NewRegionNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...optio
 
 func defaultRegionNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,12 +175,6 @@ func (c *regionNetworkEndpointGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
 func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEndpointGroup())
 
@@ -191,7 +185,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -225,16 +219,10 @@ func (c *regionNetworkEndpointGroupsRESTClient) Delete(ctx context.Context, req 
 
 // Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
 func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups/%v", req.GetProject(), req.GetRegion(), req.GetNetworkEndpointGroup())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +256,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) Get(ctx context.Context, req *co
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
 func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -319,12 +307,6 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 
 // List retrieves the list of regional network endpoint groups available to the specified project in the given region.
 func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups", req.GetProject(), req.GetRegion())
 
@@ -347,7 +329,7 @@ func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -142,8 +142,8 @@ func NewRegionNotificationEndpointsRESTClient(ctx context.Context, opts ...optio
 
 func defaultRegionNotificationEndpointsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,12 +175,6 @@ func (c *regionNotificationEndpointsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified NotificationEndpoint in the given region
 func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
@@ -191,7 +185,7 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -225,16 +219,10 @@ func (c *regionNotificationEndpointsRESTClient) Delete(ctx context.Context, req 
 
 // Get returns the specified NotificationEndpoint resource in the given region.
 func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *computepb.GetRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.NotificationEndpoint, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints/%v", req.GetProject(), req.GetRegion(), req.GetNotificationEndpoint())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +256,7 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 
 // Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
 func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNotificationEndpointResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -319,12 +307,6 @@ func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req 
 
 // List lists the NotificationEndpoints for a project in the given region.
 func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *computepb.ListRegionNotificationEndpointsRequest, opts ...gax.CallOption) (*computepb.NotificationEndpointList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/notificationEndpoints", req.GetProject(), req.GetRegion())
 
@@ -347,7 +329,7 @@ func (c *regionNotificationEndpointsRESTClient) List(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

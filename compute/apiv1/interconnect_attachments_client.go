@@ -156,8 +156,8 @@ func NewInterconnectAttachmentsRESTClient(ctx context.Context, opts ...option.Cl
 
 func defaultInterconnectAttachmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *interconnectAttachmentsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of interconnect attachments.
 func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/interconnectAttachments", req.GetProject())
 
@@ -220,7 +214,7 @@ func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -254,12 +248,6 @@ func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, 
 
 // Delete deletes the specified interconnect attachment.
 func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/interconnectAttachments/%v", req.GetProject(), req.GetRegion(), req.GetInterconnectAttachment())
 
@@ -270,7 +258,7 @@ func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -304,16 +292,10 @@ func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *com
 
 // Get returns the specified interconnect attachment.
 func (c *interconnectAttachmentsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachment, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/interconnectAttachments/%v", req.GetProject(), req.GetRegion(), req.GetInterconnectAttachment())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -347,7 +329,7 @@ func (c *interconnectAttachmentsRESTClient) Get(ctx context.Context, req *comput
 
 // Insert creates an InterconnectAttachment in the specified project using the data included in the request.
 func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -401,12 +383,6 @@ func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *com
 
 // List retrieves the list of interconnect attachments contained within the specified region.
 func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectAttachmentsRequest, opts ...gax.CallOption) (*computepb.InterconnectAttachmentList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/interconnectAttachments", req.GetProject(), req.GetRegion())
 
@@ -429,7 +405,7 @@ func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -463,7 +439,7 @@ func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *compu
 
 // Patch updates the specified interconnect attachment with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectAttachmentRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectAttachmentResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

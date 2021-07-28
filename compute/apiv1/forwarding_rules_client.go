@@ -170,8 +170,8 @@ func NewForwardingRulesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultForwardingRulesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -203,12 +203,6 @@ func (c *forwardingRulesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of forwarding rules.
 func (c *forwardingRulesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListForwardingRulesRequest, opts ...gax.CallOption) (*computepb.ForwardingRuleAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/forwardingRules", req.GetProject())
 
@@ -234,7 +228,7 @@ func (c *forwardingRulesRESTClient) AggregatedList(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,12 +262,6 @@ func (c *forwardingRulesRESTClient) AggregatedList(ctx context.Context, req *com
 
 // Delete deletes the specified ForwardingRule resource.
 func (c *forwardingRulesRESTClient) Delete(ctx context.Context, req *computepb.DeleteForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/forwardingRules/%v", req.GetProject(), req.GetRegion(), req.GetForwardingRule())
 
@@ -284,7 +272,7 @@ func (c *forwardingRulesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -318,16 +306,10 @@ func (c *forwardingRulesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 // Get returns the specified ForwardingRule resource.
 func (c *forwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/forwardingRules/%v", req.GetProject(), req.GetRegion(), req.GetForwardingRule())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -361,7 +343,7 @@ func (c *forwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetF
 
 // Insert creates a ForwardingRule resource in the specified project and region using the data included in the request.
 func (c *forwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.InsertForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -412,12 +394,6 @@ func (c *forwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 // List retrieves a list of ForwardingRule resources available to the specified project and region.
 func (c *forwardingRulesRESTClient) List(ctx context.Context, req *computepb.ListForwardingRulesRequest, opts ...gax.CallOption) (*computepb.ForwardingRuleList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/forwardingRules", req.GetProject(), req.GetRegion())
 
@@ -440,7 +416,7 @@ func (c *forwardingRulesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -474,7 +450,7 @@ func (c *forwardingRulesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 // Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 func (c *forwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.PatchForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -525,7 +501,7 @@ func (c *forwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 
 // SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 func (c *forwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -576,7 +552,7 @@ func (c *forwardingRulesRESTClient) SetLabels(ctx context.Context, req *computep
 
 // SetTarget changes target URL for forwarding rule. The new target should be of the same type as the old target.
 func (c *forwardingRulesRESTClient) SetTarget(ctx context.Context, req *computepb.SetTargetForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

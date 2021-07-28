@@ -205,8 +205,8 @@ func NewDisksRESTClient(ctx context.Context, opts ...option.ClientOption) (*Disk
 
 func defaultDisksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -238,7 +238,7 @@ func (c *disksRESTClient) Connection() *grpc.ClientConn {
 
 // AddResourcePolicies adds existing resource policies to a disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
 func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksAddResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -289,12 +289,6 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 
 // AggregatedList retrieves an aggregated list of persistent disks.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) (*computepb.DiskAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/disks", req.GetProject())
 
@@ -320,7 +314,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +348,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 
 // CreateSnapshot creates a snapshot of a specified persistent disk.
 func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -408,12 +402,6 @@ func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.Cre
 
 // Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
 
@@ -424,7 +412,7 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -458,16 +446,10 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 
 // Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
 func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -501,12 +483,6 @@ func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -517,7 +493,7 @@ func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIa
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -551,7 +527,7 @@ func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIa
 
 // Insert creates a persistent disk in the specified project using the data in the request. You can create a disk from a source (sourceImage, sourceSnapshot, or sourceDisk) or create an empty 500 GB data disk by omitting all properties. You can also create a disk that is larger than the default size by specifying the sizeGb property.
 func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -605,12 +581,6 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 
 // List retrieves a list of persistent disks contained within the specified zone.
 func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) (*computepb.DiskList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks", req.GetProject(), req.GetZone())
 
@@ -633,7 +603,7 @@ func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequ
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -667,7 +637,7 @@ func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequ
 
 // RemoveResourcePolicies removes resource policies from a disk.
 func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksRemoveResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -718,7 +688,7 @@ func (c *disksRESTClient) RemoveResourcePolicies(ctx context.Context, req *compu
 
 // Resize resizes the specified persistent disk. You can only increase the size of the disk.
 func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisksResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -769,7 +739,7 @@ func (c *disksRESTClient) Resize(ctx context.Context, req *computepb.ResizeDiskR
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *disksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -813,7 +783,7 @@ func (c *disksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIa
 
 // SetLabels sets the labels on a disk. To learn more about labels, read the Labeling Resources documentation.
 func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -864,7 +834,7 @@ func (c *disksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabel
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *disksRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsDiskRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

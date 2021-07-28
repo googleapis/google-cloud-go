@@ -149,8 +149,8 @@ func NewVpnTunnelsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 
 func defaultVpnTunnelsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *vpnTunnelsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of VPN tunnels.
 func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) (*computepb.VpnTunnelAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnTunnels", req.GetProject())
 
@@ -213,7 +207,7 @@ func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +241,6 @@ func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computep
 
 // Delete deletes the specified VpnTunnel resource.
 func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v", req.GetProject(), req.GetRegion(), req.GetVpnTunnel())
 
@@ -263,7 +251,7 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,16 +285,10 @@ func (c *vpnTunnelsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 
 // Get returns the specified VpnTunnel resource. Gets a list of available VPN tunnels by making a list() request.
 func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTunnelRequest, opts ...gax.CallOption) (*computepb.VpnTunnel, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels/%v", req.GetProject(), req.GetRegion(), req.GetVpnTunnel())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +322,7 @@ func (c *vpnTunnelsRESTClient) Get(ctx context.Context, req *computepb.GetVpnTun
 
 // Insert creates a VpnTunnel resource in the specified project and region using the data included in the request.
 func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnTunnelRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnTunnelResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -391,12 +373,6 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 
 // List retrieves a list of VpnTunnel resources contained in the specified project and region.
 func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnTunnelsRequest, opts ...gax.CallOption) (*computepb.VpnTunnelList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnTunnels", req.GetProject(), req.GetRegion())
 
@@ -419,7 +395,7 @@ func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnT
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

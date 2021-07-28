@@ -163,8 +163,8 @@ func NewTargetHttpProxiesRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultTargetHttpProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *targetHttpProxiesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project.
 func (c *targetHttpProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpProxiesRequest, opts ...gax.CallOption) (*computepb.TargetHttpProxyAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetHttpProxies", req.GetProject())
 
@@ -227,7 +221,7 @@ func (c *targetHttpProxiesRESTClient) AggregatedList(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -261,12 +255,6 @@ func (c *targetHttpProxiesRESTClient) AggregatedList(ctx context.Context, req *c
 
 // Delete deletes the specified TargetHttpProxy resource.
 func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
@@ -277,7 +265,7 @@ func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -311,16 +299,10 @@ func (c *targetHttpProxiesRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified TargetHttpProxy resource. Gets a list of available target HTTP proxies by making a list() request.
 func (c *targetHttpProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpProxy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies/%v", req.GetProject(), req.GetTargetHttpProxy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +336,7 @@ func (c *targetHttpProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a TargetHttpProxy resource in the specified project using the data included in the request.
 func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -405,12 +387,6 @@ func (c *targetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb
 
 // List retrieves the list of TargetHttpProxy resources available to the specified project.
 func (c *targetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetHttpProxiesRequest, opts ...gax.CallOption) (*computepb.TargetHttpProxyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetHttpProxies", req.GetProject())
 
@@ -433,7 +409,7 @@ func (c *targetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -467,7 +443,7 @@ func (c *targetHttpProxiesRESTClient) List(ctx context.Context, req *computepb.L
 
 // Patch patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==)
 func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -518,7 +494,7 @@ func (c *targetHttpProxiesRESTClient) Patch(ctx context.Context, req *computepb.
 
 // SetUrlMap changes the URL map for TargetHttpProxy.
 func (c *targetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

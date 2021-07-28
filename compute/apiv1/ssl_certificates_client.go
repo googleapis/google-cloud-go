@@ -149,8 +149,8 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultSslCertificatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *sslCertificatesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
 func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) (*computepb.SslCertificateAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/sslCertificates", req.GetProject())
 
@@ -213,7 +207,7 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +241,6 @@ func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *com
 
 // Delete deletes the specified SslCertificate resource.
 func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
@@ -263,7 +251,7 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,16 +285,10 @@ func (c *sslCertificatesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 // Get returns the specified SslCertificate resource. Gets a list of available SSL certificates by making a list() request.
 func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetSslCertificateRequest, opts ...gax.CallOption) (*computepb.SslCertificate, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates/%v", req.GetProject(), req.GetSslCertificate())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +322,7 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 
 // Insert creates a SslCertificate resource in the specified project using the data included in the request.
 func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -391,12 +373,6 @@ func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 // List retrieves the list of SslCertificate resources available to the specified project.
 func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.ListSslCertificatesRequest, opts ...gax.CallOption) (*computepb.SslCertificateList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/sslCertificates", req.GetProject())
 
@@ -419,7 +395,7 @@ func (c *sslCertificatesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

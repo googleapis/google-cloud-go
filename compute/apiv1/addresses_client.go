@@ -149,8 +149,8 @@ func NewAddressesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultAddressesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of addresses.
 func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) (*computepb.AddressAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/addresses", req.GetProject())
 
@@ -213,7 +207,7 @@ func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +241,6 @@ func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 // Delete deletes the specified address resource.
 func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
@@ -263,7 +251,7 @@ func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteA
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,16 +285,10 @@ func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteA
 
 // Get returns the specified address resource.
 func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddressRequest, opts ...gax.CallOption) (*computepb.Address, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses/%v", req.GetProject(), req.GetRegion(), req.GetAddress())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +322,7 @@ func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddress
 
 // Insert creates an address resource in the specified project by using the data included in the request.
 func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAddressResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -391,12 +373,6 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 
 // List retrieves a list of addresses contained within the specified region.
 func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddressesRequest, opts ...gax.CallOption) (*computepb.AddressList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/addresses", req.GetProject(), req.GetRegion())
 
@@ -419,7 +395,7 @@ func (c *addressesRESTClient) List(ctx context.Context, req *computepb.ListAddre
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

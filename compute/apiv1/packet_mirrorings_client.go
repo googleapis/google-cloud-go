@@ -163,8 +163,8 @@ func NewPacketMirroringsRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultPacketMirroringsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of packetMirrorings.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) (*computepb.PacketMirroringAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/packetMirrorings", req.GetProject())
 
@@ -227,7 +221,7 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -261,12 +255,6 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Delete deletes the specified PacketMirroring resource.
 func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.DeletePacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
@@ -277,7 +265,7 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -311,16 +299,10 @@ func (c *packetMirroringsRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get returns the specified PacketMirroring resource.
 func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.GetPacketMirroringRequest, opts ...gax.CallOption) (*computepb.PacketMirroring, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/packetMirrorings/%v", req.GetProject(), req.GetRegion(), req.GetPacketMirroring())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +336,7 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
 func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -405,12 +387,6 @@ func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.
 
 // List retrieves a list of PacketMirroring resources available to the specified project and region.
 func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.ListPacketMirroringsRequest, opts ...gax.CallOption) (*computepb.PacketMirroringList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/packetMirrorings", req.GetProject(), req.GetRegion())
 
@@ -433,7 +409,7 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -467,7 +443,7 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 
 // Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -518,7 +494,7 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *packetMirroringsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsPacketMirroringRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

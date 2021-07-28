@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.22.0...spanner/v1.23.0) (2021-07-08)
+
+
+### Features
+
+* **spanner/admin/database:** add leader_options to InstanceConfig and default_leader to Database ([7aa0e19](https://www.github.com/googleapis/google-cloud-go/commit/7aa0e195a5536dd060a1fca871bd3c6f946d935e))
+
 ## [1.22.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.21.0...spanner/v1.22.0) (2021-06-30)
 
 

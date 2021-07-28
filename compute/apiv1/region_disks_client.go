@@ -198,8 +198,8 @@ func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultRegionDisksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -231,7 +231,7 @@ func (c *regionDisksRESTClient) Connection() *grpc.ClientConn {
 
 // AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
 func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksAddResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -282,7 +282,7 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 
 // CreateSnapshot creates a snapshot of this regional disk.
 func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +333,6 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 
 // Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
@@ -349,7 +343,7 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -383,16 +377,10 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // Get returns a specified regional persistent disk.
 func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegionDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -426,12 +414,6 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
@@ -442,7 +424,7 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -476,7 +458,7 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 
 // Insert creates a persistent regional disk in the specified project using the data included in the request.
 func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -530,12 +512,6 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 // List retrieves the list of persistent disks contained within the specified region.
 func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListRegionDisksRequest, opts ...gax.CallOption) (*computepb.DiskList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks", req.GetProject(), req.GetRegion())
 
@@ -558,7 +534,7 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -592,7 +568,7 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 
 // RemoveResourcePolicies removes resource policies from a regional disk.
 func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksRemoveResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -643,7 +619,7 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 
 // Resize resizes the specified regional persistent disk.
 func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.ResizeRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionDisksResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -694,7 +670,7 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -738,7 +714,7 @@ func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 
 // SetLabels sets the labels on the target regional disk.
 func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsRegionDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -789,7 +765,7 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionDiskRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

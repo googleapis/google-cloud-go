@@ -149,8 +149,8 @@ func NewTargetGrpcProxiesRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultTargetGrpcProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *targetGrpcProxiesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified TargetGrpcProxy in the given scope
 func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
@@ -198,7 +192,7 @@ func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +226,10 @@ func (c *targetGrpcProxiesRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified TargetGrpcProxy resource in the given scope.
 func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.TargetGrpcProxy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies/%v", req.GetProject(), req.GetTargetGrpcProxy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +263,7 @@ func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.
 func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -326,12 +314,6 @@ func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb
 
 // List lists the TargetGrpcProxies for a project in the given scope.
 func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetGrpcProxiesRequest, opts ...gax.CallOption) (*computepb.TargetGrpcProxyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetGrpcProxies", req.GetProject())
 
@@ -354,7 +336,7 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -388,7 +370,7 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 
 // Patch patches the specified TargetGrpcProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

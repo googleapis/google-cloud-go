@@ -163,8 +163,8 @@ func NewGlobalForwardingRulesRESTClient(ctx context.Context, opts ...option.Clie
 
 func defaultGlobalForwardingRulesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *globalForwardingRulesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified GlobalForwardingRule resource.
 func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
@@ -212,7 +206,7 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -246,16 +240,10 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 
 // Get returns the specified GlobalForwardingRule resource. Gets a list of available forwarding rules by making a list() request.
 func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computepb.GetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.ForwardingRule, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules/%v", req.GetProject(), req.GetForwardingRule())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -289,7 +277,7 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 
 // Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
 func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -340,12 +328,6 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 
 // List retrieves a list of GlobalForwardingRule resources available to the specified project.
 func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *computepb.ListGlobalForwardingRulesRequest, opts ...gax.CallOption) (*computepb.ForwardingRuleList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/forwardingRules", req.GetProject())
 
@@ -368,7 +350,7 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -402,7 +384,7 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 
 // Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -453,7 +435,7 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 
 // SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -497,7 +479,7 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 
 // SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
 func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

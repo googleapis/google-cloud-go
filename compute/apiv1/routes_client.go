@@ -142,8 +142,8 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 
 func defaultRoutesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,12 +175,6 @@ func (c *routesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified Route resource.
 func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
@@ -191,7 +185,7 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -225,16 +219,10 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 
 // Get returns the specified Route resource. Gets a list of available routes by making a list() request.
 func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteRequest, opts ...gax.CallOption) (*computepb.Route, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes/%v", req.GetProject(), req.GetRoute())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,7 +256,7 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 
 // Insert creates a Route resource in the specified project using the data included in the request.
 func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouteResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -319,12 +307,6 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 
 // List retrieves the list of Route resources available to the specified project.
 func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRequest, opts ...gax.CallOption) (*computepb.RouteList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/routes", req.GetProject())
 
@@ -347,7 +329,7 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

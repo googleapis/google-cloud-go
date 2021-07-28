@@ -156,8 +156,8 @@ func NewTargetTcpProxiesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultTargetTcpProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *targetTcpProxiesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified TargetTcpProxy resource.
 func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v", req.GetProject(), req.GetTargetTcpProxy())
 
@@ -205,7 +199,7 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *targetTcpProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get returns the specified TargetTcpProxy resource. Gets a list of available target TCP proxies by making a list() request.
 func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.TargetTcpProxy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies/%v", req.GetProject(), req.GetTargetTcpProxy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +270,7 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
 func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +321,6 @@ func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 
 // List retrieves the list of TargetTcpProxy resources available to the specified project.
 func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetTcpProxiesRequest, opts ...gax.CallOption) (*computepb.TargetTcpProxyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetTcpProxies", req.GetProject())
 
@@ -361,7 +343,7 @@ func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +377,7 @@ func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // SetBackendService changes the BackendService for TargetTcpProxy.
 func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetBackendServiceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -446,7 +428,7 @@ func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req 
 
 // SetProxyHeader changes the ProxyHeaderType for TargetTcpProxy.
 func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetProxyHeaderRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
