@@ -89,7 +89,7 @@ func createCountView(m stats.Measure, keys ...tag.Key) *view.View {
 		Description: m.Description(),
 		TagKeys:     keys,
 		Measure:     m,
-		Aggregation: view.Count(),
+		Aggregation: view.Sum(),
 	}
 }
 

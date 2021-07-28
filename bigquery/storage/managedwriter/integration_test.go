@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"math"
 	"testing"
 	"time"
 
@@ -497,7 +498,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("%q: only expected 1 tag, got %d", tv.Name, len(metricData[0].Tags))
 		}
 		entry := metricData[0].Data
-		sum, ok := entry.(*view.CountData)
+		sum, ok := entry.(*view.SumData)
 		if !ok {
 			t.Errorf("unexpected metric type: %T", entry)
 		}
@@ -512,8 +513,9 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			want = 1
 		}
 
-		if got != want {
-			t.Errorf("%q: metric mismatch, got %d want %d", tv.Name, got, want)
+		// float comparison; diff more than error bound is error
+		if math.Abs(got-float64(want)) > 0.1 {
+			t.Errorf("%q: metric mismatch, got %f want %d", tv.Name, got, want)
 		}
 	}
 }
