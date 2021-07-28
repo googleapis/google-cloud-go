@@ -45,6 +45,9 @@ var (
 
 	// BufferedStream is a form of checkpointed stream, that allows
 	// you to advance the offset of visible rows via Flush operations.
+	//
+	// NOTE: Buffered Streams are currently in limited preview, and as such
+	// methods like FlushRows() may yield errors for non-enrolled projects.
 	BufferedStream StreamType = "BUFFERED"
 
 	// PendingStream is a stream in which no data is made visible to
@@ -106,9 +109,9 @@ type streamSettings struct {
 	// request bytes can be outstanding into the system.
 	MaxInflightBytes int
 
-	// TracePrefix sets a suitable prefix for the trace ID set on
-	// append requests.  Useful for diagnostic purposes.
-	TracePrefix string
+	// TraceID can be set when appending data on a stream. It's
+	// purpose is to aid in debug and diagnostic scenarios.
+	TraceID string
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -116,7 +119,7 @@ func defaultStreamSettings() *streamSettings {
 		streamType:          DefaultStream,
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
-		TracePrefix:         "defaultManagedWriter",
+		TraceID:             "",
 	}
 }
 
@@ -241,7 +244,9 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 				ProtoDescriptor: ms.schemaDescriptor,
 			}
-			reqCopy.TraceId = ms.streamSettings.TracePrefix
+			if ms.streamSettings.TraceID != "" {
+				reqCopy.TraceId = ms.streamSettings.TraceID
+			}
 			req = &reqCopy
 		})
 
@@ -290,10 +295,16 @@ func (ms *ManagedStream) Close() error {
 	ms.mu.Lock()
 	ms.err = io.EOF
 	ms.mu.Unlock()
+	// Propagate cancellation.
+	if ms.cancel != nil {
+		ms.cancel()
+	}
 	return err
 }
 
 // AppendRows sends the append requests to the service, and returns one AppendResult per row.
+// The format of the row data is binary serialized protocol buffer bytes, and and the message
+// must adhere to the format of the schema Descriptor passed in when creating the managed stream.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) ([]*AppendResult, error) {
 	pw := newPendingWrite(data, offset)
 	// check flow control
