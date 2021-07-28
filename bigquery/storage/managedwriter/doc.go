@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /*
-Packaged managedwriter provides an EXPERIMENTAL thick client around the BigQuery storage API's BigQueryWriteClient.
+Package managedwriter provides an EXPERIMENTAL thick client around the BigQuery storage API's BigQueryWriteClient.
 More information about this new write client may also be found in the public documentation: https://cloud.google.com/bigquery/docs/write-api
 
 It is EXPERIMENTAL and subject to change or removal without notice.  This library is in a pre-alpha
