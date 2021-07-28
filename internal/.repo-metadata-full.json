@@ -1313,6 +1313,15 @@
     "release_level": "alpha",
     "library_type": ""
   },
+  "cloud.google.com/go/storagetransfer/apiv1": {
+    "distribution_name": "cloud.google.com/go/storagetransfer/apiv1",
+    "description": "Storage Transfer API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/storagetransfer/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/talent/apiv4": {
     "distribution_name": "cloud.google.com/go/talent/apiv4",
     "description": "Cloud Talent Solution API",
