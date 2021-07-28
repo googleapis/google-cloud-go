@@ -177,7 +177,7 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err = ms.AppendRows(data, NoStreamOffset)
+		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -195,7 +195,7 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := append(data, b)
-		results, err = ms.AppendRows(data, NoStreamOffset)
+		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("grouped-row append failed: %v", err)
 		}
