@@ -158,6 +158,9 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 // BatchCommit is used to commit one or more PendingStream streams belonging to the same table
 // as a single transaction.  Streams must be finalized before committing.
 //
+// Format of the parentTable is: projects/{project}/datasets/{dataset}/tables/{table} and the utility
+// function TableParentFromStreamName can be used to derive this from a Stream's name.
+//
 // If the returned response contains stream errors, this indicates that the batch commit failed and no data was
 // committed.
 //
