@@ -23,7 +23,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -135,6 +134,11 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	// Define a function that initiates a Read with offset and length, assuming we
 	// have already read seen bytes.
 	reopen := func(seen int64) (*http.Response, error) {
+		// If the context has already expired, return immediately without making a
+		// call.
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
 		start := offset + seen
 		if length < 0 && start < 0 {
 			req.Header.Set("Range", fmt.Sprintf("bytes=%d", start))
@@ -145,7 +149,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, offset+length-1))
 		}
 		// We wait to assign conditions here because the generation number can change in between reopen() runs.
-		req.URL.RawQuery = conditionsQuery(gen, o.conds)
+		if err := setConditionsHeaders(req.Header, o.conds); err != nil {
+			return nil, err
+		}
+		// If an object generation is specified, include generation as query string parameters.
+		if gen >= 0 {
+			req.URL.RawQuery = fmt.Sprintf("generation=%d", gen)
+		}
+
 		var res *http.Response
 		err = runWithRetry(ctx, func() error {
 			res, err = o.c.hc.Do(req)
@@ -320,6 +331,24 @@ func parseCRC32c(res *http.Response) (uint32, bool) {
 	return 0, false
 }
 
+// setConditionsHeaders sets precondition request headers for downloads
+// using the XML API. It assumes that the conditions have been validated.
+func setConditionsHeaders(headers http.Header, conds *Conditions) error {
+	if conds == nil {
+		return nil
+	}
+	if conds.MetagenerationMatch != 0 {
+		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		headers.Set("x-goog-if-generation-match", fmt.Sprint(conds.GenerationMatch))
+	case conds.DoesNotExist:
+		headers.Set("x-goog-if-generation-match", "0")
+	}
+	return nil
+}
+
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 
 // Reader reads a Cloud Storage object.
@@ -369,11 +398,12 @@ func (r *Reader) readWithRetry(p []byte) (int, error) {
 		m, err := r.body.Read(p[n:])
 		n += m
 		r.seen += int64(m)
-		if !shouldRetryRead(err) {
+		if err == nil || err == io.EOF {
 			return n, err
 		}
-		// Read failed, but we will try again. Send a ranged read request that takes
-		// into account the number of bytes we've already seen.
+		// Read failed (likely due to connection issues), but we will try to reopen
+		// the pipe and continue. Send a ranged read request that takes into account
+		// the number of bytes we've already seen.
 		res, err := r.reopen(r.seen)
 		if err != nil {
 			// reopen already retries
@@ -383,13 +413,6 @@ func (r *Reader) readWithRetry(p []byte) (int, error) {
 		r.body = res.Body
 	}
 	return n, nil
-}
-
-func shouldRetryRead(err error) bool {
-	if err == nil {
-		return false
-	}
-	return strings.HasSuffix(err.Error(), "INTERNAL_ERROR") && strings.Contains(reflect.TypeOf(err).String(), "http2")
 }
 
 // Size returns the size of the object in bytes.

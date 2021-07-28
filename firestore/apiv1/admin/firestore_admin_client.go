@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newFirestoreAdminClientHook clientHook
@@ -59,6 +59,7 @@ func defaultFirestoreAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("firestore.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -139,7 +140,7 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 	}
 }
 
-// internalFirestoreAdminClient is an interface that defines the methods availaible from Google Cloud Firestore Admin API.
+// internalFirestoreAdminClient is an interface that defines the methods availaible from Cloud Firestore API.
 type internalFirestoreAdminClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -159,7 +160,7 @@ type internalFirestoreAdminClient interface {
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
 }
 
-// FirestoreAdminClient is a client for interacting with Google Cloud Firestore Admin API.
+// FirestoreAdminClient is a client for interacting with Cloud Firestore API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Operations are created by service FirestoreAdmin, but are accessed via
@@ -298,7 +299,7 @@ func (c *FirestoreAdminClient) ImportDocumentsOperation(name string) *ImportDocu
 	return c.internalClient.ImportDocumentsOperation(name)
 }
 
-// firestoreAdminGRPCClient is a client for interacting with Google Cloud Firestore Admin API over gRPC transport.
+// firestoreAdminGRPCClient is a client for interacting with Cloud Firestore API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type firestoreAdminGRPCClient struct {
