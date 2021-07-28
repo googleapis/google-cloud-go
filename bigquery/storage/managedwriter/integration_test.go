@@ -148,7 +148,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 		})
 		t.Run("DefaultStream_DynamicJSON", func(t *testing.T) {
 			t.Parallel()
-			testDefaultStream_DynamicJSON(ctx, t, mwClient, bqClient, dataset)
+			testDefaultStreamDynamicJSON(ctx, t, mwClient, bqClient, dataset)
 		})
 		t.Run("CommittedStream", func(t *testing.T) {
 			t.Parallel()
@@ -233,7 +233,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after second send")
 }
 
-func testDefaultStream_DynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
