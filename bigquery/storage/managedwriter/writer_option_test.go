@@ -63,12 +63,12 @@ func TestWriterOptions(t *testing.T) {
 		},
 		{
 			desc:    "WithTracePrefix",
-			options: []WriterOption{WithTracePrefix("foo")},
+			options: []WriterOption{WithTraceID("foo")},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				ms.streamSettings.TracePrefix = "foo"
+				ms.streamSettings.TraceID = "foo"
 				return ms
 			}(),
 		},
@@ -88,7 +88,7 @@ func TestWriterOptions(t *testing.T) {
 			options: []WriterOption{
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
-				WithTracePrefix("pre"),
+				WithTraceID("id"),
 			},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
@@ -96,7 +96,7 @@ func TestWriterOptions(t *testing.T) {
 				}
 				ms.streamSettings.MaxInflightBytes = 5
 				ms.streamSettings.streamType = PendingStream
-				ms.streamSettings.TracePrefix = "pre"
+				ms.streamSettings.TraceID = "id"
 				return ms
 			}(),
 		},
