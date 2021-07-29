@@ -10,14 +10,43 @@
         "grpc": {
           "libraryClient": "CatalogClient",
           "rpcs": {
+            "GetDefaultBranch": {
+              "methods": [
+                "GetDefaultBranch"
+              ]
+            },
             "ListCatalogs": {
               "methods": [
                 "ListCatalogs"
               ]
             },
+            "SetDefaultBranch": {
+              "methods": [
+                "SetDefaultBranch"
+              ]
+            },
             "UpdateCatalog": {
               "methods": [
                 "UpdateCatalog"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CompletionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
+                "CompleteQuery"
+              ]
+            },
+            "ImportCompletionData": {
+              "methods": [
+                "ImportCompletionData"
               ]
             }
           }
@@ -43,6 +72,11 @@
         "grpc": {
           "libraryClient": "ProductClient",
           "rpcs": {
+            "AddFulfillmentPlaces": {
+              "methods": [
+                "AddFulfillmentPlaces"
+              ]
+            },
             "CreateProduct": {
               "methods": [
                 "CreateProduct"
@@ -63,9 +97,38 @@
                 "ImportProducts"
               ]
             },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "RemoveFulfillmentPlaces": {
+              "methods": [
+                "RemoveFulfillmentPlaces"
+              ]
+            },
+            "SetInventory": {
+              "methods": [
+                "SetInventory"
+              ]
+            },
             "UpdateProduct": {
               "methods": [
                 "UpdateProduct"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SearchClient",
+          "rpcs": {
+            "Search": {
+              "methods": [
+                "Search"
               ]
             }
           }
