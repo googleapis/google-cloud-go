@@ -378,6 +378,11 @@ func (formatting *valueFormatting) defaultFormatter(in []byte) (string, error) {
 func (formatting *valueFormatting) format(
 	prefix, family, column string, value []byte,
 ) (string, error) {
+	famcolumn := strings.SplitN(column, ":", 2)
+	fam, column := famcolumn[0], famcolumn[1]
+	if fam != family {
+		return "", fmt.Errorf("family, %s, and column family, %s, don't match", family, fam)
+	}
 	key := [2]string{family, column}
 	formatter, got := formatting.formatters[key]
 	if !got {

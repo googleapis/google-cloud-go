@@ -358,14 +358,15 @@ func TestValueFormattingFormat(t *testing.T) {
 	formatting.settings.Columns["person"] = valueFormatColumn{Encoding: "p"}
 	err := formatting.setup(map[string]string{})
 
-	s, err := formatting.format("", "f1", "c1", []byte("Hello world!"))
+	s, err := formatting.format("", "f1", "f1:c1", []byte("Hello world!"))
 	assertEqual(t, s, "\"Hello world!\"\n")
 
-	s, err = formatting.format("  ", "f1", "hexy", []byte("Hello world!"))
+	s, err = formatting.format("  ", "f1", "f1:hexy", []byte("Hello world!"))
 	assertNoError(t, err)
 	assertEqual(t, s, "  48 65 6c 6c 6f 20 77 6f 72 6c 64 21\n")
 
-	s, err = formatting.format("    ", "binaries", "cb", []byte("Hello world!"))
+	s, err = formatting.format(
+		"    ", "binaries", "binaries:cb", []byte("Hello world!"))
 	assertNoError(t, err)
 	assertEqual(t, s, "    [18533 27756 28448 30575 29292 25633]\n")
 
@@ -381,7 +382,7 @@ func TestValueFormattingFormat(t *testing.T) {
 			"      >\n"
 
 	for _, col := range []string{"address", "person"} {
-		s, err = formatting.format("      ", "f1", col, in)
+		s, err = formatting.format("      ", "f1", "f1:" + col, in)
 		assertNoError(t, err)
 		assertEqual(t, s, pbExpect)
 	}
@@ -392,19 +393,19 @@ func TestPrintRow(t *testing.T) {
 		"f1": {
 			bigtable.ReadItem{
 				Row:    "r1",
-				Column: "c1",
+				Column: "f1:c1",
 				Value:  []byte("Hello!"),
 			},
 			bigtable.ReadItem{
 				Row:    "r1",
-				Column: "c2",
+				Column: "f1:c2",
 				Value:  []byte{1, 2},
 			},
 		},
 		"f2": {
 			bigtable.ReadItem{
 				Row:    "r1",
-				Column: "person",
+				Column: "f2:person",
 				Value: []byte("\n\x03Jim\x10*\x1a\x0fjim@example.com\"" +
 					"\x0c\n\x08555-1212\x10\x01"),
 			},
@@ -414,11 +415,11 @@ func TestPrintRow(t *testing.T) {
 	expect :=
 		"----------------------------------------\n" +
 			"r1\n" +
-			"  c1\n" +
+			"  f1:c1\n" +
 			"    \"Hello!\"\n" +
-			"  c2\n" +
+			"  f1:c2\n" +
 			"    \"\\x01\\x02\"\n" +
-			"  person\n" +
+			"  f2:person\n" +
 			"    \"\\n\\x03Jim\\x10*\\x1a\\x0fjim@example.com\\\"\\f\\n\\b555-1212\\x10\\x01\"\n" +
 			""
 
@@ -444,11 +445,11 @@ func TestPrintRow(t *testing.T) {
 
 	expectf := ("----------------------------------------\n" +
 		"r1\n" +
-		"  c1\n" +
+		"  f1:c1\n" +
 		"    \"Hello!\"\n" +
-		"  c2\n" +
+		"  f1:c2\n" +
 		"    258\n" +
-		"  person\n" +
+		"  f2:person\n" +
 		"    name: \"Jim\"\n" +
 		"    id: 42\n" +
 		"    email: \"jim@example.com\"\n" +
