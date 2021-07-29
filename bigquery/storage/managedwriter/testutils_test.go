@@ -117,9 +117,9 @@ type constraintOption func(*validationInfo)
 // withExactRowCount asserts the exact total row count of the table.
 func withExactRowCount(totalRows int64) constraintOption {
 	return func(vi *validationInfo) {
-		result_col := "total_rows"
-		vi.constraints[result_col] = &constraint{
-			projection:    fmt.Sprintf("COUNT(1) AS %s", result_col),
+		resultCol := "total_rows"
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNT(1) AS %s", resultCol),
 			expectedValue: totalRows,
 		}
 	}
@@ -128,9 +128,9 @@ func withExactRowCount(totalRows int64) constraintOption {
 // withNullCount asserts the number of null values in a column.
 func withNullCount(colname string, nullcount int64) constraintOption {
 	return func(vi *validationInfo) {
-		result_col := fmt.Sprintf("nullcol_count_%s", colname)
-		vi.constraints[result_col] = &constraint{
-			projection:    fmt.Sprintf("COUNTIF(ISNULL(%s)) AS %s", colname, result_col),
+		resultCol := fmt.Sprintf("nullcol_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(ISNULL(%s)) AS %s", colname, resultCol),
 			expectedValue: nullcount,
 		}
 	}
@@ -139,9 +139,9 @@ func withNullCount(colname string, nullcount int64) constraintOption {
 // withNonNullCount asserts the number of non null values in a column.
 func withNonNullCount(colname string, nullcount int64) constraintOption {
 	return func(vi *validationInfo) {
-		result_col := fmt.Sprintf("nonnullcol_count_%s", colname)
-		vi.constraints[result_col] = &constraint{
-			projection:    fmt.Sprintf("COUNTIF(NOT ISNULL(%s)) AS %s", colname, result_col),
+		resultCol := fmt.Sprintf("nonnullcol_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNTIF(NOT ISNULL(%s)) AS %s", colname, resultCol),
 			expectedValue: nullcount,
 		}
 	}
@@ -150,9 +150,9 @@ func withNonNullCount(colname string, nullcount int64) constraintOption {
 // withDistinctValues validates the exact cardinality of a column.
 func withDistinctValues(colname string, distinctVals int64) constraintOption {
 	return func(vi *validationInfo) {
-		result_col := fmt.Sprintf("distinct_count_%s", colname)
-		vi.constraints[result_col] = &constraint{
-			projection:    fmt.Sprintf("COUNT(DISTINCT %s) AS %s", colname, result_col),
+		resultCol := fmt.Sprintf("distinct_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("COUNT(DISTINCT %s) AS %s", colname, resultCol),
 			expectedValue: distinctVals,
 		}
 	}
@@ -161,9 +161,9 @@ func withDistinctValues(colname string, distinctVals int64) constraintOption {
 // withApproxDistinctValues validates the approximate cardinality of a column with an error bound.
 func withApproxDistinctValues(colname string, approxValues int64, errorBound int64) constraintOption {
 	return func(vi *validationInfo) {
-		result_col := fmt.Sprintf("distinct_count_%s", colname)
-		vi.constraints[result_col] = &constraint{
-			projection:    fmt.Sprintf("APPROX_COUNT_DISTINCT(%s) AS %s", colname, result_col),
+		resultCol := fmt.Sprintf("distinct_count_%s", colname)
+		vi.constraints[resultCol] = &constraint{
+			projection:    fmt.Sprintf("APPROX_COUNT_DISTINCT(%s) AS %s", colname, resultCol),
 			expectedValue: approxValues,
 			allowedError:  errorBound,
 		}
