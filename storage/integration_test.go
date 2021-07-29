@@ -764,6 +764,11 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
 
 	// Initialize gRPC client for Read testing.
 	client, err := newClientWithGRPC(ctx, nil)
@@ -773,11 +778,6 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	defer client.Close()
 
 	obj := client.Bucket(grpcBucket).Object(name)
-	defer func() {
-		if err := obj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
-		}
-	}()
 
 	// Using a negative length to indicate reading to the end.
 	r, err := obj.NewRangeReader(ctx, 0, -1)
@@ -823,6 +823,11 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
 
 	// Initialize gRPC client for Read testing.
 	client, err := newClientWithGRPC(ctx, nil)
@@ -832,11 +837,6 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	defer client.Close()
 
 	obj := client.Bucket(grpcBucket).Object(name)
-	defer func() {
-		if err := obj.Delete(ctx); err != nil {
-			log.Printf("failed to delete test object: %v", err)
-		}
-	}()
 
 	r, err := obj.NewReader(ctx)
 	if err != nil {
