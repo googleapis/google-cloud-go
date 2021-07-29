@@ -152,6 +152,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	}
 
 	// Recv the first message so we can populate the object metadata.
+	// TODO: Handle errors better here. Attempt to reopen?
 	msg, err := r.stream.Recv()
 	if err != nil {
 		return nil, err
