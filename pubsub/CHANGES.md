@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.2...pubsub/v1.13.0) (2021-07-20)
+
+
+### Features
+
+* **pubsub/pstest:** add ability to create a pstest server listening on ([#4459](https://www.github.com/googleapis/google-cloud-go/issues/4459)) ([f1b7c8b](https://www.github.com/googleapis/google-cloud-go/commit/f1b7c8b33bc135c6cb8f21cdec586b25d81ea214))
+
 ### [1.12.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.1...pubsub/v1.12.2) (2021-07-08)
 
 

@@ -41,12 +41,10 @@ func main() {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 // [END privateca_v1_generated_CertificateAuthorityService_DeleteCaPool_sync]

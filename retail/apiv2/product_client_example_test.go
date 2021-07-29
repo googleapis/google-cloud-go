@@ -20,6 +20,7 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	"google.golang.org/api/iterator"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
 
@@ -73,6 +74,31 @@ func ExampleProductClient_GetProduct() {
 	_ = resp
 }
 
+func ExampleProductClient_ListProducts() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.ListProductsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListProducts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleProductClient_UpdateProduct() {
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
@@ -121,6 +147,78 @@ func ExampleProductClient_ImportProducts() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.ImportProducts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_SetInventory() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.SetInventoryRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.SetInventory(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_AddFulfillmentPlaces() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.AddFulfillmentPlacesRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.AddFulfillmentPlaces(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_RemoveFulfillmentPlaces() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.RemoveFulfillmentPlacesRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.RemoveFulfillmentPlaces(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
