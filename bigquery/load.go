@@ -70,9 +70,12 @@ type LoadConfig struct {
 	// layout of objects in Cloud Storage.
 	HivePartitioningOptions *HivePartitioningOptions
 
-	// DecimalTargetTypes allows prioritizing of how decimal values are converted when
+	// DecimalTargetTypes allows selection of how decimal values are converted when
 	// processed in bigquery, subject to the value type having sufficient precision/scale
-	// to support the values.  StringTargetType supports all precision and scale values.
+	// to support the values.  In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+	// selected if is present in the list and if supports the necessary precision and scale.
+	//
+	// StringTargetType supports all precision and scale values.
 	DecimalTargetTypes []DecimalTargetType
 }
 
