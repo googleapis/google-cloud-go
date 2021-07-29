@@ -108,7 +108,7 @@ type internalPolicyTagManagerClient interface {
 // PolicyTagManagerClient is a client for interacting with Google Cloud Data Catalog API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Policy Tag Manager API service allows clients to manage their policy tags and
+// Policy Tag Manager API service allows you to manage your policy tags and
 // taxonomies.
 //
 // Policy tags are used to tag BigQuery columns and apply additional access
@@ -144,27 +144,28 @@ func (c *PolicyTagManagerClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateTaxonomy creates a taxonomy in a specified project. The taxonomy is initially empty,
-// i.e., does not contain policy tags.
+// CreateTaxonomy creates a taxonomy in a specified project.
+//
+// The taxonomy is initially empty, that is, it doesn’t contain policy tags.
 func (c *PolicyTagManagerClient) CreateTaxonomy(ctx context.Context, req *datacatalogpb.CreateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.CreateTaxonomy(ctx, req, opts...)
 }
 
-// DeleteTaxonomy deletes a taxonomy. This method will also delete all policy tags in this
+// DeleteTaxonomy deletes a taxonomy, including all policy tags in this
 // taxonomy, their associated policies, and the policy tags references from
 // BigQuery columns.
 func (c *PolicyTagManagerClient) DeleteTaxonomy(ctx context.Context, req *datacatalogpb.DeleteTaxonomyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTaxonomy(ctx, req, opts...)
 }
 
-// UpdateTaxonomy updates a taxonomy. This method can update the taxonomy’s display name,
+// UpdateTaxonomy updates a taxonomy, including its display name,
 // description, and activated policy types.
 func (c *PolicyTagManagerClient) UpdateTaxonomy(ctx context.Context, req *datacatalogpb.UpdateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	return c.internalClient.UpdateTaxonomy(ctx, req, opts...)
 }
 
-// ListTaxonomies lists all taxonomies in a project in a particular location that the caller
-// has permission to view.
+// ListTaxonomies lists all taxonomies in a project in a particular location that you
+// have a permission to view.
 func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
 	return c.internalClient.ListTaxonomies(ctx, req, opts...)
 }
@@ -179,19 +180,19 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 	return c.internalClient.CreatePolicyTag(ctx, req, opts...)
 }
 
-// DeletePolicyTag deletes a policy tag. This method also deletes:
+// DeletePolicyTag deletes a policy tag together with the following:
 //
-//   all of its descendant policy tags, if any
+//   All of its descendant policy tags, if any
 //
-//   the policies associated with the policy tag and its descendants
+//   Policies associated with the policy tag and its descendants
 //
-//   references from BigQuery table schema of the policy tag and its
-//   descendants.
+//   References from BigQuery table schema of the policy tag and its
+//   descendants
 func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePolicyTag(ctx, req, opts...)
 }
 
-// UpdatePolicyTag updates a policy tag. This method can update the policy tag’s display
+// UpdatePolicyTag updates a policy tag, including its display
 // name, description, and parent policy tag.
 func (c *PolicyTagManagerClient) UpdatePolicyTag(ctx context.Context, req *datacatalogpb.UpdatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	return c.internalClient.UpdatePolicyTag(ctx, req, opts...)
@@ -217,7 +218,7 @@ func (c *PolicyTagManagerClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified policy tag or
+// TestIamPermissions returns your permissions on a specified policy tag or
 // taxonomy.
 func (c *PolicyTagManagerClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
@@ -246,7 +247,7 @@ type policyTagManagerGRPCClient struct {
 // NewPolicyTagManagerClient creates a new policy tag manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Policy Tag Manager API service allows clients to manage their policy tags and
+// Policy Tag Manager API service allows you to manage your policy tags and
 // taxonomies.
 //
 // Policy tags are used to tag BigQuery columns and apply additional access
