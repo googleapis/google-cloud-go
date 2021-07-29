@@ -70,32 +70,6 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 	return client, bqClient
 }
 
-// validateRowCount confirms the number of rows in a table visible to the query engine.
-func validateRowCount(ctx context.Context, t *testing.T, client *bigquery.Client, tbl *bigquery.Table, expectedRows int64, description string) {
-
-	// Verify data is present in the table with a count query.
-	sql := fmt.Sprintf("SELECT COUNT(1) FROM `%s`.%s.%s", tbl.ProjectID, tbl.DatasetID, tbl.TableID)
-	q := client.Query(sql)
-	it, err := q.Read(ctx)
-	if err != nil {
-		t.Errorf("failed to issue validation query %q: %v", description, err)
-		return
-	}
-	var rowdata []bigquery.Value
-	err = it.Next(&rowdata)
-	if err != nil {
-		t.Errorf("error fetching validation results %q: %v", description, err)
-		return
-	}
-	count, ok := rowdata[0].(int64)
-	if !ok {
-		t.Errorf("got unexpected data from validation query %q: %v", description, rowdata[0])
-	}
-	if count != expectedRows {
-		t.Errorf("rows mismatch from %q, expected rows: got %d want %d", description, count, expectedRows)
-	}
-}
-
 // setupTestDataset generates a unique dataset for testing, and a cleanup that can be deferred.
 func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (ds *bigquery.Dataset, cleanup func(), err error) {
 	dataset := bqc.Dataset(datasetIDs.New())
@@ -186,8 +160,10 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
 
+	// our test data has cardinality 5 for names, 3 for values
 	testData := []*testdata.SimpleMessage{
 		{Name: "one", Value: 1},
 		{Name: "two", Value: 2},
@@ -211,8 +187,9 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	}
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
-	wantRows := int64(len(testData))
-	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after first send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "after first send round",
+		withExactRowCount(int64(len(testData))),
+		withDistinctValues("name", int64(len(testData))))
 
 	// Now, send the test rows grouped into in a single append.
 	var data [][]byte
@@ -227,10 +204,14 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("grouped-row append failed: %v", err)
 		}
 	}
-	// wait for the result to indicate ready, then validate again.
+	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
+	// cardinality should not.
 	results[0].Ready()
-	wantRows = wantRows * 2
-	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after second send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "after second send round",
+		withExactRowCount(int64(2*len(testData))),
+		withDistinctValues("name", int64(len(testData))),
+		withDistinctValues("value", int64(3)),
+	)
 }
 
 func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -249,7 +230,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
 
 	sampleData := [][]byte{
 		[]byte(`{"name": "one", "value": 1}`),
@@ -281,8 +263,9 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
-	wantRows := int64(len(sampleData))
-	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(sampleData))),
+		withDistinctValues("name", int64(len(sampleData))))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -310,8 +293,8 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	if info.GetType().String() != string(ms.StreamType()) {
 		t.Errorf("mismatch on stream type, got %s want %s", info.GetType(), ms.StreamType())
 	}
-
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
 
 	testData := []*testdata.SimpleMessage{
 		{Name: "one", Value: 1},
@@ -337,14 +320,19 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		if err != nil {
 			t.Errorf("got error from pending result %d: %v", k, err)
 		}
-		validateRowCount(ctx, t, bqClient, testTable, expectedRows, fmt.Sprintf("before flush %d", k))
+		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("before flush %d", k),
+			withExactRowCount(expectedRows),
+			withDistinctValues("name", expectedRows))
+
 		// move offset and re-validate.
 		flushOffset, err := ms.FlushRows(ctx, offset)
 		if err != nil {
 			t.Errorf("failed to flush offset to %d: %v", offset, err)
 		}
 		expectedRows = flushOffset + 1
-		validateRowCount(ctx, t, bqClient, testTable, expectedRows, fmt.Sprintf("after flush %d", k))
+		validateTableConstraints(ctx, t, bqClient, testTable, fmt.Sprintf("after flush %d", k),
+			withExactRowCount(expectedRows),
+			withDistinctValues("name", expectedRows))
 	}
 }
 
@@ -366,7 +354,8 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
 
 	testData := []*testdata.SimpleMessage{
 		{Name: "one", Value: 1},
@@ -390,8 +379,8 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
-	wantRows := int64(len(testData))
-	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(testData))))
 }
 
 func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -411,7 +400,8 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	validateRowCount(ctx, t, bqClient, testTable, 0, "before send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
 
 	testData := []*testdata.SimpleMessage{
 		{Name: "one", Value: 1},
@@ -455,5 +445,6 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if len(resp.StreamErrors) > 0 {
 		t.Errorf("stream errors present: %v", resp.StreamErrors)
 	}
-	validateRowCount(ctx, t, bqClient, testTable, wantRows, "after send")
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(testData))))
 }
