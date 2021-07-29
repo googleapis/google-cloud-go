@@ -545,21 +545,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	n := 0
-
-	if len(r.leftovers) > 0 {
-		cp := copy(p, r.leftovers)
-		r.seen += int64(cp)
-		r.leftovers = r.leftovers[cp:]
-
-		// No more room left in the user's buffer or the entire object has been
-		// read.
-		if len(p[cp:]) == 0 || r.size == r.seen {
-			return cp, nil
-		}
-
-		n = cp
-	}
+	n := copy(p, r.leftovers)
+	r.seen += int64(n)
+	r.leftovers = r.leftovers[n:]
 
 	for len(p[n:]) > 0 {
 		msg, err := r.stream.Recv()
