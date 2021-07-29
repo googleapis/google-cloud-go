@@ -48,7 +48,7 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendClientOpenCount = stats.Int64(statsPrefix+"stream_open_count", "Number of times AppendRowsClient was opened", stats.UnitDimensionless)
 
-	// AppendClientOpenCount is a measure of the number of times the AppendRowsClient open was retried.
+	// AppendClientOpenRetryCount is a measure of the number of times the AppendRowsClient open was retried.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendClientOpenRetryCount = stats.Int64(statsPrefix+"stream_open_retry_count", "Number of times AppendRowsClient open was retried", stats.UnitDimensionless)
 )
