@@ -54,6 +54,7 @@ type CallOptions struct {
 	SearchAllIamPolicies        []gax.CallOption
 	AnalyzeIamPolicy            []gax.CallOption
 	AnalyzeIamPolicyLongrunning []gax.CallOption
+	AnalyzeMove                 []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -168,6 +169,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
+		AnalyzeMove:                 []gax.CallOption{},
 	}
 }
 
@@ -190,6 +192,7 @@ type internalClient interface {
 	AnalyzeIamPolicy(context.Context, *assetpb.AnalyzeIamPolicyRequest, ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error)
 	AnalyzeIamPolicyLongrunning(context.Context, *assetpb.AnalyzeIamPolicyLongrunningRequest, ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error)
 	AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation
+	AnalyzeMove(context.Context, *assetpb.AnalyzeMoveRequest, ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error)
 }
 
 // Client is a client for interacting with Cloud Asset API.
@@ -324,7 +327,7 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // google.longrunning.Operation, which allows you to track the operation
 // status. We recommend intervals of at least 2 seconds with exponential
 // backoff retry to poll the operation result. The metadata contains the
-// request to help callers to map responses to requests.
+// metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
@@ -333,6 +336,15 @@ func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.A
 // The name must be that of a previously created AnalyzeIamPolicyLongrunningOperation, possibly from a different process.
 func (c *Client) AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation {
 	return c.internalClient.AnalyzeIamPolicyLongrunningOperation(name)
+}
+
+// AnalyzeMove analyze moving a resource to a specified destination without kicking off
+// the actual move. The analysis is best effort depending on the user’s
+// permissions of viewing different hierarchical policies and configurations.
+// The policies and configuration are subject to change before the actual
+// resource migration takes place.
+func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
+	return c.internalClient.AnalyzeMove(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Asset API over gRPC transport.
@@ -740,6 +752,22 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	}, nil
 }
 
+func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AnalyzeMove[0:len((*c.CallOptions).AnalyzeMove):len((*c.CallOptions).AnalyzeMove)], opts...)
+	var resp *assetpb.AnalyzeMoveResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AnalyzeMove(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // AnalyzeIamPolicyLongrunningOperation manages a long-running operation from AnalyzeIamPolicyLongrunning.
 type AnalyzeIamPolicyLongrunningOperation struct {
 	lro *longrunning.Operation
@@ -788,8 +816,8 @@ func (op *AnalyzeIamPolicyLongrunningOperation) Poll(ctx context.Context, opts .
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningRequest, error) {
-	var meta assetpb.AnalyzeIamPolicyLongrunningRequest
+func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningMetadata, error) {
+	var meta assetpb.AnalyzeIamPolicyLongrunningMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
