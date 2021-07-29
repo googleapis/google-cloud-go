@@ -47,11 +47,12 @@ func newAppendResult(data []byte) *AppendResult {
 	}
 }
 
-// Ready blocks until the append request is completed.
+// Ready blocks until the append request has reached a completed state,
+// which may be a successful append or an error.
 func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
 
 // GetResult returns the optional offset of this row, or the associated
-// error.
+// error.  It blocks until the result is ready.
 func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	select {
 	case <-ctx.Done():

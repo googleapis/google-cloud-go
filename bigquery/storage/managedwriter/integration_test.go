@@ -448,7 +448,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	}
 
 	// Commit stream and validate.
-	resp, err := mwClient.BatchCommit(ctx, tableParentFromStreamName(ms.StreamName()), []string{ms.StreamName()})
+	resp, err := mwClient.BatchCommit(ctx, TableParentFromStreamName(ms.StreamName()), []string{ms.StreamName()})
 	if err != nil {
 		t.Errorf("client.BatchCommit: %v", err)
 	}
