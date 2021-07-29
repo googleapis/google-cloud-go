@@ -410,14 +410,15 @@ set -ex
 
 go get -d google.golang.org/api | true # We don't care that there's no files at root.
 go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
-go mod tidy
 `)
 		c.Dir = modDir
 		if err := c.Run(); err != nil {
 			return err
 		}
 	}
-	return nil
+
+	// Tidy all modules
+	return gocmd.ModTidyAll(tmpDir)
 }
 
 func addAndPushCode(tmpDir string) error {
