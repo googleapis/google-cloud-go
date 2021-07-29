@@ -497,7 +497,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "admin",
 		importPath:            "cloud.google.com/go/datastore/admin/apiv1",
 		gRPCServiceConfigPath: "datastore_admin_grpc_service_config.json",
-		apiServiceConfigPath:  "datastore_admin_v1.yaml",
+		apiServiceConfigPath:  "datastore_v1.yaml",
 		releaseLevel:          "alpha",
 	},
 	{
@@ -1222,6 +1222,33 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "networkmanagement_grpc_service_config.json",
 		apiServiceConfigPath:  "networkmanagement_v1.yaml",
 		// GA after 2021/08/12
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/iap/v1",
+		pkg:                   "iap",
+		importPath:            "cloud.google.com/go/iap/apiv1",
+		gRPCServiceConfigPath: "iap_grpc_service_config.json",
+		apiServiceConfigPath:  "iap_v1.yaml",
+		// GA after 2021/08/22
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/datafusion/v1",
+		pkg:                   "datafusion",
+		importPath:            "cloud.google.com/go/datafusion/apiv1",
+		gRPCServiceConfigPath: "datafusion_grpc_service_config.json",
+		apiServiceConfigPath:  "datafusion_v1.yaml",
+		// GA after 2021/08/22
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/storagetransfer/v1",
+		pkg:                   "storagetransfer",
+		importPath:            "cloud.google.com/go/storagetransfer/apiv1",
+		gRPCServiceConfigPath: "storagetransfer_grpc_service_config.json",
+		apiServiceConfigPath:  "storagetransfer_v1.yaml",
+		// GA after 2021/08/27
 		releaseLevel: "beta",
 	},
 

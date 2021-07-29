@@ -149,7 +149,14 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, offset+length-1))
 		}
 		// We wait to assign conditions here because the generation number can change in between reopen() runs.
-		req.URL.RawQuery = conditionsQuery(gen, o.conds)
+		if err := setConditionsHeaders(req.Header, o.conds); err != nil {
+			return nil, err
+		}
+		// If an object generation is specified, include generation as query string parameters.
+		if gen >= 0 {
+			req.URL.RawQuery = fmt.Sprintf("generation=%d", gen)
+		}
+
 		var res *http.Response
 		err = runWithRetry(ctx, func() error {
 			res, err = o.c.hc.Do(req)
@@ -322,6 +329,24 @@ func parseCRC32c(res *http.Response) (uint32, bool) {
 		}
 	}
 	return 0, false
+}
+
+// setConditionsHeaders sets precondition request headers for downloads
+// using the XML API. It assumes that the conditions have been validated.
+func setConditionsHeaders(headers http.Header, conds *Conditions) error {
+	if conds == nil {
+		return nil
+	}
+	if conds.MetagenerationMatch != 0 {
+		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		headers.Set("x-goog-if-generation-match", fmt.Sprint(conds.GenerationMatch))
+	case conds.DoesNotExist:
+		headers.Set("x-goog-if-generation-match", "0")
+	}
+	return nil
 }
 
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
