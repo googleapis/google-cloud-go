@@ -1167,7 +1167,6 @@ func printRow(r bigtable.Row) {
 				log.Fatal(err)
 			}
 			fmt.Print(formatted)
-			//fmt.Printf("    %q\n", ri.Value)
 		}
 	}
 }
