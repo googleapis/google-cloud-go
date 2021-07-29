@@ -165,15 +165,15 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		ContentType:     obj.GetContentType(),
 		ContentEncoding: obj.GetContentEncoding(),
 		CacheControl:    obj.GetCacheControl(),
-		LastModified:    obj.GetUpdated().AsTime(),
+		LastModified:    obj.GetUpdateTime().AsTime(),
 		Metageneration:  obj.GetMetageneration(),
 		Generation:      obj.GetGeneration(),
 	}
 	if cr := msg.GetContentRange(); cr != nil {
 		r.Attrs.StartOffset = cr.GetStart()
 	}
-	if crc := msg.GetObjectChecksums().GetCrc32C(); crc != nil {
-		r.wantCRC = crc.GetValue()
+	if msg.GetObjectChecksums().Crc32C != nil {
+		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
 		r.checkCRC = true
 	}
 
