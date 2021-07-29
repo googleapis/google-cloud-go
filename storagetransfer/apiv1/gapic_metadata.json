@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.storagetransfer.v1",
+  "libraryPackage": "cloud.google.com/go/storagetransfer/apiv1",
+  "services": {
+    "StorageTransferService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTransferJob": {
+              "methods": [
+                "CreateTransferJob"
+              ]
+            },
+            "GetGoogleServiceAccount": {
+              "methods": [
+                "GetGoogleServiceAccount"
+              ]
+            },
+            "GetTransferJob": {
+              "methods": [
+                "GetTransferJob"
+              ]
+            },
+            "ListTransferJobs": {
+              "methods": [
+                "ListTransferJobs"
+              ]
+            },
+            "PauseTransferOperation": {
+              "methods": [
+                "PauseTransferOperation"
+              ]
+            },
+            "ResumeTransferOperation": {
+              "methods": [
+                "ResumeTransferOperation"
+              ]
+            },
+            "RunTransferJob": {
+              "methods": [
+                "RunTransferJob"
+              ]
+            },
+            "UpdateTransferJob": {
+              "methods": [
+                "UpdateTransferJob"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

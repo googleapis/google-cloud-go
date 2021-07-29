@@ -1242,6 +1242,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/08/22
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/storagetransfer/v1",
+		pkg:                   "storagetransfer",
+		importPath:            "cloud.google.com/go/storagetransfer/apiv1",
+		gRPCServiceConfigPath: "storagetransfer_grpc_service_config.json",
+		apiServiceConfigPath:  "storagetransfer_v1.yaml",
+		// GA after 2021/08/27
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
