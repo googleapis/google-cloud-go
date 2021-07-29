@@ -182,6 +182,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 
 	// Store the content from the first Recv in the client buffer for reading
 	// later.
+	// TODO: Capture incremental CRC32C for this chunk.
 	r.leftovers = msg.GetChecksummedData().GetContent()
 	r.remain = size
 	r.size = size
@@ -593,6 +594,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			msg = res.response
 		}
 
+		// TODO: Capture incremental CRC32C for this chunk.
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
 		leftover := len(content) - cp
