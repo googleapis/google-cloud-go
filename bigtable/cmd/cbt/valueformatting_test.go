@@ -382,7 +382,7 @@ func TestValueFormattingFormat(t *testing.T) {
 			"      >\n"
 
 	for _, col := range []string{"address", "person"} {
-		s, err = formatting.format("      ", "f1", "f1:" + col, in)
+		s, err = formatting.format("      ", "f1", "f1:"+col, in)
 		assertNoError(t, err)
 		assertEqual(t, s, pbExpect)
 	}
