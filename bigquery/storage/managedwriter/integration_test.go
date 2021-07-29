@@ -120,7 +120,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testDefaultStream(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("DefaultStream_DynamicJSON", func(t *testing.T) {
+		t.Run("DefaultStreamDynamicJSON", func(t *testing.T) {
 			t.Parallel()
 			testDefaultStreamDynamicJSON(ctx, t, mwClient, bqClient, dataset)
 		})
@@ -265,7 +265,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	results[0].Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleData))),
-		withDistinctValues("name", int64(len(sampleData))))
+		withDistinctValues("name", int64(len(sampleData))),
+		withDistinctValues("value", int64(len(sampleData))))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {

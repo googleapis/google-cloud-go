@@ -94,20 +94,27 @@ func validateTableConstraints(ctx context.Context, t *testing.T, client *bigquer
 	}
 }
 
-// constraint is a specific table constraint
+// constraint is a specific table constraint.
 type constraint struct {
-	projection    string
+	// sql fragment that projects a result value
+	projection string
+
+	// all validation constraints must eval as int64.
 	expectedValue int64
-	allowedError  int64
+
+	// if nonzero, the constraint value must be within allowedError distance of expectedValue.
+	allowedError int64
 }
 
+// validationInfo is keyed by the result column name.
 type validationInfo struct {
 	constraints map[string]*constraint
 }
 
+// constraintOption is for building validation rules.
 type constraintOption func(*validationInfo)
 
-// WithType sets the stream type for the managed stream.
+// withExactRowCount asserts the exact total row count of the table.
 func withExactRowCount(totalRows int64) constraintOption {
 	return func(vi *validationInfo) {
 		result_col := "total_rows"
@@ -118,6 +125,7 @@ func withExactRowCount(totalRows int64) constraintOption {
 	}
 }
 
+// withNullCount asserts the number of null values in a column.
 func withNullCount(colname string, nullcount int64) constraintOption {
 	return func(vi *validationInfo) {
 		result_col := fmt.Sprintf("nullcol_count_%s", colname)
@@ -128,6 +136,7 @@ func withNullCount(colname string, nullcount int64) constraintOption {
 	}
 }
 
+// withNonNullCount asserts the number of non null values in a column.
 func withNonNullCount(colname string, nullcount int64) constraintOption {
 	return func(vi *validationInfo) {
 		result_col := fmt.Sprintf("nonnullcol_count_%s", colname)
@@ -138,6 +147,7 @@ func withNonNullCount(colname string, nullcount int64) constraintOption {
 	}
 }
 
+// withDistinctValues validates the exact cardinality of a column.
 func withDistinctValues(colname string, distinctVals int64) constraintOption {
 	return func(vi *validationInfo) {
 		result_col := fmt.Sprintf("distinct_count_%s", colname)
@@ -148,6 +158,7 @@ func withDistinctValues(colname string, distinctVals int64) constraintOption {
 	}
 }
 
+// withApproxDistinctValues validates the approximate cardinality of a column with an error bound.
 func withApproxDistinctValues(colname string, approxValues int64, errorBound int64) constraintOption {
 	return func(vi *validationInfo) {
 		result_col := fmt.Sprintf("distinct_count_%s", colname)
