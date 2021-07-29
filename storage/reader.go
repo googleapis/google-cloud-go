@@ -145,11 +145,45 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		return nil, err
 	}
 
-	return &Reader{
+	r = &Reader{
 		stream:         res,
 		reopenWithGRPC: reopen,
 		cancelStream:   cancel,
-	}, nil
+	}
+
+	// Recv the first message so we can populate the object metadata.
+	msg, err := r.stream.Recv()
+	if err != nil {
+		return nil, err
+	}
+
+	obj := msg.GetMetadata()
+	size := obj.GetSize()
+
+	r.Attrs = ReaderObjectAttrs{
+		Size:            size,
+		ContentType:     obj.GetContentType(),
+		ContentEncoding: obj.GetContentEncoding(),
+		CacheControl:    obj.GetCacheControl(),
+		LastModified:    obj.GetUpdated().AsTime(),
+		Metageneration:  obj.GetMetageneration(),
+		Generation:      obj.GetGeneration(),
+	}
+	if cr := msg.GetContentRange(); cr != nil {
+		r.Attrs.StartOffset = cr.GetStart()
+	}
+	if crc := msg.GetObjectChecksums().GetCrc32C(); crc != nil {
+		r.wantCRC = crc.GetValue()
+		r.checkCRC = true
+	}
+
+	// Store the content from the first Recv in the client buffer for reading
+	// later.
+	r.leftovers = msg.GetChecksummedData().GetContent()
+	r.remain = size
+	r.size = size
+
+	return r, nil
 }
 
 // NewRangeReader reads part of an object, reading at most length bytes
@@ -503,7 +537,6 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	n := 0
-	var usedLeftovers bool
 
 	if len(r.leftovers) > 0 {
 		cp := copy(p, r.leftovers)
@@ -516,23 +549,10 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			return cp, nil
 		}
 
-		usedLeftovers = true
 		n = cp
 	}
 
-	var err error
 	for len(p[n:]) > 0 {
-		if usedLeftovers && (r.size-r.seen) > 0 {
-			// Free up the previously opened stream so we can create a new one
-			// starting at the offset after reading the leftovers.
-			r.closeStream()
-			r.stream, r.cancelStream, err = r.reopenWithGRPC(r.seen)
-			if err != nil {
-				return n, err
-			}
-			// Reset flag to avoid reopening the client every iteration.
-			usedLeftovers = false
-		}
 		msg, err := r.stream.Recv()
 		if err != nil {
 			if err == io.EOF && r.seen == r.size {
@@ -564,13 +584,6 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			continue
 		}
 
-		if r.size == 0 {
-			r.Attrs = metadataToAttrs(msg.GetMetadata())
-			r.size = r.Attrs.Size
-			r.remain = r.Attrs.Size
-		}
-
-		// TODO: Handle Crc32C digest.
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
 		leftover := len(content) - cp
@@ -585,17 +598,6 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	return n, nil
-}
-
-// metadataToAttrs converts Object metadata into ReaderObjectAttributes.
-func metadataToAttrs(met *storagepb.Object) ReaderObjectAttrs {
-	return ReaderObjectAttrs{
-		Size:            met.GetSize(),
-		ContentType:     met.GetContentType(),
-		ContentEncoding: met.GetContentEncoding(),
-		CacheControl:    met.GetCacheControl(),
-		LastModified:    met.GetUpdateTime().AsTime(),
-	}
 }
 
 func (r *Reader) readWithRetry(p []byte) (int, error) {
