@@ -111,11 +111,11 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		Object: o.object,
 	}
 
-	// Define a function that initiates a Read with offset and length, assuming we
-	// have already read seen bytes.
-	reopen := func(seen int64) (storagepb.Storage_ReadObjectClient, context.CancelFunc, error) {
-		// If the context has already expired, return immediately without making a
-		// call.
+	// Define a function that initiates a Read with offset and length, assuming
+	// we have already read seen bytes.
+	reopen := func(seen int64) (*readStreamResponse, context.CancelFunc, error) {
+		// If the context has already expired, return immediately without making
+		// we call.
 		if err := ctx.Err(); err != nil {
 			return nil, nil, err
 		}
@@ -130,14 +130,21 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		}
 		req.ReadOffset = start
 
-		res, err := o.c.gc.ReadObject(cc, req)
+		stream, err := o.c.gc.ReadObject(cc, req)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
 			cancel()
 			return nil, nil, err
 		}
-		return res, cancel, nil
+
+		msg, err := stream.Recv()
+		if err != nil {
+			cancel()
+			return nil, nil, err
+		}
+
+		return &readStreamResponse{stream, msg}, cancel, nil
 	}
 
 	res, cancel, err := reopen(0)
@@ -146,18 +153,13 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	}
 
 	r = &Reader{
-		stream:         res,
+		stream:         res.stream,
 		reopenWithGRPC: reopen,
 		cancelStream:   cancel,
 	}
 
 	// Recv the first message so we can populate the object metadata.
-	// TODO: Handle errors better here. Attempt to reopen?
-	msg, err := r.stream.Recv()
-	if err != nil {
-		return nil, err
-	}
-
+	msg := res.response
 	obj := msg.GetMetadata()
 	size := obj.GetSize()
 
@@ -478,9 +480,14 @@ type Reader struct {
 	reopen             func(seen int64) (*http.Response, error)
 
 	stream         storagepb.Storage_ReadObjectClient
-	reopenWithGRPC func(seen int64) (storagepb.Storage_ReadObjectClient, context.CancelFunc, error)
+	reopenWithGRPC func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers      []byte
 	cancelStream   context.CancelFunc
+}
+
+type readStreamResponse struct {
+	stream   storagepb.Storage_ReadObjectClient
+	response *storagepb.ReadObjectResponse
 }
 
 // Close closes the Reader. It must be called when done reading.
@@ -575,14 +582,15 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			// Close existing stream and initialize new stream with updated
 			// offset.
 			r.closeStream()
-			r.stream, r.cancelStream, err = r.reopenWithGRPC(r.seen)
+			var res *readStreamResponse
+			res, r.cancelStream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
 				// Cannot reinstantiate the stream so return the original error.
 				return n, e
 			}
-
-			// Try to Recv again.
-			continue
+			r.stream = res.stream
+			// Reopened the stream and Recv'd the first message, so carry on.
+			msg = res.response
 		}
 
 		content := msg.GetChecksummedData().GetContent()
