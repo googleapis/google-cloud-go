@@ -115,7 +115,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 		fc:             newFlowController(0, 0),
 	}
 	ms.streamSettings.streamID = "FOO"
-	ms.streamSettings.TracePrefix = "TRACE"
+	ms.streamSettings.TraceID = "TRACE"
 	ms.schemaDescriptor = schema
 
 	fakeData := [][]byte{
