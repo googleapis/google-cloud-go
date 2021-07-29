@@ -847,8 +847,8 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	bufSize := len(content)
 	buf := make([]byte, bufSize)
 
-	// Read in 4KB chunks.
-	chunk := 4 << 10
+	// Read in smaller chunks, offset to provoke reading across a Recv boundary.
+	chunk := 4<<10 + 1234
 	offset := 0
 	for {
 		end := math.Min(float64(offset+chunk), float64(bufSize))
