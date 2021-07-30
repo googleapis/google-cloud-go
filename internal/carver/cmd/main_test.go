@@ -81,10 +81,9 @@ func TestBumpSemverPatch(t *testing.T) {
 
 func TestParsePkgName(t *testing.T) {
 	tests := []struct {
-		name    string
-		in      string
-		want    string
-		wantErr bool
+		name string
+		in   string
+		want string
 	}{
 		{
 			name: "valid",
@@ -97,22 +96,17 @@ func TestParsePkgName(t *testing.T) {
 			want: "cx",
 		},
 		{
-			name:    "invalid",
-			in:      "cloud.google.com",
-			wantErr: true,
+			name: "invalid",
+			in:   "cloud.google.com/go",
+			want: "go",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parsePkgName(tt.in)
-			if tt.wantErr && err == nil {
-				t.Fatalf("parsePkgName(%q) = nil, want error", tt.in)
-			}
-			if !tt.wantErr && err != nil {
-				t.Fatalf("parsePkgName(%q) = %v, wantErr false", tt.in, err)
-			}
+			mi := &modInfo{name: tt.in}
+			got := mi.PkgName()
 			if got != tt.want {
-				t.Fatalf("parsePkgName(%q) = %q, want %q", tt.in, got, tt.want)
+				t.Fatalf("PkgName() = %q, want %q", got, tt.want)
 			}
 		})
 	}
