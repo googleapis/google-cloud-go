@@ -40,7 +40,7 @@ func TestTableParentFromStreamName(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		got := tableParentFromStreamName(tc.in)
+		got := TableParentFromStreamName(tc.in)
 		if got != tc.want {
 			t.Errorf("mismatch on %s: got %s want %s", tc.in, got, tc.want)
 		}
