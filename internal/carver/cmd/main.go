@@ -106,6 +106,9 @@ func (c *carver) Run() error {
 	if err := c.CreateChildModule(); err != nil {
 		return fmt.Errorf("failed to create child module: %v", err)
 	}
+	if err := c.FixupSnippets(); err != nil {
+		return fmt.Errorf("failed to update snippet module: %v", err)
+	}
 	if err := c.GitCommit(); err != nil {
 		return fmt.Errorf("failed to create child module: %v", err)
 	}
@@ -318,6 +321,30 @@ func (c *carver) CreateChildModule() error {
 	cmd.Dir = c.rootMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to tidy parent module: %s", b)
+	}
+	return nil
+}
+
+func (c *carver) FixupSnippets() error {
+	log.Println("Fixing snippets")
+	snippetsModDir := filepath.Join(c.rootMod.path, "internal", "generated", "snippets")
+	childRelPath := strings.TrimPrefix(c.childMod.path, c.rootMod.path)
+	cmd := exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.childMod.name, c.childMod.futureTagVersion))
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to require module: %s", b)
+	}
+
+	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=../../..%s", c.childMod.name, c.childMod.futureTagVersion, childRelPath))
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to add replace module: %s", b)
+	}
+
+	cmd = exec.Command("go", "mod", "tidy")
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to tidy child module: %s", b)
 	}
 	return nil
 }
