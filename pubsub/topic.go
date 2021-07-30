@@ -102,7 +102,7 @@ type PublishSettings struct {
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
 	BufferedByteLimit int
 
-	// MessageRetentinDuration indicates the minimum duration to retain a message after
+	// MessageRetentionDuration indicates the minimum duration to retain a message after
 	// it is published to the topic.
 	MessageRetentionDuration time.Duration
 }
@@ -237,7 +237,6 @@ type TopicConfigToUpdate struct {
 	MessageStoragePolicy *MessageStoragePolicy
 
 	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
-	//
 	// If set to a negative value, this clears RetentionDuration from the topic.
 	RetentionDuration time.Duration
 }

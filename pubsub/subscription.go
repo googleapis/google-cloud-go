@@ -285,20 +285,19 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		pbRetryPolicy = cfg.RetryPolicy.toProto()
 	}
 	return &pb.Subscription{
-		Name:                          name,
-		Topic:                         cfg.Topic.name,
-		PushConfig:                    pbPushConfig,
-		AckDeadlineSeconds:            trunc32(int64(cfg.AckDeadline.Seconds())),
-		RetainAckedMessages:           cfg.RetainAckedMessages,
-		MessageRetentionDuration:      retentionDuration,
-		Labels:                        cfg.Labels,
-		ExpirationPolicy:              expirationPolicyToProto(cfg.ExpirationPolicy),
-		EnableMessageOrdering:         cfg.EnableMessageOrdering,
-		DeadLetterPolicy:              pbDeadLetter,
-		Filter:                        cfg.Filter,
-		RetryPolicy:                   pbRetryPolicy,
-		Detached:                      cfg.Detached,
-		TopicMessageRetentionDuration: durpb.New(cfg.TopicMessageRetentionDuration),
+		Name:                     name,
+		Topic:                    cfg.Topic.name,
+		PushConfig:               pbPushConfig,
+		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
+		RetainAckedMessages:      cfg.RetainAckedMessages,
+		MessageRetentionDuration: retentionDuration,
+		Labels:                   cfg.Labels,
+		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
+		EnableMessageOrdering:    cfg.EnableMessageOrdering,
+		DeadLetterPolicy:         pbDeadLetter,
+		Filter:                   cfg.Filter,
+		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
