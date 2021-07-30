@@ -39,7 +39,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 15 * time.Second
+	defaultTestTimeout = 30 * time.Second
 )
 
 var testSimpleSchema = bigquery.Schema{
