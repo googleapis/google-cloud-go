@@ -18,9 +18,11 @@ package gocmd
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -41,6 +43,30 @@ func ModTidy(dir string) error {
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
 	return c.Run()
+}
+
+// ModTidyAll tidies all mod files from the specified root directory.
+func ModTidyAll(dir string) error {
+	log.Printf("[%s] finding all modules", dir)
+	var modDirs []string
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == "go.mod" {
+			modDirs = append(modDirs, filepath.Dir(path))
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	for _, modDir := range modDirs {
+		if err := ModTidy(modDir); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ListModName finds a modules name for a given directory.
