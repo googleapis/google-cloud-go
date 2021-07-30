@@ -242,6 +242,11 @@
               "methods": [
                 "ImportTaxonomies"
               ]
+            },
+            "ReplaceTaxonomy": {
+              "methods": [
+                "ReplaceTaxonomy"
+              ]
             }
           }
         }
