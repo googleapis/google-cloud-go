@@ -76,11 +76,11 @@ func main() {
 		fmt.Fprintf(flag.CommandLine.Output(), "\nExample\n\tcarver -parent=/Users/me/google-cloud-go -child=asset repo-metadata=/Users/me/google-cloud-go/internal/.repo-metadata-full.json\n")
 	}
 	flag.Parse()
-	rootMod, err := RootModInfo(*parent, *parentTagPrefix, *parentTag)
+	rootMod, err := rootModInfo(*parent, *parentTagPrefix, *parentTag)
 	if err != nil {
 		log.Fatalf("unable to calculate root mod info: %v", err)
 	}
-	childMod := ChildModInfo(rootMod, *child, *childTagVersion)
+	childMod := childModInfo(rootMod, *child, *childTagVersion)
 
 	c := &carver{
 		rootMod:          rootMod,
@@ -141,7 +141,7 @@ func (mi *modInfo) PkgName() string {
 	return ss[len(ss)-1]
 }
 
-func RootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, error) {
+func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, error) {
 	log.Println("Looking up parent module import path")
 	cmd := exec.Command("go", "list", "-f", "{{.ImportPath}}")
 	cmd.Dir = rootModPath
@@ -196,7 +196,7 @@ func RootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 	}, nil
 }
 
-func ChildModInfo(rootMod *modInfo, childRelPath, childTagVersion string) *modInfo {
+func childModInfo(rootMod *modInfo, childRelPath, childTagVersion string) *modInfo {
 	return &modInfo{
 		path:             filepath.Join(rootMod.path, childRelPath),
 		name:             filepath.Join(rootMod.name, childRelPath),
