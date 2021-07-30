@@ -35,6 +35,25 @@ func ExampleNewPolicyTagManagerSerializationClient() {
 	_ = c
 }
 
+func ExamplePolicyTagManagerSerializationClient_ReplaceTaxonomy() {
+	ctx := context.Background()
+	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datacatalogpb.ReplaceTaxonomyRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ReplaceTaxonomy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)

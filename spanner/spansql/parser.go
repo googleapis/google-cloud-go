@@ -906,6 +906,17 @@ func (p *parser) sniff(want ...string) bool {
 	return true
 }
 
+// sniffTokenType reports whether the next token type is as specified.
+func (p *parser) sniffTokenType(want tokenType) bool {
+	orig := *p
+	defer func() { *p = orig }()
+
+	if p.next().typ == want {
+		return true
+	}
+	return false
+}
+
 // eat reports whether the next N tokens are as specified,
 // then consumes them.
 func (p *parser) eat(want ...string) bool {
@@ -922,13 +933,15 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
-func (p *parser) expect(want string) *parseError {
-	tok := p.next()
-	if tok.err != nil {
-		return tok.err
-	}
-	if !tok.caseEqual(want) {
-		return p.errorf("got %q while expecting %q", tok.value, want)
+func (p *parser) expect(want ...string) *parseError {
+	for _, w := range want {
+		tok := p.next()
+		if tok.err != nil {
+			return tok.err
+		}
+		if !tok.caseEqual(w) {
+			return p.errorf("got %q while expecting %q", tok.value, w)
+		}
 	}
 	return nil
 }
@@ -1070,6 +1083,13 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 			}
 			ct.Interleave.OnDelete = od
 		}
+	}
+	if p.eat(",", "ROW", "DELETION", "POLICY") {
+		rdp, err := p.parseRowDeletionPolicy()
+		if err != nil {
+			return nil, err
+		}
+		ct.RowDeletionPolicy = &rdp
 	}
 
 	return ct, nil
@@ -1225,6 +1245,15 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			return a, nil
 		}
 
+		if p.eat("ROW", "DELETION", "POLICY") {
+			rdp, err := p.parseRowDeletionPolicy()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddRowDeletionPolicy{RowDeletionPolicy: rdp}
+			return a, nil
+		}
+
 		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
@@ -1242,6 +1271,11 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 				return nil, err
 			}
 			a.Alteration = DropConstraint{Name: name}
+			return a, nil
+		}
+
+		if p.eat("ROW", "DELETION", "POLICY") {
+			a.Alteration = DropRowDeletionPolicy{}
 			return a, nil
 		}
 
@@ -1286,7 +1320,17 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 			Alteration: ca,
 		}
 		return a, nil
+	case tok.caseEqual("REPLACE"):
+		if p.eat("ROW", "DELETION", "POLICY") {
+			rdp, err := p.parseRowDeletionPolicy()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = ReplaceRowDeletionPolicy{RowDeletionPolicy: rdp}
+			return a, nil
+		}
 	}
+	return a, nil
 }
 
 func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
@@ -1885,7 +1929,7 @@ func (p *parser) parseQuery() (Query, *parseError) {
 			[ LIMIT count [ OFFSET skip_rows ] ]
 	*/
 
-	// TODO: hints, sub-selects, etc.
+	// TODO: sub-selects, etc.
 
 	if err := p.expect("SELECT"); err != nil {
 		return Query{}, err
@@ -2111,6 +2155,13 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		return nil, err
 	}
 	sf := SelectFromTable{Table: tname}
+	if p.eat("@") {
+		hints, err := p.parseHints(map[string]string{})
+		if err != nil {
+			return nil, err
+		}
+		sf.Hints = hints
+	}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
@@ -2159,46 +2210,20 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		Type: jt,
 		LHS:  sf,
 	}
-	setHint := func(k, v string) {
-		if sfj.Hints == nil {
-			sfj.Hints = make(map[string]string)
-		}
-		sfj.Hints[k] = v
-	}
+	var hints map[string]string
 	if hashJoin {
-		setHint("JOIN_METHOD", "HASH_JOIN")
+		hints = map[string]string{}
+		hints["JOIN_METHOD"] = "HASH_JOIN"
 	}
 
 	if p.eat("@") {
-		if err := p.expect("{"); err != nil {
+		h, err := p.parseHints(hints)
+		if err != nil {
 			return nil, err
 		}
-		for {
-			if p.sniff("}") {
-				break
-			}
-			tok := p.next()
-			if tok.err != nil {
-				return nil, tok.err
-			}
-			k := tok.value
-			if err := p.expect("="); err != nil {
-				return nil, err
-			}
-			tok = p.next()
-			if tok.err != nil {
-				return nil, tok.err
-			}
-			v := tok.value
-			setHint(k, v)
-			if !p.eat(",") {
-				break
-			}
-		}
-		if err := p.expect("}"); err != nil {
-			return nil, err
-		}
+		hints = h
 	}
+	sfj.Hints = hints
 
 	sfj.RHS, err = p.parseSelectFrom()
 	if err != nil {
@@ -2733,11 +2758,15 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		p.back()
 		return p.parseArrayLit()
 	case tok.caseEqual("DATE"):
-		p.back()
-		return p.parseDateLit()
+		if p.sniffTokenType(stringToken) {
+			p.back()
+			return p.parseDateLit()
+		}
 	case tok.caseEqual("TIMESTAMP"):
-		p.back()
-		return p.parseTimestampLit()
+		if p.sniffTokenType(stringToken) {
+			p.back()
+			return p.parseTimestampLit()
+		}
 	}
 
 	// TODO: struct literals
@@ -2889,6 +2918,41 @@ func (p *parser) parseAlias() (ID, *parseError) {
 	return p.parseTableOrIndexOrColumnName()
 }
 
+func (p *parser) parseHints(hints map[string]string) (map[string]string, *parseError) {
+	if hints == nil {
+		hints = map[string]string{}
+	}
+	if err := p.expect("{"); err != nil {
+		return nil, err
+	}
+	for {
+		if p.sniff("}") {
+			break
+		}
+		tok := p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		k := tok.value
+		if err := p.expect("="); err != nil {
+			return nil, err
+		}
+		tok = p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		v := tok.value
+		hints[k] = v
+		if !p.eat(",") {
+			break
+		}
+	}
+	if err := p.expect("}"); err != nil {
+		return nil, err
+	}
+	return hints, nil
+}
+
 func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name:
@@ -2930,6 +2994,37 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 		return 0, err
 	}
 	return NoActionOnDelete, nil
+}
+
+func (p *parser) parseRowDeletionPolicy() (RowDeletionPolicy, *parseError) {
+	if err := p.expect("(", "OLDER_THAN", "("); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	cname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	if err := p.expect(",", "INTERVAL"); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	tok := p.next()
+	if tok.err != nil {
+		return RowDeletionPolicy{}, tok.err
+	}
+	if tok.typ != int64Token {
+		return RowDeletionPolicy{}, p.errorf("got %q, expected int64 token", tok.value)
+	}
+	n, serr := strconv.ParseInt(tok.value, tok.int64Base, 64)
+	if serr != nil {
+		return RowDeletionPolicy{}, p.errorf("%v", serr)
+	}
+	if err := p.expect("DAY", ")", ")"); err != nil {
+		return RowDeletionPolicy{}, err
+	}
+	return RowDeletionPolicy{
+		Column:  cname,
+		NumDays: n,
+	}, nil
 }
 
 // parseCommaList parses a comma-separated list enclosed by bra and ket,

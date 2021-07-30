@@ -646,34 +646,6 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() error {
-				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{GenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationNotMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationNotMatch=1234",
-		},
-		{
-			func() error {
 				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).Attrs(ctx)
 				return err
 			},
@@ -725,6 +697,59 @@ func TestCondition(t *testing.T) {
 			got := r.Method + " " + r.RequestURI
 			if got != tt.want {
 				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("%d. timeout", i)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	readerTests := []struct {
+		fn   func() error
+		want string
+	}{
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: ",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: , x-goog-if-metageneration-match: 5",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234, MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: 5",
+		},
+	}
+
+	for i, tt := range readerTests {
+		if err := tt.fn(); err != nil && err != io.EOF {
+			t.Error(err)
+			continue
+		}
+
+		select {
+		case r := <-gotReq:
+			generationConds := r.Header.Get("x-goog-if-generation-match")
+			metagenerationConds := r.Header.Get("x-goog-if-metageneration-match")
+			got := fmt.Sprintf(
+				"x-goog-if-generation-match: %s, x-goog-if-metageneration-match: %s",
+				generationConds,
+				metagenerationConds,
+			)
+			if got != tt.want {
+				t.Errorf("%d. RequestHeaders = %q; want %q", i, got, tt.want)
 			}
 		case <-time.After(5 * time.Second):
 			t.Fatalf("%d. timeout", i)

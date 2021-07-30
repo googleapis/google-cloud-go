@@ -275,7 +275,9 @@ func TestSampleRowKeys(t *testing.T) {
 	}
 }
 
-func TestTableRowsConcurrent(t *testing.T) {
+type AntagonistFunction func(s *server, attempts int, tblName string, finished chan (bool))
+
+func SampleRowKeysConcurrentTest(t *testing.T, antagonist AntagonistFunction) {
 	s := &server{
 		tables: make(map[string]*table),
 	}
@@ -324,18 +326,7 @@ func TestTableRowsConcurrent(t *testing.T) {
 		}
 		finished <- true
 	}()
-	go func() {
-		for i := 0; i < attempts; i++ {
-			req := &btapb.DropRowRangeRequest{
-				Name:   tbl.Name,
-				Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
-			}
-			if _, err = s.DropRowRange(ctx, req); err != nil {
-				t.Fatalf("Dropping all rows: %v", err)
-			}
-		}
-		finished <- true
-	}()
+	go antagonist(s, attempts, tbl.Name, finished)
 	for i := 0; i < 2; i++ {
 		select {
 		case <-finished:
@@ -343,6 +334,69 @@ func TestTableRowsConcurrent(t *testing.T) {
 			t.Fatalf("Timeout waiting for task %d\n", i)
 		}
 	}
+}
+
+func TestSampleRowKeysVsDropRowRange(t *testing.T) {
+	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
+		ctx := context.Background()
+		for i := 0; i < attempts; i++ {
+			req := &btapb.DropRowRangeRequest{
+				Name:   tblName,
+				Target: &btapb.DropRowRangeRequest_DeleteAllDataFromTable{DeleteAllDataFromTable: true},
+			}
+			if _, err := s.DropRowRange(ctx, req); err != nil {
+				t.Fatalf("Dropping all rows: %v", err)
+			}
+		}
+		finished <- true
+	})
+}
+
+func TestSampleRowKeysVsModifyColumnFamilies(t *testing.T) {
+	SampleRowKeysConcurrentTest(t, func(s *server, attempts int, tblName string, finished chan (bool)) {
+		ctx := context.Background()
+		for i := 0; i < attempts; i++ {
+			req := &btapb.ModifyColumnFamiliesRequest{
+				Name: tblName,
+				Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+					Id:  "cf2",
+					Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
+				}},
+			}
+			if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
+				t.Fatalf("Creating column family cf2: %v", err)
+			}
+			rowCount := 100
+			for i := 0; i < rowCount; i++ {
+				req := &btpb.MutateRowRequest{
+					TableName: tblName,
+					RowKey:    []byte("row-" + strconv.Itoa(i)),
+					Mutations: []*btpb.Mutation{{
+						Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+							FamilyName:      "cf2",
+							ColumnQualifier: []byte("col"),
+							TimestampMicros: 1000,
+							Value:           []byte("value"),
+						}},
+					}},
+				}
+				if _, err := s.MutateRow(ctx, req); err != nil {
+					t.Fatalf("Populating table: %v", err)
+				}
+			}
+			req = &btapb.ModifyColumnFamiliesRequest{
+				Name: tblName,
+				Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+					Id:  "cf2",
+					Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Drop{Drop: true},
+				}},
+			}
+			if _, err := s.ModifyColumnFamilies(ctx, req); err != nil {
+				t.Fatalf("Dropping column family cf2: %v", err)
+			}
+		}
+		finished <- true
+	})
 }
 
 func TestModifyColumnFamilies(t *testing.T) {
@@ -1977,5 +2031,86 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 	}
 	if diff := cmp.Diff(gotChunks, wantChunks, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
+	}
+}
+
+func TestMutateRowEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	ctx := context.Background()
+	req := &btpb.MutateRowRequest{
+		TableName: "mytable",
+		RowKey:    []byte("r"),
+		Mutations: []*btpb.Mutation{},
+	}
+
+	resp, err := srv.MutateRow(ctx, req)
+	if resp != nil ||
+		fmt.Sprint(err) !=
+			"rpc error: code = InvalidArgument"+
+				" desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+type bigtableTestingMutateRowsServer struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableTestingMutateRowsServer) Send(m *btpb.MutateRowsResponse) error {
+	return nil
+}
+
+func TestMutateRowsEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	req := &btpb.MutateRowsRequest{
+		TableName: "mytable",
+		Entries: []*btpb.MutateRowsRequest_Entry{
+			{Mutations: []*btpb.Mutation{}},
+			{Mutations: []*btpb.Mutation{}},
+		},
+	}
+
+	err := srv.MutateRows(req, &bigtableTestingMutateRowsServer{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = InvalidArgument "+
+			"desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
+	row := &row{
+		key: "row",
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					"col1": {{ts: 1000, value: []byte("val2")}},
+					"col2": {
+						{ts: 1000, value: []byte("val2")},
+						{ts: 1000, value: []byte("val3")},
+					},
+				},
+				colNames: []string{"col1", "col2"},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter *btpb.RowFilter
+		want   bool
+	}{
+		// The regexp-based filters perform whole-string, case-sensitive matches.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{1}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{2}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{3}}, false},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerRowOffsetFilter{4}}, false},
+	} {
+		got, err := filterRow(test.filter, row.copy())
+		if err != nil {
+			t.Errorf("%s: got unexpected error: %v", proto.CompactTextString(test.filter), err)
+		}
+		if got != test.want {
+			t.Errorf("%s: got %t, want %t", proto.CompactTextString(test.filter), got, test.want)
+		}
 	}
 }
