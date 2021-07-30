@@ -167,6 +167,13 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	obj := msg.GetMetadata()
 	size := obj.GetSize()
 
+	// If offset is negative, we read the remaining bytes of content starting
+	// at the offset relative to the end. Thus the absolute value of the offset
+	// is the size of the portion to be read.
+	if offset < 0 {
+		size = -offset
+	}
+
 	r.Attrs = ReaderObjectAttrs{
 		Size:            size,
 		ContentType:     obj.GetContentType(),
@@ -179,7 +186,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	if cr := msg.GetContentRange(); cr != nil {
 		r.Attrs.StartOffset = cr.GetStart()
 	}
-	if msg.GetObjectChecksums().Crc32C != nil {
+	// Only support checksums when reading an entire object, not a range.
+	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
 		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
 		r.checkCRC = true
 	}
