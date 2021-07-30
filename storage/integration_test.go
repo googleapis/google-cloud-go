@@ -870,6 +870,9 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
+	// TODO: Remove this once v2 rollout is complete.
+	t.SkipNow()
+
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data.
