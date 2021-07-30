@@ -1,3 +1,17 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package main
 
 import (
@@ -36,7 +50,7 @@ func main() {
 	// Find relative sub-module
 	submodules := map[string]bool{}
 	for _, dir := range modDirs {
-		name, err := ModName(dir)
+		name, err := modName(dir)
 		if err != nil {
 			log.Fatalf("unable to lookup mod dir")
 		}
@@ -54,7 +68,7 @@ func main() {
 		log.Fatalf("unable to pull tags: %v", err)
 	}
 
-	tag, err := LatestTag(rootDir)
+	tag, err := latestTag(rootDir)
 	if err != nil {
 		log.Fatalf("unable to find tag: %v", err)
 	}
@@ -66,7 +80,7 @@ func main() {
 		log.Fatalf("unable to reset to tag: %v", err)
 	}
 
-	changes, err := GitFilesChanges(rootDir)
+	changes, err := gitFilesChanges(rootDir)
 	if err != nil {
 		log.Fatalf("unable to get files changed: %v", err)
 	}
@@ -93,7 +107,7 @@ func main() {
 	fmt.Printf("::set-output name=submodules::%s", b)
 }
 
-func ModName(dir string) (string, error) {
+func modName(dir string) (string, error) {
 	c := exec.Command("go", "list", "-m")
 	c.Dir = dir
 	b, err := c.Output()
@@ -104,7 +118,7 @@ func ModName(dir string) (string, error) {
 	return string(b), nil
 }
 
-func LatestTag(dir string) (string, error) {
+func latestTag(dir string) (string, error) {
 	c := exec.Command("git", "rev-list", "--tags", "--max-count=1")
 	c.Dir = dir
 	b, err := c.Output()
@@ -122,7 +136,7 @@ func LatestTag(dir string) (string, error) {
 	return string(b), nil
 }
 
-func GitFilesChanges(dir string) ([]string, error) {
+func gitFilesChanges(dir string) ([]string, error) {
 	c := exec.Command("git", "diff", "--name-only", "origin/master")
 	c.Dir = dir
 	b, err := c.Output()
