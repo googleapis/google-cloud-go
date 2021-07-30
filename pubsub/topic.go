@@ -37,6 +37,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -148,11 +149,12 @@ func (c *Client) CreateTopic(ctx context.Context, topicID string) (*Topic, error
 func (c *Client) CreateTopicWithConfig(ctx context.Context, topicID string, tc *TopicConfig) (*Topic, error) {
 	t := c.Topic(topicID)
 	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{
-		Name:                 t.name,
-		Labels:               tc.Labels,
-		MessageStoragePolicy: messageStoragePolicyToProto(&tc.MessageStoragePolicy),
-		KmsKeyName:           tc.KMSKeyName,
-		SchemaSettings:       schemaSettingsToProto(tc.SchemaSettings),
+		Name:                     t.name,
+		Labels:                   tc.Labels,
+		MessageStoragePolicy:     messageStoragePolicyToProto(&tc.MessageStoragePolicy),
+		KmsKeyName:               tc.KMSKeyName,
+		SchemaSettings:           schemaSettingsToProto(tc.SchemaSettings),
+		MessageRetentionDuration: durationpb.New(tc.RetentionDuration),
 	})
 	if err != nil {
 		return nil, err
@@ -204,6 +206,16 @@ type TopicConfig struct {
 	// Schema defines the schema settings upon topic creation. This cannot
 	// be modified after a topic has been created.
 	SchemaSettings *SchemaSettings
+
+	// RetentionDuration configures the minimum duration to retain a message after it is published to
+	// the topic. If this field is set, messages published to the topic in the
+	// last `message_retention_duration` are always available to subscribers. For
+	// instance, it allows any attached subscription to [seek to a
+	// timestamp](https://cloud.google.com/pubsub/docs/replay-overview#seek_to_a_time)
+	// that is up to `message_retention_duration` in the past. If this field is
+	// not set, message retention is controlled by settings on individual
+	// subscriptions. Cannot be more than 7 days or less than 10 minutes.
+	RetentionDuration time.Duration
 }
 
 // TopicConfigToUpdate describes how to update a topic.
@@ -224,7 +236,10 @@ type TopicConfigToUpdate struct {
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
 
-	MessageRetentionDuration time.Duration
+	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
+	//
+	// If set to a negative value, this clears RetentionDuration from the topic.
+	RetentionDuration time.Duration
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
@@ -233,6 +248,7 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
 		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
+		RetentionDuration:    pbt.MessageRetentionDuration.AsDuration(),
 	}
 }
 
@@ -321,6 +337,15 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	if cfg.MessageStoragePolicy != nil {
 		pt.MessageStoragePolicy = messageStoragePolicyToProto(cfg.MessageStoragePolicy)
 		paths = append(paths, "message_storage_policy")
+	}
+	if cfg.RetentionDuration != 0 {
+		if cfg.RetentionDuration > 0 {
+			pt.MessageRetentionDuration = durationpb.New(cfg.RetentionDuration)
+		} else {
+			// If set to a negative value, clear MessageRetentionDuration.
+			pt.MessageRetentionDuration = nil
+		}
+		paths = append(paths, "message_retention_duration")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,

@@ -257,6 +257,14 @@ type SubscriptionConfig struct {
 	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
 	// the endpoint will not be made.
 	Detached bool
+
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is retained
+	// after it is published to the subscription's topic. If this field is set,
+	// messages published to the subscription's topic in the last
+	// `TopicMessageRetentionDuration` are always available to subscribers.
+	//
+	// This field is set only in responses from the server and otherwise ignored.
+	TopicMessageRetentionDuration time.Duration
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -277,19 +285,20 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		pbRetryPolicy = cfg.RetryPolicy.toProto()
 	}
 	return &pb.Subscription{
-		Name:                     name,
-		Topic:                    cfg.Topic.name,
-		PushConfig:               pbPushConfig,
-		AckDeadlineSeconds:       trunc32(int64(cfg.AckDeadline.Seconds())),
-		RetainAckedMessages:      cfg.RetainAckedMessages,
-		MessageRetentionDuration: retentionDuration,
-		Labels:                   cfg.Labels,
-		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
-		EnableMessageOrdering:    cfg.EnableMessageOrdering,
-		DeadLetterPolicy:         pbDeadLetter,
-		Filter:                   cfg.Filter,
-		RetryPolicy:              pbRetryPolicy,
-		Detached:                 cfg.Detached,
+		Name:                          name,
+		Topic:                         cfg.Topic.name,
+		PushConfig:                    pbPushConfig,
+		AckDeadlineSeconds:            trunc32(int64(cfg.AckDeadline.Seconds())),
+		RetainAckedMessages:           cfg.RetainAckedMessages,
+		MessageRetentionDuration:      retentionDuration,
+		Labels:                        cfg.Labels,
+		ExpirationPolicy:              expirationPolicyToProto(cfg.ExpirationPolicy),
+		EnableMessageOrdering:         cfg.EnableMessageOrdering,
+		DeadLetterPolicy:              pbDeadLetter,
+		Filter:                        cfg.Filter,
+		RetryPolicy:                   pbRetryPolicy,
+		Detached:                      cfg.Detached,
+		TopicMessageRetentionDuration: durpb.New(cfg.TopicMessageRetentionDuration),
 	}
 }
 
@@ -305,17 +314,18 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:                 newTopic(c, pbSub.Topic),
-		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages:   pbSub.RetainAckedMessages,
-		RetentionDuration:     rd,
-		Labels:                pbSub.Labels,
-		ExpirationPolicy:      expirationPolicy,
-		EnableMessageOrdering: pbSub.EnableMessageOrdering,
-		DeadLetterPolicy:      dlp,
-		Filter:                pbSub.Filter,
-		RetryPolicy:           rp,
-		Detached:              pbSub.Detached,
+		Topic:                         newTopic(c, pbSub.Topic),
+		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:           pbSub.RetainAckedMessages,
+		RetentionDuration:             rd,
+		Labels:                        pbSub.Labels,
+		ExpirationPolicy:              expirationPolicy,
+		EnableMessageOrdering:         pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:              dlp,
+		Filter:                        pbSub.Filter,
+		RetryPolicy:                   rp,
+		Detached:                      pbSub.Detached,
+		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {

@@ -1980,3 +1980,63 @@ func TestIntegration_ValidateMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestIntegration_TopicRetention(t *testing.T) {
+	ctx := context.Background()
+	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	c := integrationTestClient(ctx, t, opts...)
+	defer c.Close()
+
+	tc := TopicConfig{
+		RetentionDuration: 50 * time.Minute,
+	}
+	topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(cfg, tc) {
+		t.Fatalf("got: %v, want %v", cfg, tc)
+	}
+
+	newDur := 11 * time.Minute
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: newDur,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != newDur {
+		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Create a subscription on the topic and read TopicMessageRetentionDuration.
+	s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sCfg, err := s.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Clear retention duration by setting to a negative value.
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: -1 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != 0 {
+		t.Fatalf("expected cleared retention duration, got: %v", got)
+	}
+}
