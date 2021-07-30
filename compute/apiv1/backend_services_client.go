@@ -21,10 +21,13 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newBackendServicesClientHook clientHook
@@ -57,13 +61,13 @@ type internalBackendServicesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddSignedUrlKey(context.Context, *computepb.AddSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AggregatedList(context.Context, *computepb.AggregatedListBackendServicesRequest, ...gax.CallOption) (*computepb.BackendServiceAggregatedList, error)
+	AggregatedList(context.Context, *computepb.AggregatedListBackendServicesRequest, ...gax.CallOption) *BackendServicesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Get(context.Context, *computepb.GetBackendServiceRequest, ...gax.CallOption) (*computepb.BackendService, error)
 	GetHealth(context.Context, *computepb.GetHealthBackendServiceRequest, ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error)
 	Insert(context.Context, *computepb.InsertBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListBackendServicesRequest, ...gax.CallOption) (*computepb.BackendServiceList, error)
+	List(context.Context, *computepb.ListBackendServicesRequest, ...gax.CallOption) *BackendServiceIterator
 	Patch(context.Context, *computepb.PatchBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Update(context.Context, *computepb.UpdateBackendServiceRequest, ...gax.CallOption) (*computepb.Operation, error)
@@ -109,7 +113,7 @@ func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *comput
 }
 
 // AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
-func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceAggregatedList, error) {
+func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
@@ -143,7 +147,7 @@ func (c *BackendServicesClient) Insert(ctx context.Context, req *computepb.Inser
 }
 
 // List retrieves the list of BackendService resources available to the specified project.
-func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceList, error) {
+func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
@@ -278,62 +282,102 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 }
 
 // AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
-func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceAggregatedList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendServices", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
+	it := &BackendServicesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.BackendServiceAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]BackendServicesScopedListPair, string, error) {
+		resp := &computepb.BackendServiceAggregatedList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendServices", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]BackendServicesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, BackendServicesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified BackendService resource.
@@ -564,59 +608,92 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 }
 
 // List retrieves the list of BackendService resources available to the specified project.
-func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
+	it := &BackendServiceIterator{}
+	req = proto.Clone(req).(*computepb.ListBackendServicesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.BackendServiceList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
+		resp := &computepb.BackendServiceList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
@@ -770,4 +847,104 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	rsp := &computepb.Operation{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// BackendServiceIterator manages a stream of *computepb.BackendService.
+type BackendServiceIterator struct {
+	items    []*computepb.BackendService
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.BackendService, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BackendServiceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackendServiceIterator) Next() (*computepb.BackendService, error) {
+	var item *computepb.BackendService
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BackendServiceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BackendServiceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// BackendServicesScopedListPair is a holder type for string/*computepb.BackendServicesScopedList map entries
+type BackendServicesScopedListPair struct {
+	Key   string
+	Value *computepb.BackendServicesScopedList
+}
+
+// BackendServicesScopedListPairIterator manages a stream of BackendServicesScopedListPair.
+type BackendServicesScopedListPairIterator struct {
+	items    []BackendServicesScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []BackendServicesScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BackendServicesScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackendServicesScopedListPairIterator) Next() (BackendServicesScopedListPair, error) {
+	var item BackendServicesScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BackendServicesScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BackendServicesScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

@@ -21,10 +21,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newRegionNetworkEndpointGroupsClientHook clientHook
@@ -52,7 +55,7 @@ type internalRegionNetworkEndpointGroupsClient interface {
 	Delete(context.Context, *computepb.DeleteRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Get(context.Context, *computepb.GetRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroup, error)
 	Insert(context.Context, *computepb.InsertRegionNetworkEndpointGroupRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListRegionNetworkEndpointGroupsRequest, ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error)
+	List(context.Context, *computepb.ListRegionNetworkEndpointGroupsRequest, ...gax.CallOption) *NetworkEndpointGroupIterator
 }
 
 // RegionNetworkEndpointGroupsClient is a client for interacting with Google Compute Engine API.
@@ -105,7 +108,7 @@ func (c *RegionNetworkEndpointGroupsClient) Insert(ctx context.Context, req *com
 }
 
 // List retrieves the list of regional network endpoint groups available to the specified project in the given region.
-func (c *RegionNetworkEndpointGroupsClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error) {
+func (c *RegionNetworkEndpointGroupsClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
@@ -306,57 +309,90 @@ func (c *regionNetworkEndpointGroupsRESTClient) Insert(ctx context.Context, req 
 }
 
 // List retrieves the list of regional network endpoint groups available to the specified project in the given region.
-func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroupList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups", req.GetProject(), req.GetRegion())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *regionNetworkEndpointGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupIterator {
+	it := &NetworkEndpointGroupIterator{}
+	req = proto.Clone(req).(*computepb.ListRegionNetworkEndpointGroupsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.NetworkEndpointGroupList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointGroup, string, error) {
+		resp := &computepb.NetworkEndpointGroupList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/networkEndpointGroups", req.GetProject(), req.GetRegion())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

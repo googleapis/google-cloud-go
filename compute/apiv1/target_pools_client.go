@@ -21,10 +21,13 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTargetPoolsClientHook clientHook
@@ -58,12 +62,12 @@ type internalTargetPoolsClient interface {
 	Connection() *grpc.ClientConn
 	AddHealthCheck(context.Context, *computepb.AddHealthCheckTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
 	AddInstance(context.Context, *computepb.AddInstanceTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AggregatedList(context.Context, *computepb.AggregatedListTargetPoolsRequest, ...gax.CallOption) (*computepb.TargetPoolAggregatedList, error)
+	AggregatedList(context.Context, *computepb.AggregatedListTargetPoolsRequest, ...gax.CallOption) *TargetPoolsScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Get(context.Context, *computepb.GetTargetPoolRequest, ...gax.CallOption) (*computepb.TargetPool, error)
 	GetHealth(context.Context, *computepb.GetHealthTargetPoolRequest, ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error)
 	Insert(context.Context, *computepb.InsertTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListTargetPoolsRequest, ...gax.CallOption) (*computepb.TargetPoolList, error)
+	List(context.Context, *computepb.ListTargetPoolsRequest, ...gax.CallOption) *TargetPoolIterator
 	RemoveHealthCheck(context.Context, *computepb.RemoveHealthCheckTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
 	RemoveInstance(context.Context, *computepb.RemoveInstanceTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
 	SetBackup(context.Context, *computepb.SetBackupTargetPoolRequest, ...gax.CallOption) (*computepb.Operation, error)
@@ -114,7 +118,7 @@ func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddI
 }
 
 // AggregatedList retrieves an aggregated list of target pools.
-func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolAggregatedList, error) {
+func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
@@ -139,7 +143,7 @@ func (c *TargetPoolsClient) Insert(ctx context.Context, req *computepb.InsertTar
 }
 
 // List retrieves a list of target pools available to the specified project and region.
-func (c *TargetPoolsClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolList, error) {
+func (c *TargetPoolsClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
@@ -325,62 +329,102 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 }
 
 // AggregatedList retrieves an aggregated list of target pools.
-func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolAggregatedList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetPools", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
+	it := &TargetPoolsScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.TargetPoolAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]TargetPoolsScopedListPair, string, error) {
+		resp := &computepb.TargetPoolAggregatedList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetPools", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]TargetPoolsScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, TargetPoolsScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified target pool.
@@ -560,59 +604,92 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 }
 
 // List retrieves a list of target pools available to the specified project and region.
-func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools", req.GetProject(), req.GetRegion())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolIterator {
+	it := &TargetPoolIterator{}
+	req = proto.Clone(req).(*computepb.ListTargetPoolsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.TargetPoolList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.TargetPool, string, error) {
+		resp := &computepb.TargetPoolList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools", req.GetProject(), req.GetRegion())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // RemoveHealthCheck removes health check URL from a target pool.
@@ -769,4 +846,104 @@ func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.Se
 	rsp := &computepb.Operation{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// TargetPoolIterator manages a stream of *computepb.TargetPool.
+type TargetPoolIterator struct {
+	items    []*computepb.TargetPool
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetPool, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TargetPoolIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TargetPoolIterator) Next() (*computepb.TargetPool, error) {
+	var item *computepb.TargetPool
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TargetPoolIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TargetPoolIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// TargetPoolsScopedListPair is a holder type for string/*computepb.TargetPoolsScopedList map entries
+type TargetPoolsScopedListPair struct {
+	Key   string
+	Value *computepb.TargetPoolsScopedList
+}
+
+// TargetPoolsScopedListPairIterator manages a stream of TargetPoolsScopedListPair.
+type TargetPoolsScopedListPairIterator struct {
+	items    []TargetPoolsScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []TargetPoolsScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TargetPoolsScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TargetPoolsScopedListPairIterator) Next() (TargetPoolsScopedListPair, error) {
+	var item TargetPoolsScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TargetPoolsScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TargetPoolsScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

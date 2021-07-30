@@ -21,10 +21,13 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newResourcePoliciesClientHook clientHook
@@ -53,12 +57,12 @@ type internalResourcePoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AggregatedList(context.Context, *computepb.AggregatedListResourcePoliciesRequest, ...gax.CallOption) (*computepb.ResourcePolicyAggregatedList, error)
+	AggregatedList(context.Context, *computepb.AggregatedListResourcePoliciesRequest, ...gax.CallOption) *ResourcePoliciesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteResourcePolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Get(context.Context, *computepb.GetResourcePolicyRequest, ...gax.CallOption) (*computepb.ResourcePolicy, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyResourcePolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertResourcePolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListResourcePoliciesRequest, ...gax.CallOption) (*computepb.ResourcePolicyList, error)
+	List(context.Context, *computepb.ListResourcePoliciesRequest, ...gax.CallOption) *ResourcePolicyIterator
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyResourcePolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsResourcePolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
@@ -98,7 +102,7 @@ func (c *ResourcePoliciesClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of resource policies.
-func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyAggregatedList, error) {
+func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
@@ -123,7 +127,7 @@ func (c *ResourcePoliciesClient) Insert(ctx context.Context, req *computepb.Inse
 }
 
 // List a list all the resource policies that have been configured for the specified project in specified region.
-func (c *ResourcePoliciesClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyList, error) {
+func (c *ResourcePoliciesClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
@@ -202,62 +206,102 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of resource policies.
-func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyAggregatedList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/resourcePolicies", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
+	it := &ResourcePoliciesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.ResourcePolicyAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]ResourcePoliciesScopedListPair, string, error) {
+		resp := &computepb.ResourcePolicyAggregatedList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/resourcePolicies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]ResourcePoliciesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, ResourcePoliciesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified resource policy.
@@ -437,59 +481,92 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 }
 
 // List a list all the resource policies that have been configured for the specified project in specified region.
-func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies", req.GetProject(), req.GetRegion())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
+	it := &ResourcePolicyIterator{}
+	req = proto.Clone(req).(*computepb.ListResourcePoliciesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.ResourcePolicyList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ResourcePolicy, string, error) {
+		resp := &computepb.ResourcePolicyList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies", req.GetProject(), req.GetRegion())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -578,4 +655,104 @@ func (c *resourcePoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 	rsp := &computepb.TestPermissionsResponse{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// ResourcePoliciesScopedListPair is a holder type for string/*computepb.ResourcePoliciesScopedList map entries
+type ResourcePoliciesScopedListPair struct {
+	Key   string
+	Value *computepb.ResourcePoliciesScopedList
+}
+
+// ResourcePoliciesScopedListPairIterator manages a stream of ResourcePoliciesScopedListPair.
+type ResourcePoliciesScopedListPairIterator struct {
+	items    []ResourcePoliciesScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []ResourcePoliciesScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ResourcePoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ResourcePoliciesScopedListPairIterator) Next() (ResourcePoliciesScopedListPair, error) {
+	var item ResourcePoliciesScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ResourcePoliciesScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ResourcePoliciesScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ResourcePolicyIterator manages a stream of *computepb.ResourcePolicy.
+type ResourcePolicyIterator struct {
+	items    []*computepb.ResourcePolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ResourcePolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ResourcePolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ResourcePolicyIterator) Next() (*computepb.ResourcePolicy, error) {
+	var item *computepb.ResourcePolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ResourcePolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ResourcePolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

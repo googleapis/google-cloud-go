@@ -21,10 +21,13 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newInstancesClientHook clientHook
@@ -89,7 +93,7 @@ type internalInstancesClient interface {
 	Connection() *grpc.ClientConn
 	AddAccessConfig(context.Context, *computepb.AddAccessConfigInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AggregatedList(context.Context, *computepb.AggregatedListInstancesRequest, ...gax.CallOption) (*computepb.InstanceAggregatedList, error)
+	AggregatedList(context.Context, *computepb.AggregatedListInstancesRequest, ...gax.CallOption) *InstancesScopedListPairIterator
 	AttachDisk(context.Context, *computepb.AttachDiskInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	BulkInsert(context.Context, *computepb.BulkInsertInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Delete(context.Context, *computepb.DeleteInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
@@ -103,8 +107,8 @@ type internalInstancesClient interface {
 	GetSerialPortOutput(context.Context, *computepb.GetSerialPortOutputInstanceRequest, ...gax.CallOption) (*computepb.SerialPortOutput, error)
 	GetShieldedInstanceIdentity(context.Context, *computepb.GetShieldedInstanceIdentityInstanceRequest, ...gax.CallOption) (*computepb.ShieldedInstanceIdentity, error)
 	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) (*computepb.InstanceList, error)
-	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) (*computepb.InstanceListReferrers, error)
+	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
+	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
 	SetDeletionProtection(context.Context, *computepb.SetDeletionProtectionInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
@@ -176,7 +180,7 @@ func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computep
 }
 
 // AggregatedList retrieves aggregated list of all of the instances in your project across all regions and zones.
-func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceAggregatedList, error) {
+func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
@@ -246,12 +250,12 @@ func (c *InstancesClient) Insert(ctx context.Context, req *computepb.InsertInsta
 }
 
 // List retrieves the list of instances contained within the specified zone.
-func (c *InstancesClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceList, error) {
+func (c *InstancesClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
 // ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
-func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceListReferrers, error) {
+func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	return c.internalClient.ListReferrers(ctx, req, opts...)
 }
 
@@ -545,62 +549,102 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 }
 
 // AggregatedList retrieves aggregated list of all of the instances in your project across all regions and zones.
-func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceAggregatedList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instances", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
+	it := &InstancesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListInstancesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.InstanceAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]InstancesScopedListPair, string, error) {
+		resp := &computepb.InstanceAggregatedList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instances", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]InstancesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, InstancesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
@@ -1197,115 +1241,181 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 }
 
 // List retrieves the list of instances contained within the specified zone.
-func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+	it := &InstanceIterator{}
+	req = proto.Clone(req).(*computepb.ListInstancesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.InstanceList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Instance, string, error) {
+		resp := &computepb.InstanceList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
-func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceListReferrers, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/referrers", req.GetProject(), req.GetZone(), req.GetInstance())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
+	it := &ReferenceIterator{}
+	req = proto.Clone(req).(*computepb.ListReferrersInstancesRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.InstanceListReferrers{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Reference, string, error) {
+		resp := &computepb.InstanceListReferrers{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/referrers", req.GetProject(), req.GetZone(), req.GetInstance())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // RemoveResourcePolicies removes resource policies from an instance.
@@ -2488,4 +2598,151 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 	rsp := &computepb.Operation{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// InstanceIterator manages a stream of *computepb.Instance.
+type InstanceIterator struct {
+	items    []*computepb.Instance
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Instance, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InstanceIterator) Next() (*computepb.Instance, error) {
+	var item *computepb.Instance
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InstanceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InstanceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// InstancesScopedListPair is a holder type for string/*computepb.InstancesScopedList map entries
+type InstancesScopedListPair struct {
+	Key   string
+	Value *computepb.InstancesScopedList
+}
+
+// InstancesScopedListPairIterator manages a stream of InstancesScopedListPair.
+type InstancesScopedListPairIterator struct {
+	items    []InstancesScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []InstancesScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *InstancesScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InstancesScopedListPairIterator) Next() (InstancesScopedListPair, error) {
+	var item InstancesScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InstancesScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InstancesScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ReferenceIterator manages a stream of *computepb.Reference.
+type ReferenceIterator struct {
+	items    []*computepb.Reference
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Reference, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ReferenceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ReferenceIterator) Next() (*computepb.Reference, error) {
+	var item *computepb.Reference
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ReferenceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ReferenceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
