@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"math"
 	"testing"
 	"time"
 
@@ -25,6 +26,7 @@ import (
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
@@ -43,6 +45,15 @@ var (
 var testSimpleSchema = bigquery.Schema{
 	{Name: "name", Type: bigquery.StringFieldType, Required: true},
 	{Name: "value", Type: bigquery.IntegerFieldType, Required: true},
+}
+
+// our test data has cardinality 5 for names, 3 for values
+var testSimpleData = []*testdata.SimpleMessage{
+	{Name: "one", Value: 1},
+	{Name: "two", Value: 2},
+	{Name: "three", Value: 3},
+	{Name: "four", Value: 1},
+	{Name: "five", Value: 2},
 }
 
 func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*Client, *bigquery.Client) {
@@ -136,12 +147,15 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testPendingStream(ctx, t, mwClient, bqClient, dataset)
 		})
+		t.Run("Instrumentation", func(t *testing.T) {
+			// Don't run this in parallel, we only want to collect stats from this subtest.
+			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
+		})
 	})
+
 }
 
 func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
-
-	// prep a suitable destination table.
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
 		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
@@ -163,18 +177,9 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	// our test data has cardinality 5 for names, 3 for values
-	testData := []*testdata.SimpleMessage{
-		{Name: "one", Value: 1},
-		{Name: "two", Value: 2},
-		{Name: "three", Value: 3},
-		{Name: "four", Value: 1},
-		{Name: "five", Value: 2},
-	}
-
 	// First, send the test rows individually.
 	var results []*AppendResult
-	for k, mesg := range testData {
+	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -188,12 +193,12 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after first send round",
-		withExactRowCount(int64(len(testData))),
-		withDistinctValues("name", int64(len(testData))))
+		withExactRowCount(int64(len(testSimpleData))),
+		withDistinctValues("name", int64(len(testSimpleData))))
 
 	// Now, send the test rows grouped into in a single append.
 	var data [][]byte
-	for k, mesg := range testData {
+	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -208,8 +213,8 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	// cardinality should not.
 	results[0].Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after second send round",
-		withExactRowCount(int64(2*len(testData))),
-		withDistinctValues("name", int64(len(testData))),
+		withExactRowCount(int64(2*len(testSimpleData))),
+		withDistinctValues("name", int64(len(testSimpleData))),
 		withDistinctValues("value", int64(3)),
 	)
 }
@@ -233,7 +238,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	sampleData := [][]byte{
+	sampleJSONData := [][]byte{
 		[]byte(`{"name": "one", "value": 1}`),
 		[]byte(`{"name": "two", "value": 2}`),
 		[]byte(`{"name": "three", "value": 3}`),
@@ -242,7 +247,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	}
 
 	var results []*AppendResult
-	for k, v := range sampleData {
+	for k, v := range sampleJSONData {
 		message := dynamicpb.NewMessage(md)
 
 		// First, json->proto message
@@ -264,9 +269,9 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(len(sampleData))),
-		withDistinctValues("name", int64(len(sampleData))),
-		withDistinctValues("value", int64(len(sampleData))))
+		withExactRowCount(int64(len(sampleJSONData))),
+		withDistinctValues("name", int64(len(sampleJSONData))),
+		withDistinctValues("value", int64(len(sampleJSONData))))
 }
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -297,16 +302,8 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	testData := []*testdata.SimpleMessage{
-		{Name: "one", Value: 1},
-		{Name: "two", Value: 2},
-		{Name: "three", Value: 3},
-		{Name: "four", Value: 1},
-		{Name: "five", Value: 2},
-	}
-
 	var expectedRows int64
-	for k, mesg := range testData {
+	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -358,16 +355,8 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	testData := []*testdata.SimpleMessage{
-		{Name: "one", Value: 1},
-		{Name: "two", Value: 2},
-		{Name: "three", Value: 3},
-		{Name: "four", Value: 1},
-		{Name: "five", Value: 2},
-	}
-
 	var results []*AppendResult
-	for k, mesg := range testData {
+	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -381,7 +370,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	// wait for the result to indicate ready, then validate.
 	results[0].Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(len(testData))))
+		withExactRowCount(int64(len(testSimpleData))))
 }
 
 func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -404,17 +393,9 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	testData := []*testdata.SimpleMessage{
-		{Name: "one", Value: 1},
-		{Name: "two", Value: 2},
-		{Name: "three", Value: 3},
-		{Name: "four", Value: 1},
-		{Name: "five", Value: 2},
-	}
-
 	// Send data.
 	var results []*AppendResult
-	for k, mesg := range testData {
+	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
@@ -426,7 +407,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		}
 	}
 	results[0].Ready()
-	wantRows := int64(len(testData))
+	wantRows := int64(len(testSimpleData))
 
 	// Mark stream complete.
 	trackedOffset, err := ms.Finalize(ctx)
@@ -447,5 +428,86 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		t.Errorf("stream errors present: %v", resp.StreamErrors)
 	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(len(testData))))
+		withExactRowCount(int64(len(testSimpleData))))
+}
+
+func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testedViews := []*view.View{
+		AppendRequestsView,
+		AppendResponsesView,
+		AppendClientOpenView,
+	}
+
+	if err := view.Register(testedViews...); err != nil {
+		t.Fatalf("couldn't register views: %v", err)
+	}
+
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessage{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(DefaultStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+
+	var results []*AppendResult
+	for k, mesg := range testSimpleData {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Errorf("failed to marshal message %d: %v", k, err)
+		}
+		data := [][]byte{b}
+		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		if err != nil {
+			t.Errorf("single-row append %d failed: %v", k, err)
+		}
+	}
+	// wait for the result to indicate ready.
+	results[0].Ready()
+	// Ick.  Stats reporting can't force flushing, and there's a race here.  Sleep to give the recv goroutine a chance
+	// to report.
+	time.Sleep(time.Second)
+
+	for _, tv := range testedViews {
+		metricData, err := view.RetrieveData(tv.Name)
+		if err != nil {
+			t.Errorf("view %q RetrieveData: %v", tv.Name, err)
+		}
+		if len(metricData) > 1 {
+			t.Errorf("%q: only expected 1 row, got %d", tv.Name, len(metricData))
+		}
+		if len(metricData[0].Tags) != 1 {
+			t.Errorf("%q: only expected 1 tag, got %d", tv.Name, len(metricData[0].Tags))
+		}
+		entry := metricData[0].Data
+		sum, ok := entry.(*view.SumData)
+		if !ok {
+			t.Errorf("unexpected metric type: %T", entry)
+		}
+		got := sum.Value
+		var want int64
+		switch tv {
+		case AppendRequestsView:
+			want = int64(len(testSimpleData))
+		case AppendResponsesView:
+			want = int64(len(testSimpleData))
+		case AppendClientOpenView:
+			want = 1
+		}
+
+		// float comparison; diff more than error bound is error
+		if math.Abs(got-float64(want)) > 0.1 {
+			t.Errorf("%q: metric mismatch, got %f want %d", tv.Name, got, want)
+		}
+	}
 }

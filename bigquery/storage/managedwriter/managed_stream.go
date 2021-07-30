@@ -143,6 +143,7 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64) (int64, er
 		},
 	}
 	resp, err := ms.c.rawClient.FlushRows(ctx, req)
+	recordStat(ms.ctx, FlushRequests, 1)
 	if err != nil {
 		return 0, err
 	}
@@ -196,9 +197,11 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	r := defaultRetryer{}
 	for {
+		recordStat(ms.ctx, AppendClientOpenCount, 1)
 		arc, err := ms.open()
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
+			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
 			if err := gax.Sleep(ms.ctx, bo); err != nil {
 				return nil, nil, err
 			}
@@ -257,6 +260,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			// we had to amend the initial request
 			err = (*arc).Send(req)
 		}
+		recordStat(ms.ctx, AppendRequests, 1)
 		if err != nil {
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
@@ -349,7 +353,9 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			resp, err := arc.Recv()
 			if err != nil {
 				nextWrite.markDone(NoStreamOffset, err, fc)
+				continue
 			}
+			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
 				fc.release(nextWrite.reqSize)
