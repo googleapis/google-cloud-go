@@ -21,13 +21,14 @@ import (
 	"fmt"
 	"testing"
 
+	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
 )
 
-var projectId = "client-debugging" // testutil.ProjID()
+var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
 
 func TestCreateGetListInstance(t *testing.T) {
