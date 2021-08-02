@@ -21,14 +21,13 @@ import (
 	"fmt"
 	"testing"
 
-	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
 )
 
-var projectId = testutil.ProjID()
+var projectId = "client-debugging" // testutil.ProjID()
 var defaultZone = "us-central1-a"
 
 func TestCreateGetListInstance(t *testing.T) {
@@ -117,11 +116,14 @@ func TestCreateGetListInstance(t *testing.T) {
 	}
 	found := false
 	element, err := itr.Next()
-	for err != iterator.Done {
+	for err == nil {
 		if element.GetName() == name {
 			found = true
 		}
 		element, err = itr.Next()
+	}
+	if err != nil && err != iterator.Done {
+		t.Fatal(err)
 	}
 	if !found {
 		t.Error("Couldn't find the instance in list response")
