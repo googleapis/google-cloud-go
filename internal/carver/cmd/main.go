@@ -94,7 +94,6 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
-	log.Println("Successfully carved out module. Changes are ready to be pushed.")
 }
 
 func (c *carver) Run() error {
@@ -304,6 +303,7 @@ func (c *carver) CreateGitTags(rootMod *modInfo) error {
 		return err
 	}
 	childPrefix := strings.TrimPrefix(strings.TrimPrefix(c.childModPath, rootMod.filePath), "/")
+	childModTag := fmt.Sprintf("%s/%s", childPrefix, c.childTagVersion)
 	log.Println("Commiting changes")
 	if !c.dryRun {
 		cmd := exec.Command("git", "add", "-A")
@@ -312,28 +312,18 @@ func (c *carver) CreateGitTags(rootMod *modInfo) error {
 			return fmt.Errorf("unable to add changes: %s", b)
 		}
 		cmd = exec.Command("git", "commit", "-m",
-			fmt.Sprintf("chore(%s): carve out sub-module", childPrefix))
+			fmt.Sprintf("chore(%s): carve out sub-module\n\nThis commit will be tagged %s and %s.", childPrefix, futureTag, childModTag))
 		cmd.Dir = c.parentModPath
 		if b, err := cmd.Output(); err != nil {
 			return fmt.Errorf("unable to commit changes: %s", b)
 		}
 	}
-	log.Printf("Tagging Root module: %s", futureTag)
-	if !c.dryRun {
-		cmd := exec.Command("git", "tag", futureTag)
-		cmd.Dir = c.parentModPath
-		if b, err := cmd.Output(); err != nil {
-			return fmt.Errorf("unable to tag root module: %s", b)
-		}
-	}
-	log.Printf("Tagging Child module: %s/%s", childPrefix, c.childTagVersion)
-	if !c.dryRun {
-		cmd := exec.Command("git", "tag", fmt.Sprintf("%s/%s", childPrefix, c.childTagVersion))
-		cmd.Dir = c.parentModPath
-		if b, err := cmd.Output(); err != nil {
-			return fmt.Errorf("unable to tag child module: %s", b)
-		}
-	}
+	log.Println("Successfully carved out module. Please run the following commands after your change is merged:")
+	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", futureTag)
+	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", childModTag)
+	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", futureTag)
+	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", childModTag)
+
 	return nil
 }
 
