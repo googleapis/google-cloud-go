@@ -464,15 +464,14 @@ func (c *networksRESTClient) List(ctx context.Context, req *computepb.ListNetwor
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Network, string, error) {
 		resp := &computepb.NetworkList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks", req.GetProject())
 
@@ -549,15 +548,14 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ExchangedPeeringRoute, string, error) {
 		resp := &computepb.ExchangedPeeringRoutesList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/networks/%v/listPeeringRoutes", req.GetProject(), req.GetNetwork())
 

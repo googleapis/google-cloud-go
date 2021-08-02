@@ -205,15 +205,14 @@ func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]PacketMirroringsScopedListPair, string, error) {
 		resp := &computepb.PacketMirroringAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/packetMirrorings", req.GetProject())
 
@@ -440,15 +439,14 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PacketMirroring, string, error) {
 		resp := &computepb.PacketMirroringList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/packetMirrorings", req.GetProject(), req.GetRegion())
 

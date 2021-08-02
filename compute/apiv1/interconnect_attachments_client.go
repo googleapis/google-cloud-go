@@ -198,15 +198,14 @@ func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]InterconnectAttachmentsScopedListPair, string, error) {
 		resp := &computepb.InterconnectAttachmentAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/interconnectAttachments", req.GetProject())
 
@@ -436,15 +435,14 @@ func (c *interconnectAttachmentsRESTClient) List(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.InterconnectAttachment, string, error) {
 		resp := &computepb.InterconnectAttachmentList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/interconnectAttachments", req.GetProject(), req.GetRegion())
 

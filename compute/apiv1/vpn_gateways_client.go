@@ -212,15 +212,14 @@ func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]VpnGatewaysScopedListPair, string, error) {
 		resp := &computepb.VpnGatewayAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnGateways", req.GetProject())
 
@@ -484,15 +483,14 @@ func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpn
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VpnGateway, string, error) {
 		resp := &computepb.VpnGatewayList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways", req.GetProject(), req.GetRegion())
 

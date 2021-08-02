@@ -240,15 +240,14 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]SubnetworksScopedListPair, string, error) {
 		resp := &computepb.SubnetworkAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
 
@@ -574,15 +573,14 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Subnetwork, string, error) {
 		resp := &computepb.SubnetworkList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
 
@@ -659,15 +657,14 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UsableSubnetwork, string, error) {
 		resp := &computepb.UsableSubnetworksAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		if pageToken != "" {
-			req.PageToken = proto.String(pageToken)
-		}
-
 		baseUrl, _ := url.Parse(c.endpoint)
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
 
