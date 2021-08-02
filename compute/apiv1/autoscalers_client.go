@@ -202,20 +202,16 @@ func (c *autoscalersRESTClient) Connection() *grpc.ClientConn {
 func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	it := &AutoscalersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAutoscalersRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]AutoscalersScopedListPair, string, error) {
 		resp := &computepb.AutoscalerAggregatedList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -243,7 +239,7 @@ func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *compute
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -441,20 +437,16 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAutoscalersRequest, opts ...gax.CallOption) *AutoscalerIterator {
 	it := &AutoscalerIterator{}
 	req = proto.Clone(req).(*computepb.ListAutoscalersRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Autoscaler, string, error) {
 		resp := &computepb.AutoscalerList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -479,7 +471,7 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

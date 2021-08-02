@@ -299,20 +299,16 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	it := &DisksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDisksRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]DisksScopedListPair, string, error) {
 		resp := &computepb.DiskAggregatedList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -340,7 +336,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -643,20 +639,16 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) *DiskIterator {
 	it := &DiskIterator{}
 	req = proto.Clone(req).(*computepb.ListDisksRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Disk, string, error) {
 		resp := &computepb.DiskList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -681,7 +673,7 @@ func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequ
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

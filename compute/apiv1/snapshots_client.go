@@ -334,20 +334,16 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
 	req = proto.Clone(req).(*computepb.ListSnapshotsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Snapshot, string, error) {
 		resp := &computepb.SnapshotList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -372,7 +368,7 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

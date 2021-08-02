@@ -523,20 +523,16 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	it := &XpnResourceIdIterator{}
 	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.XpnResourceId, string, error) {
 		resp := &computepb.ProjectsGetXpnResources{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -561,7 +557,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -618,10 +614,12 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 		resp := &computepb.XpnHostList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
 
 		jsonReq, err := m.Marshal(req)
 		if err != nil {

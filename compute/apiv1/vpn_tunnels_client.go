@@ -188,20 +188,16 @@ func (c *vpnTunnelsRESTClient) Connection() *grpc.ClientConn {
 func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelsScopedListPairIterator {
 	it := &VpnTunnelsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListVpnTunnelsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]VpnTunnelsScopedListPair, string, error) {
 		resp := &computepb.VpnTunnelAggregatedList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -229,7 +225,7 @@ func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computep
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -427,20 +423,16 @@ func (c *vpnTunnelsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelIterator {
 	it := &VpnTunnelIterator{}
 	req = proto.Clone(req).(*computepb.ListVpnTunnelsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VpnTunnel, string, error) {
 		resp := &computepb.VpnTunnelList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -465,7 +457,7 @@ func (c *vpnTunnelsRESTClient) List(ctx context.Context, req *computepb.ListVpnT
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

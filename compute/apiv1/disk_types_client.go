@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -174,20 +173,16 @@ func (c *diskTypesRESTClient) Connection() *grpc.ClientConn {
 func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDiskTypesRequest, opts ...gax.CallOption) *DiskTypesScopedListPairIterator {
 	it := &DiskTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDiskTypesRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]DiskTypesScopedListPair, string, error) {
 		resp := &computepb.DiskTypeAggregatedList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -215,7 +210,7 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -310,20 +305,16 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskTypesRequest, opts ...gax.CallOption) *DiskTypeIterator {
 	it := &DiskTypeIterator{}
 	req = proto.Clone(req).(*computepb.ListDiskTypesRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.DiskType, string, error) {
 		resp := &computepb.DiskTypeList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -348,7 +339,7 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

@@ -209,20 +209,16 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	it := &ResourcePoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]ResourcePoliciesScopedListPair, string, error) {
 		resp := &computepb.ResourcePolicyAggregatedList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -250,7 +246,7 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
@@ -492,20 +488,16 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePolicyIterator {
 	it := &ResourcePolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListResourcePoliciesRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ResourcePolicy, string, error) {
 		resp := &computepb.ResourcePolicyList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -530,7 +522,7 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}

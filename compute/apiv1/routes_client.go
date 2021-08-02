@@ -320,20 +320,16 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRequest, opts ...gax.CallOption) *RouteIterator {
 	it := &RouteIterator{}
 	req = proto.Clone(req).(*computepb.ListRoutesRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Route, string, error) {
 		resp := &computepb.RouteList{}
 		if pageSize > math.MaxInt32 {
 			req.MaxResults = proto.Uint32(math.MaxInt32)
-		} else {
+		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		req.PageToken = proto.String(pageToken)
-
-		jsonReq, err := m.Marshal(req)
-		if err != nil {
-			return nil, "", err
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
 		}
 
 		baseUrl, _ := url.Parse(c.endpoint)
@@ -358,7 +354,7 @@ func (c *routesRESTClient) List(ctx context.Context, req *computepb.ListRoutesRe
 
 		baseUrl.RawQuery = params.Encode()
 
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return nil, "", err
 		}
