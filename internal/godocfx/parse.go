@@ -93,6 +93,7 @@ type item struct {
 	Examples []example `yaml:"codeexamples,omitempty"`
 	Children []child   `yaml:"children,omitempty"`
 	AltLink  string    `yaml:"alt_link,omitempty"`
+	Status   string    `yaml:"status,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -186,6 +187,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Summary: c.Doc,
 				Langs:   onlyGo,
 				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
+				Status:  getStatus(c.Doc),
 			})
 		}
 		for _, v := range pi.Doc.Vars {
@@ -202,6 +204,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Summary: v.Doc,
 				Langs:   onlyGo,
 				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
+				Status:  getStatus(v.Doc),
 			})
 		}
 		for _, t := range pi.Doc.Types {
@@ -217,6 +220,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Langs:    onlyGo,
 				Syntax:   syntax{Content: pkgsite.PrintType(pi.Fset, t.Decl, link.toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.Fset),
+				Status:   getStatus(t.Doc),
 			}
 			// Note: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
@@ -235,6 +239,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Summary: c.Doc,
 					Langs:   onlyGo,
 					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
+					Status:  getStatus(c.Doc),
 				})
 			}
 			for _, v := range t.Vars {
@@ -251,6 +256,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Summary: v.Doc,
 					Langs:   onlyGo,
 					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
+					Status:  getStatus(v.Doc),
 				})
 			}
 
@@ -267,6 +273,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Langs:    onlyGo,
 					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.Fset),
+					Status:   getStatus(fn.Doc),
 				})
 			}
 			for _, fn := range t.Methods {
@@ -282,6 +289,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Langs:    onlyGo,
 					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.Fset),
+					Status:   getStatus(fn.Doc),
 				})
 			}
 		}
@@ -298,6 +306,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Langs:    onlyGo,
 				Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 				Examples: processExamples(fn.Examples, pi.Fset),
+				Status:   getStatus(fn.Doc),
 			})
 		}
 	}
@@ -308,6 +317,16 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 		module:     module,
 		extraFiles: extraFiles,
 	}, nil
+}
+
+// getStatus returns a possibly empty status string for the given
+// docs.
+func getStatus(doc string) string {
+	deprecated := "\nDeprecated:"
+	if strings.Contains(doc, deprecated) {
+		return "deprecated"
+	}
+	return ""
 }
 
 type linker struct {
