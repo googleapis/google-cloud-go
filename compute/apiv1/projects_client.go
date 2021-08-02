@@ -21,10 +21,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newProjectsClientHook clientHook
@@ -64,8 +67,8 @@ type internalProjectsClient interface {
 	EnableXpnResource(context.Context, *computepb.EnableXpnResourceProjectRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetProjectRequest, ...gax.CallOption) (*computepb.Project, error)
 	GetXpnHost(context.Context, *computepb.GetXpnHostProjectRequest, ...gax.CallOption) (*computepb.Project, error)
-	GetXpnResources(context.Context, *computepb.GetXpnResourcesProjectsRequest, ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error)
-	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) (*computepb.XpnHostList, error)
+	GetXpnResources(context.Context, *computepb.GetXpnResourcesProjectsRequest, ...gax.CallOption) *XpnResourceIdIterator
+	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) *ProjectIterator
 	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*Operation, error)
 	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*Operation, error)
@@ -138,12 +141,12 @@ func (c *ProjectsClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHo
 }
 
 // GetXpnResources gets service resources (a.k.a service project) associated with this host project.
-func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error) {
+func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	return c.internalClient.GetXpnResources(ctx, req, opts...)
 }
 
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
-func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) (*computepb.XpnHostList, error) {
+func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	return c.internalClient.ListXpnHosts(ctx, req, opts...)
 }
 
@@ -517,122 +520,181 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 }
 
 // GetXpnResources gets service resources (a.k.a service project) associated with this host project.
-func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
+	it := &XpnResourceIdIterator{}
+	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.ProjectsGetXpnResources{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.XpnResourceId, string, error) {
+		resp := &computepb.ProjectsGetXpnResources{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetResources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
-func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) (*computepb.XpnHostList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true}
-	body := req.GetProjectsListXpnHostsRequestResource()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
+	it := &ProjectIterator{}
+	req = proto.Clone(req).(*computepb.ListXpnHostsProjectsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.XpnHostList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Project, string, error) {
+		resp := &computepb.XpnHostList{}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		req.PageToken = proto.String(pageToken)
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // MoveDisk moves a persistent disk from one zone to another.
@@ -908,4 +970,98 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	}
 	op := &Operation{proto: rsp}
 	return op, err
+}
+
+// ProjectIterator manages a stream of *computepb.Project.
+type ProjectIterator struct {
+	items    []*computepb.Project
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Project, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ProjectIterator) Next() (*computepb.Project, error) {
+	var item *computepb.Project
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ProjectIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ProjectIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// XpnResourceIdIterator manages a stream of *computepb.XpnResourceId.
+type XpnResourceIdIterator struct {
+	items    []*computepb.XpnResourceId
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.XpnResourceId, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *XpnResourceIdIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *XpnResourceIdIterator) Next() (*computepb.XpnResourceId, error) {
+	var item *computepb.XpnResourceId
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *XpnResourceIdIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *XpnResourceIdIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
