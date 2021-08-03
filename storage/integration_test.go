@@ -929,6 +929,45 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	}
 }
 
+func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	o := client.Bucket(grpcBucket).Object("condread")
+	defer o.Delete(ctx)
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("foo"))
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().Metageneration
+
+	// Initialize gRPC client for Read testing.
+	client, err := newClientWithGRPC(ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	obj := client.Bucket(grpcBucket).Object(o.ObjectName())
+
+	if _, err := obj.Generation(gen + 1).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with nonexistent Generation")
+	}
+	if _, err := obj.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+	}
+	if _, err := obj.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+	}
+	if _, err := obj.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+		t.Fatalf("Download failed: %v", err)
+	}
+}
+
 func TestIntegration_ConditionalDownload(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)

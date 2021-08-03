@@ -68,6 +68,8 @@ func shouldRetry(err error) bool {
 	}
 	// HTTP 429, 502, 503, and 504 all map to gRPC UNAVAILABLE per
 	// https://grpc.github.io/grpc/core/md_doc_http-grpc-status-mapping.html.
+	//
+	// This is only necessary for the experimental gRPC-based media operations.
 	if st, ok := status.FromError(err); ok && st.Code() == codes.Unavailable {
 		return true
 	}

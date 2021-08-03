@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/protobuf/proto"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -112,6 +113,9 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		Bucket: b,
 		Object: o.object,
 	}
+	if o.gen >= 0 {
+		req.Generation = o.gen
+	}
 
 	// Define a function that initiates a Read with offset and length, assuming
 	// we have already read seen bytes.
@@ -131,6 +135,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 			req.ReadLimit = length - seen
 		}
 		req.ReadOffset = start
+
+		setRequestConditions(req, o.conds)
 
 		var stream storagepb.Storage_ReadObjectClient
 		var msg *storagepb.ReadObjectResponse
@@ -478,6 +484,25 @@ func setConditionsHeaders(headers http.Header, conds *Conditions) error {
 		headers.Set("x-goog-if-generation-match", "0")
 	}
 	return nil
+}
+
+func setRequestConditions(req *storagepb.ReadObjectRequest, conds *Conditions) {
+	if conds == nil {
+		return
+	}
+	if conds.MetagenerationMatch != 0 {
+		req.IfMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
+	} else if conds.MetagenerationNotMatch != 0 {
+		req.IfMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
+	}
+	switch {
+	case conds.GenerationNotMatch != 0:
+		req.IfGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
+	case conds.GenerationMatch != 0:
+		req.IfGenerationMatch = proto.Int64(conds.GenerationMatch)
+	case conds.DoesNotExist:
+		req.IfGenerationMatch = proto.Int64(0)
+	}
 }
 
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
