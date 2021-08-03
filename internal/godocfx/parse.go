@@ -49,10 +49,11 @@ type tableOfContents []*tocItem
 
 // tocItem is an item in a TOC.
 type tocItem struct {
-	UID   string     `yaml:"uid,omitempty"`
-	Name  string     `yaml:"name,omitempty"`
-	Items []*tocItem `yaml:"items,omitempty"`
-	Href  string     `yaml:"href,omitempty"`
+	UID    string     `yaml:"uid,omitempty"`
+	Name   string     `yaml:"name,omitempty"`
+	Items  []*tocItem `yaml:"items,omitempty"`
+	Href   string     `yaml:"href,omitempty"`
+	Status string     `yaml:"status,omitempty"`
 }
 
 func (t *tocItem) addItem(i *tocItem) {
@@ -169,6 +170,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 			Type:     "package",
 			Examples: processExamples(pi.Doc.Examples, pi.Fset),
 			AltLink:  "https://pkg.go.dev/" + pi.Doc.ImportPath,
+			Status:   pi.Status,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.Doc.ImportPath] = pkgPage
@@ -545,12 +547,6 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		Name: mod,
 	}
 
-	// Assume the module root has a package.
-	modTOC.addItem(&tocItem{
-		UID:  mod,
-		Name: mod,
-	})
-
 	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
 			Href: ef.dstRelativePath,
@@ -560,15 +556,17 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 
 	toc = append(toc, modTOC)
 
-	if len(pis) == 1 {
-		// The module only has one package.
-		return toc
-	}
-
 	trimmedPkgs := []string{}
+	statuses := map[string]string{}
 	for _, pi := range pis {
 		importPath := pi.Doc.ImportPath
 		if importPath == mod {
+			// Add the module root package immediately with the full name.
+			modTOC.addItem(&tocItem{
+				UID:    mod,
+				Name:   mod,
+				Status: pi.Status,
+			})
 			continue
 		}
 		if !strings.HasPrefix(importPath, mod) {
@@ -576,6 +574,7 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		}
 		trimmed := strings.TrimPrefix(importPath, mod+"/")
 		trimmedPkgs = append(trimmedPkgs, trimmed)
+		statuses[trimmed] = pi.Status
 	}
 
 	sort.Strings(trimmedPkgs)
@@ -583,8 +582,9 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 	for _, trimmed := range trimmedPkgs {
 		uid := mod + "/" + trimmed
 		pkgTOCItem := &tocItem{
-			UID:  uid,
-			Name: trimmed,
+			UID:    uid,
+			Name:   trimmed,
+			Status: statuses[trimmed],
 		}
 		modTOC.addItem(pkgTOCItem)
 	}
