@@ -281,10 +281,11 @@ func TestPaginationWithMaxRes(t *testing.T) {
 	for err == nil {
 		if element.GetName() == "nvidia-tesla-t4" {
 			found = true
+			break
 		}
 		element, err = itr.Next()
 	}
-	if err != iterator.Done {
+	if err != nil && err != iterator.Done {
 		t.Fatal(err)
 	}
 	if !found {
@@ -316,7 +317,7 @@ func TestPaginationDefault(t *testing.T) {
 		}
 		element, err = itr.Next()
 	}
-	if err != iterator.Done {
+	if err != nil && err != iterator.Done {
 		t.Fatal(err)
 	}
 	if !found {
