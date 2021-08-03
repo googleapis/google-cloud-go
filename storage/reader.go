@@ -30,8 +30,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -134,16 +132,23 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		}
 		req.ReadOffset = start
 
-		stream, err := o.c.gc.ReadObject(cc, req)
+		var stream storagepb.Storage_ReadObjectClient
+		var msg *storagepb.ReadObjectResponse
+		var err error
+
+		err = runWithRetry(cc, func() error {
+			stream, err = o.c.gc.ReadObject(cc, req)
+			if err != nil {
+				return err
+			}
+
+			msg, err = stream.Recv()
+
+			return err
+		})
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
-			cancel()
-			return nil, nil, err
-		}
-
-		msg, err := stream.Recv()
-		if err != nil {
 			cancel()
 			return nil, nil, err
 		}
@@ -568,14 +573,12 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 				// Let the next call to readWithGRPC return EOF.
 				return n, nil
 			}
-
-			// Do not retry PermissionDenied.
-			if st, ok := status.FromError(err); ok && st.Code() == codes.PermissionDenied {
+			if !shouldRetry(err) {
 				return n, err
 			}
 
-			// TODO: How many times do we try to read before stopping?
-			// TODO: Should we backoff?
+			// TODO: Limit number of reopen attempts.
+			// TODO: Backoff before attempting to reopen the stream.
 
 			// Save the original error to return instead of the reinit error.
 			e := err
