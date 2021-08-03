@@ -1,5 +1,23 @@
 # Changes
 
+## [0.90.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.89.0...v0.90.0) (2021-08-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **compute:** add pagination and an Operation wrapper (#4542)
+
+### Features
+
+* **compute:** add pagination and an Operation wrapper ([#4542](https://www.github.com/googleapis/google-cloud-go/issues/4542)) ([36f4649](https://www.github.com/googleapis/google-cloud-go/commit/36f46494111f6d16d103fb208d49616576dbf91e))
+* **internal/godocfx:** add status to packages and TOCs ([#4547](https://www.github.com/googleapis/google-cloud-go/issues/4547)) ([c6de69c](https://www.github.com/googleapis/google-cloud-go/commit/c6de69c710561bb2a40eff05417df4b9798c258a))
+* **internal/godocfx:** mark status of deprecated items ([#4525](https://www.github.com/googleapis/google-cloud-go/issues/4525)) ([d571c6f](https://www.github.com/googleapis/google-cloud-go/commit/d571c6f4337ec9c4807c230cd77f53b6e7db6437))
+
+
+### Bug Fixes
+
+* **internal/carver:** don't tag commits ([#4518](https://www.github.com/googleapis/google-cloud-go/issues/4518)) ([c355eb8](https://www.github.com/googleapis/google-cloud-go/commit/c355eb8ecb0bb1af0ccf55e6262ca8c0d5c7e352))
+
 ## [0.89.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.88.0...v0.89.0) (2021-07-29)
 
 
