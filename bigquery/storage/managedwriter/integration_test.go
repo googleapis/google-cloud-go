@@ -203,11 +203,11 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
-		data := append(data, b)
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
-		if err != nil {
-			t.Errorf("grouped-row append failed: %v", err)
-		}
+		data = append(data, b)
+	}
+	results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+	if err != nil {
+		t.Errorf("grouped-row append failed: %v", err)
 	}
 	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
