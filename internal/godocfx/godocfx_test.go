@@ -254,3 +254,29 @@ stem: "/appengine/docs/standard/go/reference/services/bundled"
 		}
 	}
 }
+
+func TestGetStatus(t *testing.T) {
+	tests := []struct {
+		doc  string
+		want string
+	}{
+		{
+			doc: `Size returns the size of the object in bytes.
+The returned value is always the same and is not affected by
+calls to Read or Close.
+
+Deprecated: use Reader.Attrs.Size.`,
+			want: "deprecated",
+		},
+		{
+			doc:  `This will never be deprecated!`,
+			want: "",
+		},
+	}
+
+	for _, test := range tests {
+		if got := getStatus(test.doc); got != test.want {
+			t.Errorf("getStatus(%v) got %q, want %q", test.doc, got, test.want)
+		}
+	}
+}
