@@ -16,9 +16,13 @@ package storage
 
 import (
 	"context"
+	"io"
+	"net/url"
+	"strings"
 
 	"cloud.google.com/go/internal"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // runWithRetry calls the function until it returns nil or a non-retryable error, or
@@ -34,4 +38,35 @@ func runWithRetry(ctx context.Context, call func() error) error {
 		}
 		return true, err
 	})
+}
+
+func shouldRetry(err error) bool {
+	if err == io.ErrUnexpectedEOF {
+		return true
+	}
+	switch e := err.(type) {
+	case *googleapi.Error:
+		// Retry on 429 and 5xx, according to
+		// https://cloud.google.com/storage/docs/exponential-backoff.
+		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
+	case *url.Error:
+		// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
+		// Unfortunately the error type is unexported, so we resort to string
+		// matching.
+		retriable := []string{"connection refused", "connection reset"}
+		for _, s := range retriable {
+			if strings.Contains(e.Error(), s) {
+				return true
+			}
+		}
+	case interface{ Temporary() bool }:
+		if e.Temporary() {
+			return true
+		}
+	}
+	// Unwrap is only supported in go1.13.x+
+	if e, ok := err.(interface{ Unwrap() error }); ok {
+		return shouldRetry(e.Unwrap())
+	}
+	return false
 }
