@@ -598,12 +598,11 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 				// Let the next call to readWithGRPC return EOF.
 				return n, nil
 			}
+			// This prevents reopening of the stream when the error is not
+			// retryable.
 			if !shouldRetry(err) {
 				return n, err
 			}
-
-			// TODO: Limit number of reopen attempts.
-			// TODO: Backoff before attempting to reopen the stream.
 
 			// Save the original error to return instead of the reinit error.
 			e := err
@@ -611,6 +610,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			// Close existing stream and initialize new stream with updated
 			// offset.
 			r.closeStream()
+
+			// This will immediately attempt to reopen the stream, but will
+			// backoff if further attempts are necessary.
 			var res *readStreamResponse
 			res, r.cancelStream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
