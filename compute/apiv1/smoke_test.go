@@ -259,3 +259,139 @@ func ForceDeleteSecurityPolicy(ctx context.Context, name string, client *Securit
 	}
 	client.Delete(ctx, deleteRequest)
 }
+
+func TestPaginationWithMaxRes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewAcceleratorTypesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := &computepb.ListAcceleratorTypesRequest{
+		Project:    projectId,
+		Zone:       defaultZone,
+		MaxResults: proto.Uint32(1),
+	}
+	itr := c.List(ctx, req)
+
+	found := false
+	element, err := itr.Next()
+	for err == nil {
+		if element.GetName() == "nvidia-tesla-t4" {
+			found = true
+		}
+		element, err = itr.Next()
+	}
+	if err != iterator.Done {
+		t.Fatal(err)
+	}
+	if !found {
+		t.Error("Couldn't find the accelerator in the response")
+	}
+}
+
+func TestPaginationDefault(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewAcceleratorTypesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := &computepb.ListAcceleratorTypesRequest{
+		Project: projectId,
+		Zone:    defaultZone,
+	}
+	itr := c.List(ctx, req)
+
+	found := false
+	element, err := itr.Next()
+	for err == nil {
+		if element.GetName() == "nvidia-tesla-t4" {
+			found = true
+			break
+		}
+		element, err = itr.Next()
+	}
+	if err != iterator.Done {
+		t.Fatal(err)
+	}
+	if !found {
+		t.Error("Couldn't find the accelerator in the response")
+	}
+}
+
+func TestPaginationMapResponse(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewAcceleratorTypesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := &computepb.AggregatedListAcceleratorTypesRequest{
+		Project: projectId,
+	}
+	itr := c.AggregatedList(ctx, req)
+
+	found := false
+	element, err := itr.Next()
+	for err == nil {
+		if element.Key == "zones/us-central1-a" {
+			types := element.Value.GetAcceleratorTypes()
+			for _, item := range types {
+				if item.GetName() == "nvidia-tesla-t4" {
+					found = true
+					break
+				}
+			}
+		}
+		element, err = itr.Next()
+	}
+	if err != iterator.Done {
+		t.Fatal(err)
+	}
+	if !found {
+		t.Error("Couldn't find the accelerator in the response")
+	}
+}
+
+func TestPaginationMapResponseMaxRes(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewAcceleratorTypesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req := &computepb.AggregatedListAcceleratorTypesRequest{
+		Project:    projectId,
+		MaxResults: proto.Uint32(10),
+	}
+	itr := c.AggregatedList(ctx, req)
+	found := false
+	element, err := itr.Next()
+	for err == nil {
+		if element.Key == "zones/us-central1-a" {
+			types := element.Value.GetAcceleratorTypes()
+			for _, item := range types {
+				if item.GetName() == "nvidia-tesla-t4" {
+					found = true
+					break
+				}
+			}
+		}
+		element, err = itr.Next()
+	}
+	if err != iterator.Done {
+		t.Fatal(err)
+	}
+	if !found {
+		t.Error("Couldn't find the accelerator in the response")
+	}
+}
