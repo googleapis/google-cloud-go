@@ -41,7 +41,10 @@ func main() {
 		if err != nil {
 			return err
 		}
-		if d.Name() == "go.mod" && !strings.Contains(path, "/internal/") {
+		if d.Name() == "internal" {
+			return filepath.SkipDir
+		}
+		if d.Name() == "go.mod" {
 			modDirs = append(modDirs, filepath.Dir(path))
 		}
 		return nil
