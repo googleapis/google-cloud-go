@@ -21,10 +21,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newProjectsClientHook clientHook
@@ -58,19 +61,19 @@ type internalProjectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	DisableXpnHost(context.Context, *computepb.DisableXpnHostProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	DisableXpnResource(context.Context, *computepb.DisableXpnResourceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	EnableXpnHost(context.Context, *computepb.EnableXpnHostProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	EnableXpnResource(context.Context, *computepb.EnableXpnResourceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	DisableXpnHost(context.Context, *computepb.DisableXpnHostProjectRequest, ...gax.CallOption) (*Operation, error)
+	DisableXpnResource(context.Context, *computepb.DisableXpnResourceProjectRequest, ...gax.CallOption) (*Operation, error)
+	EnableXpnHost(context.Context, *computepb.EnableXpnHostProjectRequest, ...gax.CallOption) (*Operation, error)
+	EnableXpnResource(context.Context, *computepb.EnableXpnResourceProjectRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetProjectRequest, ...gax.CallOption) (*computepb.Project, error)
 	GetXpnHost(context.Context, *computepb.GetXpnHostProjectRequest, ...gax.CallOption) (*computepb.Project, error)
-	GetXpnResources(context.Context, *computepb.GetXpnResourcesProjectsRequest, ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error)
-	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) (*computepb.XpnHostList, error)
-	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
-	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*computepb.Operation, error)
+	GetXpnResources(context.Context, *computepb.GetXpnResourcesProjectsRequest, ...gax.CallOption) *XpnResourceIdIterator
+	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) *ProjectIterator
+	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*Operation, error)
+	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ProjectsClient is a client for interacting with Google Compute Engine API.
@@ -108,22 +111,22 @@ func (c *ProjectsClient) Connection() *grpc.ClientConn {
 }
 
 // DisableXpnHost disable this project as a shared VPC host project.
-func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnHost(ctx, req, opts...)
 }
 
 // DisableXpnResource disable a service resource (also known as service project) associated with this host project.
-func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DisableXpnResource(ctx, req, opts...)
 }
 
 // EnableXpnHost enable this project as a shared VPC host project.
-func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnHost(ctx, req, opts...)
 }
 
 // EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
-func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
@@ -138,37 +141,37 @@ func (c *ProjectsClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHo
 }
 
 // GetXpnResources gets service resources (a.k.a service project) associated with this host project.
-func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error) {
+func (c *ProjectsClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
 	return c.internalClient.GetXpnResources(ctx, req, opts...)
 }
 
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
-func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) (*computepb.XpnHostList, error) {
+func (c *ProjectsClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
 	return c.internalClient.ListXpnHosts(ctx, req, opts...)
 }
 
 // MoveDisk moves a persistent disk from one zone to another.
-func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
 // MoveInstance moves an instance and its attached persistent disks from one zone to another.
-func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
-func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
 }
 
 // SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
-func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetDefaultNetworkTier(ctx, req, opts...)
 }
 
 // SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
-func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *ProjectsClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetUsageExportBucket(ctx, req, opts...)
 }
 
@@ -237,7 +240,7 @@ func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 }
 
 // DisableXpnHost disable this project as a shared VPC host project.
-func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
@@ -277,11 +280,15 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // DisableXpnResource disable a service resource (also known as service project) associated with this host project.
-func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsDisableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -328,11 +335,15 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // EnableXpnHost enable this project as a shared VPC host project.
-func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
 
@@ -372,11 +383,15 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
-func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsEnableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -423,7 +438,11 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified Project resource.
@@ -501,126 +520,181 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 }
 
 // GetXpnResources gets service resources (a.k.a service project) associated with this host project.
-func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) *XpnResourceIdIterator {
+	it := &XpnResourceIdIterator{}
+	req = proto.Clone(req).(*computepb.GetXpnResourcesProjectsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.ProjectsGetXpnResources{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.XpnResourceId, string, error) {
+		resp := &computepb.ProjectsGetXpnResources{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetResources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
-func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) (*computepb.XpnHostList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true}
-	body := req.GetProjectsListXpnHostsRequestResource()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) *ProjectIterator {
+	it := &ProjectIterator{}
+	req = proto.Clone(req).(*computepb.ListXpnHostsProjectsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.XpnHostList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Project, string, error) {
+		resp := &computepb.XpnHostList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/listXpnHosts", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // MoveDisk moves a persistent disk from one zone to another.
-func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -667,11 +741,15 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // MoveInstance moves an instance and its attached persistent disks from one zone to another.
-func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -718,11 +796,15 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
-func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
 	jsonReq, err := m.Marshal(body)
@@ -769,11 +851,15 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
-func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetDefaultNetworkTierRequestResource()
 	jsonReq, err := m.Marshal(body)
@@ -820,11 +906,15 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
-func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUsageExportLocationResource()
 	jsonReq, err := m.Marshal(body)
@@ -871,5 +961,103 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
+}
+
+// ProjectIterator manages a stream of *computepb.Project.
+type ProjectIterator struct {
+	items    []*computepb.Project
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Project, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ProjectIterator) Next() (*computepb.Project, error) {
+	var item *computepb.Project
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ProjectIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ProjectIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// XpnResourceIdIterator manages a stream of *computepb.XpnResourceId.
+type XpnResourceIdIterator struct {
+	items    []*computepb.XpnResourceId
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.XpnResourceId, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *XpnResourceIdIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *XpnResourceIdIterator) Next() (*computepb.XpnResourceId, error) {
+	var item *computepb.XpnResourceId
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *XpnResourceIdIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *XpnResourceIdIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
