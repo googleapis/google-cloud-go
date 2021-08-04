@@ -426,11 +426,13 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 	it := &IndexIterator{}
 	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
-		var resp *adminpb.ListIndexesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListIndexesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -453,9 +455,11 @@ func (c *firestoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -548,11 +552,13 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.
 	it := &FieldIterator{}
 	req = proto.Clone(req).(*adminpb.ListFieldsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Field, string, error) {
-		var resp *adminpb.ListFieldsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListFieldsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -575,9 +581,11 @@ func (c *firestoreAdminGRPCClient) ListFields(ctx context.Context, req *adminpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

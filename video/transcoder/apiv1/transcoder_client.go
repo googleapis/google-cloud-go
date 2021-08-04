@@ -281,11 +281,13 @@ func (c *gRPCClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsReq
 	it := &JobIterator{}
 	req = proto.Clone(req).(*transcoderpb.ListJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.Job, string, error) {
-		var resp *transcoderpb.ListJobsResponse
-		req.PageToken = pageToken
+		resp := &transcoderpb.ListJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -308,9 +310,11 @@ func (c *gRPCClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -380,11 +384,13 @@ func (c *gRPCClient) ListJobTemplates(ctx context.Context, req *transcoderpb.Lis
 	it := &JobTemplateIterator{}
 	req = proto.Clone(req).(*transcoderpb.ListJobTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.JobTemplate, string, error) {
-		var resp *transcoderpb.ListJobTemplatesResponse
-		req.PageToken = pageToken
+		resp := &transcoderpb.ListJobTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,9 +413,11 @@ func (c *gRPCClient) ListJobTemplates(ctx context.Context, req *transcoderpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
