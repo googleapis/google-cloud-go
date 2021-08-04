@@ -2495,7 +2495,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	if !foundBackup {
-		t.Errorf("Backup not found:", backupName)
+		t.Errorf("Backup not found: %v", backupName)
 	}
 
 	// Get backup
