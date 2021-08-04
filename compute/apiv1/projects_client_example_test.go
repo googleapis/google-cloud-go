@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -160,12 +161,18 @@ func ExampleProjectsClient_GetXpnResources() {
 	req := &computepb.GetXpnResourcesProjectsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetXpnResources(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.GetXpnResources(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleProjectsClient_ListXpnHosts() {
@@ -179,12 +186,18 @@ func ExampleProjectsClient_ListXpnHosts() {
 	req := &computepb.ListXpnHostsProjectsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListXpnHosts(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListXpnHosts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleProjectsClient_MoveDisk() {
