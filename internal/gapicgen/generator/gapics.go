@@ -310,6 +310,9 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	if len(conf.transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.transports, "+")))
 	}
+	if conf.googleapisDiscovery {
+		args = append(args, "--go_gapic_opt", "diregapic")
+	}
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
 	c.Dir = dir

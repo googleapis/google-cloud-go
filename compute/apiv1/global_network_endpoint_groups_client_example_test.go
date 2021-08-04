@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -141,12 +142,18 @@ func ExampleGlobalNetworkEndpointGroupsClient_List() {
 	req := &computepb.ListGlobalNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleGlobalNetworkEndpointGroupsClient_ListNetworkEndpoints() {
@@ -160,10 +167,16 @@ func ExampleGlobalNetworkEndpointGroupsClient_ListNetworkEndpoints() {
 	req := &computepb.ListNetworkEndpointsGlobalNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListNetworkEndpoints(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListNetworkEndpoints(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }

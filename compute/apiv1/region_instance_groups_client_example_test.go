@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -65,12 +66,18 @@ func ExampleRegionInstanceGroupsClient_List() {
 	req := &computepb.ListRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupsClient_ListInstances() {
@@ -84,12 +91,18 @@ func ExampleRegionInstanceGroupsClient_ListInstances() {
 	req := &computepb.ListInstancesRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListInstances(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupsClient_SetNamedPorts() {
