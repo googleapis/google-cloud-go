@@ -205,6 +205,21 @@ func testConfig(ctx context.Context, t *testing.T) *Client {
 	return client
 }
 
+// testConfigGPRC returns both a JSON/HTTP-based client and a gRPC-based client
+// to access GCS. testConfigGRPC skips the curent test if credentials are not
+// available or when being run in Short mode.
+func testConfigGRPC(ctx context.Context, t *testing.T) (hc *Client, gc *Client) {
+	hc = testConfig(ctx, t)
+
+	var err error
+	gc, err = newClientWithGRPC(ctx, nil)
+	if err != nil {
+		log.Fatalf("newClientWithGRPC: %v", err)
+	}
+
+	return
+}
+
 // config is like testConfig, but it doesn't need a *testing.T.
 func config(ctx context.Context) *Client {
 	ts := testutil.TokenSource(ctx, ScopeFullControl)
@@ -749,9 +764,10 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	ctx := context.Background()
 
-	// Create an HTTP client to upload test data.
-	hc := testConfig(ctx, t)
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc, gc := testConfigGRPC(ctx, t)
 	defer hc.Close()
+	defer gc.Close()
 
 	content := []byte("Hello, world this is a grpc request")
 
@@ -767,14 +783,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		}
 	}()
 
-	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-
-	obj := client.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucket).Object(name)
 
 	// Using a negative length to indicate reading to the end.
 	r, err := obj.NewRangeReader(ctx, 0, -1)
@@ -804,9 +813,10 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	ctx := context.Background()
 
-	// Create an HTTP client to upload test data.
-	hc := testConfig(ctx, t)
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc, gc := testConfigGRPC(ctx, t)
 	defer hc.Close()
+	defer gc.Close()
 
 	// Use a larger blob to test chunking logic. This is a little over 5MB.
 	content := bytes.Repeat([]byte("a"), 5<<20)
@@ -823,14 +833,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 		}
 	}()
 
-	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-
-	obj := client.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucket).Object(name)
 
 	r, err := obj.NewReader(ctx)
 	if err != nil {
@@ -866,9 +869,10 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	ctx := context.Background()
 
-	// Create an HTTP client to upload test data.
-	hc := testConfig(ctx, t)
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc, gc := testConfigGRPC(ctx, t)
 	defer hc.Close()
+	defer gc.Close()
 
 	content := []byte("Hello, world this is a grpc request")
 
@@ -884,14 +888,7 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 		}
 	}()
 
-	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-
-	obj := client.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucket).Object(name)
 
 	offset := 7
 	// Using a negative offset to start reading relative to the end of the
@@ -922,11 +919,14 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 
 func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc, gc := testConfigGRPC(ctx, t)
+	defer hc.Close()
+	defer gc.Close()
 	h := testHelper{t}
 
-	o := client.Bucket(grpcBucket).Object("condread")
+	o := hc.Bucket(grpcBucket).Object("condread")
 	defer o.Delete(ctx)
 
 	wc := o.NewWriter(ctx)
@@ -936,14 +936,7 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	gen := wc.Attrs().Generation
 	metaGen := wc.Attrs().Metageneration
 
-	// Initialize gRPC client for Read testing.
-	client, err := newClientWithGRPC(ctx, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer client.Close()
-
-	obj := client.Bucket(grpcBucket).Object(o.ObjectName())
+	obj := gc.Bucket(grpcBucket).Object(o.ObjectName())
 
 	if _, err := obj.Generation(gen + 1).NewReader(ctx); err == nil {
 		t.Fatalf("Unexpected successful download with nonexistent Generation")
