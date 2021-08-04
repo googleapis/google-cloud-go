@@ -86,27 +86,27 @@ func TestParsePkgName(t *testing.T) {
 		want string
 	}{
 		{
-			name: "valid",
+			name: "subpackage",
 			in:   "cloud.google.com/go/asset",
 			want: "asset",
 		},
 		{
-			name: "valid",
-			in:   "cloud.google.com/go/assdialogflow/cx",
+			name: "nested package",
+			in:   "cloud.google.com/go/dialogflow/cx",
 			want: "cx",
 		},
 		{
-			name: "invalid",
+			name: "root",
 			in:   "cloud.google.com/go",
 			want: "go",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mi := &modInfo{name: tt.in}
+			mi := &modInfo{importPath: tt.in}
 			got := mi.PkgName()
 			if got != tt.want {
-				t.Fatalf("PkgName() = %q, want %q", got, tt.want)
+				t.Fatalf("&modInfo{importPath: %q}PkgName() = %q, want %q", tt.in, got, tt.want)
 			}
 		})
 	}

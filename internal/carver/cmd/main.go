@@ -119,8 +119,8 @@ func (c *carver) Run() error {
 type modInfo struct {
 	// path is the filepath to the module locally.
 	path string
-	// name is the import path of the module.
-	name string
+	// importPath is the import path of the module.
+	importPath string
 	// futureTagVersion is the tag version that this module should be tagged
 	// after all operations are preformed.
 	futureTagVersion string
@@ -137,7 +137,7 @@ func (mi *modInfo) Tag() string {
 }
 
 func (mi *modInfo) PkgName() string {
-	ss := strings.Split(mi.name, "/")
+	ss := strings.Split(mi.importPath, "/")
 	return ss[len(ss)-1]
 }
 
@@ -158,7 +158,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 		}
 		return &modInfo{
 			path:             rootModPath,
-			name:             modName,
+			importPath:             modName,
 			futureTagVersion: tag,
 		}, nil
 	}
@@ -191,7 +191,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 	}
 	return &modInfo{
 		path:             rootModPath,
-		name:             modName,
+		importPath:             modName,
 		futureTagVersion: futureTag,
 	}, nil
 }
@@ -199,7 +199,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 func childModInfo(rootMod *modInfo, childRelPath, childTagVersion string) *modInfo {
 	return &modInfo{
 		path:             filepath.Join(rootMod.path, childRelPath),
-		name:             filepath.Join(rootMod.name, childRelPath),
+		importPath:             filepath.Join(rootMod.importPath, childRelPath),
 		futureTagVersion: childTagVersion,
 		tagPrefix:        childRelPath,
 	}
@@ -226,7 +226,7 @@ func (c *carver) CreateChildCommonFiles() error {
 	t := template.Must(template.New("readme").Parse(readmeTmpl))
 	name := c.name
 	if name == "" {
-		name = meta[c.childMod.name]
+		name = meta[c.childMod.importPath]
 		if name == "" {
 			return fmt.Errorf("unable to determine a name from API metadata, please set -name flag")
 		}
@@ -236,7 +236,7 @@ func (c *carver) CreateChildCommonFiles() error {
 		ImportPath string
 	}{
 		Name:       name,
-		ImportPath: c.childMod.name,
+		ImportPath: c.childMod.importPath,
 	}
 	if err := t.Execute(readmeFile, readmeData); err != nil {
 		return err
@@ -273,7 +273,7 @@ func (c *carver) CreateChildModule() error {
 		Package string
 	}{
 		Year:    time.Now().Year(),
-		RootMod: c.rootMod.name,
+		RootMod: c.rootMod.importPath,
 		Package: c.childMod.PkgName(),
 	}
 	if err := t.Execute(f, data); err != nil {
@@ -284,7 +284,7 @@ func (c *carver) CreateChildModule() error {
 	if c.dryRun {
 		return nil
 	}
-	cmd := exec.Command("go", "mod", "init", c.childMod.name)
+	cmd := exec.Command("go", "mod", "init", c.childMod.importPath)
 	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to init module: %s", b)
@@ -293,13 +293,13 @@ func (c *carver) CreateChildModule() error {
 	if err != nil {
 		return err
 	}
-	cmd = exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.rootMod.name, c.rootMod.futureTagVersion))
+	cmd = exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.rootMod.importPath, c.rootMod.futureTagVersion))
 	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to require module: %s", b)
 	}
 
-	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=%s", c.rootMod.name, c.rootMod.futureTagVersion, c.rootMod.path))
+	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=%s", c.rootMod.importPath, c.rootMod.futureTagVersion, c.rootMod.path))
 	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to add replace module: %s", b)
@@ -311,7 +311,7 @@ func (c *carver) CreateChildModule() error {
 		return fmt.Errorf("unable to tidy child module: %s", b)
 	}
 
-	cmd = exec.Command("go", "mod", "edit", "-dropreplace", fmt.Sprintf("%s@%s", c.rootMod.name, c.rootMod.futureTagVersion))
+	cmd = exec.Command("go", "mod", "edit", "-dropreplace", fmt.Sprintf("%s@%s", c.rootMod.importPath, c.rootMod.futureTagVersion))
 	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to add replace module: %s", b)
@@ -329,13 +329,13 @@ func (c *carver) FixupSnippets() error {
 	log.Println("Fixing snippets")
 	snippetsModDir := filepath.Join(c.rootMod.path, "internal", "generated", "snippets")
 	childRelPath := strings.TrimPrefix(c.childMod.path, c.rootMod.path)
-	cmd := exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.childMod.name, c.childMod.futureTagVersion))
+	cmd := exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.childMod.importPath, c.childMod.futureTagVersion))
 	cmd.Dir = snippetsModDir
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to require module: %s", b)
 	}
 
-	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=../../..%s", c.childMod.name, c.childMod.futureTagVersion, childRelPath))
+	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=../../..%s", c.childMod.importPath, c.childMod.futureTagVersion, childRelPath))
 	cmd.Dir = snippetsModDir
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to add replace module: %s", b)
