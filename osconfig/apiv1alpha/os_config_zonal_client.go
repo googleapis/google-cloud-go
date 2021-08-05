@@ -558,11 +558,13 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 	it := &OSPolicyAssignmentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
-		var resp *osconfigpb.ListOSPolicyAssignmentsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListOSPolicyAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -585,9 +587,11 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -598,11 +602,13 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 	it := &OSPolicyAssignmentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
-		var resp *osconfigpb.ListOSPolicyAssignmentRevisionsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListOSPolicyAssignmentRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -625,9 +631,11 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -682,11 +690,13 @@ func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.
 	it := &InstanceOSPoliciesComplianceIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListInstanceOSPoliciesCompliancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.InstanceOSPoliciesCompliance, string, error) {
-		var resp *osconfigpb.ListInstanceOSPoliciesCompliancesResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListInstanceOSPoliciesCompliancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -709,9 +719,11 @@ func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -743,11 +755,13 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 	it := &InventoryIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListInventoriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.Inventory, string, error) {
-		var resp *osconfigpb.ListInventoriesResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListInventoriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -770,9 +784,11 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -804,11 +820,13 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 	it := &VulnerabilityReportIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListVulnerabilityReportsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.VulnerabilityReport, string, error) {
-		var resp *osconfigpb.ListVulnerabilityReportsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListVulnerabilityReportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -831,9 +849,11 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
