@@ -1330,7 +1330,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
 		if decodedVal, ok := ptr.(Decoder); ok {
-			x, err := getGenericValue(v)
+			x, err := getGenericValue(t, v)
 			if err != nil {
 				return err
 			}
@@ -1909,7 +1909,7 @@ func getListValue(v *proto3.Value) (*proto3.ListValue, error) {
 }
 
 // getGenericValue returns the interface{} value encoded in proto3.Value.
-func getGenericValue(v *proto3.Value) (interface{}, error) {
+func getGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
 	switch x := v.GetKind().(type) {
 	case *proto3.Value_NumberValue:
 		return x.NumberValue, nil
@@ -1917,8 +1917,26 @@ func getGenericValue(v *proto3.Value) (interface{}, error) {
 		return x.BoolValue, nil
 	case *proto3.Value_StringValue:
 		return x.StringValue, nil
+	case *proto3.Value_NullValue:
+		return getTypedNil(t)
 	default:
 		return 0, errSrcVal(v, "Number, Bool, String")
+	}
+}
+
+func getTypedNil(t *sppb.Type) (interface{}, error) {
+	switch t.Code {
+	case sppb.TypeCode_FLOAT64:
+		var f *float64
+		return f, nil
+	case sppb.TypeCode_BOOL:
+		var b *bool
+		return b, nil
+	default:
+		// The encoding for most types is string, except for the ones listed
+		// above.
+		var s *string
+		return s, nil
 	}
 }
 

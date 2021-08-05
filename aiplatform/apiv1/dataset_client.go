@@ -379,11 +379,13 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Dataset, string, error) {
-		var resp *aiplatformpb.ListDatasetsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -406,9 +408,11 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -488,11 +492,13 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 	it := &DataItemIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDataItemsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItem, string, error) {
-		var resp *aiplatformpb.ListDataItemsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -515,9 +521,11 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -549,11 +557,13 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 	it := &AnnotationIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListAnnotationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Annotation, string, error) {
-		var resp *aiplatformpb.ListAnnotationsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListAnnotationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -576,9 +586,11 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
