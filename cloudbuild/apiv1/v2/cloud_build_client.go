@@ -573,11 +573,13 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 	it := &BuildIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
-		var resp *cloudbuildpb.ListBuildsResponse
-		req.PageToken = pageToken
+		resp := &cloudbuildpb.ListBuildsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -600,9 +602,11 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -699,11 +703,13 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 	it := &BuildTriggerIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
-		var resp *cloudbuildpb.ListBuildTriggersResponse
-		req.PageToken = pageToken
+		resp := &cloudbuildpb.ListBuildTriggersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -726,9 +732,11 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -906,11 +914,13 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 	it := &WorkerPoolIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
-		var resp *cloudbuildpb.ListWorkerPoolsResponse
-		req.PageToken = pageToken
+		resp := &cloudbuildpb.ListWorkerPoolsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -933,9 +943,11 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

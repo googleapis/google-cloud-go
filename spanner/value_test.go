@@ -179,6 +179,21 @@ func (c *customStructToDate) DecodeSpanner(val interface{}) (err error) {
 	return nil
 }
 
+type customStructToNull struct {
+	val interface{}
+}
+
+func (c customStructToNull) EncodeSpanner() (interface{}, error) {
+	return c.val, nil
+}
+
+func (c *customStructToNull) DecodeSpanner(val interface{}) (err error) {
+	if reflect.ValueOf(val).IsNil() {
+		return nil
+	}
+	return fmt.Errorf("val mismatch: expected nil, got %v", val)
+}
+
 // Test encoding Values.
 func TestEncodeValue(t *testing.T) {
 	type CustomString string
@@ -384,6 +399,14 @@ func TestEncodeValue(t *testing.T) {
 		{customStructToBytes{[]byte("A"), []byte("B")}, bytesProto([]byte("AB")), tBytes, "a struct to bytes"},
 		{customStructToTime{"A", "B"}, timeProto(tValue), tTime, "a struct to time"},
 		{customStructToDate{"A", "B"}, dateProto(dValue), tDate, "a struct to date"},
+		{customStructToNull{val: bNilPtr}, nullProto(), tBool, "a struct to null bool"},
+		{customStructToNull{val: []byte(nil)}, nullProto(), tBytes, "a struct to null bytes"},
+		{customStructToNull{val: sNilPtr}, nullProto(), tString, "a struct to null string"},
+		{customStructToNull{val: iNilPtr}, nullProto(), tInt, "a struct to null int"},
+		{customStructToNull{val: fNilPtr}, nullProto(), tFloat, "a struct to null float"},
+		{customStructToNull{val: numNilPtr}, nullProto(), tNumeric, "a struct to null numeric"},
+		{customStructToNull{val: dNilPtr}, nullProto(), tDate, "a struct to null date"},
+		{customStructToNull{val: tNilPtr}, nullProto(), tTime, "a struct to null timestamp"},
 		// CUSTOM NUMERIC / CUSTOM NUMERIC ARRAY
 		{CustomNumeric(*numValuePtr), numericProto(numValuePtr), tNumeric, "CustomNumeric"},
 		{CustomNullNumeric{*numValuePtr, true}, numericProto(numValuePtr), tNumeric, "CustomNullNumeric with value"},
@@ -1632,6 +1655,12 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode BYTES to CustomStructToBytes", proto: bytesProto([]byte("AB")), protoType: bytesType(), want: customStructToBytes{[]byte("A"), []byte("B")}},
 		{desc: "decode TIMESTAMP to CustomStructToTime", proto: timeProto(t1), protoType: timeType(), want: customStructToTime{"A", "B"}},
 		{desc: "decode DATE to CustomStructToDate", proto: dateProto(d1), protoType: dateType(), want: customStructToDate{"A", "B"}},
+		{desc: "decode NULL bool to CustomStructToNull", proto: nullProto(), protoType: boolType(), want: customStructToNull{}},
+		{desc: "decode NULL float to CustomStructToNull", proto: nullProto(), protoType: floatType(), want: customStructToNull{}},
+		{desc: "decode NULL string to CustomStructToNull", proto: nullProto(), protoType: stringType(), want: customStructToNull{}},
+		{desc: "decode NULL array of bool to CustomStructToNull", proto: nullProto(), protoType: listType(boolType()), want: customStructToNull{}},
+		{desc: "decode NULL array of float to CustomStructToNull", proto: nullProto(), protoType: listType(floatType()), want: customStructToNull{}},
+		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1665,7 +1694,7 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{})) {
+		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
 			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
 		}
 	}

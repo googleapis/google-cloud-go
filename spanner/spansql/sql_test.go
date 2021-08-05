@@ -292,6 +292,28 @@ func TestSQL(t *testing.T) {
 			&AlterDatabase{
 				Name: "dbname",
 				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					EnableKeyVisualizer: func(b bool) *bool { return &b }(true),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (enable_key_visualizer=true)",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					OptimizerVersion: func(i int) *int { return &i }(2),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2)",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
 					VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
 					OptimizerVersion:       func(i int) *int { return &i }(2),
 					EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
