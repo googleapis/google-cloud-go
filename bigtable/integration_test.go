@@ -2455,39 +2455,47 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		return infos, err
 	}
 
-	// Precondition: no backups
-	backups, err := list(sourceCluster)
+	// Create backup
+	uniqueID := make([]byte, 8)
+	_, err = rand.Read(uniqueID)
 	if err != nil {
-		t.Fatalf("Initial backup list: %v", err)
-	}
-	if got, want := len(backups), 0; got != want {
-		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
+		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	// Create backup
-	backupName := "mybackup"
-	defer adminClient.DeleteBackup(ctx, sourceCluster, "mybackup")
+	backupName := "mybackup-" + string(uniqueID)
+	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err = list(sourceCluster)
+	backups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
-	if got, want := len(backups), 1; got != want {
-		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	if got, want := len(backups), 1; got < want {
+		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
 	}
-	if got, want := backups[0].Name, backupName; got != want {
-		t.Errorf("Backup name: %s, want: %s", got, want)
+
+	foundBackup := false
+	for _, backup := range backups {
+		if backup.Name == backupName {
+			foundBackup = true
+
+			if got, want := backup.SourceTable, tblConf.TableID; got != want {
+				t.Errorf("Backup SourceTable: %s, want: %s", got, want)
+			}
+			if got, want := backup.ExpireTime, backup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
+			}
+
+			break
+		}
 	}
-	if got, want := backups[0].SourceTable, tblConf.TableID; got != want {
-		t.Errorf("Backup SourceTable: %s, want: %s", got, want)
-	}
-	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
+
+	if !foundBackup {
+		t.Errorf("Backup not found: %v", backupName)
 	}
 
 	// Get backup

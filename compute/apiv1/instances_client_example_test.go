@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -84,12 +85,18 @@ func ExampleInstancesClient_AggregatedList() {
 	req := &computepb.AggregatedListInstancesRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_AttachDisk() {
@@ -350,12 +357,18 @@ func ExampleInstancesClient_List() {
 	req := &computepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_ListReferrers() {
@@ -369,12 +382,18 @@ func ExampleInstancesClient_ListReferrers() {
 	req := &computepb.ListReferrersInstancesRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListReferrers(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListReferrers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_RemoveResourcePolicies() {
