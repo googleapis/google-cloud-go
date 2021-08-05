@@ -158,7 +158,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 		}
 		return &modInfo{
 			path:             rootModPath,
-			importPath:             modName,
+			importPath:       modName,
 			futureTagVersion: tag,
 		}, nil
 	}
@@ -191,7 +191,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 	}
 	return &modInfo{
 		path:             rootModPath,
-		importPath:             modName,
+		importPath:       modName,
 		futureTagVersion: futureTag,
 	}, nil
 }
@@ -199,7 +199,7 @@ func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, e
 func childModInfo(rootMod *modInfo, childRelPath, childTagVersion string) *modInfo {
 	return &modInfo{
 		path:             filepath.Join(rootMod.path, childRelPath),
-		importPath:             filepath.Join(rootMod.importPath, childRelPath),
+		importPath:       filepath.Join(rootMod.importPath, childRelPath),
 		futureTagVersion: childTagVersion,
 		tagPrefix:        childRelPath,
 	}
