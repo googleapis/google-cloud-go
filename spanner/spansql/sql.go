@@ -185,16 +185,15 @@ func (do DatabaseOptions) SQL() string {
 		hasOpt = true
 		if *do.OptimizerVersion == 0 {
 			str += "optimizer_version=null"
-
 		} else {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
 	if do.VersionRetentionPeriod != nil {
-		hasOpt = true
 		if hasOpt {
 			str += ", "
 		}
+		hasOpt = true
 		if *do.VersionRetentionPeriod == "" {
 			str += "version_retention_period=null"
 		} else {
@@ -202,10 +201,10 @@ func (do DatabaseOptions) SQL() string {
 		}
 	}
 	if do.EnableKeyVisualizer != nil {
-		hasOpt = true
 		if hasOpt {
 			str += ", "
 		}
+		hasOpt = true
 		if *do.EnableKeyVisualizer {
 			str += "enable_key_visualizer=true"
 		} else {
