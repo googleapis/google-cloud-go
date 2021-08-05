@@ -50,15 +50,13 @@ var (
 )
 
 type carver struct {
+	rootMod  *modInfo
+	childMod *modInfo
+
 	// flags
-	parentModPath      string
-	parentGitTag       string
-	parentGitTagPrefix string
-	childTagVersion    string
-	childModPath       string
-	repoMetadataPath   string
-	name               string
-	dryRun             bool
+	repoMetadataPath string
+	name             string
+	dryRun           bool
 
 	w io.WriteCloser
 }
@@ -78,16 +76,18 @@ func main() {
 		fmt.Fprintf(flag.CommandLine.Output(), "\nExample\n\tcarver -parent=/Users/me/google-cloud-go -child=asset repo-metadata=/Users/me/google-cloud-go/internal/.repo-metadata-full.json\n")
 	}
 	flag.Parse()
+	rootMod, err := rootModInfo(*parent, *parentTagPrefix, *parentTag)
+	if err != nil {
+		log.Fatalf("unable to calculate root mod info: %v", err)
+	}
+	childMod := childModInfo(rootMod, *child, *childTagVersion)
 
 	c := &carver{
-		parentModPath:      *parent,
-		parentGitTag:       *parentTag,
-		parentGitTagPrefix: *parentTagPrefix,
-		childTagVersion:    *childTagVersion,
-		childModPath:       filepath.Join(*parent, *child),
-		repoMetadataPath:   *repoMetadataPath,
-		name:               *name,
-		dryRun:             *dryRun,
+		rootMod:          rootMod,
+		childMod:         childMod,
+		repoMetadataPath: *repoMetadataPath,
+		name:             *name,
+		dryRun:           *dryRun,
 	}
 	if err := c.Run(); err != nil {
 		log.Println(err)
@@ -97,24 +97,19 @@ func main() {
 }
 
 func (c *carver) Run() error {
-	if c.parentModPath == "" || c.childModPath == "" || c.repoMetadataPath == "" {
+	if c.rootMod.path == "" || c.childMod.path == "" || c.repoMetadataPath == "" {
 		return fmt.Errorf("all required flags were not provided")
 	}
-	rootMod, err := c.LookupParentModInfo()
-	if err != nil {
-		return fmt.Errorf("failed to lookup parent mod info: %v", err)
-	}
-	childPkgName, err := parsePkgName(c.childModPath)
-	if err != nil {
-		return err
-	}
-	if err := c.CreateChildCommonFiles(childPkgName, rootMod); err != nil {
+	if err := c.CreateChildCommonFiles(); err != nil {
 		return fmt.Errorf("failed to create readme: %v", err)
 	}
-	if err := c.CreateChildModule(childPkgName, rootMod); err != nil {
+	if err := c.CreateChildModule(); err != nil {
 		return fmt.Errorf("failed to create child module: %v", err)
 	}
-	if err := c.CreateGitTags(rootMod); err != nil {
+	if err := c.FixupSnippets(); err != nil {
+		return fmt.Errorf("failed to update snippet module: %v", err)
+	}
+	if err := c.GitCommit(); err != nil {
 		return fmt.Errorf("failed to create child module: %v", err)
 	}
 
@@ -122,32 +117,55 @@ func (c *carver) Run() error {
 }
 
 type modInfo struct {
-	filePath   string
-	moduleName string
-	tag        string
+	// path is the filepath to the module locally.
+	path string
+	// importPath is the import path of the module.
+	importPath string
+	// futureTagVersion is the tag version that this module should be tagged
+	// after all operations are preformed.
+	futureTagVersion string
+	// tagPrefix is the prefix of the module used while tagging.
+	tagPrefix string
 }
 
-func (c *carver) LookupParentModInfo() (*modInfo, error) {
+// Tag returns a formatted git tag for a module.
+func (mi *modInfo) Tag() string {
+	if mi.tagPrefix == "" {
+		return mi.futureTagVersion
+	}
+	return fmt.Sprintf("%s/%s", mi.tagPrefix, mi.futureTagVersion)
+}
+
+func (mi *modInfo) PkgName() string {
+	ss := strings.Split(mi.importPath, "/")
+	return ss[len(ss)-1]
+}
+
+func rootModInfo(rootModPath, rootTagPrefix, rootTagVersion string) (*modInfo, error) {
 	log.Println("Looking up parent module import path")
 	cmd := exec.Command("go", "list", "-f", "{{.ImportPath}}")
-	cmd.Dir = c.parentModPath
+	cmd.Dir = rootModPath
 	b, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}
 	modName := string(bytes.TrimSpace(b))
 
-	if c.parentGitTag != "" {
+	if rootTagVersion != "" {
+		tag, err := bumpSemverPatch(rootTagVersion)
+		if err != nil {
+			return nil, err
+		}
 		return &modInfo{
-			filePath:   c.parentModPath,
-			moduleName: modName,
-			tag:        c.parentGitTag,
+			path:             rootModPath,
+			importPath:       modName,
+			futureTagVersion: tag,
 		}, nil
 	}
 
 	log.Println("Looking up latest parent tag")
 	cmd = exec.Command("git", "tag")
-	cmd.Dir = c.parentModPath
+	cmd.Dir = rootModPath
 	b, err = cmd.Output()
 	if err != nil {
 		return nil, err
@@ -155,11 +173,11 @@ func (c *carver) LookupParentModInfo() (*modInfo, error) {
 
 	var relevantTags []string
 	for _, tag := range strings.Split(string(bytes.TrimSpace(b)), "\n") {
-		if c.parentGitTagPrefix != "" && strings.HasPrefix(tag, c.parentGitTagPrefix) {
+		if rootTagPrefix != "" && strings.HasPrefix(tag, rootTagPrefix) {
 			relevantTags = append(relevantTags, tag)
 			continue
 		}
-		if c.parentGitTagPrefix == "" && !strings.Contains(tag, "/") && strings.HasPrefix(tag, "v") {
+		if rootTagPrefix == "" && !strings.Contains(tag, "/") && strings.HasPrefix(tag, "v") {
 			relevantTags = append(relevantTags, tag)
 		}
 	}
@@ -167,14 +185,27 @@ func (c *carver) LookupParentModInfo() (*modInfo, error) {
 	tag := relevantTags[0]
 	log.Println("Found latest tag: ", tag)
 
+	futureTag, err := bumpSemverPatch(tag)
+	if err != nil {
+		return nil, err
+	}
 	return &modInfo{
-		filePath:   c.parentModPath,
-		moduleName: modName,
-		tag:        tag,
+		path:             rootModPath,
+		importPath:       modName,
+		futureTagVersion: futureTag,
 	}, nil
 }
 
-func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error {
+func childModInfo(rootMod *modInfo, childRelPath, childTagVersion string) *modInfo {
+	return &modInfo{
+		path:             filepath.Join(rootMod.path, childRelPath),
+		importPath:       filepath.Join(rootMod.importPath, childRelPath),
+		futureTagVersion: childTagVersion,
+		tagPrefix:        childRelPath,
+	}
+}
+
+func (c *carver) CreateChildCommonFiles() error {
 	log.Printf("Reading metadata file from %q", c.repoMetadataPath)
 	metaFile, err := os.Open(c.repoMetadataPath)
 	if err != nil {
@@ -185,7 +216,7 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 		return err
 	}
 
-	readmePath := filepath.Join(c.childModPath, "README.md")
+	readmePath := filepath.Join(c.childMod.path, "README.md")
 	log.Printf("Creating %q", readmePath)
 	readmeFile, err := c.newWriterCloser(readmePath)
 	if err != nil {
@@ -193,10 +224,9 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 	}
 	defer readmeFile.Close()
 	t := template.Must(template.New("readme").Parse(readmeTmpl))
-	importPath := rootMod.moduleName + strings.TrimPrefix(c.childModPath, rootMod.filePath)
 	name := c.name
 	if name == "" {
-		name = meta[importPath]
+		name = meta[c.childMod.importPath]
 		if name == "" {
 			return fmt.Errorf("unable to determine a name from API metadata, please set -name flag")
 		}
@@ -206,13 +236,13 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 		ImportPath string
 	}{
 		Name:       name,
-		ImportPath: importPath,
+		ImportPath: c.childMod.importPath,
 	}
 	if err := t.Execute(readmeFile, readmeData); err != nil {
 		return err
 	}
 
-	changesPath := filepath.Join(c.childModPath, "CHANGES.md")
+	changesPath := filepath.Join(c.childMod.path, "CHANGES.md")
 	log.Printf("Creating %q", changesPath)
 	changesFile, err := c.newWriterCloser(changesPath)
 	if err != nil {
@@ -223,13 +253,13 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 	changesData := struct {
 		Package string
 	}{
-		Package: pkgName,
+		Package: c.childMod.PkgName(),
 	}
 	return t2.Execute(changesFile, changesData)
 }
 
-func (c *carver) CreateChildModule(pkgName string, rootMod *modInfo) error {
-	fp := filepath.Join(c.childModPath, "go_mod_tidy_hack.go")
+func (c *carver) CreateChildModule() error {
+	fp := filepath.Join(c.childMod.path, "go_mod_tidy_hack.go")
 	log.Printf("Creating %q", fp)
 	f, err := c.newWriterCloser(fp)
 	if err != nil {
@@ -243,86 +273,102 @@ func (c *carver) CreateChildModule(pkgName string, rootMod *modInfo) error {
 		Package string
 	}{
 		Year:    time.Now().Year(),
-		RootMod: rootMod.moduleName,
-		Package: pkgName,
+		RootMod: c.rootMod.importPath,
+		Package: c.childMod.PkgName(),
 	}
 	if err := t.Execute(f, data); err != nil {
 		return err
 	}
 
-	log.Printf("Creating child module in %q", c.childModPath)
+	log.Printf("Creating child module in %q", c.childMod.path)
 	if c.dryRun {
 		return nil
 	}
-	childModName := rootMod.moduleName + strings.TrimPrefix(c.childModPath, rootMod.filePath)
-	cmd := exec.Command("go", "mod", "init", childModName)
-	cmd.Dir = c.childModPath
+	cmd := exec.Command("go", "mod", "init", c.childMod.importPath)
+	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to init module: %s", b)
 	}
 
-	futureTag, err := bumpSemverPatch(rootMod.tag)
 	if err != nil {
 		return err
 	}
-	cmd = exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", rootMod.moduleName, futureTag))
-	cmd.Dir = c.childModPath
+	cmd = exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.rootMod.importPath, c.rootMod.futureTagVersion))
+	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to require module: %s", b)
 	}
 
-	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=%s", rootMod.moduleName, futureTag, rootMod.filePath))
-	cmd.Dir = c.childModPath
+	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=%s", c.rootMod.importPath, c.rootMod.futureTagVersion, c.rootMod.path))
+	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to add replace module: %s", b)
 	}
 
 	cmd = exec.Command("go", "mod", "tidy")
-	cmd.Dir = c.childModPath
+	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to tidy child module: %s", b)
 	}
 
-	cmd = exec.Command("go", "mod", "edit", "-dropreplace", fmt.Sprintf("%s@%s", rootMod.moduleName, futureTag))
-	cmd.Dir = c.childModPath
+	cmd = exec.Command("go", "mod", "edit", "-dropreplace", fmt.Sprintf("%s@%s", c.rootMod.importPath, c.rootMod.futureTagVersion))
+	cmd.Dir = c.childMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to add replace module: %s", b)
 	}
 
 	cmd = exec.Command("go", "mod", "tidy")
-	cmd.Dir = rootMod.filePath
+	cmd.Dir = c.rootMod.path
 	if b, err := cmd.Output(); err != nil {
 		return fmt.Errorf("unable to tidy parent module: %s", b)
 	}
 	return nil
 }
 
-func (c *carver) CreateGitTags(rootMod *modInfo) error {
-	futureTag, err := bumpSemverPatch(rootMod.tag)
-	if err != nil {
-		return err
+func (c *carver) FixupSnippets() error {
+	log.Println("Fixing snippets")
+	snippetsModDir := filepath.Join(c.rootMod.path, "internal", "generated", "snippets")
+	childRelPath := strings.TrimPrefix(c.childMod.path, c.rootMod.path)
+	cmd := exec.Command("go", "mod", "edit", "-require", fmt.Sprintf("%s@%s", c.childMod.importPath, c.childMod.futureTagVersion))
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to require module: %s", b)
 	}
-	childPrefix := strings.TrimPrefix(strings.TrimPrefix(c.childModPath, rootMod.filePath), "/")
-	childModTag := fmt.Sprintf("%s/%s", childPrefix, c.childTagVersion)
+
+	cmd = exec.Command("go", "mod", "edit", "-replace", fmt.Sprintf("%s@%s=../../..%s", c.childMod.importPath, c.childMod.futureTagVersion, childRelPath))
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to add replace module: %s", b)
+	}
+
+	cmd = exec.Command("go", "mod", "tidy")
+	cmd.Dir = snippetsModDir
+	if b, err := cmd.Output(); err != nil {
+		return fmt.Errorf("unable to tidy child module: %s", b)
+	}
+	return nil
+}
+
+func (c *carver) GitCommit() error {
 	log.Println("Commiting changes")
 	if !c.dryRun {
 		cmd := exec.Command("git", "add", "-A")
-		cmd.Dir = c.parentModPath
+		cmd.Dir = c.rootMod.path
 		if b, err := cmd.Output(); err != nil {
 			return fmt.Errorf("unable to add changes: %s", b)
 		}
 		cmd = exec.Command("git", "commit", "-m",
-			fmt.Sprintf("chore(%s): carve out sub-module\n\nThis commit will be tagged %s and %s.", childPrefix, futureTag, childModTag))
-		cmd.Dir = c.parentModPath
+			fmt.Sprintf("chore(%s): carve out sub-module\n\nThis commit will be tagged %s and %s.", c.childMod.tagPrefix, c.rootMod.Tag(), c.childMod.Tag()))
+		cmd.Dir = c.rootMod.path
 		if b, err := cmd.Output(); err != nil {
 			return fmt.Errorf("unable to commit changes: %s", b)
 		}
 	}
 	log.Println("Successfully carved out module. Please run the following commands after your change is merged:")
-	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", futureTag)
-	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", childModTag)
-	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", futureTag)
-	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", childModTag)
+	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", c.rootMod.Tag())
+	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", c.childMod.Tag())
+	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", c.rootMod.Tag())
+	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", c.childMod.Tag())
 
 	return nil
 }
@@ -374,14 +420,6 @@ func sortTags(tags []string) {
 
 		return iTotal > jTotal
 	})
-}
-
-func parsePkgName(childModFilePath string) (string, error) {
-	ss := strings.Split(childModFilePath, "/")
-	if len(ss) < 2 {
-		return "", fmt.Errorf("unable to parse package name from %q", childModFilePath)
-	}
-	return ss[len(ss)-1], nil
 }
 
 type noopCloser struct {
