@@ -504,11 +504,13 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 	it := &JobIterator{}
 	req = proto.Clone(req).(*talentpb.ListJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Job, string, error) {
-		var resp *talentpb.ListJobsResponse
-		req.PageToken = pageToken
+		resp := &talentpb.ListJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -531,9 +533,11 @@ func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -565,11 +569,13 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 	it := &SearchJobsResponse_MatchingJobIterator{}
 	req = proto.Clone(req).(*talentpb.SearchJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.SearchJobsResponse_MatchingJob, string, error) {
-		var resp *talentpb.SearchJobsResponse
-		req.PageToken = pageToken
+		resp := &talentpb.SearchJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,9 +598,11 @@ func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Se
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
