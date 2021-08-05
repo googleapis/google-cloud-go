@@ -390,11 +390,13 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 	it := &MembershipIterator{}
 	req = proto.Clone(req).(*gkehubpb.ListMembershipsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkehubpb.Membership, string, error) {
-		var resp *gkehubpb.ListMembershipsResponse
-		req.PageToken = pageToken
+		resp := &gkehubpb.ListMembershipsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -417,9 +419,11 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
