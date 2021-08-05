@@ -358,7 +358,6 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
-				fc.release(nextWrite.reqSize)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}
