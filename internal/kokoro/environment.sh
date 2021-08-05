@@ -71,6 +71,7 @@ fi
 # If Kubernetes, install kubectl component
 if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
   gcloud components install kubectl -q
+  sudo apt-get install kubectl -y
 fi
 
 # Run the environment test for the specified GCP service
