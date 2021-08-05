@@ -470,11 +470,13 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 	it := &CustomJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListCustomJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.CustomJob, string, error) {
-		var resp *aiplatformpb.ListCustomJobsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListCustomJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -497,9 +499,11 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -592,11 +596,13 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 	it := &DataLabelingJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDataLabelingJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataLabelingJob, string, error) {
-		var resp *aiplatformpb.ListDataLabelingJobsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListDataLabelingJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -619,9 +625,11 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -714,11 +722,13 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 	it := &HyperparameterTuningJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListHyperparameterTuningJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.HyperparameterTuningJob, string, error) {
-		var resp *aiplatformpb.ListHyperparameterTuningJobsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListHyperparameterTuningJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -741,9 +751,11 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -836,11 +848,13 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 	it := &BatchPredictionJobIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListBatchPredictionJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.BatchPredictionJob, string, error) {
-		var resp *aiplatformpb.ListBatchPredictionJobsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListBatchPredictionJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -863,9 +877,11 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
