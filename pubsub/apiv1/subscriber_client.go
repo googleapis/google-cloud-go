@@ -678,11 +678,13 @@ func (c *subscriberGRPCClient) ListSubscriptions(ctx context.Context, req *pubsu
 	it := &SubscriptionIterator{}
 	req = proto.Clone(req).(*pubsubpb.ListSubscriptionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Subscription, string, error) {
-		var resp *pubsubpb.ListSubscriptionsResponse
-		req.PageToken = pageToken
+		resp := &pubsubpb.ListSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -705,9 +707,11 @@ func (c *subscriberGRPCClient) ListSubscriptions(ctx context.Context, req *pubsu
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -843,11 +847,13 @@ func (c *subscriberGRPCClient) ListSnapshots(ctx context.Context, req *pubsubpb.
 	it := &SnapshotIterator{}
 	req = proto.Clone(req).(*pubsubpb.ListSnapshotsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Snapshot, string, error) {
-		var resp *pubsubpb.ListSnapshotsResponse
-		req.PageToken = pageToken
+		resp := &pubsubpb.ListSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -870,9 +876,11 @@ func (c *subscriberGRPCClient) ListSnapshots(ctx context.Context, req *pubsubpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
