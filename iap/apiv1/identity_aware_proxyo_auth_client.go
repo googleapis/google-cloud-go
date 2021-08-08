@@ -350,11 +350,13 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 	it := &IdentityAwareProxyClientIterator{}
 	req = proto.Clone(req).(*iappb.ListIdentityAwareProxyClientsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iappb.IdentityAwareProxyClient, string, error) {
-		var resp *iappb.ListIdentityAwareProxyClientsResponse
-		req.PageToken = pageToken
+		resp := &iappb.ListIdentityAwareProxyClientsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -377,9 +379,11 @@ func (c *identityAwareProxyOAuthGRPCClient) ListIdentityAwareProxyClients(ctx co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

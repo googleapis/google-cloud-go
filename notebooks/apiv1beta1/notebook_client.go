@@ -467,11 +467,13 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*notebookspb.ListInstancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Instance, string, error) {
-		var resp *notebookspb.ListInstancesResponse
-		req.PageToken = pageToken
+		resp := &notebookspb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -494,9 +496,11 @@ func (c *notebookGRPCClient) ListInstances(ctx context.Context, req *notebookspb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -825,11 +829,13 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*notebookspb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*notebookspb.Environment, string, error) {
-		var resp *notebookspb.ListEnvironmentsResponse
-		req.PageToken = pageToken
+		resp := &notebookspb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -852,9 +858,11 @@ func (c *notebookGRPCClient) ListEnvironments(ctx context.Context, req *notebook
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

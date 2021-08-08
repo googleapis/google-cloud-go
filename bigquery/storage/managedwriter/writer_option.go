@@ -16,10 +16,10 @@ package managedwriter
 
 import "google.golang.org/protobuf/types/descriptorpb"
 
-// WriterOption is used to configure a ManagedWriteClient.
+// WriterOption are variadic options used to configure a ManagedStream instance.
 type WriterOption func(*ManagedStream)
 
-// WithType sets the write type of the new writer.
+// WithType sets the stream type for the managed stream.
 func WithType(st StreamType) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.streamType = st
@@ -28,10 +28,10 @@ func WithType(st StreamType) WriterOption {
 
 // WithStreamName allows users to set the stream name this writer will
 // append to explicitly.  By default, the managed client will create the
-// stream when instantiated.
+// stream when instantiated if necessary.
 //
-// Note:  Supplying this option causes other options such as WithStreamType
-// and WithDestinationTable to be ignored.
+// Note:  Supplying this option causes other options which affect stream construction
+// such as WithStreamType and WithDestinationTable to be ignored.
 func WithStreamName(name string) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.streamID = name
@@ -62,15 +62,16 @@ func WithMaxInflightBytes(n int) WriterOption {
 	}
 }
 
-// WithTracePrefix allows instruments requests to the service with a custom trace prefix.
+// WithTraceID allows instruments requests to the service with a custom trace prefix.
 // This is generally for diagnostic purposes only.
-func WithTracePrefix(prefix string) WriterOption {
+func WithTraceID(traceID string) WriterOption {
 	return func(ms *ManagedStream) {
-		ms.streamSettings.TracePrefix = prefix
+		ms.streamSettings.TraceID = traceID
 	}
 }
 
-// WithSchemaDescriptor describes the format of messages you'll be sending to the service.
+// WithSchemaDescriptor describes the format of the serialized data being sent by
+// AppendRows calls on the stream.
 func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.schemaDescriptor = dp

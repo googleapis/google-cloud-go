@@ -21,10 +21,12 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newPublicAdvertisedPrefixesClientHook clientHook
@@ -50,11 +53,11 @@ type internalPublicAdvertisedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	Delete(context.Context, *computepb.DeletePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Delete(context.Context, *computepb.DeletePublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.PublicAdvertisedPrefix, error)
-	Insert(context.Context, *computepb.InsertPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListPublicAdvertisedPrefixesRequest, ...gax.CallOption) (*computepb.PublicAdvertisedPrefixList, error)
-	Patch(context.Context, *computepb.PatchPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
+	List(context.Context, *computepb.ListPublicAdvertisedPrefixesRequest, ...gax.CallOption) *PublicAdvertisedPrefixIterator
+	Patch(context.Context, *computepb.PatchPublicAdvertisedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // PublicAdvertisedPrefixesClient is a client for interacting with Google Compute Engine API.
@@ -92,7 +95,7 @@ func (c *PublicAdvertisedPrefixesClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified PublicAdvertisedPrefix
-func (c *PublicAdvertisedPrefixesClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -102,17 +105,17 @@ func (c *PublicAdvertisedPrefixesClient) Get(ctx context.Context, req *computepb
 }
 
 // Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
-func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List lists the PublicAdvertisedPrefixes for a project.
-func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) (*computepb.PublicAdvertisedPrefixList, error) {
+func (c *PublicAdvertisedPrefixesClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) *PublicAdvertisedPrefixIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *PublicAdvertisedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -181,7 +184,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // Delete deletes the specified PublicAdvertisedPrefix
-func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
@@ -221,7 +224,11 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified PublicAdvertisedPrefix resource.
@@ -262,7 +269,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 }
 
 // Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
-func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -309,67 +316,99 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists the PublicAdvertisedPrefixes for a project.
-func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) (*computepb.PublicAdvertisedPrefixList, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) *PublicAdvertisedPrefixIterator {
+	it := &PublicAdvertisedPrefixIterator{}
+	req = proto.Clone(req).(*computepb.ListPublicAdvertisedPrefixesRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.PublicAdvertisedPrefixList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.PublicAdvertisedPrefix, string, error) {
+		resp := &computepb.PublicAdvertisedPrefixList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if httpRsp.StatusCode != http.StatusOK {
+			return nil, "", fmt.Errorf(httpRsp.Status)
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
-func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
@@ -416,5 +455,56 @@ func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *com
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
+}
+
+// PublicAdvertisedPrefixIterator manages a stream of *computepb.PublicAdvertisedPrefix.
+type PublicAdvertisedPrefixIterator struct {
+	items    []*computepb.PublicAdvertisedPrefix
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PublicAdvertisedPrefix, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *PublicAdvertisedPrefixIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *PublicAdvertisedPrefixIterator) Next() (*computepb.PublicAdvertisedPrefix, error) {
+	var item *computepb.PublicAdvertisedPrefix
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *PublicAdvertisedPrefixIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *PublicAdvertisedPrefixIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
