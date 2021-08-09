@@ -309,11 +309,13 @@ func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ListContactsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
-		var resp *essentialcontactspb.ListContactsResponse
-		req.PageToken = pageToken
+		resp := &essentialcontactspb.ListContactsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -336,9 +338,11 @@ func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -387,11 +391,13 @@ func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ComputeContactsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
-		var resp *essentialcontactspb.ComputeContactsResponse
-		req.PageToken = pageToken
+		resp := &essentialcontactspb.ComputeContactsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -414,9 +420,11 @@ func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontacts
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

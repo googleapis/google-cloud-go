@@ -406,11 +406,13 @@ func (c *agentsGRPCClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsR
 	it := &AgentIterator{}
 	req = proto.Clone(req).(*cxpb.ListAgentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Agent, string, error) {
-		var resp *cxpb.ListAgentsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListAgentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -433,9 +435,11 @@ func (c *agentsGRPCClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsR
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

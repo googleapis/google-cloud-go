@@ -197,11 +197,13 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 	it := &AuthorizedDomainIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedDomain, string, error) {
-		var resp *appenginepb.ListAuthorizedDomainsResponse
-		req.PageToken = pageToken
+		resp := &appenginepb.ListAuthorizedDomainsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -224,9 +226,11 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
