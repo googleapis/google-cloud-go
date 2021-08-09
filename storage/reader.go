@@ -107,8 +107,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets.
-	proj := "_"
-	b := fmt.Sprintf("projects/%s/buckets/%s", proj, o.bucket)
+	b := bucket("_", o.bucket)
 	req := &storagepb.ReadObjectRequest{
 		Bucket: b,
 		Object: o.object,

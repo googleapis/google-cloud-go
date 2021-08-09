@@ -1679,3 +1679,8 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	}
 	return res.EmailAddress, nil
 }
+
+// bucket formats the given project ID and bucket ID into a Bucket name.
+func bucket(p, b string) string {
+	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
+}
