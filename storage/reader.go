@@ -92,6 +92,7 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // Google Cloud Storage dictates.
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReader")
+	
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
