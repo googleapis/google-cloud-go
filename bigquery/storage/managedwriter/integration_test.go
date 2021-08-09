@@ -82,9 +82,9 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 }
 
 // setupTestDataset generates a unique dataset for testing, and a cleanup that can be deferred.
-func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (ds *bigquery.Dataset, cleanup func(), err error) {
+func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, location string) (ds *bigquery.Dataset, cleanup func(), err error) {
 	dataset := bqc.Dataset(datasetIDs.New())
-	if err := dataset.Create(ctx, nil); err != nil {
+	if err := dataset.Create(ctx, &bigquery.DatasetMetadata{Location: location}); err != nil {
 		return nil, nil, err
 	}
 	return dataset, func() {
@@ -117,7 +117,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient)
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}

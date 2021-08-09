@@ -1,5 +1,12 @@
 # Changes
 
+### [1.20.1](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.20.0...bigquery/v1.20.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** fix flowcontroller double-release ([#4555](https://www.github.com/googleapis/google-cloud-go/issues/4555)) ([67facd9](https://www.github.com/googleapis/google-cloud-go/commit/67facd9697e931e193f3cd8e188f1dd819ba31eb))
+
 ## [1.20.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.19.0...bigquery/v1.20.0) (2021-07-30)
 
 
