@@ -55,7 +55,7 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(s string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -107,7 +107,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 
 	ms := &ManagedStream{
 		ctx: ctx,
-		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		open: func(s string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			testARC.openCount = testARC.openCount + 1
 			return testARC, nil
 		},
