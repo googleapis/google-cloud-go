@@ -818,11 +818,13 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
-		var resp *datalabelingpb.ListDatasetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -845,9 +847,11 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListD
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -942,11 +946,13 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 	it := &DataItemIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
-		var resp *datalabelingpb.ListDataItemsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -969,9 +975,11 @@ func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1003,11 +1011,13 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 	it := &AnnotatedDatasetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
-		var resp *datalabelingpb.ListAnnotatedDatasetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1030,9 +1040,11 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1145,11 +1157,13 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 	it := &ExampleIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
-		var resp *datalabelingpb.ListExamplesResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListExamplesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1172,9 +1186,11 @@ func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListE
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1227,11 +1243,13 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 	it := &AnnotationSpecSetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
-		var resp *datalabelingpb.ListAnnotationSpecSetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1254,9 +1272,11 @@ func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabeli
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1328,11 +1348,13 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 	it := &InstructionIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
-		var resp *datalabelingpb.ListInstructionsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListInstructionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1355,9 +1377,11 @@ func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1406,11 +1430,13 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 	it := &EvaluationIterator{}
 	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
-		var resp *datalabelingpb.SearchEvaluationsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.SearchEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1433,9 +1459,11 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1446,11 +1474,13 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
 	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
-		var resp *datalabelingpb.SearchExampleComparisonsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.SearchExampleComparisonsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1473,9 +1503,11 @@ func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabe
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1600,11 +1632,13 @@ func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 	it := &EvaluationJobIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
-		var resp *datalabelingpb.ListEvaluationJobsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListEvaluationJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1627,9 +1661,11 @@ func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

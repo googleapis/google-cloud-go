@@ -33,7 +33,6 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -1594,44 +1593,6 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 	}
 	m.Call([]reflect.Value{reflect.ValueOf(value)})
 	return true
-}
-
-// conditionsQuery returns the generation and conditions as a URL query
-// string suitable for URL.RawQuery.  It assumes that the conditions
-// have been validated.
-func conditionsQuery(gen int64, conds *Conditions) string {
-	// URL escapes are elided because integer strings are URL-safe.
-	var buf []byte
-
-	appendParam := func(s string, n int64) {
-		if len(buf) > 0 {
-			buf = append(buf, '&')
-		}
-		buf = append(buf, s...)
-		buf = strconv.AppendInt(buf, n, 10)
-	}
-
-	if gen >= 0 {
-		appendParam("generation=", gen)
-	}
-	if conds == nil {
-		return string(buf)
-	}
-	switch {
-	case conds.GenerationMatch != 0:
-		appendParam("ifGenerationMatch=", conds.GenerationMatch)
-	case conds.GenerationNotMatch != 0:
-		appendParam("ifGenerationNotMatch=", conds.GenerationNotMatch)
-	case conds.DoesNotExist:
-		appendParam("ifGenerationMatch=", 0)
-	}
-	switch {
-	case conds.MetagenerationMatch != 0:
-		appendParam("ifMetagenerationMatch=", conds.MetagenerationMatch)
-	case conds.MetagenerationNotMatch != 0:
-		appendParam("ifMetagenerationNotMatch=", conds.MetagenerationNotMatch)
-	}
-	return string(buf)
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods

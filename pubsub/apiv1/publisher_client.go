@@ -502,11 +502,13 @@ func (c *publisherGRPCClient) ListTopics(ctx context.Context, req *pubsubpb.List
 	it := &TopicIterator{}
 	req = proto.Clone(req).(*pubsubpb.ListTopicsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsubpb.Topic, string, error) {
-		var resp *pubsubpb.ListTopicsResponse
-		req.PageToken = pageToken
+		resp := &pubsubpb.ListTopicsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -529,9 +531,11 @@ func (c *publisherGRPCClient) ListTopics(ctx context.Context, req *pubsubpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -542,11 +546,13 @@ func (c *publisherGRPCClient) ListTopicSubscriptions(ctx context.Context, req *p
 	it := &StringIterator{}
 	req = proto.Clone(req).(*pubsubpb.ListTopicSubscriptionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
-		var resp *pubsubpb.ListTopicSubscriptionsResponse
-		req.PageToken = pageToken
+		resp := &pubsubpb.ListTopicSubscriptionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -569,9 +575,11 @@ func (c *publisherGRPCClient) ListTopicSubscriptions(ctx context.Context, req *p
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -582,11 +590,13 @@ func (c *publisherGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubsu
 	it := &StringIterator{}
 	req = proto.Clone(req).(*pubsubpb.ListTopicSnapshotsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
-		var resp *pubsubpb.ListTopicSnapshotsResponse
-		req.PageToken = pageToken
+		resp := &pubsubpb.ListTopicSnapshotsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -609,9 +619,11 @@ func (c *publisherGRPCClient) ListTopicSnapshots(ctx context.Context, req *pubsu
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

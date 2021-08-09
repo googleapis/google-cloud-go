@@ -17,7 +17,6 @@ package git
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -87,17 +86,16 @@ func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string
 	var changes []*ChangeInfo
 	for _, hash := range hashes {
 		// Get commit title and body
-		rawBody := bytes.NewBuffer(nil)
 		c := execv.Command("git", "show", "--pretty=format:%s~~%b", "-s", hash)
-		c.Stdout = rawBody
 		c.Dir = googleapisDir
-		if err := c.Run(); err != nil {
+		b, err := c.Output()
+		if err != nil {
 			return nil, err
 		}
 
-		ss := strings.Split(rawBody.String(), "~~")
+		ss := strings.Split(string(b), "~~")
 		if len(ss) != 2 {
-			return nil, fmt.Errorf("expected two segments for commit, got %d: %q", len(ss), rawBody.String())
+			return nil, fmt.Errorf("expected two segments for commit, got %d: %s", len(ss), b)
 		}
 		title, body := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 
@@ -154,46 +152,38 @@ func CommitsSinceHash(gitDir, hash string, inclusive bool) ([]string, error) {
 		commitRange = fmt.Sprintf("%s..", hash)
 	}
 
-	out := bytes.NewBuffer(nil)
 	c := execv.Command("git", "rev-list", commitRange)
-	c.Stdout = out
 	c.Dir = gitDir
-	if err := c.Run(); err != nil {
+	b, err := c.Output()
+	if err != nil {
 		return nil, err
 	}
-	return strings.Split(strings.TrimSpace(out.String()), "\n"), nil
+	return strings.Split(strings.TrimSpace(string(b)), "\n"), nil
 }
 
 // UpdateFilesSinceHash returns a listed of files updated since the provided
 // hash for the given gitDir.
 func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
-	out := bytes.NewBuffer(nil)
 	// The provided diff-filter flags restricts to files that have been:
 	// - (A) Added
 	// - (C) Copied
 	// - (M) Modified
 	// - (R) Renamed
 	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
-	c.Stdout = out
 	c.Dir = gitDir
-	if err := c.Run(); err != nil {
+	b, err := c.Output()
+	if err != nil {
 		return nil, err
 	}
-	return strings.Split(out.String(), "\n"), nil
+	return strings.Split(string(b), "\n"), nil
 }
 
 // HasChanges reports whether the given directory has uncommitted git changes.
 func HasChanges(dir string) (bool, error) {
-	// Write command output to both os.Stderr and local, so that we can check
-	// whether there are modified files.
-	inmem := &bytes.Buffer{}
-	w := io.MultiWriter(os.Stderr, inmem)
-
 	c := execv.Command("bash", "-c", "git status --short")
 	c.Dir = dir
-	c.Stdout = w
-	err := c.Run()
-	return inmem.Len() > 0, err
+	b, err := c.Output()
+	return len(b) > 0, err
 }
 
 // DeepClone clones a repository in the given directory.
@@ -249,12 +239,11 @@ func FileDiff(dir, filename string) (string, error) {
 // filesChanged returns a list of files changed in a commit for the provdied
 // hash in the given gitDir.
 func filesChanged(gitDir, hash string) ([]string, error) {
-	out := bytes.NewBuffer(nil)
 	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
-	c.Stdout = out
 	c.Dir = gitDir
-	if err := c.Run(); err != nil {
+	b, err := c.Output()
+	if err != nil {
 		return nil, err
 	}
-	return strings.Split(out.String(), "\n"), nil
+	return strings.Split(string(b), "\n"), nil
 }
