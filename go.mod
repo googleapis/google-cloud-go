@@ -10,12 +10,9 @@ require (
 	github.com/google/martian/v3 v3.2.1
 	github.com/google/pprof v0.0.0-20210720184732-4bb14d4b1be1
 	github.com/googleapis/gax-go/v2 v2.0.5
-	github.com/jstemmer/go-junit-report v0.9.1
 	go.opencensus.io v0.23.0
-	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914
 	golang.org/x/text v0.3.6
-	golang.org/x/tools v0.1.5
 	google.golang.org/api v0.52.0
 	google.golang.org/genproto v0.0.0-20210805201207-89edb61ffb67
 	google.golang.org/grpc v1.39.0
