@@ -300,7 +300,12 @@ func ExampleClient_CreateWorkerPool() {
 	req := &cloudbuildpb.CreateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.CreateWorkerPool(ctx, req)
+	op, err := c.CreateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -338,7 +343,12 @@ func ExampleClient_DeleteWorkerPool() {
 	req := &cloudbuildpb.DeleteWorkerPoolRequest{
 		// TODO: Fill request struct fields.
 	}
-	err = c.DeleteWorkerPool(ctx, req)
+	op, err := c.DeleteWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -355,7 +365,12 @@ func ExampleClient_UpdateWorkerPool() {
 	req := &cloudbuildpb.UpdateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.UpdateWorkerPool(ctx, req)
+	op, err := c.UpdateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -374,10 +389,16 @@ func ExampleClient_ListWorkerPools() {
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListWorkerPools(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListWorkerPools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }

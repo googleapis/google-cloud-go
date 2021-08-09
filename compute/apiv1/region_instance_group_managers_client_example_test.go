@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -198,12 +199,18 @@ func ExampleRegionInstanceGroupManagersClient_List() {
 	req := &computepb.ListRegionInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupManagersClient_ListErrors() {
@@ -217,12 +224,18 @@ func ExampleRegionInstanceGroupManagersClient_ListErrors() {
 	req := &computepb.ListErrorsRegionInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListErrors(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListErrors(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupManagersClient_ListManagedInstances() {
@@ -236,12 +249,18 @@ func ExampleRegionInstanceGroupManagersClient_ListManagedInstances() {
 	req := &computepb.ListManagedInstancesRegionInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListManagedInstances(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListManagedInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupManagersClient_ListPerInstanceConfigs() {
@@ -255,12 +274,18 @@ func ExampleRegionInstanceGroupManagersClient_ListPerInstanceConfigs() {
 	req := &computepb.ListPerInstanceConfigsRegionInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListPerInstanceConfigs(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListPerInstanceConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionInstanceGroupManagersClient_Patch() {

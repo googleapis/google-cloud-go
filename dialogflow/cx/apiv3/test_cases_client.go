@@ -460,11 +460,13 @@ func (c *testCasesGRPCClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 	it := &TestCaseIterator{}
 	req = proto.Clone(req).(*cxpb.ListTestCasesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TestCase, string, error) {
-		var resp *cxpb.ListTestCasesResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTestCasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -487,9 +489,11 @@ func (c *testCasesGRPCClient) ListTestCases(ctx context.Context, req *cxpb.ListT
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -693,11 +697,13 @@ func (c *testCasesGRPCClient) ListTestCaseResults(ctx context.Context, req *cxpb
 	it := &TestCaseResultIterator{}
 	req = proto.Clone(req).(*cxpb.ListTestCaseResultsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TestCaseResult, string, error) {
-		var resp *cxpb.ListTestCaseResultsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTestCaseResultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -720,9 +726,11 @@ func (c *testCasesGRPCClient) ListTestCaseResults(ctx context.Context, req *cxpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

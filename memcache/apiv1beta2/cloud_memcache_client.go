@@ -356,11 +356,13 @@ func (c *cloudMemcacheGRPCClient) ListInstances(ctx context.Context, req *memcac
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*memcachepb.ListInstancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*memcachepb.Instance, string, error) {
-		var resp *memcachepb.ListInstancesResponse
-		req.PageToken = pageToken
+		resp := &memcachepb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -383,9 +385,11 @@ func (c *cloudMemcacheGRPCClient) ListInstances(ctx context.Context, req *memcac
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

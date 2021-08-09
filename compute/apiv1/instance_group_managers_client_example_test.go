@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -65,12 +66,18 @@ func ExampleInstanceGroupManagersClient_AggregatedList() {
 	req := &computepb.AggregatedListInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceGroupManagersClient_ApplyUpdatesToInstances() {
@@ -217,12 +224,18 @@ func ExampleInstanceGroupManagersClient_List() {
 	req := &computepb.ListInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceGroupManagersClient_ListErrors() {
@@ -236,12 +249,18 @@ func ExampleInstanceGroupManagersClient_ListErrors() {
 	req := &computepb.ListErrorsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListErrors(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListErrors(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceGroupManagersClient_ListManagedInstances() {
@@ -255,12 +274,18 @@ func ExampleInstanceGroupManagersClient_ListManagedInstances() {
 	req := &computepb.ListManagedInstancesInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListManagedInstances(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListManagedInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceGroupManagersClient_ListPerInstanceConfigs() {
@@ -274,12 +299,18 @@ func ExampleInstanceGroupManagersClient_ListPerInstanceConfigs() {
 	req := &computepb.ListPerInstanceConfigsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListPerInstanceConfigs(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListPerInstanceConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceGroupManagersClient_Patch() {
