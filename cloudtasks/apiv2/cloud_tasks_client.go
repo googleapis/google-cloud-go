@@ -531,11 +531,13 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 	it := &QueueIterator{}
 	req = proto.Clone(req).(*taskspb.ListQueuesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Queue, string, error) {
-		var resp *taskspb.ListQueuesResponse
-		req.PageToken = pageToken
+		resp := &taskspb.ListQueuesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,9 +560,11 @@ func (c *gRPCClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -777,11 +781,13 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *taskspb.ListTasksReques
 	it := &TaskIterator{}
 	req = proto.Clone(req).(*taskspb.ListTasksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Task, string, error) {
-		var resp *taskspb.ListTasksResponse
-		req.PageToken = pageToken
+		resp := &taskspb.ListTasksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -804,9 +810,11 @@ func (c *gRPCClient) ListTasks(ctx context.Context, req *taskspb.ListTasksReques
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

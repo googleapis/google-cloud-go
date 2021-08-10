@@ -81,38 +81,32 @@ func TestBumpSemverPatch(t *testing.T) {
 
 func TestParsePkgName(t *testing.T) {
 	tests := []struct {
-		name    string
-		in      string
-		want    string
-		wantErr bool
+		name string
+		in   string
+		want string
 	}{
 		{
-			name: "valid",
+			name: "subpackage",
 			in:   "cloud.google.com/go/asset",
 			want: "asset",
 		},
 		{
-			name: "valid",
-			in:   "cloud.google.com/go/assdialogflow/cx",
+			name: "nested package",
+			in:   "cloud.google.com/go/dialogflow/cx",
 			want: "cx",
 		},
 		{
-			name:    "invalid",
-			in:      "cloud.google.com",
-			wantErr: true,
+			name: "root",
+			in:   "cloud.google.com/go",
+			want: "go",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := parsePkgName(tt.in)
-			if tt.wantErr && err == nil {
-				t.Fatalf("parsePkgName(%q) = nil, want error", tt.in)
-			}
-			if !tt.wantErr && err != nil {
-				t.Fatalf("parsePkgName(%q) = %v, wantErr false", tt.in, err)
-			}
+			mi := &modInfo{importPath: tt.in}
+			got := mi.PkgName()
 			if got != tt.want {
-				t.Fatalf("parsePkgName(%q) = %q, want %q", tt.in, got, tt.want)
+				t.Fatalf("&modInfo{importPath: %q}PkgName() = %q, want %q", tt.in, got, tt.want)
 			}
 		})
 	}

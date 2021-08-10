@@ -359,11 +359,13 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *aiplatformpb.List
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListModelsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Model, string, error) {
-		var resp *aiplatformpb.ListModelsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListModelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -386,9 +388,11 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *aiplatformpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -487,11 +491,13 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 	it := &ModelEvaluationIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListModelEvaluationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.ModelEvaluation, string, error) {
-		var resp *aiplatformpb.ListModelEvaluationsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListModelEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,9 +520,11 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -548,11 +556,13 @@ func (c *modelGRPCClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 	it := &ModelEvaluationSliceIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListModelEvaluationSlicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.ModelEvaluationSlice, string, error) {
-		var resp *aiplatformpb.ListModelEvaluationSlicesResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListModelEvaluationSlicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -575,9 +585,11 @@ func (c *modelGRPCClient) ListModelEvaluationSlices(ctx context.Context, req *ai
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

@@ -222,11 +222,13 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 	it := &ExecutionIterator{}
 	req = proto.Clone(req).(*executionspb.ListExecutionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*executionspb.Execution, string, error) {
-		var resp *executionspb.ListExecutionsResponse
-		req.PageToken = pageToken
+		resp := &executionspb.ListExecutionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -249,9 +251,11 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

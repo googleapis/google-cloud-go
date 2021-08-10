@@ -375,11 +375,13 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 	it := &WorkloadIterator{}
 	req = proto.Clone(req).(*assuredworkloadspb.ListWorkloadsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assuredworkloadspb.Workload, string, error) {
-		var resp *assuredworkloadspb.ListWorkloadsResponse
-		req.PageToken = pageToken
+		resp := &assuredworkloadspb.ListWorkloadsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,9 +404,11 @@ func (c *gRPCClient) ListWorkloads(ctx context.Context, req *assuredworkloadspb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

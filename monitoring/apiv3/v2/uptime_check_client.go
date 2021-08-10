@@ -299,11 +299,13 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req 
 	it := &UptimeCheckConfigIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListUptimeCheckConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.UptimeCheckConfig, string, error) {
-		var resp *monitoringpb.ListUptimeCheckConfigsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListUptimeCheckConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -326,9 +328,11 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckConfigs(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -418,11 +422,13 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckIps(ctx context.Context, req *mon
 	it := &UptimeCheckIpIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListUptimeCheckIpsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.UptimeCheckIp, string, error) {
-		var resp *monitoringpb.ListUptimeCheckIpsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListUptimeCheckIpsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -445,9 +451,11 @@ func (c *uptimeCheckGRPCClient) ListUptimeCheckIps(ctx context.Context, req *mon
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

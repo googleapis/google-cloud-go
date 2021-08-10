@@ -1507,11 +1507,13 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 	it := &CustomerIterator{}
 	req = proto.Clone(req).(*channelpb.ListCustomersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Customer, string, error) {
-		var resp *channelpb.ListCustomersResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListCustomersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1534,9 +1536,11 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1671,11 +1675,13 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 	it := &EntitlementIterator{}
 	req = proto.Clone(req).(*channelpb.ListEntitlementsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Entitlement, string, error) {
-		var resp *channelpb.ListEntitlementsResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListEntitlementsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1698,9 +1704,11 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1711,11 +1719,13 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 	it := &TransferableSkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListTransferableSkusRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableSku, string, error) {
-		var resp *channelpb.ListTransferableSkusResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListTransferableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1738,9 +1748,11 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1751,11 +1763,13 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 	it := &TransferableOfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListTransferableOffersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableOffer, string, error) {
-		var resp *channelpb.ListTransferableOffersResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListTransferableOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1778,9 +1792,11 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2042,11 +2058,13 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 	it := &ChannelPartnerLinkIterator{}
 	req = proto.Clone(req).(*channelpb.ListChannelPartnerLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerLink, string, error) {
-		var resp *channelpb.ListChannelPartnerLinksResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListChannelPartnerLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2069,9 +2087,11 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2165,11 +2185,13 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*channelpb.ListProductsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Product, string, error) {
-		var resp *channelpb.ListProductsResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListProductsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2192,9 +2214,11 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2205,11 +2229,13 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 	it := &SkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListSkusRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Sku, string, error) {
-		var resp *channelpb.ListSkusResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2232,9 +2258,11 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2245,11 +2273,13 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 	it := &OfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListOffersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Offer, string, error) {
-		var resp *channelpb.ListOffersResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2272,9 +2302,11 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2285,11 +2317,13 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 	it := &PurchasableSkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListPurchasableSkusRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableSku, string, error) {
-		var resp *channelpb.ListPurchasableSkusResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListPurchasableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2312,9 +2346,11 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2325,11 +2361,13 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 	it := &PurchasableOfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListPurchasableOffersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableOffer, string, error) {
-		var resp *channelpb.ListPurchasableOffersResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListPurchasableOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2352,9 +2390,11 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2407,11 +2447,13 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 	it := &StringIterator{}
 	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
-		var resp *channelpb.ListSubscribersResponse
-		req.PageToken = pageToken
+		resp := &channelpb.ListSubscribersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2434,9 +2476,11 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

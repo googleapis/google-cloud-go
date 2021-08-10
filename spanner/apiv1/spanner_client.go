@@ -616,11 +616,13 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 	it := &SessionIterator{}
 	req = proto.Clone(req).(*spannerpb.ListSessionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
-		var resp *spannerpb.ListSessionsResponse
-		req.PageToken = pageToken
+		resp := &spannerpb.ListSessionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -643,9 +645,11 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
