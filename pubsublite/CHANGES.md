@@ -1,5 +1,17 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.0.0...pubsublite/v1.1.0) (2021-08-09)
+
+
+### Features
+
+* **pubsublite:** support seek subscription in AdminClient ([#4316](https://www.github.com/googleapis/google-cloud-go/issues/4316)) ([2dea319](https://www.github.com/googleapis/google-cloud-go/commit/2dea3196a73764bd10842a3da5d0fa29ae84e101))
+
+
+### Bug Fixes
+
+* **pubsublite:** set a default grpc connection pool size of 8 ([#4462](https://www.github.com/googleapis/google-cloud-go/issues/4462)) ([b7ce742](https://www.github.com/googleapis/google-cloud-go/commit/b7ce742db1acdd18b5a597ebb2a2111953c0942a))
+
 ## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.2...pubsublite/v1.0.0) (2021-07-08)
 
 
