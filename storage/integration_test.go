@@ -62,7 +62,7 @@ const (
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	grpcBucket             = "golang-grpc-test"
+	grpcBucket             = "golang-grpc-test-integration"
 )
 
 var (
