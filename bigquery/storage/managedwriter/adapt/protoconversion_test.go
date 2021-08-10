@@ -350,9 +350,6 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 	}{
 		{
 			name: "SimpleMessageProto2",
-			in: bigquery.Schema{
-				{Name: "field", Type: bigquery.StringFieldType},
-			},
 			setterF: func() protoreflect.ProtoMessage {
 				return &testdata.SimpleMessageProto2{
 					Name:  proto.String(fmt.Sprintf("test-%d", time.Now().UnixNano())),
@@ -362,13 +359,76 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 		},
 		{
 			name: "SimpleMessageProto3",
-			in: bigquery.Schema{
-				{Name: "field", Type: bigquery.StringFieldType},
-			},
 			setterF: func() protoreflect.ProtoMessage {
 				return &testdata.SimpleMessageProto3{
 					Name:  fmt.Sprintf("test-%d", time.Now().UnixNano()),
 					Value: time.Now().UnixNano(),
+				}
+			},
+		},
+		{
+			name: "GithubArchiveProto2",
+			setterF: func() protoreflect.ProtoMessage {
+				nowNano := time.Now().UnixNano()
+				return &testdata.GithubArchiveMessageProto2{
+					Type:    proto.String("SomeEvent"),
+					Public:  proto.Bool(nowNano%2 == 0),
+					Payload: proto.String(fmt.Sprintf("stuff %d", nowNano)),
+					Repo: &testdata.GithubArchiveRepoProto2{
+						Id:   proto.Int64(nowNano),
+						Name: proto.String("staticname"),
+						Url:  proto.String(fmt.Sprintf("foo.com/%d", nowNano)),
+					},
+					Actor: &testdata.GithubArchiveEntityProto2{
+						Id:         proto.Int64(nowNano % 1000),
+						Login:      proto.String(fmt.Sprintf("login-%d", nowNano%1000)),
+						GravatarId: proto.String(fmt.Sprintf("grav-%d", nowNano%1000000)),
+						AvatarUrl:  proto.String(fmt.Sprintf("https://something.com/img/%d", nowNano%10000000)),
+						Url:        proto.String(fmt.Sprintf("https://something.com/img/%d", nowNano%10000000)),
+					},
+					Org: &testdata.GithubArchiveEntityProto2{
+						Id:         proto.Int64(nowNano % 1000),
+						Login:      proto.String(fmt.Sprintf("login-%d", nowNano%1000)),
+						GravatarId: proto.String(fmt.Sprintf("grav-%d", nowNano%1000000)),
+						AvatarUrl:  proto.String(fmt.Sprintf("https://something.com/img/%d", nowNano%10000000)),
+						Url:        proto.String(fmt.Sprintf("https://something.com/img/%d", nowNano%10000000)),
+					},
+					CreatedAt: proto.Int64(nowNano),
+					Id:        proto.String(fmt.Sprintf("id%d", nowNano)),
+					Other:     proto.String("other"),
+				}
+			},
+		},
+		{
+			name: "GithubArchiveProto3",
+			setterF: func() protoreflect.ProtoMessage {
+				nowNano := time.Now().UnixNano()
+				return &testdata.GithubArchiveMessageProto3{
+					Type:    "SomeEvent",
+					Public:  nowNano%2 == 0,
+					Payload: fmt.Sprintf("stuff %d", nowNano),
+					Repo: &testdata.GithubArchiveRepoProto3{
+						Id:   nowNano,
+						Name: "staticname",
+						Url:  fmt.Sprintf("foo.com/%d", nowNano),
+					},
+					Actor: &testdata.GithubArchiveEntityProto3{
+						Id:         nowNano % 1000,
+						Login:      fmt.Sprintf("login-%d", nowNano%1000),
+						GravatarId: fmt.Sprintf("grav-%d", nowNano%1000000),
+						AvatarUrl:  fmt.Sprintf("https://something.com/img/%d", nowNano%10000000),
+						Url:        fmt.Sprintf("https://something.com/img/%d", nowNano%10000000),
+					},
+					Org: &testdata.GithubArchiveEntityProto3{
+						Id:         nowNano % 1000,
+						Login:      fmt.Sprintf("login-%d", nowNano%1000),
+						GravatarId: fmt.Sprintf("grav-%d", nowNano%1000000),
+						AvatarUrl:  fmt.Sprintf("https://something.com/img/%d", nowNano%10000000),
+						Url:        fmt.Sprintf("https://something.com/img/%d", nowNano%10000000),
+					},
+					CreatedAt: nowNano,
+					Id:        fmt.Sprintf("id%d", nowNano),
+					Other:     "other",
 				}
 			},
 		},

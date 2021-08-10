@@ -97,6 +97,260 @@ func (x *SimpleMessageProto2) GetValue() int64 {
 	return 0
 }
 
+type GithubArchiveEntityProto2 struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id         *int64  `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
+	Login      *string `protobuf:"bytes,2,opt,name=login" json:"login,omitempty"`
+	GravatarId *string `protobuf:"bytes,3,opt,name=gravatar_id,json=gravatarId" json:"gravatar_id,omitempty"`
+	AvatarUrl  *string `protobuf:"bytes,4,opt,name=avatar_url,json=avatarUrl" json:"avatar_url,omitempty"`
+	Url        *string `protobuf:"bytes,5,opt,name=url" json:"url,omitempty"`
+}
+
+func (x *GithubArchiveEntityProto2) Reset() {
+	*x = GithubArchiveEntityProto2{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GithubArchiveEntityProto2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GithubArchiveEntityProto2) ProtoMessage() {}
+
+func (x *GithubArchiveEntityProto2) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GithubArchiveEntityProto2.ProtoReflect.Descriptor instead.
+func (*GithubArchiveEntityProto2) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GithubArchiveEntityProto2) GetId() int64 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *GithubArchiveEntityProto2) GetLogin() string {
+	if x != nil && x.Login != nil {
+		return *x.Login
+	}
+	return ""
+}
+
+func (x *GithubArchiveEntityProto2) GetGravatarId() string {
+	if x != nil && x.GravatarId != nil {
+		return *x.GravatarId
+	}
+	return ""
+}
+
+func (x *GithubArchiveEntityProto2) GetAvatarUrl() string {
+	if x != nil && x.AvatarUrl != nil {
+		return *x.AvatarUrl
+	}
+	return ""
+}
+
+func (x *GithubArchiveEntityProto2) GetUrl() string {
+	if x != nil && x.Url != nil {
+		return *x.Url
+	}
+	return ""
+}
+
+type GithubArchiveRepoProto2 struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id   *int64  `protobuf:"varint,1,opt,name=id" json:"id,omitempty"`
+	Name *string `protobuf:"bytes,2,opt,name=name" json:"name,omitempty"`
+	Url  *string `protobuf:"bytes,3,opt,name=url" json:"url,omitempty"`
+}
+
+func (x *GithubArchiveRepoProto2) Reset() {
+	*x = GithubArchiveRepoProto2{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GithubArchiveRepoProto2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GithubArchiveRepoProto2) ProtoMessage() {}
+
+func (x *GithubArchiveRepoProto2) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GithubArchiveRepoProto2.ProtoReflect.Descriptor instead.
+func (*GithubArchiveRepoProto2) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GithubArchiveRepoProto2) GetId() int64 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *GithubArchiveRepoProto2) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *GithubArchiveRepoProto2) GetUrl() string {
+	if x != nil && x.Url != nil {
+		return *x.Url
+	}
+	return ""
+}
+
+// GithubArchiveMessageProto2 is the proto2 version of github archive row.
+type GithubArchiveMessageProto2 struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Type      *string                    `protobuf:"bytes,1,opt,name=type" json:"type,omitempty"`
+	Public    *bool                      `protobuf:"varint,2,opt,name=public" json:"public,omitempty"`
+	Payload   *string                    `protobuf:"bytes,3,opt,name=payload" json:"payload,omitempty"`
+	Repo      *GithubArchiveRepoProto2   `protobuf:"bytes,4,opt,name=repo" json:"repo,omitempty"`
+	Actor     *GithubArchiveEntityProto2 `protobuf:"bytes,5,opt,name=actor" json:"actor,omitempty"`
+	Org       *GithubArchiveEntityProto2 `protobuf:"bytes,6,opt,name=org" json:"org,omitempty"`
+	CreatedAt *int64                     `protobuf:"varint,7,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
+	Id        *string                    `protobuf:"bytes,8,opt,name=id" json:"id,omitempty"`
+	Other     *string                    `protobuf:"bytes,9,opt,name=other" json:"other,omitempty"`
+}
+
+func (x *GithubArchiveMessageProto2) Reset() {
+	*x = GithubArchiveMessageProto2{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_messages_proto2_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GithubArchiveMessageProto2) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GithubArchiveMessageProto2) ProtoMessage() {}
+
+func (x *GithubArchiveMessageProto2) ProtoReflect() protoreflect.Message {
+	mi := &file_messages_proto2_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GithubArchiveMessageProto2.ProtoReflect.Descriptor instead.
+func (*GithubArchiveMessageProto2) Descriptor() ([]byte, []int) {
+	return file_messages_proto2_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GithubArchiveMessageProto2) GetType() string {
+	if x != nil && x.Type != nil {
+		return *x.Type
+	}
+	return ""
+}
+
+func (x *GithubArchiveMessageProto2) GetPublic() bool {
+	if x != nil && x.Public != nil {
+		return *x.Public
+	}
+	return false
+}
+
+func (x *GithubArchiveMessageProto2) GetPayload() string {
+	if x != nil && x.Payload != nil {
+		return *x.Payload
+	}
+	return ""
+}
+
+func (x *GithubArchiveMessageProto2) GetRepo() *GithubArchiveRepoProto2 {
+	if x != nil {
+		return x.Repo
+	}
+	return nil
+}
+
+func (x *GithubArchiveMessageProto2) GetActor() *GithubArchiveEntityProto2 {
+	if x != nil {
+		return x.Actor
+	}
+	return nil
+}
+
+func (x *GithubArchiveMessageProto2) GetOrg() *GithubArchiveEntityProto2 {
+	if x != nil {
+		return x.Org
+	}
+	return nil
+}
+
+func (x *GithubArchiveMessageProto2) GetCreatedAt() int64 {
+	if x != nil && x.CreatedAt != nil {
+		return *x.CreatedAt
+	}
+	return 0
+}
+
+func (x *GithubArchiveMessageProto2) GetId() string {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return ""
+}
+
+func (x *GithubArchiveMessageProto2) GetOther() string {
+	if x != nil && x.Other != nil {
+		return *x.Other
+	}
+	return ""
+}
+
 var File_messages_proto2_proto protoreflect.FileDescriptor
 
 var file_messages_proto2_proto_rawDesc = []byte{
@@ -106,11 +360,46 @@ var file_messages_proto2_proto_rawDesc = []byte{
 	0x67, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x14, 0x0a, 0x05,
 	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x42, 0x3d, 0x5a, 0x3b, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
-	0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65,
-	0x72, 0x79, 0x2f, 0x73, 0x74, 0x6f, 0x72, 0x61, 0x67, 0x65, 0x2f, 0x6d, 0x61, 0x6e, 0x61, 0x67,
-	0x65, 0x64, 0x77, 0x72, 0x69, 0x74, 0x65, 0x72, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74,
-	0x61,
+	0x75, 0x65, 0x22, 0x93, 0x01, 0x0a, 0x19, 0x47, 0x69, 0x74, 0x68, 0x75, 0x62, 0x41, 0x72, 0x63,
+	0x68, 0x69, 0x76, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x32,
+	0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x02, 0x69, 0x64,
+	0x12, 0x14, 0x0a, 0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x6c, 0x6f, 0x67, 0x69, 0x6e, 0x12, 0x1f, 0x0a, 0x0b, 0x67, 0x72, 0x61, 0x76, 0x61, 0x74,
+	0x61, 0x72, 0x5f, 0x69, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x67, 0x72, 0x61,
+	0x76, 0x61, 0x74, 0x61, 0x72, 0x49, 0x64, 0x12, 0x1d, 0x0a, 0x0a, 0x61, 0x76, 0x61, 0x74, 0x61,
+	0x72, 0x5f, 0x75, 0x72, 0x6c, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x61, 0x76, 0x61,
+	0x74, 0x61, 0x72, 0x55, 0x72, 0x6c, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0x4f, 0x0a, 0x17, 0x47, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x50, 0x72, 0x6f,
+	0x74, 0x6f, 0x32, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x22, 0xd0, 0x02, 0x0a, 0x1a, 0x47, 0x69,
+	0x74, 0x68, 0x75, 0x62, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x4d, 0x65, 0x73, 0x73, 0x61,
+	0x67, 0x65, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06,
+	0x70, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x70, 0x75,
+	0x62, 0x6c, 0x69, 0x63, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x35,
+	0x0a, 0x04, 0x72, 0x65, 0x70, 0x6f, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x74,
+	0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x47, 0x69, 0x74, 0x68, 0x75, 0x62, 0x41, 0x72,
+	0x63, 0x68, 0x69, 0x76, 0x65, 0x52, 0x65, 0x70, 0x6f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x52,
+	0x04, 0x72, 0x65, 0x70, 0x6f, 0x12, 0x39, 0x0a, 0x05, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x05,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e,
+	0x47, 0x69, 0x74, 0x68, 0x75, 0x62, 0x41, 0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x45, 0x6e, 0x74,
+	0x69, 0x74, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x32, 0x52, 0x05, 0x61, 0x63, 0x74, 0x6f, 0x72,
+	0x12, 0x35, 0x0a, 0x03, 0x6f, 0x72, 0x67, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e,
+	0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x47, 0x69, 0x74, 0x68, 0x75, 0x62, 0x41,
+	0x72, 0x63, 0x68, 0x69, 0x76, 0x65, 0x45, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x32, 0x52, 0x03, 0x6f, 0x72, 0x67, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x08, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x18,
+	0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x74, 0x68, 0x65, 0x72, 0x42, 0x3d, 0x5a, 0x3b,
+	0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x67, 0x6f, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x73, 0x74, 0x6f,
+	0x72, 0x61, 0x67, 0x65, 0x2f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x64, 0x77, 0x72, 0x69, 0x74,
+	0x65, 0x72, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x64, 0x61, 0x74, 0x61,
 }
 
 var (
@@ -125,16 +414,22 @@ func file_messages_proto2_proto_rawDescGZIP() []byte {
 	return file_messages_proto2_proto_rawDescData
 }
 
-var file_messages_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_messages_proto2_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_messages_proto2_proto_goTypes = []interface{}{
-	(*SimpleMessageProto2)(nil), // 0: testdata.SimpleMessageProto2
+	(*SimpleMessageProto2)(nil),        // 0: testdata.SimpleMessageProto2
+	(*GithubArchiveEntityProto2)(nil),  // 1: testdata.GithubArchiveEntityProto2
+	(*GithubArchiveRepoProto2)(nil),    // 2: testdata.GithubArchiveRepoProto2
+	(*GithubArchiveMessageProto2)(nil), // 3: testdata.GithubArchiveMessageProto2
 }
 var file_messages_proto2_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: testdata.GithubArchiveMessageProto2.repo:type_name -> testdata.GithubArchiveRepoProto2
+	1, // 1: testdata.GithubArchiveMessageProto2.actor:type_name -> testdata.GithubArchiveEntityProto2
+	1, // 2: testdata.GithubArchiveMessageProto2.org:type_name -> testdata.GithubArchiveEntityProto2
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_messages_proto2_proto_init() }
@@ -155,6 +450,42 @@ func file_messages_proto2_proto_init() {
 				return nil
 			}
 		}
+		file_messages_proto2_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GithubArchiveEntityProto2); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto2_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GithubArchiveRepoProto2); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_messages_proto2_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GithubArchiveMessageProto2); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -162,7 +493,7 @@ func file_messages_proto2_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_messages_proto2_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
