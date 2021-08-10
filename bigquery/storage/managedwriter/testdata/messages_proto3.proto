@@ -18,7 +18,7 @@ option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata
 
 
 // SimpleMessage represents a simple message that transmits a string and int64 value.
-message SimpleMessage {
+message SimpleMessageProto3 {
     // name is a simple scalar string.
     string name = 1;
     // value is a simple int64 value.

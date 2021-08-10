@@ -16,9 +16,13 @@ package adapt
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -52,7 +56,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						Number: proto.Int32(1),
 						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
-					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
 					{Name: proto.String("baz"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
 				},
 			},
@@ -229,7 +233,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Name:   proto.String("key"),
 				Number: proto.Int32(1),
 				Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
-				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 			},
 			{
 				Name:   proto.String("value"),
@@ -276,4 +280,111 @@ func TestProtoJSONSerialization(t *testing.T) {
 		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
 
+}
+
+var benchDescriptor protoreflect.Descriptor
+
+func BenchmarkStorageSchemaToDescriptor(b *testing.B) {
+	syntaxLabels := []string{"proto2", "proto3"}
+	for _, bm := range []struct {
+		name string
+		in   bigquery.Schema
+	}{
+		{
+			name: "SingleField",
+			in: bigquery.Schema{
+				{Name: "field", Type: bigquery.StringFieldType},
+			},
+		},
+		{
+			name: "NestedRecord",
+			in: bigquery.Schema{
+				{Name: "field1", Type: bigquery.StringFieldType},
+				{Name: "field2", Type: bigquery.IntegerFieldType},
+				{Name: "field3", Type: bigquery.BooleanFieldType},
+				{
+					Name: "field4",
+					Type: bigquery.RecordFieldType,
+					Schema: bigquery.Schema{
+						{Name: "recordfield1", Type: bigquery.GeographyFieldType},
+						{Name: "recordfield2", Type: bigquery.TimestampFieldType},
+					},
+				},
+			},
+		},
+		{
+			name: "SimpleMessage",
+			in:   testdata.SimpleMessageSchema,
+		},
+		{
+			name: "GithubArchiveSchema",
+			in:   testdata.GithubArchiveSchema,
+		},
+	} {
+		for _, s := range syntaxLabels {
+			b.Run(fmt.Sprintf("%s-%s", bm.name, s), func(b *testing.B) {
+				convSchema, err := BQSchemaToStorageTableSchema(bm.in)
+				if err != nil {
+					b.Errorf("%q: schema conversion fail: %v", bm.name, err)
+				}
+				for n := 0; n < b.N; n++ {
+					dc := make(dependencyCache)
+					benchDescriptor, err = storageSchemaToDescriptorInternal(convSchema, "root", &dc, s == "proto3")
+					if err != nil {
+						b.Errorf("failed to convert %q: %v", bm.name, err)
+					}
+				}
+			})
+		}
+	}
+}
+
+var staticBytes []byte
+
+func BenchmarkStaticProtoSerialization(b *testing.B) {
+	for _, bm := range []struct {
+		name    string
+		in      bigquery.Schema
+		syntax  string
+		setterF func() protoreflect.ProtoMessage
+	}{
+		{
+			name: "SimpleMessageProto2",
+			in: bigquery.Schema{
+				{Name: "field", Type: bigquery.StringFieldType},
+			},
+			setterF: func() protoreflect.ProtoMessage {
+				return &testdata.SimpleMessageProto2{
+					Name:  proto.String(fmt.Sprintf("test-%d", time.Now().UnixNano())),
+					Value: proto.Int64(time.Now().UnixNano()),
+				}
+			},
+		},
+		{
+			name: "SimpleMessageProto3",
+			in: bigquery.Schema{
+				{Name: "field", Type: bigquery.StringFieldType},
+			},
+			setterF: func() protoreflect.ProtoMessage {
+				return &testdata.SimpleMessageProto3{
+					Name:  fmt.Sprintf("test-%d", time.Now().UnixNano()),
+					Value: time.Now().UnixNano(),
+				}
+			},
+		},
+	} {
+		b.Run(bm.name, func(b *testing.B) {
+			var totalBytes int64
+			for n := 0; n < b.N; n++ {
+				m := bm.setterF()
+				out, err := proto.Marshal(m)
+				if err != nil {
+					b.Errorf("%q %q: Marshal: %v", bm.name, bm.syntax, err)
+				}
+				totalBytes = totalBytes + int64(len(out))
+				staticBytes = out
+			}
+			b.Logf("avg bytes/message: %d", totalBytes/int64(b.N))
+		})
+	}
 }
