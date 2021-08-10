@@ -11,6 +11,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.52.0
 	google.golang.org/genproto v0.0.0-20210805201207-89edb61ffb67
-	google.golang.org/protobuf v1.27.1
 	google.golang.org/grpc v1.39.1
+	google.golang.org/protobuf v1.27.1
 )
