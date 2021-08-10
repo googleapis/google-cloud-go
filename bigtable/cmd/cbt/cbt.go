@@ -173,7 +173,15 @@ func doMain(config *cbtconfig.Config, args []string) {
 		cliUserAgent = config.UserAgent
 	}
 
-	ctx := context.Background()
+	var ctx context.Context
+	if config.Timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(context.Background(), config.Timeout)
+		defer cancel()
+	} else {
+		ctx = context.Background()
+	}
+
 	if config.AuthToken != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-iam-authorization-token", config.AuthToken)
 	}
@@ -235,6 +243,7 @@ options to your ~/.cbtrc file in the following format:
     admin-endpoint = hostname:port
     data-endpoint = hostname:port
     auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
+    timeout = 30s
 
 All values are optional and can be overridden at the command prompt.
 `
@@ -864,7 +873,7 @@ func doMDDoc(ctx context.Context, args ...string) { doMDDocFn(ctx, args...) }
 func docFlags() []*flag.Flag {
 	// Only include specific flags, in a specific order.
 	var flags []*flag.Flag
-	for _, name := range []string{"project", "instance", "creds"} {
+	for _, name := range []string{"project", "instance", "creds", "timeout"} {
 		f := flag.Lookup(name)
 		if f == nil {
 			log.Fatalf("Flag not linked: -%s", name)

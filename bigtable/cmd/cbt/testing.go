@@ -29,8 +29,12 @@ import (
 )
 
 func captureStdout(f func()) string {
-	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
+	/*
+	   Capture standard output to facilitate testing code that prints
 
+	   or to prevent useless print output in running tests.
+	*/
+	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
 	saved := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
