@@ -2552,7 +2552,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer dAdminClient.Close()
 
 	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
-	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, "mybackup"); err != nil {
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, backupName); err != nil {
 		t.Fatalf("RestoreTableFrom: %v", err)
 	}
 	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
