@@ -65,7 +65,7 @@ echo $ENVCTL_ID
 
 # If App Engine, install app-engine-go component
 if [[ $ENVIRONMENT == *"appengine"* ]]; then
-  gcloud components install app-engine-go -q
+  apt-get install google-cloud-sdk-app-engine-go -y | cat
 fi
 
 # If Kubernetes, install kubectl component
