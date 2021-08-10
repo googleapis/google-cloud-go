@@ -16,40 +16,41 @@ syntax = "proto3";
 package testdata;
 option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
 
+import "google/protobuf/wrappers.proto";
 
 // SimpleMessageProto3 represents a simple message that transmits a string and int64 value.
 message SimpleMessageProto3 {
     // name is a simple scalar string.
     string name = 1;
     // value is a simple int64 value.
-    int64 value = 2;
+    google.protobuf.Int64Value value = 2;
 }
 
 
 message GithubArchiveEntityProto3 {
-    int64 id = 1;
-    string login = 2;
-    string gravatar_id = 3;
-    string avatar_url = 4;
-    string url = 5;
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue login = 2;
+    google.protobuf.StringValue gravatar_id = 3;
+    google.protobuf.StringValue avatar_url = 4;
+    google.protobuf.StringValue url = 5;
 }
 
 message GithubArchiveRepoProto3 {
-    int64 id = 1;
-    string name = 2;
-    string url = 3;
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue name = 2;
+    google.protobuf.StringValue url = 3;
 }
 
 // GithubArchiveMessageProto3 is the proto3 version of github archive row.
 message GithubArchiveMessageProto3 {
-    string type = 1;
-    bool public = 2;
-    string payload = 3;
+    google.protobuf.StringValue type = 1;
+    google.protobuf.BoolValue public = 2;
+    google.protobuf.StringValue payload = 3;
     GithubArchiveRepoProto3 repo = 4;
     GithubArchiveEntityProto3 actor = 5;
     GithubArchiveEntityProto3 org = 6;
-    int64 created_at = 7;
-    string id = 8;
-    string other = 9;
+    google.protobuf.Int64Value created_at = 7;
+    google.protobuf.StringValue id = 8;
+    google.protobuf.StringValue other = 9;
 }
 

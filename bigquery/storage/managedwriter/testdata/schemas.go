@@ -18,7 +18,7 @@ import "cloud.google.com/go/bigquery"
 
 var (
 	SimpleMessageSchema bigquery.Schema = bigquery.Schema{
-		{Name: "name", Type: bigquery.StringFieldType},
+		{Name: "name", Type: bigquery.StringFieldType, Required: true},
 		{Name: "value", Type: bigquery.IntegerFieldType},
 	}
 
