@@ -239,9 +239,9 @@ func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.Upd
 
 // CancelJob starts a job cancellation request. To access the job resource
 // after cancellation, call
-// regions/{region}/jobs.list (at https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/list)
+// regions/{region}/jobs.list
 // or
-// regions/{region}/jobs.get (at https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/get).
+// regions/{region}/jobs.get.
 func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
 	return c.internalClient.CancelJob(ctx, req, opts...)
 }
@@ -420,11 +420,13 @@ func (c *jobControllerGRPCClient) ListJobs(ctx context.Context, req *dataprocpb.
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.Job, string, error) {
-		var resp *dataprocpb.ListJobsResponse
-		req.PageToken = pageToken
+		resp := &dataprocpb.ListJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -447,9 +449,11 @@ func (c *jobControllerGRPCClient) ListJobs(ctx context.Context, req *dataprocpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

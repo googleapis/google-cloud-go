@@ -56,13 +56,16 @@ type KeyManagementCallOptions struct {
 	CreateImportJob               []gax.CallOption
 	UpdateCryptoKey               []gax.CallOption
 	UpdateCryptoKeyVersion        []gax.CallOption
+	UpdateCryptoKeyPrimaryVersion []gax.CallOption
+	DestroyCryptoKeyVersion       []gax.CallOption
+	RestoreCryptoKeyVersion       []gax.CallOption
 	Encrypt                       []gax.CallOption
 	Decrypt                       []gax.CallOption
 	AsymmetricSign                []gax.CallOption
 	AsymmetricDecrypt             []gax.CallOption
-	UpdateCryptoKeyPrimaryVersion []gax.CallOption
-	DestroyCryptoKeyVersion       []gax.CallOption
-	RestoreCryptoKeyVersion       []gax.CallOption
+	MacSign                       []gax.CallOption
+	MacVerify                     []gax.CallOption
+	GenerateRandomBytes           []gax.CallOption
 	GetIamPolicy                  []gax.CallOption
 	SetIamPolicy                  []gax.CallOption
 	TestIamPermissions            []gax.CallOption
@@ -253,6 +256,42 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 				})
 			}),
 		},
+		UpdateCryptoKeyPrimaryVersion: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DestroyCryptoKeyVersion: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RestoreCryptoKeyVersion: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		Encrypt: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -301,45 +340,12 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 				})
 			}),
 		},
-		UpdateCryptoKeyPrimaryVersion: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DestroyCryptoKeyVersion: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		RestoreCryptoKeyVersion: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
+		MacSign:             []gax.CallOption{},
+		MacVerify:           []gax.CallOption{},
+		GenerateRandomBytes: []gax.CallOption{},
+		GetIamPolicy:        []gax.CallOption{},
+		SetIamPolicy:        []gax.CallOption{},
+		TestIamPermissions:  []gax.CallOption{},
 	}
 }
 
@@ -364,13 +370,16 @@ type internalKeyManagementClient interface {
 	CreateImportJob(context.Context, *kmspb.CreateImportJobRequest, ...gax.CallOption) (*kmspb.ImportJob, error)
 	UpdateCryptoKey(context.Context, *kmspb.UpdateCryptoKeyRequest, ...gax.CallOption) (*kmspb.CryptoKey, error)
 	UpdateCryptoKeyVersion(context.Context, *kmspb.UpdateCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
+	UpdateCryptoKeyPrimaryVersion(context.Context, *kmspb.UpdateCryptoKeyPrimaryVersionRequest, ...gax.CallOption) (*kmspb.CryptoKey, error)
+	DestroyCryptoKeyVersion(context.Context, *kmspb.DestroyCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
+	RestoreCryptoKeyVersion(context.Context, *kmspb.RestoreCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
 	Encrypt(context.Context, *kmspb.EncryptRequest, ...gax.CallOption) (*kmspb.EncryptResponse, error)
 	Decrypt(context.Context, *kmspb.DecryptRequest, ...gax.CallOption) (*kmspb.DecryptResponse, error)
 	AsymmetricSign(context.Context, *kmspb.AsymmetricSignRequest, ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error)
 	AsymmetricDecrypt(context.Context, *kmspb.AsymmetricDecryptRequest, ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error)
-	UpdateCryptoKeyPrimaryVersion(context.Context, *kmspb.UpdateCryptoKeyPrimaryVersionRequest, ...gax.CallOption) (*kmspb.CryptoKey, error)
-	DestroyCryptoKeyVersion(context.Context, *kmspb.DestroyCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
-	RestoreCryptoKeyVersion(context.Context, *kmspb.RestoreCryptoKeyVersionRequest, ...gax.CallOption) (*kmspb.CryptoKeyVersion, error)
+	MacSign(context.Context, *kmspb.MacSignRequest, ...gax.CallOption) (*kmspb.MacSignResponse, error)
+	MacVerify(context.Context, *kmspb.MacVerifyRequest, ...gax.CallOption) (*kmspb.MacVerifyResponse, error)
+	GenerateRandomBytes(context.Context, *kmspb.GenerateRandomBytesRequest, ...gax.CallOption) (*kmspb.GenerateRandomBytesResponse, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
@@ -528,33 +537,6 @@ func (c *KeyManagementClient) UpdateCryptoKeyVersion(ctx context.Context, req *k
 	return c.internalClient.UpdateCryptoKeyVersion(ctx, req, opts...)
 }
 
-// Encrypt encrypts data, so that it can only be recovered by a call to Decrypt.
-// The CryptoKey.purpose must be
-// ENCRYPT_DECRYPT.
-func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
-	return c.internalClient.Encrypt(ctx, req, opts...)
-}
-
-// Decrypt decrypts data that was protected by Encrypt. The CryptoKey.purpose
-// must be ENCRYPT_DECRYPT.
-func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptRequest, opts ...gax.CallOption) (*kmspb.DecryptResponse, error) {
-	return c.internalClient.Decrypt(ctx, req, opts...)
-}
-
-// AsymmetricSign signs data using a CryptoKeyVersion with CryptoKey.purpose
-// ASYMMETRIC_SIGN, producing a signature that can be verified with the public
-// key retrieved from GetPublicKey.
-func (c *KeyManagementClient) AsymmetricSign(ctx context.Context, req *kmspb.AsymmetricSignRequest, opts ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error) {
-	return c.internalClient.AsymmetricSign(ctx, req, opts...)
-}
-
-// AsymmetricDecrypt decrypts data that was encrypted with a public key retrieved from
-// GetPublicKey corresponding to a CryptoKeyVersion with
-// CryptoKey.purpose ASYMMETRIC_DECRYPT.
-func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.AsymmetricDecryptRequest, opts ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error) {
-	return c.internalClient.AsymmetricDecrypt(ctx, req, opts...)
-}
-
 // UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that will be used in Encrypt.
 //
 // Returns an error if called on a key whose purpose is not
@@ -588,6 +570,53 @@ func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *
 // and destroy_time will be cleared.
 func (c *KeyManagementClient) RestoreCryptoKeyVersion(ctx context.Context, req *kmspb.RestoreCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.RestoreCryptoKeyVersion(ctx, req, opts...)
+}
+
+// Encrypt encrypts data, so that it can only be recovered by a call to Decrypt.
+// The CryptoKey.purpose must be
+// ENCRYPT_DECRYPT.
+func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
+	return c.internalClient.Encrypt(ctx, req, opts...)
+}
+
+// Decrypt decrypts data that was protected by Encrypt. The CryptoKey.purpose
+// must be ENCRYPT_DECRYPT.
+func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptRequest, opts ...gax.CallOption) (*kmspb.DecryptResponse, error) {
+	return c.internalClient.Decrypt(ctx, req, opts...)
+}
+
+// AsymmetricSign signs data using a CryptoKeyVersion with CryptoKey.purpose
+// ASYMMETRIC_SIGN, producing a signature that can be verified with the public
+// key retrieved from GetPublicKey.
+func (c *KeyManagementClient) AsymmetricSign(ctx context.Context, req *kmspb.AsymmetricSignRequest, opts ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error) {
+	return c.internalClient.AsymmetricSign(ctx, req, opts...)
+}
+
+// AsymmetricDecrypt decrypts data that was encrypted with a public key retrieved from
+// GetPublicKey corresponding to a CryptoKeyVersion with
+// CryptoKey.purpose ASYMMETRIC_DECRYPT.
+func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.AsymmetricDecryptRequest, opts ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error) {
+	return c.internalClient.AsymmetricDecrypt(ctx, req, opts...)
+}
+
+// MacSign signs data using a CryptoKeyVersion with CryptoKey.purpose
+// MAC, producing a tag that can be verified by another source with the
+// same key.
+func (c *KeyManagementClient) MacSign(ctx context.Context, req *kmspb.MacSignRequest, opts ...gax.CallOption) (*kmspb.MacSignResponse, error) {
+	return c.internalClient.MacSign(ctx, req, opts...)
+}
+
+// MacVerify verifies MAC tag using a CryptoKeyVersion with CryptoKey.purpose
+// MAC, and returns a response that indicates whether or not the verification
+// was successful.
+func (c *KeyManagementClient) MacVerify(ctx context.Context, req *kmspb.MacVerifyRequest, opts ...gax.CallOption) (*kmspb.MacVerifyResponse, error) {
+	return c.internalClient.MacVerify(ctx, req, opts...)
+}
+
+// GenerateRandomBytes generate random bytes using the Cloud KMS randomness source in the provided
+// location.
+func (c *KeyManagementClient) GenerateRandomBytes(ctx context.Context, req *kmspb.GenerateRandomBytesRequest, opts ...gax.CallOption) (*kmspb.GenerateRandomBytesResponse, error) {
+	return c.internalClient.GenerateRandomBytes(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy for a resource. Returns an empty policy
@@ -720,11 +749,13 @@ func (c *keyManagementGRPCClient) ListKeyRings(ctx context.Context, req *kmspb.L
 	it := &KeyRingIterator{}
 	req = proto.Clone(req).(*kmspb.ListKeyRingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.KeyRing, string, error) {
-		var resp *kmspb.ListKeyRingsResponse
-		req.PageToken = pageToken
+		resp := &kmspb.ListKeyRingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -747,9 +778,11 @@ func (c *keyManagementGRPCClient) ListKeyRings(ctx context.Context, req *kmspb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -760,11 +793,13 @@ func (c *keyManagementGRPCClient) ListCryptoKeys(ctx context.Context, req *kmspb
 	it := &CryptoKeyIterator{}
 	req = proto.Clone(req).(*kmspb.ListCryptoKeysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
-		var resp *kmspb.ListCryptoKeysResponse
-		req.PageToken = pageToken
+		resp := &kmspb.ListCryptoKeysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -787,9 +822,11 @@ func (c *keyManagementGRPCClient) ListCryptoKeys(ctx context.Context, req *kmspb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -800,11 +837,13 @@ func (c *keyManagementGRPCClient) ListCryptoKeyVersions(ctx context.Context, req
 	it := &CryptoKeyVersionIterator{}
 	req = proto.Clone(req).(*kmspb.ListCryptoKeyVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKeyVersion, string, error) {
-		var resp *kmspb.ListCryptoKeyVersionsResponse
-		req.PageToken = pageToken
+		resp := &kmspb.ListCryptoKeyVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -827,9 +866,11 @@ func (c *keyManagementGRPCClient) ListCryptoKeyVersions(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -840,11 +881,13 @@ func (c *keyManagementGRPCClient) ListImportJobs(ctx context.Context, req *kmspb
 	it := &ImportJobIterator{}
 	req = proto.Clone(req).(*kmspb.ListImportJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.ImportJob, string, error) {
-		var resp *kmspb.ListImportJobsResponse
-		req.PageToken = pageToken
+		resp := &kmspb.ListImportJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -867,9 +910,11 @@ func (c *keyManagementGRPCClient) ListImportJobs(ctx context.Context, req *kmspb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1125,6 +1170,69 @@ func (c *keyManagementGRPCClient) UpdateCryptoKeyVersion(ctx context.Context, re
 	return resp, nil
 }
 
+func (c *keyManagementGRPCClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateCryptoKeyPrimaryVersion[0:len((*c.CallOptions).UpdateCryptoKeyPrimaryVersion):len((*c.CallOptions).UpdateCryptoKeyPrimaryVersion)], opts...)
+	var resp *kmspb.CryptoKey
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.keyManagementClient.UpdateCryptoKeyPrimaryVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) DestroyCryptoKeyVersion(ctx context.Context, req *kmspb.DestroyCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DestroyCryptoKeyVersion[0:len((*c.CallOptions).DestroyCryptoKeyVersion):len((*c.CallOptions).DestroyCryptoKeyVersion)], opts...)
+	var resp *kmspb.CryptoKeyVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.keyManagementClient.DestroyCryptoKeyVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) RestoreCryptoKeyVersion(ctx context.Context, req *kmspb.RestoreCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RestoreCryptoKeyVersion[0:len((*c.CallOptions).RestoreCryptoKeyVersion):len((*c.CallOptions).RestoreCryptoKeyVersion)], opts...)
+	var resp *kmspb.CryptoKeyVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.keyManagementClient.RestoreCryptoKeyVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *keyManagementGRPCClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1209,19 +1317,14 @@ func (c *keyManagementGRPCClient) AsymmetricDecrypt(ctx context.Context, req *km
 	return resp, nil
 }
 
-func (c *keyManagementGRPCClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *keyManagementGRPCClient) MacSign(ctx context.Context, req *kmspb.MacSignRequest, opts ...gax.CallOption) (*kmspb.MacSignResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateCryptoKeyPrimaryVersion[0:len((*c.CallOptions).UpdateCryptoKeyPrimaryVersion):len((*c.CallOptions).UpdateCryptoKeyPrimaryVersion)], opts...)
-	var resp *kmspb.CryptoKey
+	opts = append((*c.CallOptions).MacSign[0:len((*c.CallOptions).MacSign):len((*c.CallOptions).MacSign)], opts...)
+	var resp *kmspb.MacSignResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.keyManagementClient.UpdateCryptoKeyPrimaryVersion(ctx, req, settings.GRPC...)
+		resp, err = c.keyManagementClient.MacSign(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1230,19 +1333,14 @@ func (c *keyManagementGRPCClient) UpdateCryptoKeyPrimaryVersion(ctx context.Cont
 	return resp, nil
 }
 
-func (c *keyManagementGRPCClient) DestroyCryptoKeyVersion(ctx context.Context, req *kmspb.DestroyCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *keyManagementGRPCClient) MacVerify(ctx context.Context, req *kmspb.MacVerifyRequest, opts ...gax.CallOption) (*kmspb.MacVerifyResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DestroyCryptoKeyVersion[0:len((*c.CallOptions).DestroyCryptoKeyVersion):len((*c.CallOptions).DestroyCryptoKeyVersion)], opts...)
-	var resp *kmspb.CryptoKeyVersion
+	opts = append((*c.CallOptions).MacVerify[0:len((*c.CallOptions).MacVerify):len((*c.CallOptions).MacVerify)], opts...)
+	var resp *kmspb.MacVerifyResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.keyManagementClient.DestroyCryptoKeyVersion(ctx, req, settings.GRPC...)
+		resp, err = c.keyManagementClient.MacVerify(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1251,19 +1349,14 @@ func (c *keyManagementGRPCClient) DestroyCryptoKeyVersion(ctx context.Context, r
 	return resp, nil
 }
 
-func (c *keyManagementGRPCClient) RestoreCryptoKeyVersion(ctx context.Context, req *kmspb.RestoreCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *keyManagementGRPCClient) GenerateRandomBytes(ctx context.Context, req *kmspb.GenerateRandomBytesRequest, opts ...gax.CallOption) (*kmspb.GenerateRandomBytesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).RestoreCryptoKeyVersion[0:len((*c.CallOptions).RestoreCryptoKeyVersion):len((*c.CallOptions).RestoreCryptoKeyVersion)], opts...)
-	var resp *kmspb.CryptoKeyVersion
+	opts = append((*c.CallOptions).GenerateRandomBytes[0:len((*c.CallOptions).GenerateRandomBytes):len((*c.CallOptions).GenerateRandomBytes)], opts...)
+	var resp *kmspb.GenerateRandomBytesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.keyManagementClient.RestoreCryptoKeyVersion(ctx, req, settings.GRPC...)
+		resp, err = c.keyManagementClient.GenerateRandomBytes(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

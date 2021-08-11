@@ -2208,9 +2208,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err := autoTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   AutoHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
@@ -2225,9 +2226,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err = customTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{NumericTargetType, StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   CustomHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",

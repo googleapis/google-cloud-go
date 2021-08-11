@@ -1092,11 +1092,13 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Account, string, error) {
-		var resp *adminpb.ListAccountsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAccountsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1119,9 +1121,11 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1189,11 +1193,13 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 	it := &AccountSummaryIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
-		var resp *adminpb.ListAccountSummariesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAccountSummariesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1216,9 +1222,11 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1249,11 +1257,13 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 	it := &PropertyIterator{}
 	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Property, string, error) {
-		var resp *adminpb.ListPropertiesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListPropertiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1276,9 +1286,11 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1393,11 +1405,13 @@ func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *admin
 	it := &UserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.UserLink, string, error) {
-		var resp *adminpb.ListUserLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListUserLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1420,9 +1434,11 @@ func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *admin
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1433,11 +1449,13 @@ func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *admi
 	it := &AuditUserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.AuditUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AuditUserLink, string, error) {
-		var resp *adminpb.AuditUserLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.AuditUserLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1460,9 +1478,11 @@ func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *admi
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1671,11 +1691,13 @@ func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *
 	it := &WebDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListWebDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.WebDataStream, string, error) {
-		var resp *adminpb.ListWebDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListWebDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1698,9 +1720,11 @@ func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1770,11 +1794,13 @@ func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, re
 	it := &IosAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListIosAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.IosAppDataStream, string, error) {
-		var resp *adminpb.ListIosAppDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListIosAppDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1797,9 +1823,11 @@ func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, re
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1869,11 +1897,13 @@ func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context
 	it := &AndroidAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListAndroidAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AndroidAppDataStream, string, error) {
-		var resp *adminpb.ListAndroidAppDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAndroidAppDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1896,9 +1926,11 @@ func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2010,11 +2042,13 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 	it := &FirebaseLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
-		var resp *adminpb.ListFirebaseLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListFirebaseLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2037,9 +2071,11 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2130,11 +2166,13 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 	it := &GoogleAdsLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.GoogleAdsLink, string, error) {
-		var resp *adminpb.ListGoogleAdsLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListGoogleAdsLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2157,9 +2195,11 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2212,11 +2252,13 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 	it := &MeasurementProtocolSecretIterator{}
 	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.MeasurementProtocolSecret, string, error) {
-		var resp *adminpb.ListMeasurementProtocolSecretsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListMeasurementProtocolSecretsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2239,9 +2281,11 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2311,11 +2355,13 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChangeHistoryEvent, string, error) {
-		var resp *adminpb.SearchChangeHistoryEventsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.SearchChangeHistoryEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2338,9 +2384,11 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2452,11 +2500,13 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 	it := &ConversionEventIterator{}
 	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ConversionEvent, string, error) {
-		var resp *adminpb.ListConversionEventsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListConversionEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2479,9 +2529,11 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2534,11 +2586,13 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 	it := &CustomDimensionIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomDimension, string, error) {
-		var resp *adminpb.ListCustomDimensionsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListCustomDimensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2561,9 +2615,11 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2654,11 +2710,13 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 	it := &CustomMetricIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomMetric, string, error) {
-		var resp *adminpb.ListCustomMetricsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListCustomMetricsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2681,9 +2739,11 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
