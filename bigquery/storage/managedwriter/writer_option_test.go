@@ -84,6 +84,18 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
+			desc:    "WithDataOrigin",
+			options: []WriterOption{WithDataOrigin("origin")},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings:   defaultStreamSettings(),
+					destinationTable: "foo",
+				}
+				ms.streamSettings.dataOrigin = "origin"
+				return ms
+			}(),
+		},
+		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithType(PendingStream),
