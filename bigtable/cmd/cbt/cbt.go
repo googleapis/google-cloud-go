@@ -1029,15 +1029,12 @@ func getDataFilter(
 		filters = append(filters, columnFilters)
 	}
 
-	var filter bigtable.Filter = nil
 	var option bigtable.ReadOption
-	if len(filters) > 0 {
-		if len(filters) > 1 {
-			filter = bigtable.ChainFilters(filters...)
-		} else if len(filters) == 1 {
-			filter = filters[0]
-		}
-		option = bigtable.RowFilter(filter)
+
+	if len(filters) > 1 {
+		option = bigtable.RowFilter(bigtable.ChainFilters(filters...))
+	} else if len(filters) == 1 {
+		option = bigtable.RowFilter(filters[0])
 	}
 
 	return option, keysOnly, nil
