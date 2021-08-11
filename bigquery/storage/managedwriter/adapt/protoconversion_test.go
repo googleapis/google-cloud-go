@@ -401,6 +401,16 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 			},
 		},
 		{
+			// Only set a single top-level field in a larger message.
+			name: "GithubArchiveProto2_Sparse",
+			setterF: func() protoreflect.ProtoMessage {
+				nowNano := time.Now().UnixNano()
+				return &testdata.GithubArchiveMessageProto2{
+					Id: proto.String(fmt.Sprintf("id%d", nowNano)),
+				}
+			},
+		},
+		{
 			name: "GithubArchiveProto3",
 			setterF: func() protoreflect.ProtoMessage {
 				nowNano := time.Now().UnixNano()
@@ -433,6 +443,16 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 				}
 			},
 		},
+		{
+			// Only set a single field in a larger message.
+			name: "GithubArchiveProto3_Sparse",
+			setterF: func() protoreflect.ProtoMessage {
+				nowNano := time.Now().UnixNano()
+				return &testdata.GithubArchiveMessageProto3{
+					Id: &wrapperspb.StringValue{Value: fmt.Sprintf("id%d", nowNano)},
+				}
+			},
+		},
 	} {
 		b.Run(bm.name, func(b *testing.B) {
 			var totalBytes int64
@@ -445,7 +465,7 @@ func BenchmarkStaticProtoSerialization(b *testing.B) {
 				totalBytes = totalBytes + int64(len(out))
 				staticBytes = out
 			}
-			b.Logf("avg bytes/message: %d", totalBytes/int64(b.N))
+			b.Logf("N=%d, avg bytes/message: %d", b.N, totalBytes/int64(b.N))
 		})
 	}
 }
