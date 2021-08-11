@@ -1057,39 +1057,14 @@ func doLookup(ctx context.Context, args ...string) {
 		log.Fatal(err)
 	}
 
+	opt, keysOnly, err := getDataFilter(parsed)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var opts []bigtable.ReadOption
-	var filters []bigtable.Filter
-	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
-		n, err := strconv.Atoi(cellsPerColumn)
-		if err != nil {
-			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
-		}
-		filters = append(filters, bigtable.LatestNFilter(n))
-	}
-
-	keysOnly := false
-	if keysOnlyS := parsed["keys-only"]; keysOnlyS != "" {
-		keysOnly, err = strconv.ParseBool(keysOnlyS)
-		if err != nil {
-			log.Fatalf("Bad value for keys-only: %v", keysOnlyS)
-		}
-		if keysOnly {
-			filters = append(filters, bigtable.StripValueFilter())
-		}
-	}
-
-	if columns := parsed["columns"]; columns != "" {
-		columnFilters, err := parseColumnsFilter(columns)
-		if err != nil {
-			log.Fatal(err)
-		}
-		filters = append(filters, columnFilters)
-	}
-
-	if len(filters) > 1 {
-		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
-	} else if len(filters) == 1 {
-		opts = append(opts, bigtable.RowFilter(filters[0]))
+	if opt != nil {
+		opts = append(opts, opt)
 	}
 
 	table, row := args[0], args[1]
