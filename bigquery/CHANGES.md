@@ -1,5 +1,12 @@
 # Changes
 
+### [1.20.2](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.20.1...bigquery/v1.20.2) (2021-08-11)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** support non-default regions ([#4566](https://www.github.com/googleapis/google-cloud-go/issues/4566)) ([68418f9](https://www.github.com/googleapis/google-cloud-go/commit/68418f9e340def179eb5556aea433c0d07000b79))
+
 ### [1.20.1](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.20.0...bigquery/v1.20.1) (2021-08-06)
 
 
