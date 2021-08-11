@@ -25,6 +25,7 @@ import (
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
@@ -81,8 +82,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		c:              c,
 		ctx:            ctx,
 		cancel:         cancel,
-		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			arc, err := streamFunc(ctx, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
+		open: func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			arc, err := streamFunc(
+				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
+				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)),
+				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
 			if err != nil {
 				return nil, err
 			}

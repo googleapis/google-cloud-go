@@ -575,11 +575,13 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 	it := &ConnectionProfileIterator{}
 	req = proto.Clone(req).(*datastreampb.ListConnectionProfilesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.ConnectionProfile, string, error) {
-		var resp *datastreampb.ListConnectionProfilesResponse
-		req.PageToken = pageToken
+		resp := &datastreampb.ListConnectionProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -602,9 +604,11 @@ func (c *gRPCClient) ListConnectionProfiles(ctx context.Context, req *datastream
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -726,11 +730,13 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 	it := &StreamIterator{}
 	req = proto.Clone(req).(*datastreampb.ListStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Stream, string, error) {
-		var resp *datastreampb.ListStreamsResponse
-		req.PageToken = pageToken
+		resp := &datastreampb.ListStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -753,9 +759,11 @@ func (c *gRPCClient) ListStreams(ctx context.Context, req *datastreampb.ListStre
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -879,11 +887,13 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 	it := &StringIterator{}
 	req = proto.Clone(req).(*datastreampb.FetchStaticIpsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
-		var resp *datastreampb.FetchStaticIpsResponse
-		req.PageToken = pageToken
+		resp := &datastreampb.FetchStaticIpsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -906,9 +916,11 @@ func (c *gRPCClient) FetchStaticIps(ctx context.Context, req *datastreampb.Fetch
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -963,11 +975,13 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 	it := &PrivateConnectionIterator{}
 	req = proto.Clone(req).(*datastreampb.ListPrivateConnectionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.PrivateConnection, string, error) {
-		var resp *datastreampb.ListPrivateConnectionsResponse
-		req.PageToken = pageToken
+		resp := &datastreampb.ListPrivateConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -990,9 +1004,11 @@ func (c *gRPCClient) ListPrivateConnections(ctx context.Context, req *datastream
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1070,11 +1086,13 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 	it := &RouteIterator{}
 	req = proto.Clone(req).(*datastreampb.ListRoutesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datastreampb.Route, string, error) {
-		var resp *datastreampb.ListRoutesResponse
-		req.PageToken = pageToken
+		resp := &datastreampb.ListRoutesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1097,9 +1115,11 @@ func (c *gRPCClient) ListRoutes(ctx context.Context, req *datastreampb.ListRoute
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
