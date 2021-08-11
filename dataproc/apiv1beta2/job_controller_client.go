@@ -239,9 +239,9 @@ func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.Upd
 
 // CancelJob starts a job cancellation request. To access the job resource
 // after cancellation, call
-// regions/{region}/jobs.list (at https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/list)
+// regions/{region}/jobs.list
 // or
-// regions/{region}/jobs.get (at https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/get).
+// regions/{region}/jobs.get.
 func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
 	return c.internalClient.CancelJob(ctx, req, opts...)
 }
