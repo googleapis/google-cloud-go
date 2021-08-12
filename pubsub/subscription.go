@@ -897,6 +897,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 				for i, msg := range msgs {
 					msg := msg
+					if msg.OrderingKey != "" {
+						s.once.Do(s.checkOrdering)
+					}
 					// TODO(jba): call acquire closer to when the message is allocated.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
@@ -914,9 +917,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
-					if msg.OrderingKey != "" {
-						s.once.Do(s.checkOrdering)
-					}
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
 					if s.enableOrdering {
