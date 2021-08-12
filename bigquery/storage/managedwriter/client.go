@@ -126,7 +126,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	}
 	if ms.streamSettings != nil {
 		if ms.ctx != nil {
-			ms.ctx = keyContextWithStreamID(ms.ctx, ms.streamSettings.streamID)
+			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
 		}
 		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
 	} else {
