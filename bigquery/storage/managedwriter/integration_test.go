@@ -96,7 +96,7 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
 	}
 
-	descriptor, err := adapt.StorageSchemaToDescriptor(convertedSchema, "root")
+	descriptor, err := adapt.StorageSchemaToProto2Descriptor(convertedSchema, "root")
 	if err != nil {
 		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
 	}
