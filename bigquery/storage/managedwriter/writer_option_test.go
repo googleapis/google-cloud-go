@@ -88,8 +88,7 @@ func TestWriterOptions(t *testing.T) {
 			options: []WriterOption{WithDataOrigin("origin")},
 			want: func() *ManagedStream {
 				ms := &ManagedStream{
-					streamSettings:   defaultStreamSettings(),
-					destinationTable: "foo",
+					streamSettings: defaultStreamSettings(),
 				}
 				ms.streamSettings.dataOrigin = "origin"
 				return ms
