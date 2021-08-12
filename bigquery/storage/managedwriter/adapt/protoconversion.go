@@ -123,7 +123,7 @@ func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope stri
 	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, false)
 }
 
-// StorageSchemaToProto3Descriptor builds a protoreflt.Descriptor for a given table schema using proto3 syntax.
+// StorageSchemaToProto3Descriptor builds a protoreflect.Descriptor for a given table schema using proto3 syntax.
 //
 // NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
 // completeness.
