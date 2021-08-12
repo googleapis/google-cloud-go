@@ -3694,6 +3694,42 @@ func TestIntegration_Scopes(t *testing.T) {
 
 }
 
+func TestBucketSignURL(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucketName)
+
+	obj := "testBucketSignedURL"
+	contents := []byte("test")
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+
+	url, err := bkt.SignedURL(obj, &SignedURLOptions{
+		Method:  "GET",
+		Expires: time.Now().Add(30 * time.Second),
+	})
+	if err != nil {
+		t.Fatalf("unable to create signed URL: %v", err)
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		t.Fatalf("http.Get(%q) errored: %q", url, err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		t.Fatalf("resp.StatusCode = %v, want 200: %v", resp.StatusCode, err)
+	}
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatalf("unable to read resp.Body: %v", err)
+	}
+	if bytes.Equal(b, contents) {
+		t.Fatalf("got %q, want %q", b, contents)
+	}
+}
+
 type testHelper struct {
 	t *testing.T
 }

@@ -40,10 +40,12 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -94,6 +96,7 @@ type Client struct {
 	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
+	creds    *google.Credentials
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -104,6 +107,7 @@ type Client struct {
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var host, readHost, scheme string
+	var creds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -117,10 +121,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		readHost = "storage.googleapis.com"
 
 		// Prepend default options to avoid overriding options passed by the user.
-		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
+		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, opts...)
 
 		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
+
+		c, err := transport.Creds(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		creds = c
+
+		opts = append(opts, internaloption.WithCredentials(creds))
+
 	} else {
 		scheme = "http"
 		readHost = host
@@ -154,6 +167,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		scheme:   scheme,
 		envHost:  host,
 		readHost: readHost,
+		creds:    creds,
 	}, nil
 }
 
@@ -164,6 +178,7 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	c.creds = nil
 	return nil
 }
 
@@ -464,7 +479,7 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // the users access to a restricted resource for a limited time without having a
 // Google account or signing in. For more information about the signed
 // URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
-func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
+func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
 		return "", err
@@ -473,13 +488,13 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	switch opts.Scheme {
 	case SigningSchemeV2:
 		opts.Headers = v2SanitizeHeaders(opts.Headers)
-		return signedURLV2(bucket, name, opts)
+		return signedURLV2(bucket, object, opts)
 	case SigningSchemeV4:
 		opts.Headers = v4SanitizeHeaders(opts.Headers)
-		return signedURLV4(bucket, name, opts, now)
+		return signedURLV4(bucket, object, opts, now)
 	default: // SigningSchemeDefault
 		opts.Headers = v2SanitizeHeaders(opts.Headers)
-		return signedURLV2(bucket, name, opts)
+		return signedURLV2(bucket, object, opts)
 	}
 }
 

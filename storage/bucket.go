@@ -16,15 +16,20 @@ package storage
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
 	"time"
 
+	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
 )
 
@@ -220,6 +225,93 @@ func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPa
 		req.UserProject(b.userProject)
 	}
 	return req, nil
+}
+
+// todo  add
+func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
+	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return SignedURL(b.name, object, opts)
+	}
+	// Make a copy of opts so we don't modify the pointer parameter.
+	newopts := &SignedURLOptions{
+		GoogleAccessID:  opts.GoogleAccessID,
+		SignBytes:       opts.SignBytes,
+		PrivateKey:      opts.PrivateKey,
+		Method:          opts.Method,
+		Expires:         opts.Expires,
+		ContentType:     opts.ContentType,
+		Headers:         opts.Headers,
+		QueryParameters: opts.QueryParameters,
+		MD5:             opts.MD5,
+		Style:           opts.Style,
+		Insecure:        opts.Insecure,
+		Scheme:          opts.Scheme,
+	}
+
+	if newopts.GoogleAccessID == "" {
+		id, err := b.detectDefaultGoogleAccessID()
+		if err != nil {
+			return "", err
+		}
+		newopts.GoogleAccessID = id
+	}
+	if newopts.SignBytes == nil && len(newopts.PrivateKey) == 0 {
+		if len(b.c.creds.JSON) > 0 {
+			var sa struct {
+				PrivateKey string `json:"private_key"`
+			}
+			// Don't error out if we can't marshal, fallback to GCE check.
+			err := json.Unmarshal(b.c.creds.JSON, &sa)
+			if err == nil && sa.PrivateKey != "" {
+				newopts.PrivateKey = []byte(sa.PrivateKey)
+			}
+		}
+		if len(newopts.PrivateKey) == 0 {
+			newopts.SignBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
+		}
+	}
+	return SignedURL(b.name, object, newopts)
+}
+
+func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
+	if len(b.c.creds.JSON) > 0 {
+		var sa struct {
+			ClientEmail string `json:"client_email"`
+		}
+		// Don't error out if we can't marshal, fallback to GCE check.
+		err := json.Unmarshal(b.c.creds.JSON, &sa)
+		if err == nil && sa.ClientEmail != "" {
+			return sa.ClientEmail, nil
+		}
+	}
+	if metadata.OnGCE() {
+		email, err := metadata.Email("default")
+		if err == nil && email != "" {
+			return email, nil
+		}
+	}
+	return "", fmt.Errorf("unable to detect default GoogleAccessID")
+}
+
+func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
+	return func(in []byte) ([]byte, error) {
+		ctx := context.Background()
+		svc, err := iamcredentials.NewService(ctx, option.WithHTTPClient(b.c.hc))
+		if err != nil {
+			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
+		}
+		resp, err := svc.Projects.ServiceAccounts.SignBlob(fmt.Sprintf("projects/-/serviceAccounts/%s", email), &iamcredentials.SignBlobRequest{
+			Payload: base64.StdEncoding.EncodeToString(in),
+		}).Do()
+		if err != nil {
+			return nil, fmt.Errorf("unable to sign bytes: %v", err)
+		}
+		out, err := base64.StdEncoding.DecodeString(resp.SignedBlob)
+		if err != nil {
+			return nil, fmt.Errorf("unable to base64 decode response: %v", err)
+		}
+		return out, nil
+	}
 }
 
 // BucketAttrs represents the metadata for a Google Cloud Storage bucket.
