@@ -112,6 +112,10 @@ type streamSettings struct {
 	// TraceID can be set when appending data on a stream. It's
 	// purpose is to aid in debug and diagnostic scenarios.
 	TraceID string
+
+	// dataOrigin can be set for classifying metrics generated
+	// by a stream.
+	dataOrigin string
 }
 
 func defaultStreamSettings() *streamSettings {
