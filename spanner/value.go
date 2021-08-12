@@ -472,7 +472,7 @@ func (n NullJSON) IsNull() bool {
 	return !n.Valid
 }
 
-// String implements Stringer.String for NullJSON
+// String implements Stringer.String for NullJSON.
 func (n NullJSON) String() string {
 	if !n.Valid {
 		return nullString
