@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"runtime"
 	"strings"
@@ -23,10 +24,20 @@ import (
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
+
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
@@ -50,10 +61,28 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
+	if projectID == DetectProjectID {
+		projectID, err = detectProjectID(ctx, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to detect project: %v", err)
+		}
+	}
+
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
 	}, nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("credentials did not provide a valid ProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 // Close releases resources held by the client.
