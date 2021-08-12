@@ -116,11 +116,20 @@ func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoref
 	return nil
 }
 
-// StorageSchemaToDescriptor builds a protoreflect.Descriptor for a given table schema.
-func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+// StorageSchemaToProto2Descriptor builds a protoreflect.Descriptor for a given table schema using proto2 syntax.
+func StorageSchemaToProto2Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
 	dc := make(dependencyCache)
 	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
 	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, false)
+}
+
+// StorageSchemaToProto3Descriptor builds a protoreflt.Descriptor for a given table schema using proto3 syntax.
+//
+// NOTE: Currently the write API doesn't yet support proto3 behaviors (default value, wrapper types, etc), but this is provided for
+// completeness.
+func StorageSchemaToProto3Descriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+	dc := make(dependencyCache)
+	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, true)
 }
 
 // internal implementation of the conversion code.
