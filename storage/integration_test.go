@@ -213,7 +213,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 	}
 
 	var err error
-	gc, err = newClientWithGRPC(ctx, nil)
+	gc, err = newHybridClient(ctx, nil)
 	if err != nil {
 		log.Fatalf("newClientWithGRPC: %v", err)
 	}
