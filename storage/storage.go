@@ -121,20 +121,20 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
 		// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
-		var hostUrl *url.URL
+		var hostURL *url.URL
 		if strings.Contains(host, "://") {
 			h, err := url.Parse(host)
 			if err != nil {
 				return nil, err
 			}
-			hostUrl = h
+			hostURL = h
 		} else {
-			hostUrl = &url.URL{Scheme: "http", Host: host}
+			hostURL = &url.URL{Scheme: "http", Host: host}
 		}
 
 		// Prepend an endpoint for the user in case they don't supply one
-		hostUrl.Path = "storage/v1"
-		endpoint := hostUrl.String()
+		hostURL.Path = "storage/v1"
+		endpoint := hostURL.String()
 
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
