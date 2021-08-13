@@ -623,7 +623,11 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			msg = res.response
 		}
 
-		// TODO: Capture incremental CRC32C for this chunk.
+		// TODO: Determine if we need to capture incremental CRC32C for this
+		// chunk. The Object CRC32C checksum is captured when directed to read
+		// the entire Object. If directed to read a range, we may need to
+		// calculate the range's checksum for verification if the checksum is
+		// present in the response here.
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
 		leftover := len(content) - cp
