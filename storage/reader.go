@@ -595,56 +595,56 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		return n, nil
 	}
 
-	for len(p[n:]) > 0 {
-		msg, err := r.stream.Recv()
-		if err != nil {
-			// Let the next call to readWithGRPC return EOF.
-			if err == io.EOF && r.seen == r.size {
-				return n, nil
-			}
-			// This prevents reopening of the stream when the error is not
-			// retryable. If the error is EOF, it will be returned here.
-			if !shouldRetry(err) {
-				return n, err
-			}
-
-			// Save the original error to return instead of the reinit error.
-			e := err
-
-			// This will "close" the existing stream and immediately attempt to
-			// reopen the stream, but will backoff if further attempts are
-			// necessary. Reopening the stream Recv'd the first message, so this
-			// can continue where it left off.
-			msg, err = r.reopenStream(r.seen)
-			if err != nil {
-				// Cannot reinstantiate the stream so return the original error.
-				return n, e
-			}
-		}
-
-		// TODO: Determine if we need to capture incremental CRC32C for this
-		// chunk. The Object CRC32C checksum is captured when directed to read
-		// the entire Object. If directed to read a range, we may need to
-		// calculate the range's checksum for verification if the checksum is
-		// present in the response here.
-		// TODO: Figure out if we need to support decompressive transcoding
-		// https://cloud.google.com/storage/docs/transcoding.
-		content := msg.GetChecksummedData().GetContent()
-		cp := copy(p[n:], content)
-		leftover := len(content) - cp
-		if leftover > 0 {
-			// Wasn't able to copy all of the data in the message, store for
-			// future Read calls.
-			// TODO: Instead of acquiring a new block of memory, should we reuse
-			// the existing leftovers slice, expanding it if necessary?
-			r.leftovers = make([]byte, leftover)
-			copy(r.leftovers, content[cp:])
-		}
-		n += cp
-		r.seen += int64(cp)
+	// Attempt to Recv the next message on the stream.
+	msg, err := r.recvWithRetry()
+	if err != nil {
+		return 0, err
 	}
 
+	// TODO: Determine if we need to capture incremental CRC32C for this
+	// chunk. The Object CRC32C checksum is captured when directed to read
+	// the entire Object. If directed to read a range, we may need to
+	// calculate the range's checksum for verification if the checksum is
+	// present in the response here.
+	// TODO: Figure out if we need to support decompressive transcoding
+	// https://cloud.google.com/storage/docs/transcoding.
+	content := msg.GetChecksummedData().GetContent()
+	n = copy(p[n:], content)
+	leftover := len(content) - n
+	if leftover > 0 {
+		// Wasn't able to copy all of the data in the message, store for
+		// future Read calls.
+		// TODO: Instead of acquiring a new block of memory, should we reuse
+		// the existing leftovers slice, expanding it if necessary?
+		r.leftovers = make([]byte, leftover)
+		copy(r.leftovers, content[n:])
+	}
+	r.seen += int64(n)
+
 	return n, nil
+}
+
+// recvWithRetry attempts to Recv the next message on the stream. In the event
+// that a retryable error is encountered, the stream will be closed, reopened
+// and Recv again. This will attempt to Recv until one of the following is true:
+//
+// * Recv is successful
+// * A non-retryable error is encountered
+// * The Reader's context is canceled
+//
+// The last error received is the one that is returned, which could be from
+// an attempt to reopen the stream.
+func (r *Reader) recvWithRetry() (*storagepb.ReadObjectResponse, error) {
+	msg, err := r.stream.Recv()
+	for err != nil && shouldRetry(err) {
+		// This will "close" the existing stream and immediately attempt to
+		// reopen the stream, but will backoff in doing so if further attempts
+		// are necessary. Reopening the stream Recvs the first message, so this
+		// loop will exit with the next msg if successful.
+		msg, err = r.reopenStream(r.seen)
+	}
+
+	return msg, err
 }
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
