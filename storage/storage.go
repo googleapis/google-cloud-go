@@ -90,8 +90,6 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// EnvHost is the host set on the STORAGE_EMULATOR_HOST variable.
-	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
 }
@@ -152,7 +150,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		hc:       hc,
 		raw:      rawService,
 		scheme:   scheme,
-		envHost:  host,
 		readHost: readHost,
 	}, nil
 }
