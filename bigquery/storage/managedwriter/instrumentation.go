@@ -27,6 +27,10 @@ import (
 var (
 	// Metrics on a stream are tagged with the stream ID.
 	keyStream = tag.MustNewKey("streamID")
+
+	// We allow users to annotate streams with a data origin for monitoring purposes.
+	// See the WithDataOrigin writer option for providing this.
+	keyDataOrigin = tag.MustNewKey("dataOrigin")
 )
 
 const statsPrefix = "cloud.google.com/go/bigquery/storage/managedwriter/"
@@ -35,6 +39,10 @@ var (
 	// AppendRequests is a measure of the number of append requests sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequests = stats.Int64(statsPrefix+"append_requests", "Number of append requests sent", stats.UnitDimensionless)
+
+	// AppendBytes is a measure of the bytes sent as append requests.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendBytes = stats.Int64(statsPrefix+"append_bytes", "Number of bytes sent as append requests", stats.UnitBytes)
 
 	// AppendResponses is a measure of the number of append responses received.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
@@ -58,6 +66,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestsView *view.View
 
+	// AppendBytesView is a cumulative sum of AppendBytes.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendBytesView *view.View
+
 	// AppendResponsesView is a cumulative sum of AppendResponses.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponsesView *view.View
@@ -76,31 +88,43 @@ var (
 )
 
 func init() {
-	AppendRequestsView = createCountView(stats.Measure(AppendRequests), keyStream)
-	AppendResponsesView = createCountView(stats.Measure(AppendResponses), keyStream)
-	FlushRequestsView = createCountView(stats.Measure(FlushRequests), keyStream)
-	AppendClientOpenView = createCountView(stats.Measure(AppendClientOpenCount), keyStream)
-	AppendClientOpenRetryView = createCountView(stats.Measure(AppendClientOpenRetryCount), keyStream)
+	AppendRequestsView = createSumView(stats.Measure(AppendRequests), keyStream, keyDataOrigin)
+	AppendBytesView = createSumView(stats.Measure(AppendBytes), keyStream, keyDataOrigin)
+	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
+	FlushRequestsView = createSumView(stats.Measure(FlushRequests), keyStream, keyDataOrigin)
+	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount), keyStream, keyDataOrigin)
+	AppendClientOpenRetryView = createSumView(stats.Measure(AppendClientOpenRetryCount), keyStream, keyDataOrigin)
 }
 
-func createCountView(m stats.Measure, keys ...tag.Key) *view.View {
+func createView(m stats.Measure, agg *view.Aggregation, keys ...tag.Key) *view.View {
 	return &view.View{
 		Name:        m.Name(),
 		Description: m.Description(),
 		TagKeys:     keys,
 		Measure:     m,
-		Aggregation: view.Sum(),
+		Aggregation: agg,
 	}
 }
 
-var logOnce sync.Once
+func createSumView(m stats.Measure, keys ...tag.Key) *view.View {
+	return createView(m, view.Sum(), keys...)
+}
 
-// keyContextWithStreamID returns a new context modified with the streamID tag.
-func keyContextWithStreamID(ctx context.Context, streamID string) context.Context {
+var logTagStreamOnce sync.Once
+var logTagOriginOnce sync.Once
+
+// keyContextWithStreamID returns a new context modified with the instrumentation tags.
+func keyContextWithTags(ctx context.Context, streamID, dataOrigin string) context.Context {
 	ctx, err := tag.New(ctx, tag.Upsert(keyStream, streamID))
 	if err != nil {
-		logOnce.Do(func() {
-			log.Printf("managedwriter: error creating tag map for 'stream' key: %v", err)
+		logTagStreamOnce.Do(func() {
+			log.Printf("managedwriter: error creating tag map for 'streamID' key: %v", err)
+		})
+	}
+	ctx, err = tag.New(ctx, tag.Upsert(keyDataOrigin, dataOrigin))
+	if err != nil {
+		logTagOriginOnce.Do(func() {
+			log.Printf("managedwriter: error creating tag map for 'dataOrigin' key: %v", err)
 		})
 	}
 	return ctx
