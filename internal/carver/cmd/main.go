@@ -365,10 +365,11 @@ func (c *carver) GitCommit() error {
 		}
 	}
 	log.Println("Successfully carved out module. Please run the following commands after your change is merged:")
-	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", c.rootMod.Tag())
-	fmt.Fprintf(os.Stdout, "git tag -a %s <COMMIT-SHA>\n", c.childMod.Tag())
-	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", c.rootMod.Tag())
-	fmt.Fprintf(os.Stdout, "git push origin ref/tags/%s\n", c.childMod.Tag())
+	fmt.Fprintf(os.Stdout, "git tag %s <COMMIT-SHA>\n", c.rootMod.Tag())
+	fmt.Fprintf(os.Stdout, "git tag %s <COMMIT-SHA>\n", c.childMod.Tag())
+	fmt.Fprintf(os.Stdout, "git push origin refs/tags/%s\n", c.rootMod.Tag())
+	fmt.Fprintf(os.Stdout, "git push origin refs/tags/%s\n", c.childMod.Tag())
+	fmt.Fprintf(os.Stdout, "Once tags have propagated open a new PR tidying the new child mods go.sum entries.\n")
 
 	return nil
 }
