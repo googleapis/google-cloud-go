@@ -596,7 +596,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	// Attempt to Recv the next message on the stream.
-	msg, err := r.recvWithRetry()
+	msg, err := r.recv()
 	if err != nil {
 		return 0, err
 	}
@@ -624,8 +624,8 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	return n, nil
 }
 
-// recvWithRetry attempts to Recv the next message on the stream. In the event
-// that a retryable error is encountered, the stream will be closed, reopened
+// recv attempts to Recv the next message on the stream. In the event
+// that a retryable error is encountered, the stream will be closed, reopened,
 // and Recv again. This will attempt to Recv until one of the following is true:
 //
 // * Recv is successful
@@ -634,13 +634,13 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 //
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
-func (r *Reader) recvWithRetry() (*storagepb.ReadObjectResponse, error) {
+func (r *Reader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
-	for err != nil && shouldRetry(err) {
+	if err != nil && shouldRetry(err) {
 		// This will "close" the existing stream and immediately attempt to
-		// reopen the stream, but will backoff in doing so if further attempts
-		// are necessary. Reopening the stream Recvs the first message, so this
-		// loop will exit with the next msg if successful.
+		// reopen the stream, but will backoff if further attempts are necessary.
+		// Reopening the stream Recvs the first message, so if retrying is
+		// successful, the next logical chunk will be returned.
 		msg, err = r.reopenStream(r.seen)
 	}
 
