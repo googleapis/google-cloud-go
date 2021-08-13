@@ -32,8 +32,8 @@ require (
 	cloud.google.com/go/pubsublite v0.90.0
 	cloud.google.com/go/spanner v0.90.0
 	cloud.google.com/go/storagetransfer v0.0.0-00010101000000-000000000000
-	google.golang.org/api v0.52.0
-	google.golang.org/genproto v0.0.0-20210811021853-ddbe55d93216
+	google.golang.org/api v0.54.0
+	google.golang.org/genproto v0.0.0-20210813162853-db860fec028c
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
