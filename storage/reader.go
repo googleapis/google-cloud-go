@@ -598,9 +598,8 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	for len(p[n:]) > 0 {
 		msg, err := r.stream.Recv()
 		if err != nil {
-			// Unless nothing has been read yet, let the next
-			// call to readWithGRPC return EOF.
-			if err == io.EOF && r.seen == r.size && n > 0 {
+			// Let the next call to readWithGRPC return EOF.
+			if err == io.EOF && r.seen == r.size {
 				return n, nil
 			}
 			// This prevents reopening of the stream when the error is not
