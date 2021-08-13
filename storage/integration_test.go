@@ -205,11 +205,12 @@ func testConfig(ctx context.Context, t *testing.T) *Client {
 	return client
 }
 
-// testConfigGPRC returns both a JSON/HTTP-based client and a gRPC-based client
-// to access GCS. testConfigGRPC skips the curent test if credentials are not
-// available or when being run in Short mode.
-func testConfigGRPC(ctx context.Context, t *testing.T) (hc *Client, gc *Client) {
-	hc = testConfig(ctx, t)
+// testConfigGPRC returns a gRPC-based client to access GCS. testConfigGRPC
+// skips the curent test when being run in Short mode.
+func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
 
 	var err error
 	gc, err = newClientWithGRPC(ctx, nil)
@@ -765,8 +766,9 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc, gc := testConfigGRPC(ctx, t)
+	hc := testConfig(ctx, t)
 	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
 	defer gc.Close()
 
 	content := []byte("Hello, world this is a grpc request")
@@ -814,8 +816,9 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc, gc := testConfigGRPC(ctx, t)
+	hc := testConfig(ctx, t)
 	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
 	defer gc.Close()
 
 	// Use a larger blob to test chunking logic. This is a little over 5MB.
@@ -859,19 +862,16 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 		offset += n
 	}
 
-	got := string(buf)
-	want := string(content)
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("got(-),want(+):\n%s", diff)
-	}
+	// TODO: Verify content with the checksums.
 }
 
 func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc, gc := testConfigGRPC(ctx, t)
+	hc := testConfig(ctx, t)
 	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
 	defer gc.Close()
 
 	content := []byte("Hello, world this is a grpc request")
@@ -921,8 +921,9 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
-	hc, gc := testConfigGRPC(ctx, t)
+	hc := testConfig(ctx, t)
 	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
 	defer gc.Close()
 	h := testHelper{t}
 
