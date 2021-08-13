@@ -52,6 +52,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -3695,8 +3696,24 @@ func TestIntegration_Scopes(t *testing.T) {
 }
 
 func TestBucketSignURL(t *testing.T) {
+	// go install github.com/go-delve/delve/cmd/dlv@latest
 	ctx := context.Background()
-	client := testConfig(ctx, t)
+
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+	client, err := newTestClient(ctx, option.WithCredentials(creds))
+	if err != nil {
+		log.Fatalf("NewClient: %v", err)
+	}
+	if client == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
 	defer client.Close()
 	bkt := client.Bucket(bucketName)
 
@@ -3725,9 +3742,21 @@ func TestBucketSignURL(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unable to read resp.Body: %v", err)
 	}
-	if bytes.Equal(b, contents) {
+	if !bytes.Equal(b, contents) {
 		t.Fatalf("got %q, want %q", b, contents)
 	}
+}
+
+func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
+	key := os.Getenv(envVar)
+	var opts []option.ClientOption
+	if len(scopes) > 0 {
+		opts = append(opts, option.WithScopes(scopes...))
+	}
+	if key != "" {
+		opts = append(opts, option.WithCredentialsFile(key))
+	}
+	return transport.Creds(ctx, opts...)
 }
 
 type testHelper struct {
