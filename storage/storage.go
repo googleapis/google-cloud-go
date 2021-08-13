@@ -90,8 +90,6 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// EnvHost is the host set on the STORAGE_EMULATOR_HOST variable.
-	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
 }
@@ -141,18 +139,20 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	// Update readHost with the chosen endpoint.
+	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
 	readHost = u.Host
+	if u.Scheme != "" {
+		scheme = u.Scheme
+	}
 
 	return &Client{
 		hc:       hc,
 		raw:      rawService,
 		scheme:   scheme,
-		envHost:  host,
 		readHost: readHost,
 	}, nil
 }
