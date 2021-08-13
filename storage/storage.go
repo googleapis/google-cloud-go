@@ -120,13 +120,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
-		scheme = "http"
-		readHost = host
+		// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
+		var hostUrl *url.URL
+		if strings.Contains(host, "://") {
+			h, err := url.Parse(host)
+			if err != nil {
+				return nil, err
+			}
+			hostUrl = h
+		} else {
+			hostUrl = &url.URL{Scheme: "http", Host: host}
+		}
+
+		// Prepend an endpoint for the user in case they don't supply one
+		hostUrl.Path = "storage/v1"
+		endpoint := hostUrl.String()
 
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint(host))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(host))
+		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.

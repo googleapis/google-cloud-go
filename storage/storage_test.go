@@ -1287,7 +1287,15 @@ func TestWithEndpoint(t *testing.T) {
 			desc:                "Emulator host specified, no specified endpoint",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
-			WantRawBasePath:     "http://emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1",
+			WantReadHost:        "emu.com",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Emulator host specified without scheme",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1",
 			WantReadHost:        "emu.com",
 			WantScheme:          "http",
 		},
@@ -1312,9 +1320,6 @@ func TestWithEndpoint(t *testing.T) {
 	for _, tc := range testCases {
 		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
-		if err != nil {
-			t.Fatalf("error creating client: %v", err)
-		}
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}
