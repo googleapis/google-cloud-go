@@ -576,9 +576,8 @@ func (r *Reader) Read(p []byte) (int, error) {
 
 func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	// No stream to read from, either never initiliazed or Close was called.
-	// TODO: should an error be returned here? "reader has been closed"?
 	if r.stream == nil {
-		return 0, io.EOF
+		return 0, fmt.Errorf("reader has been closed")
 	}
 
 	// The entire object has been read by this reader, return EOF.
