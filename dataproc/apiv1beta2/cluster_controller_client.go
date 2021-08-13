@@ -197,7 +197,7 @@ func (c *ClusterControllerClient) Connection() *grpc.ClientConn {
 
 // CreateCluster creates a cluster in a project. The returned
 // Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata.
 func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
 	return c.internalClient.CreateCluster(ctx, req, opts...)
 }
@@ -210,7 +210,7 @@ func (c *ClusterControllerClient) CreateClusterOperation(name string) *CreateClu
 
 // UpdateCluster updates a cluster in a project. The returned
 // Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata.
 func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
 	return c.internalClient.UpdateCluster(ctx, req, opts...)
 }
@@ -223,7 +223,7 @@ func (c *ClusterControllerClient) UpdateClusterOperation(name string) *UpdateClu
 
 // DeleteCluster deletes a cluster in a project. The returned
 // Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata.
 func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	return c.internalClient.DeleteCluster(ctx, req, opts...)
 }
@@ -246,7 +246,7 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 
 // DiagnoseCluster gets cluster diagnostic information. The returned
 // Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// ClusterOperationMetadata.
 // After the operation completes,
 // Operation.response
 // contains
