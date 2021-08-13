@@ -198,11 +198,13 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 	it := &JobMessageIterator{}
 	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
-		var resp *dataflowpb.ListJobMessagesResponse
-		req.PageToken = pageToken
+		resp := &dataflowpb.ListJobMessagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -225,9 +227,11 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

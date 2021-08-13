@@ -948,11 +948,13 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 	it := &CertificateIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
-		var resp *privatecapb.ListCertificatesResponse
-		req.PageToken = pageToken
+		resp := &privatecapb.ListCertificatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -975,9 +977,11 @@ func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, r
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1164,11 +1168,13 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 	it := &CertificateAuthorityIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
-		var resp *privatecapb.ListCertificateAuthoritiesResponse
-		req.PageToken = pageToken
+		resp := &privatecapb.ListCertificateAuthoritiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1191,9 +1197,11 @@ func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1340,11 +1348,13 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 	it := &CaPoolIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
-		var resp *privatecapb.ListCaPoolsResponse
-		req.PageToken = pageToken
+		resp := &privatecapb.ListCaPoolsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1367,9 +1377,11 @@ func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *p
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1445,11 +1457,13 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 	it := &CertificateRevocationListIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
-		var resp *privatecapb.ListCertificateRevocationListsResponse
-		req.PageToken = pageToken
+		resp := &privatecapb.ListCertificateRevocationListsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1472,9 +1486,11 @@ func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx cont
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1575,11 +1591,13 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 	it := &CertificateTemplateIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
-		var resp *privatecapb.ListCertificateTemplatesResponse
-		req.PageToken = pageToken
+		resp := &privatecapb.ListCertificateTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1602,9 +1620,11 @@ func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

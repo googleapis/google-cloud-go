@@ -34,6 +34,7 @@ type Info struct {
 	Fset *token.FileSet
 	// ImportRenames is a map from package path to local name or "".
 	ImportRenames map[string]string
+	Status        string
 }
 
 // Load parses the given glob and returns info for the matching packages.
@@ -157,10 +158,34 @@ func Load(glob, workingDir string, filter []string) ([]Info, error) {
 			Doc:           docPkg,
 			Fset:          fset,
 			ImportRenames: imports,
+			Status:        pkgStatus(pkgPath, docPkg.Doc),
 		})
 	}
 
 	return result, nil
+}
+
+// pkgStatus returns the status of the given package with the
+// given GoDoc.
+//
+// pkgStatus does not use repo-metadata-full.json because it's
+// not available for all modules nor all versions.
+func pkgStatus(importPath, doc string) string {
+	switch {
+	case strings.Contains(doc, "\nDeprecated:"):
+		return "deprecated"
+	case strings.Contains(doc, "This package is in alpha"):
+		return "alpha"
+	case strings.Contains(doc, "This package is in beta"):
+		return "beta"
+
+	case strings.Contains(importPath, "alpha"):
+		return "alpha"
+	case strings.Contains(importPath, "beta"):
+		return "beta"
+	}
+
+	return ""
 }
 
 func hasPrefix(s string, prefixes []string) bool {

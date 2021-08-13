@@ -337,11 +337,13 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *tpupb.ListNodesRequest,
 	it := &NodeIterator{}
 	req = proto.Clone(req).(*tpupb.ListNodesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.Node, string, error) {
-		var resp *tpupb.ListNodesResponse
-		req.PageToken = pageToken
+		resp := &tpupb.ListNodesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -364,9 +366,11 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *tpupb.ListNodesRequest,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -513,11 +517,13 @@ func (c *gRPCClient) ListTensorFlowVersions(ctx context.Context, req *tpupb.List
 	it := &TensorFlowVersionIterator{}
 	req = proto.Clone(req).(*tpupb.ListTensorFlowVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.TensorFlowVersion, string, error) {
-		var resp *tpupb.ListTensorFlowVersionsResponse
-		req.PageToken = pageToken
+		resp := &tpupb.ListTensorFlowVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -540,9 +546,11 @@ func (c *gRPCClient) ListTensorFlowVersions(ctx context.Context, req *tpupb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -574,11 +582,13 @@ func (c *gRPCClient) ListAcceleratorTypes(ctx context.Context, req *tpupb.ListAc
 	it := &AcceleratorTypeIterator{}
 	req = proto.Clone(req).(*tpupb.ListAcceleratorTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tpupb.AcceleratorType, string, error) {
-		var resp *tpupb.ListAcceleratorTypesResponse
-		req.PageToken = pageToken
+		resp := &tpupb.ListAcceleratorTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,9 +611,11 @@ func (c *gRPCClient) ListAcceleratorTypes(ctx context.Context, req *tpupb.ListAc
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
