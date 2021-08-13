@@ -611,21 +611,15 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			// Save the original error to return instead of the reinit error.
 			e := err
 
-			// Close existing stream and initialize new stream with updated
-			// offset.
-			r.closeStream()
-
-			// This will immediately attempt to reopen the stream, but will
-			// backoff if further attempts are necessary.
-			var res *readStreamResponse
-			res, r.cancelStream, err = r.reopenWithGRPC(r.seen)
+			// This will "close" the existing stream and immediately attempt to
+			// reopen the stream, but will backoff if further attempts are
+			// necessary. Reopening the stream Recv'd the first message, so this
+			// can continue where it left off.
+			msg, err = r.reopenStream(r.seen)
 			if err != nil {
 				// Cannot reinstantiate the stream so return the original error.
 				return n, e
 			}
-			r.stream = res.stream
-			// Reopened the stream and Recv'd the first message, so carry on.
-			msg = res.response
 		}
 
 		// TODO: Determine if we need to capture incremental CRC32C for this
@@ -633,6 +627,8 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		// the entire Object. If directed to read a range, we may need to
 		// calculate the range's checksum for verification if the checksum is
 		// present in the response here.
+		// TODO: Figure out if we need to support decompressive transcoding
+		// https://cloud.google.com/storage/docs/transcoding.
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
 		leftover := len(content) - cp
@@ -649,6 +645,21 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	return n, nil
+}
+
+// reopenStream "closes" the existing stream and attempts to reopen a stream and
+// sets the Reader's stream and cancelStream properties in the process.
+func (r *Reader) reopenStream(seen int64) (*storagepb.ReadObjectResponse, error) {
+	// Close existing stream and initialize new stream with updated offset.
+	r.closeStream()
+
+	res, cancel, err := r.reopenWithGRPC(r.seen)
+	if err != nil {
+		return nil, err
+	}
+	r.stream = res.stream
+	r.cancelStream = cancel
+	return res.response, nil
 }
 
 func (r *Reader) readWithRetry(p []byte) (int, error) {
