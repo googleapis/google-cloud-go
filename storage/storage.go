@@ -145,7 +145,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
 	readHost = u.Host
-	scheme = u.Scheme
+	if u.Scheme != "" {
+		scheme = u.Scheme
+	}
 
 	return &Client{
 		hc:       hc,
