@@ -16,15 +16,14 @@ package managedwriter
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"runtime"
 	"strings"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	"cloud.google.com/go/internal/detect"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -61,28 +60,16 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, err
 	}
 
-	if projectID == DetectProjectID {
-		projectID, err = detectProjectID(ctx, opts...)
-		if err != nil {
-			return nil, fmt.Errorf("failed to detect project: %v", err)
-		}
+	// Handle project autodetection.
+	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Client{
 		rawClient: rawClient,
 		projectID: projectID,
 	}, nil
-}
-
-func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
-	creds, err := transport.Creds(ctx, opts...)
-	if err != nil {
-		return "", fmt.Errorf("fetching creds: %v", err)
-	}
-	if creds.ProjectID == "" {
-		return "", errors.New("credentials did not provide a valid ProjectID")
-	}
-	return creds.ProjectID, nil
 }
 
 // Close releases resources held by the client.
