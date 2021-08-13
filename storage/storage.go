@@ -133,7 +133,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		}
 
 		// Prepend an endpoint for the user in case they don't supply one
-		hostURL.Path = "storage/v1"
+		hostURL.Path = "storage/v1/"
 		endpoint := hostURL.String()
 
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
