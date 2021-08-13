@@ -585,19 +585,26 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		return 0, io.EOF
 	}
 
-	n := copy(p, r.leftovers)
-	r.seen += int64(n)
-	r.leftovers = r.leftovers[n:]
+	var n int
+	// Read leftovers and return what was available to conform to the Reader
+	// interface: https://pkg.go.dev/io#Reader.
+	if len(r.leftovers) > 0 {
+		n = copy(p, r.leftovers)
+		r.seen += int64(n)
+		r.leftovers = r.leftovers[n:]
+		return n, nil
+	}
 
 	for len(p[n:]) > 0 {
 		msg, err := r.stream.Recv()
 		if err != nil {
-			if err == io.EOF && r.seen == r.size {
-				// Let the next call to readWithGRPC return EOF.
+			// Unless nothing has been read yet, let the next
+			// call to readWithGRPC return EOF.
+			if err == io.EOF && r.seen == r.size && n > 0 {
 				return n, nil
 			}
 			// This prevents reopening of the stream when the error is not
-			// retryable.
+			// retryable. If the error is EOF, it will be returned here.
 			if !shouldRetry(err) {
 				return n, err
 			}
