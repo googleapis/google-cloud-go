@@ -34,7 +34,8 @@ func TestSchemaToProtoConversion(t *testing.T) {
 	testCases := []struct {
 		description string
 		bq          *storagepb.TableSchema
-		want        *descriptorpb.DescriptorProto
+		wantProto2  *descriptorpb.DescriptorProto
+		wantProto3  *descriptorpb.DescriptorProto
 	}{
 		{
 			description: "basic",
@@ -44,7 +45,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					{Name: "bar", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
 					{Name: "baz", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_REPEATED},
 				}},
-			want: &descriptorpb.DescriptorProto{
+			wantProto2: &descriptorpb.DescriptorProto{
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
@@ -52,6 +53,19 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						Number: proto.Int32(1),
 						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
+					{Name: proto.String("baz"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("foo"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.StringValue"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 					{Name: proto.String("baz"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
 				},
@@ -74,7 +88,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					},
 				},
 			},
-			want: &descriptorpb.DescriptorProto{
+			wantProto2: &descriptorpb.DescriptorProto{
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
@@ -82,6 +96,25 @@ func TestSchemaToProtoConversion(t *testing.T) {
 						Number: proto.Int32(1),
 						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
 						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("curdate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int32Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 					{
 						Name:     proto.String("rec"),
@@ -119,7 +152,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					},
 				},
 			},
-			want: &descriptorpb.DescriptorProto{
+			wantProto2: &descriptorpb.DescriptorProto{
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
@@ -144,24 +177,64 @@ func TestSchemaToProtoConversion(t *testing.T) {
 					},
 				},
 			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("curdate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int32Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec1"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec2"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
 		},
 	}
 	for _, tc := range testCases {
-		d, err := StorageSchemaToDescriptor(tc.bq, "root")
+		p2d, err := StorageSchemaToProto2Descriptor(tc.bq, "root")
 		if err != nil {
-			t.Fatalf("case (%s) failed conversion: %v", tc.description, err)
+			t.Errorf("case (%s) failed proto2 conversion: %v", tc.description, err)
 		}
 
 		// convert it to DP form
-		mDesc, ok := d.(protoreflect.MessageDescriptor)
+		mDesc, ok := p2d.(protoreflect.MessageDescriptor)
 		if !ok {
-			t.Fatalf("%s: couldn't convert to messagedescriptor", tc.description)
+			t.Errorf("%s: couldn't convert proto2 to messagedescriptor", tc.description)
 		}
 		gotDP := protodesc.ToDescriptorProto(mDesc)
-
-		if diff := cmp.Diff(gotDP, tc.want, protocmp.Transform()); diff != "" {
-			t.Fatalf("%s: -got, +want:\n%s", tc.description, diff)
+		if diff := cmp.Diff(gotDP, tc.wantProto2, protocmp.Transform()); diff != "" {
+			t.Errorf("%s proto2: -got, +want:\n%s", tc.description, diff)
 		}
+
+		p3d, err := StorageSchemaToProto3Descriptor(tc.bq, "root")
+		if err != nil {
+			t.Fatalf("case (%s) failed proto3 conversion: %v", tc.description, err)
+		}
+
+		mDesc, ok = p3d.(protoreflect.MessageDescriptor)
+		if !ok {
+			t.Errorf("%s: couldn't convert proto3 to messagedescriptor", tc.description)
+		}
+		gotDP = protodesc.ToDescriptorProto(mDesc)
+		if diff := cmp.Diff(gotDP, tc.wantProto3, protocmp.Transform()); diff != "" {
+			t.Errorf("%s proto3: -got, +want:\n%s", tc.description, diff)
+		}
+
 	}
 }
 
@@ -182,7 +255,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToDescriptor(sourceSchema, "root")
+	descriptor, err := StorageSchemaToProto2Descriptor(sourceSchema, "root")
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}
@@ -229,7 +302,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Name:   proto.String("key"),
 				Number: proto.Int32(1),
 				Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
-				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 			},
 			{
 				Name:   proto.String("value"),
