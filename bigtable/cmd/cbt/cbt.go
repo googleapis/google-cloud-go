@@ -1061,7 +1061,7 @@ func doLookup(ctx context.Context, args ...string) {
 
 	var opts []bigtable.ReadOption
 	if opt != nil {
-		opts = append(opts, opt)
+		opts = []bigtable.ReadOption{opt}
 	}
 
 	table, row := args[0], args[1]
