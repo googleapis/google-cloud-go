@@ -77,3 +77,11 @@ func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
 		ms.schemaDescriptor = dp
 	}
 }
+
+// WithDataOrigin is used to attach an origin context to the instrumentation metrics
+// emitted by the library.
+func WithDataOrigin(dataOrigin string) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.streamSettings.dataOrigin = dataOrigin
+	}
+}
