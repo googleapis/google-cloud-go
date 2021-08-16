@@ -94,7 +94,7 @@ Here is an example of how to set a timeout for an RPC, use context.WithTimeout:
  // Time out if it takes more than 10 seconds to create a dataset.
  tctx, cancel := context.WithTimeout(ctx, 10*time.Second)
  defer cancel() // Always call cancel.
- 
+
  req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/project-id/secrets/name"}
  if err := client.DeleteSecret(tctx, req); err != nil {
  	// TODO: handle error.
@@ -110,7 +110,7 @@ Here is an example of how to arrange for an RPC to be canceled, use context.With
  }
  cctx, cancel := context.WithCancel(ctx)
  defer cancel() // Always call cancel.
- 
+
  // TODO: Make the cancel function available to whatever might want to cancel the
  // call--perhaps a GUI button.
  req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/proj/secrets/name"}
