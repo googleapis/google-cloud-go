@@ -1948,6 +1948,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 }
 
 func TestIntegration_Load(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4418")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -2207,9 +2208,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err := autoTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   AutoHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
@@ -2224,9 +2226,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err = customTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{NumericTargetType, StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   CustomHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",
@@ -2434,6 +2437,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	sql := `
 	-- Declare a variable to hold names as an array.
 	DECLARE top_names ARRAY<STRING>;
+	BEGIN TRANSACTION;
 	-- Build an array of the top 100 names from the year 2017.
 	SET top_names = (
 	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
@@ -2448,6 +2452,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	  SELECT word
 	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
 	);
+	COMMIT TRANSACTION;
 	`
 	q := client.Query(sql)
 	job, err := q.Run(ctx)
@@ -2504,6 +2509,12 @@ func TestIntegration_Scripting(t *testing.T) {
 		}
 		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
 			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
+		}
+		if cStatus.Statistics.TransactionInfo == nil {
+			t.Errorf("child job %q didn't have transaction info present", cj.ID())
+		}
+		if cStatus.Statistics.TransactionInfo.TransactionID == "" {
+			t.Errorf("child job %q didn't have transactionID present", cj.ID())
 		}
 	}
 

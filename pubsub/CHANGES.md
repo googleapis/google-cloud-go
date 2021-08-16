@@ -1,5 +1,33 @@
 # Changes
 
+## [1.15.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.14.0...pubsub/v1.15.0) (2021-08-13)
+
+
+### Features
+
+* **pubsub:** Add topic retention options ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+
+
+### Bug Fixes
+
+* **pubsub:** always make config check to prevent race ([#4606](https://www.github.com/googleapis/google-cloud-go/issues/4606)) ([8cfcf53](https://www.github.com/googleapis/google-cloud-go/commit/8cfcf53d03b9b442e7f0bc1c1b20c791e31c07b0)), refs [#3626](https://www.github.com/googleapis/google-cloud-go/issues/3626)
+* **pubsub:** mitigate race in checking ordering config ([#4602](https://www.github.com/googleapis/google-cloud-go/issues/4602)) ([112eea2](https://www.github.com/googleapis/google-cloud-go/commit/112eea20b46bbc34e5f8f65b9812fb3e60107409)), refs [#3626](https://www.github.com/googleapis/google-cloud-go/issues/3626)
+* **pubsub:** replace IAMPolicy in API config ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+
+## [1.14.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.13.0...pubsub/v1.14.0) (2021-08-09)
+
+
+### Features
+
+* **pubsub:** expose CallOptions for pub/sub retries and timeouts ([#4428](https://www.github.com/googleapis/google-cloud-go/issues/4428)) ([8b99dd3](https://www.github.com/googleapis/google-cloud-go/commit/8b99dd356475a750000c06a44fc7b8423d703967))
+
+## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.2...pubsub/v1.13.0) (2021-07-20)
+
+
+### Features
+
+* **pubsub/pstest:** add ability to create a pstest server listening on ([#4459](https://www.github.com/googleapis/google-cloud-go/issues/4459)) ([f1b7c8b](https://www.github.com/googleapis/google-cloud-go/commit/f1b7c8b33bc135c6cb8f21cdec586b25d81ea214))
+
 ### [1.12.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.1...pubsub/v1.12.2) (2021-07-08)
 
 

@@ -45,7 +45,7 @@ func TestPendingWrite(t *testing.T) {
 	if pending.request.GetOffset() != nil {
 		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
 	}
-	pending.markDone(NoStreamOffset, nil)
+	pending.markDone(NoStreamOffset, nil, nil)
 	for k, ar := range pending.results {
 		if ar.offset != NoStreamOffset {
 			t.Errorf("mismatch on completed AppendResult(%d) without offset: got %d want %d", k, ar.offset, NoStreamOffset)
@@ -90,7 +90,7 @@ func TestPendingWrite(t *testing.T) {
 	// verify completion behavior
 	reportedOffset := int64(101)
 	wantErr := fmt.Errorf("foo")
-	pending.markDone(reportedOffset, wantErr)
+	pending.markDone(reportedOffset, wantErr, nil)
 
 	if pending.request != nil {
 		t.Errorf("expected request to be cleared, is present: %#v", pending.request)

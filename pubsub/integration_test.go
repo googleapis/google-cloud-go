@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -48,8 +49,9 @@ import (
 )
 
 var (
-	topicIDs = uid.NewSpace("topic", nil)
-	subIDs   = uid.NewSpace("sub", nil)
+	topicIDs  = uid.NewSpace("topic", nil)
+	subIDs    = uid.NewSpace("sub", nil)
+	schemaIDs = uid.NewSpace("schema", nil)
 )
 
 // messageData is used to hold the contents of a message so that it can be compared against the contents
@@ -96,6 +98,26 @@ func integrationTestClient(ctx context.Context, t *testing.T, opts ...option.Cli
 		t.Fatalf("Creating client error: %v", err)
 	}
 	return client
+}
+
+func integrationTestSchemaClient(ctx context.Context, t *testing.T, opts ...option.ClientOption) *SchemaClient {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	projID := testutil.ProjID()
+	if projID == "" {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
+	sc, err := NewSchemaClient(ctx, projID, opts...)
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	return sc
 }
 
 func TestIntegration_All(t *testing.T) {
@@ -1081,7 +1103,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := tc
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.MessageStoragePolicy, want.MessageStoragePolicy); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }
@@ -1260,8 +1282,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(60 * time.Second):
-		t.Fatal("timed out after 60s waiting for all messages to be received")
+	case <-time.After(5 * time.Minute):
+		t.Fatal("timed out after 5m waiting for all messages to be received")
 	}
 
 	mu.Lock()
@@ -1772,5 +1794,188 @@ func TestIntegration_DetachSubscription(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("SubscriptionConfig for detached sub; got: - want: +\n%s", diff)
+	}
+}
+
+func TestIntegration_SchemaAdmin(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc       string
+		schemaType SchemaType
+		path       string
+	}{
+		{
+			desc:       "avro schema",
+			schemaType: SchemaAvro,
+			path:       "testdata/schema/us-states.avsc",
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/us-states.proto",
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			schema := string(content)
+			schemaID := schemaIDs.New()
+			schemaPath := fmt.Sprintf("projects/%s/schemas/%s", testutil.ProjID(), schemaID)
+			sc := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: schema,
+			}
+			got, err := c.CreateSchema(ctx, schemaID, sc)
+			if err != nil {
+				t.Fatalf("SchemaClient.CreateSchema error: %v", err)
+			}
+
+			want := &SchemaConfig{
+				Name:       schemaPath,
+				Type:       tc.schemaType,
+				Definition: schema,
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			got, err = c.Schema(ctx, schemaID, SchemaViewFull)
+			if err != nil {
+				t.Fatalf("SchemaClient.Schema error: %v", err)
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			err = c.DeleteSchema(ctx, schemaID)
+			if err != nil {
+				t.Fatalf("SchemaClient.DeleteSchema error: %v", err)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateSchema(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc       string
+		schemaType SchemaType
+		path       string
+		wantErr    error
+	}{
+		{
+			desc:       "avro schema",
+			schemaType: SchemaAvro,
+			path:       "testdata/schema/us-states.avsc",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/us-states.proto",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/invalid.avsc",
+			wantErr:    status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+			_, gotErr := c.ValidateSchema(ctx, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateMessage(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc        string
+		schemaType  SchemaType
+		schemaPath  string
+		encoding    SchemaEncoding
+		messagePath string
+		wantErr     error
+	}{
+		{
+			desc:        "avro json encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "avro binary encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/alaska.avro",
+			wantErr:     nil,
+		},
+		{
+			desc:        "proto json encoding",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/us-states.proto",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "protocol buffer schema",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/invalid.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/invalid.avsc",
+			wantErr:     status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.schemaPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+
+			msg, err := ioutil.ReadFile(tc.messagePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, gotErr := c.ValidateMessageWithConfig(ctx, msg, tc.encoding, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
 	}
 }

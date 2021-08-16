@@ -25,6 +25,7 @@ package spansql
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -54,6 +55,9 @@ func (ct CreateTable) SQL() string {
 	str += ")"
 	if il := ct.Interleave; il != nil {
 		str += ",\n  INTERLEAVE IN PARENT " + il.Parent.SQL() + " ON DELETE " + il.OnDelete.SQL()
+	}
+	if rdp := ct.RowDeletionPolicy; rdp != nil {
+		str += ",\n  " + rdp.SQL()
 	}
 	return str
 }
@@ -129,6 +133,17 @@ func (ac AlterColumn) SQL() string {
 	return "ALTER COLUMN " + ac.Name.SQL() + " " + ac.Alteration.SQL()
 }
 
+func (ardp AddRowDeletionPolicy) SQL() string {
+	return "ADD " + ardp.RowDeletionPolicy.SQL()
+}
+
+func (rrdp ReplaceRowDeletionPolicy) SQL() string {
+	return "REPLACE " + rrdp.RowDeletionPolicy.SQL()
+}
+
+func (drdp DropRowDeletionPolicy) SQL() string {
+	return "DROP ROW DELETION POLICY"
+}
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
@@ -170,16 +185,15 @@ func (do DatabaseOptions) SQL() string {
 		hasOpt = true
 		if *do.OptimizerVersion == 0 {
 			str += "optimizer_version=null"
-
 		} else {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
 	if do.VersionRetentionPeriod != nil {
-		hasOpt = true
 		if hasOpt {
 			str += ", "
 		}
+		hasOpt = true
 		if *do.VersionRetentionPeriod == "" {
 			str += "version_retention_period=null"
 		} else {
@@ -187,10 +201,10 @@ func (do DatabaseOptions) SQL() string {
 		}
 	}
 	if do.EnableKeyVisualizer != nil {
-		hasOpt = true
 		if hasOpt {
 			str += ", "
 		}
+		hasOpt = true
 		if *do.EnableKeyVisualizer {
 			str += "enable_key_visualizer=true"
 		} else {
@@ -243,6 +257,10 @@ func (tc TableConstraint) SQL() string {
 	}
 	str += tc.Constraint.SQL()
 	return str
+}
+
+func (rdp RowDeletionPolicy) SQL() string {
+	return "ROW DELETION POLICY ( OLDER_THAN ( " + rdp.Column.SQL() + ", INTERVAL " + strconv.FormatInt(rdp.NumDays, 10) + " DAY ))"
 }
 
 func (fk ForeignKey) SQL() string {
@@ -365,6 +383,19 @@ func (sel Select) addSQL(sb *strings.Builder) {
 
 func (sft SelectFromTable) SQL() string {
 	str := sft.Table.SQL()
+	if len(sft.Hints) > 0 {
+		str += "@{"
+		kvs := make([]string, len(sft.Hints))
+		i := 0
+		for k, v := range sft.Hints {
+			kvs[i] = fmt.Sprintf("%s=%s", k, v)
+			i++
+		}
+		sort.Strings(kvs)
+		str += strings.Join(kvs, ",")
+		str += "}"
+	}
+
 	if sft.Alias != "" {
 		str += " AS " + sft.Alias.SQL()
 	}

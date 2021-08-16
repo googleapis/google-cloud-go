@@ -47,11 +47,12 @@ func newAppendResult(data []byte) *AppendResult {
 	}
 }
 
-// Ready blocks until the append request is completed.
+// Ready blocks until the append request has reached a completed state,
+// which may be a successful append or an error.
 func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
 
 // GetResult returns the optional offset of this row, or the associated
-// error.
+// error.  It blocks until the result is ready.
 func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	select {
 	case <-ctx.Done():
@@ -106,7 +107,7 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 
 // markDone propagates finalization of an append request to associated
 // AppendResult references.
-func (pw *pendingWrite) markDone(startOffset int64, err error) {
+func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowController) {
 	curOffset := startOffset
 	for _, ar := range pw.results {
 		if err != nil {
@@ -124,4 +125,9 @@ func (pw *pendingWrite) markDone(startOffset int64, err error) {
 	}
 	// Clear the reference to the request.
 	pw.request = nil
+	// if there's a flow controller, signal release.  The only time this should be nil is when
+	// encountering issues with flow control during enqueuing the initial request.
+	if fc != nil {
+		fc.release(pw.reqSize)
+	}
 }
