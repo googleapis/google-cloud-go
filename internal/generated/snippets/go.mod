@@ -24,14 +24,14 @@ replace cloud.google.com/go/storage => ../../../storage
 
 require (
 	cloud.google.com/go v0.91.1
-	cloud.google.com/go/bigquery v0.90.0
-	cloud.google.com/go/datastore v0.90.0
-	cloud.google.com/go/firestore v0.90.0
-	cloud.google.com/go/logging v0.90.0
+	cloud.google.com/go/bigquery v0.91.1
+	cloud.google.com/go/datastore v0.91.1
+	cloud.google.com/go/firestore v0.91.1
+	cloud.google.com/go/logging v0.91.1
 	cloud.google.com/go/pubsub v1.9.1
-	cloud.google.com/go/pubsublite v0.90.0
-	cloud.google.com/go/spanner v0.90.0
-	cloud.google.com/go/storagetransfer v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/pubsublite v0.91.1
+	cloud.google.com/go/spanner v0.91.1
+	cloud.google.com/go/storagetransfer v0.91.1
 	google.golang.org/api v0.54.0
 	google.golang.org/genproto v0.0.0-20210813162853-db860fec028c
 )

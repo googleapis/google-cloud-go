@@ -11,10 +11,10 @@ require (
 	github.com/google/pprof v0.0.0-20210804190019-f964ff605595
 	github.com/googleapis/gax-go/v2 v2.0.5
 	go.opencensus.io v0.23.0
-	golang.org/x/oauth2 v0.0.0-20210805134026-6f1e6394065a
-	golang.org/x/text v0.3.6
+	golang.org/x/oauth2 v0.0.0-20210810183815-faf39c7919d5
+	golang.org/x/text v0.3.7
 	google.golang.org/api v0.54.0
 	google.golang.org/genproto v0.0.0-20210813162853-db860fec028c
-	google.golang.org/grpc v1.39.1
+	google.golang.org/grpc v1.40.0
 	google.golang.org/protobuf v1.27.1
 )
