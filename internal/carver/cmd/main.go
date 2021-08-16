@@ -29,6 +29,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"text/template"
 	"time"
 )
@@ -61,6 +62,8 @@ type carver struct {
 	w io.WriteCloser
 }
 
+var once sync.Once
+
 func main() {
 	parent := flag.String("parent", "", "The path to the parent module. Required.")
 	child := flag.String("child", "", "The relative path to the child module from the parent module. Required.")
@@ -80,40 +83,60 @@ func main() {
 	if err != nil {
 		log.Fatalf("unable to calculate root mod info: %v", err)
 	}
-	childMod := childModInfo(rootMod, *child, *childTagVersion)
+	children := strings.Split(strings.TrimSpace(*child), ",")
+	var tags []string
+	for _, child := range children {
+		child := strings.TrimSpace(child)
+		childMod := childModInfo(rootMod, child, *childTagVersion)
+		c := &carver{
+			rootMod:          rootMod,
+			childMod:         childMod,
+			repoMetadataPath: *repoMetadataPath,
+			name:             *name,
+			dryRun:           *dryRun,
+		}
+		ts, err := c.Run()
+		if err != nil {
+			log.Println(err)
+			flag.Usage()
+			os.Exit(1)
+		}
+		tags = append(tags, ts...)
+	}
+	if err := gitCommit(rootMod.path, tags, *dryRun); err != nil {
+		log.Fatal(err)
+	}
 
-	c := &carver{
-		rootMod:          rootMod,
-		childMod:         childMod,
-		repoMetadataPath: *repoMetadataPath,
-		name:             *name,
-		dryRun:           *dryRun,
+	log.Println("Successfully carved out modules. Please run the following commands after your changes are merged:")
+	for _, tag := range tags {
+		fmt.Fprintf(os.Stdout, "git tag %s $COMMIT_SHA\n", tag)
 	}
-	if err := c.Run(); err != nil {
-		log.Println(err)
-		flag.Usage()
-		os.Exit(1)
+	for _, tag := range tags {
+		fmt.Fprintf(os.Stdout, "git push origin refs/tags/%s\n", tag)
 	}
+	fmt.Fprintf(os.Stdout, "Once tags have propagated open a new PR tidying the new child mods go.sum entries.\n")
 }
 
-func (c *carver) Run() error {
+func (c *carver) Run() ([]string, error) {
 	if c.rootMod.path == "" || c.childMod.path == "" || c.repoMetadataPath == "" {
-		return fmt.Errorf("all required flags were not provided")
+		return nil, fmt.Errorf("all required flags were not provided")
 	}
 	if err := c.CreateChildCommonFiles(); err != nil {
-		return fmt.Errorf("failed to create readme: %v", err)
+		return nil, fmt.Errorf("failed to create readme: %v", err)
 	}
 	if err := c.CreateChildModule(); err != nil {
-		return fmt.Errorf("failed to create child module: %v", err)
+		return nil, fmt.Errorf("failed to create child module: %v", err)
 	}
 	if err := c.FixupSnippets(); err != nil {
-		return fmt.Errorf("failed to update snippet module: %v", err)
-	}
-	if err := c.GitCommit(); err != nil {
-		return fmt.Errorf("failed to create child module: %v", err)
+		return nil, fmt.Errorf("failed to update snippet module: %v", err)
 	}
 
-	return nil
+	var tags []string
+	once.Do(func() {
+		tags = append(tags, c.rootMod.Tag())
+	})
+	tags = append(tags, c.childMod.Tag())
+	return tags, nil
 }
 
 type modInfo struct {
@@ -349,28 +372,25 @@ func (c *carver) FixupSnippets() error {
 	return nil
 }
 
-func (c *carver) GitCommit() error {
+func gitCommit(dir string, tags []string, dryRun bool) error {
 	log.Println("Commiting changes")
-	if !c.dryRun {
+	if !dryRun {
 		cmd := exec.Command("git", "add", "-A")
-		cmd.Dir = c.rootMod.path
+		cmd.Dir = dir
 		if b, err := cmd.Output(); err != nil {
 			return fmt.Errorf("unable to add changes: %s", b)
 		}
-		cmd = exec.Command("git", "commit", "-m",
-			fmt.Sprintf("chore(%s): carve out sub-module\n\nThis commit will be tagged %s and %s.", c.childMod.tagPrefix, c.rootMod.Tag(), c.childMod.Tag()))
-		cmd.Dir = c.rootMod.path
+		var sb strings.Builder
+		sb.WriteString("chore: carve out sub-modules\n\nThis commit will be tagged:\n")
+		for _, tag := range tags {
+			sb.WriteString(fmt.Sprintf("\t- %s\n", tag))
+		}
+		cmd = exec.Command("git", "commit", "-m", sb.String())
+		cmd.Dir = dir
 		if b, err := cmd.Output(); err != nil {
 			return fmt.Errorf("unable to commit changes: %s", b)
 		}
 	}
-	log.Println("Successfully carved out module. Please run the following commands after your change is merged:")
-	fmt.Fprintf(os.Stdout, "git tag %s <COMMIT-SHA>\n", c.rootMod.Tag())
-	fmt.Fprintf(os.Stdout, "git tag %s <COMMIT-SHA>\n", c.childMod.Tag())
-	fmt.Fprintf(os.Stdout, "git push origin refs/tags/%s\n", c.rootMod.Tag())
-	fmt.Fprintf(os.Stdout, "git push origin refs/tags/%s\n", c.childMod.Tag())
-	fmt.Fprintf(os.Stdout, "Once tags have propagated open a new PR tidying the new child mods go.sum entries.\n")
-
 	return nil
 }
 
