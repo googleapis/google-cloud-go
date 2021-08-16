@@ -98,6 +98,8 @@ type internalClient interface {
 // Streaming over HTTP (DASH). You can also customize jobs using advanced
 // features such as Digital Rights Management (DRM), audio equalization, content
 // concatenation, and digital ad-stitch ready content generation.
+//
+// Deprecated: TranscoderService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -197,6 +199,8 @@ type gRPCClient struct {
 // Streaming over HTTP (DASH). You can also customize jobs using advanced
 // features such as Digital Rights Management (DRM), audio equalization, content
 // concatenation, and digital ad-stitch ready content generation.
+//
+// Deprecated: TranscoderService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
