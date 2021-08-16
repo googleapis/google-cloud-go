@@ -30,7 +30,7 @@ All the clients in sub-packages support authentication via Google Application De
 Credentials (see https://cloud.google.com/docs/authentication/production), or
 by providing a JSON key file for a Service Account. See examples below.
 
-Google Application Default Credentials(ADC) is the recommended way to authorize
+Google Application Default Credentials (ADC) is the recommended way to authorize
 and authenticate clients. For information on how to create and obtain
 Application Default Credentials, see
 https://cloud.google.com/docs/authentication/production. Here is an example
