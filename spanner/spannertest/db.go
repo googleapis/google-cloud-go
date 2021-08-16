@@ -623,7 +623,7 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	}
 
 	if _, ok := t.colIndex[cd.Name]; ok {
-		return status.Newf(codes.InvalidArgument, "duplicated column names: %s", cd.Name)
+		return status.Newf(codes.AlreadyExists, "column %s already exists", cd.Name)
 	}
 
 	t.mu.Lock()
