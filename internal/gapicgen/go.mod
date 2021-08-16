@@ -5,7 +5,7 @@ go 1.16
 require (
 	cloud.google.com/go v0.90.0
 	cloud.google.com/go/internal/godocfx v0.0.0-20210809194338-77391da6deb3
-	github.com/google/go-github/v35 v35.3.0
+	github.com/google/go-github/v38 v38.1.0
 	github.com/shurcooL/githubv4 v0.0.0-20210725200734-83ba7b4c9228
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect
 	golang.org/x/oauth2 v0.0.0-20210805134026-6f1e6394065a
