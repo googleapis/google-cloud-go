@@ -125,6 +125,9 @@ func (w *Writer) open() error {
 		if w.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(w.MD5)
 		}
+		if w.o.c.readHost != "" {
+			w.o.c.raw.BasePath = fmt.Sprint("usuk")
+		}
 		call := w.o.c.raw.Objects.Insert(w.o.bucket, rawObj).
 			Media(pr, mediaOpts...).
 			Projection("full").

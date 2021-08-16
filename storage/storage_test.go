@@ -1323,6 +1323,22 @@ func TestWithEndpoint(t *testing.T) {
 			WantReadHost:        "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
+		{
+			desc:                "Endpoint overrides emulator host when host  is specified as scheme://host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "https://localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when host  is specified as host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
+			WantScheme:          "http",
+		},
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
@@ -1343,4 +1359,75 @@ func TestWithEndpoint(t *testing.T) {
 		}
 	}
 	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+}
+
+// Create a client using a combination of custom endpoint and
+// STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
+// for writes) and readHost and scheme (used for reads) are not changed by running operations
+func TestOperationsWithEndpoint(t *testing.T) {
+	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+
+	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		io.Copy(ioutil.Discard, r.Body)
+		fmt.Fprintf(w, "{}")
+	})
+	defer close()
+
+	testCases := []struct {
+		desc                string
+		CustomEndpoint      string
+		StorageEmulatorHost string
+	}{
+		{
+			desc:                "No endpoint or emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "",
+		},
+		{
+			desc:                "emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "a",
+		},
+		{
+			desc:                "endpoint specified",
+			CustomEndpoint:      "q",
+			StorageEmulatorHost: "",
+		},
+	}
+	ctx := context.Background()
+	for _, tc := range testCases {
+		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+
+		c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
+		if err != nil {
+			t.Fatalf("error creating client: %v", err)
+		}
+		originalRawBasePath := c.raw.BasePath
+		originalReadHost := c.readHost
+		originalScheme := c.scheme
+
+		// c.Bucket("test-bucket").Create(ctx, "pid", nil)
+		// if err != nil {
+		// 	t.Errorf("%s: %v", tc.desc, err)
+		// }
+
+		w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+		_, err = io.Copy(w, strings.NewReader("copy into"))
+		if err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+
+		//r := c.Bucket("test-bucket")
+
+		if c.raw.BasePath != originalRawBasePath {
+			t.Errorf("%s: raw.BasePath changed\n\tgot %v, original %v", tc.desc, c.raw.BasePath, originalRawBasePath)
+		}
+		if c.readHost != originalReadHost {
+			t.Errorf("%s: readHost not set correctly\n\tgot %v, original %v", tc.desc, c.readHost, originalReadHost)
+		}
+		if c.scheme != originalScheme {
+			t.Errorf("%s: scheme not set correctly\n\tgot %v, original %v", tc.desc, c.scheme, originalScheme)
+		}
+	}
 }

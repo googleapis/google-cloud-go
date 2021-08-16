@@ -133,7 +133,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		hostURL.Path = "storage/v1/"
 		endpoint := hostURL.String()
 
-		// Prepend the emulator host as default endpoint for the user
+		// Append the emulator host as default endpoint for the user
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
 		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
