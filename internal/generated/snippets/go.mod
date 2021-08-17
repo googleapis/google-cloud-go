@@ -60,6 +60,7 @@ require (
 	cloud.google.com/go/firestore v0.90.0
 	cloud.google.com/go/functions v0.1.0
 	cloud.google.com/go/gaming v0.1.0
+	cloud.google.com/go/gkehub v0.1.0
 	cloud.google.com/go/gsuiteaddons v0.1.0
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/iot v0.1.0
@@ -287,3 +288,5 @@ replace cloud.google.com/go/video v0.1.0 => ../../../video
 replace cloud.google.com/go/security v0.1.0 => ../../../security
 
 replace cloud.google.com/go/grafeas v0.1.0 => ../../../grafeas
+
+replace cloud.google.com/go/gkehub v0.1.0 => ../../../gkehub
