@@ -71,6 +71,7 @@ require (
 	cloud.google.com/go/mediatranslation v0.1.0
 	cloud.google.com/go/memcache v0.1.0
 	cloud.google.com/go/metastore v0.1.0
+	cloud.google.com/go/monitoring v0.1.0
 	cloud.google.com/go/networkconnectivity v0.1.0
 	cloud.google.com/go/networkmanagement v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
@@ -273,3 +274,5 @@ replace cloud.google.com/go/websecurityscanner v0.1.0 => ../../../websecuritysca
 replace cloud.google.com/go/workflows v0.1.0 => ../../../workflows
 
 replace cloud.google.com/go/cloudbuild v0.1.0 => ../../../cloudbuild
+
+replace cloud.google.com/go/monitoring v0.1.0 => ../../../monitoring
