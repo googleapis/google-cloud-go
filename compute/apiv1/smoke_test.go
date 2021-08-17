@@ -107,7 +107,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if get.GetDescription() != "тест" {
 		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "тест", get.GetDescription()))
 	}
-	if get.GetShieldedInstanceConfig().GetEnableSecureBoot() != false {
+	if secureBootEnabled := get.GetShieldedInstanceConfig().GetEnableSecureBoot(); secureBootEnabled {
 		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", false, get.GetShieldedInstanceConfig().GetEnableSecureBoot()))
 	}
 
@@ -157,9 +157,9 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Error(err)
 	}
 	if fetched.GetDescription() != "updated" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", get.GetDescription()))
+		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetch.GetDescription()))
 	}
-	if fetched.GetShieldedInstanceConfig().GetEnableSecureBoot() != true {
+	if secureBootEnabled := fetched.GetShieldedInstanceConfig().GetEnableSecureBoot(); !secureBootEnabled {
 		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, get.GetShieldedInstanceConfig().GetEnableSecureBoot()))
 	}
 	listRequest := &computepb.ListInstancesRequest{
