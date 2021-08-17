@@ -16,7 +16,6 @@ package bigquery
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -25,12 +24,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
 )
 
 const (
@@ -83,11 +82,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
 	}
 
-	if projectID == DetectProjectID {
-		projectID, err = detectProjectID(ctx, opts...)
-		if err != nil {
-			return nil, fmt.Errorf("failed to detect project: %v", err)
-		}
+	// Handle project autodetection.
+	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
+	if err != nil {
+		return nil, err
 	}
 
 	c := &Client{
@@ -108,17 +106,6 @@ func (c *Client) Project() string {
 // It need not be called at program exit.
 func (c *Client) Close() error {
 	return nil
-}
-
-func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
-	creds, err := transport.Creds(ctx, opts...)
-	if err != nil {
-		return "", fmt.Errorf("fetching creds: %v", err)
-	}
-	if creds.ProjectID == "" {
-		return "", errors.New("credentials did not provide a valid ProjectID")
-	}
-	return creds.ProjectID, nil
 }
 
 // Calls the Jobs.Insert RPC and returns a Job.
