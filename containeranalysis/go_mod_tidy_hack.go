@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     https://www.apache.org/licenses/LICENSE-2.0
+//      http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-syntax = "proto3";
-package testdata;
-option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata";
+// This file, and the cloud.google.com/go import, won't actually become part of
+// the resultant binary.
+// +build modhack
 
+package containeranalysis
 
-// SimpleMessage represents a simple message that transmits a string and int64 value.
-message SimpleMessage {
-    // name is a simple scalar string.
-    string name = 1;
-    // value is a simple int64 value.
-    int64 value = 2;
-}
-
-
+// Necessary for safely adding multi-module repo. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository
+import _ "cloud.google.com/go"

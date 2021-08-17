@@ -1252,6 +1252,7 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 func TestWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
+		desc                string
 		CustomEndpoint      string
 		StorageEmulatorHost string
 		WantRawBasePath     string
@@ -1259,6 +1260,7 @@ func TestWithEndpoint(t *testing.T) {
 		WantScheme          string
 	}{
 		{
+			desc:                "No endpoint or emulator host specified",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://storage.googleapis.com/storage/v1/",
@@ -1266,6 +1268,7 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "https",
 		},
 		{
+			desc:                "With specified https endpoint, no specified emulator host",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
@@ -1273,16 +1276,50 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "https",
 		},
 		{
+			desc:                "With specified http endpoint, no specified emulator host",
+			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Emulator host specified, no specified endpoint",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
-			WantRawBasePath:     "http://emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1/",
 			WantReadHost:        "emu.com",
 			WantScheme:          "http",
 		},
 		{
+			desc:                "Emulator host specified without scheme",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1/",
+			WantReadHost:        "emu.com",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Emulator host specified as host:port",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "localhost:9000",
+			WantRawBasePath:     "http://localhost:9000/storage/v1/",
+			WantReadHost:        "localhost:9000",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when both are specified - https",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "https",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when both are specified - http",
+			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "https://emu.com",
+			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
 			WantReadHost:        "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
@@ -1294,18 +1331,15 @@ func TestWithEndpoint(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}
-		if err != nil {
-			t.Fatalf("error creating client: %v", err)
-		}
 
 		if c.raw.BasePath != tc.WantRawBasePath {
-			t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, tc.WantRawBasePath)
+			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.raw.BasePath, tc.WantRawBasePath)
 		}
 		if c.readHost != tc.WantReadHost {
-			t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, tc.WantReadHost)
+			t.Errorf("%s: readHost not set correctly\n\tgot %v, want %v", tc.desc, c.readHost, tc.WantReadHost)
 		}
 		if c.scheme != tc.WantScheme {
-			t.Errorf("scheme not set correctly: got %v, want %v", c.scheme, tc.WantScheme)
+			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
 		}
 	}
 	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
