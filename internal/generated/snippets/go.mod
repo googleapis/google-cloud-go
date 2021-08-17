@@ -29,6 +29,7 @@ require (
 	cloud.google.com/go/apigateway v0.1.0
 	cloud.google.com/go/apigeeconnect v0.1.0
 	cloud.google.com/go/appengine v0.1.0
+	cloud.google.com/go/area120 v0.1.0
 	cloud.google.com/go/artifactregistry v0.1.0
 	cloud.google.com/go/asset v0.1.0
 	cloud.google.com/go/assuredworkloads v0.1.0
@@ -293,3 +294,5 @@ replace cloud.google.com/go/grafeas v0.1.0 => ../../../grafeas
 replace cloud.google.com/go/gkehub v0.1.0 => ../../../gkehub
 
 replace cloud.google.com/go/gkeconnect v0.1.0 => ../../../gkeconnect
+
+replace cloud.google.com/go/area120 v0.1.0 => ../../../area120
