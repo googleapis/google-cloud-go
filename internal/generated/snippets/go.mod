@@ -92,6 +92,7 @@ require (
 	cloud.google.com/go/retail v0.1.0
 	cloud.google.com/go/scheduler v0.1.0
 	cloud.google.com/go/secretmanager v0.1.0
+	cloud.google.com/go/security v0.1.0
 	cloud.google.com/go/securitycenter v0.1.0
 	cloud.google.com/go/servicecontrol v0.1.0
 	cloud.google.com/go/servicedirectory v0.1.0
@@ -282,3 +283,5 @@ replace cloud.google.com/go/monitoring v0.1.0 => ../../../monitoring
 replace cloud.google.com/go/secretmanager v0.1.0 => ../../../secretmanager
 
 replace cloud.google.com/go/video v0.1.0 => ../../../video
+
+replace cloud.google.com/go/security v0.1.0 => ../../../security
