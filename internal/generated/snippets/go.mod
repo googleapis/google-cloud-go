@@ -91,6 +91,7 @@ require (
 	cloud.google.com/go/resourcesettings v0.1.0
 	cloud.google.com/go/retail v0.1.0
 	cloud.google.com/go/scheduler v0.1.0
+	cloud.google.com/go/secretmanager v0.1.0
 	cloud.google.com/go/securitycenter v0.1.0
 	cloud.google.com/go/servicecontrol v0.1.0
 	cloud.google.com/go/servicedirectory v0.1.0
@@ -276,3 +277,5 @@ replace cloud.google.com/go/workflows v0.1.0 => ../../../workflows
 replace cloud.google.com/go/cloudbuild v0.1.0 => ../../../cloudbuild
 
 replace cloud.google.com/go/monitoring v0.1.0 => ../../../monitoring
+
+replace cloud.google.com/go/secretmanager v0.1.0 => ../../../secretmanager
