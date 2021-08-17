@@ -23,7 +23,7 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.92.2
+	cloud.google.com/go v0.92.3
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/aiplatform v0.1.0
 	cloud.google.com/go/apigateway v0.1.0
@@ -37,6 +37,7 @@ require (
 	cloud.google.com/go/billing v0.1.0
 	cloud.google.com/go/binaryauthorization v0.1.0
 	cloud.google.com/go/channel v0.1.0
+	cloud.google.com/go/cloudbuild v0.1.0
 	cloud.google.com/go/clouddms v0.1.0
 	cloud.google.com/go/cloudtasks v0.1.0
 	cloud.google.com/go/container v0.1.0
@@ -270,3 +271,5 @@ replace cloud.google.com/go/webrisk v0.1.0 => ../../../webrisk
 replace cloud.google.com/go/websecurityscanner v0.1.0 => ../../../websecurityscanner
 
 replace cloud.google.com/go/workflows v0.1.0 => ../../../workflows
+
+replace cloud.google.com/go/cloudbuild v0.1.0 => ../../../cloudbuild
