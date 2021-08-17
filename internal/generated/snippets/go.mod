@@ -285,3 +285,5 @@ replace cloud.google.com/go/secretmanager v0.1.0 => ../../../secretmanager
 replace cloud.google.com/go/video v0.1.0 => ../../../video
 
 replace cloud.google.com/go/security v0.1.0 => ../../../security
+
+replace cloud.google.com/go/grafeas v0.1.0 => ../../../grafeas
