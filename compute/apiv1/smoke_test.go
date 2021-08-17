@@ -19,7 +19,7 @@ package compute
 import (
 	"context"
 	"fmt"
-	"reflect"
+	"github.com/google/go-cmp/cmp"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -157,10 +157,10 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Error(err)
 	}
 	if fetched.GetDescription() != "updated" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetch.GetDescription()))
+		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
 	}
 	if secureBootEnabled := fetched.GetShieldedInstanceConfig().GetEnableSecureBoot(); !secureBootEnabled {
-		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, get.GetShieldedInstanceConfig().GetEnableSecureBoot()))
+		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, secureBootEnabled))
 	}
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
@@ -492,23 +492,24 @@ func TestTypeInt64(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-
-	defer func(c *ImagesClient, ctx context.Context, req *computepb.DeleteImageRequest) {
-		_, err := c.Delete(ctx, req)
-		if err != nil {
-		}
-	}(c, ctx, &computepb.DeleteImageRequest{
+	delReq := &computepb.DeleteImageRequest{
 		Project: projectId,
 		Image:   name,
-	})
+	}
+	defer func() {
+		_, err := c.Delete(ctx, delReq)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
 
 	fetched, err := c.Get(ctx,
 		&computepb.GetImageRequest{
 			Project: projectId,
 			Image:   name,
 		})
-	if !reflect.DeepEqual(fetched.GetLicenseCodes(), codes) {
-		t.Fatal("License codes are not equal")
+	if diff := cmp.Diff(fetched.GetLicenseCodes(), codes, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
 }
 
@@ -558,19 +559,21 @@ func TestCapitalLetter(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	defer func(c *FirewallsClient, ctx context.Context, req *computepb.DeleteFirewallRequest) {
-		_, err := c.Delete(ctx, req)
-		if err != nil {
-		}
-	}(c, ctx, &computepb.DeleteFirewallRequest{
+	delReq := &computepb.DeleteFirewallRequest{
 		Project:  projectId,
 		Firewall: name,
-	})
+	}
+	defer func() {
+		_, err := c.Delete(ctx, delReq)
+		if err != nil {
+			t.Error(err)
+		}
+	}()
 	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
 		Project:  projectId,
 		Firewall: name,
 	})
-	if !reflect.DeepEqual(fetched.GetAllowed(), allowed) {
-		t.Fatal("Firewall contains unexpected values.")
+	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
 }
