@@ -106,6 +106,7 @@ require (
 	cloud.google.com/go/tpu v0.1.0
 	cloud.google.com/go/trace v0.1.0
 	cloud.google.com/go/translate v0.1.0
+	cloud.google.com/go/video v0.1.0
 	cloud.google.com/go/videointelligence v0.1.0
 	cloud.google.com/go/vision v0.1.0
 	cloud.google.com/go/vpcaccess v0.1.0
@@ -279,3 +280,5 @@ replace cloud.google.com/go/cloudbuild v0.1.0 => ../../../cloudbuild
 replace cloud.google.com/go/monitoring v0.1.0 => ../../../monitoring
 
 replace cloud.google.com/go/secretmanager v0.1.0 => ../../../secretmanager
+
+replace cloud.google.com/go/video v0.1.0 => ../../../video
