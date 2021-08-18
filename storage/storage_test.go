@@ -1362,13 +1362,13 @@ func TestWithEndpoint(t *testing.T) {
 }
 
 // Create a client using a combination of custom endpoint and
-// STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
-// for writes) and readHost and scheme (used for reads) are not changed by running operations
+// STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath,
+// readHost and scheme are not changed by running operations such as upload
 func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 
-	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+	addr, hClient, close := newTestServerAt(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
 	})
@@ -1387,12 +1387,17 @@ func TestOperationsWithEndpoint(t *testing.T) {
 		{
 			desc:                "emulator host specified",
 			CustomEndpoint:      "",
-			StorageEmulatorHost: "a",
+			StorageEmulatorHost: "https://" + addr,
 		},
 		{
 			desc:                "endpoint specified",
-			CustomEndpoint:      "q",
+			CustomEndpoint:      "https://" + addr,
 			StorageEmulatorHost: "",
+		},
+		{
+			desc:                "both emulator and endpoint specified",
+			CustomEndpoint:      "https://" + addr,
+			StorageEmulatorHost: "https://" + addr,
 		},
 	}
 	ctx := context.Background()
@@ -1407,27 +1412,97 @@ func TestOperationsWithEndpoint(t *testing.T) {
 		originalReadHost := c.readHost
 		originalScheme := c.scheme
 
-		// c.Bucket("test-bucket").Create(ctx, "pid", nil)
-		// if err != nil {
-		// 	t.Errorf("%s: %v", tc.desc, err)
-		// }
+		op := "bucket creation"
 
-		w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
-		_, err = io.Copy(w, strings.NewReader("copy into"))
+		c.Bucket("test-bucket").Create(ctx, "pid", nil)
 		if err != nil {
 			t.Errorf("%s: %v", tc.desc, err)
 		}
 
-		//r := c.Bucket("test-bucket")
-
 		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed\n\tgot %v, original %v", tc.desc, c.raw.BasePath, originalRawBasePath)
+			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
 		}
 		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost not set correctly\n\tgot %v, original %v", tc.desc, c.readHost, originalReadHost)
+			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
 		}
 		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme not set correctly\n\tgot %v, original %v", tc.desc, c.scheme, originalScheme)
+			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
 		}
+
+		op = "object upload"
+
+		w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+		_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+		if err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+		if closeErr := w.Close(); closeErr != nil {
+			t.Errorf("%s: %v", tc.desc, closeErr)
+		}
+
+		if c.raw.BasePath != originalRawBasePath {
+			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
+		}
+		if c.readHost != originalReadHost {
+			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
+		}
+		if c.scheme != originalScheme {
+			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
+		}
+
+		op = "object download"
+
+		rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+		if err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+		defer rc.Close()
+
+		_, err = io.Copy(ioutil.Discard, rc)
+		if err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+
+		if c.raw.BasePath != originalRawBasePath {
+			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
+		}
+		if c.readHost != originalReadHost {
+			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
+		}
+		if c.scheme != originalScheme {
+			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
+		}
+
+		op = "bucket delete"
+
+		if err := c.Bucket("test-bucket").Delete(ctx); err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+
+		if c.raw.BasePath != originalRawBasePath {
+			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
+		}
+		if c.readHost != originalReadHost {
+			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
+		}
+		if c.scheme != originalScheme {
+			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
+		}
+	}
+}
+
+func newTestServerAt(handler func(w http.ResponseWriter, r *http.Request)) (string, *http.Client, func()) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(handler))
+	address := ts.Listener.Addr().String()
+	tlsConf := &tls.Config{InsecureSkipVerify: true}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConf,
+		DialTLS: func(netw, addr string) (net.Conn, error) {
+			return tls.Dial("tcp", address, tlsConf)
+		},
+	}
+	return address, &http.Client{Transport: tr}, func() {
+		tr.CloseIdleConnections()
+		ts.Close()
 	}
 }
