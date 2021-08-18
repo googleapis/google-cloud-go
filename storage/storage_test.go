@@ -1324,7 +1324,7 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "http",
 		},
 		{
-			desc:                "Endpoint overrides emulator host when host  is specified as scheme://host:port",
+			desc:                "Endpoint overrides emulator host when host is specified as scheme://host:port",
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "https://localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
@@ -1332,7 +1332,7 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "http",
 		},
 		{
-			desc:                "Endpoint overrides emulator host when host  is specified as host:port",
+			desc:                "Endpoint overrides emulator host when host is specified as host:port",
 			CustomEndpoint:      "http://localhost:8080/storage/v1",
 			StorageEmulatorHost: "localhost:9000",
 			WantRawBasePath:     "http://localhost:8080/storage/v1",
