@@ -33,8 +33,8 @@ cloud.google.com/go/bigquery v1.7.0/go.mod h1://okPTzCYNXSlb24MZs83e2Do+h+VXtc4g
 cloud.google.com/go/bigquery v1.8.0/go.mod h1:J5hqkt3O0uAFnINi6JXValWIb1v0goeZM77hZzJN/fQ=
 cloud.google.com/go/datastore v1.0.0/go.mod h1:LXYbyblFSglQ5pkeyhO+Qmw7ukd3C+pD7TKLgZqpHYE=
 cloud.google.com/go/datastore v1.1.0/go.mod h1:umbIZjpQpHh4hmRpGhH4tLFup+FVzqBi1b3c64qFpCk=
-cloud.google.com/go/grafeas v0.0.0-20210817223811-71387f0142a4 h1:0e238Z4TgXEpd5tJiHSLNTExPaq3ONmI8hFPSGXvcXE=
-cloud.google.com/go/grafeas v0.0.0-20210817223811-71387f0142a4/go.mod h1:JIjQPjT5tO2IieDgcDyhc1AvplAIo+FyYSKg3OvITsE=
+cloud.google.com/go/grafeas v0.1.0 h1:Oxl67wNfT3Pz3s1MIzJxuST76Ql4m2k5qq/97PxHazM=
+cloud.google.com/go/grafeas v0.1.0/go.mod h1:JIjQPjT5tO2IieDgcDyhc1AvplAIo+FyYSKg3OvITsE=
 cloud.google.com/go/pubsub v1.0.1/go.mod h1:R0Gpsv3s54REJCy4fxDixWD93lHJMoZTyQ2kNxGRt3I=
 cloud.google.com/go/pubsub v1.1.0/go.mod h1:EwwdRX2sKPjnvnqCa270oGRyludottCI76h+R3AArQw=
 cloud.google.com/go/pubsub v1.2.0/go.mod h1:jhfEVHT8odbXTkndysNHCcx0awwzvfOlguIAii9o8iA=
