@@ -19,8 +19,9 @@ package compute
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-cmp/cmp"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -102,13 +103,13 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Error(err)
 	}
 	if get.GetName() != name {
-		t.Fatal(fmt.Sprintf("expected instance name: %s, got: %s", name, get.GetName()))
+		t.Fatalf("expected instance name: %s, got: %s", name, get.GetName())
 	}
 	if get.GetDescription() != "тест" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "тест", get.GetDescription()))
+		t.Fatalf("expected instance description: %s, got: %s", "тест", get.GetDescription())
 	}
 	if secureBootEnabled := get.GetShieldedInstanceConfig().GetEnableSecureBoot(); secureBootEnabled {
-		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", false, get.GetShieldedInstanceConfig().GetEnableSecureBoot()))
+		t.Fatalf("expected instance secure boot: %t, got: %t", false, get.GetShieldedInstanceConfig().GetEnableSecureBoot())
 	}
 
 	get.Description = proto.String("updated")
