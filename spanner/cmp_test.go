@@ -55,6 +55,12 @@ func testEqual(a, b interface{}) bool {
 			if strings.Contains(path.GoString(), "{*status.Error}.e") {
 				return true
 			}
+			if strings.Contains(path.GoString(), "{*status.Error}.s") {
+				return true
+			}
+			if strings.Contains(path.GoString(), "(*status.Error).s") {
+				return true
+			}
 			return false
 		}, cmp.Ignore()))
 }
