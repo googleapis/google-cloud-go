@@ -509,6 +509,9 @@ func TestTypeInt64(t *testing.T) {
 			Project: projectId,
 			Image:   name,
 		})
+	if err != nil {
+		t.Error(err)
+	}
 	if diff := cmp.Diff(fetched.GetLicenseCodes(), codes, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
@@ -574,6 +577,9 @@ func TestCapitalLetter(t *testing.T) {
 		Project:  projectId,
 		Firewall: name,
 	})
+	if err != nil {
+		t.Error(err)
+	}
 	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
