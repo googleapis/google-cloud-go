@@ -23,7 +23,7 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.92.3
+	cloud.google.com/go v0.93.3
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/aiplatform v0.1.0
 	cloud.google.com/go/analytics v0.1.0
