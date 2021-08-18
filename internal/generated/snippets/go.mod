@@ -23,12 +23,14 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.92.2
+	cloud.google.com/go v0.92.3
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/aiplatform v0.1.0
+	cloud.google.com/go/analytics v0.1.0
 	cloud.google.com/go/apigateway v0.1.0
 	cloud.google.com/go/apigeeconnect v0.1.0
 	cloud.google.com/go/appengine v0.1.0
+	cloud.google.com/go/area120 v0.1.0
 	cloud.google.com/go/artifactregistry v0.1.0
 	cloud.google.com/go/asset v0.1.0
 	cloud.google.com/go/assuredworkloads v0.1.0
@@ -37,6 +39,7 @@ require (
 	cloud.google.com/go/billing v0.1.0
 	cloud.google.com/go/binaryauthorization v0.1.0
 	cloud.google.com/go/channel v0.1.0
+	cloud.google.com/go/cloudbuild v0.1.0
 	cloud.google.com/go/clouddms v0.1.0
 	cloud.google.com/go/cloudtasks v0.1.0
 	cloud.google.com/go/container v0.1.0
@@ -59,6 +62,8 @@ require (
 	cloud.google.com/go/firestore v0.90.0
 	cloud.google.com/go/functions v0.1.0
 	cloud.google.com/go/gaming v0.1.0
+	cloud.google.com/go/gkeconnect v0.1.0
+	cloud.google.com/go/gkehub v0.1.0
 	cloud.google.com/go/gsuiteaddons v0.1.0
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/iot v0.1.0
@@ -70,6 +75,7 @@ require (
 	cloud.google.com/go/mediatranslation v0.1.0
 	cloud.google.com/go/memcache v0.1.0
 	cloud.google.com/go/metastore v0.1.0
+	cloud.google.com/go/monitoring v0.1.0
 	cloud.google.com/go/networkconnectivity v0.1.0
 	cloud.google.com/go/networkmanagement v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
@@ -89,6 +95,8 @@ require (
 	cloud.google.com/go/resourcesettings v0.1.0
 	cloud.google.com/go/retail v0.1.0
 	cloud.google.com/go/scheduler v0.1.0
+	cloud.google.com/go/secretmanager v0.1.0
+	cloud.google.com/go/security v0.1.0
 	cloud.google.com/go/securitycenter v0.1.0
 	cloud.google.com/go/servicecontrol v0.1.0
 	cloud.google.com/go/servicedirectory v0.1.0
@@ -103,6 +111,7 @@ require (
 	cloud.google.com/go/tpu v0.1.0
 	cloud.google.com/go/trace v0.1.0
 	cloud.google.com/go/translate v0.1.0
+	cloud.google.com/go/video v0.1.0
 	cloud.google.com/go/videointelligence v0.1.0
 	cloud.google.com/go/vision v0.1.0
 	cloud.google.com/go/vpcaccess v0.1.0
@@ -270,3 +279,23 @@ replace cloud.google.com/go/webrisk v0.1.0 => ../../../webrisk
 replace cloud.google.com/go/websecurityscanner v0.1.0 => ../../../websecurityscanner
 
 replace cloud.google.com/go/workflows v0.1.0 => ../../../workflows
+
+replace cloud.google.com/go/cloudbuild v0.1.0 => ../../../cloudbuild
+
+replace cloud.google.com/go/monitoring v0.1.0 => ../../../monitoring
+
+replace cloud.google.com/go/secretmanager v0.1.0 => ../../../secretmanager
+
+replace cloud.google.com/go/video v0.1.0 => ../../../video
+
+replace cloud.google.com/go/security v0.1.0 => ../../../security
+
+replace cloud.google.com/go/grafeas v0.1.0 => ../../../grafeas
+
+replace cloud.google.com/go/gkehub v0.1.0 => ../../../gkehub
+
+replace cloud.google.com/go/gkeconnect v0.1.0 => ../../../gkeconnect
+
+replace cloud.google.com/go/area120 v0.1.0 => ../../../area120
+
+replace cloud.google.com/go/analytics v0.1.0 => ../../../analytics
