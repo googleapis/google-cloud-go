@@ -493,12 +493,12 @@ func TestTypeInt64(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	delReq := &computepb.DeleteImageRequest{
-		Project: projectId,
-		Image:   name,
-	}
 	defer func() {
-		_, err := c.Delete(ctx, delReq)
+		_, err := c.Delete(ctx,
+			&computepb.DeleteImageRequest{
+				Project: projectId,
+				Image:   name,
+			})
 		if err != nil {
 			t.Error(err)
 		}
@@ -560,12 +560,12 @@ func TestCapitalLetter(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	delReq := &computepb.DeleteFirewallRequest{
-		Project:  projectId,
-		Firewall: name,
-	}
 	defer func() {
-		_, err := c.Delete(ctx, delReq)
+		_, err := c.Delete(ctx,
+			&computepb.DeleteFirewallRequest{
+				Project:  projectId,
+				Firewall: name,
+			})
 		if err != nil {
 			t.Error(err)
 		}
