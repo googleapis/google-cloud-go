@@ -82,137 +82,6 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 	return o.NewRangeReader(ctx, 0, -1)
 }
 
-// newRangeReaderWithGRPC creates a new Reader with the given range that uses
-// gRPC to read Object content.
-//
-// This is an experimental API and not intended for public use.
-func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.newRangeReaderWithGRPC")
-	defer func() { trace.EndSpan(ctx, err) }()
-
-	if o.c.gc == nil {
-		err = fmt.Errorf("handle doesn't have a gRPC client initialized")
-		return
-	}
-	if err = o.validate(); err != nil {
-		return
-	}
-
-	// A negative length means "read to the end of the object", but the
-	// read_limit field it corresponds to uses zero to mean the same thing. Thus
-	// we coerce the length to 0 to read to the end of the object.
-	if length < 0 {
-		length = 0
-	}
-
-	// For now, there are only globally unique buckets, and "_" is the alias
-	// project ID for such buckets.
-	b := bucket("_", o.bucket)
-	req := &storagepb.ReadObjectRequest{
-		Bucket: b,
-		Object: o.object,
-	}
-	// The default is a negative value, which means latest.
-	if o.gen >= 0 {
-		req.Generation = o.gen
-	}
-
-	// Define a function that initiates a Read with offset and length, assuming
-	// we have already read seen bytes.
-	reopen := func(seen int64) (*readStreamResponse, context.CancelFunc, error) {
-		// If the context has already expired, return immediately without making
-		// we call.
-		if err := ctx.Err(); err != nil {
-			return nil, nil, err
-		}
-
-		cc, cancel := context.WithCancel(ctx)
-
-		start := offset + seen
-		// Only set a ReadLimit if length is greater than zero, because zero
-		// means read it all.
-		if length > 0 {
-			req.ReadLimit = length - seen
-		}
-		req.ReadOffset = start
-
-		setRequestConditions(req, o.conds)
-
-		var stream storagepb.Storage_ReadObjectClient
-		var msg *storagepb.ReadObjectResponse
-		var err error
-
-		err = runWithRetry(cc, func() error {
-			stream, err = o.c.gc.ReadObject(cc, req)
-			if err != nil {
-				return err
-			}
-
-			msg, err = stream.Recv()
-
-			return err
-		})
-		if err != nil {
-			// Close the stream context we just created to ensure we don't leak
-			// resources.
-			cancel()
-			return nil, nil, err
-		}
-
-		return &readStreamResponse{stream, msg}, cancel, nil
-	}
-
-	res, cancel, err := reopen(0)
-	if err != nil {
-		return nil, err
-	}
-
-	r = &Reader{
-		stream:         res.stream,
-		reopenWithGRPC: reopen,
-		cancelStream:   cancel,
-	}
-
-	// The first message was Recv'd on stream open, use it to populate the
-	// object metadata.
-	msg := res.response
-	obj := msg.GetMetadata()
-	size := obj.GetSize()
-
-	// If offset is negative, we read the remaining bytes of content starting
-	// at the offset relative to the end. Thus the absolute value of the offset
-	// is the size of the portion to be read.
-	if offset < 0 {
-		size = -offset
-	}
-
-	r.Attrs = ReaderObjectAttrs{
-		Size:            size,
-		ContentType:     obj.GetContentType(),
-		ContentEncoding: obj.GetContentEncoding(),
-		CacheControl:    obj.GetCacheControl(),
-		LastModified:    obj.GetUpdateTime().AsTime(),
-		Metageneration:  obj.GetMetageneration(),
-		Generation:      obj.GetGeneration(),
-	}
-	if cr := msg.GetContentRange(); cr != nil {
-		r.Attrs.StartOffset = cr.GetStart()
-	}
-	// Only support checksums when reading an entire object, not a range.
-	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
-		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
-		r.checkCRC = true
-	}
-
-	// Store the content from the first Recv in the client buffer for reading
-	// later.
-	r.leftovers = msg.GetChecksummedData().GetContent()
-	r.remain = size
-	r.size = size
-
-	return r, nil
-}
-
 // NewRangeReader reads part of an object, reading at most length bytes
 // starting at the given offset. If length is negative, the object is read
 // until the end. If offset is negative, the object is read abs(offset) bytes
@@ -486,25 +355,6 @@ func setConditionsHeaders(headers http.Header, conds *Conditions) error {
 	return nil
 }
 
-func setRequestConditions(req *storagepb.ReadObjectRequest, conds *Conditions) {
-	if conds == nil {
-		return
-	}
-	if conds.MetagenerationMatch != 0 {
-		req.IfMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
-	} else if conds.MetagenerationNotMatch != 0 {
-		req.IfMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
-	}
-	switch {
-	case conds.GenerationNotMatch != 0:
-		req.IfGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
-	case conds.GenerationMatch != 0:
-		req.IfGenerationMatch = proto.Int64(conds.GenerationMatch)
-	case conds.DoesNotExist:
-		req.IfGenerationMatch = proto.Int64(0)
-	}
-}
-
 var emptyBody = ioutil.NopCloser(strings.NewReader(""))
 
 // Reader reads a Cloud Storage object.
@@ -544,13 +394,6 @@ func (r *Reader) Close() error {
 	return nil
 }
 
-func (r *Reader) closeStream() {
-	if r.cancelStream != nil {
-		r.cancelStream()
-	}
-	r.stream = nil
-}
-
 func (r *Reader) Read(p []byte) (int, error) {
 	read := r.readWithRetry
 	if r.reopenWithGRPC != nil {
@@ -576,6 +419,174 @@ func (r *Reader) Read(p []byte) (int, error) {
 	return n, err
 }
 
+// newRangeReaderWithGRPC creates a new Reader with the given range that uses
+// gRPC to read Object content.
+//
+// This is an experimental API and not intended for public use.
+func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.newRangeReaderWithGRPC")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if o.c.gc == nil {
+		err = fmt.Errorf("handle doesn't have a gRPC client initialized")
+		return
+	}
+	if err = o.validate(); err != nil {
+		return
+	}
+
+	// A negative length means "read to the end of the object", but the
+	// read_limit field it corresponds to uses zero to mean the same thing. Thus
+	// we coerce the length to 0 to read to the end of the object.
+	if length < 0 {
+		length = 0
+	}
+
+	// For now, there are only globally unique buckets, and "_" is the alias
+	// project ID for such buckets.
+	b := bucket("_", o.bucket)
+	req := &storagepb.ReadObjectRequest{
+		Bucket: b,
+		Object: o.object,
+	}
+	// The default is a negative value, which means latest.
+	if o.gen >= 0 {
+		req.Generation = o.gen
+	}
+
+	// Define a function that initiates a Read with offset and length, assuming
+	// we have already read seen bytes.
+	reopen := func(seen int64) (*readStreamResponse, context.CancelFunc, error) {
+		// If the context has already expired, return immediately without making
+		// we call.
+		if err := ctx.Err(); err != nil {
+			return nil, nil, err
+		}
+
+		cc, cancel := context.WithCancel(ctx)
+
+		start := offset + seen
+		// Only set a ReadLimit if length is greater than zero, because zero
+		// means read it all.
+		if length > 0 {
+			req.ReadLimit = length - seen
+		}
+		req.ReadOffset = start
+
+		setRequestConditions(req, o.conds)
+
+		var stream storagepb.Storage_ReadObjectClient
+		var msg *storagepb.ReadObjectResponse
+		var err error
+
+		err = runWithRetry(cc, func() error {
+			stream, err = o.c.gc.ReadObject(cc, req)
+			if err != nil {
+				return err
+			}
+
+			msg, err = stream.Recv()
+
+			return err
+		})
+		if err != nil {
+			// Close the stream context we just created to ensure we don't leak
+			// resources.
+			cancel()
+			return nil, nil, err
+		}
+
+		return &readStreamResponse{stream, msg}, cancel, nil
+	}
+
+	res, cancel, err := reopen(0)
+	if err != nil {
+		return nil, err
+	}
+
+	r = &Reader{
+		stream:         res.stream,
+		reopenWithGRPC: reopen,
+		cancelStream:   cancel,
+	}
+
+	// The first message was Recv'd on stream open, use it to populate the
+	// object metadata.
+	msg := res.response
+	obj := msg.GetMetadata()
+	size := obj.GetSize()
+
+	// If offset is negative, we read the remaining bytes of content starting
+	// at the offset relative to the end. Thus the absolute value of the offset
+	// is the size of the portion to be read.
+	if offset < 0 {
+		size = -offset
+	}
+
+	r.Attrs = ReaderObjectAttrs{
+		Size:            size,
+		ContentType:     obj.GetContentType(),
+		ContentEncoding: obj.GetContentEncoding(),
+		CacheControl:    obj.GetCacheControl(),
+		LastModified:    obj.GetUpdateTime().AsTime(),
+		Metageneration:  obj.GetMetageneration(),
+		Generation:      obj.GetGeneration(),
+	}
+	if cr := msg.GetContentRange(); cr != nil {
+		r.Attrs.StartOffset = cr.GetStart()
+	}
+	// Only support checksums when reading an entire object, not a range.
+	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
+		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
+		r.checkCRC = true
+	}
+
+	// Store the content from the first Recv in the client buffer for reading
+	// later.
+	r.leftovers = msg.GetChecksummedData().GetContent()
+	r.remain = size
+	r.size = size
+
+	return r, nil
+}
+
+func (r *Reader) readWithRetry(p []byte) (int, error) {
+	n := 0
+	for len(p[n:]) > 0 {
+		m, err := r.body.Read(p[n:])
+		n += m
+		r.seen += int64(m)
+		if err == nil || err == io.EOF {
+			return n, err
+		}
+		// Read failed (likely due to connection issues), but we will try to reopen
+		// the pipe and continue. Send a ranged read request that takes into account
+		// the number of bytes we've already seen.
+		res, err := r.reopen(r.seen)
+		if err != nil {
+			// reopen already retries
+			return n, err
+		}
+		r.body.Close()
+		r.body = res.Body
+	}
+	return n, nil
+}
+
+// closeStream cancels a stream's context in order for it to be closed and
+// collected.
+//
+// This is an experimental API and not intended for public use.
+func (r *Reader) closeStream() {
+	if r.cancelStream != nil {
+		r.cancelStream()
+	}
+	r.stream = nil
+}
+
+// readWithGRPC reads bytes into the user's buffer from an open gRPC stream.
+//
+// This is an experimental API and not intended for public use.
 func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	// No stream to read from, either never initiliazed or Close was called.
 	if r.stream == nil {
@@ -636,6 +647,8 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 //
 // The last error received is the one that is returned, which could be from
 // an attempt to reopen the stream.
+//
+// This is an experimental API and not intended for public use.
 func (r *Reader) recv() (*storagepb.ReadObjectResponse, error) {
 	msg, err := r.stream.Recv()
 	if err != nil && shouldRetry(err) {
@@ -651,6 +664,8 @@ func (r *Reader) recv() (*storagepb.ReadObjectResponse, error) {
 
 // reopenStream "closes" the existing stream and attempts to reopen a stream and
 // sets the Reader's stream and cancelStream properties in the process.
+//
+// This is an experimental API and not intended for public use.
 func (r *Reader) reopenStream(seen int64) (*storagepb.ReadObjectResponse, error) {
 	// Close existing stream and initialize new stream with updated offset.
 	r.closeStream()
@@ -664,27 +679,27 @@ func (r *Reader) reopenStream(seen int64) (*storagepb.ReadObjectResponse, error)
 	return res.response, nil
 }
 
-func (r *Reader) readWithRetry(p []byte) (int, error) {
-	n := 0
-	for len(p[n:]) > 0 {
-		m, err := r.body.Read(p[n:])
-		n += m
-		r.seen += int64(m)
-		if err == nil || err == io.EOF {
-			return n, err
-		}
-		// Read failed (likely due to connection issues), but we will try to reopen
-		// the pipe and continue. Send a ranged read request that takes into account
-		// the number of bytes we've already seen.
-		res, err := r.reopen(r.seen)
-		if err != nil {
-			// reopen already retries
-			return n, err
-		}
-		r.body.Close()
-		r.body = res.Body
+// setRequestConditions is used to apply the given Conditions to a gRPC request
+// message.
+//
+// This is an experimental API and not intended for public use.
+func setRequestConditions(req *storagepb.ReadObjectRequest, conds *Conditions) {
+	if conds == nil {
+		return
 	}
-	return n, nil
+	if conds.MetagenerationMatch != 0 {
+		req.IfMetagenerationMatch = proto.Int64(conds.MetagenerationMatch)
+	} else if conds.MetagenerationNotMatch != 0 {
+		req.IfMetagenerationNotMatch = proto.Int64(conds.MetagenerationNotMatch)
+	}
+	switch {
+	case conds.GenerationNotMatch != 0:
+		req.IfGenerationNotMatch = proto.Int64(conds.GenerationNotMatch)
+	case conds.GenerationMatch != 0:
+		req.IfGenerationMatch = proto.Int64(conds.GenerationMatch)
+	case conds.DoesNotExist:
+		req.IfGenerationMatch = proto.Int64(0)
+	}
 }
 
 // Size returns the size of the object in bytes.
