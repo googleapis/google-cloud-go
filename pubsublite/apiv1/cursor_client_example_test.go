@@ -31,18 +31,19 @@ func ExampleNewCursorClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCursorClient_StreamingCommitCursor() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingCommitCursor(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,13 +73,12 @@ func ExampleCursorClient_StreamingCommitCursor() {
 }
 
 func ExampleCursorClient_CommitCursor() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.CommitCursorRequest{
 		// TODO: Fill request struct fields.
@@ -92,14 +92,12 @@ func ExampleCursorClient_CommitCursor() {
 }
 
 func ExampleCursorClient_ListPartitionCursors() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.

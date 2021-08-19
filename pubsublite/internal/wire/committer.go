@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -46,11 +47,12 @@ type committer struct {
 	initialReq   *pb.StreamingCommitCursorRequest
 	metadata     pubsubMetadata
 
-	// Fields below must be guarded with mutex.
+	// Fields below must be guarded with mu.
 	stream        *retryableStream
 	acks          *ackTracker
 	cursorTracker *commitCursorTracker
 	pollCommits   *periodicTask
+	flushPending  *sync.Cond
 	enableCommits bool
 
 	abstractService
@@ -82,6 +84,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 		backgroundTask = func() {}
 	}
 	c.pollCommits = newPeriodicTask(commitCursorPeriod, backgroundTask)
+	c.flushPending = sync.NewCond(&c.mu)
 	return c
 }
 
@@ -112,6 +115,24 @@ func (c *committer) Terminate() {
 
 	c.acks.Release()
 	c.unsafeInitiateShutdown(serviceTerminating, nil)
+}
+
+// BlockingReset flushes any pending commits to the server, waits until the
+// server has confirmed the commit, and resets the state of the committer.
+func (c *committer) BlockingReset() error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.acks.Release() // Discard outstanding acks
+	for !c.cursorTracker.UpToDate() && c.status < serviceTerminating {
+		c.unsafeCommitOffsetToStream()
+		c.flushPending.Wait()
+	}
+	if c.status >= serviceTerminating {
+		return ErrServiceStopped
+	}
+	c.cursorTracker.Reset()
+	return nil
 }
 
 func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
@@ -215,6 +236,9 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 		return
 	}
 
+	// Notify any waiting threads of the termination.
+	c.flushPending.Broadcast()
+
 	// If it's a graceful shutdown, expedite sending final commits to the stream.
 	if targetStatus == serviceTerminating {
 		c.unsafeCommitOffsetToStream()
@@ -227,10 +251,18 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 	c.unsafeOnTerminated()
 }
 
+// Performs actions when the cursor tracker is up to date.
 func (c *committer) unsafeCheckDone() {
+	if !c.cursorTracker.UpToDate() {
+		return
+	}
+
+	// Notify any waiting threads that flushing pending commits is complete.
+	c.flushPending.Broadcast()
+
 	// The commit stream can be closed once the final commit offset has been
 	// confirmed and there are no outstanding acks.
-	if c.status == serviceTerminating && c.cursorTracker.UpToDate() && c.acks.Empty() {
+	if c.status == serviceTerminating {
 		c.unsafeOnTerminated()
 	}
 }

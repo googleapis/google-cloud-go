@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newPolicyTagManagerClientHook clientHook
@@ -54,12 +54,13 @@ type PolicyTagManagerCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-func defaultPolicyTagManagerClientOptions() []option.ClientOption {
+func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datacatalog.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -84,37 +85,176 @@ func defaultPolicyTagManagerCallOptions() *PolicyTagManagerCallOptions {
 	}
 }
 
+// internalPolicyTagManagerClient is an interface that defines the methods availaible from Google Cloud Data Catalog API.
+type internalPolicyTagManagerClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateTaxonomy(context.Context, *datacatalogpb.CreateTaxonomyRequest, ...gax.CallOption) (*datacatalogpb.Taxonomy, error)
+	DeleteTaxonomy(context.Context, *datacatalogpb.DeleteTaxonomyRequest, ...gax.CallOption) error
+	UpdateTaxonomy(context.Context, *datacatalogpb.UpdateTaxonomyRequest, ...gax.CallOption) (*datacatalogpb.Taxonomy, error)
+	ListTaxonomies(context.Context, *datacatalogpb.ListTaxonomiesRequest, ...gax.CallOption) *TaxonomyIterator
+	GetTaxonomy(context.Context, *datacatalogpb.GetTaxonomyRequest, ...gax.CallOption) (*datacatalogpb.Taxonomy, error)
+	CreatePolicyTag(context.Context, *datacatalogpb.CreatePolicyTagRequest, ...gax.CallOption) (*datacatalogpb.PolicyTag, error)
+	DeletePolicyTag(context.Context, *datacatalogpb.DeletePolicyTagRequest, ...gax.CallOption) error
+	UpdatePolicyTag(context.Context, *datacatalogpb.UpdatePolicyTagRequest, ...gax.CallOption) (*datacatalogpb.PolicyTag, error)
+	ListPolicyTags(context.Context, *datacatalogpb.ListPolicyTagsRequest, ...gax.CallOption) *PolicyTagIterator
+	GetPolicyTag(context.Context, *datacatalogpb.GetPolicyTagRequest, ...gax.CallOption) (*datacatalogpb.PolicyTag, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+}
+
 // PolicyTagManagerClient is a client for interacting with Google Cloud Data Catalog API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Policy Tag Manager API service allows you to manage your policy tags and
+// taxonomies.
+//
+// Policy tags are used to tag BigQuery columns and apply additional access
+// control policies. A taxonomy is a hierarchical grouping of policy tags that
+// classify data along a common axis.
+type PolicyTagManagerClient struct {
+	// The internal transport-dependent client.
+	internalClient internalPolicyTagManagerClient
+
+	// The call options for this service.
+	CallOptions *PolicyTagManagerCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *PolicyTagManagerClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *PolicyTagManagerClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *PolicyTagManagerClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateTaxonomy creates a taxonomy in a specified project.
+//
+// The taxonomy is initially empty, that is, it doesn’t contain policy tags.
+func (c *PolicyTagManagerClient) CreateTaxonomy(ctx context.Context, req *datacatalogpb.CreateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+	return c.internalClient.CreateTaxonomy(ctx, req, opts...)
+}
+
+// DeleteTaxonomy deletes a taxonomy, including all policy tags in this
+// taxonomy, their associated policies, and the policy tags references from
+// BigQuery columns.
+func (c *PolicyTagManagerClient) DeleteTaxonomy(ctx context.Context, req *datacatalogpb.DeleteTaxonomyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTaxonomy(ctx, req, opts...)
+}
+
+// UpdateTaxonomy updates a taxonomy, including its display name,
+// description, and activated policy types.
+func (c *PolicyTagManagerClient) UpdateTaxonomy(ctx context.Context, req *datacatalogpb.UpdateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+	return c.internalClient.UpdateTaxonomy(ctx, req, opts...)
+}
+
+// ListTaxonomies lists all taxonomies in a project in a particular location that you
+// have a permission to view.
+func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
+	return c.internalClient.ListTaxonomies(ctx, req, opts...)
+}
+
+// GetTaxonomy gets a taxonomy.
+func (c *PolicyTagManagerClient) GetTaxonomy(ctx context.Context, req *datacatalogpb.GetTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+	return c.internalClient.GetTaxonomy(ctx, req, opts...)
+}
+
+// CreatePolicyTag creates a policy tag in a taxonomy.
+func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datacatalogpb.CreatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+	return c.internalClient.CreatePolicyTag(ctx, req, opts...)
+}
+
+// DeletePolicyTag deletes a policy tag together with the following:
+//
+//   All of its descendant policy tags, if any
+//
+//   Policies associated with the policy tag and its descendants
+//
+//   References from BigQuery table schema of the policy tag and its
+//   descendants
+func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeletePolicyTag(ctx, req, opts...)
+}
+
+// UpdatePolicyTag updates a policy tag, including its display
+// name, description, and parent policy tag.
+func (c *PolicyTagManagerClient) UpdatePolicyTag(ctx context.Context, req *datacatalogpb.UpdatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+	return c.internalClient.UpdatePolicyTag(ctx, req, opts...)
+}
+
+// ListPolicyTags lists all policy tags in a taxonomy.
+func (c *PolicyTagManagerClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
+	return c.internalClient.ListPolicyTags(ctx, req, opts...)
+}
+
+// GetPolicyTag gets a policy tag.
+func (c *PolicyTagManagerClient) GetPolicyTag(ctx context.Context, req *datacatalogpb.GetPolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+	return c.internalClient.GetPolicyTag(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM policy for a policy tag or a taxonomy.
+func (c *PolicyTagManagerClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the IAM policy for a policy tag or a taxonomy.
+func (c *PolicyTagManagerClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns your permissions on a specified policy tag or
+// taxonomy.
+func (c *PolicyTagManagerClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// policyTagManagerGRPCClient is a client for interacting with Google Cloud Data Catalog API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type PolicyTagManagerClient struct {
+type policyTagManagerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing PolicyTagManagerClient
+	CallOptions **PolicyTagManagerCallOptions
+
 	// The gRPC API client.
 	policyTagManagerClient datacatalogpb.PolicyTagManagerClient
-
-	// The call options for this service.
-	CallOptions *PolicyTagManagerCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewPolicyTagManagerClient creates a new policy tag manager client.
+// NewPolicyTagManagerClient creates a new policy tag manager client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Policy Tag Manager API service allows clients to manage their policy tags and
+// Policy Tag Manager API service allows you to manage your policy tags and
 // taxonomies.
 //
 // Policy tags are used to tag BigQuery columns and apply additional access
 // control policies. A taxonomy is a hierarchical grouping of policy tags that
 // classify data along a common axis.
 func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption) (*PolicyTagManagerClient, error) {
-	clientOpts := defaultPolicyTagManagerClientOptions()
-
+	clientOpts := defaultPolicyTagManagerGRPCClientOptions()
 	if newPolicyTagManagerClientHook != nil {
 		hookOpts, err := newPolicyTagManagerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -132,43 +272,44 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 	if err != nil {
 		return nil, err
 	}
-	c := &PolicyTagManagerClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultPolicyTagManagerCallOptions(),
+	client := PolicyTagManagerClient{CallOptions: defaultPolicyTagManagerCallOptions()}
 
+	c := &policyTagManagerGRPCClient{
+		connPool:               connPool,
+		disableDeadlines:       disableDeadlines,
 		policyTagManagerClient: datacatalogpb.NewPolicyTagManagerClient(connPool),
+		CallOptions:            &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *PolicyTagManagerClient) Connection() *grpc.ClientConn {
+func (c *policyTagManagerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *PolicyTagManagerClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PolicyTagManagerClient) setGoogleClientInfo(keyval ...string) {
+func (c *policyTagManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateTaxonomy creates a taxonomy in a specified project. The taxonomy is initially empty,
-// i.e., does not contain policy tags.
-func (c *PolicyTagManagerClient) CreateTaxonomy(ctx context.Context, req *datacatalogpb.CreateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *policyTagManagerGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *policyTagManagerGRPCClient) CreateTaxonomy(ctx context.Context, req *datacatalogpb.CreateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -176,7 +317,7 @@ func (c *PolicyTagManagerClient) CreateTaxonomy(ctx context.Context, req *dataca
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTaxonomy[0:len(c.CallOptions.CreateTaxonomy):len(c.CallOptions.CreateTaxonomy)], opts...)
+	opts = append((*c.CallOptions).CreateTaxonomy[0:len((*c.CallOptions).CreateTaxonomy):len((*c.CallOptions).CreateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -189,10 +330,7 @@ func (c *PolicyTagManagerClient) CreateTaxonomy(ctx context.Context, req *dataca
 	return resp, nil
 }
 
-// DeleteTaxonomy deletes a taxonomy. This method will also delete all policy tags in this
-// taxonomy, their associated policies, and the policy tags references from
-// BigQuery columns.
-func (c *PolicyTagManagerClient) DeleteTaxonomy(ctx context.Context, req *datacatalogpb.DeleteTaxonomyRequest, opts ...gax.CallOption) error {
+func (c *policyTagManagerGRPCClient) DeleteTaxonomy(ctx context.Context, req *datacatalogpb.DeleteTaxonomyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -200,7 +338,7 @@ func (c *PolicyTagManagerClient) DeleteTaxonomy(ctx context.Context, req *dataca
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTaxonomy[0:len(c.CallOptions.DeleteTaxonomy):len(c.CallOptions.DeleteTaxonomy)], opts...)
+	opts = append((*c.CallOptions).DeleteTaxonomy[0:len((*c.CallOptions).DeleteTaxonomy):len((*c.CallOptions).DeleteTaxonomy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.policyTagManagerClient.DeleteTaxonomy(ctx, req, settings.GRPC...)
@@ -209,9 +347,7 @@ func (c *PolicyTagManagerClient) DeleteTaxonomy(ctx context.Context, req *dataca
 	return err
 }
 
-// UpdateTaxonomy updates a taxonomy. This method can update the taxonomy’s display name,
-// description, and activated policy types.
-func (c *PolicyTagManagerClient) UpdateTaxonomy(ctx context.Context, req *datacatalogpb.UpdateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+func (c *policyTagManagerGRPCClient) UpdateTaxonomy(ctx context.Context, req *datacatalogpb.UpdateTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -219,7 +355,7 @@ func (c *PolicyTagManagerClient) UpdateTaxonomy(ctx context.Context, req *dataca
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "taxonomy.name", url.QueryEscape(req.GetTaxonomy().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTaxonomy[0:len(c.CallOptions.UpdateTaxonomy):len(c.CallOptions.UpdateTaxonomy)], opts...)
+	opts = append((*c.CallOptions).UpdateTaxonomy[0:len((*c.CallOptions).UpdateTaxonomy):len((*c.CallOptions).UpdateTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -232,20 +368,20 @@ func (c *PolicyTagManagerClient) UpdateTaxonomy(ctx context.Context, req *dataca
 	return resp, nil
 }
 
-// ListTaxonomies lists all taxonomies in a project in a particular location that the caller
-// has permission to view.
-func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
+func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *datacatalogpb.ListTaxonomiesRequest, opts ...gax.CallOption) *TaxonomyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTaxonomies[0:len(c.CallOptions.ListTaxonomies):len(c.CallOptions.ListTaxonomies)], opts...)
+	opts = append((*c.CallOptions).ListTaxonomies[0:len((*c.CallOptions).ListTaxonomies):len((*c.CallOptions).ListTaxonomies)], opts...)
 	it := &TaxonomyIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
-		var resp *datacatalogpb.ListTaxonomiesResponse
-		req.PageToken = pageToken
+		resp := &datacatalogpb.ListTaxonomiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -268,14 +404,15 @@ func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *dataca
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetTaxonomy gets a taxonomy.
-func (c *PolicyTagManagerClient) GetTaxonomy(ctx context.Context, req *datacatalogpb.GetTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
+func (c *policyTagManagerGRPCClient) GetTaxonomy(ctx context.Context, req *datacatalogpb.GetTaxonomyRequest, opts ...gax.CallOption) (*datacatalogpb.Taxonomy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -283,7 +420,7 @@ func (c *PolicyTagManagerClient) GetTaxonomy(ctx context.Context, req *datacatal
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTaxonomy[0:len(c.CallOptions.GetTaxonomy):len(c.CallOptions.GetTaxonomy)], opts...)
+	opts = append((*c.CallOptions).GetTaxonomy[0:len((*c.CallOptions).GetTaxonomy):len((*c.CallOptions).GetTaxonomy)], opts...)
 	var resp *datacatalogpb.Taxonomy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -296,8 +433,7 @@ func (c *PolicyTagManagerClient) GetTaxonomy(ctx context.Context, req *datacatal
 	return resp, nil
 }
 
-// CreatePolicyTag creates a policy tag in a taxonomy.
-func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datacatalogpb.CreatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+func (c *policyTagManagerGRPCClient) CreatePolicyTag(ctx context.Context, req *datacatalogpb.CreatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -305,7 +441,7 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreatePolicyTag[0:len(c.CallOptions.CreatePolicyTag):len(c.CallOptions.CreatePolicyTag)], opts...)
+	opts = append((*c.CallOptions).CreatePolicyTag[0:len((*c.CallOptions).CreatePolicyTag):len((*c.CallOptions).CreatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -318,15 +454,7 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 	return resp, nil
 }
 
-// DeletePolicyTag deletes a policy tag. This method also deletes:
-//
-//   all of its descendant policy tags, if any
-//
-//   the policies associated with the policy tag and its descendants
-//
-//   references from BigQuery table schema of the policy tag and its
-//   descendants.
-func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
+func (c *policyTagManagerGRPCClient) DeletePolicyTag(ctx context.Context, req *datacatalogpb.DeletePolicyTagRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -334,7 +462,7 @@ func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datac
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeletePolicyTag[0:len(c.CallOptions.DeletePolicyTag):len(c.CallOptions.DeletePolicyTag)], opts...)
+	opts = append((*c.CallOptions).DeletePolicyTag[0:len((*c.CallOptions).DeletePolicyTag):len((*c.CallOptions).DeletePolicyTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.policyTagManagerClient.DeletePolicyTag(ctx, req, settings.GRPC...)
@@ -343,9 +471,7 @@ func (c *PolicyTagManagerClient) DeletePolicyTag(ctx context.Context, req *datac
 	return err
 }
 
-// UpdatePolicyTag updates a policy tag. This method can update the policy tag’s display
-// name, description, and parent policy tag.
-func (c *PolicyTagManagerClient) UpdatePolicyTag(ctx context.Context, req *datacatalogpb.UpdatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+func (c *policyTagManagerGRPCClient) UpdatePolicyTag(ctx context.Context, req *datacatalogpb.UpdatePolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -353,7 +479,7 @@ func (c *PolicyTagManagerClient) UpdatePolicyTag(ctx context.Context, req *datac
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy_tag.name", url.QueryEscape(req.GetPolicyTag().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdatePolicyTag[0:len(c.CallOptions.UpdatePolicyTag):len(c.CallOptions.UpdatePolicyTag)], opts...)
+	opts = append((*c.CallOptions).UpdatePolicyTag[0:len((*c.CallOptions).UpdatePolicyTag):len((*c.CallOptions).UpdatePolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -366,19 +492,20 @@ func (c *PolicyTagManagerClient) UpdatePolicyTag(ctx context.Context, req *datac
 	return resp, nil
 }
 
-// ListPolicyTags lists all policy tags in a taxonomy.
-func (c *PolicyTagManagerClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
+func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *datacatalogpb.ListPolicyTagsRequest, opts ...gax.CallOption) *PolicyTagIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPolicyTags[0:len(c.CallOptions.ListPolicyTags):len(c.CallOptions.ListPolicyTags)], opts...)
+	opts = append((*c.CallOptions).ListPolicyTags[0:len((*c.CallOptions).ListPolicyTags):len((*c.CallOptions).ListPolicyTags)], opts...)
 	it := &PolicyTagIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
-		var resp *datacatalogpb.ListPolicyTagsResponse
-		req.PageToken = pageToken
+		resp := &datacatalogpb.ListPolicyTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -401,14 +528,15 @@ func (c *PolicyTagManagerClient) ListPolicyTags(ctx context.Context, req *dataca
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetPolicyTag gets a policy tag.
-func (c *PolicyTagManagerClient) GetPolicyTag(ctx context.Context, req *datacatalogpb.GetPolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
+func (c *policyTagManagerGRPCClient) GetPolicyTag(ctx context.Context, req *datacatalogpb.GetPolicyTagRequest, opts ...gax.CallOption) (*datacatalogpb.PolicyTag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -416,7 +544,7 @@ func (c *PolicyTagManagerClient) GetPolicyTag(ctx context.Context, req *datacata
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetPolicyTag[0:len(c.CallOptions.GetPolicyTag):len(c.CallOptions.GetPolicyTag)], opts...)
+	opts = append((*c.CallOptions).GetPolicyTag[0:len((*c.CallOptions).GetPolicyTag):len((*c.CallOptions).GetPolicyTag)], opts...)
 	var resp *datacatalogpb.PolicyTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -429,8 +557,7 @@ func (c *PolicyTagManagerClient) GetPolicyTag(ctx context.Context, req *datacata
 	return resp, nil
 }
 
-// GetIamPolicy gets the IAM policy for a policy tag or a taxonomy.
-func (c *PolicyTagManagerClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *policyTagManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -438,7 +565,7 @@ func (c *PolicyTagManagerClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -451,8 +578,7 @@ func (c *PolicyTagManagerClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	return resp, nil
 }
 
-// SetIamPolicy sets the IAM policy for a policy tag or a taxonomy.
-func (c *PolicyTagManagerClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *policyTagManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -460,7 +586,7 @@ func (c *PolicyTagManagerClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -473,9 +599,7 @@ func (c *PolicyTagManagerClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	return resp, nil
 }
 
-// TestIamPermissions returns the permissions that a caller has on a specified policy tag or
-// taxonomy.
-func (c *PolicyTagManagerClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *policyTagManagerGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -483,7 +607,7 @@ func (c *PolicyTagManagerClient) TestIamPermissions(ctx context.Context, req *ia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

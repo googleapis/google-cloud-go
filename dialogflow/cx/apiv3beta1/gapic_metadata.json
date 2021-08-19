@@ -113,6 +113,11 @@
                 "GetEnvironment"
               ]
             },
+            "ListContinuousTestResults": {
+              "methods": [
+                "ListContinuousTestResults"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
@@ -121,6 +126,11 @@
             "LookupEnvironmentHistory": {
               "methods": [
                 "LookupEnvironmentHistory"
+              ]
+            },
+            "RunContinuousTest": {
+              "methods": [
+                "RunContinuousTest"
               ]
             },
             "UpdateEnvironment": {

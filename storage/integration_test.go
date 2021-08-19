@@ -52,6 +52,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 const (
@@ -575,6 +576,92 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	}
 }
 
+func TestIntegration_PublicAccessPrevention(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	// Create a bucket with PublicAccessPrevention enforced.
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+	defer h.mustDeleteBucket(bkt)
+
+	// Making bucket public should fail.
+	policy, err := bkt.IAM().V3().Policy(ctx)
+	if err != nil {
+		t.Fatalf("fetching bucket IAM policy: %v", err)
+	}
+	policy.Bindings = append(policy.Bindings, &iampb.Binding{
+		Role:    "roles/storage.objectViewer",
+		Members: []string{iam.AllUsers},
+	})
+	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+	}
+
+	// Making object public via ACL should fail.
+	o := bkt.Object("publicAccessPrevention")
+	defer func() {
+		if err := o.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("test"))
+	a := o.ACL()
+	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+	}
+
+	// Update PAP setting to unspecified should work and not affect UBLA setting.
+	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
+	if err != nil {
+		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+	}
+	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
+		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	}
+	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+		t.Error("updating PublicAccessPrevention changed UBLA setting")
+	}
+
+	// Now, making object public or making bucket public should succeed. Run with
+	// retry because ACL settings may take time to propagate.
+	if err := retry(ctx,
+		func() error {
+			a = o.ACL()
+			return a.Set(ctx, AllUsers, RoleReader)
+		},
+		nil); err != nil {
+		t.Errorf("ACL.Set: making object public failed: %v", err)
+	}
+	policy, err = bkt.IAM().V3().Policy(ctx)
+	if err != nil {
+		t.Fatalf("fetching bucket IAM policy: %v", err)
+	}
+	policy.Bindings = append(policy.Bindings, &iampb.Binding{
+		Role:    "roles/storage.objectViewer",
+		Members: []string{iam.AllUsers},
+	})
+	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+		t.Errorf("SetPolicy: making bucket public failed: %v", err)
+	}
+
+	// Updating UBLA should not affect PAP setting.
+	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+	if err != nil {
+		t.Fatalf("updating UBLA failed: %v", err)
+	}
+	if !attrs.UniformBucketLevelAccess.Enabled {
+		t.Error("updating UBLA: got UBLA not enabled, want enabled")
+	}
+	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
+		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	}
+}
+
 func TestIntegration_ConditionalDelete(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -654,6 +741,36 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				t.Fatalf("Body length mismatch, got %d want %d", got, want)
 			}
 		})
+	}
+}
+
+func TestIntegration_ConditionalDownload(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	o := client.Bucket(bucketName).Object("condread")
+	defer o.Delete(ctx)
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("foo"))
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().Metageneration
+
+	if _, err := o.Generation(gen + 1).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with nonexistent Generation")
+	}
+	if _, err := o.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+	}
+	if _, err := o.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+		t.Fatalf("Download failed: %v", err)
 	}
 }
 
@@ -3176,6 +3293,54 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	if got.LastModified.IsZero() {
 		t.Fatal("LastModified is 0, should be >0")
 	}
+}
+
+// Test that context cancellation correctly stops a download before completion.
+func TestIntegration_ReaderCancel(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucketName)
+
+	// Upload a 1MB object.
+	obj := bkt.Object("reader-cancel-obj")
+	w := obj.NewWriter(ctx)
+	c := randomContents()
+	for i := 0; i < 62500; i++ {
+		if _, err := w.Write(c); err != nil {
+			t.Fatalf("writer.Write: %v", err)
+		}
+
+	}
+	w.Close()
+
+	// Create a reader (which makes a GET request to GCS and opens the body to
+	// read the object) and then cancel the context before reading.
+	readerCtx, cancel := context.WithCancel(ctx)
+	r, err := obj.NewReader(readerCtx)
+	if err != nil {
+		t.Fatalf("obj.NewReader: %v", err)
+	}
+	defer r.Close()
+
+	cancel()
+
+	// Read the object 1KB a time. We cannot guarantee that Reads will return a
+	// context canceled error immediately, but they should always do so before we
+	// reach EOF.
+	var readErr error
+	for i := 0; i < 1000; i++ {
+		buf := make([]byte, 1000)
+		_, readErr = r.Read(buf)
+		if readErr != nil {
+			if readErr == context.Canceled {
+				return
+			}
+			break
+		}
+	}
+	t.Fatalf("Reader.Read: got %v, want context.Canceled", readErr)
 }
 
 // Ensures that a file stored with a:

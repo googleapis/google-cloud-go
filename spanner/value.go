@@ -71,19 +71,19 @@ var (
 // Encoder is the interface implemented by a custom type that can be encoded to
 // a supported type by Spanner. A code example:
 //
-// type customField struct {
-//     Prefix string
-//     Suffix string
-// }
+//   type customField struct {
+//       Prefix string
+//       Suffix string
+//   }
 //
-// // Convert a customField value to a string
-// func (cf customField) EncodeSpanner() (interface{}, error) {
-//     var b bytes.Buffer
-//     b.WriteString(cf.Prefix)
-//     b.WriteString("-")
-//     b.WriteString(cf.Suffix)
-//     return b.String(), nil
-// }
+//   // Convert a customField value to a string
+//   func (cf customField) EncodeSpanner() (interface{}, error) {
+//       var b bytes.Buffer
+//       b.WriteString(cf.Prefix)
+//       b.WriteString("-")
+//       b.WriteString(cf.Suffix)
+//       return b.String(), nil
+//   }
 type Encoder interface {
 	EncodeSpanner() (interface{}, error)
 }
@@ -91,24 +91,24 @@ type Encoder interface {
 // Decoder is the interface implemented by a custom type that can be decoded
 // from a supported type by Spanner. A code example:
 //
-// type customField struct {
-//     Prefix string
-//     Suffix string
-// }
+//   type customField struct {
+//       Prefix string
+//       Suffix string
+//   }
 //
-// // Convert a string to a customField value
-// func (cf *customField) DecodeSpanner(val interface{}) (err error) {
-//     strVal, ok := val.(string)
-//     if !ok {
-//         return fmt.Errorf("failed to decode customField: %v", val)
-//     }
-//     s := strings.Split(strVal, "-")
-//     if len(s) > 1 {
-//         cf.Prefix = s[0]
-//         cf.Suffix = s[1]
-//     }
-//     return nil
-// }
+//   // Convert a string to a customField value
+//   func (cf *customField) DecodeSpanner(val interface{}) (err error) {
+//       strVal, ok := val.(string)
+//       if !ok {
+//           return fmt.Errorf("failed to decode customField: %v", val)
+//       }
+//       s := strings.Split(strVal, "-")
+//       if len(s) > 1 {
+//           cf.Prefix = s[0]
+//           cf.Suffix = s[1]
+//       }
+//       return nil
+//   }
 type Decoder interface {
 	DecodeSpanner(input interface{}) error
 }
@@ -1330,7 +1330,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
 		if decodedVal, ok := ptr.(Decoder); ok {
-			x, err := getGenericValue(v)
+			x, err := getGenericValue(t, v)
 			if err != nil {
 				return err
 			}
@@ -1355,8 +1355,8 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errNilDst(p)
 		}
 		if !isPtrStructPtrSlice(vp.Type()) {
-			// The container is not a pointer to a struct pointer slice.
-			return errTypeMismatch(code, acode, ptr)
+			// The container is not a slice of struct pointers.
+			return fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(code, acode, ptr))
 		}
 		// Only use reflection for nil detection on slow path.
 		// Also, IsNil panics on many types, so check it after the type check.
@@ -1909,7 +1909,7 @@ func getListValue(v *proto3.Value) (*proto3.ListValue, error) {
 }
 
 // getGenericValue returns the interface{} value encoded in proto3.Value.
-func getGenericValue(v *proto3.Value) (interface{}, error) {
+func getGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
 	switch x := v.GetKind().(type) {
 	case *proto3.Value_NumberValue:
 		return x.NumberValue, nil
@@ -1917,8 +1917,26 @@ func getGenericValue(v *proto3.Value) (interface{}, error) {
 		return x.BoolValue, nil
 	case *proto3.Value_StringValue:
 		return x.StringValue, nil
+	case *proto3.Value_NullValue:
+		return getTypedNil(t)
 	default:
 		return 0, errSrcVal(v, "Number, Bool, String")
+	}
+}
+
+func getTypedNil(t *sppb.Type) (interface{}, error) {
+	switch t.Code {
+	case sppb.TypeCode_FLOAT64:
+		var f *float64
+		return f, nil
+	case sppb.TypeCode_BOOL:
+		var b *bool
+		return b, nil
+	default:
+		// The encoding for most types is string, except for the ones listed
+		// above.
+		var s *string
+		return s, nil
 	}
 }
 

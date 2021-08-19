@@ -17,7 +17,10 @@
 // Package servicedirectory is an auto-generated package for the
 // Service Directory API.
 //
-// Allows the registration and lookup of services.
+// Service Directory is a platform for discovering, publishing, and
+// connecting services.
+//
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Use of Context
 //
@@ -28,7 +31,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package servicedirectory // import "cloud.google.com/go/servicedirectory/apiv1beta1"
 
 import (
@@ -48,7 +51,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210504"
+const versionClient = "20210805"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

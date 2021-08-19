@@ -404,12 +404,21 @@ type SessionPoolConfig struct {
 	// Defaults to 100.
 	MinOpened uint64
 
-	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep.
+	// MaxIdle is the maximum number of idle sessions that are allowed in the
+	// session pool.
 	//
 	// Defaults to 0.
 	MaxIdle uint64
 
 	// MaxBurst is the maximum number of concurrent session creation requests.
+	//
+	// Deprecated: MaxBurst exists for historical compatibility and should not
+	// be used. MaxBurst was used to limit the number of sessions that the
+	// session pool could create within a time frame. This was an early safety
+	// valve to prevent a client from overwhelming the backend if a large number
+	// of sessions was suddenly needed. The session pool would then pause the
+	// creation of sessions for a while. Such a pause is no longer needed and
+	// the implementation has been removed from the pool.
 	//
 	// Defaults to 10.
 	MaxBurst uint64
@@ -434,7 +443,7 @@ type SessionPoolConfig struct {
 
 	// HealthCheckInterval is how often the health checker pings a session.
 	//
-	// Defaults to 5m.
+	// Defaults to 50m.
 	HealthCheckInterval time.Duration
 
 	// TrackSessionHandles determines whether the session pool will keep track

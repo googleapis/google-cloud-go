@@ -34,8 +34,9 @@ func testPublishSettings() PublishSettings {
 	// Send messages with minimal delay to speed up tests.
 	settings.DelayThreshold = time.Millisecond
 	settings.Timeout = 5 * time.Second
-	// Disable topic partition count background polling.
-	settings.ConfigPollPeriod = 0
+	// Set long poll period to prevent background update, but still have non-zero
+	// request timeout.
+	settings.ConfigPollPeriod = 1 * time.Minute
 	return settings
 }
 
@@ -1004,24 +1005,15 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	t.Run("Failed update", func(t *testing.T) {
 		pub.pub.partitionWatcher.updatePartitionCount()
 
-		// Failed background update terminates the routingPublisher.
-		if gotErr := pub.WaitStopped(); !test.ErrorHasMsg(gotErr, serverErr.Error()) {
-			t.Errorf("Final error got: (%v), want: (%v)", gotErr, serverErr)
-		}
+		// Failed update ignored.
 		if got, want := pub.NumPartitionPublishers(), initialPartitionCount; got != want {
 			t.Errorf("Num partition publishers: got %d, want %d", got, want)
 		}
 	})
-}
 
-func TestNewPublisherCreatesImpl(t *testing.T) {
-	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	const region = "us-central1"
-
-	if pub, err := NewPublisher(context.Background(), DefaultPublishSettings, region, topic); err != nil {
-		t.Errorf("NewPublisher() got error: %v", err)
-	} else if _, ok := pub.(*routingPublisher); !ok {
-		t.Error("NewPublisher() did not return a routingPublisher")
+	pub.Stop()
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
 	}
 }
 

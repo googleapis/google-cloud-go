@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListAssets() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.

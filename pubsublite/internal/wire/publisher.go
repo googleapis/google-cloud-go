@@ -279,7 +279,6 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 // count, but not decreasing.
 type routingPublisher struct {
 	// Immutable after creation.
-	clients          apiClients
 	msgRouterFactory *messageRouterFactory
 	pubFactory       *singlePartitionPublisherFactory
 	partitionWatcher *partitionCountWatcher
@@ -288,12 +287,12 @@ type routingPublisher struct {
 	msgRouter  messageRouter
 	publishers []*singlePartitionPublisher
 
-	compositeService
+	apiClientService
 }
 
 func newRoutingPublisher(allClients apiClients, adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
 	pub := &routingPublisher{
-		clients:          allClients,
+		apiClientService: apiClientService{clients: allClients},
 		msgRouterFactory: msgRouterFactory,
 		pubFactory:       pubFactory,
 	}
@@ -359,12 +358,6 @@ func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*singlePart
 	return rp.publishers[partition], nil
 }
 
-func (rp *routingPublisher) WaitStopped() error {
-	err := rp.compositeService.WaitStopped()
-	rp.clients.Close()
-	return err
-}
-
 // Publisher is the client interface exported from this package for publishing
 // messages.
 type Publisher interface {
@@ -385,15 +378,20 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	if err := validatePublishSettings(settings); err != nil {
 		return nil, err
 	}
+
+	var allClients apiClients
 	pubClient, err := newPublisherClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
+	allClients = append(allClients, pubClient)
+
 	adminClient, err := NewAdminClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
-	allClients := apiClients{pubClient, adminClient}
+	allClients = append(allClients, adminClient)
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
