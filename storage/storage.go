@@ -1687,7 +1687,9 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	return res.EmailAddress, nil
 }
 
-// bucket formats the given project ID and bucket ID into a Bucket name.
+// bucket formats the given project ID and bucket ID into a Bucket resource
+// name. This is the format necessary for the gRPC API as it conforms to the
+// Resource-oriented design practices in https://google.aip.dev/121.
 func bucket(p, b string) string {
 	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
 }
