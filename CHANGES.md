@@ -1,5 +1,17 @@
 # Changes
 
+## [0.93.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.92.0...v0.93.0) (2021-08-19)
+
+
+### Features
+
+* **asset:** Release of relationships in v1, Add content type Relationship to support relationship export Committer: lvv@ ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **cloudbuild/apiv1:** Add ability to configure BuildTriggers to create Builds that require approval before executing and ApproveBuild API to approve or reject pending Builds ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **internal/carver:** support carving batches ([#4623](https://www.github.com/googleapis/google-cloud-go/issues/4623)) ([2972d19](https://www.github.com/googleapis/google-cloud-go/commit/2972d194da19bedf16d76fda471c06a965cfdcd6))
+* **metastore:** Added the Backup resource and Backup resource GetIamPolicy/SetIamPolicy to V1 feat: Added the RestoreService method to V1 ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **speech:** Add transcript normalization ([b31646d](https://www.github.com/googleapis/google-cloud-go/commit/b31646d1e12037731df4b5c0ba9f60b6434d7b9b))
+* **talent:** Add new commute methods in Search APIs feat: Add new histogram type 'publish_time_in_day' feat: Support filtering by requisitionId is ListJobs API ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+
 ## [0.92.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.91.0...v0.92.0) (2021-08-16)
 
 
