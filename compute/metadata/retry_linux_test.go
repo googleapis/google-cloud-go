@@ -27,13 +27,13 @@ func TestMetadataRetryerLinux(t *testing.T) {
 	t.Run("retry on syscall.ECONNRESET", func(t *testing.T) {
 		_, shouldRetry := retryer.Retry(400, syscall.ECONNRESET)
 		if !shouldRetry {
-			t.Fatal("retryer.Retry(500, nil) = false, want true")
+			t.Fatal("retryer.Retry(400, syscall.ECONNRESET) = false, want true")
 		}
 	})
 	t.Run("retry on syscall.ECONNREFUSED", func(t *testing.T) {
 		_, shouldRetry := retryer.Retry(400, syscall.ECONNREFUSED)
 		if !shouldRetry {
-			t.Fatal("retryer.Retry(500, nil) = false, want true")
+			t.Fatal("retryer.Retry(400, syscall.ECONNREFUSED) = false, want true")
 		}
 	})
 }

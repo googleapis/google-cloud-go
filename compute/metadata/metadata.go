@@ -284,6 +284,7 @@ func NewClient(c *http.Client) *Client {
 // getETag returns a value from the metadata service as well as the associated ETag.
 // This func is otherwise equivalent to Get.
 func (c *Client) getETag(suffix string) (value, etag string, err error) {
+	ctx := context.TODO()
 	// Using a fixed IP makes it very difficult to spoof the metadata service in
 	// a container, which is an important use-case for local testing of cloud
 	// deployments. To enable spoofing of the metadata service, the environment
@@ -315,7 +316,7 @@ func (c *Client) getETag(suffix string) (value, etag string, err error) {
 			break
 		}
 		if delay, shouldRetry := retryer.Retry(res.StatusCode, err); shouldRetry {
-			if err := gax.Sleep(context.Background(), delay); err != nil {
+			if err := gax.Sleep(ctx, delay); err != nil {
 				return "", "", err
 			}
 			continue
