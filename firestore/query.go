@@ -167,7 +167,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 		q.err = err
 		return q
 	}
-	q.orders = append(q.copyOrders(), order{fp, nil, dir})
+	q.orders = append(q.copyOrders(), order{fieldPath: fp, dir: dir})
 	return q
 }
 
@@ -175,7 +175,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 // returned. A Query can have multiple OrderBy/OrderByPath specifications.
 // OrderByPath appends the specification to the list of existing ones.
 func (q Query) OrderByPath(fp FieldPath, dir Direction) Query {
-	q.orders = append(q.copyOrders(), order{fp, nil, dir})
+	q.orders = append(q.copyOrders(), order{fieldPath: fp, dir: dir})
 	return q
 }
 
@@ -276,15 +276,6 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q Query) query() *Query { return &q }
 
-func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
-	i, err := createFromProtoValue(vProto, q.c)
-	if err != nil {
-		q.err = err
-		return q, err
-	}
-	return i, nil
-}
-
 // FromProto creates a new Query object from a RunQueryRequest. This can be used
 // in combintation with ToProto to serialize Query objects.
 func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
@@ -322,7 +313,7 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 			q.startBefore = true
 		}
 		for _, v := range startAt.GetValues() {
-			c, err := getSafeCursorValue(v, q)
+			c, err := createFromProtoValue(v, q.c)
 			if err != nil {
 				q.err = err
 				return q, err
@@ -340,7 +331,8 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	}
 	if endAt := pbq.GetEndAt(); endAt != nil {
 		for _, v := range endAt.GetValues() {
-			c, err := getSafeCursorValue(v, q)
+			c, err := createFromProtoValue(v, q.c)
+
 			if err != nil {
 				q.err = err
 				return q, err
@@ -376,7 +368,7 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	if orderBy := pbq.GetOrderBy(); orderBy != nil {
 		for _, v := range orderBy {
 			fp := v.GetField()
-			q.orders = append(q.orders, order{nil, fp, Direction(v.GetDirection())})
+			q.orders = append(q.orders, order{fieldReference: fp, dir: Direction(v.GetDirection())})
 		}
 	}
 
@@ -599,7 +591,7 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	if len(q.orders) > 0 {
 		lastDir = q.orders[len(q.orders)-1].dir
 	}
-	orders := append(q.copyOrders(), order{[]string{DocumentID}, nil, lastDir})
+	orders := append(q.copyOrders(), order{fieldPath: []string{DocumentID}, dir: lastDir})
 	return func(d1, d2 *DocumentSnapshot) (int, error) {
 		for _, ord := range orders {
 			var cmp int
