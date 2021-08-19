@@ -21,7 +21,6 @@ import (
 	"io"
 	"math"
 	"reflect"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/btree"
@@ -50,8 +49,6 @@ type Query struct {
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
 	err                    error
-
-	structuredQueryProto *pb.StructuredQuery
 
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
@@ -142,7 +139,6 @@ func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 		return q
 	}
 	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
-
 	return q
 }
 
@@ -281,21 +277,12 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 func (q Query) query() *Query { return &q }
 
 func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
-	switch vProto.ValueType.(type) {
-	case *pb.Value_ReferenceValue:
-		refVal := vProto.GetReferenceValue()
-		if strings.HasPrefix(refVal, q.path) {
-			refVal = refVal[len(q.path)+1:]
-		}
-		return refVal, nil
-	default:
-		i, err := createFromProtoValue(vProto, q.c)
-		if err != nil {
-			q.err = err
-			return q, err
-		}
-		return i, nil
+	i, err := createFromProtoValue(vProto, q.c)
+	if err != nil {
+		q.err = err
+		return q, err
 	}
+	return i, nil
 }
 
 // FromProto creates a new Query object from a RunQueryRequest. This can be used
@@ -549,22 +536,26 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 	for i, ord := range q.orders {
 		fval := fieldValues[i]
 		if ord.isDocumentID() {
-			// TODO(jba): support DocumentRefs as well as strings.
 			// TODO(jba): error if document ref does not belong to the right collection.
-			docID, ok := fval.(string)
-			if !ok {
+
+			switch docID := fval.(type) {
+			case string:
+				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
+				continue
+			case *DocumentRef:
+				// DocumentRef can be transformed in usual way.
+			default:
 				return nil, fmt.Errorf("firestore: expected doc ID for DocumentID field, got %T", fval)
 			}
-			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
-		} else {
-			var sawTransform bool
-			vals[i], sawTransform, err = toProtoValue(reflect.ValueOf(fval))
-			if err != nil {
-				return nil, err
-			}
-			if sawTransform {
-				return nil, errors.New("firestore: transforms disallowed in query value")
-			}
+		}
+
+		var sawTransform bool
+		vals[i], sawTransform, err = toProtoValue(reflect.ValueOf(fval))
+		if err != nil {
+			return nil, err
+		}
+		if sawTransform {
+			return nil, errors.New("firestore: transforms disallowed in query value")
 		}
 	}
 	return vals, nil
