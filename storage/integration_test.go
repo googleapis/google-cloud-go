@@ -923,6 +923,59 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	}
 }
 
+func TestIntegration_ObjectReadPartialContentGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	content := []byte("Hello, world this is a grpc request")
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucketName).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	obj := gc.Bucket(grpcBucketName).Object(name)
+
+	offset := 5
+	length := 5
+	// Using a negative offset to start reading relative to the end of the
+	// object, and length to indicate reading to the end.
+	r, err := obj.NewRangeReader(ctx, int64(offset), int64(length))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+
+	b := new(bytes.Buffer)
+	b.Grow(offset)
+
+	n, err := io.Copy(b, r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Fatal("Expected to have read more than 0 bytes")
+	}
+
+	got := b.String()
+	want := string(content[offset : offset+length])
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+}
+
 func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	ctx := context.Background()
 

@@ -514,14 +514,9 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	// object metadata.
 	msg := res.response
 	obj := msg.GetMetadata()
-	size := obj.GetSize()
-
-	// If offset is negative, we read the remaining bytes of content starting
-	// at the offset relative to the end. Thus the absolute value of the offset
-	// is the size of the portion to be read.
-	if offset < 0 {
-		size = -offset
-	}
+	// This is the size of the content the Reader will convey. It can be the
+	// entire object, or just the size of the request range.
+	size := msg.GetContentRange().GetCompleteLength()
 
 	r.Attrs = ReaderObjectAttrs{
 		Size:            size,
