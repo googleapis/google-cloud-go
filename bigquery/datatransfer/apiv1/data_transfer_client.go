@@ -289,7 +289,8 @@ func (c *Client) GetTransferConfig(ctx context.Context, req *datatransferpb.GetT
 	return c.internalClient.GetTransferConfig(ctx, req, opts...)
 }
 
-// ListTransferConfigs returns information about all data transfers in the project.
+// ListTransferConfigs returns information about all transfer configs owned by a project in the
+// specified location.
 func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.ListTransferConfigsRequest, opts ...gax.CallOption) *TransferConfigIterator {
 	return c.internalClient.ListTransferConfigs(ctx, req, opts...)
 }
