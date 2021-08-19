@@ -62,14 +62,16 @@ const (
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	grpcBucket             = "golang-grpc-test-integration"
+	grpcTestPrefix         = "golang-grpc-test-"
 )
 
 var (
 	record = flag.Bool("record", false, "record RPCs")
 
-	uidSpace   *uid.Space
-	bucketName string
+	uidSpace       *uid.Space
+	uidSpaceGRPC   *uid.Space
+	bucketName     string
+	grpcBucketName string
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -177,6 +179,9 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
+		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
+			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
+		}
 		return cleanup
 	}
 }
@@ -184,6 +189,8 @@ func initIntegrationTest() func() error {
 func initUIDsAndRand(t time.Time) {
 	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
 	bucketName = uidSpace.New()
+	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t})
+	grpcBucketName = uidSpaceGRPC.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -774,7 +781,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 
 	// Upload test data.
 	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucket).Object(name)
+	ho := hc.Bucket(grpcBucketName).Object(name)
 	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
@@ -784,7 +791,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 		}
 	}()
 
-	obj := gc.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucketName).Object(name)
 
 	// Using a negative length to indicate reading to the end.
 	r, err := obj.NewRangeReader(ctx, 0, -1)
@@ -825,7 +832,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 
 	// Upload test data.
 	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucket).Object(name)
+	ho := hc.Bucket(grpcBucketName).Object(name)
 	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
@@ -835,7 +842,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 		}
 	}()
 
-	obj := gc.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucketName).Object(name)
 
 	r, err := obj.NewReader(ctx)
 	if err != nil {
@@ -877,7 +884,7 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 
 	// Upload test data.
 	name := uidSpace.New()
-	ho := hc.Bucket(grpcBucket).Object(name)
+	ho := hc.Bucket(grpcBucketName).Object(name)
 	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
 		t.Fatal(err)
 	}
@@ -887,7 +894,7 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 		}
 	}()
 
-	obj := gc.Bucket(grpcBucket).Object(name)
+	obj := gc.Bucket(grpcBucketName).Object(name)
 
 	offset := 7
 	// Using a negative offset to start reading relative to the end of the
@@ -926,7 +933,7 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	defer gc.Close()
 	h := testHelper{t}
 
-	o := hc.Bucket(grpcBucket).Object("condread")
+	o := hc.Bucket(grpcBucketName).Object("condread")
 	defer o.Delete(ctx)
 
 	wc := o.NewWriter(ctx)
@@ -936,7 +943,7 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	gen := wc.Attrs().Generation
 	metaGen := wc.Attrs().Metageneration
 
-	obj := gc.Bucket(grpcBucket).Object(o.ObjectName())
+	obj := gc.Bucket(grpcBucketName).Object(o.ObjectName())
 
 	if _, err := obj.Generation(gen + 1).NewReader(ctx); err == nil {
 		t.Fatalf("Unexpected successful download with nonexistent Generation")
@@ -4031,14 +4038,24 @@ func cleanupBuckets() error {
 	if err := killBucket(ctx, client, bucketName); err != nil {
 		return err
 	}
+	if err := killBucket(ctx, client, grpcBucketName); err != nil {
+		return err
+	}
 
 	// Delete buckets whose name begins with our test prefix, and which were
 	// created a while ago. (Unfortunately GCS doesn't provide last-modified
 	// time, which would be a better way to check for staleness.)
+	if err := deleteExpiredBuckets(ctx, client, testPrefix); err != nil {
+		return err
+	}
+	return deleteExpiredBuckets(ctx, client, grpcTestPrefix)
+}
+
+func deleteExpiredBuckets(ctx context.Context, client *Client, prefix string) error {
 	const expireAge = 24 * time.Hour
 	projectID := testutil.ProjID()
 	it := client.Buckets(ctx, projectID)
-	it.Prefix = testPrefix
+	it.Prefix = prefix
 	for {
 		bktAttrs, err := it.Next()
 		if err == iterator.Done {
