@@ -147,6 +147,30 @@ func ExampleClient_RetryBuild() {
 	_ = resp
 }
 
+func ExampleClient_ApproveBuild() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ApproveBuildRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ApproveBuild(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateBuildTrigger() {
 	ctx := context.Background()
 	c, err := cloudbuild.NewClient(ctx)
