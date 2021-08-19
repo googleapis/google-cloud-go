@@ -584,6 +584,9 @@ func (r *Reader) closeStream() {
 // This is an experimental API and not intended for public use.
 func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	// No stream to read from, either never initiliazed or Close was called.
+	// Note: There is a potential concurrency issue if multiple routines are
+	// using the same reader. One encounters an error and the stream is closed
+	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
 		return 0, fmt.Errorf("reader has been closed")
 	}
