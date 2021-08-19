@@ -112,6 +112,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		Bucket: b,
 		Object: o.object,
 	}
+	// The default is a negative value, which means latest.
 	if o.gen >= 0 {
 		req.Generation = o.gen
 	}
@@ -172,7 +173,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		cancelStream:   cancel,
 	}
 
-	// Recv the first message so we can populate the object metadata.
+	// The first message was Recv'd on stream open, use it to populate the
+	// object metadata.
 	msg := res.response
 	obj := msg.GetMetadata()
 	size := obj.GetSize()
@@ -520,6 +522,7 @@ type Reader struct {
 	gotCRC             uint32 // running crc
 	reopen             func(seen int64) (*http.Response, error)
 
+	// The following fields are only for use in the gRPC hybrid client.
 	stream         storagepb.Storage_ReadObjectClient
 	reopenWithGRPC func(seen int64) (*readStreamResponse, context.CancelFunc, error)
 	leftovers      []byte
