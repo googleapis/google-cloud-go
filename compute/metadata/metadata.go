@@ -32,6 +32,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/googleapis/gax-go/v2"
 )
 
 const (
@@ -304,9 +306,21 @@ func (c *Client) getETag(suffix string) (value, etag string, err error) {
 	}
 	req.Header.Set("Metadata-Flavor", "Google")
 	req.Header.Set("User-Agent", userAgent)
-	res, err := c.hc.Do(req)
-	if err != nil {
-		return "", "", err
+	var res *http.Response
+	retryer := newRetryer()
+	for {
+		var err error
+		res, err = c.hc.Do(req)
+		if err != nil {
+			if delay, shouldRetry :=retryer.Retry(res.StatusCode, err); shouldRetry {
+				if err := gax.Sleep(context.Background(), delay); err != nil {
+					return "", "", err
+				}
+				continue
+			}
+			return "", "", err
+		}
+		break
 	}
 	defer res.Body.Close()
 	if res.StatusCode == http.StatusNotFound {
