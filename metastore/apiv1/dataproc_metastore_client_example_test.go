@@ -265,3 +265,117 @@ func ExampleDataprocMetastoreClient_ExportMetadata() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleDataprocMetastoreClient_RestoreService() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.RestoreServiceRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.RestoreService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_ListBackups() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.ListBackupsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListBackups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDataprocMetastoreClient_GetBackup() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.GetBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_CreateBackup() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.CreateBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDataprocMetastoreClient_DeleteBackup() {
+	ctx := context.Background()
+	c, err := metastore.NewDataprocMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &metastorepb.DeleteBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeleteBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
