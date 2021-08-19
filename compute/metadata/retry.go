@@ -21,6 +21,10 @@ import (
 	"github.com/googleapis/gax-go/v2"
 )
 
+const (
+	maxRetryAttempts = 5
+)
+
 var (
 	syscallRetryable = func(err error) bool { return false }
 )
@@ -43,10 +47,10 @@ func (r *metadataRetryer) Retry(status int, err error) (time.Duration, bool) {
 	if !retryOk {
 		return 0, false
 	}
-	r.attempts++
-	if r.attempts == 6 {
+	if r.attempts == maxRetryAttempts {
 		return 0, false
 	}
+	r.attempts++
 	return r.bo.Pause(), true
 }
 

@@ -311,16 +311,16 @@ func (c *Client) getETag(suffix string) (value, etag string, err error) {
 	for {
 		var err error
 		res, err = c.hc.Do(req)
-		if err != nil {
-			if delay, shouldRetry :=retryer.Retry(res.StatusCode, err); shouldRetry {
-				if err := gax.Sleep(context.Background(), delay); err != nil {
-					return "", "", err
-				}
-				continue
-			}
-			return "", "", err
+		if err == nil {
+			break
 		}
-		break
+		if delay, shouldRetry := retryer.Retry(res.StatusCode, err); shouldRetry {
+			if err := gax.Sleep(context.Background(), delay); err != nil {
+				return "", "", err
+			}
+			continue
+		}
+		return "", "", err
 	}
 	defer res.Body.Close()
 	if res.StatusCode == http.StatusNotFound {
