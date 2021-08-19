@@ -1405,69 +1405,71 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
-		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+		t.Run(tc.desc, func(t *testing.T) {
+			os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 
-		c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
-		if err != nil {
-			t.Fatalf("error creating client: %v", err)
-		}
-		originalRawBasePath := c.raw.BasePath
-		originalReadHost := c.readHost
-		originalScheme := c.scheme
+			c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
+			if err != nil {
+				t.Fatalf("error creating client: %v", err)
+			}
+			originalRawBasePath := c.raw.BasePath
+			originalReadHost := c.readHost
+			originalScheme := c.scheme
 
-		// Create a bucket
-		c.Bucket("test-bucket").Create(ctx, "pid", nil)
-		if err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
-		createBucket := lastRequest
+			// Create a bucket
+			c.Bucket("test-bucket").Create(ctx, "pid", nil)
+			if err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
+			createBucket := lastRequest
 
-		// Upload an object
-		w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
-		_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
-		if err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
-		if closeErr := w.Close(); closeErr != nil {
-			t.Errorf("%s: %v", tc.desc, closeErr)
-		}
+			// Upload an object
+			w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+			_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+			if err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
+			if closeErr := w.Close(); closeErr != nil {
+				t.Errorf("%s: %v", tc.desc, closeErr)
+			}
 
-		// Download an object
-		rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
-		if err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
-		defer rc.Close()
+			// Download an object
+			rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+			if err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
+			defer rc.Close()
 
-		_, err = io.Copy(ioutil.Discard, rc)
-		if err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
+			_, err = io.Copy(ioutil.Discard, rc)
+			if err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
 
-		// Delete bucket
-		if err := c.Bucket("test-bucket").Delete(ctx); err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
+			// Delete bucket
+			if err := c.Bucket("test-bucket").Delete(ctx); err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
 
-		// Create a bucket
-		c.Bucket("test-bucket").Create(ctx, "pid", nil)
-		if err != nil {
-			t.Errorf("%s: %v", tc.desc, err)
-		}
-		if lastRequest != createBucket {
-			t.Errorf("%s: unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, lastRequest, createBucket)
-		}
+			// Create a bucket
+			c.Bucket("test-bucket").Create(ctx, "pid", nil)
+			if err != nil {
+				t.Errorf("%s: %v", tc.desc, err)
+			}
+			if lastRequest != createBucket {
+				t.Errorf("unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", lastRequest, createBucket)
+			}
 
-		// Check that the client fields have not changed
-		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.raw.BasePath, originalRawBasePath)
-		}
-		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.readHost, originalReadHost)
-		}
-		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.scheme, originalScheme)
-		}
+			// Check that the client fields have not changed
+			if c.raw.BasePath != originalRawBasePath {
+				t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.raw.BasePath, originalRawBasePath)
+			}
+			if c.readHost != originalReadHost {
+				t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.readHost, originalReadHost)
+			}
+			if c.scheme != originalScheme {
+				t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.scheme, originalScheme)
+			}
+		})
 	}
 }
 
