@@ -1368,9 +1368,12 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 
+	var lastRequest string
+
 	addr, hClient, close := newTestServerAt(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
+		lastRequest = r.Host + r.RequestURI
 	})
 	defer close()
 
@@ -1412,25 +1415,14 @@ func TestOperationsWithEndpoint(t *testing.T) {
 		originalReadHost := c.readHost
 		originalScheme := c.scheme
 
-		op := "bucket creation"
-
+		// Create a bucket
 		c.Bucket("test-bucket").Create(ctx, "pid", nil)
 		if err != nil {
 			t.Errorf("%s: %v", tc.desc, err)
 		}
+		createBucket := lastRequest
 
-		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
-		}
-		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
-		}
-		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
-		}
-
-		op = "object upload"
-
+		// Upload an object
 		w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
 		_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
 		if err != nil {
@@ -1440,18 +1432,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			t.Errorf("%s: %v", tc.desc, closeErr)
 		}
 
-		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
-		}
-		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
-		}
-		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
-		}
-
-		op = "object download"
-
+		// Download an object
 		rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
 		if err != nil {
 			t.Errorf("%s: %v", tc.desc, err)
@@ -1463,30 +1444,29 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			t.Errorf("%s: %v", tc.desc, err)
 		}
 
-		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
-		}
-		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
-		}
-		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
-		}
-
-		op = "bucket delete"
-
+		// Delete bucket
 		if err := c.Bucket("test-bucket").Delete(ctx); err != nil {
 			t.Errorf("%s: %v", tc.desc, err)
 		}
 
+		// Create a bucket
+		c.Bucket("test-bucket").Create(ctx, "pid", nil)
+		if err != nil {
+			t.Errorf("%s: %v", tc.desc, err)
+		}
+		if lastRequest != createBucket {
+			t.Errorf("%s: unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, lastRequest, createBucket)
+		}
+
+		// Check that the client fields have not changed
 		if c.raw.BasePath != originalRawBasePath {
-			t.Errorf("%s: raw.BasePath changed after %s\n\tgot %v, original %v", tc.desc, op, c.raw.BasePath, originalRawBasePath)
+			t.Errorf("%s: raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.raw.BasePath, originalRawBasePath)
 		}
 		if c.readHost != originalReadHost {
-			t.Errorf("%s: readHost changed after %s\n\tgot %v, original %v", tc.desc, op, c.readHost, originalReadHost)
+			t.Errorf("%s: readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.readHost, originalReadHost)
 		}
 		if c.scheme != originalScheme {
-			t.Errorf("%s: scheme changed after %s\n\tgot %v, original %v", tc.desc, op, c.scheme, originalScheme)
+			t.Errorf("%s: scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v", tc.desc, c.scheme, originalScheme)
 		}
 	}
 }
