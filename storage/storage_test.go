@@ -1368,12 +1368,13 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 
-	var lastRequest string
+	var lastRequestEndpoint string
 
 	addr, hClient, close := newTestServerAt(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
-		lastRequest = r.Host + r.RequestURI
+		req, _ := url.Parse(r.RequestURI)
+		lastRequestEndpoint = req.RawPath
 	})
 	defer close()
 
@@ -1421,7 +1422,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("%s: %v", tc.desc, err)
 			}
-			createBucket := lastRequest
+			createBucketEndpoint := lastRequestEndpoint
 
 			// Upload an object
 			w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
@@ -1455,8 +1456,9 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			if err != nil {
 				t.Errorf("%s: %v", tc.desc, err)
 			}
-			if lastRequest != createBucket {
-				t.Errorf("unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", lastRequest, createBucket)
+
+			if lastRequestEndpoint != createBucketEndpoint {
+				t.Errorf("unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", lastRequestEndpoint, createBucketEndpoint)
 			}
 
 			// Check that the client fields have not changed
