@@ -212,10 +212,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	var err error
-	gc, err = newHybridClient(ctx, nil)
+	gc, err := newHybridClient(ctx, nil)
 	if err != nil {
-		log.Fatalf("newClientWithGRPC: %v", err)
+		t.Fatalf("newHybridClient: %v", err)
 	}
 
 	return
