@@ -319,8 +319,8 @@ func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOper
 // RemoveFulfillmentPlaces.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *ProductClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	return c.internalClient.SetInventory(ctx, req, opts...)
 }
@@ -344,8 +344,8 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 // ListProducts.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *ProductClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	return c.internalClient.AddFulfillmentPlaces(ctx, req, opts...)
 }
@@ -369,8 +369,8 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 // ListProducts.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *ProductClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	return c.internalClient.RemoveFulfillmentPlaces(ctx, req, opts...)
 }
