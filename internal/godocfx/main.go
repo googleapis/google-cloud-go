@@ -162,6 +162,8 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 		"cloud.google.com/go/analytics",
 		"cloud.google.com/go/area120",
 		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
 	}
 	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
 	if err != nil {

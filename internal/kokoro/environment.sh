@@ -70,11 +70,11 @@ fi
 
 # If Kubernetes, install kubectl component
 if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
-  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl.sha256"
+  curl -LO "https://dl.k8s.io/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
   chmod +x kubectl
   mkdir -p ~/.local/bin
   mv ./kubectl ~/.local/bin
-  export PATH=$PATH:/.local/bin/
+  export PATH=$PATH:~/.local/bin/
 fi
 
 # Run the environment test for the specified GCP service

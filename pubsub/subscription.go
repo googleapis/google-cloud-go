@@ -48,7 +48,6 @@ type Subscription struct {
 	mu            sync.Mutex
 	receiveActive bool
 
-	once           sync.Once
 	enableOrdering bool
 }
 
@@ -794,6 +793,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
+	s.checkOrdering()
+
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -923,9 +924,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
-					if msg.OrderingKey != "" {
-						s.once.Do(s.checkOrdering)
-					}
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
 					if s.enableOrdering {
