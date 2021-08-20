@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -59,12 +59,13 @@ type CallOptions struct {
 	DeleteApiConfig []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apigateway.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("apigateway.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://apigateway.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -190,37 +191,236 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from API Gateway API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListGateways(context.Context, *apigatewaypb.ListGatewaysRequest, ...gax.CallOption) *GatewayIterator
+	GetGateway(context.Context, *apigatewaypb.GetGatewayRequest, ...gax.CallOption) (*apigatewaypb.Gateway, error)
+	CreateGateway(context.Context, *apigatewaypb.CreateGatewayRequest, ...gax.CallOption) (*CreateGatewayOperation, error)
+	CreateGatewayOperation(name string) *CreateGatewayOperation
+	UpdateGateway(context.Context, *apigatewaypb.UpdateGatewayRequest, ...gax.CallOption) (*UpdateGatewayOperation, error)
+	UpdateGatewayOperation(name string) *UpdateGatewayOperation
+	DeleteGateway(context.Context, *apigatewaypb.DeleteGatewayRequest, ...gax.CallOption) (*DeleteGatewayOperation, error)
+	DeleteGatewayOperation(name string) *DeleteGatewayOperation
+	ListApis(context.Context, *apigatewaypb.ListApisRequest, ...gax.CallOption) *ApiIterator
+	GetApi(context.Context, *apigatewaypb.GetApiRequest, ...gax.CallOption) (*apigatewaypb.Api, error)
+	CreateApi(context.Context, *apigatewaypb.CreateApiRequest, ...gax.CallOption) (*CreateApiOperation, error)
+	CreateApiOperation(name string) *CreateApiOperation
+	UpdateApi(context.Context, *apigatewaypb.UpdateApiRequest, ...gax.CallOption) (*UpdateApiOperation, error)
+	UpdateApiOperation(name string) *UpdateApiOperation
+	DeleteApi(context.Context, *apigatewaypb.DeleteApiRequest, ...gax.CallOption) (*DeleteApiOperation, error)
+	DeleteApiOperation(name string) *DeleteApiOperation
+	ListApiConfigs(context.Context, *apigatewaypb.ListApiConfigsRequest, ...gax.CallOption) *ApiConfigIterator
+	GetApiConfig(context.Context, *apigatewaypb.GetApiConfigRequest, ...gax.CallOption) (*apigatewaypb.ApiConfig, error)
+	CreateApiConfig(context.Context, *apigatewaypb.CreateApiConfigRequest, ...gax.CallOption) (*CreateApiConfigOperation, error)
+	CreateApiConfigOperation(name string) *CreateApiConfigOperation
+	UpdateApiConfig(context.Context, *apigatewaypb.UpdateApiConfigRequest, ...gax.CallOption) (*UpdateApiConfigOperation, error)
+	UpdateApiConfigOperation(name string) *UpdateApiConfigOperation
+	DeleteApiConfig(context.Context, *apigatewaypb.DeleteApiConfigRequest, ...gax.CallOption) (*DeleteApiConfigOperation, error)
+	DeleteApiConfigOperation(name string) *DeleteApiConfigOperation
+}
+
 // Client is a client for interacting with API Gateway API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The API Gateway Service is the interface for managing API Gateways.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListGateways lists Gateways in a given project and location.
+func (c *Client) ListGateways(ctx context.Context, req *apigatewaypb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
+	return c.internalClient.ListGateways(ctx, req, opts...)
+}
+
+// GetGateway gets details of a single Gateway.
+func (c *Client) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewayRequest, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
+	return c.internalClient.GetGateway(ctx, req, opts...)
+}
+
+// CreateGateway creates a new Gateway in a given project and location.
+func (c *Client) CreateGateway(ctx context.Context, req *apigatewaypb.CreateGatewayRequest, opts ...gax.CallOption) (*CreateGatewayOperation, error) {
+	return c.internalClient.CreateGateway(ctx, req, opts...)
+}
+
+// CreateGatewayOperation returns a new CreateGatewayOperation from a given name.
+// The name must be that of a previously created CreateGatewayOperation, possibly from a different process.
+func (c *Client) CreateGatewayOperation(name string) *CreateGatewayOperation {
+	return c.internalClient.CreateGatewayOperation(name)
+}
+
+// UpdateGateway updates the parameters of a single Gateway.
+func (c *Client) UpdateGateway(ctx context.Context, req *apigatewaypb.UpdateGatewayRequest, opts ...gax.CallOption) (*UpdateGatewayOperation, error) {
+	return c.internalClient.UpdateGateway(ctx, req, opts...)
+}
+
+// UpdateGatewayOperation returns a new UpdateGatewayOperation from a given name.
+// The name must be that of a previously created UpdateGatewayOperation, possibly from a different process.
+func (c *Client) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
+	return c.internalClient.UpdateGatewayOperation(name)
+}
+
+// DeleteGateway deletes a single Gateway.
+func (c *Client) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGatewayRequest, opts ...gax.CallOption) (*DeleteGatewayOperation, error) {
+	return c.internalClient.DeleteGateway(ctx, req, opts...)
+}
+
+// DeleteGatewayOperation returns a new DeleteGatewayOperation from a given name.
+// The name must be that of a previously created DeleteGatewayOperation, possibly from a different process.
+func (c *Client) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
+	return c.internalClient.DeleteGatewayOperation(name)
+}
+
+// ListApis lists Apis in a given project and location.
+func (c *Client) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
+	return c.internalClient.ListApis(ctx, req, opts...)
+}
+
+// GetApi gets details of a single Api.
+func (c *Client) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
+	return c.internalClient.GetApi(ctx, req, opts...)
+}
+
+// CreateApi creates a new Api in a given project and location.
+func (c *Client) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiRequest, opts ...gax.CallOption) (*CreateApiOperation, error) {
+	return c.internalClient.CreateApi(ctx, req, opts...)
+}
+
+// CreateApiOperation returns a new CreateApiOperation from a given name.
+// The name must be that of a previously created CreateApiOperation, possibly from a different process.
+func (c *Client) CreateApiOperation(name string) *CreateApiOperation {
+	return c.internalClient.CreateApiOperation(name)
+}
+
+// UpdateApi updates the parameters of a single Api.
+func (c *Client) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiRequest, opts ...gax.CallOption) (*UpdateApiOperation, error) {
+	return c.internalClient.UpdateApi(ctx, req, opts...)
+}
+
+// UpdateApiOperation returns a new UpdateApiOperation from a given name.
+// The name must be that of a previously created UpdateApiOperation, possibly from a different process.
+func (c *Client) UpdateApiOperation(name string) *UpdateApiOperation {
+	return c.internalClient.UpdateApiOperation(name)
+}
+
+// DeleteApi deletes a single Api.
+func (c *Client) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiRequest, opts ...gax.CallOption) (*DeleteApiOperation, error) {
+	return c.internalClient.DeleteApi(ctx, req, opts...)
+}
+
+// DeleteApiOperation returns a new DeleteApiOperation from a given name.
+// The name must be that of a previously created DeleteApiOperation, possibly from a different process.
+func (c *Client) DeleteApiOperation(name string) *DeleteApiOperation {
+	return c.internalClient.DeleteApiOperation(name)
+}
+
+// ListApiConfigs lists ApiConfigs in a given project and location.
+func (c *Client) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiConfigsRequest, opts ...gax.CallOption) *ApiConfigIterator {
+	return c.internalClient.ListApiConfigs(ctx, req, opts...)
+}
+
+// GetApiConfig gets details of a single ApiConfig.
+func (c *Client) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiConfigRequest, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
+	return c.internalClient.GetApiConfig(ctx, req, opts...)
+}
+
+// CreateApiConfig creates a new ApiConfig in a given project and location.
+func (c *Client) CreateApiConfig(ctx context.Context, req *apigatewaypb.CreateApiConfigRequest, opts ...gax.CallOption) (*CreateApiConfigOperation, error) {
+	return c.internalClient.CreateApiConfig(ctx, req, opts...)
+}
+
+// CreateApiConfigOperation returns a new CreateApiConfigOperation from a given name.
+// The name must be that of a previously created CreateApiConfigOperation, possibly from a different process.
+func (c *Client) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
+	return c.internalClient.CreateApiConfigOperation(name)
+}
+
+// UpdateApiConfig updates the parameters of a single ApiConfig.
+func (c *Client) UpdateApiConfig(ctx context.Context, req *apigatewaypb.UpdateApiConfigRequest, opts ...gax.CallOption) (*UpdateApiConfigOperation, error) {
+	return c.internalClient.UpdateApiConfig(ctx, req, opts...)
+}
+
+// UpdateApiConfigOperation returns a new UpdateApiConfigOperation from a given name.
+// The name must be that of a previously created UpdateApiConfigOperation, possibly from a different process.
+func (c *Client) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
+	return c.internalClient.UpdateApiConfigOperation(name)
+}
+
+// DeleteApiConfig deletes a single ApiConfig.
+func (c *Client) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteApiConfigRequest, opts ...gax.CallOption) (*DeleteApiConfigOperation, error) {
+	return c.internalClient.DeleteApiConfig(ctx, req, opts...)
+}
+
+// DeleteApiConfigOperation returns a new DeleteApiConfigOperation from a given name.
+// The name must be that of a previously created DeleteApiConfigOperation, possibly from a different process.
+func (c *Client) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
+	return c.internalClient.DeleteApiConfigOperation(name)
+}
+
+// gRPCClient is a client for interacting with API Gateway API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client apigatewaypb.ApiGatewayServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new api gateway service client.
+// NewClient creates a new api gateway service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The API Gateway Service is the interface for managing API Gateways.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -238,16 +438,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: apigatewaypb.NewApiGatewayServiceClient(connPool),
+		client:           apigatewaypb.NewApiGatewayServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -257,44 +460,46 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListGateways lists Gateways in a given project and location.
-func (c *Client) ListGateways(ctx context.Context, req *apigatewaypb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGatewaysRequest, opts ...gax.CallOption) *GatewayIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGateways[0:len(c.CallOptions.ListGateways):len(c.CallOptions.ListGateways)], opts...)
+	opts = append((*c.CallOptions).ListGateways[0:len((*c.CallOptions).ListGateways):len((*c.CallOptions).ListGateways)], opts...)
 	it := &GatewayIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
-		var resp *apigatewaypb.ListGatewaysResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListGatewaysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -317,17 +522,18 @@ func (c *Client) ListGateways(ctx context.Context, req *apigatewaypb.ListGateway
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetGateway gets details of a single Gateway.
-func (c *Client) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewayRequest, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
+func (c *gRPCClient) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewayRequest, opts ...gax.CallOption) (*apigatewaypb.Gateway, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGateway[0:len(c.CallOptions.GetGateway):len(c.CallOptions.GetGateway)], opts...)
+	opts = append((*c.CallOptions).GetGateway[0:len((*c.CallOptions).GetGateway):len((*c.CallOptions).GetGateway)], opts...)
 	var resp *apigatewaypb.Gateway
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -340,8 +546,7 @@ func (c *Client) GetGateway(ctx context.Context, req *apigatewaypb.GetGatewayReq
 	return resp, nil
 }
 
-// CreateGateway creates a new Gateway in a given project and location.
-func (c *Client) CreateGateway(ctx context.Context, req *apigatewaypb.CreateGatewayRequest, opts ...gax.CallOption) (*CreateGatewayOperation, error) {
+func (c *gRPCClient) CreateGateway(ctx context.Context, req *apigatewaypb.CreateGatewayRequest, opts ...gax.CallOption) (*CreateGatewayOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -349,7 +554,7 @@ func (c *Client) CreateGateway(ctx context.Context, req *apigatewaypb.CreateGate
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGateway[0:len(c.CallOptions.CreateGateway):len(c.CallOptions.CreateGateway)], opts...)
+	opts = append((*c.CallOptions).CreateGateway[0:len((*c.CallOptions).CreateGateway):len((*c.CallOptions).CreateGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -360,12 +565,11 @@ func (c *Client) CreateGateway(ctx context.Context, req *apigatewaypb.CreateGate
 		return nil, err
 	}
 	return &CreateGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateGateway updates the parameters of a single Gateway.
-func (c *Client) UpdateGateway(ctx context.Context, req *apigatewaypb.UpdateGatewayRequest, opts ...gax.CallOption) (*UpdateGatewayOperation, error) {
+func (c *gRPCClient) UpdateGateway(ctx context.Context, req *apigatewaypb.UpdateGatewayRequest, opts ...gax.CallOption) (*UpdateGatewayOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -373,7 +577,7 @@ func (c *Client) UpdateGateway(ctx context.Context, req *apigatewaypb.UpdateGate
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "gateway.name", url.QueryEscape(req.GetGateway().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGateway[0:len(c.CallOptions.UpdateGateway):len(c.CallOptions.UpdateGateway)], opts...)
+	opts = append((*c.CallOptions).UpdateGateway[0:len((*c.CallOptions).UpdateGateway):len((*c.CallOptions).UpdateGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -384,12 +588,11 @@ func (c *Client) UpdateGateway(ctx context.Context, req *apigatewaypb.UpdateGate
 		return nil, err
 	}
 	return &UpdateGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteGateway deletes a single Gateway.
-func (c *Client) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGatewayRequest, opts ...gax.CallOption) (*DeleteGatewayOperation, error) {
+func (c *gRPCClient) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGatewayRequest, opts ...gax.CallOption) (*DeleteGatewayOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -397,7 +600,7 @@ func (c *Client) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGate
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGateway[0:len(c.CallOptions.DeleteGateway):len(c.CallOptions.DeleteGateway)], opts...)
+	opts = append((*c.CallOptions).DeleteGateway[0:len((*c.CallOptions).DeleteGateway):len((*c.CallOptions).DeleteGateway)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -408,23 +611,24 @@ func (c *Client) DeleteGateway(ctx context.Context, req *apigatewaypb.DeleteGate
 		return nil, err
 	}
 	return &DeleteGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListApis lists Apis in a given project and location.
-func (c *Client) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
+func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest, opts ...gax.CallOption) *ApiIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListApis[0:len(c.CallOptions.ListApis):len(c.CallOptions.ListApis)], opts...)
+	opts = append((*c.CallOptions).ListApis[0:len((*c.CallOptions).ListApis):len((*c.CallOptions).ListApis)], opts...)
 	it := &ApiIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
-		var resp *apigatewaypb.ListApisResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApisResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -447,17 +651,18 @@ func (c *Client) ListApis(ctx context.Context, req *apigatewaypb.ListApisRequest
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetApi gets details of a single Api.
-func (c *Client) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
+func (c *gRPCClient) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest, opts ...gax.CallOption) (*apigatewaypb.Api, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetApi[0:len(c.CallOptions.GetApi):len(c.CallOptions.GetApi)], opts...)
+	opts = append((*c.CallOptions).GetApi[0:len((*c.CallOptions).GetApi):len((*c.CallOptions).GetApi)], opts...)
 	var resp *apigatewaypb.Api
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -470,8 +675,7 @@ func (c *Client) GetApi(ctx context.Context, req *apigatewaypb.GetApiRequest, op
 	return resp, nil
 }
 
-// CreateApi creates a new Api in a given project and location.
-func (c *Client) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiRequest, opts ...gax.CallOption) (*CreateApiOperation, error) {
+func (c *gRPCClient) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiRequest, opts ...gax.CallOption) (*CreateApiOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -479,7 +683,7 @@ func (c *Client) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiReque
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateApi[0:len(c.CallOptions.CreateApi):len(c.CallOptions.CreateApi)], opts...)
+	opts = append((*c.CallOptions).CreateApi[0:len((*c.CallOptions).CreateApi):len((*c.CallOptions).CreateApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -490,12 +694,11 @@ func (c *Client) CreateApi(ctx context.Context, req *apigatewaypb.CreateApiReque
 		return nil, err
 	}
 	return &CreateApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateApi updates the parameters of a single Api.
-func (c *Client) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiRequest, opts ...gax.CallOption) (*UpdateApiOperation, error) {
+func (c *gRPCClient) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiRequest, opts ...gax.CallOption) (*UpdateApiOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -503,7 +706,7 @@ func (c *Client) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiReque
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api.name", url.QueryEscape(req.GetApi().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateApi[0:len(c.CallOptions.UpdateApi):len(c.CallOptions.UpdateApi)], opts...)
+	opts = append((*c.CallOptions).UpdateApi[0:len((*c.CallOptions).UpdateApi):len((*c.CallOptions).UpdateApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -514,12 +717,11 @@ func (c *Client) UpdateApi(ctx context.Context, req *apigatewaypb.UpdateApiReque
 		return nil, err
 	}
 	return &UpdateApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteApi deletes a single Api.
-func (c *Client) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiRequest, opts ...gax.CallOption) (*DeleteApiOperation, error) {
+func (c *gRPCClient) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiRequest, opts ...gax.CallOption) (*DeleteApiOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -527,7 +729,7 @@ func (c *Client) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiReque
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteApi[0:len(c.CallOptions.DeleteApi):len(c.CallOptions.DeleteApi)], opts...)
+	opts = append((*c.CallOptions).DeleteApi[0:len((*c.CallOptions).DeleteApi):len((*c.CallOptions).DeleteApi)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -538,23 +740,24 @@ func (c *Client) DeleteApi(ctx context.Context, req *apigatewaypb.DeleteApiReque
 		return nil, err
 	}
 	return &DeleteApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListApiConfigs lists ApiConfigs in a given project and location.
-func (c *Client) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiConfigsRequest, opts ...gax.CallOption) *ApiConfigIterator {
+func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiConfigsRequest, opts ...gax.CallOption) *ApiConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListApiConfigs[0:len(c.CallOptions.ListApiConfigs):len(c.CallOptions.ListApiConfigs)], opts...)
+	opts = append((*c.CallOptions).ListApiConfigs[0:len((*c.CallOptions).ListApiConfigs):len((*c.CallOptions).ListApiConfigs)], opts...)
 	it := &ApiConfigIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
-		var resp *apigatewaypb.ListApiConfigsResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApiConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -577,17 +780,18 @@ func (c *Client) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListApiCo
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetApiConfig gets details of a single ApiConfig.
-func (c *Client) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiConfigRequest, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
+func (c *gRPCClient) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiConfigRequest, opts ...gax.CallOption) (*apigatewaypb.ApiConfig, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetApiConfig[0:len(c.CallOptions.GetApiConfig):len(c.CallOptions.GetApiConfig)], opts...)
+	opts = append((*c.CallOptions).GetApiConfig[0:len((*c.CallOptions).GetApiConfig):len((*c.CallOptions).GetApiConfig)], opts...)
 	var resp *apigatewaypb.ApiConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -600,8 +804,7 @@ func (c *Client) GetApiConfig(ctx context.Context, req *apigatewaypb.GetApiConfi
 	return resp, nil
 }
 
-// CreateApiConfig creates a new ApiConfig in a given project and location.
-func (c *Client) CreateApiConfig(ctx context.Context, req *apigatewaypb.CreateApiConfigRequest, opts ...gax.CallOption) (*CreateApiConfigOperation, error) {
+func (c *gRPCClient) CreateApiConfig(ctx context.Context, req *apigatewaypb.CreateApiConfigRequest, opts ...gax.CallOption) (*CreateApiConfigOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -609,7 +812,7 @@ func (c *Client) CreateApiConfig(ctx context.Context, req *apigatewaypb.CreateAp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateApiConfig[0:len(c.CallOptions.CreateApiConfig):len(c.CallOptions.CreateApiConfig)], opts...)
+	opts = append((*c.CallOptions).CreateApiConfig[0:len((*c.CallOptions).CreateApiConfig):len((*c.CallOptions).CreateApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -620,12 +823,11 @@ func (c *Client) CreateApiConfig(ctx context.Context, req *apigatewaypb.CreateAp
 		return nil, err
 	}
 	return &CreateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateApiConfig updates the parameters of a single ApiConfig.
-func (c *Client) UpdateApiConfig(ctx context.Context, req *apigatewaypb.UpdateApiConfigRequest, opts ...gax.CallOption) (*UpdateApiConfigOperation, error) {
+func (c *gRPCClient) UpdateApiConfig(ctx context.Context, req *apigatewaypb.UpdateApiConfigRequest, opts ...gax.CallOption) (*UpdateApiConfigOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -633,7 +835,7 @@ func (c *Client) UpdateApiConfig(ctx context.Context, req *apigatewaypb.UpdateAp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "api_config.name", url.QueryEscape(req.GetApiConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateApiConfig[0:len(c.CallOptions.UpdateApiConfig):len(c.CallOptions.UpdateApiConfig)], opts...)
+	opts = append((*c.CallOptions).UpdateApiConfig[0:len((*c.CallOptions).UpdateApiConfig):len((*c.CallOptions).UpdateApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -644,12 +846,11 @@ func (c *Client) UpdateApiConfig(ctx context.Context, req *apigatewaypb.UpdateAp
 		return nil, err
 	}
 	return &UpdateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteApiConfig deletes a single ApiConfig.
-func (c *Client) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteApiConfigRequest, opts ...gax.CallOption) (*DeleteApiConfigOperation, error) {
+func (c *gRPCClient) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteApiConfigRequest, opts ...gax.CallOption) (*DeleteApiConfigOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -657,7 +858,7 @@ func (c *Client) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteAp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteApiConfig[0:len(c.CallOptions.DeleteApiConfig):len(c.CallOptions.DeleteApiConfig)], opts...)
+	opts = append((*c.CallOptions).DeleteApiConfig[0:len((*c.CallOptions).DeleteApiConfig):len((*c.CallOptions).DeleteApiConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -668,7 +869,7 @@ func (c *Client) DeleteApiConfig(ctx context.Context, req *apigatewaypb.DeleteAp
 		return nil, err
 	}
 	return &DeleteApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -679,9 +880,9 @@ type CreateApiOperation struct {
 
 // CreateApiOperation returns a new CreateApiOperation from a given name.
 // The name must be that of a previously created CreateApiOperation, possibly from a different process.
-func (c *Client) CreateApiOperation(name string) *CreateApiOperation {
+func (c *gRPCClient) CreateApiOperation(name string) *CreateApiOperation {
 	return &CreateApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -748,9 +949,9 @@ type CreateApiConfigOperation struct {
 
 // CreateApiConfigOperation returns a new CreateApiConfigOperation from a given name.
 // The name must be that of a previously created CreateApiConfigOperation, possibly from a different process.
-func (c *Client) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
+func (c *gRPCClient) CreateApiConfigOperation(name string) *CreateApiConfigOperation {
 	return &CreateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -817,9 +1018,9 @@ type CreateGatewayOperation struct {
 
 // CreateGatewayOperation returns a new CreateGatewayOperation from a given name.
 // The name must be that of a previously created CreateGatewayOperation, possibly from a different process.
-func (c *Client) CreateGatewayOperation(name string) *CreateGatewayOperation {
+func (c *gRPCClient) CreateGatewayOperation(name string) *CreateGatewayOperation {
 	return &CreateGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -886,9 +1087,9 @@ type DeleteApiOperation struct {
 
 // DeleteApiOperation returns a new DeleteApiOperation from a given name.
 // The name must be that of a previously created DeleteApiOperation, possibly from a different process.
-func (c *Client) DeleteApiOperation(name string) *DeleteApiOperation {
+func (c *gRPCClient) DeleteApiOperation(name string) *DeleteApiOperation {
 	return &DeleteApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -944,9 +1145,9 @@ type DeleteApiConfigOperation struct {
 
 // DeleteApiConfigOperation returns a new DeleteApiConfigOperation from a given name.
 // The name must be that of a previously created DeleteApiConfigOperation, possibly from a different process.
-func (c *Client) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
+func (c *gRPCClient) DeleteApiConfigOperation(name string) *DeleteApiConfigOperation {
 	return &DeleteApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1002,9 +1203,9 @@ type DeleteGatewayOperation struct {
 
 // DeleteGatewayOperation returns a new DeleteGatewayOperation from a given name.
 // The name must be that of a previously created DeleteGatewayOperation, possibly from a different process.
-func (c *Client) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
+func (c *gRPCClient) DeleteGatewayOperation(name string) *DeleteGatewayOperation {
 	return &DeleteGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1060,9 +1261,9 @@ type UpdateApiOperation struct {
 
 // UpdateApiOperation returns a new UpdateApiOperation from a given name.
 // The name must be that of a previously created UpdateApiOperation, possibly from a different process.
-func (c *Client) UpdateApiOperation(name string) *UpdateApiOperation {
+func (c *gRPCClient) UpdateApiOperation(name string) *UpdateApiOperation {
 	return &UpdateApiOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1129,9 +1330,9 @@ type UpdateApiConfigOperation struct {
 
 // UpdateApiConfigOperation returns a new UpdateApiConfigOperation from a given name.
 // The name must be that of a previously created UpdateApiConfigOperation, possibly from a different process.
-func (c *Client) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
+func (c *gRPCClient) UpdateApiConfigOperation(name string) *UpdateApiConfigOperation {
 	return &UpdateApiConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1198,9 +1399,9 @@ type UpdateGatewayOperation struct {
 
 // UpdateGatewayOperation returns a new UpdateGatewayOperation from a given name.
 // The name must be that of a previously created UpdateGatewayOperation, possibly from a different process.
-func (c *Client) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
+func (c *gRPCClient) UpdateGatewayOperation(name string) *UpdateGatewayOperation {
 	return &UpdateGatewayOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

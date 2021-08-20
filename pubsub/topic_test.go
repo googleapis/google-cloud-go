@@ -84,6 +84,10 @@ func TestCreateTopicWithConfig(t *testing.T) {
 			AllowedPersistenceRegions: []string{"us-east1"},
 		},
 		KMSKeyName: "projects/P/locations/L/keyRings/R/cryptoKeys/K",
+		SchemaSettings: &SchemaSettings{
+			Schema:   "projects/P/schemas/S",
+			Encoding: EncodingJSON,
+		},
 	}
 
 	topic := mustCreateTopicWithConfig(t, c, id, &want)
@@ -305,5 +309,79 @@ func TestDetachSubscription(t *testing.T) {
 	})
 	if _, err := c.DetachSubscription(ctx, "projects/P/subscriptions/some-sub"); err != nil {
 		t.Errorf("DetachSubscription failed: %v", err)
+	}
+}
+
+func TestFlushStopTopic(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "flush-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Subsequent publishes after a flush should succeed.
+	topic.Flush()
+	r1 := topic.Publish(ctx, &Message{
+		Data: []byte("hello"),
+	})
+	_, err = r1.Get(ctx)
+	if err != nil {
+		t.Errorf("got err: %v", err)
+	}
+
+	// Publishing after a flush should succeed.
+	topic.Flush()
+	r2 := topic.Publish(ctx, &Message{
+		Data: []byte("world"),
+	})
+	_, err = r2.Get(ctx)
+	if err != nil {
+		t.Errorf("got err: %v", err)
+	}
+
+	// Publishing after a temporarily blocked flush should succeed.
+	srv.SetAutoPublishResponse(false)
+
+	r3 := topic.Publish(ctx, &Message{
+		Data: []byte("blocking message publish"),
+	})
+	go func() {
+		topic.Flush()
+	}()
+
+	// Wait a second between publishes to ensure messages are not bundled together.
+	time.Sleep(1 * time.Second)
+	r4 := topic.Publish(ctx, &Message{
+		Data: []byte("message published after flush"),
+	})
+
+	// Wait 5 seconds to simulate network delay.
+	time.Sleep(5 * time.Second)
+	srv.AddPublishResponse(&pubsubpb.PublishResponse{
+		MessageIds: []string{"1"},
+	}, nil)
+	srv.AddPublishResponse(&pubsubpb.PublishResponse{
+		MessageIds: []string{"2"},
+	}, nil)
+
+	if _, err = r3.Get(ctx); err != nil {
+		t.Errorf("got err: %v", err)
+	}
+	if _, err = r4.Get(ctx); err != nil {
+		t.Errorf("got err: %v", err)
+	}
+
+	// Publishing after Stop should fail.
+	srv.SetAutoPublishResponse(true)
+	topic.Stop()
+	r5 := topic.Publish(ctx, &Message{
+		Data: []byte("this should fail"),
+	})
+	if _, err := r5.Get(ctx); err != errTopicStopped {
+		t.Errorf("got %v, want errTopicStopped", err)
 	}
 }

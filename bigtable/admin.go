@@ -1158,17 +1158,22 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	if err != nil {
 		return nil, err
 	}
+
 	var cis []*ClusterInfo
 	for _, c := range res.Clusters {
 		nameParts := strings.Split(c.Name, "/")
 		locParts := strings.Split(c.Location, "/")
+		kmsKeyName := ""
+		if c.EncryptionConfig != nil {
+			kmsKeyName = c.EncryptionConfig.KmsKeyName
+		}
 		cis = append(cis, &ClusterInfo{
 			Name:        nameParts[len(nameParts)-1],
 			Zone:        locParts[len(locParts)-1],
 			ServeNodes:  int(c.ServeNodes),
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
-			KMSKeyName:  c.EncryptionConfig.KmsKeyName,
+			KMSKeyName:  kmsKeyName,
 		})
 	}
 	if len(res.FailedLocations) > 0 {
@@ -1195,6 +1200,10 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		return nil, err
 	}
 
+	kmsKeyName := ""
+	if c.EncryptionConfig != nil {
+		kmsKeyName = c.EncryptionConfig.KmsKeyName
+	}
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
 	cis := &ClusterInfo{
@@ -1203,7 +1212,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		ServeNodes:  int(c.ServeNodes),
 		State:       c.State.String(),
 		StorageType: storageTypeFromProto(c.DefaultStorageType),
-		KMSKeyName:  c.EncryptionConfig.KmsKeyName,
+		KMSKeyName:  kmsKeyName,
 	}
 	return cis, nil
 }

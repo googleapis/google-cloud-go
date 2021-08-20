@@ -29,18 +29,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_AnalyzeSentiment() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeSentimentRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleClient_AnalyzeSentiment() {
 }
 
 func ExampleClient_AnalyzeEntities() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeEntitiesRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleClient_AnalyzeEntities() {
 }
 
 func ExampleClient_AnalyzeEntitySentiment() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeEntitySentimentRequest{
 		// TODO: Fill request struct fields.
@@ -94,13 +93,12 @@ func ExampleClient_AnalyzeEntitySentiment() {
 }
 
 func ExampleClient_AnalyzeSyntax() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeSyntaxRequest{
 		// TODO: Fill request struct fields.
@@ -114,13 +112,12 @@ func ExampleClient_AnalyzeSyntax() {
 }
 
 func ExampleClient_ClassifyText() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.ClassifyTextRequest{
 		// TODO: Fill request struct fields.
@@ -134,13 +131,12 @@ func ExampleClient_ClassifyText() {
 }
 
 func ExampleClient_AnnotateText() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newContextsClientHook clientHook
@@ -47,12 +47,13 @@ type ContextsCallOptions struct {
 	DeleteAllContexts []gax.CallOption
 }
 
-func defaultContextsClientOptions() []option.ClientOption {
+func defaultContextsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -130,32 +131,111 @@ func defaultContextsCallOptions() *ContextsCallOptions {
 	}
 }
 
+// internalContextsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalContextsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListContexts(context.Context, *dialogflowpb.ListContextsRequest, ...gax.CallOption) *ContextIterator
+	GetContext(context.Context, *dialogflowpb.GetContextRequest, ...gax.CallOption) (*dialogflowpb.Context, error)
+	CreateContext(context.Context, *dialogflowpb.CreateContextRequest, ...gax.CallOption) (*dialogflowpb.Context, error)
+	UpdateContext(context.Context, *dialogflowpb.UpdateContextRequest, ...gax.CallOption) (*dialogflowpb.Context, error)
+	DeleteContext(context.Context, *dialogflowpb.DeleteContextRequest, ...gax.CallOption) error
+	DeleteAllContexts(context.Context, *dialogflowpb.DeleteAllContextsRequest, ...gax.CallOption) error
+}
+
 // ContextsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Contexts.
+type ContextsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalContextsClient
+
+	// The call options for this service.
+	CallOptions *ContextsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ContextsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ContextsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ContextsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListContexts returns the list of all contexts in the specified session.
+func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.ListContextsRequest, opts ...gax.CallOption) *ContextIterator {
+	return c.internalClient.ListContexts(ctx, req, opts...)
+}
+
+// GetContext retrieves the specified context.
+func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	return c.internalClient.GetContext(ctx, req, opts...)
+}
+
+// CreateContext creates a context.
+//
+// If the specified context already exists, overrides the context.
+func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.CreateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	return c.internalClient.CreateContext(ctx, req, opts...)
+}
+
+// UpdateContext updates the specified context.
+func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.UpdateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	return c.internalClient.UpdateContext(ctx, req, opts...)
+}
+
+// DeleteContext deletes the specified context.
+func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.DeleteContextRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteContext(ctx, req, opts...)
+}
+
+// DeleteAllContexts deletes all active contexts in the specified session.
+func (c *ContextsClient) DeleteAllContexts(ctx context.Context, req *dialogflowpb.DeleteAllContextsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAllContexts(ctx, req, opts...)
+}
+
+// contextsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ContextsClient struct {
+type contextsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ContextsClient
+	CallOptions **ContextsCallOptions
+
 	// The gRPC API client.
 	contextsClient dialogflowpb.ContextsClient
-
-	// The call options for this service.
-	CallOptions *ContextsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewContextsClient creates a new contexts client.
+// NewContextsClient creates a new contexts client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Contexts.
 func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*ContextsClient, error) {
-	clientOpts := defaultContextsClientOptions()
-
+	clientOpts := defaultContextsGRPCClientOptions()
 	if newContextsClientHook != nil {
 		hookOpts, err := newContextsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -173,53 +253,57 @@ func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*Conte
 	if err != nil {
 		return nil, err
 	}
-	c := &ContextsClient{
+	client := ContextsClient{CallOptions: defaultContextsCallOptions()}
+
+	c := &contextsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultContextsCallOptions(),
-
-		contextsClient: dialogflowpb.NewContextsClient(connPool),
+		contextsClient:   dialogflowpb.NewContextsClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ContextsClient) Connection() *grpc.ClientConn {
+func (c *contextsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ContextsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ContextsClient) setGoogleClientInfo(keyval ...string) {
+func (c *contextsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListContexts returns the list of all contexts in the specified session.
-func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.ListContextsRequest, opts ...gax.CallOption) *ContextIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *contextsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *contextsGRPCClient) ListContexts(ctx context.Context, req *dialogflowpb.ListContextsRequest, opts ...gax.CallOption) *ContextIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListContexts[0:len(c.CallOptions.ListContexts):len(c.CallOptions.ListContexts)], opts...)
+	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	it := &ContextIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListContextsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Context, string, error) {
-		var resp *dialogflowpb.ListContextsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListContextsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -242,14 +326,15 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetContext retrieves the specified context.
-func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+func (c *contextsGRPCClient) GetContext(ctx context.Context, req *dialogflowpb.GetContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -257,7 +342,7 @@ func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetCo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetContext[0:len(c.CallOptions.GetContext):len(c.CallOptions.GetContext)], opts...)
+	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -270,10 +355,7 @@ func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetCo
 	return resp, nil
 }
 
-// CreateContext creates a context.
-//
-// If the specified context already exists, overrides the context.
-func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.CreateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+func (c *contextsGRPCClient) CreateContext(ctx context.Context, req *dialogflowpb.CreateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -281,7 +363,7 @@ func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.Cr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateContext[0:len(c.CallOptions.CreateContext):len(c.CallOptions.CreateContext)], opts...)
+	opts = append((*c.CallOptions).CreateContext[0:len((*c.CallOptions).CreateContext):len((*c.CallOptions).CreateContext)], opts...)
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -294,8 +376,7 @@ func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.Cr
 	return resp, nil
 }
 
-// UpdateContext updates the specified context.
-func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.UpdateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+func (c *contextsGRPCClient) UpdateContext(ctx context.Context, req *dialogflowpb.UpdateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -303,7 +384,7 @@ func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.Up
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context.name", url.QueryEscape(req.GetContext().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateContext[0:len(c.CallOptions.UpdateContext):len(c.CallOptions.UpdateContext)], opts...)
+	opts = append((*c.CallOptions).UpdateContext[0:len((*c.CallOptions).UpdateContext):len((*c.CallOptions).UpdateContext)], opts...)
 	var resp *dialogflowpb.Context
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -316,8 +397,7 @@ func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.Up
 	return resp, nil
 }
 
-// DeleteContext deletes the specified context.
-func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.DeleteContextRequest, opts ...gax.CallOption) error {
+func (c *contextsGRPCClient) DeleteContext(ctx context.Context, req *dialogflowpb.DeleteContextRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -325,7 +405,7 @@ func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.De
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteContext[0:len(c.CallOptions.DeleteContext):len(c.CallOptions.DeleteContext)], opts...)
+	opts = append((*c.CallOptions).DeleteContext[0:len((*c.CallOptions).DeleteContext):len((*c.CallOptions).DeleteContext)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.contextsClient.DeleteContext(ctx, req, settings.GRPC...)
@@ -334,8 +414,7 @@ func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.De
 	return err
 }
 
-// DeleteAllContexts deletes all active contexts in the specified session.
-func (c *ContextsClient) DeleteAllContexts(ctx context.Context, req *dialogflowpb.DeleteAllContextsRequest, opts ...gax.CallOption) error {
+func (c *contextsGRPCClient) DeleteAllContexts(ctx context.Context, req *dialogflowpb.DeleteAllContextsRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -343,7 +422,7 @@ func (c *ContextsClient) DeleteAllContexts(ctx context.Context, req *dialogflowp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAllContexts[0:len(c.CallOptions.DeleteAllContexts):len(c.CallOptions.DeleteAllContexts)], opts...)
+	opts = append((*c.CallOptions).DeleteAllContexts[0:len((*c.CallOptions).DeleteAllContexts):len((*c.CallOptions).DeleteAllContexts)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.contextsClient.DeleteAllContexts(ctx, req, settings.GRPC...)

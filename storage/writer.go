@@ -99,15 +99,15 @@ func (w *Writer) open() error {
 	if attrs.KMSKeyName != "" && w.o.encryptionKey != nil {
 		return errors.New("storage: cannot use KMSKeyName with a customer-supplied encryption key")
 	}
+	if w.ChunkSize < 0 {
+		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
 	pr, pw := io.Pipe()
 	w.pw = pw
 	w.opened = true
 
 	go w.monitorCancel()
 
-	if w.ChunkSize < 0 {
-		return errors.New("storage: Writer.ChunkSize must be non-negative")
-	}
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(w.ChunkSize),
 	}
@@ -124,9 +124,6 @@ func (w *Writer) open() error {
 		}
 		if w.MD5 != nil {
 			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(w.MD5)
-		}
-		if w.o.c.envHost != "" {
-			w.o.c.raw.BasePath = fmt.Sprintf("%s://%s", w.o.c.scheme, w.o.c.envHost)
 		}
 		call := w.o.c.raw.Objects.Insert(w.o.bucket, rawObj).
 			Media(pr, mediaOpts...).

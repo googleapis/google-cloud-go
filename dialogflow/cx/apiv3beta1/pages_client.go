@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newPagesClientHook clientHook
@@ -46,12 +46,13 @@ type PagesCallOptions struct {
 	DeletePage []gax.CallOption
 }
 
-func defaultPagesClientOptions() []option.ClientOption {
+func defaultPagesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -118,32 +119,103 @@ func defaultPagesCallOptions() *PagesCallOptions {
 	}
 }
 
+// internalPagesClient is an interface that defines the methods availaible from Dialogflow API.
+type internalPagesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListPages(context.Context, *cxpb.ListPagesRequest, ...gax.CallOption) *PageIterator
+	GetPage(context.Context, *cxpb.GetPageRequest, ...gax.CallOption) (*cxpb.Page, error)
+	CreatePage(context.Context, *cxpb.CreatePageRequest, ...gax.CallOption) (*cxpb.Page, error)
+	UpdatePage(context.Context, *cxpb.UpdatePageRequest, ...gax.CallOption) (*cxpb.Page, error)
+	DeletePage(context.Context, *cxpb.DeletePageRequest, ...gax.CallOption) error
+}
+
 // PagesClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing [Pages][google.cloud.dialogflow.cx.v3beta1.Page (at http://google.cloud.dialogflow.cx.v3beta1.Page)].
+type PagesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalPagesClient
+
+	// The call options for this service.
+	CallOptions *PagesCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *PagesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *PagesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *PagesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListPages returns the list of all pages in the specified flow.
+func (c *PagesClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest, opts ...gax.CallOption) *PageIterator {
+	return c.internalClient.ListPages(ctx, req, opts...)
+}
+
+// GetPage retrieves the specified page.
+func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	return c.internalClient.GetPage(ctx, req, opts...)
+}
+
+// CreatePage creates a page in the specified flow.
+func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	return c.internalClient.CreatePage(ctx, req, opts...)
+}
+
+// UpdatePage updates the specified page.
+func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	return c.internalClient.UpdatePage(ctx, req, opts...)
+}
+
+// DeletePage deletes the specified page.
+func (c *PagesClient) DeletePage(ctx context.Context, req *cxpb.DeletePageRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeletePage(ctx, req, opts...)
+}
+
+// pagesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type PagesClient struct {
+type pagesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing PagesClient
+	CallOptions **PagesCallOptions
+
 	// The gRPC API client.
 	pagesClient cxpb.PagesClient
-
-	// The call options for this service.
-	CallOptions *PagesCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewPagesClient creates a new pages client.
+// NewPagesClient creates a new pages client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing [Pages][google.cloud.dialogflow.cx.v3beta1.Page (at http://google.cloud.dialogflow.cx.v3beta1.Page)].
 func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesClient, error) {
-	clientOpts := defaultPagesClientOptions()
-
+	clientOpts := defaultPagesGRPCClientOptions()
 	if newPagesClientHook != nil {
 		hookOpts, err := newPagesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,53 +233,57 @@ func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesCli
 	if err != nil {
 		return nil, err
 	}
-	c := &PagesClient{
+	client := PagesClient{CallOptions: defaultPagesCallOptions()}
+
+	c := &pagesGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultPagesCallOptions(),
-
-		pagesClient: cxpb.NewPagesClient(connPool),
+		pagesClient:      cxpb.NewPagesClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *PagesClient) Connection() *grpc.ClientConn {
+func (c *pagesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *PagesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PagesClient) setGoogleClientInfo(keyval ...string) {
+func (c *pagesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListPages returns the list of all pages in the specified flow.
-func (c *PagesClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest, opts ...gax.CallOption) *PageIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *pagesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *pagesGRPCClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest, opts ...gax.CallOption) *PageIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPages[0:len(c.CallOptions.ListPages):len(c.CallOptions.ListPages)], opts...)
+	opts = append((*c.CallOptions).ListPages[0:len((*c.CallOptions).ListPages):len((*c.CallOptions).ListPages)], opts...)
 	it := &PageIterator{}
 	req = proto.Clone(req).(*cxpb.ListPagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Page, string, error) {
-		var resp *cxpb.ListPagesResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListPagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,14 +306,15 @@ func (c *PagesClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetPage retrieves the specified page.
-func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+func (c *pagesGRPCClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -245,7 +322,7 @@ func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opt
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetPage[0:len(c.CallOptions.GetPage):len(c.CallOptions.GetPage)], opts...)
+	opts = append((*c.CallOptions).GetPage[0:len((*c.CallOptions).GetPage):len((*c.CallOptions).GetPage)], opts...)
 	var resp *cxpb.Page
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -258,8 +335,7 @@ func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opt
 	return resp, nil
 }
 
-// CreatePage creates a page in the specified flow.
-func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+func (c *pagesGRPCClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -267,7 +343,7 @@ func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreatePage[0:len(c.CallOptions.CreatePage):len(c.CallOptions.CreatePage)], opts...)
+	opts = append((*c.CallOptions).CreatePage[0:len((*c.CallOptions).CreatePage):len((*c.CallOptions).CreatePage)], opts...)
 	var resp *cxpb.Page
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,8 +356,7 @@ func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageReques
 	return resp, nil
 }
 
-// UpdatePage updates the specified page.
-func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+func (c *pagesGRPCClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -289,7 +364,7 @@ func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "page.name", url.QueryEscape(req.GetPage().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdatePage[0:len(c.CallOptions.UpdatePage):len(c.CallOptions.UpdatePage)], opts...)
+	opts = append((*c.CallOptions).UpdatePage[0:len((*c.CallOptions).UpdatePage):len((*c.CallOptions).UpdatePage)], opts...)
 	var resp *cxpb.Page
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -302,8 +377,7 @@ func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageReques
 	return resp, nil
 }
 
-// DeletePage deletes the specified page.
-func (c *PagesClient) DeletePage(ctx context.Context, req *cxpb.DeletePageRequest, opts ...gax.CallOption) error {
+func (c *pagesGRPCClient) DeletePage(ctx context.Context, req *cxpb.DeletePageRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -311,7 +385,7 @@ func (c *PagesClient) DeletePage(ctx context.Context, req *cxpb.DeletePageReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeletePage[0:len(c.CallOptions.DeletePage):len(c.CallOptions.DeletePage)], opts...)
+	opts = append((*c.CallOptions).DeletePage[0:len((*c.CallOptions).DeletePage):len((*c.CallOptions).DeletePage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.pagesClient.DeletePage(ctx, req, settings.GRPC...)

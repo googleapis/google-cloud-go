@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAnswerRecordsClientHook clientHook
@@ -43,12 +43,13 @@ type AnswerRecordsCallOptions struct {
 	UpdateAnswerRecord []gax.CallOption
 }
 
-func defaultAnswerRecordsClientOptions() []option.ClientOption {
+func defaultAnswerRecordsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -82,33 +83,86 @@ func defaultAnswerRecordsCallOptions() *AnswerRecordsCallOptions {
 	}
 }
 
+// internalAnswerRecordsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalAnswerRecordsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListAnswerRecords(context.Context, *dialogflowpb.ListAnswerRecordsRequest, ...gax.CallOption) *AnswerRecordIterator
+	UpdateAnswerRecord(context.Context, *dialogflowpb.UpdateAnswerRecordRequest, ...gax.CallOption) (*dialogflowpb.AnswerRecord, error)
+}
+
 // AnswerRecordsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing AnswerRecords.
+type AnswerRecordsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAnswerRecordsClient
+
+	// The call options for this service.
+	CallOptions *AnswerRecordsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AnswerRecordsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AnswerRecordsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AnswerRecordsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListAnswerRecords returns the list of all answer records in the specified project in reverse
+// chronological order.
+func (c *AnswerRecordsClient) ListAnswerRecords(ctx context.Context, req *dialogflowpb.ListAnswerRecordsRequest, opts ...gax.CallOption) *AnswerRecordIterator {
+	return c.internalClient.ListAnswerRecords(ctx, req, opts...)
+}
+
+// UpdateAnswerRecord updates the specified answer record.
+func (c *AnswerRecordsClient) UpdateAnswerRecord(ctx context.Context, req *dialogflowpb.UpdateAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
+	return c.internalClient.UpdateAnswerRecord(ctx, req, opts...)
+}
+
+// answerRecordsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AnswerRecordsClient struct {
+type answerRecordsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AnswerRecordsClient
+	CallOptions **AnswerRecordsCallOptions
+
 	// The gRPC API client.
 	answerRecordsClient dialogflowpb.AnswerRecordsClient
-
-	// The call options for this service.
-	CallOptions *AnswerRecordsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAnswerRecordsClient creates a new answer records client.
+// NewAnswerRecordsClient creates a new answer records client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for managing
-// AnswerRecords.
+// Service for managing AnswerRecords.
 func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*AnswerRecordsClient, error) {
-	clientOpts := defaultAnswerRecordsClientOptions()
-
+	clientOpts := defaultAnswerRecordsGRPCClientOptions()
 	if newAnswerRecordsClientHook != nil {
 		hookOpts, err := newAnswerRecordsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -126,54 +180,57 @@ func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	c := &AnswerRecordsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAnswerRecordsCallOptions(),
+	client := AnswerRecordsClient{CallOptions: defaultAnswerRecordsCallOptions()}
 
+	c := &answerRecordsGRPCClient{
+		connPool:            connPool,
+		disableDeadlines:    disableDeadlines,
 		answerRecordsClient: dialogflowpb.NewAnswerRecordsClient(connPool),
+		CallOptions:         &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AnswerRecordsClient) Connection() *grpc.ClientConn {
+func (c *answerRecordsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AnswerRecordsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AnswerRecordsClient) setGoogleClientInfo(keyval ...string) {
+func (c *answerRecordsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListAnswerRecords returns the list of all answer records in the specified project in reverse
-// chronological order.
-func (c *AnswerRecordsClient) ListAnswerRecords(ctx context.Context, req *dialogflowpb.ListAnswerRecordsRequest, opts ...gax.CallOption) *AnswerRecordIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *answerRecordsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *answerRecordsGRPCClient) ListAnswerRecords(ctx context.Context, req *dialogflowpb.ListAnswerRecordsRequest, opts ...gax.CallOption) *AnswerRecordIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAnswerRecords[0:len(c.CallOptions.ListAnswerRecords):len(c.CallOptions.ListAnswerRecords)], opts...)
+	opts = append((*c.CallOptions).ListAnswerRecords[0:len((*c.CallOptions).ListAnswerRecords):len((*c.CallOptions).ListAnswerRecords)], opts...)
 	it := &AnswerRecordIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListAnswerRecordsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.AnswerRecord, string, error) {
-		var resp *dialogflowpb.ListAnswerRecordsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListAnswerRecordsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -196,14 +253,15 @@ func (c *AnswerRecordsClient) ListAnswerRecords(ctx context.Context, req *dialog
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// UpdateAnswerRecord updates the specified answer record.
-func (c *AnswerRecordsClient) UpdateAnswerRecord(ctx context.Context, req *dialogflowpb.UpdateAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
+func (c *answerRecordsGRPCClient) UpdateAnswerRecord(ctx context.Context, req *dialogflowpb.UpdateAnswerRecordRequest, opts ...gax.CallOption) (*dialogflowpb.AnswerRecord, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -211,7 +269,7 @@ func (c *AnswerRecordsClient) UpdateAnswerRecord(ctx context.Context, req *dialo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "answer_record.name", url.QueryEscape(req.GetAnswerRecord().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateAnswerRecord[0:len(c.CallOptions.UpdateAnswerRecord):len(c.CallOptions.UpdateAnswerRecord)], opts...)
+	opts = append((*c.CallOptions).UpdateAnswerRecord[0:len((*c.CallOptions).UpdateAnswerRecord):len((*c.CallOptions).UpdateAnswerRecord)], opts...)
 	var resp *dialogflowpb.AnswerRecord
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

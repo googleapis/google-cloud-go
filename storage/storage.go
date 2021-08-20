@@ -33,7 +33,6 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -91,8 +90,6 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// EnvHost is the host set on the STORAGE_EMULATOR_HOST variable.
-	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
 }
@@ -104,7 +101,6 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	var host, readHost, scheme string
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -113,23 +109,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
 	// manually configure the default endpoint options on the http client. Furthermore, we
 	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
-	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
-		scheme = "https"
-		readHost = "storage.googleapis.com"
-
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
 
 		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
-		scheme = "http"
-		readHost = host
+		var hostURL *url.URL
 
+		if strings.Contains(host, "://") {
+			h, err := url.Parse(host)
+			if err != nil {
+				return nil, err
+			}
+			hostURL = h
+		} else {
+			// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
+			// URL is only parsed correctly if it has a scheme, so we build it ourselves
+			hostURL = &url.URL{Scheme: "http", Host: host}
+		}
+
+		hostURL.Path = "storage/v1/"
+		endpoint := hostURL.String()
+
+		// Append the emulator host as default endpoint for the user
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint(host))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(host))
+		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
@@ -142,19 +150,17 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	// Update readHost with the chosen endpoint.
+	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
-	readHost = u.Host
 
 	return &Client{
 		hc:       hc,
 		raw:      rawService,
-		scheme:   scheme,
-		envHost:  host,
-		readHost: readHost,
+		scheme:   u.Scheme,
+		readHost: u.Host,
 	}, nil
 }
 
@@ -1594,44 +1600,6 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 	}
 	m.Call([]reflect.Value{reflect.ValueOf(value)})
 	return true
-}
-
-// conditionsQuery returns the generation and conditions as a URL query
-// string suitable for URL.RawQuery.  It assumes that the conditions
-// have been validated.
-func conditionsQuery(gen int64, conds *Conditions) string {
-	// URL escapes are elided because integer strings are URL-safe.
-	var buf []byte
-
-	appendParam := func(s string, n int64) {
-		if len(buf) > 0 {
-			buf = append(buf, '&')
-		}
-		buf = append(buf, s...)
-		buf = strconv.AppendInt(buf, n, 10)
-	}
-
-	if gen >= 0 {
-		appendParam("generation=", gen)
-	}
-	if conds == nil {
-		return string(buf)
-	}
-	switch {
-	case conds.GenerationMatch != 0:
-		appendParam("ifGenerationMatch=", conds.GenerationMatch)
-	case conds.GenerationNotMatch != 0:
-		appendParam("ifGenerationNotMatch=", conds.GenerationNotMatch)
-	case conds.DoesNotExist:
-		appendParam("ifGenerationMatch=", 0)
-	}
-	switch {
-	case conds.MetagenerationMatch != 0:
-		appendParam("ifMetagenerationMatch=", conds.MetagenerationMatch)
-	case conds.MetagenerationNotMatch != 0:
-		appendParam("ifMetagenerationNotMatch=", conds.MetagenerationNotMatch)
-	}
-	return string(buf)
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClusterManagerClientHook clientHook
@@ -73,12 +73,13 @@ type ClusterManagerCallOptions struct {
 	ListUsableSubnetworks   []gax.CallOption
 }
 
-func defaultClusterManagerClientOptions() []option.ClientOption {
+func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("container.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("container.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://container.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -221,126 +222,88 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 	}
 }
 
+// internalClusterManagerClient is an interface that defines the methods availaible from Kubernetes Engine API.
+type internalClusterManagerClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListClusters(context.Context, *containerpb.ListClustersRequest, ...gax.CallOption) (*containerpb.ListClustersResponse, error)
+	GetCluster(context.Context, *containerpb.GetClusterRequest, ...gax.CallOption) (*containerpb.Cluster, error)
+	CreateCluster(context.Context, *containerpb.CreateClusterRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	UpdateCluster(context.Context, *containerpb.UpdateClusterRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	UpdateNodePool(context.Context, *containerpb.UpdateNodePoolRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetNodePoolAutoscaling(context.Context, *containerpb.SetNodePoolAutoscalingRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetLoggingService(context.Context, *containerpb.SetLoggingServiceRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetMonitoringService(context.Context, *containerpb.SetMonitoringServiceRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetAddonsConfig(context.Context, *containerpb.SetAddonsConfigRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetLocations(context.Context, *containerpb.SetLocationsRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	UpdateMaster(context.Context, *containerpb.UpdateMasterRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetMasterAuth(context.Context, *containerpb.SetMasterAuthRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	DeleteCluster(context.Context, *containerpb.DeleteClusterRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	ListOperations(context.Context, *containerpb.ListOperationsRequest, ...gax.CallOption) (*containerpb.ListOperationsResponse, error)
+	GetOperation(context.Context, *containerpb.GetOperationRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	CancelOperation(context.Context, *containerpb.CancelOperationRequest, ...gax.CallOption) error
+	GetServerConfig(context.Context, *containerpb.GetServerConfigRequest, ...gax.CallOption) (*containerpb.ServerConfig, error)
+	GetJSONWebKeys(context.Context, *containerpb.GetJSONWebKeysRequest, ...gax.CallOption) (*containerpb.GetJSONWebKeysResponse, error)
+	ListNodePools(context.Context, *containerpb.ListNodePoolsRequest, ...gax.CallOption) (*containerpb.ListNodePoolsResponse, error)
+	GetNodePool(context.Context, *containerpb.GetNodePoolRequest, ...gax.CallOption) (*containerpb.NodePool, error)
+	CreateNodePool(context.Context, *containerpb.CreateNodePoolRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	DeleteNodePool(context.Context, *containerpb.DeleteNodePoolRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	RollbackNodePoolUpgrade(context.Context, *containerpb.RollbackNodePoolUpgradeRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetNodePoolManagement(context.Context, *containerpb.SetNodePoolManagementRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetLabels(context.Context, *containerpb.SetLabelsRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetLegacyAbac(context.Context, *containerpb.SetLegacyAbacRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	StartIPRotation(context.Context, *containerpb.StartIPRotationRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	CompleteIPRotation(context.Context, *containerpb.CompleteIPRotationRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetNodePoolSize(context.Context, *containerpb.SetNodePoolSizeRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetNetworkPolicy(context.Context, *containerpb.SetNetworkPolicyRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	SetMaintenancePolicy(context.Context, *containerpb.SetMaintenancePolicyRequest, ...gax.CallOption) (*containerpb.Operation, error)
+	ListUsableSubnetworks(context.Context, *containerpb.ListUsableSubnetworksRequest, ...gax.CallOption) *UsableSubnetworkIterator
+}
+
 // ClusterManagerClient is a client for interacting with Kubernetes Engine API.
-//
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Google Kubernetes Engine Cluster Manager v1
 type ClusterManagerClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	clusterManagerClient containerpb.ClusterManagerClient
+	// The internal transport-dependent client.
+	internalClient internalClusterManagerClient
 
 	// The call options for this service.
 	CallOptions *ClusterManagerCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
 }
 
-// NewClusterManagerClient creates a new cluster manager client.
-//
-// Google Kubernetes Engine Cluster Manager v1
-func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterManagerClient, error) {
-	clientOpts := defaultClusterManagerClientOptions()
-
-	if newClusterManagerClientHook != nil {
-		hookOpts, err := newClusterManagerClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &ClusterManagerClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultClusterManagerCallOptions(),
-
-		clusterManagerClient: containerpb.NewClusterManagerClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	return c, nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *ClusterManagerClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ClusterManagerClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *ClusterManagerClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ClusterManagerClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // ListClusters lists all clusters owned by a project in either the specified zone or all
 // zones.
 func (c *ClusterManagerClient) ListClusters(ctx context.Context, req *containerpb.ListClustersRequest, opts ...gax.CallOption) (*containerpb.ListClustersResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListClusters[0:len(c.CallOptions.ListClusters):len(c.CallOptions.ListClusters)], opts...)
-	var resp *containerpb.ListClustersResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.ListClusters(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.ListClusters(ctx, req, opts...)
 }
 
 // GetCluster gets the details of a specific cluster.
 func (c *ClusterManagerClient) GetCluster(ctx context.Context, req *containerpb.GetClusterRequest, opts ...gax.CallOption) (*containerpb.Cluster, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCluster[0:len(c.CallOptions.GetCluster):len(c.CallOptions.GetCluster)], opts...)
-	var resp *containerpb.Cluster
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.GetCluster(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.GetCluster(ctx, req, opts...)
 }
 
 // CreateCluster creates a cluster, consisting of the specified number and type of Google
@@ -358,227 +321,59 @@ func (c *ClusterManagerClient) GetCluster(ctx context.Context, req *containerpb.
 // Finally, an entry is added to the project’s global metadata indicating
 // which CIDR range the cluster is using.
 func (c *ClusterManagerClient) CreateCluster(ctx context.Context, req *containerpb.CreateClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCluster[0:len(c.CallOptions.CreateCluster):len(c.CallOptions.CreateCluster)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.CreateCluster(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.CreateCluster(ctx, req, opts...)
 }
 
 // UpdateCluster updates the settings of a specific cluster.
 func (c *ClusterManagerClient) UpdateCluster(ctx context.Context, req *containerpb.UpdateClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCluster[0:len(c.CallOptions.UpdateCluster):len(c.CallOptions.UpdateCluster)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.UpdateCluster(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.UpdateCluster(ctx, req, opts...)
 }
 
 // UpdateNodePool updates the version and/or image type for the specified node pool.
 func (c *ClusterManagerClient) UpdateNodePool(ctx context.Context, req *containerpb.UpdateNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateNodePool[0:len(c.CallOptions.UpdateNodePool):len(c.CallOptions.UpdateNodePool)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.UpdateNodePool(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.UpdateNodePool(ctx, req, opts...)
 }
 
 // SetNodePoolAutoscaling sets the autoscaling settings for the specified node pool.
 func (c *ClusterManagerClient) SetNodePoolAutoscaling(ctx context.Context, req *containerpb.SetNodePoolAutoscalingRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetNodePoolAutoscaling[0:len(c.CallOptions.SetNodePoolAutoscaling):len(c.CallOptions.SetNodePoolAutoscaling)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetNodePoolAutoscaling(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetNodePoolAutoscaling(ctx, req, opts...)
 }
 
 // SetLoggingService sets the logging service for a specific cluster.
 func (c *ClusterManagerClient) SetLoggingService(ctx context.Context, req *containerpb.SetLoggingServiceRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetLoggingService[0:len(c.CallOptions.SetLoggingService):len(c.CallOptions.SetLoggingService)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetLoggingService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetLoggingService(ctx, req, opts...)
 }
 
 // SetMonitoringService sets the monitoring service for a specific cluster.
 func (c *ClusterManagerClient) SetMonitoringService(ctx context.Context, req *containerpb.SetMonitoringServiceRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetMonitoringService[0:len(c.CallOptions.SetMonitoringService):len(c.CallOptions.SetMonitoringService)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetMonitoringService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetMonitoringService(ctx, req, opts...)
 }
 
 // SetAddonsConfig sets the addons for a specific cluster.
 func (c *ClusterManagerClient) SetAddonsConfig(ctx context.Context, req *containerpb.SetAddonsConfigRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetAddonsConfig[0:len(c.CallOptions.SetAddonsConfig):len(c.CallOptions.SetAddonsConfig)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetAddonsConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetAddonsConfig(ctx, req, opts...)
 }
 
 // SetLocations sets the locations for a specific cluster.
 // Deprecated. Use
 // projects.locations.clusters.update (at https://cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)
 // instead.
+//
+// Deprecated: SetLocations may be removed in a future version.
 func (c *ClusterManagerClient) SetLocations(ctx context.Context, req *containerpb.SetLocationsRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetLocations[0:len(c.CallOptions.SetLocations):len(c.CallOptions.SetLocations)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetLocations(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetLocations(ctx, req, opts...)
 }
 
 // UpdateMaster updates the master for a specific cluster.
 func (c *ClusterManagerClient) UpdateMaster(ctx context.Context, req *containerpb.UpdateMasterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateMaster[0:len(c.CallOptions.UpdateMaster):len(c.CallOptions.UpdateMaster)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.UpdateMaster(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.UpdateMaster(ctx, req, opts...)
 }
 
 // SetMasterAuth sets master auth materials. Currently supports changing the admin password
 // or a specific cluster, either via password generation or explicitly setting
 // the password.
 func (c *ClusterManagerClient) SetMasterAuth(ctx context.Context, req *containerpb.SetMasterAuthRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetMasterAuth[0:len(c.CallOptions.SetMasterAuth):len(c.CallOptions.SetMasterAuth)], opts...)
-	var resp *containerpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.clusterManagerClient.SetMasterAuth(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.SetMasterAuth(ctx, req, opts...)
 }
 
 // DeleteCluster deletes the cluster, including the Kubernetes endpoint and all worker
@@ -591,6 +386,210 @@ func (c *ClusterManagerClient) SetMasterAuth(ctx context.Context, req *container
 // such as load balancer resources, are not deleted if they weren’t present
 // when the cluster was initially created.
 func (c *ClusterManagerClient) DeleteCluster(ctx context.Context, req *containerpb.DeleteClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.DeleteCluster(ctx, req, opts...)
+}
+
+// ListOperations lists all operations in a project in a specific zone or all zones.
+func (c *ClusterManagerClient) ListOperations(ctx context.Context, req *containerpb.ListOperationsRequest, opts ...gax.CallOption) (*containerpb.ListOperationsResponse, error) {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// GetOperation gets the specified operation.
+func (c *ClusterManagerClient) GetOperation(ctx context.Context, req *containerpb.GetOperationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// CancelOperation cancels the specified operation.
+func (c *ClusterManagerClient) CancelOperation(ctx context.Context, req *containerpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// GetServerConfig returns configuration info about the Google Kubernetes Engine service.
+func (c *ClusterManagerClient) GetServerConfig(ctx context.Context, req *containerpb.GetServerConfigRequest, opts ...gax.CallOption) (*containerpb.ServerConfig, error) {
+	return c.internalClient.GetServerConfig(ctx, req, opts...)
+}
+
+// GetJSONWebKeys gets the public component of the cluster signing keys in
+// JSON Web Key format.
+// This API is not yet intended for general use, and is not available for all
+// clusters.
+func (c *ClusterManagerClient) GetJSONWebKeys(ctx context.Context, req *containerpb.GetJSONWebKeysRequest, opts ...gax.CallOption) (*containerpb.GetJSONWebKeysResponse, error) {
+	return c.internalClient.GetJSONWebKeys(ctx, req, opts...)
+}
+
+// ListNodePools lists the node pools for a cluster.
+func (c *ClusterManagerClient) ListNodePools(ctx context.Context, req *containerpb.ListNodePoolsRequest, opts ...gax.CallOption) (*containerpb.ListNodePoolsResponse, error) {
+	return c.internalClient.ListNodePools(ctx, req, opts...)
+}
+
+// GetNodePool retrieves the requested node pool.
+func (c *ClusterManagerClient) GetNodePool(ctx context.Context, req *containerpb.GetNodePoolRequest, opts ...gax.CallOption) (*containerpb.NodePool, error) {
+	return c.internalClient.GetNodePool(ctx, req, opts...)
+}
+
+// CreateNodePool creates a node pool for a cluster.
+func (c *ClusterManagerClient) CreateNodePool(ctx context.Context, req *containerpb.CreateNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.CreateNodePool(ctx, req, opts...)
+}
+
+// DeleteNodePool deletes a node pool from a cluster.
+func (c *ClusterManagerClient) DeleteNodePool(ctx context.Context, req *containerpb.DeleteNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.DeleteNodePool(ctx, req, opts...)
+}
+
+// RollbackNodePoolUpgrade rolls back a previously Aborted or Failed NodePool upgrade.
+// This makes no changes if the last upgrade successfully completed.
+func (c *ClusterManagerClient) RollbackNodePoolUpgrade(ctx context.Context, req *containerpb.RollbackNodePoolUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.RollbackNodePoolUpgrade(ctx, req, opts...)
+}
+
+// SetNodePoolManagement sets the NodeManagement options for a node pool.
+func (c *ClusterManagerClient) SetNodePoolManagement(ctx context.Context, req *containerpb.SetNodePoolManagementRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetNodePoolManagement(ctx, req, opts...)
+}
+
+// SetLabels sets labels on a cluster.
+func (c *ClusterManagerClient) SetLabels(ctx context.Context, req *containerpb.SetLabelsRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetLabels(ctx, req, opts...)
+}
+
+// SetLegacyAbac enables or disables the ABAC authorization mechanism on a cluster.
+func (c *ClusterManagerClient) SetLegacyAbac(ctx context.Context, req *containerpb.SetLegacyAbacRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetLegacyAbac(ctx, req, opts...)
+}
+
+// StartIPRotation starts master IP rotation.
+func (c *ClusterManagerClient) StartIPRotation(ctx context.Context, req *containerpb.StartIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.StartIPRotation(ctx, req, opts...)
+}
+
+// CompleteIPRotation completes master IP rotation.
+func (c *ClusterManagerClient) CompleteIPRotation(ctx context.Context, req *containerpb.CompleteIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.CompleteIPRotation(ctx, req, opts...)
+}
+
+// SetNodePoolSize sets the size for a specific node pool.
+func (c *ClusterManagerClient) SetNodePoolSize(ctx context.Context, req *containerpb.SetNodePoolSizeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetNodePoolSize(ctx, req, opts...)
+}
+
+// SetNetworkPolicy enables or disables Network Policy for a cluster.
+func (c *ClusterManagerClient) SetNetworkPolicy(ctx context.Context, req *containerpb.SetNetworkPolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetNetworkPolicy(ctx, req, opts...)
+}
+
+// SetMaintenancePolicy sets the maintenance policy for a cluster.
+func (c *ClusterManagerClient) SetMaintenancePolicy(ctx context.Context, req *containerpb.SetMaintenancePolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.SetMaintenancePolicy(ctx, req, opts...)
+}
+
+// ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.
+func (c *ClusterManagerClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
+	return c.internalClient.ListUsableSubnetworks(ctx, req, opts...)
+}
+
+// clusterManagerGRPCClient is a client for interacting with Kubernetes Engine API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type clusterManagerGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing ClusterManagerClient
+	CallOptions **ClusterManagerCallOptions
+
+	// The gRPC API client.
+	clusterManagerClient containerpb.ClusterManagerClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewClusterManagerClient creates a new cluster manager client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Google Kubernetes Engine Cluster Manager v1
+func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterManagerClient, error) {
+	clientOpts := defaultClusterManagerGRPCClientOptions()
+	if newClusterManagerClientHook != nil {
+		hookOpts, err := newClusterManagerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := ClusterManagerClient{CallOptions: defaultClusterManagerCallOptions()}
+
+	c := &clusterManagerGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
+		clusterManagerClient: containerpb.NewClusterManagerClient(connPool),
+		CallOptions:          &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *clusterManagerGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *clusterManagerGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *clusterManagerGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *clusterManagerGRPCClient) ListClusters(ctx context.Context, req *containerpb.ListClustersRequest, opts ...gax.CallOption) (*containerpb.ListClustersResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
+	var resp *containerpb.ListClustersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.ListClusters(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) GetCluster(ctx context.Context, req *containerpb.GetClusterRequest, opts ...gax.CallOption) (*containerpb.Cluster, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -598,7 +597,238 @@ func (c *ClusterManagerClient) DeleteCluster(ctx context.Context, req *container
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCluster[0:len(c.CallOptions.DeleteCluster):len(c.CallOptions.DeleteCluster)], opts...)
+	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
+	var resp *containerpb.Cluster
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.GetCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) CreateCluster(ctx context.Context, req *containerpb.CreateClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.CreateCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) UpdateCluster(ctx context.Context, req *containerpb.UpdateClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.UpdateCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) UpdateNodePool(ctx context.Context, req *containerpb.UpdateNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateNodePool[0:len((*c.CallOptions).UpdateNodePool):len((*c.CallOptions).UpdateNodePool)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.UpdateNodePool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetNodePoolAutoscaling(ctx context.Context, req *containerpb.SetNodePoolAutoscalingRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetNodePoolAutoscaling[0:len((*c.CallOptions).SetNodePoolAutoscaling):len((*c.CallOptions).SetNodePoolAutoscaling)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetNodePoolAutoscaling(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetLoggingService(ctx context.Context, req *containerpb.SetLoggingServiceRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetLoggingService[0:len((*c.CallOptions).SetLoggingService):len((*c.CallOptions).SetLoggingService)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetLoggingService(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetMonitoringService(ctx context.Context, req *containerpb.SetMonitoringServiceRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetMonitoringService[0:len((*c.CallOptions).SetMonitoringService):len((*c.CallOptions).SetMonitoringService)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetMonitoringService(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetAddonsConfig(ctx context.Context, req *containerpb.SetAddonsConfigRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetAddonsConfig[0:len((*c.CallOptions).SetAddonsConfig):len((*c.CallOptions).SetAddonsConfig)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetAddonsConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetLocations(ctx context.Context, req *containerpb.SetLocationsRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetLocations[0:len((*c.CallOptions).SetLocations):len((*c.CallOptions).SetLocations)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetLocations(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) UpdateMaster(ctx context.Context, req *containerpb.UpdateMasterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateMaster[0:len((*c.CallOptions).UpdateMaster):len((*c.CallOptions).UpdateMaster)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.UpdateMaster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) SetMasterAuth(ctx context.Context, req *containerpb.SetMasterAuthRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetMasterAuth[0:len((*c.CallOptions).SetMasterAuth):len((*c.CallOptions).SetMasterAuth)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.clusterManagerClient.SetMasterAuth(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) DeleteCluster(ctx context.Context, req *containerpb.DeleteClusterRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -611,8 +841,7 @@ func (c *ClusterManagerClient) DeleteCluster(ctx context.Context, req *container
 	return resp, nil
 }
 
-// ListOperations lists all operations in a project in a specific zone or all zones.
-func (c *ClusterManagerClient) ListOperations(ctx context.Context, req *containerpb.ListOperationsRequest, opts ...gax.CallOption) (*containerpb.ListOperationsResponse, error) {
+func (c *clusterManagerGRPCClient) ListOperations(ctx context.Context, req *containerpb.ListOperationsRequest, opts ...gax.CallOption) (*containerpb.ListOperationsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -620,7 +849,7 @@ func (c *ClusterManagerClient) ListOperations(ctx context.Context, req *containe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListOperations[0:len(c.CallOptions.ListOperations):len(c.CallOptions.ListOperations)], opts...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	var resp *containerpb.ListOperationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -633,8 +862,7 @@ func (c *ClusterManagerClient) ListOperations(ctx context.Context, req *containe
 	return resp, nil
 }
 
-// GetOperation gets the specified operation.
-func (c *ClusterManagerClient) GetOperation(ctx context.Context, req *containerpb.GetOperationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) GetOperation(ctx context.Context, req *containerpb.GetOperationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -642,7 +870,7 @@ func (c *ClusterManagerClient) GetOperation(ctx context.Context, req *containerp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "operation_id", url.QueryEscape(req.GetOperationId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetOperation[0:len(c.CallOptions.GetOperation):len(c.CallOptions.GetOperation)], opts...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -655,8 +883,7 @@ func (c *ClusterManagerClient) GetOperation(ctx context.Context, req *containerp
 	return resp, nil
 }
 
-// CancelOperation cancels the specified operation.
-func (c *ClusterManagerClient) CancelOperation(ctx context.Context, req *containerpb.CancelOperationRequest, opts ...gax.CallOption) error {
+func (c *clusterManagerGRPCClient) CancelOperation(ctx context.Context, req *containerpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -664,7 +891,7 @@ func (c *ClusterManagerClient) CancelOperation(ctx context.Context, req *contain
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "operation_id", url.QueryEscape(req.GetOperationId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CancelOperation[0:len(c.CallOptions.CancelOperation):len(c.CallOptions.CancelOperation)], opts...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.clusterManagerClient.CancelOperation(ctx, req, settings.GRPC...)
@@ -673,8 +900,7 @@ func (c *ClusterManagerClient) CancelOperation(ctx context.Context, req *contain
 	return err
 }
 
-// GetServerConfig returns configuration info about the Google Kubernetes Engine service.
-func (c *ClusterManagerClient) GetServerConfig(ctx context.Context, req *containerpb.GetServerConfigRequest, opts ...gax.CallOption) (*containerpb.ServerConfig, error) {
+func (c *clusterManagerGRPCClient) GetServerConfig(ctx context.Context, req *containerpb.GetServerConfigRequest, opts ...gax.CallOption) (*containerpb.ServerConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -682,7 +908,7 @@ func (c *ClusterManagerClient) GetServerConfig(ctx context.Context, req *contain
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetServerConfig[0:len(c.CallOptions.GetServerConfig):len(c.CallOptions.GetServerConfig)], opts...)
+	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
 	var resp *containerpb.ServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -695,14 +921,10 @@ func (c *ClusterManagerClient) GetServerConfig(ctx context.Context, req *contain
 	return resp, nil
 }
 
-// GetJSONWebKeys gets the public component of the cluster signing keys in
-// JSON Web Key format.
-// This API is not yet intended for general use, and is not available for all
-// clusters.
-func (c *ClusterManagerClient) GetJSONWebKeys(ctx context.Context, req *containerpb.GetJSONWebKeysRequest, opts ...gax.CallOption) (*containerpb.GetJSONWebKeysResponse, error) {
+func (c *clusterManagerGRPCClient) GetJSONWebKeys(ctx context.Context, req *containerpb.GetJSONWebKeysRequest, opts ...gax.CallOption) (*containerpb.GetJSONWebKeysResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetJSONWebKeys[0:len(c.CallOptions.GetJSONWebKeys):len(c.CallOptions.GetJSONWebKeys)], opts...)
+	opts = append((*c.CallOptions).GetJSONWebKeys[0:len((*c.CallOptions).GetJSONWebKeys):len((*c.CallOptions).GetJSONWebKeys)], opts...)
 	var resp *containerpb.GetJSONWebKeysResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -715,8 +937,7 @@ func (c *ClusterManagerClient) GetJSONWebKeys(ctx context.Context, req *containe
 	return resp, nil
 }
 
-// ListNodePools lists the node pools for a cluster.
-func (c *ClusterManagerClient) ListNodePools(ctx context.Context, req *containerpb.ListNodePoolsRequest, opts ...gax.CallOption) (*containerpb.ListNodePoolsResponse, error) {
+func (c *clusterManagerGRPCClient) ListNodePools(ctx context.Context, req *containerpb.ListNodePoolsRequest, opts ...gax.CallOption) (*containerpb.ListNodePoolsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -724,7 +945,7 @@ func (c *ClusterManagerClient) ListNodePools(ctx context.Context, req *container
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListNodePools[0:len(c.CallOptions.ListNodePools):len(c.CallOptions.ListNodePools)], opts...)
+	opts = append((*c.CallOptions).ListNodePools[0:len((*c.CallOptions).ListNodePools):len((*c.CallOptions).ListNodePools)], opts...)
 	var resp *containerpb.ListNodePoolsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -737,8 +958,7 @@ func (c *ClusterManagerClient) ListNodePools(ctx context.Context, req *container
 	return resp, nil
 }
 
-// GetNodePool retrieves the requested node pool.
-func (c *ClusterManagerClient) GetNodePool(ctx context.Context, req *containerpb.GetNodePoolRequest, opts ...gax.CallOption) (*containerpb.NodePool, error) {
+func (c *clusterManagerGRPCClient) GetNodePool(ctx context.Context, req *containerpb.GetNodePoolRequest, opts ...gax.CallOption) (*containerpb.NodePool, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -746,7 +966,7 @@ func (c *ClusterManagerClient) GetNodePool(ctx context.Context, req *containerpb
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetNodePool[0:len(c.CallOptions.GetNodePool):len(c.CallOptions.GetNodePool)], opts...)
+	opts = append((*c.CallOptions).GetNodePool[0:len((*c.CallOptions).GetNodePool):len((*c.CallOptions).GetNodePool)], opts...)
 	var resp *containerpb.NodePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -759,8 +979,7 @@ func (c *ClusterManagerClient) GetNodePool(ctx context.Context, req *containerpb
 	return resp, nil
 }
 
-// CreateNodePool creates a node pool for a cluster.
-func (c *ClusterManagerClient) CreateNodePool(ctx context.Context, req *containerpb.CreateNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) CreateNodePool(ctx context.Context, req *containerpb.CreateNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -768,7 +987,7 @@ func (c *ClusterManagerClient) CreateNodePool(ctx context.Context, req *containe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateNodePool[0:len(c.CallOptions.CreateNodePool):len(c.CallOptions.CreateNodePool)], opts...)
+	opts = append((*c.CallOptions).CreateNodePool[0:len((*c.CallOptions).CreateNodePool):len((*c.CallOptions).CreateNodePool)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -781,8 +1000,7 @@ func (c *ClusterManagerClient) CreateNodePool(ctx context.Context, req *containe
 	return resp, nil
 }
 
-// DeleteNodePool deletes a node pool from a cluster.
-func (c *ClusterManagerClient) DeleteNodePool(ctx context.Context, req *containerpb.DeleteNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) DeleteNodePool(ctx context.Context, req *containerpb.DeleteNodePoolRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
@@ -790,7 +1008,7 @@ func (c *ClusterManagerClient) DeleteNodePool(ctx context.Context, req *containe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteNodePool[0:len(c.CallOptions.DeleteNodePool):len(c.CallOptions.DeleteNodePool)], opts...)
+	opts = append((*c.CallOptions).DeleteNodePool[0:len((*c.CallOptions).DeleteNodePool):len((*c.CallOptions).DeleteNodePool)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -803,9 +1021,7 @@ func (c *ClusterManagerClient) DeleteNodePool(ctx context.Context, req *containe
 	return resp, nil
 }
 
-// RollbackNodePoolUpgrade rolls back a previously Aborted or Failed NodePool upgrade.
-// This makes no changes if the last upgrade successfully completed.
-func (c *ClusterManagerClient) RollbackNodePoolUpgrade(ctx context.Context, req *containerpb.RollbackNodePoolUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) RollbackNodePoolUpgrade(ctx context.Context, req *containerpb.RollbackNodePoolUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -813,7 +1029,7 @@ func (c *ClusterManagerClient) RollbackNodePoolUpgrade(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RollbackNodePoolUpgrade[0:len(c.CallOptions.RollbackNodePoolUpgrade):len(c.CallOptions.RollbackNodePoolUpgrade)], opts...)
+	opts = append((*c.CallOptions).RollbackNodePoolUpgrade[0:len((*c.CallOptions).RollbackNodePoolUpgrade):len((*c.CallOptions).RollbackNodePoolUpgrade)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -826,8 +1042,7 @@ func (c *ClusterManagerClient) RollbackNodePoolUpgrade(ctx context.Context, req 
 	return resp, nil
 }
 
-// SetNodePoolManagement sets the NodeManagement options for a node pool.
-func (c *ClusterManagerClient) SetNodePoolManagement(ctx context.Context, req *containerpb.SetNodePoolManagementRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetNodePoolManagement(ctx context.Context, req *containerpb.SetNodePoolManagementRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -835,7 +1050,7 @@ func (c *ClusterManagerClient) SetNodePoolManagement(ctx context.Context, req *c
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetNodePoolManagement[0:len(c.CallOptions.SetNodePoolManagement):len(c.CallOptions.SetNodePoolManagement)], opts...)
+	opts = append((*c.CallOptions).SetNodePoolManagement[0:len((*c.CallOptions).SetNodePoolManagement):len((*c.CallOptions).SetNodePoolManagement)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -848,8 +1063,7 @@ func (c *ClusterManagerClient) SetNodePoolManagement(ctx context.Context, req *c
 	return resp, nil
 }
 
-// SetLabels sets labels on a cluster.
-func (c *ClusterManagerClient) SetLabels(ctx context.Context, req *containerpb.SetLabelsRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetLabels(ctx context.Context, req *containerpb.SetLabelsRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -857,7 +1071,7 @@ func (c *ClusterManagerClient) SetLabels(ctx context.Context, req *containerpb.S
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetLabels[0:len(c.CallOptions.SetLabels):len(c.CallOptions.SetLabels)], opts...)
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -870,8 +1084,7 @@ func (c *ClusterManagerClient) SetLabels(ctx context.Context, req *containerpb.S
 	return resp, nil
 }
 
-// SetLegacyAbac enables or disables the ABAC authorization mechanism on a cluster.
-func (c *ClusterManagerClient) SetLegacyAbac(ctx context.Context, req *containerpb.SetLegacyAbacRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetLegacyAbac(ctx context.Context, req *containerpb.SetLegacyAbacRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -879,7 +1092,7 @@ func (c *ClusterManagerClient) SetLegacyAbac(ctx context.Context, req *container
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetLegacyAbac[0:len(c.CallOptions.SetLegacyAbac):len(c.CallOptions.SetLegacyAbac)], opts...)
+	opts = append((*c.CallOptions).SetLegacyAbac[0:len((*c.CallOptions).SetLegacyAbac):len((*c.CallOptions).SetLegacyAbac)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -892,8 +1105,7 @@ func (c *ClusterManagerClient) SetLegacyAbac(ctx context.Context, req *container
 	return resp, nil
 }
 
-// StartIPRotation starts master IP rotation.
-func (c *ClusterManagerClient) StartIPRotation(ctx context.Context, req *containerpb.StartIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) StartIPRotation(ctx context.Context, req *containerpb.StartIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -901,7 +1113,7 @@ func (c *ClusterManagerClient) StartIPRotation(ctx context.Context, req *contain
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StartIPRotation[0:len(c.CallOptions.StartIPRotation):len(c.CallOptions.StartIPRotation)], opts...)
+	opts = append((*c.CallOptions).StartIPRotation[0:len((*c.CallOptions).StartIPRotation):len((*c.CallOptions).StartIPRotation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -914,8 +1126,7 @@ func (c *ClusterManagerClient) StartIPRotation(ctx context.Context, req *contain
 	return resp, nil
 }
 
-// CompleteIPRotation completes master IP rotation.
-func (c *ClusterManagerClient) CompleteIPRotation(ctx context.Context, req *containerpb.CompleteIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) CompleteIPRotation(ctx context.Context, req *containerpb.CompleteIPRotationRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -923,7 +1134,7 @@ func (c *ClusterManagerClient) CompleteIPRotation(ctx context.Context, req *cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CompleteIPRotation[0:len(c.CallOptions.CompleteIPRotation):len(c.CallOptions.CompleteIPRotation)], opts...)
+	opts = append((*c.CallOptions).CompleteIPRotation[0:len((*c.CallOptions).CompleteIPRotation):len((*c.CallOptions).CompleteIPRotation)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -936,8 +1147,7 @@ func (c *ClusterManagerClient) CompleteIPRotation(ctx context.Context, req *cont
 	return resp, nil
 }
 
-// SetNodePoolSize sets the size for a specific node pool.
-func (c *ClusterManagerClient) SetNodePoolSize(ctx context.Context, req *containerpb.SetNodePoolSizeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetNodePoolSize(ctx context.Context, req *containerpb.SetNodePoolSizeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -945,7 +1155,7 @@ func (c *ClusterManagerClient) SetNodePoolSize(ctx context.Context, req *contain
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId()), "node_pool_id", url.QueryEscape(req.GetNodePoolId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetNodePoolSize[0:len(c.CallOptions.SetNodePoolSize):len(c.CallOptions.SetNodePoolSize)], opts...)
+	opts = append((*c.CallOptions).SetNodePoolSize[0:len((*c.CallOptions).SetNodePoolSize):len((*c.CallOptions).SetNodePoolSize)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -958,8 +1168,7 @@ func (c *ClusterManagerClient) SetNodePoolSize(ctx context.Context, req *contain
 	return resp, nil
 }
 
-// SetNetworkPolicy enables or disables Network Policy for a cluster.
-func (c *ClusterManagerClient) SetNetworkPolicy(ctx context.Context, req *containerpb.SetNetworkPolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetNetworkPolicy(ctx context.Context, req *containerpb.SetNetworkPolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -967,7 +1176,7 @@ func (c *ClusterManagerClient) SetNetworkPolicy(ctx context.Context, req *contai
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetNetworkPolicy[0:len(c.CallOptions.SetNetworkPolicy):len(c.CallOptions.SetNetworkPolicy)], opts...)
+	opts = append((*c.CallOptions).SetNetworkPolicy[0:len((*c.CallOptions).SetNetworkPolicy):len((*c.CallOptions).SetNetworkPolicy)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -980,8 +1189,7 @@ func (c *ClusterManagerClient) SetNetworkPolicy(ctx context.Context, req *contai
 	return resp, nil
 }
 
-// SetMaintenancePolicy sets the maintenance policy for a cluster.
-func (c *ClusterManagerClient) SetMaintenancePolicy(ctx context.Context, req *containerpb.SetMaintenancePolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+func (c *clusterManagerGRPCClient) SetMaintenancePolicy(ctx context.Context, req *containerpb.SetMaintenancePolicyRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 45000*time.Millisecond)
 		defer cancel()
@@ -989,7 +1197,7 @@ func (c *ClusterManagerClient) SetMaintenancePolicy(ctx context.Context, req *co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "name", url.QueryEscape(req.GetName()), "project_id", url.QueryEscape(req.GetProjectId()), "zone", url.QueryEscape(req.GetZone()), "cluster_id", url.QueryEscape(req.GetClusterId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetMaintenancePolicy[0:len(c.CallOptions.SetMaintenancePolicy):len(c.CallOptions.SetMaintenancePolicy)], opts...)
+	opts = append((*c.CallOptions).SetMaintenancePolicy[0:len((*c.CallOptions).SetMaintenancePolicy):len((*c.CallOptions).SetMaintenancePolicy)], opts...)
 	var resp *containerpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1002,19 +1210,20 @@ func (c *ClusterManagerClient) SetMaintenancePolicy(ctx context.Context, req *co
 	return resp, nil
 }
 
-// ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.
-func (c *ClusterManagerClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
+func (c *clusterManagerGRPCClient) ListUsableSubnetworks(ctx context.Context, req *containerpb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListUsableSubnetworks[0:len(c.CallOptions.ListUsableSubnetworks):len(c.CallOptions.ListUsableSubnetworks)], opts...)
+	opts = append((*c.CallOptions).ListUsableSubnetworks[0:len((*c.CallOptions).ListUsableSubnetworks):len((*c.CallOptions).ListUsableSubnetworks)], opts...)
 	it := &UsableSubnetworkIterator{}
 	req = proto.Clone(req).(*containerpb.ListUsableSubnetworksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*containerpb.UsableSubnetwork, string, error) {
-		var resp *containerpb.ListUsableSubnetworksResponse
-		req.PageToken = pageToken
+		resp := &containerpb.ListUsableSubnetworksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1037,9 +1246,11 @@ func (c *ClusterManagerClient) ListUsableSubnetworks(ctx context.Context, req *c
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

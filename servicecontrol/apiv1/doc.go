@@ -17,8 +17,8 @@
 // Package servicecontrol is an auto-generated package for the
 // Service Control API.
 //
-// Provides control plane functionality to managed services, such as logging,
-// monitoring, and status checks.
+// Provides admission control and telemetry reporting for services integrated
+// with Service Infrastructure.
 //
 // Use of Context
 //
@@ -29,7 +29,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package servicecontrol // import "cloud.google.com/go/servicecontrol/apiv1"
 
 import (
@@ -49,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210503"
+const versionClient = "20210805"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

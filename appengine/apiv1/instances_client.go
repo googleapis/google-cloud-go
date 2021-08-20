@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newInstancesClientHook clientHook
@@ -47,12 +47,13 @@ type InstancesCallOptions struct {
 	DebugInstance  []gax.CallOption
 }
 
-func defaultInstancesClientOptions() []option.ClientOption {
+func defaultInstancesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -68,37 +69,142 @@ func defaultInstancesCallOptions() *InstancesCallOptions {
 	}
 }
 
+// internalInstancesClient is an interface that defines the methods availaible from App Engine Admin API.
+type internalInstancesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListInstances(context.Context, *appenginepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
+	GetInstance(context.Context, *appenginepb.GetInstanceRequest, ...gax.CallOption) (*appenginepb.Instance, error)
+	DeleteInstance(context.Context, *appenginepb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
+	DeleteInstanceOperation(name string) *DeleteInstanceOperation
+	DebugInstance(context.Context, *appenginepb.DebugInstanceRequest, ...gax.CallOption) (*DebugInstanceOperation, error)
+	DebugInstanceOperation(name string) *DebugInstanceOperation
+}
+
 // InstancesClient is a client for interacting with App Engine Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages instances of a version.
+type InstancesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalInstancesClient
+
+	// The call options for this service.
+	CallOptions *InstancesCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *InstancesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *InstancesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *InstancesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListInstances lists the instances of a version.
+//
+// Tip: To aggregate details about instances over time, see the
+// Stackdriver Monitoring API (at https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
+func (c *InstancesClient) ListInstances(ctx context.Context, req *appenginepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+	return c.internalClient.ListInstances(ctx, req, opts...)
+}
+
+// GetInstance gets instance information.
+func (c *InstancesClient) GetInstance(ctx context.Context, req *appenginepb.GetInstanceRequest, opts ...gax.CallOption) (*appenginepb.Instance, error) {
+	return c.internalClient.GetInstance(ctx, req, opts...)
+}
+
+// DeleteInstance stops a running instance.
+//
+// The instance might be automatically recreated based on the scaling settings
+// of the version. For more information, see “How Instances are Managed”
+// (standard environment (at https://cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) |
+// flexible environment (at https://cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).
+//
+// To ensure that instances are not re-created and avoid getting billed, you
+// can stop all instances within the target version by changing the serving
+// status of the version to STOPPED with the
+// apps.services.versions.patch (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)
+// method.
+func (c *InstancesClient) DeleteInstance(ctx context.Context, req *appenginepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	return c.internalClient.DeleteInstance(ctx, req, opts...)
+}
+
+// DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
+// The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
+func (c *InstancesClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+	return c.internalClient.DeleteInstanceOperation(name)
+}
+
+// DebugInstance enables debugging on a VM instance. This allows you to use the SSH
+// command to connect to the virtual machine where the instance lives.
+// While in “debug mode”, the instance continues to serve live traffic.
+// You should delete the instance when you are done debugging and then
+// allow the system to take over and determine if another instance
+// should be started.
+//
+// Only applicable for instances in App Engine flexible environment.
+func (c *InstancesClient) DebugInstance(ctx context.Context, req *appenginepb.DebugInstanceRequest, opts ...gax.CallOption) (*DebugInstanceOperation, error) {
+	return c.internalClient.DebugInstance(ctx, req, opts...)
+}
+
+// DebugInstanceOperation returns a new DebugInstanceOperation from a given name.
+// The name must be that of a previously created DebugInstanceOperation, possibly from a different process.
+func (c *InstancesClient) DebugInstanceOperation(name string) *DebugInstanceOperation {
+	return c.internalClient.DebugInstanceOperation(name)
+}
+
+// instancesGRPCClient is a client for interacting with App Engine Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type InstancesClient struct {
+type instancesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing InstancesClient
+	CallOptions **InstancesCallOptions
+
 	// The gRPC API client.
 	instancesClient appenginepb.InstancesClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *InstancesCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewInstancesClient creates a new instances client.
+// NewInstancesClient creates a new instances client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages instances of a version.
 func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*InstancesClient, error) {
-	clientOpts := defaultInstancesClientOptions()
-
+	clientOpts := defaultInstancesGRPCClientOptions()
 	if newInstancesClientHook != nil {
 		hookOpts, err := newInstancesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -116,16 +222,19 @@ func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*Inst
 	if err != nil {
 		return nil, err
 	}
-	c := &InstancesClient{
+	client := InstancesClient{CallOptions: defaultInstancesCallOptions()}
+
+	c := &instancesGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultInstancesCallOptions(),
-
-		instancesClient: appenginepb.NewInstancesClient(connPool),
+		instancesClient:  appenginepb.NewInstancesClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -135,47 +244,46 @@ func NewInstancesClient(ctx context.Context, opts ...option.ClientOption) (*Inst
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *InstancesClient) Connection() *grpc.ClientConn {
+func (c *instancesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *InstancesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *InstancesClient) setGoogleClientInfo(keyval ...string) {
+func (c *instancesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListInstances lists the instances of a version.
-//
-// Tip: To aggregate details about instances over time, see the
-// Stackdriver Monitoring API (at https://cloud.google.com/monitoring/api/ref_v3/rest/v3/projects.timeSeries/list).
-func (c *InstancesClient) ListInstances(ctx context.Context, req *appenginepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *instancesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *instancesGRPCClient) ListInstances(ctx context.Context, req *appenginepb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInstances[0:len(c.CallOptions.ListInstances):len(c.CallOptions.ListInstances)], opts...)
+	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*appenginepb.ListInstancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.Instance, string, error) {
-		var resp *appenginepb.ListInstancesResponse
-		req.PageToken = pageToken
+		resp := &appenginepb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -198,17 +306,18 @@ func (c *InstancesClient) ListInstances(ctx context.Context, req *appenginepb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetInstance gets instance information.
-func (c *InstancesClient) GetInstance(ctx context.Context, req *appenginepb.GetInstanceRequest, opts ...gax.CallOption) (*appenginepb.Instance, error) {
+func (c *instancesGRPCClient) GetInstance(ctx context.Context, req *appenginepb.GetInstanceRequest, opts ...gax.CallOption) (*appenginepb.Instance, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInstance[0:len(c.CallOptions.GetInstance):len(c.CallOptions.GetInstance)], opts...)
+	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *appenginepb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -221,22 +330,10 @@ func (c *InstancesClient) GetInstance(ctx context.Context, req *appenginepb.GetI
 	return resp, nil
 }
 
-// DeleteInstance stops a running instance.
-//
-// The instance might be automatically recreated based on the scaling settings
-// of the version. For more information, see “How Instances are Managed”
-// (standard environment (at https://cloud.google.com/appengine/docs/standard/python/how-instances-are-managed) |
-// flexible environment (at https://cloud.google.com/appengine/docs/flexible/python/how-instances-are-managed)).
-//
-// To ensure that instances are not re-created and avoid getting billed, you
-// can stop all instances within the target version by changing the serving
-// status of the version to STOPPED with the
-// apps.services.versions.patch (at https://cloud.google.com/appengine/docs/admin-api/reference/rest/v1/apps.services.versions/patch)
-// method.
-func (c *InstancesClient) DeleteInstance(ctx context.Context, req *appenginepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+func (c *instancesGRPCClient) DeleteInstance(ctx context.Context, req *appenginepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteInstance[0:len(c.CallOptions.DeleteInstance):len(c.CallOptions.DeleteInstance)], opts...)
+	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -247,22 +344,14 @@ func (c *InstancesClient) DeleteInstance(ctx context.Context, req *appenginepb.D
 		return nil, err
 	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DebugInstance enables debugging on a VM instance. This allows you to use the SSH
-// command to connect to the virtual machine where the instance lives.
-// While in “debug mode”, the instance continues to serve live traffic.
-// You should delete the instance when you are done debugging and then
-// allow the system to take over and determine if another instance
-// should be started.
-//
-// Only applicable for instances in App Engine flexible environment.
-func (c *InstancesClient) DebugInstance(ctx context.Context, req *appenginepb.DebugInstanceRequest, opts ...gax.CallOption) (*DebugInstanceOperation, error) {
+func (c *instancesGRPCClient) DebugInstance(ctx context.Context, req *appenginepb.DebugInstanceRequest, opts ...gax.CallOption) (*DebugInstanceOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DebugInstance[0:len(c.CallOptions.DebugInstance):len(c.CallOptions.DebugInstance)], opts...)
+	opts = append((*c.CallOptions).DebugInstance[0:len((*c.CallOptions).DebugInstance):len((*c.CallOptions).DebugInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -273,7 +362,7 @@ func (c *InstancesClient) DebugInstance(ctx context.Context, req *appenginepb.De
 		return nil, err
 	}
 	return &DebugInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -284,9 +373,9 @@ type DebugInstanceOperation struct {
 
 // DebugInstanceOperation returns a new DebugInstanceOperation from a given name.
 // The name must be that of a previously created DebugInstanceOperation, possibly from a different process.
-func (c *InstancesClient) DebugInstanceOperation(name string) *DebugInstanceOperation {
+func (c *instancesGRPCClient) DebugInstanceOperation(name string) *DebugInstanceOperation {
 	return &DebugInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -353,9 +442,9 @@ type DeleteInstanceOperation struct {
 
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
-func (c *InstancesClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+func (c *instancesGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

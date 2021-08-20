@@ -30,19 +30,19 @@ func ExampleNewMetricClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleMetricClient_ListMonitoredResourceDescriptors() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 }
 
 func ExampleMetricClient_GetMonitoredResourceDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
@@ -82,14 +81,12 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 }
 
 func ExampleMetricClient_ListMetricDescriptors() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
@@ -109,13 +106,12 @@ func ExampleMetricClient_ListMetricDescriptors() {
 }
 
 func ExampleMetricClient_GetMetricDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
@@ -129,13 +125,12 @@ func ExampleMetricClient_GetMetricDescriptor() {
 }
 
 func ExampleMetricClient_CreateMetricDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
@@ -154,6 +149,7 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
@@ -165,14 +161,12 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 }
 
 func ExampleMetricClient_ListTimeSeries() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
@@ -197,6 +191,7 @@ func ExampleMetricClient_CreateTimeSeries() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
