@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleSecurityPolicyRequest.
 	}
 	resp, err := c.AddRule(ctx, req)
 	if err != nil {

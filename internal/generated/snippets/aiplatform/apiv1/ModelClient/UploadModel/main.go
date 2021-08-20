@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.UploadModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UploadModelRequest.
 	}
 	op, err := c.UploadModel(ctx, req)
 	if err != nil {

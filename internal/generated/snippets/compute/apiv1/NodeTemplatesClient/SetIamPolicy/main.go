@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetIamPolicyNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyNodeTemplateRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {

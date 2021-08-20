@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.GetCustomJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetCustomJobRequest.
 	}
 	resp, err := c.GetCustomJob(ctx, req)
 	if err != nil {

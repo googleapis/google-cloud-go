@@ -35,6 +35,7 @@ func main() {
 
 	req := &visionpb.DeleteReferenceImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteReferenceImageRequest.
 	}
 	err = c.DeleteReferenceImage(ctx, req)
 	if err != nil {

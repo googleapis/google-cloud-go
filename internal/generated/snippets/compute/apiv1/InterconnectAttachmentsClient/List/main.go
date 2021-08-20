@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListInterconnectAttachmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectAttachmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

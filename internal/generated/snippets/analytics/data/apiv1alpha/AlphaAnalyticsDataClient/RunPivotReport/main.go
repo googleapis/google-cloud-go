@@ -35,6 +35,7 @@ func main() {
 
 	req := &datapb.RunPivotReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunPivotReportRequest.
 	}
 	resp, err := c.RunPivotReport(ctx, req)
 	if err != nil {

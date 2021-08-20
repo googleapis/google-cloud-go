@@ -35,6 +35,7 @@ func main() {
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#WaitOperationRequest.
 	}
 	resp, err := c.WaitOperation(ctx, req)
 	if err != nil {

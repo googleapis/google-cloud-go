@@ -36,6 +36,7 @@ func main() {
 
 	req := &gsuiteaddonspb.ListDeploymentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#ListDeploymentsRequest.
 	}
 	it := c.ListDeployments(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetGroupRequest.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {

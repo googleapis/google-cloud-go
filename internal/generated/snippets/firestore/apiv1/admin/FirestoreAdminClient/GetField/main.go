@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetFieldRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#GetFieldRequest.
 	}
 	resp, err := c.GetField(ctx, req)
 	if err != nil {

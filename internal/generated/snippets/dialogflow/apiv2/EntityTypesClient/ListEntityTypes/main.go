@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListEntityTypesRequest.
 	}
 	it := c.ListEntityTypes(ctx, req)
 	for {

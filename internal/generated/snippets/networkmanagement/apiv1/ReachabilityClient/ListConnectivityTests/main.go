@@ -36,6 +36,7 @@ func main() {
 
 	req := &networkmanagementpb.ListConnectivityTestsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#ListConnectivityTestsRequest.
 	}
 	it := c.ListConnectivityTests(ctx, req)
 	for {

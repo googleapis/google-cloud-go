@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.LabelImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelImageRequest.
 	}
 	op, err := c.LabelImage(ctx, req)
 	if err != nil {

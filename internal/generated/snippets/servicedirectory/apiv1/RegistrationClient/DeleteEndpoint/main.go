@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicedirectorypb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#DeleteEndpointRequest.
 	}
 	err = c.DeleteEndpoint(ctx, req)
 	if err != nil {

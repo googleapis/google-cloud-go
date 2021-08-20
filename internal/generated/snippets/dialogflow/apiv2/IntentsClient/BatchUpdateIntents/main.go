@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.BatchUpdateIntentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#BatchUpdateIntentsRequest.
 	}
 	op, err := c.BatchUpdateIntents(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &containerpb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#ListUsableSubnetworksRequest.
 	}
 	it := c.ListUsableSubnetworks(ctx, req)
 	for {

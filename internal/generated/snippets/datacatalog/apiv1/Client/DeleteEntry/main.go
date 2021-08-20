@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.DeleteEntryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteEntryRequest.
 	}
 	err = c.DeleteEntry(ctx, req)
 	if err != nil {

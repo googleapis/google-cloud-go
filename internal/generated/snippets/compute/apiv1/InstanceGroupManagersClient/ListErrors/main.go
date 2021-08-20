@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListErrorsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListErrorsInstanceGroupManagersRequest.
 	}
 	it := c.ListErrors(ctx, req)
 	for {

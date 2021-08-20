@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelVerificationCodeRequest.
 	}
 	resp, err := c.GetNotificationChannelVerificationCode(ctx, req)
 	if err != nil {

@@ -46,6 +46,7 @@ func ExampleClient_InspectContent() {
 
 	req := &dlppb.InspectContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#InspectContentRequest.
 	}
 	resp, err := c.InspectContent(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_RedactImage() {
 
 	req := &dlppb.RedactImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#RedactImageRequest.
 	}
 	resp, err := c.RedactImage(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_DeidentifyContent() {
 
 	req := &dlppb.DeidentifyContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeidentifyContentRequest.
 	}
 	resp, err := c.DeidentifyContent(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleClient_ReidentifyContent() {
 
 	req := &dlppb.ReidentifyContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ReidentifyContentRequest.
 	}
 	resp, err := c.ReidentifyContent(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleClient_ListInfoTypes() {
 
 	req := &dlppb.ListInfoTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListInfoTypesRequest.
 	}
 	resp, err := c.ListInfoTypes(ctx, req)
 	if err != nil {
@@ -141,6 +146,7 @@ func ExampleClient_CreateInspectTemplate() {
 
 	req := &dlppb.CreateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CreateInspectTemplateRequest.
 	}
 	resp, err := c.CreateInspectTemplate(ctx, req)
 	if err != nil {
@@ -160,6 +166,7 @@ func ExampleClient_UpdateInspectTemplate() {
 
 	req := &dlppb.UpdateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#UpdateInspectTemplateRequest.
 	}
 	resp, err := c.UpdateInspectTemplate(ctx, req)
 	if err != nil {
@@ -179,6 +186,7 @@ func ExampleClient_GetInspectTemplate() {
 
 	req := &dlppb.GetInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetInspectTemplateRequest.
 	}
 	resp, err := c.GetInspectTemplate(ctx, req)
 	if err != nil {
@@ -198,6 +206,7 @@ func ExampleClient_ListInspectTemplates() {
 
 	req := &dlppb.ListInspectTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListInspectTemplatesRequest.
 	}
 	it := c.ListInspectTemplates(ctx, req)
 	for {
@@ -223,6 +232,7 @@ func ExampleClient_DeleteInspectTemplate() {
 
 	req := &dlppb.DeleteInspectTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteInspectTemplateRequest.
 	}
 	err = c.DeleteInspectTemplate(ctx, req)
 	if err != nil {
@@ -240,6 +250,7 @@ func ExampleClient_CreateDeidentifyTemplate() {
 
 	req := &dlppb.CreateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CreateDeidentifyTemplateRequest.
 	}
 	resp, err := c.CreateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -259,6 +270,7 @@ func ExampleClient_UpdateDeidentifyTemplate() {
 
 	req := &dlppb.UpdateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#UpdateDeidentifyTemplateRequest.
 	}
 	resp, err := c.UpdateDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -278,6 +290,7 @@ func ExampleClient_GetDeidentifyTemplate() {
 
 	req := &dlppb.GetDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetDeidentifyTemplateRequest.
 	}
 	resp, err := c.GetDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -297,6 +310,7 @@ func ExampleClient_ListDeidentifyTemplates() {
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListDeidentifyTemplatesRequest.
 	}
 	it := c.ListDeidentifyTemplates(ctx, req)
 	for {
@@ -322,6 +336,7 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 
 	req := &dlppb.DeleteDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteDeidentifyTemplateRequest.
 	}
 	err = c.DeleteDeidentifyTemplate(ctx, req)
 	if err != nil {
@@ -339,6 +354,7 @@ func ExampleClient_CreateJobTrigger() {
 
 	req := &dlppb.CreateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CreateJobTriggerRequest.
 	}
 	resp, err := c.CreateJobTrigger(ctx, req)
 	if err != nil {
@@ -358,6 +374,7 @@ func ExampleClient_UpdateJobTrigger() {
 
 	req := &dlppb.UpdateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#UpdateJobTriggerRequest.
 	}
 	resp, err := c.UpdateJobTrigger(ctx, req)
 	if err != nil {
@@ -377,6 +394,7 @@ func ExampleClient_HybridInspectJobTrigger() {
 
 	req := &dlppb.HybridInspectJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#HybridInspectJobTriggerRequest.
 	}
 	resp, err := c.HybridInspectJobTrigger(ctx, req)
 	if err != nil {
@@ -396,6 +414,7 @@ func ExampleClient_GetJobTrigger() {
 
 	req := &dlppb.GetJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetJobTriggerRequest.
 	}
 	resp, err := c.GetJobTrigger(ctx, req)
 	if err != nil {
@@ -415,6 +434,7 @@ func ExampleClient_ListJobTriggers() {
 
 	req := &dlppb.ListJobTriggersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListJobTriggersRequest.
 	}
 	it := c.ListJobTriggers(ctx, req)
 	for {
@@ -440,6 +460,7 @@ func ExampleClient_DeleteJobTrigger() {
 
 	req := &dlppb.DeleteJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteJobTriggerRequest.
 	}
 	err = c.DeleteJobTrigger(ctx, req)
 	if err != nil {
@@ -457,6 +478,7 @@ func ExampleClient_ActivateJobTrigger() {
 
 	req := &dlppb.ActivateJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ActivateJobTriggerRequest.
 	}
 	resp, err := c.ActivateJobTrigger(ctx, req)
 	if err != nil {
@@ -476,6 +498,7 @@ func ExampleClient_CreateDlpJob() {
 
 	req := &dlppb.CreateDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CreateDlpJobRequest.
 	}
 	resp, err := c.CreateDlpJob(ctx, req)
 	if err != nil {
@@ -495,6 +518,7 @@ func ExampleClient_ListDlpJobs() {
 
 	req := &dlppb.ListDlpJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListDlpJobsRequest.
 	}
 	it := c.ListDlpJobs(ctx, req)
 	for {
@@ -520,6 +544,7 @@ func ExampleClient_GetDlpJob() {
 
 	req := &dlppb.GetDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetDlpJobRequest.
 	}
 	resp, err := c.GetDlpJob(ctx, req)
 	if err != nil {
@@ -539,6 +564,7 @@ func ExampleClient_DeleteDlpJob() {
 
 	req := &dlppb.DeleteDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteDlpJobRequest.
 	}
 	err = c.DeleteDlpJob(ctx, req)
 	if err != nil {
@@ -556,6 +582,7 @@ func ExampleClient_CancelDlpJob() {
 
 	req := &dlppb.CancelDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CancelDlpJobRequest.
 	}
 	err = c.CancelDlpJob(ctx, req)
 	if err != nil {
@@ -573,6 +600,7 @@ func ExampleClient_CreateStoredInfoType() {
 
 	req := &dlppb.CreateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#CreateStoredInfoTypeRequest.
 	}
 	resp, err := c.CreateStoredInfoType(ctx, req)
 	if err != nil {
@@ -592,6 +620,7 @@ func ExampleClient_UpdateStoredInfoType() {
 
 	req := &dlppb.UpdateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#UpdateStoredInfoTypeRequest.
 	}
 	resp, err := c.UpdateStoredInfoType(ctx, req)
 	if err != nil {
@@ -611,6 +640,7 @@ func ExampleClient_GetStoredInfoType() {
 
 	req := &dlppb.GetStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetStoredInfoTypeRequest.
 	}
 	resp, err := c.GetStoredInfoType(ctx, req)
 	if err != nil {
@@ -630,6 +660,7 @@ func ExampleClient_ListStoredInfoTypes() {
 
 	req := &dlppb.ListStoredInfoTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListStoredInfoTypesRequest.
 	}
 	it := c.ListStoredInfoTypes(ctx, req)
 	for {
@@ -655,6 +686,7 @@ func ExampleClient_DeleteStoredInfoType() {
 
 	req := &dlppb.DeleteStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteStoredInfoTypeRequest.
 	}
 	err = c.DeleteStoredInfoType(ctx, req)
 	if err != nil {
@@ -672,6 +704,7 @@ func ExampleClient_HybridInspectDlpJob() {
 
 	req := &dlppb.HybridInspectDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#HybridInspectDlpJobRequest.
 	}
 	resp, err := c.HybridInspectDlpJob(ctx, req)
 	if err != nil {
@@ -691,6 +724,7 @@ func ExampleClient_FinishDlpJob() {
 
 	req := &dlppb.FinishDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#FinishDlpJobRequest.
 	}
 	err = c.FinishDlpJob(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.ListBrandsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListBrandsRequest.
 	}
 	resp, err := c.ListBrands(ctx, req)
 	if err != nil {

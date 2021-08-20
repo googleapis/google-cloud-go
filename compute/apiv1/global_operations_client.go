@@ -26,6 +26,7 @@ import (
 	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -55,7 +56,7 @@ type internalGlobalOperationsClient interface {
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListGlobalOperationsRequest, ...gax.CallOption) *OperationsScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteGlobalOperationRequest, ...gax.CallOption) (*computepb.DeleteGlobalOperationResponse, error)
-	Get(context.Context, *computepb.GetGlobalOperationRequest, ...gax.CallOption) (*Operation, error)
+	Get(context.Context, *computepb.GetGlobalOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 	List(context.Context, *computepb.ListGlobalOperationsRequest, ...gax.CallOption) *OperationIterator
 	Wait(context.Context, *computepb.WaitGlobalOperationRequest, ...gax.CallOption) (*Operation, error)
 }
@@ -105,7 +106,7 @@ func (c *GlobalOperationsClient) Delete(ctx context.Context, req *computepb.Dele
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *GlobalOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *GlobalOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
@@ -246,8 +247,8 @@ func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *co
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -305,8 +306,8 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -321,7 +322,7 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v", req.GetProject(), req.GetOperation())
 
@@ -342,8 +343,8 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -354,11 +355,7 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
-	}
-	op := &Operation{proto: rsp}
-	return op, err
+	return rsp, unm.Unmarshal(buf, rsp)
 }
 
 // List retrieves a list of Operation resources contained within the specified project.
@@ -415,8 +412,8 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -473,8 +470,8 @@ func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)

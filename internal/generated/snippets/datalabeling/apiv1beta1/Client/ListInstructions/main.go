@@ -36,6 +36,7 @@ func main() {
 
 	req := &datalabelingpb.ListInstructionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListInstructionsRequest.
 	}
 	it := c.ListInstructions(ctx, req)
 	for {

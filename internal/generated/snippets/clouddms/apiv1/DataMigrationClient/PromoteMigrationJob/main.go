@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddmspb.PromoteMigrationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#PromoteMigrationJobRequest.
 	}
 	op, err := c.PromoteMigrationJob(ctx, req)
 	if err != nil {
