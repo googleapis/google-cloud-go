@@ -35,6 +35,7 @@ func main() {
 
 	req := &iotpb.CreateDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRequest.
 	}
 	resp, err := c.CreateDevice(ctx, req)
 	if err != nil {

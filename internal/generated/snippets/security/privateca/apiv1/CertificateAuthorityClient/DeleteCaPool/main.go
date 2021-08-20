@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.DeleteCaPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#DeleteCaPoolRequest.
 	}
 	op, err := c.DeleteCaPool(ctx, req)
 	if err != nil {

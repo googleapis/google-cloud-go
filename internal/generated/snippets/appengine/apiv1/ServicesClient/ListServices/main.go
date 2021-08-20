@@ -36,6 +36,7 @@ func main() {
 
 	req := &appenginepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.GetEntryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetEntryRequest.
 	}
 	resp, err := c.GetEntry(ctx, req)
 	if err != nil {

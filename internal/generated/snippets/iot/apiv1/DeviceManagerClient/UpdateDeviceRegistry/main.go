@@ -35,6 +35,7 @@ func main() {
 
 	req := &iotpb.UpdateDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UpdateDeviceRegistryRequest.
 	}
 	resp, err := c.UpdateDeviceRegistry(ctx, req)
 	if err != nil {

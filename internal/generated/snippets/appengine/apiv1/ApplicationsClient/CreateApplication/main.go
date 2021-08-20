@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.CreateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateApplicationRequest.
 	}
 	op, err := c.CreateApplication(ctx, req)
 	if err != nil {

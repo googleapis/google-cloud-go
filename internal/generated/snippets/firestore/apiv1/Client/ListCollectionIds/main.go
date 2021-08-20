@@ -36,6 +36,7 @@ func main() {
 
 	req := &firestorepb.ListCollectionIdsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#ListCollectionIdsRequest.
 	}
 	it := c.ListCollectionIds(ctx, req)
 	for {

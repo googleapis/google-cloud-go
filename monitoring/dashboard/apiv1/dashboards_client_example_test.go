@@ -46,6 +46,7 @@ func ExampleDashboardsClient_CreateDashboard() {
 
 	req := &dashboardpb.CreateDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#CreateDashboardRequest.
 	}
 	resp, err := c.CreateDashboard(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleDashboardsClient_ListDashboards() {
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#ListDashboardsRequest.
 	}
 	it := c.ListDashboards(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleDashboardsClient_GetDashboard() {
 
 	req := &dashboardpb.GetDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#GetDashboardRequest.
 	}
 	resp, err := c.GetDashboard(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleDashboardsClient_DeleteDashboard() {
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#DeleteDashboardRequest.
 	}
 	err = c.DeleteDashboard(ctx, req)
 	if err != nil {
@@ -126,6 +130,7 @@ func ExampleDashboardsClient_UpdateDashboard() {
 
 	req := &dashboardpb.UpdateDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#UpdateDashboardRequest.
 	}
 	resp, err := c.UpdateDashboard(ctx, req)
 	if err != nil {

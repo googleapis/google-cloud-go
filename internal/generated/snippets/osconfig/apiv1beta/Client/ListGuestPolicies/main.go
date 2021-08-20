@@ -36,6 +36,7 @@ func main() {
 
 	req := &osconfigpb.ListGuestPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1beta#ListGuestPoliciesRequest.
 	}
 	it := c.ListGuestPolicies(ctx, req)
 	for {

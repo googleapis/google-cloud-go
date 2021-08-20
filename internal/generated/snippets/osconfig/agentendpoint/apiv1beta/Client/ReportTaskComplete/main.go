@@ -35,6 +35,7 @@ func main() {
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta#ReportTaskCompleteRequest.
 	}
 	resp, err := c.ReportTaskComplete(ctx, req)
 	if err != nil {

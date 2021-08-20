@@ -46,6 +46,7 @@ func ExampleRegionsClient_Get() {
 
 	req := &computepb.GetRegionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionsClient_List() {
 
 	req := &computepb.ListRegionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

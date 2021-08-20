@@ -46,6 +46,7 @@ func ExampleClient_CreateContact() {
 
 	req := &essentialcontactspb.CreateContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#CreateContactRequest.
 	}
 	resp, err := c.CreateContact(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_UpdateContact() {
 
 	req := &essentialcontactspb.UpdateContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#UpdateContactRequest.
 	}
 	resp, err := c.UpdateContact(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_ListContacts() {
 
 	req := &essentialcontactspb.ListContactsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ListContactsRequest.
 	}
 	it := c.ListContacts(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExampleClient_GetContact() {
 
 	req := &essentialcontactspb.GetContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#GetContactRequest.
 	}
 	resp, err := c.GetContact(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleClient_DeleteContact() {
 
 	req := &essentialcontactspb.DeleteContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#DeleteContactRequest.
 	}
 	err = c.DeleteContact(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleClient_ComputeContacts() {
 
 	req := &essentialcontactspb.ComputeContactsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ComputeContactsRequest.
 	}
 	it := c.ComputeContacts(ctx, req)
 	for {
@@ -170,6 +176,7 @@ func ExampleClient_SendTestMessage() {
 
 	req := &essentialcontactspb.SendTestMessageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#SendTestMessageRequest.
 	}
 	err = c.SendTestMessage(ctx, req)
 	if err != nil {

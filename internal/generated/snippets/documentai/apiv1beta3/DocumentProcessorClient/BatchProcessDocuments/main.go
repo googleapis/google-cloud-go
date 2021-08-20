@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.BatchProcessRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#BatchProcessRequest.
 	}
 	op, err := c.BatchProcessDocuments(ctx, req)
 	if err != nil {

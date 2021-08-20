@@ -35,6 +35,7 @@ func main() {
 
 	req := &gkehubpb.GenerateExclusivityManifestRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateExclusivityManifestRequest.
 	}
 	resp, err := c.GenerateExclusivityManifest(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.ListParticipantsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListParticipantsRequest.
 	}
 	it := c.ListParticipants(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.DeleteResource(ctx, req)
 	if err != nil {

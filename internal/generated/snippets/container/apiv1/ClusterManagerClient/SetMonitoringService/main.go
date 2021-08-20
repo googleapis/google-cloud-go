@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetMonitoringServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetMonitoringServiceRequest.
 	}
 	resp, err := c.SetMonitoringService(ctx, req)
 	if err != nil {

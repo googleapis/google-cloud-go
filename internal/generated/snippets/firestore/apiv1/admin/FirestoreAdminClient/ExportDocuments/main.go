@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.ExportDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ExportDocumentsRequest.
 	}
 	op, err := c.ExportDocuments(ctx, req)
 	if err != nil {

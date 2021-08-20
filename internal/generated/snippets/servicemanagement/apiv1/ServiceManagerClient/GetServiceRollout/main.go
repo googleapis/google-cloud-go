@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicemanagementpb.GetServiceRolloutRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GetServiceRolloutRequest.
 	}
 	resp, err := c.GetServiceRollout(ctx, req)
 	if err != nil {

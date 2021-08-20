@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.GetColumnSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetColumnSpecRequest.
 	}
 	resp, err := c.GetColumnSpec(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.InsertGlobalForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertGlobalForwardingRuleRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
