@@ -2035,7 +2035,7 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := cfg.RetentionDuration; got != 0 {
+	if got := cfg.RetentionDuration; got != nil {
 		t.Fatalf("expected cleared retention duration, got: %v", got)
 	}
 }
