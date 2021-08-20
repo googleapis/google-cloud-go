@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetPolicyTagRequest.
 	}
 	resp, err := c.GetPolicyTag(ctx, req)
 	if err != nil {

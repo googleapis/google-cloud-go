@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListVpnTunnelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListVpnTunnelsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

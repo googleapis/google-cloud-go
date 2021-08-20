@@ -35,6 +35,7 @@ func main() {
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#ListVoicesRequest.
 	}
 	resp, err := c.ListVoices(ctx, req)
 	if err != nil {

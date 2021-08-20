@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsublitepb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListSubscriptionsRequest.
 	}
 	it := c.ListSubscriptions(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteIngressRuleRequest.
 	}
 	err = c.DeleteIngressRule(ctx, req)
 	if err != nil {

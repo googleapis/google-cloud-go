@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicemanagementpb.CreateServiceConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#CreateServiceConfigRequest.
 	}
 	resp, err := c.CreateServiceConfig(ctx, req)
 	if err != nil {

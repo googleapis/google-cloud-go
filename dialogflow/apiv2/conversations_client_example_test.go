@@ -46,6 +46,7 @@ func ExampleConversationsClient_CreateConversation() {
 
 	req := &dialogflowpb.CreateConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleConversationsClient_ListConversations() {
 
 	req := &dialogflowpb.ListConversationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationsRequest.
 	}
 	it := c.ListConversations(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleConversationsClient_GetConversation() {
 
 	req := &dialogflowpb.GetConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationRequest.
 	}
 	resp, err := c.GetConversation(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleConversationsClient_CompleteConversation() {
 
 	req := &dialogflowpb.CompleteConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CompleteConversationRequest.
 	}
 	resp, err := c.CompleteConversation(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleConversationsClient_ListMessages() {
 
 	req := &dialogflowpb.ListMessagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListMessagesRequest.
 	}
 	it := c.ListMessages(ctx, req)
 	for {

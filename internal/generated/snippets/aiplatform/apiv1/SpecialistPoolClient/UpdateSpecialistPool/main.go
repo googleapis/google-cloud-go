@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.UpdateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateSpecialistPoolRequest.
 	}
 	op, err := c.UpdateSpecialistPool(ctx, req)
 	if err != nil {

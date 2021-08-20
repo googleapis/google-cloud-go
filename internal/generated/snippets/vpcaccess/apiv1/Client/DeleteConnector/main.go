@@ -35,6 +35,7 @@ func main() {
 
 	req := &vpcaccesspb.DeleteConnectorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#DeleteConnectorRequest.
 	}
 	op, err := c.DeleteConnector(ctx, req)
 	if err != nil {

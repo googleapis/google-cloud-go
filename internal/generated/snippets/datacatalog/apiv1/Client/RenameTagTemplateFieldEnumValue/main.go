@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.RenameTagTemplateFieldEnumValueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#RenameTagTemplateFieldEnumValueRequest.
 	}
 	resp, err := c.RenameTagTemplateFieldEnumValue(ctx, req)
 	if err != nil {

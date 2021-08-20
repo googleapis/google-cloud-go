@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.GetPageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetPageRequest.
 	}
 	resp, err := c.GetPage(ctx, req)
 	if err != nil {

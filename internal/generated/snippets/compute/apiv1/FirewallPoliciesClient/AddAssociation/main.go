@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddAssociationFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAssociationFirewallPolicyRequest.
 	}
 	resp, err := c.AddAssociation(ctx, req)
 	if err != nil {

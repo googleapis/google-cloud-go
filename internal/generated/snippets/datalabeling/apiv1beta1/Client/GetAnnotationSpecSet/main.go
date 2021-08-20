@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.GetAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetAnnotationSpecSetRequest.
 	}
 	resp, err := c.GetAnnotationSpecSet(ctx, req)
 	if err != nil {

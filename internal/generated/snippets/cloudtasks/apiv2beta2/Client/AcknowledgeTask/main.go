@@ -35,6 +35,7 @@ func main() {
 
 	req := &taskspb.AcknowledgeTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#AcknowledgeTaskRequest.
 	}
 	err = c.AcknowledgeTask(ctx, req)
 	if err != nil {

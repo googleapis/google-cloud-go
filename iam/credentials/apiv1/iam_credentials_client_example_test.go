@@ -45,6 +45,7 @@ func ExampleIamCredentialsClient_GenerateAccessToken() {
 
 	req := &credentialspb.GenerateAccessTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateAccessTokenRequest.
 	}
 	resp, err := c.GenerateAccessToken(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleIamCredentialsClient_GenerateIdToken() {
 
 	req := &credentialspb.GenerateIdTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateIdTokenRequest.
 	}
 	resp, err := c.GenerateIdToken(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleIamCredentialsClient_SignBlob() {
 
 	req := &credentialspb.SignBlobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignBlobRequest.
 	}
 	resp, err := c.SignBlob(ctx, req)
 	if err != nil {
@@ -102,6 +105,7 @@ func ExampleIamCredentialsClient_SignJwt() {
 
 	req := &credentialspb.SignJwtRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignJwtRequest.
 	}
 	resp, err := c.SignJwt(ctx, req)
 	if err != nil {

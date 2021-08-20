@@ -35,6 +35,7 @@ func main() {
 
 	req := &translatepb.DeleteGlossaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#DeleteGlossaryRequest.
 	}
 	op, err := c.DeleteGlossary(ctx, req)
 	if err != nil {

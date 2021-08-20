@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetDefaultNetworkTierProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDefaultNetworkTierProjectRequest.
 	}
 	resp, err := c.SetDefaultNetworkTier(ctx, req)
 	if err != nil {

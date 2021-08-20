@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.ResetIdentityAwareProxyClientSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ResetIdentityAwareProxyClientSecretRequest.
 	}
 	resp, err := c.ResetIdentityAwareProxyClientSecret(ctx, req)
 	if err != nil {

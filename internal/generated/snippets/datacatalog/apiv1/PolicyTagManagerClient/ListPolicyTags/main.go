@@ -36,6 +36,7 @@ func main() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateEntityTypeRequest.
 	}
 	resp, err := c.CreateEntityType(ctx, req)
 	if err != nil {

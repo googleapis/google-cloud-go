@@ -35,6 +35,7 @@ func main() {
 
 	req := &reservationpb.CreateAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1#CreateAssignmentRequest.
 	}
 	resp, err := c.CreateAssignment(ctx, req)
 	if err != nil {

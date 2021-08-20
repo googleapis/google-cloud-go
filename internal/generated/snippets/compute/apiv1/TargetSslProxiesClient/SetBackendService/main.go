@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetBackendServiceTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackendServiceTargetSslProxyRequest.
 	}
 	resp, err := c.SetBackendService(ctx, req)
 	if err != nil {

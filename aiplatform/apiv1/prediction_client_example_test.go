@@ -45,6 +45,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &aiplatformpb.PredictRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {

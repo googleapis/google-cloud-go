@@ -46,6 +46,7 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 
 	req := &dialogflowpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListEnvironmentsRequest.
 	}
 	it := c.ListEnvironments(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 
 	req := &dialogflowpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 
 	req := &dialogflowpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateEnvironmentRequest.
 	}
 	resp, err := c.CreateEnvironment(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 
 	req := &dialogflowpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateEnvironmentRequest.
 	}
 	resp, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 
 	req := &dialogflowpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteEnvironmentRequest.
 	}
 	err = c.DeleteEnvironment(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleEnvironmentsClient_GetEnvironmentHistory() {
 
 	req := &dialogflowpb.GetEnvironmentHistoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetEnvironmentHistoryRequest.
 	}
 	it := c.GetEnvironmentHistory(ctx, req)
 	for {

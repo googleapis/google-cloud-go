@@ -35,6 +35,7 @@ func main() {
 
 	req := &eventarcpb.CreateTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateTriggerRequest.
 	}
 	op, err := c.CreateTrigger(ctx, req)
 	if err != nil {

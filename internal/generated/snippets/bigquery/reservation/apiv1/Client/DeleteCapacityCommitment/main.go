@@ -35,6 +35,7 @@ func main() {
 
 	req := &reservationpb.DeleteCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteCapacityCommitmentRequest.
 	}
 	err = c.DeleteCapacityCommitment(ctx, req)
 	if err != nil {

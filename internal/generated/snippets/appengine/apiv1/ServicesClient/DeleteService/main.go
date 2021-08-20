@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteServiceRequest.
 	}
 	op, err := c.DeleteService(ctx, req)
 	if err != nil {

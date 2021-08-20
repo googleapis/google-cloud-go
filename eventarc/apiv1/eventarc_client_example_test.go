@@ -46,6 +46,7 @@ func ExampleClient_GetTrigger() {
 
 	req := &eventarcpb.GetTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#GetTriggerRequest.
 	}
 	resp, err := c.GetTrigger(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_ListTriggers() {
 
 	req := &eventarcpb.ListTriggersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListTriggersRequest.
 	}
 	it := c.ListTriggers(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleClient_CreateTrigger() {
 
 	req := &eventarcpb.CreateTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#CreateTriggerRequest.
 	}
 	op, err := c.CreateTrigger(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_UpdateTrigger() {
 
 	req := &eventarcpb.UpdateTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#UpdateTriggerRequest.
 	}
 	op, err := c.UpdateTrigger(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_DeleteTrigger() {
 
 	req := &eventarcpb.DeleteTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#DeleteTriggerRequest.
 	}
 	op, err := c.DeleteTrigger(ctx, req)
 	if err != nil {
