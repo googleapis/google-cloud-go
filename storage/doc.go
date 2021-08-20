@@ -48,6 +48,13 @@ an unauthenticated client with
 
     client, err := storage.NewClient(ctx, option.WithoutAuthentication())
 
+To use an emulator with this library, you can set the STORAGE_EMULATOR_HOST
+environment variable to the address at which your emulator is running. This will
+send requests to that address instead of to Cloud Storage. You can then create a
+client as normal (see above) or, if you want, manually specify the endpoint:
+
+    client, err := storage.NewClient(ctx, option.WithEndpoint(emulatorHost + "/storage/v1/"))
+
 Buckets
 
 A Google Cloud Storage bucket is a collection of objects. To work with a
