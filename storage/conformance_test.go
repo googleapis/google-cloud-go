@@ -150,16 +150,23 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
-	host := os.Getenv("STORAGE_EMULATOR_HOST")
-	if host == "" {
-		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
-	}
-	host = "http://" + host
+
+	fmt.Errorf("hdi\n")
+	// host := os.Getenv("STORAGE_EMULATOR_HOST")
+	// if host == "" {
+	// 	t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
+	// }
+
+	host := "http://localhost:9000"
+
+	os.Setenv("STORAGE_EMULATOR_HOST", host)
+	defer os.Unsetenv("STORAGE_EMULATOR_HOST")
 
 	ctx := context.Background()
 
+	fmt.Errorf("hi")
 	// Create non-wrapped client to use for setup steps.
-	client, err := NewClient(ctx, option.WithEndpoint(host + "/storage/v1/"))
+	client, err := NewClient(ctx)
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
@@ -265,7 +272,7 @@ func checkRetryTest(host, testID string) error {
 	defer resp.Body.Close()
 	testRes := struct {
 		Instructions map[string][]string
-		Completed bool
+		Completed    bool
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
 		return fmt.Errorf("decoding response: %v", err)
@@ -321,7 +328,7 @@ func wrappedClient(host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host + "/storage/v1/"))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
 	return client, err
 }
 
