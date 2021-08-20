@@ -350,7 +350,6 @@ func (r ACLRule) toProtoObjectAccessControl(bucket string) *storagepb.ObjectAcce
 		Entity: string(r.Entity),
 		Role:   string(r.Role),
 		// The other fields are not settable.
-		// TODO: Is that the case for gRPC?
 	}
 }
 

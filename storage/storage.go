@@ -1147,7 +1147,7 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 	}
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets.
-	b = bucket("_", b)
+	b = bucketResourceName("_", b)
 
 	return &storagepb.Object{
 		Bucket:              b,
@@ -1383,7 +1383,7 @@ func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
 		return nil
 	}
 	return &ObjectAttrs{
-		Bucket:                  o.Bucket,
+		Bucket:                  parseBucketName(o.Bucket),
 		Name:                    o.Name,
 		ContentType:             o.ContentType,
 		ContentLanguage:         o.ContentLanguage,
@@ -1765,9 +1765,15 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	return res.EmailAddress, nil
 }
 
-// bucket formats the given project ID and bucket ID into a Bucket resource
-// name. This is the format necessary for the gRPC API as it conforms to the
-// Resource-oriented design practices in https://google.aip.dev/121.
-func bucket(p, b string) string {
+// bucketResourceName formats the given project ID and bucketResourceName ID
+// into a Bucket resource name. This is the format necessary for the gRPC API as
+// it conforms to the Resource-oriented design practices in https://google.aip.dev/121.
+func bucketResourceName(p, b string) string {
 	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
+}
+
+// parseBucketName strips the leading resource path segment and returns the
+// bucket ID, which is the simple Bucket name typical of the v1 API.
+func parseBucketName(b string) string {
+	return strings.TrimPrefix(b, "projects/_/buckets/")
 }
