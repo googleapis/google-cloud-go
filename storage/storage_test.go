@@ -1361,20 +1361,23 @@ func TestWithEndpoint(t *testing.T) {
 	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 }
 
-// Create a client using a combination of custom endpoint and
-// STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath,
-// readHost and scheme are not changed by running operations such as upload
+// Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
+// env variable and verify that the client hits the correct endpoint for several
+// different operations performe in sequence.
+// Verifies also that raw.BasePath, readHost and scheme are not changed
+// after running the operations.
 func TestOperationsWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 
-	var lastRequestEndpoint string
+	gotURL := make(chan string, 1)
+	gotMethod := make(chan string, 1)
 
-	addr, hClient, close := newTestServerAt(func(w http.ResponseWriter, r *http.Request) {
+	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
-		req, _ := url.Parse(r.RequestURI)
-		lastRequestEndpoint = req.RawPath
+		gotURL <- r.RequestURI
+		gotMethod <- r.Method
 	})
 	defer close()
 
@@ -1391,17 +1394,17 @@ func TestOperationsWithEndpoint(t *testing.T) {
 		{
 			desc:                "emulator host specified",
 			CustomEndpoint:      "",
-			StorageEmulatorHost: "https://" + addr,
+			StorageEmulatorHost: "https://host",
 		},
 		{
 			desc:                "endpoint specified",
-			CustomEndpoint:      "https://" + addr,
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
 			StorageEmulatorHost: "",
 		},
 		{
 			desc:                "both emulator and endpoint specified",
-			CustomEndpoint:      "https://" + addr,
-			StorageEmulatorHost: "https://" + addr,
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
+			StorageEmulatorHost: "https://host",
 		},
 	}
 	ctx := context.Background()
@@ -1417,76 +1420,90 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			originalReadHost := c.readHost
 			originalScheme := c.scheme
 
-			// Create a bucket
-			c.Bucket("test-bucket").Create(ctx, "pid", nil)
-			if err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
-			}
-			createBucketEndpoint := lastRequestEndpoint
+			operations := []struct {
+				desc       string
+				runOp      func() error
+				wantURL    string
+				wantMethod string
+			}{
+				{
+					desc: "Create a bucket",
+					runOp: func() error {
+						return c.Bucket("test-bucket").Create(ctx, "pid", nil)
+					},
+					wantURL:    "/storage/v1/b?alt=json&prettyPrint=false&project=pid",
+					wantMethod: "POST",
+				},
+				{
+					desc: "Upload an object",
+					runOp: func() error {
+						w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+						_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+						if err != nil {
+							return err
+						}
+						return w.Close()
+					},
+					wantURL:    "/upload/storage/v1/b/test-bucket/o?alt=json&name=file&prettyPrint=false&projection=full&uploadType=multipart",
+					wantMethod: "POST",
+				},
+				{
+					desc: "Download an object",
+					runOp: func() error {
+						rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+						if err != nil {
+							return err
+						}
 
-			// Upload an object
-			w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
-			_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
-			if err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
-			}
-			if closeErr := w.Close(); closeErr != nil {
-				t.Errorf("%s: %v", tc.desc, closeErr)
-			}
-
-			// Download an object
-			rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
-			if err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
-			}
-			defer rc.Close()
-
-			_, err = io.Copy(ioutil.Discard, rc)
-			if err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
+						_, err = io.Copy(ioutil.Discard, rc)
+						if err != nil {
+							return err
+						}
+						return rc.Close()
+					},
+					wantURL:    "/test-bucket/file",
+					wantMethod: "GET",
+				},
+				{
+					desc: "Delete bucket",
+					runOp: func() error {
+						return c.Bucket("test-bucket").Delete(ctx)
+					},
+					wantURL:    "/storage/v1/b/test-bucket?alt=json&prettyPrint=false",
+					wantMethod: "DELETE",
+				},
 			}
 
-			// Delete bucket
-			if err := c.Bucket("test-bucket").Delete(ctx); err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
-			}
-
-			// Create a bucket
-			c.Bucket("test-bucket").Create(ctx, "pid", nil)
-			if err != nil {
-				t.Errorf("%s: %v", tc.desc, err)
-			}
-
-			if lastRequestEndpoint != createBucketEndpoint {
-				t.Errorf("unexpected change in endpoint for creating a bucket\n\tgot:\t\t%v\n\toriginal:\t%v", lastRequestEndpoint, createBucketEndpoint)
+			// Check that the calls made to the server are as expected
+			// given the operations performed
+			for _, op := range operations {
+				if err := op.runOp(); err != nil {
+					t.Errorf("%s: %v", op.desc, err)
+				}
+				u, method := <-gotURL, <-gotMethod
+				if u != op.wantURL {
+					t.Errorf("%s: unexpected request URL\ngot  %q\nwant %q",
+						op.desc, u, op.wantURL)
+				}
+				if method != op.wantMethod {
+					t.Errorf("%s: unexpected request method\ngot  %q\nwant %q",
+						op.desc, method, op.wantMethod)
+				}
 			}
 
 			// Check that the client fields have not changed
 			if c.raw.BasePath != originalRawBasePath {
-				t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.raw.BasePath, originalRawBasePath)
+				t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+					c.raw.BasePath, originalRawBasePath)
 			}
 			if c.readHost != originalReadHost {
-				t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.readHost, originalReadHost)
+				t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+					c.readHost, originalReadHost)
 			}
 			if c.scheme != originalScheme {
-				t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v", c.scheme, originalScheme)
+				t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+					c.scheme, originalScheme)
 			}
 		})
-	}
-}
-
-func newTestServerAt(handler func(w http.ResponseWriter, r *http.Request)) (string, *http.Client, func()) {
-	ts := httptest.NewTLSServer(http.HandlerFunc(handler))
-	address := ts.Listener.Addr().String()
-	tlsConf := &tls.Config{InsecureSkipVerify: true}
-	tr := &http.Transport{
-		TLSClientConfig: tlsConf,
-		DialTLS: func(netw, addr string) (net.Conn, error) {
-			return tls.Dial("tcp", address, tlsConf)
-		},
-	}
-	return address, &http.Client{Transport: tr}, func() {
-		tr.CloseIdleConnections()
-		ts.Close()
 	}
 }
