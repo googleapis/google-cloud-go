@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.UpdateAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAccessConfigInstanceRequest.
 	}
 	resp, err := c.UpdateAccessConfig(ctx, req)
 	if err != nil {

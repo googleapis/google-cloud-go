@@ -35,6 +35,7 @@ func main() {
 
 	req := &settingspb.GetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#GetComponentSettingsRequest.
 	}
 	resp, err := c.GetComponentSettings(ctx, req)
 	if err != nil {

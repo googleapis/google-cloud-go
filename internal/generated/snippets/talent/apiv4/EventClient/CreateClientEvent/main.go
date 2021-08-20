@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.CreateClientEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateClientEventRequest.
 	}
 	resp, err := c.CreateClientEvent(ctx, req)
 	if err != nil {

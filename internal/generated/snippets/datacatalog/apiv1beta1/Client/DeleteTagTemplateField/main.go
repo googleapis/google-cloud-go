@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.DeleteTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#DeleteTagTemplateFieldRequest.
 	}
 	err = c.DeleteTagTemplateField(ctx, req)
 	if err != nil {

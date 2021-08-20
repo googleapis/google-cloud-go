@@ -35,6 +35,7 @@ func main() {
 
 	req := &datatransferpb.UpdateTransferConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#UpdateTransferConfigRequest.
 	}
 	resp, err := c.UpdateTransferConfig(ctx, req)
 	if err != nil {

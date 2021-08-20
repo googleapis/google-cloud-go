@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.ApproveBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ApproveBuildRequest.
 	}
 	op, err := c.ApproveBuild(ctx, req)
 	if err != nil {

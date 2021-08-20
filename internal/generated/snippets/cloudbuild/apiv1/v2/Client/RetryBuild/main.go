@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.RetryBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#RetryBuildRequest.
 	}
 	op, err := c.RetryBuild(ctx, req)
 	if err != nil {

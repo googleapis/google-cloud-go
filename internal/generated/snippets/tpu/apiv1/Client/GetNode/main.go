@@ -35,6 +35,7 @@ func main() {
 
 	req := &tpupb.GetNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#GetNodeRequest.
 	}
 	resp, err := c.GetNode(ctx, req)
 	if err != nil {

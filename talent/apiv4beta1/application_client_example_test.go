@@ -46,6 +46,7 @@ func ExampleApplicationClient_CreateApplication() {
 
 	req := &talentpb.CreateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateApplicationRequest.
 	}
 	resp, err := c.CreateApplication(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleApplicationClient_GetApplication() {
 
 	req := &talentpb.GetApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetApplicationRequest.
 	}
 	resp, err := c.GetApplication(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleApplicationClient_UpdateApplication() {
 
 	req := &talentpb.UpdateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateApplicationRequest.
 	}
 	resp, err := c.UpdateApplication(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleApplicationClient_DeleteApplication() {
 
 	req := &talentpb.DeleteApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteApplicationRequest.
 	}
 	err = c.DeleteApplication(ctx, req)
 	if err != nil {
@@ -120,6 +124,7 @@ func ExampleApplicationClient_ListApplications() {
 
 	req := &talentpb.ListApplicationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListApplicationsRequest.
 	}
 	it := c.ListApplications(ctx, req)
 	for {

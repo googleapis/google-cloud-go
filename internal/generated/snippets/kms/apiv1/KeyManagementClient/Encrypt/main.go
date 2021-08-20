@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.EncryptRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#EncryptRequest.
 	}
 	resp, err := c.Encrypt(ctx, req)
 	if err != nil {

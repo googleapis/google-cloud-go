@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsublitepb.ComputeHeadCursorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeHeadCursorRequest.
 	}
 	resp, err := c.ComputeHeadCursor(ctx, req)
 	if err != nil {

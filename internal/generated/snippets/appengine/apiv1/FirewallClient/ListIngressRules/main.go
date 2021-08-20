@@ -36,6 +36,7 @@ func main() {
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListIngressRulesRequest.
 	}
 	it := c.ListIngressRules(ctx, req)
 	for {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListVpnTunnelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListVpnTunnelsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
