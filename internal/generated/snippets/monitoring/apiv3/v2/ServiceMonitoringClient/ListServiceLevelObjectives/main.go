@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListServiceLevelObjectivesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListServiceLevelObjectivesRequest.
 	}
 	it := c.ListServiceLevelObjectives(ctx, req)
 	for {

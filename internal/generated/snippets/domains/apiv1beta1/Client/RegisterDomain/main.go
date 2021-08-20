@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.RegisterDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RegisterDomainRequest.
 	}
 	op, err := c.RegisterDomain(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemoveHealthCheckTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveHealthCheckTargetPoolRequest.
 	}
 	resp, err := c.RemoveHealthCheck(ctx, req)
 	if err != nil {

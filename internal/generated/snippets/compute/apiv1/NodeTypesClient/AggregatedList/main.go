@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListNodeTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNodeTypesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

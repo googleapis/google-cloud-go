@@ -35,6 +35,7 @@ func main() {
 
 	req := &reservationpb.GetBiReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetBiReservationRequest.
 	}
 	resp, err := c.GetBiReservation(ctx, req)
 	if err != nil {

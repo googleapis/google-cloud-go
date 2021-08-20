@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAccountRequest.
 	}
 	resp, err := c.GetAccount(ctx, req)
 	if err != nil {

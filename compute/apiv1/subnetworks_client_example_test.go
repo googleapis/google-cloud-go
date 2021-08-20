@@ -46,6 +46,7 @@ func ExampleSubnetworksClient_AggregatedList() {
 
 	req := &computepb.AggregatedListSubnetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListSubnetworksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleSubnetworksClient_Delete() {
 
 	req := &computepb.DeleteSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSubnetworkRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleSubnetworksClient_ExpandIpCidrRange() {
 
 	req := &computepb.ExpandIpCidrRangeSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ExpandIpCidrRangeSubnetworkRequest.
 	}
 	resp, err := c.ExpandIpCidrRange(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleSubnetworksClient_Get() {
 
 	req := &computepb.GetSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSubnetworkRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleSubnetworksClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicySubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicySubnetworkRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleSubnetworksClient_Insert() {
 
 	req := &computepb.InsertSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSubnetworkRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -166,6 +172,7 @@ func ExampleSubnetworksClient_List() {
 
 	req := &computepb.ListSubnetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSubnetworksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -191,6 +198,7 @@ func ExampleSubnetworksClient_ListUsable() {
 
 	req := &computepb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListUsableSubnetworksRequest.
 	}
 	it := c.ListUsable(ctx, req)
 	for {
@@ -216,6 +224,7 @@ func ExampleSubnetworksClient_Patch() {
 
 	req := &computepb.PatchSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchSubnetworkRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -235,6 +244,7 @@ func ExampleSubnetworksClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicySubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicySubnetworkRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -254,6 +264,7 @@ func ExampleSubnetworksClient_SetPrivateIpGoogleAccess() {
 
 	req := &computepb.SetPrivateIpGoogleAccessSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetPrivateIpGoogleAccessSubnetworkRequest.
 	}
 	resp, err := c.SetPrivateIpGoogleAccess(ctx, req)
 	if err != nil {
@@ -273,6 +284,7 @@ func ExampleSubnetworksClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsSubnetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsSubnetworkRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

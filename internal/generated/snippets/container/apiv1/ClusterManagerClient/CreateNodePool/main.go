@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.CreateNodePoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#CreateNodePoolRequest.
 	}
 	resp, err := c.CreateNodePool(ctx, req)
 	if err != nil {

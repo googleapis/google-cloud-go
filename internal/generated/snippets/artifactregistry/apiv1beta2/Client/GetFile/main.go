@@ -35,6 +35,7 @@ func main() {
 
 	req := &artifactregistrypb.GetFileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetFileRequest.
 	}
 	resp, err := c.GetFile(ctx, req)
 	if err != nil {

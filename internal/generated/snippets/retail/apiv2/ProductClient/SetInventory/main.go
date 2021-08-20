@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.SetInventoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetInventoryRequest.
 	}
 	op, err := c.SetInventory(ctx, req)
 	if err != nil {

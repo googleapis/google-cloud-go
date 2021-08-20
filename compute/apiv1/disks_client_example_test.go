@@ -46,6 +46,7 @@ func ExampleDisksClient_AddResourcePolicies() {
 
 	req := &computepb.AddResourcePoliciesDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesDiskRequest.
 	}
 	resp, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleDisksClient_AggregatedList() {
 
 	req := &computepb.AggregatedListDisksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListDisksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleDisksClient_CreateSnapshot() {
 
 	req := &computepb.CreateSnapshotDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateSnapshotDiskRequest.
 	}
 	resp, err := c.CreateSnapshot(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleDisksClient_Delete() {
 
 	req := &computepb.DeleteDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteDiskRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleDisksClient_Get() {
 
 	req := &computepb.GetDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiskRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleDisksClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyDiskRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -166,6 +172,7 @@ func ExampleDisksClient_Insert() {
 
 	req := &computepb.InsertDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertDiskRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -185,6 +192,7 @@ func ExampleDisksClient_List() {
 
 	req := &computepb.ListDisksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListDisksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -210,6 +218,7 @@ func ExampleDisksClient_RemoveResourcePolicies() {
 
 	req := &computepb.RemoveResourcePoliciesDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesDiskRequest.
 	}
 	resp, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
@@ -229,6 +238,7 @@ func ExampleDisksClient_Resize() {
 
 	req := &computepb.ResizeDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeDiskRequest.
 	}
 	resp, err := c.Resize(ctx, req)
 	if err != nil {
@@ -248,6 +258,7 @@ func ExampleDisksClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyDiskRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -267,6 +278,7 @@ func ExampleDisksClient_SetLabels() {
 
 	req := &computepb.SetLabelsDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsDiskRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -286,6 +298,7 @@ func ExampleDisksClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsDiskRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

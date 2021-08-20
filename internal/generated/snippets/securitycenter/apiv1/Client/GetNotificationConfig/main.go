@@ -35,6 +35,7 @@ func main() {
 
 	req := &securitycenterpb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetNotificationConfigRequest.
 	}
 	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {

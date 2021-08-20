@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteDocumentRequest.
 	}
 	op, err := c.DeleteDocument(ctx, req)
 	if err != nil {

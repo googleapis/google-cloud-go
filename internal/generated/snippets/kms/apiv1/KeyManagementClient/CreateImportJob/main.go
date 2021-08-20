@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.CreateImportJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateImportJobRequest.
 	}
 	resp, err := c.CreateImportJob(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &managedidentitiespb.ListDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ListDomainsRequest.
 	}
 	it := c.ListDomains(ctx, req)
 	for {

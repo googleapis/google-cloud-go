@@ -35,6 +35,7 @@ func main() {
 
 	req := &gsuiteaddonspb.UninstallDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#UninstallDeploymentRequest.
 	}
 	err = c.UninstallDeployment(ctx, req)
 	if err != nil {

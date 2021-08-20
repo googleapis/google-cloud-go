@@ -46,6 +46,7 @@ func ExamplePublicDelegatedPrefixesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListPublicDelegatedPrefixesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListPublicDelegatedPrefixesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExamplePublicDelegatedPrefixesClient_Delete() {
 
 	req := &computepb.DeletePublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExamplePublicDelegatedPrefixesClient_Get() {
 
 	req := &computepb.GetPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExamplePublicDelegatedPrefixesClient_Insert() {
 
 	req := &computepb.InsertPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExamplePublicDelegatedPrefixesClient_List() {
 
 	req := &computepb.ListPublicDelegatedPrefixesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPublicDelegatedPrefixesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExamplePublicDelegatedPrefixesClient_Patch() {
 
 	req := &computepb.PatchPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

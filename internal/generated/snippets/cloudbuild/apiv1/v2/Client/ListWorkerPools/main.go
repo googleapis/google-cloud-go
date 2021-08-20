@@ -36,6 +36,7 @@ func main() {
 
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListWorkerPoolsRequest.
 	}
 	it := c.ListWorkerPools(ctx, req)
 	for {

@@ -45,6 +45,7 @@ func ExampleUserEventClient_WriteUserEvent() {
 
 	req := &retailpb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#WriteUserEventRequest.
 	}
 	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleUserEventClient_CollectUserEvent() {
 
 	req := &retailpb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CollectUserEventRequest.
 	}
 	resp, err := c.CollectUserEvent(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleUserEventClient_PurgeUserEvents() {
 
 	req := &retailpb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {
@@ -107,6 +110,7 @@ func ExampleUserEventClient_ImportUserEvents() {
 
 	req := &retailpb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ImportUserEventsRequest.
 	}
 	op, err := c.ImportUserEvents(ctx, req)
 	if err != nil {
@@ -131,6 +135,7 @@ func ExampleUserEventClient_RejoinUserEvents() {
 
 	req := &retailpb.RejoinUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RejoinUserEventsRequest.
 	}
 	op, err := c.RejoinUserEvents(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.RetrieveRegisterParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveRegisterParametersRequest.
 	}
 	resp, err := c.RetrieveRegisterParameters(ctx, req)
 	if err != nil {

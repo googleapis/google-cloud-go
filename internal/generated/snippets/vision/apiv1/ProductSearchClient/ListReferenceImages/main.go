@@ -36,6 +36,7 @@ func main() {
 
 	req := &visionpb.ListReferenceImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListReferenceImagesRequest.
 	}
 	it := c.ListReferenceImages(ctx, req)
 	for {
