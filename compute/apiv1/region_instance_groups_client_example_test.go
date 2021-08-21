@@ -46,6 +46,7 @@ func ExampleRegionInstanceGroupsClient_Get() {
 
 	req := &computepb.GetRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionInstanceGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionInstanceGroupsClient_List() {
 
 	req := &computepb.ListRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionInstanceGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleRegionInstanceGroupsClient_ListInstances() {
 
 	req := &computepb.ListInstancesRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesRegionInstanceGroupsRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -115,6 +118,7 @@ func ExampleRegionInstanceGroupsClient_SetNamedPorts() {
 
 	req := &computepb.SetNamedPortsRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsRegionInstanceGroupRequest.
 	}
 	resp, err := c.SetNamedPorts(ctx, req)
 	if err != nil {

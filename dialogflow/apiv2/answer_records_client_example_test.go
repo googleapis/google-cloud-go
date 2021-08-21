@@ -46,6 +46,7 @@ func ExampleAnswerRecordsClient_ListAnswerRecords() {
 
 	req := &dialogflowpb.ListAnswerRecordsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListAnswerRecordsRequest.
 	}
 	it := c.ListAnswerRecords(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleAnswerRecordsClient_UpdateAnswerRecord() {
 
 	req := &dialogflowpb.UpdateAnswerRecordRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateAnswerRecordRequest.
 	}
 	resp, err := c.UpdateAnswerRecord(ctx, req)
 	if err != nil {

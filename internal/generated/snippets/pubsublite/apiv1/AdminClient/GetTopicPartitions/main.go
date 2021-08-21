@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsublitepb.GetTopicPartitionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetTopicPartitionsRequest.
 	}
 	resp, err := c.GetTopicPartitions(ctx, req)
 	if err != nil {

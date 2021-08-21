@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.UpdateAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateAgentRequest.
 	}
 	resp, err := c.UpdateAgent(ctx, req)
 	if err != nil {

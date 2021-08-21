@@ -35,6 +35,7 @@ func main() {
 
 	req := &accessapprovalpb.DeleteAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#DeleteAccessApprovalSettingsMessage.
 	}
 	err = c.DeleteAccessApprovalSettings(ctx, req)
 	if err != nil {

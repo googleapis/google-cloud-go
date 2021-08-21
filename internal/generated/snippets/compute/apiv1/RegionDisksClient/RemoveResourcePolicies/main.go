@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemoveResourcePoliciesRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesRegionDiskRequest.
 	}
 	resp, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {

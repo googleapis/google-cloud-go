@@ -35,6 +35,7 @@ func main() {
 
 	req := &essentialcontactspb.DeleteContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#DeleteContactRequest.
 	}
 	err = c.DeleteContact(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.DeleteSinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteSinkRequest.
 	}
 	err = c.DeleteSink(ctx, req)
 	if err != nil {

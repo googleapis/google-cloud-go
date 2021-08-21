@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkconnectivitypb.DeleteSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#DeleteSpokeRequest.
 	}
 	op, err := c.DeleteSpoke(ctx, req)
 	if err != nil {

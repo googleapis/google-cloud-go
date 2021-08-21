@@ -35,6 +35,7 @@ func main() {
 
 	req := &budgetspb.CreateBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1#CreateBudgetRequest.
 	}
 	resp, err := c.CreateBudget(ctx, req)
 	if err != nil {

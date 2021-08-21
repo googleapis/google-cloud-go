@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.DeleteTenantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#DeleteTenantRequest.
 	}
 	err = c.DeleteTenant(ctx, req)
 	if err != nil {

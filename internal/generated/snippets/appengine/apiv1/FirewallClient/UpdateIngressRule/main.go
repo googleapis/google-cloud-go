@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.UpdateIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateIngressRuleRequest.
 	}
 	resp, err := c.UpdateIngressRule(ctx, req)
 	if err != nil {

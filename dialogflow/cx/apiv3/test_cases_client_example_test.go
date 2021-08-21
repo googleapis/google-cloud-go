@@ -46,6 +46,7 @@ func ExampleTestCasesClient_ListTestCases() {
 
 	req := &cxpb.ListTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListTestCasesRequest.
 	}
 	it := c.ListTestCases(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleTestCasesClient_BatchDeleteTestCases() {
 
 	req := &cxpb.BatchDeleteTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#BatchDeleteTestCasesRequest.
 	}
 	err = c.BatchDeleteTestCases(ctx, req)
 	if err != nil {
@@ -88,6 +90,7 @@ func ExampleTestCasesClient_GetTestCase() {
 
 	req := &cxpb.GetTestCaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetTestCaseRequest.
 	}
 	resp, err := c.GetTestCase(ctx, req)
 	if err != nil {
@@ -107,6 +110,7 @@ func ExampleTestCasesClient_CreateTestCase() {
 
 	req := &cxpb.CreateTestCaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateTestCaseRequest.
 	}
 	resp, err := c.CreateTestCase(ctx, req)
 	if err != nil {
@@ -126,6 +130,7 @@ func ExampleTestCasesClient_UpdateTestCase() {
 
 	req := &cxpb.UpdateTestCaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateTestCaseRequest.
 	}
 	resp, err := c.UpdateTestCase(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleTestCasesClient_RunTestCase() {
 
 	req := &cxpb.RunTestCaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#RunTestCaseRequest.
 	}
 	op, err := c.RunTestCase(ctx, req)
 	if err != nil {
@@ -169,6 +175,7 @@ func ExampleTestCasesClient_BatchRunTestCases() {
 
 	req := &cxpb.BatchRunTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#BatchRunTestCasesRequest.
 	}
 	op, err := c.BatchRunTestCases(ctx, req)
 	if err != nil {
@@ -193,6 +200,7 @@ func ExampleTestCasesClient_CalculateCoverage() {
 
 	req := &cxpb.CalculateCoverageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CalculateCoverageRequest.
 	}
 	resp, err := c.CalculateCoverage(ctx, req)
 	if err != nil {
@@ -212,6 +220,7 @@ func ExampleTestCasesClient_ImportTestCases() {
 
 	req := &cxpb.ImportTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ImportTestCasesRequest.
 	}
 	op, err := c.ImportTestCases(ctx, req)
 	if err != nil {
@@ -236,6 +245,7 @@ func ExampleTestCasesClient_ExportTestCases() {
 
 	req := &cxpb.ExportTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ExportTestCasesRequest.
 	}
 	op, err := c.ExportTestCases(ctx, req)
 	if err != nil {
@@ -260,6 +270,7 @@ func ExampleTestCasesClient_ListTestCaseResults() {
 
 	req := &cxpb.ListTestCaseResultsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListTestCaseResultsRequest.
 	}
 	it := c.ListTestCaseResults(ctx, req)
 	for {
@@ -285,6 +296,7 @@ func ExampleTestCasesClient_GetTestCaseResult() {
 
 	req := &cxpb.GetTestCaseResultRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetTestCaseResultRequest.
 	}
 	resp, err := c.GetTestCaseResult(ctx, req)
 	if err != nil {

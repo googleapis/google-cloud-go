@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.CompleteIPRotationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#CompleteIPRotationRequest.
 	}
 	resp, err := c.CompleteIPRotation(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &resourcemanagerpb.SearchFoldersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#SearchFoldersRequest.
 	}
 	it := c.SearchFolders(ctx, req)
 	for {

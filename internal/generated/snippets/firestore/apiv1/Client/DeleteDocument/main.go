@@ -35,6 +35,7 @@ func main() {
 
 	req := &firestorepb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#DeleteDocumentRequest.
 	}
 	err = c.DeleteDocument(ctx, req)
 	if err != nil {

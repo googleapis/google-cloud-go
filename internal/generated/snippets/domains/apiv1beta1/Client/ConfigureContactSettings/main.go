@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.ConfigureContactSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureContactSettingsRequest.
 	}
 	op, err := c.ConfigureContactSettings(ctx, req)
 	if err != nil {

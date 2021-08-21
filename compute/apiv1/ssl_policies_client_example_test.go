@@ -46,6 +46,7 @@ func ExampleSslPoliciesClient_Delete() {
 
 	req := &computepb.DeleteSslPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSslPolicyRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleSslPoliciesClient_Get() {
 
 	req := &computepb.GetSslPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSslPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleSslPoliciesClient_Insert() {
 
 	req := &computepb.InsertSslPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSslPolicyRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleSslPoliciesClient_List() {
 
 	req := &computepb.ListSslPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSslPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleSslPoliciesClient_ListAvailableFeatures() {
 
 	req := &computepb.ListAvailableFeaturesSslPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAvailableFeaturesSslPoliciesRequest.
 	}
 	resp, err := c.ListAvailableFeatures(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleSslPoliciesClient_Patch() {
 
 	req := &computepb.PatchSslPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchSslPolicyRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

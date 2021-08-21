@@ -36,6 +36,7 @@ func main() {
 
 	req := &aiplatformpb.ListCustomJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListCustomJobsRequest.
 	}
 	it := c.ListCustomJobs(ctx, req)
 	for {

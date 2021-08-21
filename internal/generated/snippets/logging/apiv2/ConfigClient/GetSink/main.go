@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.GetSinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetSinkRequest.
 	}
 	resp, err := c.GetSink(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.UpdateRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#UpdateRegistrationRequest.
 	}
 	op, err := c.UpdateRegistration(ctx, req)
 	if err != nil {

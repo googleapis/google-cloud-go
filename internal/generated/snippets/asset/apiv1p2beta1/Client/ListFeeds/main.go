@@ -35,6 +35,7 @@ func main() {
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#ListFeedsRequest.
 	}
 	resp, err := c.ListFeeds(ctx, req)
 	if err != nil {
