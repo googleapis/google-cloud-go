@@ -1374,12 +1374,23 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	gotHost := make(chan string, 1)
 	gotMethod := make(chan string, 1)
 
-	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+	timedOut := make(chan bool, 1)
+
+	hClient, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		done := make(chan bool, 1)
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
-		gotHost <- r.Host
-		gotURL <- r.RequestURI
-		gotMethod <- r.Method
+		go func() {
+			gotHost <- r.Host
+			gotURL <- r.RequestURI
+			gotMethod <- r.Method
+			done <- true
+		}()
+
+		select {
+		case <-timedOut:
+		case <-done:
+		}
 
 	})
 	//defer close()
@@ -1420,18 +1431,19 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			wantHost:            "end",
 		},
 	}
-	ctx := context.Background()
-	timeout := time.After(3 * time.Second)
-	done := make(chan bool, 1)
 
-	go func() {
-		for _, tc := range testCases {
-			t.Run(tc.desc, func(t *testing.T) {
+	for _, tc := range testCases {
+		ctx := context.Background()
+		t.Run(tc.desc, func(t *testing.T) {
+			timeout := time.After(time.Second)
+			done := make(chan bool, 1)
+			go func() {
 				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 
 				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
 				if err != nil {
-					t.Fatalf("error creating client: %v", err)
+					t.Errorf("error creating client: %v", err)
+					return
 				}
 				originalRawBasePath := c.raw.BasePath
 				originalReadHost := c.readHost
@@ -1526,20 +1538,19 @@ func TestOperationsWithEndpoint(t *testing.T) {
 					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
 						c.scheme, originalScheme)
 				}
+				done <- true
+			}()
+			select {
+			case <-timeout:
+				t.Errorf("test timeout")
+				timedOut <- true
+			case <-done:
+			}
+		})
 
-			})
-
-		}
-		t.Log("HEYY")
-		done <- true
-	}()
-
-	select {
-	case <-timeout:
-		t.Fatal("test timeout")
-	case <-done:
 	}
-	close()
+
+	closeServer()
 }
 
 func newTestServerAt(handler func(w http.ResponseWriter, r *http.Request)) (string, *http.Client, func()) {
