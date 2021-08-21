@@ -1371,139 +1371,189 @@ func TestOperationsWithEndpoint(t *testing.T) {
 	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 
 	gotURL := make(chan string, 1)
+	gotHost := make(chan string, 1)
 	gotMethod := make(chan string, 1)
 
 	hClient, close := newTestServer(func(w http.ResponseWriter, r *http.Request) {
 		io.Copy(ioutil.Discard, r.Body)
 		fmt.Fprintf(w, "{}")
+		gotHost <- r.Host
 		gotURL <- r.RequestURI
 		gotMethod <- r.Method
+
 	})
-	defer close()
+	//defer close()
 
 	testCases := []struct {
 		desc                string
 		CustomEndpoint      string
 		StorageEmulatorHost string
+		wantScheme          string
+		wantHost            string
 	}{
 		{
 			desc:                "No endpoint or emulator host specified",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "storage.googleapis.com",
 		},
 		{
 			desc:                "emulator host specified",
 			CustomEndpoint:      "",
-			StorageEmulatorHost: "https://host",
+			StorageEmulatorHost: "https://" + "addr",
+			wantScheme:          "https",
+			wantHost:            "addr",
 		},
 		{
 			desc:                "endpoint specified",
 			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
 			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "end",
 		},
 		{
 			desc:                "both emulator and endpoint specified",
 			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
-			StorageEmulatorHost: "https://host",
+			StorageEmulatorHost: "http://host",
+			wantScheme:          "https",
+			wantHost:            "end",
 		},
 	}
 	ctx := context.Background()
-	for _, tc := range testCases {
-		t.Run(tc.desc, func(t *testing.T) {
-			os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+	timeout := time.After(3 * time.Second)
+	done := make(chan bool, 1)
 
-			c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
-			if err != nil {
-				t.Fatalf("error creating client: %v", err)
-			}
-			originalRawBasePath := c.raw.BasePath
-			originalReadHost := c.readHost
-			originalScheme := c.scheme
+	go func() {
+		for _, tc := range testCases {
+			t.Run(tc.desc, func(t *testing.T) {
+				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 
-			operations := []struct {
-				desc       string
-				runOp      func() error
-				wantURL    string
-				wantMethod string
-			}{
-				{
-					desc: "Create a bucket",
-					runOp: func() error {
-						return c.Bucket("test-bucket").Create(ctx, "pid", nil)
-					},
-					wantURL:    "/storage/v1/b?alt=json&prettyPrint=false&project=pid",
-					wantMethod: "POST",
-				},
-				{
-					desc: "Upload an object",
-					runOp: func() error {
-						w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
-						_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
-						if err != nil {
-							return err
-						}
-						return w.Close()
-					},
-					wantURL:    "/upload/storage/v1/b/test-bucket/o?alt=json&name=file&prettyPrint=false&projection=full&uploadType=multipart",
-					wantMethod: "POST",
-				},
-				{
-					desc: "Download an object",
-					runOp: func() error {
-						rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
-						if err != nil {
-							return err
-						}
-
-						_, err = io.Copy(ioutil.Discard, rc)
-						if err != nil {
-							return err
-						}
-						return rc.Close()
-					},
-					wantURL:    "/test-bucket/file",
-					wantMethod: "GET",
-				},
-				{
-					desc: "Delete bucket",
-					runOp: func() error {
-						return c.Bucket("test-bucket").Delete(ctx)
-					},
-					wantURL:    "/storage/v1/b/test-bucket?alt=json&prettyPrint=false",
-					wantMethod: "DELETE",
-				},
-			}
-
-			// Check that the calls made to the server are as expected
-			// given the operations performed
-			for _, op := range operations {
-				if err := op.runOp(); err != nil {
-					t.Errorf("%s: %v", op.desc, err)
+				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
+				if err != nil {
+					t.Fatalf("error creating client: %v", err)
 				}
-				u, method := <-gotURL, <-gotMethod
-				if u != op.wantURL {
-					t.Errorf("%s: unexpected request URL\ngot  %q\nwant %q",
-						op.desc, u, op.wantURL)
-				}
-				if method != op.wantMethod {
-					t.Errorf("%s: unexpected request method\ngot  %q\nwant %q",
-						op.desc, method, op.wantMethod)
-				}
-			}
+				originalRawBasePath := c.raw.BasePath
+				originalReadHost := c.readHost
+				originalScheme := c.scheme
 
-			// Check that the client fields have not changed
-			if c.raw.BasePath != originalRawBasePath {
-				t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-					c.raw.BasePath, originalRawBasePath)
-			}
-			if c.readHost != originalReadHost {
-				t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-					c.readHost, originalReadHost)
-			}
-			if c.scheme != originalScheme {
-				t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
-					c.scheme, originalScheme)
-			}
-		})
+				operations := []struct {
+					desc       string
+					runOp      func() error
+					wantURL    string
+					wantMethod string
+				}{
+					{
+						desc: "Create a bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Create(ctx, "pid", nil)
+						},
+						wantURL:    "/storage/v1/b?alt=json&prettyPrint=false&project=pid",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Upload an object",
+						runOp: func() error {
+							w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+							_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+							if err != nil {
+								return err
+							}
+							return w.Close()
+						},
+						wantURL:    "/upload/storage/v1/b/test-bucket/o?alt=json&name=file&prettyPrint=false&projection=full&uploadType=multipart",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Download an object",
+						runOp: func() error {
+							rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+							if err != nil {
+								return err
+							}
+
+							_, err = io.Copy(ioutil.Discard, rc)
+							if err != nil {
+								return err
+							}
+							return rc.Close()
+						},
+						wantURL:    "/test-bucket/file",
+						wantMethod: "GET",
+					},
+					{
+						desc: "Delete bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Delete(ctx)
+						},
+						wantURL:    "/storage/v1/b/test-bucket?alt=json&prettyPrint=false",
+						wantMethod: "DELETE",
+					},
+				}
+
+				// Check that the calls made to the server are as expected
+				// given the operations performed
+				for _, op := range operations {
+					if err := op.runOp(); err != nil {
+						t.Errorf("%s: %v", op.desc, err)
+					}
+					u, method := <-gotURL, <-gotMethod
+					if u != op.wantURL {
+						t.Errorf("%s: unexpected request URL\ngot  %q\nwant %q",
+							op.desc, u, op.wantURL)
+					}
+					if method != op.wantMethod {
+						t.Errorf("%s: unexpected request method\ngot  %q\nwant %q",
+							op.desc, method, op.wantMethod)
+					}
+
+					if got := <-gotHost; got != tc.wantHost {
+						t.Errorf("%s: unexpected request host\ngot  %q\nwant %q",
+							op.desc, got, tc.wantHost)
+					}
+				}
+
+				// Check that the client fields have not changed
+				if c.raw.BasePath != originalRawBasePath {
+					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.raw.BasePath, originalRawBasePath)
+				}
+				if c.readHost != originalReadHost {
+					t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.readHost, originalReadHost)
+				}
+				if c.scheme != originalScheme {
+					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.scheme, originalScheme)
+				}
+
+			})
+
+		}
+		t.Log("HEYY")
+		done <- true
+	}()
+
+	select {
+	case <-timeout:
+		t.Fatal("test timeout")
+	case <-done:
+	}
+	close()
+}
+
+func newTestServerAt(handler func(w http.ResponseWriter, r *http.Request)) (string, *http.Client, func()) {
+	ts := httptest.NewTLSServer(http.HandlerFunc(handler))
+	address := ts.Listener.Addr().String()
+	tlsConf := &tls.Config{InsecureSkipVerify: true}
+	tr := &http.Transport{
+		TLSClientConfig: tlsConf,
+		DialTLS: func(netw, addr string) (net.Conn, error) {
+			return tls.Dial("tcp", address, tlsConf)
+		},
+	}
+	return address, &http.Client{Transport: tr}, func() {
+		tr.CloseIdleConnections()
+		ts.Close()
 	}
 }
