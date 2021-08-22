@@ -45,6 +45,7 @@ func ExampleClient_DeletePosixAccount() {
 
 	req := &osloginpb.DeletePosixAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#DeletePosixAccountRequest.
 	}
 	err = c.DeletePosixAccount(ctx, req)
 	if err != nil {
@@ -62,6 +63,7 @@ func ExampleClient_DeleteSshPublicKey() {
 
 	req := &osloginpb.DeleteSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#DeleteSshPublicKeyRequest.
 	}
 	err = c.DeleteSshPublicKey(ctx, req)
 	if err != nil {
@@ -79,6 +81,7 @@ func ExampleClient_GetLoginProfile() {
 
 	req := &osloginpb.GetLoginProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#GetLoginProfileRequest.
 	}
 	resp, err := c.GetLoginProfile(ctx, req)
 	if err != nil {
@@ -98,6 +101,7 @@ func ExampleClient_GetSshPublicKey() {
 
 	req := &osloginpb.GetSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#GetSshPublicKeyRequest.
 	}
 	resp, err := c.GetSshPublicKey(ctx, req)
 	if err != nil {
@@ -117,6 +121,7 @@ func ExampleClient_ImportSshPublicKey() {
 
 	req := &osloginpb.ImportSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#ImportSshPublicKeyRequest.
 	}
 	resp, err := c.ImportSshPublicKey(ctx, req)
 	if err != nil {
@@ -136,6 +141,7 @@ func ExampleClient_UpdateSshPublicKey() {
 
 	req := &osloginpb.UpdateSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#UpdateSshPublicKeyRequest.
 	}
 	resp, err := c.UpdateSshPublicKey(ctx, req)
 	if err != nil {

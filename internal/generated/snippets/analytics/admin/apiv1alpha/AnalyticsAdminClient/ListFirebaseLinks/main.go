@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListFirebaseLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListFirebaseLinksRequest.
 	}
 	it := c.ListFirebaseLinks(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.PatchRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRouterRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

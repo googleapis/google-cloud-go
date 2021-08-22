@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetGlobalSiteTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGlobalSiteTagRequest.
 	}
 	resp, err := c.GetGlobalSiteTag(ctx, req)
 	if err != nil {

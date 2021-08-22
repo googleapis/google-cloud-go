@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.DeleteBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteBuildTriggerRequest.
 	}
 	err = c.DeleteBuildTrigger(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2#InstantiateInlineWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateInlineWorkflowTemplate(ctx, req)
 	if err != nil {

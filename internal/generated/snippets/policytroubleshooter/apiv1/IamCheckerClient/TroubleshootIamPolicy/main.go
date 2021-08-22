@@ -35,6 +35,7 @@ func main() {
 
 	req := &policytroubleshooterpb.TroubleshootIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1#TroubleshootIamPolicyRequest.
 	}
 	resp, err := c.TroubleshootIamPolicy(ctx, req)
 	if err != nil {

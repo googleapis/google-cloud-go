@@ -27,6 +27,7 @@ import (
 	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -255,8 +256,8 @@ func (c *healthChecksRESTClient) AggregatedList(ctx context.Context, req *comput
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -321,8 +322,8 @@ func (c *healthChecksRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -362,8 +363,8 @@ func (c *healthChecksRESTClient) Get(ctx context.Context, req *computepb.GetHeal
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -413,8 +414,8 @@ func (c *healthChecksRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -486,8 +487,8 @@ func (c *healthChecksRESTClient) List(ctx context.Context, req *computepb.ListHe
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -552,8 +553,8 @@ func (c *healthChecksRESTClient) Patch(ctx context.Context, req *computepb.Patch
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -607,8 +608,8 @@ func (c *healthChecksRESTClient) Update(ctx context.Context, req *computepb.Upda
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)

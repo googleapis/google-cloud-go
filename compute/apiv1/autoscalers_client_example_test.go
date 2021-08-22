@@ -46,6 +46,7 @@ func ExampleAutoscalersClient_AggregatedList() {
 
 	req := &computepb.AggregatedListAutoscalersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAutoscalersRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleAutoscalersClient_Delete() {
 
 	req := &computepb.DeleteAutoscalerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAutoscalerRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleAutoscalersClient_Get() {
 
 	req := &computepb.GetAutoscalerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetAutoscalerRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleAutoscalersClient_Insert() {
 
 	req := &computepb.InsertAutoscalerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertAutoscalerRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleAutoscalersClient_List() {
 
 	req := &computepb.ListAutoscalersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAutoscalersRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExampleAutoscalersClient_Patch() {
 
 	req := &computepb.PatchAutoscalerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchAutoscalerRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleAutoscalersClient_Update() {
 
 	req := &computepb.UpdateAutoscalerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAutoscalerRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {

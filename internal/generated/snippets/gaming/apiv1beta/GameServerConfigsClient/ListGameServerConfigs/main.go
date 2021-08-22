@@ -36,6 +36,7 @@ func main() {
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {

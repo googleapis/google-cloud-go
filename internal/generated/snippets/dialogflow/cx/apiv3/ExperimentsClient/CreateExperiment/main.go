@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.CreateExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateExperimentRequest.
 	}
 	resp, err := c.CreateExperiment(ctx, req)
 	if err != nil {

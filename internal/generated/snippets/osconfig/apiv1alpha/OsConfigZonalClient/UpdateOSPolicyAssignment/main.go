@@ -35,6 +35,7 @@ func main() {
 
 	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#UpdateOSPolicyAssignmentRequest.
 	}
 	op, err := c.UpdateOSPolicyAssignment(ctx, req)
 	if err != nil {

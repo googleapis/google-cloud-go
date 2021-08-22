@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.GetIapSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetIapSettingsRequest.
 	}
 	resp, err := c.GetIapSettings(ctx, req)
 	if err != nil {

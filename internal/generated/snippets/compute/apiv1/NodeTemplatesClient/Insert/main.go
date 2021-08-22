@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.InsertNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNodeTemplateRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {

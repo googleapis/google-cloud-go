@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.CancelBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CancelBuildRequest.
 	}
 	resp, err := c.CancelBuild(ctx, req)
 	if err != nil {

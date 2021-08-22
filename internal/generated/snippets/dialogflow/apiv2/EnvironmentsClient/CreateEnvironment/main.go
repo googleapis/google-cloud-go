@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateEnvironmentRequest.
 	}
 	resp, err := c.CreateEnvironment(ctx, req)
 	if err != nil {

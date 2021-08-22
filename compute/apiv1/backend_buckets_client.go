@@ -26,6 +26,7 @@ import (
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -240,8 +241,8 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -288,8 +289,8 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -339,8 +340,8 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -380,8 +381,8 @@ func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBa
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -431,8 +432,8 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -504,8 +505,8 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -570,8 +571,8 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -625,8 +626,8 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)

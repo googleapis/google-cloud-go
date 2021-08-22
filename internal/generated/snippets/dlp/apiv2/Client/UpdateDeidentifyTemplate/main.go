@@ -35,6 +35,7 @@ func main() {
 
 	req := &dlppb.UpdateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#UpdateDeidentifyTemplateRequest.
 	}
 	resp, err := c.UpdateDeidentifyTemplate(ctx, req)
 	if err != nil {

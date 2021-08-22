@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
 	if err != nil {

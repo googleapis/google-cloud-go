@@ -36,6 +36,7 @@ func main() {
 
 	req := &channelpb.ListPurchasableOffersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListPurchasableOffersRequest.
 	}
 	it := c.ListPurchasableOffers(ctx, req)
 	for {

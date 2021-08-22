@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.DeletePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeletePrivateConnectionRequest.
 	}
 	op, err := c.DeletePrivateConnection(ctx, req)
 	if err != nil {

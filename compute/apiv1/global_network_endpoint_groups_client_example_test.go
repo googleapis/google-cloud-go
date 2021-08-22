@@ -46,6 +46,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
 
 	req := &computepb.AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.AttachNetworkEndpoints(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_Delete() {
 
 	req := &computepb.DeleteGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
 
 	req := &computepb.DetachNetworkEndpointsGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachNetworkEndpointsGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.DetachNetworkEndpoints(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_Get() {
 
 	req := &computepb.GetGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_Insert() {
 
 	req := &computepb.InsertGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -141,6 +146,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_List() {
 
 	req := &computepb.ListGlobalNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListGlobalNetworkEndpointGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -166,6 +172,7 @@ func ExampleGlobalNetworkEndpointGroupsClient_ListNetworkEndpoints() {
 
 	req := &computepb.ListNetworkEndpointsGlobalNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworkEndpointsGlobalNetworkEndpointGroupsRequest.
 	}
 	it := c.ListNetworkEndpoints(ctx, req)
 	for {

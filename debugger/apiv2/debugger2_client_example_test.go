@@ -45,6 +45,7 @@ func ExampleDebugger2Client_SetBreakpoint() {
 
 	req := &clouddebuggerpb.SetBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#SetBreakpointRequest.
 	}
 	resp, err := c.SetBreakpoint(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleDebugger2Client_GetBreakpoint() {
 
 	req := &clouddebuggerpb.GetBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#GetBreakpointRequest.
 	}
 	resp, err := c.GetBreakpoint(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleDebugger2Client_DeleteBreakpoint() {
 
 	req := &clouddebuggerpb.DeleteBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#DeleteBreakpointRequest.
 	}
 	err = c.DeleteBreakpoint(ctx, req)
 	if err != nil {
@@ -100,6 +103,7 @@ func ExampleDebugger2Client_ListBreakpoints() {
 
 	req := &clouddebuggerpb.ListBreakpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListBreakpointsRequest.
 	}
 	resp, err := c.ListBreakpoints(ctx, req)
 	if err != nil {
@@ -119,6 +123,7 @@ func ExampleDebugger2Client_ListDebuggees() {
 
 	req := &clouddebuggerpb.ListDebuggeesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListDebuggeesRequest.
 	}
 	resp, err := c.ListDebuggees(ctx, req)
 	if err != nil {
