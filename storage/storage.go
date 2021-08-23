@@ -40,6 +40,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -92,6 +93,11 @@ type Client struct {
 	scheme string
 	// ReadHost is the default host used on the reader.
 	readHost string
+
+	// gc is an optional gRPC-based, GAPIC client.
+	//
+	// This is an experimental field and not intended for public use.
+	gc *gapic.Client
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -164,6 +170,34 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
+// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
+type hybridClientOptions struct {
+	HTTPOpts []option.ClientOption
+	GRPCOpts []option.ClientOption
+}
+
+// newHybridClient creates a new Storage client that initializes a gRPC-based client
+// for media upload and download operations.
+//
+// This is an experimental API and not intended for public use.
+func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
+	if opts == nil {
+		opts = &hybridClientOptions{}
+	}
+	c, err := NewClient(ctx, opts.HTTPOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.gc = g
+
+	return c, nil
+}
+
 // Close closes the Client.
 //
 // Close need not be called at program exit.
@@ -171,6 +205,9 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	if c.gc != nil {
+		return c.gc.Close()
+	}
 	return nil
 }
 
@@ -1648,4 +1685,11 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 		return "", err
 	}
 	return res.EmailAddress, nil
+}
+
+// bucket formats the given project ID and bucket ID into a Bucket resource
+// name. This is the format necessary for the gRPC API as it conforms to the
+// Resource-oriented design practices in https://google.aip.dev/121.
+func bucket(p, b string) string {
+	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
 }

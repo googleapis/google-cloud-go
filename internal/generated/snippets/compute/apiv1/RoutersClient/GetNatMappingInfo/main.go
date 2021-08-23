@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.GetNatMappingInfoRoutersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNatMappingInfoRoutersRequest.
 	}
 	it := c.GetNatMappingInfo(ctx, req)
 	for {

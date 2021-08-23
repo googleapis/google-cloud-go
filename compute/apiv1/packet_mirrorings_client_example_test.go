@@ -46,6 +46,7 @@ func ExamplePacketMirroringsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListPacketMirroringsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListPacketMirroringsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExamplePacketMirroringsClient_Delete() {
 
 	req := &computepb.DeletePacketMirroringRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePacketMirroringRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExamplePacketMirroringsClient_Get() {
 
 	req := &computepb.GetPacketMirroringRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPacketMirroringRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExamplePacketMirroringsClient_Insert() {
 
 	req := &computepb.InsertPacketMirroringRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPacketMirroringRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExamplePacketMirroringsClient_List() {
 
 	req := &computepb.ListPacketMirroringsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPacketMirroringsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExamplePacketMirroringsClient_Patch() {
 
 	req := &computepb.PatchPacketMirroringRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPacketMirroringRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExamplePacketMirroringsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsPacketMirroringRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsPacketMirroringRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

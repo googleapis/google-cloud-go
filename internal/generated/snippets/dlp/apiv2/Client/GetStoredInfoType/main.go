@@ -35,6 +35,7 @@ func main() {
 
 	req := &dlppb.GetStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#GetStoredInfoTypeRequest.
 	}
 	resp, err := c.GetStoredInfoType(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.DeleteProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteProfileRequest.
 	}
 	err = c.DeleteProfile(ctx, req)
 	if err != nil {

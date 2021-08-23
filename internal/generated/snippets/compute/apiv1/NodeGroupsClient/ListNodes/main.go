@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListNodesNodeGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNodesNodeGroupsRequest.
 	}
 	it := c.ListNodes(ctx, req)
 	for {

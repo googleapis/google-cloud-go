@@ -45,6 +45,7 @@ func ExamplePhishingProtectionServiceV1Beta1Client_ReportPhishing() {
 
 	req := &phishingprotectionpb.ReportPhishingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1#ReportPhishingRequest.
 	}
 	resp, err := c.ReportPhishing(ctx, req)
 	if err != nil {

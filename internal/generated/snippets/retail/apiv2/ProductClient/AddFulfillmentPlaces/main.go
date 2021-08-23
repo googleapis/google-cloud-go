@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.AddFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddFulfillmentPlacesRequest.
 	}
 	op, err := c.AddFulfillmentPlaces(ctx, req)
 	if err != nil {

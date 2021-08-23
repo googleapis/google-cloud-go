@@ -35,6 +35,7 @@ func main() {
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#CreateSourceRequest.
 	}
 	resp, err := c.CreateSource(ctx, req)
 	if err != nil {

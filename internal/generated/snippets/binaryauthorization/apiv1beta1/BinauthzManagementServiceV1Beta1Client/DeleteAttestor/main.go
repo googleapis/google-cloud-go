@@ -35,6 +35,7 @@ func main() {
 
 	req := &binaryauthorizationpb.DeleteAttestorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1#DeleteAttestorRequest.
 	}
 	err = c.DeleteAttestor(ctx, req)
 	if err != nil {

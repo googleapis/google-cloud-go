@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.CancelCustomJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelCustomJobRequest.
 	}
 	err = c.CancelCustomJob(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetCommonInstanceMetadataProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCommonInstanceMetadataProjectRequest.
 	}
 	resp, err := c.SetCommonInstanceMetadata(ctx, req)
 	if err != nil {

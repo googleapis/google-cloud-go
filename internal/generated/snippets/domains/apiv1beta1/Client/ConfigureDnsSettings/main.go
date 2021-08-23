@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.ConfigureDnsSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ConfigureDnsSettingsRequest.
 	}
 	op, err := c.ConfigureDnsSettings(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &websecurityscannerpb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#UpdateScanConfigRequest.
 	}
 	resp, err := c.UpdateScanConfig(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &binaryauthorizationpb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {

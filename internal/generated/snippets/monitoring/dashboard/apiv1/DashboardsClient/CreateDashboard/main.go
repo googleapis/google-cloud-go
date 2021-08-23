@@ -35,6 +35,7 @@ func main() {
 
 	req := &dashboardpb.CreateDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#CreateDashboardRequest.
 	}
 	resp, err := c.CreateDashboard(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.FinalizeStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#FinalizeStreamRequest.
 	}
 	err = c.FinalizeStream(ctx, req)
 	if err != nil {

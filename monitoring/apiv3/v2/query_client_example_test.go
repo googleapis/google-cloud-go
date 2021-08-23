@@ -46,6 +46,7 @@ func ExampleQueryClient_QueryTimeSeries() {
 
 	req := &monitoringpb.QueryTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#QueryTimeSeriesRequest.
 	}
 	it := c.QueryTimeSeries(ctx, req)
 	for {

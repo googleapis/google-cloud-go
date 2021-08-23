@@ -36,6 +36,7 @@ func main() {
 
 	req := &documentaipb.ListProcessorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ListProcessorsRequest.
 	}
 	it := c.ListProcessors(ctx, req)
 	for {

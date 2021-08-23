@@ -46,6 +46,7 @@ func ExampleProfileClient_ListProfiles() {
 
 	req := &talentpb.ListProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListProfilesRequest.
 	}
 	it := c.ListProfiles(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleProfileClient_CreateProfile() {
 
 	req := &talentpb.CreateProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateProfileRequest.
 	}
 	resp, err := c.CreateProfile(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleProfileClient_GetProfile() {
 
 	req := &talentpb.GetProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetProfileRequest.
 	}
 	resp, err := c.GetProfile(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleProfileClient_UpdateProfile() {
 
 	req := &talentpb.UpdateProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateProfileRequest.
 	}
 	resp, err := c.UpdateProfile(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleProfileClient_DeleteProfile() {
 
 	req := &talentpb.DeleteProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteProfileRequest.
 	}
 	err = c.DeleteProfile(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleProfileClient_SearchProfiles() {
 
 	req := &talentpb.SearchProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#SearchProfilesRequest.
 	}
 	resp, err := c.SearchProfiles(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.UpdateLogMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateLogMetricRequest.
 	}
 	resp, err := c.UpdateLogMetric(ctx, req)
 	if err != nil {

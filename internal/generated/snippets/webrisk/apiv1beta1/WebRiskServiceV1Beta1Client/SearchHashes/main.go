@@ -35,6 +35,7 @@ func main() {
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.ImportTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ImportTestCasesRequest.
 	}
 	op, err := c.ImportTestCases(ctx, req)
 	if err != nil {
