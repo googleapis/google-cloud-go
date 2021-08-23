@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetServiceAccountInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetServiceAccountInstanceRequest.
 	}
 	resp, err := c.SetServiceAccount(ctx, req)
 	if err != nil {

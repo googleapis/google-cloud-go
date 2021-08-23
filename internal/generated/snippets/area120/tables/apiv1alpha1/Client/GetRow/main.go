@@ -35,6 +35,7 @@ func main() {
 
 	req := &tablespb.GetRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetRowRequest.
 	}
 	resp, err := c.GetRow(ctx, req)
 	if err != nil {

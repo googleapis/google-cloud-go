@@ -36,6 +36,7 @@ func main() {
 
 	req := &datastreampb.ListPrivateConnectionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListPrivateConnectionsRequest.
 	}
 	it := c.ListPrivateConnections(ctx, req)
 	for {

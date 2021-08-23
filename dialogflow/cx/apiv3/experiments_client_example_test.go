@@ -46,6 +46,7 @@ func ExampleExperimentsClient_ListExperiments() {
 
 	req := &cxpb.ListExperimentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListExperimentsRequest.
 	}
 	it := c.ListExperiments(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleExperimentsClient_GetExperiment() {
 
 	req := &cxpb.GetExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetExperimentRequest.
 	}
 	resp, err := c.GetExperiment(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleExperimentsClient_CreateExperiment() {
 
 	req := &cxpb.CreateExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateExperimentRequest.
 	}
 	resp, err := c.CreateExperiment(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleExperimentsClient_UpdateExperiment() {
 
 	req := &cxpb.UpdateExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateExperimentRequest.
 	}
 	resp, err := c.UpdateExperiment(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleExperimentsClient_DeleteExperiment() {
 
 	req := &cxpb.DeleteExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteExperimentRequest.
 	}
 	err = c.DeleteExperiment(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleExperimentsClient_StartExperiment() {
 
 	req := &cxpb.StartExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#StartExperimentRequest.
 	}
 	resp, err := c.StartExperiment(ctx, req)
 	if err != nil {
@@ -164,6 +170,7 @@ func ExampleExperimentsClient_StopExperiment() {
 
 	req := &cxpb.StopExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#StopExperimentRequest.
 	}
 	resp, err := c.StopExperiment(ctx, req)
 	if err != nil {

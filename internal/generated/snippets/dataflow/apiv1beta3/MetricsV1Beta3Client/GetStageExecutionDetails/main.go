@@ -36,6 +36,7 @@ func main() {
 
 	req := &dataflowpb.GetStageExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetStageExecutionDetailsRequest.
 	}
 	it := c.GetStageExecutionDetails(ctx, req)
 	for {

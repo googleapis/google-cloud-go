@@ -35,6 +35,7 @@ func main() {
 
 	req := &databasepb.UpdateDatabaseDdlRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#UpdateDatabaseDdlRequest.
 	}
 	op, err := c.UpdateDatabaseDdl(ctx, req)
 	if err != nil {

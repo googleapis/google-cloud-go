@@ -46,6 +46,7 @@ func ExampleRegionTargetHttpsProxiesClient_Delete() {
 
 	req := &computepb.DeleteRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionTargetHttpsProxiesClient_Get() {
 
 	req := &computepb.GetRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionTargetHttpsProxiesClient_Insert() {
 
 	req := &computepb.InsertRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionTargetHttpsProxiesClient_List() {
 
 	req := &computepb.ListRegionTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionTargetHttpsProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 
 	req := &computepb.SetSslCertificatesRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslCertificatesRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.SetSslCertificates(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleRegionTargetHttpsProxiesClient_SetUrlMap() {
 
 	req := &computepb.SetUrlMapRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUrlMapRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.SetUrlMap(ctx, req)
 	if err != nil {

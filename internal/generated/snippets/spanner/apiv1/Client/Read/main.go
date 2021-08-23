@@ -35,6 +35,7 @@ func main() {
 
 	req := &spannerpb.ReadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ReadRequest.
 	}
 	resp, err := c.Read(ctx, req)
 	if err != nil {

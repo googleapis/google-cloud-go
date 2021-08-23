@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.ResetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#ResetInstanceRequest.
 	}
 	op, err := c.ResetInstance(ctx, req)
 	if err != nil {

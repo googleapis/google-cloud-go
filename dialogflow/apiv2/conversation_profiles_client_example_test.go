@@ -46,6 +46,7 @@ func ExampleConversationProfilesClient_ListConversationProfiles() {
 
 	req := &dialogflowpb.ListConversationProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationProfilesRequest.
 	}
 	it := c.ListConversationProfiles(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleConversationProfilesClient_GetConversationProfile() {
 
 	req := &dialogflowpb.GetConversationProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationProfileRequest.
 	}
 	resp, err := c.GetConversationProfile(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleConversationProfilesClient_CreateConversationProfile() {
 
 	req := &dialogflowpb.CreateConversationProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationProfileRequest.
 	}
 	resp, err := c.CreateConversationProfile(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleConversationProfilesClient_UpdateConversationProfile() {
 
 	req := &dialogflowpb.UpdateConversationProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateConversationProfileRequest.
 	}
 	resp, err := c.UpdateConversationProfile(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 
 	req := &dialogflowpb.DeleteConversationProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteConversationProfileRequest.
 	}
 	err = c.DeleteConversationProfile(ctx, req)
 	if err != nil {

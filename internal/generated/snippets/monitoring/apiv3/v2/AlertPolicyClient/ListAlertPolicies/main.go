@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListAlertPoliciesRequest.
 	}
 	it := c.ListAlertPolicies(ctx, req)
 	for {

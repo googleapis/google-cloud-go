@@ -46,6 +46,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Delete() {
 
 	req := &computepb.DeleteRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Get() {
 
 	req := &computepb.GetRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Insert() {
 
 	req := &computepb.InsertRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionNetworkEndpointGroupsClient_List() {
 
 	req := &computepb.ListRegionNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionNetworkEndpointGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

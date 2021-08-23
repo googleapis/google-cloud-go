@@ -35,6 +35,7 @@ func main() {
 
 	req := &credentialspb.SignBlobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignBlobRequest.
 	}
 	resp, err := c.SignBlob(ctx, req)
 	if err != nil {

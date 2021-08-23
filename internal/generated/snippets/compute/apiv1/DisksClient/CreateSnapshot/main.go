@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.CreateSnapshotDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateSnapshotDiskRequest.
 	}
 	resp, err := c.CreateSnapshot(ctx, req)
 	if err != nil {

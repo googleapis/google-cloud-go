@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.StartInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartInstanceRequest.
 	}
 	resp, err := c.Start(ctx, req)
 	if err != nil {

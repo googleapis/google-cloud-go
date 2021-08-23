@@ -46,6 +46,7 @@ func ExampleZonesClient_Get() {
 
 	req := &computepb.GetZoneRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetZoneRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleZonesClient_List() {
 
 	req := &computepb.ListZonesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListZonesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

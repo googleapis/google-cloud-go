@@ -36,6 +36,7 @@ func main() {
 
 	req := &metastorepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {

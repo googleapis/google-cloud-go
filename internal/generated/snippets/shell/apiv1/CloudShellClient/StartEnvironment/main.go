@@ -35,6 +35,7 @@ func main() {
 
 	req := &shellpb.StartEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#StartEnvironmentRequest.
 	}
 	op, err := c.StartEnvironment(ctx, req)
 	if err != nil {

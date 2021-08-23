@@ -35,6 +35,7 @@ func main() {
 
 	req := &accessapprovalpb.DismissApprovalRequestMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#DismissApprovalRequestMessage.
 	}
 	resp, err := c.DismissApprovalRequest(ctx, req)
 	if err != nil {

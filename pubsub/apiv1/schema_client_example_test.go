@@ -47,6 +47,7 @@ func ExampleSchemaClient_CreateSchema() {
 
 	req := &pubsubpb.CreateSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#CreateSchemaRequest.
 	}
 	resp, err := c.CreateSchema(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleSchemaClient_GetSchema() {
 
 	req := &pubsubpb.GetSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetSchemaRequest.
 	}
 	resp, err := c.GetSchema(ctx, req)
 	if err != nil {
@@ -85,6 +87,7 @@ func ExampleSchemaClient_ListSchemas() {
 
 	req := &pubsubpb.ListSchemasRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSchemasRequest.
 	}
 	it := c.ListSchemas(ctx, req)
 	for {
@@ -110,6 +113,7 @@ func ExampleSchemaClient_DeleteSchema() {
 
 	req := &pubsubpb.DeleteSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSchemaRequest.
 	}
 	err = c.DeleteSchema(ctx, req)
 	if err != nil {
@@ -127,6 +131,7 @@ func ExampleSchemaClient_ValidateSchema() {
 
 	req := &pubsubpb.ValidateSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ValidateSchemaRequest.
 	}
 	resp, err := c.ValidateSchema(ctx, req)
 	if err != nil {
@@ -146,6 +151,7 @@ func ExampleSchemaClient_ValidateMessage() {
 
 	req := &pubsubpb.ValidateMessageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ValidateMessageRequest.
 	}
 	resp, err := c.ValidateMessage(ctx, req)
 	if err != nil {
@@ -165,6 +171,7 @@ func ExampleSchemaClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -184,6 +191,7 @@ func ExampleSchemaClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -203,6 +211,7 @@ func ExampleSchemaClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.UpdateAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAndroidAppDataStreamRequest.
 	}
 	resp, err := c.UpdateAndroidAppDataStream(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.GetProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {

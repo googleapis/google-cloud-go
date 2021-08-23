@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.UpdateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#UpdateWorkerPoolRequest.
 	}
 	op, err := c.UpdateWorkerPool(ctx, req)
 	if err != nil {

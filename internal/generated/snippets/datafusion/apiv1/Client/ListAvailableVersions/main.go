@@ -36,6 +36,7 @@ func main() {
 
 	req := &datafusionpb.ListAvailableVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#ListAvailableVersionsRequest.
 	}
 	it := c.ListAvailableVersions(ctx, req)
 	for {

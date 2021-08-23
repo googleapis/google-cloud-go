@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.DeleteProcessorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DeleteProcessorRequest.
 	}
 	op, err := c.DeleteProcessor(ctx, req)
 	if err != nil {

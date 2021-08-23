@@ -35,6 +35,7 @@ func main() {
 
 	req := &iotpb.UnbindDeviceFromGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UnbindDeviceFromGatewayRequest.
 	}
 	resp, err := c.UnbindDeviceFromGateway(ctx, req)
 	if err != nil {
