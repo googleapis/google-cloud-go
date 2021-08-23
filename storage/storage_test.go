@@ -1393,7 +1393,7 @@ func TestOperationsWithEndpoint(t *testing.T) {
 		}
 
 	})
-	//defer close()
+	defer closeServer()
 
 	testCases := []struct {
 		desc                string
@@ -1548,23 +1548,5 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			}
 		})
 
-	}
-
-	closeServer()
-}
-
-func newTestServerAt(handler func(w http.ResponseWriter, r *http.Request)) (string, *http.Client, func()) {
-	ts := httptest.NewTLSServer(http.HandlerFunc(handler))
-	address := ts.Listener.Addr().String()
-	tlsConf := &tls.Config{InsecureSkipVerify: true}
-	tr := &http.Transport{
-		TLSClientConfig: tlsConf,
-		DialTLS: func(netw, addr string) (net.Conn, error) {
-			return tls.Dial("tcp", address, tlsConf)
-		},
-	}
-	return address, &http.Client{Transport: tr}, func() {
-		tr.CloseIdleConnections()
-		ts.Close()
 	}
 }
