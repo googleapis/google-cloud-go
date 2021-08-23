@@ -793,12 +793,18 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 
 	obj := gc.Bucket(grpcBucketName).Object(name)
 
-	// Using a negative length to indicate reading to the end.
-	r, err := obj.NewRangeReader(ctx, 0, -1)
+	r, err := obj.NewReader(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer r.Close()
+
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(len(content)) {
+		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
+	}
 
 	b := new(bytes.Buffer)
 	b.Grow(len(content))
@@ -815,6 +821,10 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 	want := string(content)
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
 	}
 }
 
@@ -850,6 +860,13 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 	}
 	defer r.Close()
 
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(len(content)) {
+		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
+	}
+
 	bufSize := len(content)
 	buf := make([]byte, bufSize)
 
@@ -866,6 +883,10 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 			t.Fatal(err)
 		}
 		offset += n
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
 	}
 
 	// TODO: Verify content with the checksums.
@@ -905,6 +926,13 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	}
 	defer r.Close()
 
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(offset) {
+		t.Errorf("got %v bytes remaining, want %v", rem, offset)
+	}
+
 	b := new(bytes.Buffer)
 	b.Grow(offset)
 
@@ -920,6 +948,10 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 	want := string(content[len(content)-offset:])
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
 	}
 }
 
