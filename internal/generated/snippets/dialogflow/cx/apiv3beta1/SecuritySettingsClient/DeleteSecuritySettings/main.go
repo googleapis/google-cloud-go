@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.DeleteSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteSecuritySettingsRequest.
 	}
 	err = c.DeleteSecuritySettings(ctx, req)
 	if err != nil {

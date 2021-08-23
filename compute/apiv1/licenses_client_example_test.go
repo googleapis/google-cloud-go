@@ -46,6 +46,7 @@ func ExampleLicensesClient_Delete() {
 
 	req := &computepb.DeleteLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteLicenseRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleLicensesClient_Get() {
 
 	req := &computepb.GetLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetLicenseRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleLicensesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyLicenseRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleLicensesClient_Insert() {
 
 	req := &computepb.InsertLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertLicenseRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleLicensesClient_List() {
 
 	req := &computepb.ListLicensesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListLicensesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -147,6 +152,7 @@ func ExampleLicensesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyLicenseRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -166,6 +172,7 @@ func ExampleLicensesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsLicenseRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -46,6 +46,7 @@ func ExampleClient_ListConnectionProfiles() {
 
 	req := &datastreampb.ListConnectionProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListConnectionProfilesRequest.
 	}
 	it := c.ListConnectionProfiles(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetConnectionProfile() {
 
 	req := &datastreampb.GetConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetConnectionProfileRequest.
 	}
 	resp, err := c.GetConnectionProfile(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateConnectionProfile() {
 
 	req := &datastreampb.CreateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#CreateConnectionProfileRequest.
 	}
 	op, err := c.CreateConnectionProfile(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_UpdateConnectionProfile() {
 
 	req := &datastreampb.UpdateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#UpdateConnectionProfileRequest.
 	}
 	op, err := c.UpdateConnectionProfile(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_DeleteConnectionProfile() {
 
 	req := &datastreampb.DeleteConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeleteConnectionProfileRequest.
 	}
 	op, err := c.DeleteConnectionProfile(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleClient_DiscoverConnectionProfile() {
 
 	req := &datastreampb.DiscoverConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DiscoverConnectionProfileRequest.
 	}
 	resp, err := c.DiscoverConnectionProfile(ctx, req)
 	if err != nil {
@@ -179,6 +185,7 @@ func ExampleClient_ListStreams() {
 
 	req := &datastreampb.ListStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListStreamsRequest.
 	}
 	it := c.ListStreams(ctx, req)
 	for {
@@ -204,6 +211,7 @@ func ExampleClient_GetStream() {
 
 	req := &datastreampb.GetStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetStreamRequest.
 	}
 	resp, err := c.GetStream(ctx, req)
 	if err != nil {
@@ -223,6 +231,7 @@ func ExampleClient_CreateStream() {
 
 	req := &datastreampb.CreateStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#CreateStreamRequest.
 	}
 	op, err := c.CreateStream(ctx, req)
 	if err != nil {
@@ -247,6 +256,7 @@ func ExampleClient_UpdateStream() {
 
 	req := &datastreampb.UpdateStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#UpdateStreamRequest.
 	}
 	op, err := c.UpdateStream(ctx, req)
 	if err != nil {
@@ -271,6 +281,7 @@ func ExampleClient_DeleteStream() {
 
 	req := &datastreampb.DeleteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeleteStreamRequest.
 	}
 	op, err := c.DeleteStream(ctx, req)
 	if err != nil {
@@ -293,6 +304,7 @@ func ExampleClient_FetchErrors() {
 
 	req := &datastreampb.FetchErrorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#FetchErrorsRequest.
 	}
 	op, err := c.FetchErrors(ctx, req)
 	if err != nil {
@@ -317,6 +329,7 @@ func ExampleClient_FetchStaticIps() {
 
 	req := &datastreampb.FetchStaticIpsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#FetchStaticIpsRequest.
 	}
 	it := c.FetchStaticIps(ctx, req)
 	for {
@@ -342,6 +355,7 @@ func ExampleClient_CreatePrivateConnection() {
 
 	req := &datastreampb.CreatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#CreatePrivateConnectionRequest.
 	}
 	op, err := c.CreatePrivateConnection(ctx, req)
 	if err != nil {
@@ -366,6 +380,7 @@ func ExampleClient_GetPrivateConnection() {
 
 	req := &datastreampb.GetPrivateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetPrivateConnectionRequest.
 	}
 	resp, err := c.GetPrivateConnection(ctx, req)
 	if err != nil {
@@ -385,6 +400,7 @@ func ExampleClient_ListPrivateConnections() {
 
 	req := &datastreampb.ListPrivateConnectionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListPrivateConnectionsRequest.
 	}
 	it := c.ListPrivateConnections(ctx, req)
 	for {
@@ -410,6 +426,7 @@ func ExampleClient_DeletePrivateConnection() {
 
 	req := &datastreampb.DeletePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeletePrivateConnectionRequest.
 	}
 	op, err := c.DeletePrivateConnection(ctx, req)
 	if err != nil {
@@ -432,6 +449,7 @@ func ExampleClient_CreateRoute() {
 
 	req := &datastreampb.CreateRouteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#CreateRouteRequest.
 	}
 	op, err := c.CreateRoute(ctx, req)
 	if err != nil {
@@ -456,6 +474,7 @@ func ExampleClient_GetRoute() {
 
 	req := &datastreampb.GetRouteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetRouteRequest.
 	}
 	resp, err := c.GetRoute(ctx, req)
 	if err != nil {
@@ -475,6 +494,7 @@ func ExampleClient_ListRoutes() {
 
 	req := &datastreampb.ListRoutesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListRoutesRequest.
 	}
 	it := c.ListRoutes(ctx, req)
 	for {
@@ -500,6 +520,7 @@ func ExampleClient_DeleteRoute() {
 
 	req := &datastreampb.DeleteRouteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeleteRouteRequest.
 	}
 	op, err := c.DeleteRoute(ctx, req)
 	if err != nil {

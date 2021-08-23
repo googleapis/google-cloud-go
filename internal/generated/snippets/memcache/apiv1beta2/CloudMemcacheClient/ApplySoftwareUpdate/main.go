@@ -35,6 +35,7 @@ func main() {
 
 	req := &memcachepb.ApplySoftwareUpdateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#ApplySoftwareUpdateRequest.
 	}
 	op, err := c.ApplySoftwareUpdate(ctx, req)
 	if err != nil {

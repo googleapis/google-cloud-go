@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.SuggestArticlesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestArticlesRequest.
 	}
 	resp, err := c.SuggestArticles(ctx, req)
 	if err != nil {

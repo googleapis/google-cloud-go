@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#PurgeUserEventsRequest.
 	}
 	op, err := c.PurgeUserEvents(ctx, req)
 	if err != nil {

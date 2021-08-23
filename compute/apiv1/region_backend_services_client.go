@@ -26,6 +26,7 @@ import (
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -226,8 +227,8 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -267,8 +268,8 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -311,8 +312,8 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -362,8 +363,8 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -435,8 +436,8 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -501,8 +502,8 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -556,8 +557,8 @@ func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)

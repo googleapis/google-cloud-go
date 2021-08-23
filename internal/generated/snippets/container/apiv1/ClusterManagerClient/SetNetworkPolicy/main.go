@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetNetworkPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetNetworkPolicyRequest.
 	}
 	resp, err := c.SetNetworkPolicy(ctx, req)
 	if err != nil {

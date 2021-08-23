@@ -40,6 +40,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -90,10 +91,13 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// EnvHost is the host set on the STORAGE_EMULATOR_HOST variable.
-	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
+
+	// gc is an optional gRPC-based, GAPIC client.
+	//
+	// This is an experimental field and not intended for public use.
+	gc *gapic.Client
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -103,7 +107,6 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	var host, readHost, scheme string
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -112,23 +115,35 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
 	// manually configure the default endpoint options on the http client. Furthermore, we
 	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
-	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
-		scheme = "https"
-		readHost = "storage.googleapis.com"
-
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
 
 		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
-		scheme = "http"
-		readHost = host
+		var hostURL *url.URL
 
+		if strings.Contains(host, "://") {
+			h, err := url.Parse(host)
+			if err != nil {
+				return nil, err
+			}
+			hostURL = h
+		} else {
+			// Add scheme for user if not supplied in STORAGE_EMULATOR_HOST
+			// URL is only parsed correctly if it has a scheme, so we build it ourselves
+			hostURL = &url.URL{Scheme: "http", Host: host}
+		}
+
+		hostURL.Path = "storage/v1/"
+		endpoint := hostURL.String()
+
+		// Append the emulator host as default endpoint for the user
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint(host))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(host))
+		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
@@ -141,20 +156,46 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	// Update readHost with the chosen endpoint.
+	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
-	readHost = u.Host
 
 	return &Client{
 		hc:       hc,
 		raw:      rawService,
-		scheme:   scheme,
-		envHost:  host,
-		readHost: readHost,
+		scheme:   u.Scheme,
+		readHost: u.Host,
 	}, nil
+}
+
+// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
+type hybridClientOptions struct {
+	HTTPOpts []option.ClientOption
+	GRPCOpts []option.ClientOption
+}
+
+// newHybridClient creates a new Storage client that initializes a gRPC-based client
+// for media upload and download operations.
+//
+// This is an experimental API and not intended for public use.
+func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
+	if opts == nil {
+		opts = &hybridClientOptions{}
+	}
+	c, err := NewClient(ctx, opts.HTTPOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.gc = g
+
+	return c, nil
 }
 
 // Close closes the Client.
@@ -164,6 +205,9 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	if c.gc != nil {
+		return c.gc.Close()
+	}
 	return nil
 }
 
@@ -1641,4 +1685,11 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 		return "", err
 	}
 	return res.EmailAddress, nil
+}
+
+// bucket formats the given project ID and bucket ID into a Bucket resource
+// name. This is the format necessary for the gRPC API as it conforms to the
+// Resource-oriented design practices in https://google.aip.dev/121.
+func bucket(p, b string) string {
+	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
 }

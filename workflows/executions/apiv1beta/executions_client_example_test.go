@@ -46,6 +46,7 @@ func ExampleClient_ListExecutions() {
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#ListExecutionsRequest.
 	}
 	it := c.ListExecutions(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_CreateExecution() {
 
 	req := &executionspb.CreateExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#CreateExecutionRequest.
 	}
 	resp, err := c.CreateExecution(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_GetExecution() {
 
 	req := &executionspb.GetExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#GetExecutionRequest.
 	}
 	resp, err := c.GetExecution(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleClient_CancelExecution() {
 
 	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#CancelExecutionRequest.
 	}
 	resp, err := c.CancelExecution(ctx, req)
 	if err != nil {

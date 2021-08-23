@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SimulateMaintenanceEventInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SimulateMaintenanceEventInstanceRequest.
 	}
 	resp, err := c.SimulateMaintenanceEvent(ctx, req)
 	if err != nil {

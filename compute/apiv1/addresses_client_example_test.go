@@ -46,6 +46,7 @@ func ExampleAddressesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListAddressesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAddressesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleAddressesClient_Delete() {
 
 	req := &computepb.DeleteAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAddressRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleAddressesClient_Get() {
 
 	req := &computepb.GetAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetAddressRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleAddressesClient_Insert() {
 
 	req := &computepb.InsertAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertAddressRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleAddressesClient_List() {
 
 	req := &computepb.ListAddressesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAddressesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

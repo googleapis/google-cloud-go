@@ -46,6 +46,7 @@ func ExampleGroupClient_ListGroups() {
 
 	req := &monitoringpb.ListGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListGroupsRequest.
 	}
 	it := c.ListGroups(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleGroupClient_GetGroup() {
 
 	req := &monitoringpb.GetGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetGroupRequest.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleGroupClient_CreateGroup() {
 
 	req := &monitoringpb.CreateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateGroupRequest.
 	}
 	resp, err := c.CreateGroup(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleGroupClient_UpdateGroup() {
 
 	req := &monitoringpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateGroupRequest.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleGroupClient_DeleteGroup() {
 
 	req := &monitoringpb.DeleteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteGroupRequest.
 	}
 	err = c.DeleteGroup(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleGroupClient_ListGroupMembers() {
 
 	req := &monitoringpb.ListGroupMembersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListGroupMembersRequest.
 	}
 	it := c.ListGroupMembers(ctx, req)
 	for {

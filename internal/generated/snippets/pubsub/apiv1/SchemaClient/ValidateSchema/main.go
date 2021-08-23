@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.ValidateSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ValidateSchemaRequest.
 	}
 	resp, err := c.ValidateSchema(ctx, req)
 	if err != nil {

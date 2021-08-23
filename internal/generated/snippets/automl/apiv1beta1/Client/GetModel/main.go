@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.GetModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &secretmanagerpb.CreateSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#CreateSecretRequest.
 	}
 	resp, err := c.CreateSecret(ctx, req)
 	if err != nil {

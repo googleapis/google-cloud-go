@@ -35,6 +35,7 @@ func main() {
 
 	req := &recommenderpb.MarkInsightAcceptedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkInsightAcceptedRequest.
 	}
 	resp, err := c.MarkInsightAccepted(ctx, req)
 	if err != nil {

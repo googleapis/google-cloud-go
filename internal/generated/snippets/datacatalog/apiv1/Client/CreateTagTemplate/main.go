@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.CreateTagTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#CreateTagTemplateRequest.
 	}
 	resp, err := c.CreateTagTemplate(ctx, req)
 	if err != nil {

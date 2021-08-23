@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.DeleteWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteWorkflowTemplateRequest.
 	}
 	err = c.DeleteWorkflowTemplate(ctx, req)
 	if err != nil {

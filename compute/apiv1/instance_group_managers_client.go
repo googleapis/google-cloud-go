@@ -27,6 +27,7 @@ import (
 	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -351,8 +352,8 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -427,8 +428,8 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -493,8 +494,8 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -548,8 +549,8 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -596,8 +597,8 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -655,8 +656,8 @@ func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, r
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -703,8 +704,8 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -744,8 +745,8 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -797,8 +798,8 @@ func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -870,8 +871,8 @@ func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *compute
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -954,8 +955,8 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1038,8 +1039,8 @@ func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Conte
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1122,8 +1123,8 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1188,8 +1189,8 @@ func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *comput
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1243,8 +1244,8 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1302,8 +1303,8 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1361,8 +1362,8 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1416,8 +1417,8 @@ func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Contex
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1471,8 +1472,8 @@ func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, re
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1526,8 +1527,8 @@ func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.C
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
