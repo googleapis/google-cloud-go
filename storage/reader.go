@@ -233,6 +233,8 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		if !strings.HasPrefix(cr, "bytes ") || !strings.Contains(cr, "/") {
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
 		}
+		// Content range is formatted <first byte>-<last byte>/<total size>. We take
+		// the total size.
 		size, err = strconv.ParseInt(cr[strings.LastIndex(cr, "/")+1:], 10, 64)
 		if err != nil {
 			return nil, fmt.Errorf("storage: invalid Content-Range %q", cr)
@@ -514,9 +516,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	// object metadata.
 	msg := res.response
 	obj := msg.GetMetadata()
-	// This is the size of the content the Reader will convey. It can be the
-	// entire object, or just the size of the request range.
-	size := msg.GetContentRange().GetCompleteLength()
+	// This is the size of the entire object, even if only a range was requested.
+	size := obj.GetSize()
 
 	r.Attrs = ReaderObjectAttrs{
 		Size:            size,
@@ -527,9 +528,16 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		Metageneration:  obj.GetMetageneration(),
 		Generation:      obj.GetGeneration(),
 	}
-	if cr := msg.GetContentRange(); cr != nil {
+
+	r.size = size
+	cr := msg.GetContentRange()
+	if cr != nil {
 		r.Attrs.StartOffset = cr.GetStart()
+		r.remain = cr.GetEnd() - cr.GetStart() + 1
+	} else {
+		r.remain = size
 	}
+
 	// Only support checksums when reading an entire object, not a range.
 	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
 		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
@@ -539,8 +547,6 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	// Store the content from the first Recv in the client buffer for reading
 	// later.
 	r.leftovers = msg.GetChecksummedData().GetContent()
-	r.remain = size
-	r.size = size
 
 	return r, nil
 }
