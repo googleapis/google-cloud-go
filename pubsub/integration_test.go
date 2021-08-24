@@ -1982,8 +1982,7 @@ func TestIntegration_ValidateMessage(t *testing.T) {
 
 func TestIntegration_TopicRetention(t *testing.T) {
 	ctx := context.Background()
-	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
-	c := integrationTestClient(ctx, t, opts...)
+	c := integrationTestClient(ctx, t)
 	defer c.Close()
 
 	tc := TopicConfig{
