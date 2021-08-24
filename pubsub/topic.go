@@ -354,9 +354,8 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	}
 	if cfg.RetentionDuration != nil {
 		r := optional.ToDuration(cfg.RetentionDuration)
-		if r > 0 {
-			pt.MessageRetentionDuration = durationpb.New(r)
-		} else {
+		pt.MessageRetentionDuration = durationpb.New(r)
+		if r <= 0 {
 			// Clear MessageRetentionDuration.
 			pt.MessageRetentionDuration = nil
 		}
