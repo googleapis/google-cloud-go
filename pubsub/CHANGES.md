@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.15.0...pubsub/v1.16.0) (2021-08-24)
+
+
+### Features
+
+* **pubsub:** add topic message retention duration ([#4520](https://www.github.com/googleapis/google-cloud-go/issues/4520)) ([0440336](https://www.github.com/googleapis/google-cloud-go/commit/0440336c988a4401cbdb5d85a8cc7fca388831e5))
+
 ## [1.15.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.14.0...pubsub/v1.15.0) (2021-08-13)
 
 
