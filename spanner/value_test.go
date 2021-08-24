@@ -1334,7 +1334,7 @@ func TestDecodeValue(t *testing.T) {
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
 	var unmarshalledJSONStruct interface{}
 	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONStruct)
-	invalidJsonStr := `{wrong_json_string}`
+	invalidJSONStr := `{wrong_json_string}`
 	emptyArrayJSONStr := `[]`
 	var unmarshalledEmptyJSONArray interface{}
 	json.Unmarshal([]byte(emptyArrayJSONStr), &unmarshalledEmptyJSONArray)
@@ -1465,7 +1465,7 @@ func TestDecodeValue(t *testing.T) {
 		// JSON
 		{desc: "decode json to NullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: NullJSON{unmarshalledJSONStruct, true}},
 		{desc: "decode NULL to NullJSON", proto: nullProto(), protoType: jsonType(), want: NullJSON{}},
-		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: NullJSON{}, wantErr: true},
+		{desc: "decode an invalid json string", proto: stringProto(invalidJSONStr), protoType: jsonType(), want: NullJSON{}, wantErr: true},
 		{desc: "decode a json string with empty array to a NullJSON", proto: stringProto(emptyArrayJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledEmptyJSONArray, true}},
 		{desc: "decode a json string with null to a NullJSON", proto: stringProto(nullValueJSONStr), protoType: jsonType(), want: NullJSON{unmarshalledStructWithNull, true}},
 		// JSON ARRAY with []NullJSON
