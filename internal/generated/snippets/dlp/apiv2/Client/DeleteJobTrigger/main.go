@@ -35,6 +35,7 @@ func main() {
 
 	req := &dlppb.DeleteJobTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteJobTriggerRequest.
 	}
 	err = c.DeleteJobTrigger(ctx, req)
 	if err != nil {

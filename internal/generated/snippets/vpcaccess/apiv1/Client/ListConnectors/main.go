@@ -36,6 +36,7 @@ func main() {
 
 	req := &vpcaccesspb.ListConnectorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#ListConnectorsRequest.
 	}
 	it := c.ListConnectors(ctx, req)
 	for {

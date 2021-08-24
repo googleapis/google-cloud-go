@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateServiceRequest.
 	}
 	op, err := c.UpdateService(ctx, req)
 	if err != nil {

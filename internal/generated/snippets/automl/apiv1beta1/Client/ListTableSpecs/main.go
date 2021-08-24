@@ -36,6 +36,7 @@ func main() {
 
 	req := &automlpb.ListTableSpecsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListTableSpecsRequest.
 	}
 	it := c.ListTableSpecs(ctx, req)
 	for {

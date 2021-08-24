@@ -46,6 +46,7 @@ func ExampleMetricsV1Beta3Client_GetJobMetrics() {
 
 	req := &dataflowpb.GetJobMetricsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobMetricsRequest.
 	}
 	resp, err := c.GetJobMetrics(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleMetricsV1Beta3Client_GetJobExecutionDetails() {
 
 	req := &dataflowpb.GetJobExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobExecutionDetailsRequest.
 	}
 	it := c.GetJobExecutionDetails(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleMetricsV1Beta3Client_GetStageExecutionDetails() {
 
 	req := &dataflowpb.GetStageExecutionDetailsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetStageExecutionDetailsRequest.
 	}
 	it := c.GetStageExecutionDetails(ctx, req)
 	for {

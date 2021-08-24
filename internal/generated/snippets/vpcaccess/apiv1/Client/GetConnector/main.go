@@ -35,6 +35,7 @@ func main() {
 
 	req := &vpcaccesspb.GetConnectorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#GetConnectorRequest.
 	}
 	resp, err := c.GetConnector(ctx, req)
 	if err != nil {

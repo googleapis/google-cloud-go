@@ -36,6 +36,7 @@ func main() {
 
 	req := &channelpb.ListPurchasableSkusRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListPurchasableSkusRequest.
 	}
 	it := c.ListPurchasableSkus(ctx, req)
 	for {

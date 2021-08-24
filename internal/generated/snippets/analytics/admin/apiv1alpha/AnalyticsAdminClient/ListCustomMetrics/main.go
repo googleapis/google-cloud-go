@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListCustomMetricsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomMetricsRequest.
 	}
 	it := c.ListCustomMetrics(ctx, req)
 	for {

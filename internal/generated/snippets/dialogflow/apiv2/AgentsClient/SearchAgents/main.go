@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.SearchAgentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SearchAgentsRequest.
 	}
 	it := c.SearchAgents(ctx, req)
 	for {

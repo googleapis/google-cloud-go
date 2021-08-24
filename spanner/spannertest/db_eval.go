@@ -873,6 +873,12 @@ func evalLike(str, pat string) bool {
 
 	// Lean on regexp for simplicity.
 	pat = regexp.QuoteMeta(pat)
+	if !strings.HasPrefix(pat, "%") {
+		pat = "^" + pat
+	}
+	if !strings.HasSuffix(pat, "%") {
+		pat = pat + "$"
+	}
 	pat = strings.Replace(pat, "%", ".*", -1)
 	pat = strings.Replace(pat, "_", ".", -1)
 	match, err := regexp.MatchString(pat, str)

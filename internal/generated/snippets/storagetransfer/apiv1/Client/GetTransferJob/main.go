@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagetransferpb.GetTransferJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetTransferJobRequest.
 	}
 	resp, err := c.GetTransferJob(ctx, req)
 	if err != nil {

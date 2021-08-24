@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicedirectorypb.UpdateEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#UpdateEndpointRequest.
 	}
 	resp, err := c.UpdateEndpoint(ctx, req)
 	if err != nil {

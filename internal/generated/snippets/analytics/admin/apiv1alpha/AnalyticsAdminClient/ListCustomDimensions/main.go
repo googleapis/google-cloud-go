@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListCustomDimensionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomDimensionsRequest.
 	}
 	it := c.ListCustomDimensions(ctx, req)
 	for {

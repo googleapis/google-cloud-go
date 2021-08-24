@@ -35,6 +35,7 @@ func main() {
 
 	req := &websecurityscannerpb.GetFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#GetFindingRequest.
 	}
 	resp, err := c.GetFinding(ctx, req)
 	if err != nil {

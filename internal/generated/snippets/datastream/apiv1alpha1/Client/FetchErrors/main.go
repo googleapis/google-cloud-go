@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.FetchErrorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#FetchErrorsRequest.
 	}
 	op, err := c.FetchErrors(ctx, req)
 	if err != nil {

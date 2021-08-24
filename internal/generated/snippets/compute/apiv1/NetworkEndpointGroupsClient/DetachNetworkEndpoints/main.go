@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
 	resp, err := c.DetachNetworkEndpoints(ctx, req)
 	if err != nil {

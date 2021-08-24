@@ -36,6 +36,7 @@ func main() {
 
 	req := &transcoderpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {

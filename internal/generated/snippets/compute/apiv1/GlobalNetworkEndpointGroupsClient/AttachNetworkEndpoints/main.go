@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachNetworkEndpointsGlobalNetworkEndpointGroupRequest.
 	}
 	resp, err := c.AttachNetworkEndpoints(ctx, req)
 	if err != nil {

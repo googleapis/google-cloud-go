@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.GetDomainMappingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetDomainMappingRequest.
 	}
 	resp, err := c.GetDomainMapping(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &secretmanagerpb.ListSecretsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1#ListSecretsRequest.
 	}
 	it := c.ListSecrets(ctx, req)
 	for {
