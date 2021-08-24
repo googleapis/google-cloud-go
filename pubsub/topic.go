@@ -258,8 +258,8 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 		KMSKeyName:           pbt.KmsKeyName,
 		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
 	}
-	if pbt.MessageRetentionDuration != nil {
-		tc.RetentionDuration = pbt.MessageRetentionDuration.AsDuration()
+	if pbt.GetMessageRetentionDuration() != nil {
+		tc.RetentionDuration = pbt.GetMessageRetentionDuration().AsDuration()
 	}
 	return tc
 }
@@ -353,8 +353,8 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	if cfg.RetentionDuration != nil {
 		r := optional.ToDuration(cfg.RetentionDuration)
 		pt.MessageRetentionDuration = durationpb.New(r)
-		if r <= 0 {
-			// Clear MessageRetentionDuration.
+		if r < 0 {
+			// Clear MessageRetentionDuration if sentinel value is read.
 			pt.MessageRetentionDuration = nil
 		}
 		paths = append(paths, "message_retention_duration")
