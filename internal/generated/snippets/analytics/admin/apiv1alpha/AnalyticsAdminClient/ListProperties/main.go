@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListPropertiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListPropertiesRequest.
 	}
 	it := c.ListProperties(ctx, req)
 	for {

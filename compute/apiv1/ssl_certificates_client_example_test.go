@@ -46,6 +46,7 @@ func ExampleSslCertificatesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListSslCertificatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListSslCertificatesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleSslCertificatesClient_Delete() {
 
 	req := &computepb.DeleteSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSslCertificateRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleSslCertificatesClient_Get() {
 
 	req := &computepb.GetSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSslCertificateRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleSslCertificatesClient_Insert() {
 
 	req := &computepb.InsertSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSslCertificateRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleSslCertificatesClient_List() {
 
 	req := &computepb.ListSslCertificatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSslCertificatesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

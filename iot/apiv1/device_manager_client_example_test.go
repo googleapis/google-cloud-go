@@ -47,6 +47,7 @@ func ExampleDeviceManagerClient_CreateDeviceRegistry() {
 
 	req := &iotpb.CreateDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRegistryRequest.
 	}
 	resp, err := c.CreateDeviceRegistry(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleDeviceManagerClient_GetDeviceRegistry() {
 
 	req := &iotpb.GetDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#GetDeviceRegistryRequest.
 	}
 	resp, err := c.GetDeviceRegistry(ctx, req)
 	if err != nil {
@@ -85,6 +87,7 @@ func ExampleDeviceManagerClient_UpdateDeviceRegistry() {
 
 	req := &iotpb.UpdateDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UpdateDeviceRegistryRequest.
 	}
 	resp, err := c.UpdateDeviceRegistry(ctx, req)
 	if err != nil {
@@ -104,6 +107,7 @@ func ExampleDeviceManagerClient_DeleteDeviceRegistry() {
 
 	req := &iotpb.DeleteDeviceRegistryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#DeleteDeviceRegistryRequest.
 	}
 	err = c.DeleteDeviceRegistry(ctx, req)
 	if err != nil {
@@ -121,6 +125,7 @@ func ExampleDeviceManagerClient_ListDeviceRegistries() {
 
 	req := &iotpb.ListDeviceRegistriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceRegistriesRequest.
 	}
 	it := c.ListDeviceRegistries(ctx, req)
 	for {
@@ -146,6 +151,7 @@ func ExampleDeviceManagerClient_CreateDevice() {
 
 	req := &iotpb.CreateDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#CreateDeviceRequest.
 	}
 	resp, err := c.CreateDevice(ctx, req)
 	if err != nil {
@@ -165,6 +171,7 @@ func ExampleDeviceManagerClient_GetDevice() {
 
 	req := &iotpb.GetDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#GetDeviceRequest.
 	}
 	resp, err := c.GetDevice(ctx, req)
 	if err != nil {
@@ -184,6 +191,7 @@ func ExampleDeviceManagerClient_UpdateDevice() {
 
 	req := &iotpb.UpdateDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UpdateDeviceRequest.
 	}
 	resp, err := c.UpdateDevice(ctx, req)
 	if err != nil {
@@ -203,6 +211,7 @@ func ExampleDeviceManagerClient_DeleteDevice() {
 
 	req := &iotpb.DeleteDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#DeleteDeviceRequest.
 	}
 	err = c.DeleteDevice(ctx, req)
 	if err != nil {
@@ -220,6 +229,7 @@ func ExampleDeviceManagerClient_ListDevices() {
 
 	req := &iotpb.ListDevicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDevicesRequest.
 	}
 	it := c.ListDevices(ctx, req)
 	for {
@@ -245,6 +255,7 @@ func ExampleDeviceManagerClient_ModifyCloudToDeviceConfig() {
 
 	req := &iotpb.ModifyCloudToDeviceConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ModifyCloudToDeviceConfigRequest.
 	}
 	resp, err := c.ModifyCloudToDeviceConfig(ctx, req)
 	if err != nil {
@@ -264,6 +275,7 @@ func ExampleDeviceManagerClient_ListDeviceConfigVersions() {
 
 	req := &iotpb.ListDeviceConfigVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceConfigVersionsRequest.
 	}
 	resp, err := c.ListDeviceConfigVersions(ctx, req)
 	if err != nil {
@@ -283,6 +295,7 @@ func ExampleDeviceManagerClient_ListDeviceStates() {
 
 	req := &iotpb.ListDeviceStatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceStatesRequest.
 	}
 	resp, err := c.ListDeviceStates(ctx, req)
 	if err != nil {
@@ -302,6 +315,7 @@ func ExampleDeviceManagerClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -321,6 +335,7 @@ func ExampleDeviceManagerClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -340,6 +355,7 @@ func ExampleDeviceManagerClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -359,6 +375,7 @@ func ExampleDeviceManagerClient_SendCommandToDevice() {
 
 	req := &iotpb.SendCommandToDeviceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#SendCommandToDeviceRequest.
 	}
 	resp, err := c.SendCommandToDevice(ctx, req)
 	if err != nil {
@@ -378,6 +395,7 @@ func ExampleDeviceManagerClient_BindDeviceToGateway() {
 
 	req := &iotpb.BindDeviceToGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#BindDeviceToGatewayRequest.
 	}
 	resp, err := c.BindDeviceToGateway(ctx, req)
 	if err != nil {
@@ -397,6 +415,7 @@ func ExampleDeviceManagerClient_UnbindDeviceFromGateway() {
 
 	req := &iotpb.UnbindDeviceFromGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#UnbindDeviceFromGatewayRequest.
 	}
 	resp, err := c.UnbindDeviceFromGateway(ctx, req)
 	if err != nil {

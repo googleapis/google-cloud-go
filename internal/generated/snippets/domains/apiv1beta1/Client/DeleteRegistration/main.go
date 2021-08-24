@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#DeleteRegistrationRequest.
 	}
 	op, err := c.DeleteRegistration(ctx, req)
 	if err != nil {

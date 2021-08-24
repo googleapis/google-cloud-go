@@ -46,6 +46,7 @@ func ExampleForwardingRulesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListForwardingRulesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListForwardingRulesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleForwardingRulesClient_Delete() {
 
 	req := &computepb.DeleteForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteForwardingRuleRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleForwardingRulesClient_Get() {
 
 	req := &computepb.GetForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetForwardingRuleRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleForwardingRulesClient_Insert() {
 
 	req := &computepb.InsertForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertForwardingRuleRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleForwardingRulesClient_List() {
 
 	req := &computepb.ListForwardingRulesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListForwardingRulesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExampleForwardingRulesClient_Patch() {
 
 	req := &computepb.PatchForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchForwardingRuleRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleForwardingRulesClient_SetLabels() {
 
 	req := &computepb.SetLabelsForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsForwardingRuleRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -191,6 +198,7 @@ func ExampleForwardingRulesClient_SetTarget() {
 
 	req := &computepb.SetTargetForwardingRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTargetForwardingRuleRequest.
 	}
 	resp, err := c.SetTarget(ctx, req)
 	if err != nil {

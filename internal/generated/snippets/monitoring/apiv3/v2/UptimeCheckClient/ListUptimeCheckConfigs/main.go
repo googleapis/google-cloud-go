@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListUptimeCheckConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListUptimeCheckConfigsRequest.
 	}
 	it := c.ListUptimeCheckConfigs(ctx, req)
 	for {

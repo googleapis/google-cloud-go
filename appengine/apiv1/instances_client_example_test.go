@@ -46,6 +46,7 @@ func ExampleInstancesClient_ListInstances() {
 
 	req := &appenginepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleInstancesClient_GetInstance() {
 
 	req := &appenginepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleInstancesClient_DeleteInstance() {
 
 	req := &appenginepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -112,6 +115,7 @@ func ExampleInstancesClient_DebugInstance() {
 
 	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DebugInstanceRequest.
 	}
 	op, err := c.DebugInstance(ctx, req)
 	if err != nil {

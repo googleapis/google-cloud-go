@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.CreateCustomerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#CreateCustomerRequest.
 	}
 	resp, err := c.CreateCustomer(ctx, req)
 	if err != nil {

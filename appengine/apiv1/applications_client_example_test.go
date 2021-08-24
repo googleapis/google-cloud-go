@@ -45,6 +45,7 @@ func ExampleApplicationsClient_GetApplication() {
 
 	req := &appenginepb.GetApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetApplicationRequest.
 	}
 	resp, err := c.GetApplication(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleApplicationsClient_CreateApplication() {
 
 	req := &appenginepb.CreateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateApplicationRequest.
 	}
 	op, err := c.CreateApplication(ctx, req)
 	if err != nil {
@@ -88,6 +90,7 @@ func ExampleApplicationsClient_UpdateApplication() {
 
 	req := &appenginepb.UpdateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateApplicationRequest.
 	}
 	op, err := c.UpdateApplication(ctx, req)
 	if err != nil {
@@ -112,6 +115,7 @@ func ExampleApplicationsClient_RepairApplication() {
 
 	req := &appenginepb.RepairApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#RepairApplicationRequest.
 	}
 	op, err := c.RepairApplication(ctx, req)
 	if err != nil {

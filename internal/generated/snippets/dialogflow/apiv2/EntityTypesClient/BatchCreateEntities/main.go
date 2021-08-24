@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.BatchCreateEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#BatchCreateEntitiesRequest.
 	}
 	op, err := c.BatchCreateEntities(ctx, req)
 	if err != nil {

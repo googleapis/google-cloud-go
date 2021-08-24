@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.CreateFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateFlowRequest.
 	}
 	resp, err := c.CreateFlow(ctx, req)
 	if err != nil {

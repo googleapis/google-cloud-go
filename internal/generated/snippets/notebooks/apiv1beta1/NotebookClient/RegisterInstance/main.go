@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.RegisterInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#RegisterInstanceRequest.
 	}
 	op, err := c.RegisterInstance(ctx, req)
 	if err != nil {

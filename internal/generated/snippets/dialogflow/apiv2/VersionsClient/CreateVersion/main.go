@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateVersionRequest.
 	}
 	resp, err := c.CreateVersion(ctx, req)
 	if err != nil {

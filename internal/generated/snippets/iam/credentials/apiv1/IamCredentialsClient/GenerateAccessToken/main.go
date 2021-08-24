@@ -35,6 +35,7 @@ func main() {
 
 	req := &credentialspb.GenerateAccessTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateAccessTokenRequest.
 	}
 	resp, err := c.GenerateAccessToken(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &loggingpb.ListSinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListSinksRequest.
 	}
 	it := c.ListSinks(ctx, req)
 	for {

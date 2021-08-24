@@ -45,6 +45,7 @@ func ExampleFlexTemplatesClient_LaunchFlexTemplate() {
 
 	req := &dataflowpb.LaunchFlexTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchFlexTemplateRequest.
 	}
 	resp, err := c.LaunchFlexTemplate(ctx, req)
 	if err != nil {

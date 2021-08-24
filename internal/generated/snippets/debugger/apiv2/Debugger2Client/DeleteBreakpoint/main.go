@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddebuggerpb.DeleteBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#DeleteBreakpointRequest.
 	}
 	err = c.DeleteBreakpoint(ctx, req)
 	if err != nil {

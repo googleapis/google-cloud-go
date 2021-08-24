@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.DeleteKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteKnowledgeBaseRequest.
 	}
 	err = c.DeleteKnowledgeBase(ctx, req)
 	if err != nil {

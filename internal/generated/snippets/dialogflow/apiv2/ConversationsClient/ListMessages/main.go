@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.ListMessagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListMessagesRequest.
 	}
 	it := c.ListMessages(ctx, req)
 	for {

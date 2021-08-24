@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListDisksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListDisksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

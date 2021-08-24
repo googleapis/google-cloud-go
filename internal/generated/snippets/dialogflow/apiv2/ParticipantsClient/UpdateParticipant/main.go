@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.UpdateParticipantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateParticipantRequest.
 	}
 	resp, err := c.UpdateParticipant(ctx, req)
 	if err != nil {

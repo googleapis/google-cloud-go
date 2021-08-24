@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.GenerateRandomBytesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GenerateRandomBytesRequest.
 	}
 	resp, err := c.GenerateRandomBytes(ctx, req)
 	if err != nil {

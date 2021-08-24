@@ -204,8 +204,8 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //   {newBranch}.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -215,8 +215,8 @@ func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetD
 // method under a specified parent catalog.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	return c.internalClient.GetDefaultBranch(ctx, req, opts...)
 }

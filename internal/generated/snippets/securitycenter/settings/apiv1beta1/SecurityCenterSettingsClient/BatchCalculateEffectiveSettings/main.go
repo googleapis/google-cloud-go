@@ -35,6 +35,7 @@ func main() {
 
 	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#BatchCalculateEffectiveSettingsRequest.
 	}
 	resp, err := c.BatchCalculateEffectiveSettings(ctx, req)
 	if err != nil {

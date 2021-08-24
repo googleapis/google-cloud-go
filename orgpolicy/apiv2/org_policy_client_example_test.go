@@ -46,6 +46,7 @@ func ExampleClient_ListConstraints() {
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
 	}
 	it := c.ListConstraints(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_ListPolicies() {
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {
@@ -96,6 +98,7 @@ func ExampleClient_GetPolicy() {
 
 	req := &orgpolicypb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
@@ -115,6 +118,7 @@ func ExampleClient_GetEffectivePolicy() {
 
 	req := &orgpolicypb.GetEffectivePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetEffectivePolicyRequest.
 	}
 	resp, err := c.GetEffectivePolicy(ctx, req)
 	if err != nil {
@@ -134,6 +138,7 @@ func ExampleClient_CreatePolicy() {
 
 	req := &orgpolicypb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#CreatePolicyRequest.
 	}
 	resp, err := c.CreatePolicy(ctx, req)
 	if err != nil {
@@ -153,6 +158,7 @@ func ExampleClient_UpdatePolicy() {
 
 	req := &orgpolicypb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#UpdatePolicyRequest.
 	}
 	resp, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleClient_DeletePolicy() {
 
 	req := &orgpolicypb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#DeletePolicyRequest.
 	}
 	err = c.DeletePolicy(ctx, req)
 	if err != nil {

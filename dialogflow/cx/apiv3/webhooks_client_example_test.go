@@ -46,6 +46,7 @@ func ExampleWebhooksClient_ListWebhooks() {
 
 	req := &cxpb.ListWebhooksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListWebhooksRequest.
 	}
 	it := c.ListWebhooks(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleWebhooksClient_GetWebhook() {
 
 	req := &cxpb.GetWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetWebhookRequest.
 	}
 	resp, err := c.GetWebhook(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleWebhooksClient_CreateWebhook() {
 
 	req := &cxpb.CreateWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateWebhookRequest.
 	}
 	resp, err := c.CreateWebhook(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleWebhooksClient_UpdateWebhook() {
 
 	req := &cxpb.UpdateWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateWebhookRequest.
 	}
 	resp, err := c.UpdateWebhook(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleWebhooksClient_DeleteWebhook() {
 
 	req := &cxpb.DeleteWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteWebhookRequest.
 	}
 	err = c.DeleteWebhook(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
