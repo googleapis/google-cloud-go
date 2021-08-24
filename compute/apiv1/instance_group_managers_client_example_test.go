@@ -46,6 +46,7 @@ func ExampleInstanceGroupManagersClient_AbandonInstances() {
 
 	req := &computepb.AbandonInstancesInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AbandonInstancesInstanceGroupManagerRequest.
 	}
 	resp, err := c.AbandonInstances(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleInstanceGroupManagersClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInstanceGroupManagersRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleInstanceGroupManagersClient_ApplyUpdatesToInstances() {
 
 	req := &computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ApplyUpdatesToInstancesInstanceGroupManagerRequest.
 	}
 	resp, err := c.ApplyUpdatesToInstances(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleInstanceGroupManagersClient_CreateInstances() {
 
 	req := &computepb.CreateInstancesInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateInstancesInstanceGroupManagerRequest.
 	}
 	resp, err := c.CreateInstances(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleInstanceGroupManagersClient_Delete() {
 
 	req := &computepb.DeleteInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceGroupManagerRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleInstanceGroupManagersClient_DeleteInstances() {
 
 	req := &computepb.DeleteInstancesInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstancesInstanceGroupManagerRequest.
 	}
 	resp, err := c.DeleteInstances(ctx, req)
 	if err != nil {
@@ -166,6 +172,7 @@ func ExampleInstanceGroupManagersClient_DeletePerInstanceConfigs() {
 
 	req := &computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePerInstanceConfigsInstanceGroupManagerRequest.
 	}
 	resp, err := c.DeletePerInstanceConfigs(ctx, req)
 	if err != nil {
@@ -185,6 +192,7 @@ func ExampleInstanceGroupManagersClient_Get() {
 
 	req := &computepb.GetInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceGroupManagerRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -204,6 +212,7 @@ func ExampleInstanceGroupManagersClient_Insert() {
 
 	req := &computepb.InsertInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceGroupManagerRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -223,6 +232,7 @@ func ExampleInstanceGroupManagersClient_List() {
 
 	req := &computepb.ListInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstanceGroupManagersRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -248,6 +258,7 @@ func ExampleInstanceGroupManagersClient_ListErrors() {
 
 	req := &computepb.ListErrorsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListErrorsInstanceGroupManagersRequest.
 	}
 	it := c.ListErrors(ctx, req)
 	for {
@@ -273,6 +284,7 @@ func ExampleInstanceGroupManagersClient_ListManagedInstances() {
 
 	req := &computepb.ListManagedInstancesInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListManagedInstancesInstanceGroupManagersRequest.
 	}
 	it := c.ListManagedInstances(ctx, req)
 	for {
@@ -298,6 +310,7 @@ func ExampleInstanceGroupManagersClient_ListPerInstanceConfigs() {
 
 	req := &computepb.ListPerInstanceConfigsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPerInstanceConfigsInstanceGroupManagersRequest.
 	}
 	it := c.ListPerInstanceConfigs(ctx, req)
 	for {
@@ -323,6 +336,7 @@ func ExampleInstanceGroupManagersClient_Patch() {
 
 	req := &computepb.PatchInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchInstanceGroupManagerRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -342,6 +356,7 @@ func ExampleInstanceGroupManagersClient_PatchPerInstanceConfigs() {
 
 	req := &computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPerInstanceConfigsInstanceGroupManagerRequest.
 	}
 	resp, err := c.PatchPerInstanceConfigs(ctx, req)
 	if err != nil {
@@ -361,6 +376,7 @@ func ExampleInstanceGroupManagersClient_RecreateInstances() {
 
 	req := &computepb.RecreateInstancesInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RecreateInstancesInstanceGroupManagerRequest.
 	}
 	resp, err := c.RecreateInstances(ctx, req)
 	if err != nil {
@@ -380,6 +396,7 @@ func ExampleInstanceGroupManagersClient_Resize() {
 
 	req := &computepb.ResizeInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeInstanceGroupManagerRequest.
 	}
 	resp, err := c.Resize(ctx, req)
 	if err != nil {
@@ -399,6 +416,7 @@ func ExampleInstanceGroupManagersClient_SetInstanceTemplate() {
 
 	req := &computepb.SetInstanceTemplateInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetInstanceTemplateInstanceGroupManagerRequest.
 	}
 	resp, err := c.SetInstanceTemplate(ctx, req)
 	if err != nil {
@@ -418,6 +436,7 @@ func ExampleInstanceGroupManagersClient_SetTargetPools() {
 
 	req := &computepb.SetTargetPoolsInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTargetPoolsInstanceGroupManagerRequest.
 	}
 	resp, err := c.SetTargetPools(ctx, req)
 	if err != nil {
@@ -437,6 +456,7 @@ func ExampleInstanceGroupManagersClient_UpdatePerInstanceConfigs() {
 
 	req := &computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePerInstanceConfigsInstanceGroupManagerRequest.
 	}
 	resp, err := c.UpdatePerInstanceConfigs(ctx, req)
 	if err != nil {

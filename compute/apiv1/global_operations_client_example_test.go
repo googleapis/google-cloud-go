@@ -46,6 +46,7 @@ func ExampleGlobalOperationsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListGlobalOperationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListGlobalOperationsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleGlobalOperationsClient_Delete() {
 
 	req := &computepb.DeleteGlobalOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleGlobalOperationsClient_Get() {
 
 	req := &computepb.GetGlobalOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalOperationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleGlobalOperationsClient_List() {
 
 	req := &computepb.ListGlobalOperationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListGlobalOperationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -134,6 +138,7 @@ func ExampleGlobalOperationsClient_Wait() {
 
 	req := &computepb.WaitGlobalOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitGlobalOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CancelJobRequest.
 	}
 	resp, err := c.CancelJob(ctx, req)
 	if err != nil {

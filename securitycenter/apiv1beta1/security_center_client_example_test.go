@@ -47,6 +47,7 @@ func ExampleClient_CreateSource() {
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#CreateSourceRequest.
 	}
 	resp, err := c.CreateSource(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleClient_CreateFinding() {
 
 	req := &securitycenterpb.CreateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#CreateFindingRequest.
 	}
 	resp, err := c.CreateFinding(ctx, req)
 	if err != nil {
@@ -85,6 +87,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -104,6 +107,7 @@ func ExampleClient_GetOrganizationSettings() {
 
 	req := &securitycenterpb.GetOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#GetOrganizationSettingsRequest.
 	}
 	resp, err := c.GetOrganizationSettings(ctx, req)
 	if err != nil {
@@ -123,6 +127,7 @@ func ExampleClient_GetSource() {
 
 	req := &securitycenterpb.GetSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#GetSourceRequest.
 	}
 	resp, err := c.GetSource(ctx, req)
 	if err != nil {
@@ -142,6 +147,7 @@ func ExampleClient_GroupAssets() {
 
 	req := &securitycenterpb.GroupAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#GroupAssetsRequest.
 	}
 	it := c.GroupAssets(ctx, req)
 	for {
@@ -167,6 +173,7 @@ func ExampleClient_GroupFindings() {
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#GroupFindingsRequest.
 	}
 	it := c.GroupFindings(ctx, req)
 	for {
@@ -192,6 +199,7 @@ func ExampleClient_ListAssets() {
 
 	req := &securitycenterpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -217,6 +225,7 @@ func ExampleClient_ListFindings() {
 
 	req := &securitycenterpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#ListFindingsRequest.
 	}
 	it := c.ListFindings(ctx, req)
 	for {
@@ -242,6 +251,7 @@ func ExampleClient_ListSources() {
 
 	req := &securitycenterpb.ListSourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#ListSourcesRequest.
 	}
 	it := c.ListSources(ctx, req)
 	for {
@@ -267,6 +277,7 @@ func ExampleClient_RunAssetDiscovery() {
 
 	req := &securitycenterpb.RunAssetDiscoveryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#RunAssetDiscoveryRequest.
 	}
 	op, err := c.RunAssetDiscovery(ctx, req)
 	if err != nil {
@@ -289,6 +300,7 @@ func ExampleClient_SetFindingState() {
 
 	req := &securitycenterpb.SetFindingStateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#SetFindingStateRequest.
 	}
 	resp, err := c.SetFindingState(ctx, req)
 	if err != nil {
@@ -308,6 +320,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -327,6 +340,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -346,6 +360,7 @@ func ExampleClient_UpdateFinding() {
 
 	req := &securitycenterpb.UpdateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#UpdateFindingRequest.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
 	if err != nil {
@@ -365,6 +380,7 @@ func ExampleClient_UpdateOrganizationSettings() {
 
 	req := &securitycenterpb.UpdateOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#UpdateOrganizationSettingsRequest.
 	}
 	resp, err := c.UpdateOrganizationSettings(ctx, req)
 	if err != nil {
@@ -384,6 +400,7 @@ func ExampleClient_UpdateSource() {
 
 	req := &securitycenterpb.UpdateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#UpdateSourceRequest.
 	}
 	resp, err := c.UpdateSource(ctx, req)
 	if err != nil {
@@ -403,6 +420,7 @@ func ExampleClient_UpdateSecurityMarks() {
 
 	req := &securitycenterpb.UpdateSecurityMarksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#UpdateSecurityMarksRequest.
 	}
 	resp, err := c.UpdateSecurityMarks(ctx, req)
 	if err != nil {

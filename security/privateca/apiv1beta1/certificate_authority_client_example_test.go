@@ -46,6 +46,7 @@ func ExampleCertificateAuthorityClient_CreateCertificate() {
 
 	req := &privatecapb.CreateCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#CreateCertificateRequest.
 	}
 	resp, err := c.CreateCertificate(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleCertificateAuthorityClient_GetCertificate() {
 
 	req := &privatecapb.GetCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#GetCertificateRequest.
 	}
 	resp, err := c.GetCertificate(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleCertificateAuthorityClient_ListCertificates() {
 
 	req := &privatecapb.ListCertificatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ListCertificatesRequest.
 	}
 	it := c.ListCertificates(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExampleCertificateAuthorityClient_RevokeCertificate() {
 
 	req := &privatecapb.RevokeCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#RevokeCertificateRequest.
 	}
 	resp, err := c.RevokeCertificate(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleCertificateAuthorityClient_UpdateCertificate() {
 
 	req := &privatecapb.UpdateCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#UpdateCertificateRequest.
 	}
 	resp, err := c.UpdateCertificate(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleCertificateAuthorityClient_ActivateCertificateAuthority() {
 
 	req := &privatecapb.ActivateCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ActivateCertificateAuthorityRequest.
 	}
 	op, err := c.ActivateCertificateAuthority(ctx, req)
 	if err != nil {
@@ -171,6 +177,7 @@ func ExampleCertificateAuthorityClient_CreateCertificateAuthority() {
 
 	req := &privatecapb.CreateCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#CreateCertificateAuthorityRequest.
 	}
 	op, err := c.CreateCertificateAuthority(ctx, req)
 	if err != nil {
@@ -195,6 +202,7 @@ func ExampleCertificateAuthorityClient_DisableCertificateAuthority() {
 
 	req := &privatecapb.DisableCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#DisableCertificateAuthorityRequest.
 	}
 	op, err := c.DisableCertificateAuthority(ctx, req)
 	if err != nil {
@@ -219,6 +227,7 @@ func ExampleCertificateAuthorityClient_EnableCertificateAuthority() {
 
 	req := &privatecapb.EnableCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#EnableCertificateAuthorityRequest.
 	}
 	op, err := c.EnableCertificateAuthority(ctx, req)
 	if err != nil {
@@ -243,6 +252,7 @@ func ExampleCertificateAuthorityClient_FetchCertificateAuthorityCsr() {
 
 	req := &privatecapb.FetchCertificateAuthorityCsrRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#FetchCertificateAuthorityCsrRequest.
 	}
 	resp, err := c.FetchCertificateAuthorityCsr(ctx, req)
 	if err != nil {
@@ -262,6 +272,7 @@ func ExampleCertificateAuthorityClient_GetCertificateAuthority() {
 
 	req := &privatecapb.GetCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#GetCertificateAuthorityRequest.
 	}
 	resp, err := c.GetCertificateAuthority(ctx, req)
 	if err != nil {
@@ -281,6 +292,7 @@ func ExampleCertificateAuthorityClient_ListCertificateAuthorities() {
 
 	req := &privatecapb.ListCertificateAuthoritiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ListCertificateAuthoritiesRequest.
 	}
 	it := c.ListCertificateAuthorities(ctx, req)
 	for {
@@ -306,6 +318,7 @@ func ExampleCertificateAuthorityClient_RestoreCertificateAuthority() {
 
 	req := &privatecapb.RestoreCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#RestoreCertificateAuthorityRequest.
 	}
 	op, err := c.RestoreCertificateAuthority(ctx, req)
 	if err != nil {
@@ -330,6 +343,7 @@ func ExampleCertificateAuthorityClient_ScheduleDeleteCertificateAuthority() {
 
 	req := &privatecapb.ScheduleDeleteCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ScheduleDeleteCertificateAuthorityRequest.
 	}
 	op, err := c.ScheduleDeleteCertificateAuthority(ctx, req)
 	if err != nil {
@@ -354,6 +368,7 @@ func ExampleCertificateAuthorityClient_UpdateCertificateAuthority() {
 
 	req := &privatecapb.UpdateCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#UpdateCertificateAuthorityRequest.
 	}
 	op, err := c.UpdateCertificateAuthority(ctx, req)
 	if err != nil {
@@ -378,6 +393,7 @@ func ExampleCertificateAuthorityClient_GetCertificateRevocationList() {
 
 	req := &privatecapb.GetCertificateRevocationListRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#GetCertificateRevocationListRequest.
 	}
 	resp, err := c.GetCertificateRevocationList(ctx, req)
 	if err != nil {
@@ -397,6 +413,7 @@ func ExampleCertificateAuthorityClient_ListCertificateRevocationLists() {
 
 	req := &privatecapb.ListCertificateRevocationListsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ListCertificateRevocationListsRequest.
 	}
 	it := c.ListCertificateRevocationLists(ctx, req)
 	for {
@@ -422,6 +439,7 @@ func ExampleCertificateAuthorityClient_UpdateCertificateRevocationList() {
 
 	req := &privatecapb.UpdateCertificateRevocationListRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#UpdateCertificateRevocationListRequest.
 	}
 	op, err := c.UpdateCertificateRevocationList(ctx, req)
 	if err != nil {
@@ -446,6 +464,7 @@ func ExampleCertificateAuthorityClient_GetReusableConfig() {
 
 	req := &privatecapb.GetReusableConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#GetReusableConfigRequest.
 	}
 	resp, err := c.GetReusableConfig(ctx, req)
 	if err != nil {
@@ -465,6 +484,7 @@ func ExampleCertificateAuthorityClient_ListReusableConfigs() {
 
 	req := &privatecapb.ListReusableConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ListReusableConfigsRequest.
 	}
 	it := c.ListReusableConfigs(ctx, req)
 	for {

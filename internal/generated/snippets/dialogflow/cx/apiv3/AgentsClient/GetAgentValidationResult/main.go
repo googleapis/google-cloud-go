@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.GetAgentValidationResultRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetAgentValidationResultRequest.
 	}
 	resp, err := c.GetAgentValidationResult(ctx, req)
 	if err != nil {

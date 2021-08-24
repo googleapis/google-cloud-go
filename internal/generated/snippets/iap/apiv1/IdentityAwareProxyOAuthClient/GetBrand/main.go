@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.GetBrandRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetBrandRequest.
 	}
 	resp, err := c.GetBrand(ctx, req)
 	if err != nil {

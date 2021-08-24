@@ -35,6 +35,7 @@ func main() {
 
 	req := &osloginpb.GetSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#GetSshPublicKeyRequest.
 	}
 	resp, err := c.GetSshPublicKey(ctx, req)
 	if err != nil {

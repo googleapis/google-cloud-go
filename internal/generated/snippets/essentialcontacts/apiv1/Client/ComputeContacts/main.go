@@ -36,6 +36,7 @@ func main() {
 
 	req := &essentialcontactspb.ComputeContactsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#ComputeContactsRequest.
 	}
 	it := c.ComputeContacts(ctx, req)
 	for {

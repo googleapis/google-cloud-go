@@ -35,6 +35,7 @@ func main() {
 
 	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#DeleteOSPolicyAssignmentRequest.
 	}
 	op, err := c.DeleteOSPolicyAssignment(ctx, req)
 	if err != nil {

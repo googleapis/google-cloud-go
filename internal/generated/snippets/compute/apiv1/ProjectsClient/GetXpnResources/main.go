@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.GetXpnResourcesProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetXpnResourcesProjectsRequest.
 	}
 	it := c.GetXpnResources(ctx, req)
 	for {

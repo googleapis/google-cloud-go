@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.DeleteAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteAnnotatedDatasetRequest.
 	}
 	err = c.DeleteAnnotatedDataset(ctx, req)
 	if err != nil {

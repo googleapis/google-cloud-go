@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkmanagementpb.RerunConnectivityTestRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#RerunConnectivityTestRequest.
 	}
 	op, err := c.RerunConnectivityTest(ctx, req)
 	if err != nil {

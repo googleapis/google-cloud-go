@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.CreateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateUptimeCheckConfigRequest.
 	}
 	resp, err := c.CreateUptimeCheckConfig(ctx, req)
 	if err != nil {

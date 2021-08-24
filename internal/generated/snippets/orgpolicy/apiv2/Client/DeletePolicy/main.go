@@ -35,6 +35,7 @@ func main() {
 
 	req := &orgpolicypb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#DeletePolicyRequest.
 	}
 	err = c.DeletePolicy(ctx, req)
 	if err != nil {

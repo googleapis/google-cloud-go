@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.GetIdentityAwareProxyClientRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetIdentityAwareProxyClientRequest.
 	}
 	resp, err := c.GetIdentityAwareProxyClient(ctx, req)
 	if err != nil {

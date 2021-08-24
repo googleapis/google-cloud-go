@@ -46,6 +46,7 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMonitoredResourceDescriptorRequest.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleMetricClient_ListMetricDescriptors() {
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMetricDescriptorsRequest.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {
@@ -115,6 +118,7 @@ func ExampleMetricClient_GetMetricDescriptor() {
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMetricDescriptorRequest.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {
@@ -134,6 +138,7 @@ func ExampleMetricClient_CreateMetricDescriptor() {
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateMetricDescriptorRequest.
 	}
 	resp, err := c.CreateMetricDescriptor(ctx, req)
 	if err != nil {
@@ -153,6 +158,7 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteMetricDescriptorRequest.
 	}
 	err = c.DeleteMetricDescriptor(ctx, req)
 	if err != nil {
@@ -170,6 +176,7 @@ func ExampleMetricClient_ListTimeSeries() {
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListTimeSeriesRequest.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {
@@ -195,6 +202,7 @@ func ExampleMetricClient_CreateTimeSeries() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
 	if err != nil {

@@ -46,6 +46,7 @@ func ExampleJobClient_CreateJob() {
 
 	req := &talentpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleJobClient_BatchCreateJobs() {
 
 	req := &talentpb.BatchCreateJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#BatchCreateJobsRequest.
 	}
 	op, err := c.BatchCreateJobs(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleJobClient_GetJob() {
 
 	req := &talentpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -108,6 +111,7 @@ func ExampleJobClient_UpdateJob() {
 
 	req := &talentpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -127,6 +131,7 @@ func ExampleJobClient_BatchUpdateJobs() {
 
 	req := &talentpb.BatchUpdateJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#BatchUpdateJobsRequest.
 	}
 	op, err := c.BatchUpdateJobs(ctx, req)
 	if err != nil {
@@ -151,6 +156,7 @@ func ExampleJobClient_DeleteJob() {
 
 	req := &talentpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {
@@ -168,6 +174,7 @@ func ExampleJobClient_BatchDeleteJobs() {
 
 	req := &talentpb.BatchDeleteJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#BatchDeleteJobsRequest.
 	}
 	err = c.BatchDeleteJobs(ctx, req)
 	if err != nil {
@@ -185,6 +192,7 @@ func ExampleJobClient_ListJobs() {
 
 	req := &talentpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -210,6 +218,7 @@ func ExampleJobClient_SearchJobs() {
 
 	req := &talentpb.SearchJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#SearchJobsRequest.
 	}
 	resp, err := c.SearchJobs(ctx, req)
 	if err != nil {
@@ -229,6 +238,7 @@ func ExampleJobClient_SearchJobsForAlert() {
 
 	req := &talentpb.SearchJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#SearchJobsRequest.
 	}
 	it := c.SearchJobsForAlert(ctx, req)
 	for {

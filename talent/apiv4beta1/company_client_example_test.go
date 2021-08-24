@@ -46,6 +46,7 @@ func ExampleCompanyClient_CreateCompany() {
 
 	req := &talentpb.CreateCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateCompanyRequest.
 	}
 	resp, err := c.CreateCompany(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleCompanyClient_GetCompany() {
 
 	req := &talentpb.GetCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetCompanyRequest.
 	}
 	resp, err := c.GetCompany(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleCompanyClient_UpdateCompany() {
 
 	req := &talentpb.UpdateCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateCompanyRequest.
 	}
 	resp, err := c.UpdateCompany(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleCompanyClient_DeleteCompany() {
 
 	req := &talentpb.DeleteCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteCompanyRequest.
 	}
 	err = c.DeleteCompany(ctx, req)
 	if err != nil {
@@ -120,6 +124,7 @@ func ExampleCompanyClient_ListCompanies() {
 
 	req := &talentpb.ListCompaniesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListCompaniesRequest.
 	}
 	it := c.ListCompanies(ctx, req)
 	for {
