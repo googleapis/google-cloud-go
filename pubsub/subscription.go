@@ -257,16 +257,15 @@ type SubscriptionConfig struct {
 	// the endpoint will not be made.
 	Detached bool
 
-	// TopicMessageRetentionDuration is the subscription's topic's message
-	// retention duration populated by the server and is read only.bundledMessage
-	// Topic message retention indicates the minimum duration for which a message is
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is
 	// retained after it is published to the subscription's topic. If this field is
 	// set, messages published to the subscription's topic in the last
 	// `TopicMessageRetentionDuration` are always available to subscribers.
 	// You can enable both topic and subscription retention for the same topic.
 	// In this situation, the maximum of the retention durations takes effect.
 	//
-	// This field is set only in responses from the server and otherwise ignored.
+	// This is an output only field, meaning it will only appear in responses from the backend
+	// and will be ignored if sent in a request.
 	TopicMessageRetentionDuration time.Duration
 }
 
