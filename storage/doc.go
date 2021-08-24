@@ -50,10 +50,28 @@ an unauthenticated client with
 
 To use an emulator with this library, you can set the STORAGE_EMULATOR_HOST
 environment variable to the address at which your emulator is running. This will
-send requests to that address instead of to Cloud Storage. You can then create a
-client as normal (see above) or, if you want, manually specify the endpoint:
+send requests to that address instead of to Cloud Storage. You can then create
+and use a client as usual:
 
-    client, err := storage.NewClient(ctx, option.WithEndpoint(emulatorHost + "/storage/v1/"))
+    // Set STORAGE_EMULATOR_HOST environment variable.
+    err := os.Setenv("STORAGE_EMULATOR_HOST", "localhost:9000")
+    if err != nil {
+        // TODO: Handle error.
+    }
+
+    // Create client as usual.
+    client, err := storage.NewClient(ctx)
+    if err != nil {
+        // TODO: Handle error.
+    }
+
+    // This request is now directed to http://localhost:9000/storage/v1/b
+    // instead of https://storage.googleapis.com/storage/v1/b
+    if err := client.Bucket("my-bucket").Create(ctx, projectID, nil); err != nil {
+        // TODO: Handle error.
+    }
+
+Please note that there is no official emulator for Cloud Storage.
 
 Buckets
 
