@@ -39,6 +39,9 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestV2HeaderSanitization(t *testing.T) {
@@ -1213,6 +1216,98 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 		if diff := testutil.Diff(got, want); diff != "" {
 			t.Errorf("toRawObject mismatches:\ngot=-, want=+:\n%s", diff)
 		}
+	}
+}
+
+func TestProtoObjectToObjectAttrs(t *testing.T) {
+	t.Parallel()
+	now := time.Now()
+	tests := []struct {
+		in   *storagepb.Object
+		want *ObjectAttrs
+	}{
+		{in: nil, want: nil},
+		{
+			in: &storagepb.Object{
+				Bucket:              "Test",
+				ContentLanguage:     "en-us",
+				ContentType:         "video/mpeg",
+				CustomTime:          timestamppb.New(now),
+				EventBasedHold:      proto.Bool(false),
+				Generation:          7,
+				Checksums:           &storagepb.ObjectChecksums{Md5Hash: []byte("14683cba444dbcc6db297645e683f5c1")},
+				Name:                "foo.mp4",
+				RetentionExpireTime: timestamppb.New(now),
+				Size:                1 << 20,
+				CreateTime:          timestamppb.New(now),
+				DeleteTime:          timestamppb.New(now),
+				TemporaryHold:       true,
+			},
+			want: &ObjectAttrs{
+				Bucket:                  "Test",
+				Created:                 now,
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				CustomTime:              now,
+				Deleted:                 now,
+				EventBasedHold:          false,
+				Generation:              7,
+				MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: now,
+				Size:                    1 << 20,
+				TemporaryHold:           true,
+			},
+		},
+	}
+
+	for i, tt := range tests {
+		r := &storagepb.WriteObjectResponse{WriteStatus: &storagepb.WriteObjectResponse_Resource{Resource: tt.in}}
+		got := newObjectFromProto(r)
+		if diff := testutil.Diff(got, tt.want); diff != "" {
+			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
+		}
+	}
+}
+
+func TestObjectAttrsToProtoObject(t *testing.T) {
+	t.Parallel()
+	now := time.Now()
+
+	b := "bucket"
+	want := &storagepb.Object{
+		Bucket:              "projects/_/buckets/" + b,
+		ContentLanguage:     "en-us",
+		ContentType:         "video/mpeg",
+		CustomTime:          timestamppb.New(now),
+		EventBasedHold:      proto.Bool(false),
+		Generation:          7,
+		Checksums:           &storagepb.ObjectChecksums{Md5Hash: []byte("14683cba444dbcc6db297645e683f5c1")},
+		Name:                "foo.mp4",
+		RetentionExpireTime: timestamppb.New(now),
+		Size:                1 << 20,
+		CreateTime:          timestamppb.New(now),
+		DeleteTime:          timestamppb.New(now),
+		TemporaryHold:       true,
+	}
+	in := &ObjectAttrs{
+		Created:                 now,
+		ContentLanguage:         "en-us",
+		ContentType:             "video/mpeg",
+		CustomTime:              now,
+		Deleted:                 now,
+		EventBasedHold:          false,
+		Generation:              7,
+		MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+		Name:                    "foo.mp4",
+		RetentionExpirationTime: now,
+		Size:                    1 << 20,
+		TemporaryHold:           true,
+	}
+
+	got := in.toProtoObject(b)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("toProtoObject mismatches:\ngot=-, want=+:\n%s", diff)
 	}
 }
 

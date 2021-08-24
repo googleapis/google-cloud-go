@@ -1137,13 +1137,11 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 
 // toProtoObject copies the editable attributes from o to the proto library's Object type.
 func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
-	var ret *timestamppb.Timestamp
-	if !o.RetentionExpirationTime.IsZero() {
-		ret = timestamppb.New(o.RetentionExpirationTime)
-	}
-	var ct *timestamppb.Timestamp
-	if !o.CustomTime.IsZero() {
-		ct = timestamppb.New(o.CustomTime)
+	var checksums *storagepb.ObjectChecksums
+	if len(o.MD5) > 0 {
+		checksums = &storagepb.ObjectChecksums{Md5Hash: o.MD5}
+	} else if o.CRC32C > 0 {
+		checksums = &storagepb.ObjectChecksums{Crc32C: proto.Uint32(o.CRC32C)}
 	}
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets.
@@ -1154,7 +1152,6 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		Name:                o.Name,
 		EventBasedHold:      proto.Bool(o.EventBasedHold),
 		TemporaryHold:       o.TemporaryHold,
-		RetentionExpireTime: ret,
 		ContentType:         o.ContentType,
 		ContentEncoding:     o.ContentEncoding,
 		ContentLanguage:     o.ContentLanguage,
@@ -1163,8 +1160,15 @@ func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
 		StorageClass:        o.StorageClass,
 		Acl:                 toProtoObjectACL(o.ACL),
 		Metadata:            o.Metadata,
-		CustomTime:          ct,
+		CreateTime:          toProtoTimestamp(o.Created),
+		CustomTime:          toProtoTimestamp(o.CustomTime),
+		DeleteTime:          toProtoTimestamp(o.Deleted),
+		RetentionExpireTime: toProtoTimestamp(o.RetentionExpirationTime),
+		UpdateTime:          toProtoTimestamp(o.Updated),
 		KmsKey:              o.KMSKeyName,
+		Generation:          o.Generation,
+		Size:                o.Size,
+		Checksums:           checksums,
 	}
 }
 
@@ -1330,6 +1334,14 @@ func convertProtoTime(t *timestamppb.Timestamp) time.Time {
 		r = t.AsTime()
 	}
 	return r
+}
+
+func toProtoTimestamp(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+
+	return timestamppb.New(t)
 }
 
 func newObject(o *raw.Object) *ObjectAttrs {
