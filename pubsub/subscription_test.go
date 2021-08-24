@@ -91,10 +91,9 @@ func TestListProjectSubscriptions(t *testing.T) {
 		}
 		if err != nil {
 			t.Errorf("SubscriptionIterator.NextConfig() got err: %v", err)
-		} else {
-			if got := sub.Topic.ID(); got != topic.ID() {
-				t.Errorf("subConfig.Topic mismatch, got: %v, want: %v", got, topic.ID())
-			}
+		}
+		if got := sub.Topic.ID(); got != topic.ID() {
+			t.Errorf("subConfig.Topic mismatch, got: %v, want: %v", got, topic.ID())
 		}
 	}
 }

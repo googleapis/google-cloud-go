@@ -356,7 +356,10 @@ func (tps *TopicIterator) Next() (*Topic, error) {
 	return newTopic(tps.c, topicName), nil
 }
 
-// NextConfig returns the next topic config. If there are no more topics, iterator.Done will be returned.
+// NextConfig returns the next topic config. If there are no more topics,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `TopicIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
 func (t *TopicIterator) NextConfig() (*TopicConfig, error) {
 	tpb, err := t.it.Next()
 	if err != nil {

@@ -115,7 +115,10 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	return &Subscription{c: subs.c, name: subName}, nil
 }
 
-// NextConfig returns the next subscription config. If there are no more subscriptions, iterator.Done will be returned.
+// NextConfig returns the next subscription config. If there are no more subscriptions,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `SubscriptionIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
 func (subs *SubscriptionIterator) NextConfig() (*SubscriptionConfig, error) {
 	spb, err := subs.it.Next()
 	if err != nil {
