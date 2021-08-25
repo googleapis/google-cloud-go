@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.14
 // +build go1.14
 
 // This test is only for Go1.14 and above because we need to use
