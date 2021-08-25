@@ -35,6 +35,7 @@ func main() {
 
 	req := &resourcemanagerpb.UpdateFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#UpdateFolderRequest.
 	}
 	resp, err := c.UpdateFolder(ctx, req)
 	if err != nil {

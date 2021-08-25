@@ -256,6 +256,17 @@ type SubscriptionConfig struct {
 	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
 	// the endpoint will not be made.
 	Detached bool
+
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is
+	// retained after it is published to the subscription's topic. If this field is
+	// set, messages published to the subscription's topic in the last
+	// `TopicMessageRetentionDuration` are always available to subscribers.
+	// You can enable both topic and subscription retention for the same topic.
+	// In this situation, the maximum of the retention durations takes effect.
+	//
+	// This is an output only field, meaning it will only appear in responses from the backend
+	// and will be ignored if sent in a request.
+	TopicMessageRetentionDuration time.Duration
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -304,17 +315,18 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:                 newTopic(c, pbSub.Topic),
-		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages:   pbSub.RetainAckedMessages,
-		RetentionDuration:     rd,
-		Labels:                pbSub.Labels,
-		ExpirationPolicy:      expirationPolicy,
-		EnableMessageOrdering: pbSub.EnableMessageOrdering,
-		DeadLetterPolicy:      dlp,
-		Filter:                pbSub.Filter,
-		RetryPolicy:           rp,
-		Detached:              pbSub.Detached,
+		Topic:                         newTopic(c, pbSub.Topic),
+		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:           pbSub.RetainAckedMessages,
+		RetentionDuration:             rd,
+		Labels:                        pbSub.Labels,
+		ExpirationPolicy:              expirationPolicy,
+		EnableMessageOrdering:         pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:              dlp,
+		Filter:                        pbSub.Filter,
+		RetryPolicy:                   rp,
+		Detached:                      pbSub.Detached,
+		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {

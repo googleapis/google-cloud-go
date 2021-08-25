@@ -36,6 +36,7 @@ func main() {
 
 	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {

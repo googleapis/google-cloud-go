@@ -36,6 +36,7 @@ func main() {
 
 	req := &dataprocpb.ListClustersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2#ListClustersRequest.
 	}
 	it := c.ListClusters(ctx, req)
 	for {

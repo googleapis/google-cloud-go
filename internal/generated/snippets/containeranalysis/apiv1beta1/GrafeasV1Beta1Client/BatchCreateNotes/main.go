@@ -35,6 +35,7 @@ func main() {
 
 	req := &grafeaspb.BatchCreateNotesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#BatchCreateNotesRequest.
 	}
 	resp, err := c.BatchCreateNotes(ctx, req)
 	if err != nil {

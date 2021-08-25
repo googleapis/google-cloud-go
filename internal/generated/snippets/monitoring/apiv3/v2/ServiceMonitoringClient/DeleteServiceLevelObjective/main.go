@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteServiceLevelObjectiveRequest.
 	}
 	err = c.DeleteServiceLevelObjective(ctx, req)
 	if err != nil {

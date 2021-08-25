@@ -35,6 +35,7 @@ func main() {
 
 	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#DeleteBudgetRequest.
 	}
 	err = c.DeleteBudget(ctx, req)
 	if err != nil {

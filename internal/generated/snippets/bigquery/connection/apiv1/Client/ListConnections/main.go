@@ -36,6 +36,7 @@ func main() {
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#ListConnectionsRequest.
 	}
 	it := c.ListConnections(ctx, req)
 	for {

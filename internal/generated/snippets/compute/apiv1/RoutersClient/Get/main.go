@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRouterRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {

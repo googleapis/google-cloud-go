@@ -748,9 +748,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello"`,
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B')`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello")}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
@@ -817,11 +817,33 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			`SELECT str FROM SomeStrings WHERE str LIKE "a%"`,
+			nil,
+			[][]interface{}{
+				{"afoo"},
+				{"abar"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE Name LIKE "%e"`,
+			nil,
+			[][]interface{}{
+				{"George"},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE Name LIKE "J%k" OR Name LIKE "_am"`,
 			nil,
 			[][]interface{}{
 				{"Jack"},
 				{"Sam"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE STARTS_WITH(Name, 'Ja')`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
 			},
 		},
 		{

@@ -46,6 +46,7 @@ func ExampleRegionTargetHttpProxiesClient_Delete() {
 
 	req := &computepb.DeleteRegionTargetHttpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionTargetHttpProxyRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionTargetHttpProxiesClient_Get() {
 
 	req := &computepb.GetRegionTargetHttpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionTargetHttpProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionTargetHttpProxiesClient_Insert() {
 
 	req := &computepb.InsertRegionTargetHttpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionTargetHttpProxyRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionTargetHttpProxiesClient_List() {
 
 	req := &computepb.ListRegionTargetHttpProxiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionTargetHttpProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleRegionTargetHttpProxiesClient_SetUrlMap() {
 
 	req := &computepb.SetUrlMapRegionTargetHttpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUrlMapRegionTargetHttpProxyRequest.
 	}
 	resp, err := c.SetUrlMap(ctx, req)
 	if err != nil {

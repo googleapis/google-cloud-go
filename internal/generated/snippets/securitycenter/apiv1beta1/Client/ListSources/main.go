@@ -36,6 +36,7 @@ func main() {
 
 	req := &securitycenterpb.ListSourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#ListSourcesRequest.
 	}
 	it := c.ListSources(ctx, req)
 	for {

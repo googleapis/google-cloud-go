@@ -35,6 +35,7 @@ func main() {
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#DeleteFunctionRequest.
 	}
 	op, err := c.DeleteFunction(ctx, req)
 	if err != nil {

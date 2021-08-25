@@ -46,6 +46,7 @@ func ExampleDiskTypesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListDiskTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListDiskTypesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleDiskTypesClient_Get() {
 
 	req := &computepb.GetDiskTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiskTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleDiskTypesClient_List() {
 
 	req := &computepb.ListDiskTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListDiskTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

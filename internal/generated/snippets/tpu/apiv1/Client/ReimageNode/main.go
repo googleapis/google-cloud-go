@@ -35,6 +35,7 @@ func main() {
 
 	req := &tpupb.ReimageNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ReimageNodeRequest.
 	}
 	op, err := c.ReimageNode(ctx, req)
 	if err != nil {

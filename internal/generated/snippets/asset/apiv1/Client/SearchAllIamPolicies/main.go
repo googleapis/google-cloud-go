@@ -36,6 +36,7 @@ func main() {
 
 	req := &assetpb.SearchAllIamPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#SearchAllIamPoliciesRequest.
 	}
 	it := c.SearchAllIamPolicies(ctx, req)
 	for {

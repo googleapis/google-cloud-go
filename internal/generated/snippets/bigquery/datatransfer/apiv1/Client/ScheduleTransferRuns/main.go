@@ -35,6 +35,7 @@ func main() {
 
 	req := &datatransferpb.ScheduleTransferRunsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ScheduleTransferRunsRequest.
 	}
 	resp, err := c.ScheduleTransferRuns(ctx, req)
 	if err != nil {

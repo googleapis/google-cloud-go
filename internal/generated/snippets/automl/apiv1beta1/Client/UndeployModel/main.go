@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UndeployModelRequest.
 	}
 	op, err := c.UndeployModel(ctx, req)
 	if err != nil {

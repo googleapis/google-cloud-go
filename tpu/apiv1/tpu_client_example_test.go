@@ -46,6 +46,7 @@ func ExampleClient_ListNodes() {
 
 	req := &tpupb.ListNodesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListNodesRequest.
 	}
 	it := c.ListNodes(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetNode() {
 
 	req := &tpupb.GetNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#GetNodeRequest.
 	}
 	resp, err := c.GetNode(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateNode() {
 
 	req := &tpupb.CreateNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#CreateNodeRequest.
 	}
 	op, err := c.CreateNode(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_DeleteNode() {
 
 	req := &tpupb.DeleteNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#DeleteNodeRequest.
 	}
 	op, err := c.DeleteNode(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_ReimageNode() {
 
 	req := &tpupb.ReimageNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ReimageNodeRequest.
 	}
 	op, err := c.ReimageNode(ctx, req)
 	if err != nil {
@@ -162,6 +167,7 @@ func ExampleClient_StopNode() {
 
 	req := &tpupb.StopNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#StopNodeRequest.
 	}
 	op, err := c.StopNode(ctx, req)
 	if err != nil {
@@ -186,6 +192,7 @@ func ExampleClient_StartNode() {
 
 	req := &tpupb.StartNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#StartNodeRequest.
 	}
 	op, err := c.StartNode(ctx, req)
 	if err != nil {
@@ -210,6 +217,7 @@ func ExampleClient_ListTensorFlowVersions() {
 
 	req := &tpupb.ListTensorFlowVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListTensorFlowVersionsRequest.
 	}
 	it := c.ListTensorFlowVersions(ctx, req)
 	for {
@@ -235,6 +243,7 @@ func ExampleClient_GetTensorFlowVersion() {
 
 	req := &tpupb.GetTensorFlowVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#GetTensorFlowVersionRequest.
 	}
 	resp, err := c.GetTensorFlowVersion(ctx, req)
 	if err != nil {
@@ -254,6 +263,7 @@ func ExampleClient_ListAcceleratorTypes() {
 
 	req := &tpupb.ListAcceleratorTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListAcceleratorTypesRequest.
 	}
 	it := c.ListAcceleratorTypes(ctx, req)
 	for {
@@ -279,6 +289,7 @@ func ExampleClient_GetAcceleratorType() {
 
 	req := &tpupb.GetAcceleratorTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#GetAcceleratorTypeRequest.
 	}
 	resp, err := c.GetAcceleratorType(ctx, req)
 	if err != nil {

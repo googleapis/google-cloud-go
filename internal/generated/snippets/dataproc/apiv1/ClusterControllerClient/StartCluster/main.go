@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.StartClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#StartClusterRequest.
 	}
 	op, err := c.StartCluster(ctx, req)
 	if err != nil {

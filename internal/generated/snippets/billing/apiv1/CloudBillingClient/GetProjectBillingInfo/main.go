@@ -35,6 +35,7 @@ func main() {
 
 	req := &billingpb.GetProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#GetProjectBillingInfoRequest.
 	}
 	resp, err := c.GetProjectBillingInfo(ctx, req)
 	if err != nil {
