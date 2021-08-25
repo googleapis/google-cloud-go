@@ -35,6 +35,7 @@ func main() {
 
 	req := &connectionpb.UpdateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1#UpdateConnectionRequest.
 	}
 	resp, err := c.UpdateConnection(ctx, req)
 	if err != nil {

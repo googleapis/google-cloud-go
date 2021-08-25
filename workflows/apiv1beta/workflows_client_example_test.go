@@ -46,6 +46,7 @@ func ExampleClient_ListWorkflows() {
 
 	req := &workflowspb.ListWorkflowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#ListWorkflowsRequest.
 	}
 	it := c.ListWorkflows(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetWorkflow() {
 
 	req := &workflowspb.GetWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#GetWorkflowRequest.
 	}
 	resp, err := c.GetWorkflow(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateWorkflow() {
 
 	req := &workflowspb.CreateWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#CreateWorkflowRequest.
 	}
 	op, err := c.CreateWorkflow(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_DeleteWorkflow() {
 
 	req := &workflowspb.DeleteWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#DeleteWorkflowRequest.
 	}
 	op, err := c.DeleteWorkflow(ctx, req)
 	if err != nil {
@@ -136,6 +140,7 @@ func ExampleClient_UpdateWorkflow() {
 
 	req := &workflowspb.UpdateWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#UpdateWorkflowRequest.
 	}
 	op, err := c.UpdateWorkflow(ctx, req)
 	if err != nil {

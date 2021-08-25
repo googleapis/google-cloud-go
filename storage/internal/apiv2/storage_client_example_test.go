@@ -45,6 +45,7 @@ func ExampleClient_StartResumableWrite() {
 
 	req := &storagepb.StartResumableWriteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#StartResumableWriteRequest.
 	}
 	resp, err := c.StartResumableWrite(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleClient_QueryWriteStatus() {
 
 	req := &storagepb.QueryWriteStatusRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#QueryWriteStatusRequest.
 	}
 	resp, err := c.QueryWriteStatus(ctx, req)
 	if err != nil {

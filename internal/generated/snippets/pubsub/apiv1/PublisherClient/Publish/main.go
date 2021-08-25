@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.PublishRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#PublishRequest.
 	}
 	resp, err := c.Publish(ctx, req)
 	if err != nil {

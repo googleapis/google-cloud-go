@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.UpdateSinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateSinkRequest.
 	}
 	resp, err := c.UpdateSink(ctx, req)
 	if err != nil {

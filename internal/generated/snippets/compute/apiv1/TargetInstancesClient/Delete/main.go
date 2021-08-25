@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteTargetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetInstanceRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetConversionEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetConversionEventRequest.
 	}
 	resp, err := c.GetConversionEvent(ctx, req)
 	if err != nil {

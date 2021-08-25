@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.InsertDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertDiskRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {

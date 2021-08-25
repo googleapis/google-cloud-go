@@ -46,6 +46,7 @@ func ExampleDocumentsClient_ListDocuments() {
 
 	req := &dialogflowpb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListDocumentsRequest.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleDocumentsClient_GetDocument() {
 
 	req := &dialogflowpb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetDocumentRequest.
 	}
 	resp, err := c.GetDocument(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleDocumentsClient_CreateDocument() {
 
 	req := &dialogflowpb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateDocumentRequest.
 	}
 	op, err := c.CreateDocument(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleDocumentsClient_DeleteDocument() {
 
 	req := &dialogflowpb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteDocumentRequest.
 	}
 	op, err := c.DeleteDocument(ctx, req)
 	if err != nil {
@@ -136,6 +140,7 @@ func ExampleDocumentsClient_UpdateDocument() {
 
 	req := &dialogflowpb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateDocumentRequest.
 	}
 	op, err := c.UpdateDocument(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleDocumentsClient_ReloadDocument() {
 
 	req := &dialogflowpb.ReloadDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ReloadDocumentRequest.
 	}
 	op, err := c.ReloadDocument(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListConversionEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListConversionEventsRequest.
 	}
 	it := c.ListConversionEvents(ctx, req)
 	for {

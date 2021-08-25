@@ -36,6 +36,7 @@ func main() {
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#ListFunctionsRequest.
 	}
 	it := c.ListFunctions(ctx, req)
 	for {

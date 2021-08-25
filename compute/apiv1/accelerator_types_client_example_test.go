@@ -46,6 +46,7 @@ func ExampleAcceleratorTypesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListAcceleratorTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListAcceleratorTypesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleAcceleratorTypesClient_Get() {
 
 	req := &computepb.GetAcceleratorTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetAcceleratorTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleAcceleratorTypesClient_List() {
 
 	req := &computepb.ListAcceleratorTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAcceleratorTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

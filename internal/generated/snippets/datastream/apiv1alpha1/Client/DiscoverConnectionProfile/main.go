@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.DiscoverConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DiscoverConnectionProfileRequest.
 	}
 	resp, err := c.DiscoverConnectionProfile(ctx, req)
 	if err != nil {

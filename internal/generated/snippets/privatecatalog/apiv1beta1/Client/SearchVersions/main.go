@@ -36,6 +36,7 @@ func main() {
 
 	req := &privatecatalogpb.SearchVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchVersionsRequest.
 	}
 	it := c.SearchVersions(ctx, req)
 	for {

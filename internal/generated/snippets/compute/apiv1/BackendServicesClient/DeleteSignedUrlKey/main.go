@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteSignedUrlKeyBackendServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSignedUrlKeyBackendServiceRequest.
 	}
 	resp, err := c.DeleteSignedUrlKey(ctx, req)
 	if err != nil {

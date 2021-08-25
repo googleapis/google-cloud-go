@@ -35,6 +35,7 @@ func main() {
 
 	req := &tpupb.CreateNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#CreateNodeRequest.
 	}
 	op, err := c.CreateNode(ctx, req)
 	if err != nil {

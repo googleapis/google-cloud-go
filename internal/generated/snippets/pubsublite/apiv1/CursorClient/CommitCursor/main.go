@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsublitepb.CommitCursorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CommitCursorRequest.
 	}
 	resp, err := c.CommitCursor(ctx, req)
 	if err != nil {

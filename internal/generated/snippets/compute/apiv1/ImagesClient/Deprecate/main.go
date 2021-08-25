@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeprecateImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
 	}
 	resp, err := c.Deprecate(ctx, req)
 	if err != nil {
