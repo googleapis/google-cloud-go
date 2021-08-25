@@ -1388,9 +1388,8 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	}
 }
 
-func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
-	o := r.GetResource()
-	if r == nil || o == nil {
+func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
+	if o == nil {
 		return nil
 	}
 	return &ObjectAttrs{

@@ -25,6 +25,16 @@ import (
 
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+)
+
+const (
+	// Maximum amount of content that can be sent per WriteObjectRequest message.
+	// A buffer reaching this amount will precipitate a flush of the buffer.
+	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
+
+	// Default per stream, or "chunk", size is 16 MB.
+	defaultPerStreamWriteSize int = 16 << 20
 )
 
 // A Writer writes a Cloud Storage object.
@@ -84,30 +94,301 @@ type Writer struct {
 
 	mu  sync.Mutex
 	err error
+
+	stream storagepb.Storage_WriteObjectClient
 }
 
-func (w *Writer) open() error {
-	attrs := w.ObjectAttrs
-	// Check the developer didn't change the object Name (this is unfortunate, but
-	// we don't want to store an object under the wrong name).
-	if attrs.Name != w.o.object {
-		return fmt.Errorf("storage: Writer.Name %q does not match object name %q", attrs.Name, w.o.object)
+// openGRPC initializes a pipe for the user to write data to, and a routine to
+// read from that pipe and upload the data to GCS via gRPC.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) openGRPC() error {
+	if err := w.validateWriteAttrs(); err != nil {
+		return err
 	}
-	if !utf8.ValidString(attrs.Name) {
-		return fmt.Errorf("storage: object name %q is not valid UTF-8", attrs.Name)
-	}
-	if attrs.KMSKeyName != "" && w.o.encryptionKey != nil {
-		return errors.New("storage: cannot use KMSKeyName with a customer-supplied encryption key")
-	}
-	if w.ChunkSize < 0 {
-		return errors.New("storage: Writer.ChunkSize must be non-negative")
-	}
+
 	pr, pw := io.Pipe()
 	w.pw = pw
 	w.opened = true
 
 	go w.monitorCancel()
 
+	// TODO: Handle this case later.
+	bufSize := w.ChunkSize
+	if w.ChunkSize == 0 {
+		bufSize = maxPerMessageWriteSize
+	}
+
+	var offset int64
+	var upid string
+
+	go func() {
+		defer close(w.donec)
+
+		// Loop until there is an error or the Object has been finalized.
+		for {
+			// Initiliaze client buffer with ChunkSize.
+			buf := make([]byte, bufSize)
+			recvd, done, err := read(pr, buf)
+			if err != nil {
+				w.error(err)
+				pr.CloseWithError(err)
+				return
+			}
+
+			// TODO: Figure out how to set up encryption via CommonObjectRequestParams.
+			// TODO: Apply Object write conditions to the request.
+			// TODO: Send Object checksum.
+
+			// The chunk buffer is full, but there is no end in sight. Start a
+			// resumable upload if it has not already been started.
+			if !done && upid == "" {
+				upid, err = w.startResumableUpload()
+				if err != nil {
+					w.error(err)
+					pr.CloseWithError(err)
+					return
+				}
+			}
+
+			o, off, finalized, err := w.upload(buf, recvd, offset, done, upid)
+			if err != nil {
+				w.error(err)
+				pr.CloseWithError(err)
+				return
+			}
+			offset = off
+
+			// When we are done reading data and the chunk has been finalized,
+			// we are done.
+			if done && finalized {
+				// Build Object from server's response and report progress.
+				w.obj = newObjectFromProto(o)
+				w.progress(o.GetSize())
+				return
+			}
+
+			// Query the progress then upload another chunk.
+			if err := w.queryProgress(upid); err != nil {
+				w.error(err)
+				pr.CloseWithError(err)
+				return
+			}
+		}
+	}()
+
+	return nil
+}
+
+// startResumableUpload initializes a Resumable Upload and returns the upload ID.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) startResumableUpload() (string, error) {
+	var common *storagepb.CommonRequestParams
+	if w.o.userProject != "" {
+		common = &storagepb.CommonRequestParams{UserProject: w.o.userProject}
+	}
+	upres, err := w.o.c.gc.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
+		WriteObjectSpec: &storagepb.WriteObjectSpec{
+			Resource: w.ObjectAttrs.toProtoObject(w.o.bucket),
+		},
+		CommonRequestParams: common,
+	})
+
+	return upres.GetUploadId(), err
+}
+
+// queryProgress is a helper that queries the status of the resumable upload
+// associated with the given upload ID. Progress is reported with the committed
+// size from the write status.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) queryProgress(upid string) error {
+	q, err := w.o.c.gc.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: upid})
+
+	// q.GetCommittedSize() will return 0 if q is nil, and progress() will ignore 0 progress.
+	w.progress(q.GetCommittedSize())
+	return err
+}
+
+// upload opens a Write stream and uploads the buffer at the given offset (if
+// uploading a chunk for a resumable upload), and will mark the write as
+// finished if we are done receiving data from the user. The resulting write
+// offset after uploading the buffer is returned, as well as a boolean
+// indicating if the Object has been finalized. If it has been finalized, the
+// final Object will be returned as well.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) upload(buf []byte, recvd int, offset int64, done bool, upid string) (*storagepb.Object, int64, bool, error) {
+	var err error
+
+	sent := 0
+	first := true
+	finished := false
+	limit := maxPerMessageWriteSize
+	for recvd-sent > 0 {
+		// This indicates that this is the last message and the remaining
+		// data fits in one message.
+		if sent+limit >= recvd {
+			limit = recvd - sent
+			finished = true
+
+			// Do not indicate finished for Resumable Uploads until we have
+			// received all data for writing from the user.
+			if !done && upid != "" {
+				finished = false
+			}
+		}
+
+		// Prepare chunk section for upload.
+		data := buf[sent : sent+limit]
+		req := &storagepb.WriteObjectRequest{
+			Data: &storagepb.WriteObjectRequest_ChecksummedData{
+				ChecksummedData: &storagepb.ChecksummedData{
+					Content: data,
+				},
+			},
+			WriteOffset: offset,
+			FinishWrite: finished,
+		}
+
+		n, err := w.sendWithRetry(req, first, upid)
+		if err != nil {
+			return nil, 0, false, err
+		}
+		first = false
+
+		// Update the immediate stream's sent total and the global upload
+		// offset with the data sent.
+		sent += n
+		offset += int64(n)
+	}
+
+	// Close the stream to "commit" the data sent.
+	resp, finalized, err := w.commit()
+	if err != nil {
+		return nil, 0, false, err
+	}
+
+	return resp.GetResource(), offset, finalized, err
+}
+
+// commit closes the stream to commit the data sent and potentially receive
+// the finalized object if finished uploading. If the last request sent
+// indicated that writing was finished, the Object will be finalized and
+// returned. If not, then the Object will be nil, and the boolean returned will
+// be false.
+func (w *Writer) commit() (*storagepb.WriteObjectResponse, bool, error) {
+	finalized := true
+	resp, err := w.stream.CloseAndRecv()
+	if err == io.EOF {
+		// Closing a stream for a resumable upload finish_write = false results
+		// in an EOF which can be ignored, as we aren't done uploading yet.
+		finalized = false
+		err = nil
+	}
+	// Drop the stream reference as it has been closed.
+	w.stream = nil
+
+	return resp, finalized, err
+}
+
+// sendWithRetry will attempt to Send a WriteObjectRequest on the stream, and
+// will reopen the stream and retry that send if it fails for a retryable
+// reason until the Writer's context is canceled.
+func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool, upid string) (int, error) {
+	var err error
+	err = runWithRetry(w.ctx, func() error {
+		// Open a new stream and set the first_message field on the request.
+		// The first message on the WriteObject stream must either be the
+		// Object or the Resumable Upload ID.
+		if first {
+			w.stream, err = w.o.c.gc.WriteObject(w.ctx)
+			if err != nil {
+				return err
+			}
+
+			if upid != "" {
+				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: upid}
+			} else {
+				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
+					WriteObjectSpec: &storagepb.WriteObjectSpec{
+						Resource: w.ObjectAttrs.toProtoObject(w.o.bucket),
+					},
+				}
+			}
+		}
+
+		err = w.stream.Send(req)
+		if err == nil {
+			return nil
+		} else if err != nil && err != io.EOF {
+			return err
+		}
+
+		// err was io.EOF. The client-side of a stream only gets an EOF on Send
+		// when the backend closes the stream and wants to return an error
+		// status. Closing the stream receives the status as an error.
+		_, err = w.stream.CloseAndRecv()
+
+		// Set first to true so that if the request is retried, the stream is
+		// reopened.
+		first = true
+		return err
+	})
+
+	return len(req.GetChecksummedData().GetContent()), err
+}
+
+// read copies the data in the reader to the given buffer and reports how much
+// data was read into the buffer and if there is no more data to read (EOF).
+//
+// This is an experimental API and not intended for public use.
+func read(r io.Reader, buf []byte) (int, bool, error) {
+	// Set n to -1 to start the Read loop.
+	var n, recvd int = -1, 0
+	var err error
+	for err == nil && n != 0 {
+		// The routine blocks here until data is received.
+		n, err = r.Read(buf[recvd:])
+		recvd += n
+	}
+	var done bool
+	if err == io.EOF {
+		done = true
+		err = nil
+	}
+	return recvd, done, err
+}
+
+// progress is a convenience wrapper that reports write progress to the Writer
+// ProgressFunc if it is set and progress is non-zero.
+func (w *Writer) progress(p int64) {
+	if w.ProgressFunc != nil && p != 0 {
+		w.ProgressFunc(p)
+	}
+}
+
+// error acquires the Writer's lock, sets the Writer's err to the given error,
+// then relinquishes the lock.
+func (w *Writer) error(err error) {
+	w.mu.Lock()
+	w.err = err
+	w.mu.Unlock()
+}
+
+func (w *Writer) open() error {
+	if err := w.validateWriteAttrs(); err != nil {
+		return err
+	}
+
+	pr, pw := io.Pipe()
+	w.pw = pw
+	w.opened = true
+
+	go w.monitorCancel()
+
+	attrs := w.ObjectAttrs
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(w.ChunkSize),
 	}
@@ -190,7 +471,12 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		return 0, werr
 	}
 	if !w.opened {
-		if err := w.open(); err != nil {
+		// gRPC client has been initialized - use gRPC to upload.
+		if w.o.c.gc != nil {
+			if err := w.openGRPC(); err != nil {
+				return 0, err
+			}
+		} else if err := w.open(); err != nil {
 			return 0, err
 		}
 	}
@@ -262,4 +548,23 @@ func (w *Writer) CloseWithError(err error) error {
 // It's only valid to call it after Close returns nil.
 func (w *Writer) Attrs() *ObjectAttrs {
 	return w.obj
+}
+
+func (w *Writer) validateWriteAttrs() error {
+	attrs := w.ObjectAttrs
+	// Check the developer didn't change the object Name (this is unfortunate, but
+	// we don't want to store an object under the wrong name).
+	if attrs.Name != w.o.object {
+		return fmt.Errorf("storage: Writer.Name %q does not match object name %q", attrs.Name, w.o.object)
+	}
+	if !utf8.ValidString(attrs.Name) {
+		return fmt.Errorf("storage: object name %q is not valid UTF-8", attrs.Name)
+	}
+	if attrs.KMSKeyName != "" && w.o.encryptionKey != nil {
+		return errors.New("storage: cannot use KMSKeyName with a customer-supplied encryption key")
+	}
+	if w.ChunkSize < 0 {
+		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
+	return nil
 }

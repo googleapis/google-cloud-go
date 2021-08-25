@@ -1262,8 +1262,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		r := &storagepb.WriteObjectResponse{WriteStatus: &storagepb.WriteObjectResponse_Resource{Resource: tt.in}}
-		got := newObjectFromProto(r)
+		got := newObjectFromProto(tt.in)
 		if diff := testutil.Diff(got, tt.want); diff != "" {
 			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
 		}

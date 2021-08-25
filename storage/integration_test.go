@@ -1044,6 +1044,183 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	}
 }
 
+func TestIntegration_SimpleWriteGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	content := []byte("Hello, world this is a grpc request")
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+	// TODO: Verify content via checksums.
+
+}
+
+func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+	// TODO: Verify content via checksums.
+}
+
+func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
+	// t.Skip()
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+
+	w := gobj.NewWriter(ctx)
+	// Use a 1 MB chunk size.
+	w.ChunkSize = 1 << 20
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hobj := hc.Bucket(grpcBucketName).Object(name)
+	hr, err := hobj.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+	// TODO: Verify content via checksums.
+}
+
 func TestIntegration_ConditionalDownload(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
