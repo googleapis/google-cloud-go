@@ -817,6 +817,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			`SELECT str FROM SomeStrings WHERE str LIKE "a%"`,
+			nil,
+			[][]interface{}{
+				{"afoo"},
+				{"abar"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE Name LIKE "%e"`,
+			nil,
+			[][]interface{}{
+				{"George"},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE Name LIKE "J%k" OR Name LIKE "_am"`,
 			nil,
 			[][]interface{}{
