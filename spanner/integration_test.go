@@ -1796,13 +1796,12 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			val  interface{}
 			want interface{}
 		}{
-			{col: "JSON", val: NullJSON{msg, true}, want: msg},
 			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
-			{col: "JSON", val: NullJSON{msg, false}},
+			{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
 			{col: "JSON", val: nil, want: NullJSON{}},
 			{col: "JSONArray", val: []NullJSON(nil)},
 			{col: "JSONArray", val: []NullJSON{}},
-			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}},
+			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
 		}...)
 	}
 
