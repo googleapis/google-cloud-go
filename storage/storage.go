@@ -1137,12 +1137,11 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 
 // toProtoObject copies the editable attributes from o to the proto library's Object type.
 func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
-	var checksums *storagepb.ObjectChecksums
-	if len(o.MD5) > 0 {
-		checksums = &storagepb.ObjectChecksums{Md5Hash: o.MD5}
-	} else if o.CRC32C > 0 {
-		checksums = &storagepb.ObjectChecksums{Crc32C: proto.Uint32(o.CRC32C)}
+	checksums := &storagepb.ObjectChecksums{Md5Hash: o.MD5}
+	if o.CRC32C > 0 {
+		checksums.Crc32C = proto.Uint32(o.CRC32C)
 	}
+
 	// For now, there are only globally unique buckets, and "_" is the alias
 	// project ID for such buckets.
 	b = bucketResourceName("_", b)
