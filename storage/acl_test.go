@@ -73,8 +73,8 @@ func TestToProtoObjectACL(t *testing.T) {
 		{nil, nil},
 		{
 			rules: []ACLRule{
-				{Entity: "foo", Role: "bar"},
-				{Entity: "bar", Role: "foo"},
+				{Entity: "foo", Role: "bar", Domain: "do not copy me!", Email: "donotcopy@"},
+				{Entity: "bar", Role: "foo", ProjectTeam: &ProjectTeam{ProjectNumber: "1234", Team: "donotcopy"}},
 			},
 			want: []*storagepb.ObjectAccessControl{
 				{Entity: "foo", Role: "bar"},
