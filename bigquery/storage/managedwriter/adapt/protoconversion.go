@@ -280,7 +280,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 	}, nil
 }
 
-// ConvertToProtoSchema builds a self-contained DescriptorProto suitable for communicating schema
+// NormalizeDescriptor builds a self-contained DescriptorProto suitable for communicating schema
 // information with the BigQuery Storage write API.  It's primarily used for cases where users are
 // interested in sending data using a predefined protocol buffer message.
 //
