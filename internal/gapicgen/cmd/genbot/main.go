@@ -25,6 +25,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"cloud.google.com/go/internal/gapicgen"
 )
@@ -50,6 +51,7 @@ func main() {
 	gocloudDir := flag.String("gocloud-dir", os.Getenv("GOCLOUD_DIR"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", os.Getenv("GENPROTO_DIR"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", os.Getenv("PROTO_DIR"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	skipPrefixes := flag.String("skip-prefixes", os.Getenv("SKIP_PREFIXES"), `Specifies which gapic prefixes should not be generated separated by a comma. The value should be in the form of an import path (Ex: google.golang.org/genproto/googleapis/ads). '-' value will allow to generate all gapics. The default "google.golang.org/genproto/googleapis/ads" generates all gapics except ads.`)
 	gapicToGenerate := flag.String("gapic", os.Getenv("GAPIC_TO_GENERATE"), `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
 	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
 	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
@@ -64,6 +66,7 @@ func main() {
 			genprotoDir:        *genprotoDir,
 			protoDir:           *protoDir,
 			gapicToGenerate:    *gapicToGenerate,
+			skipPrefixes:       getSkipPrefixes(*skipPrefixes),
 			onlyGapics:         *onlyGapics,
 			regenOnly:          *regenOnly,
 			forceAll:           *forceAll,
@@ -77,6 +80,7 @@ func main() {
 		githubUsername:    *githubUsername,
 		githubName:        *githubName,
 		githubEmail:       *githubEmail,
+		skipPrefixes:      getSkipPrefixes(*skipPrefixes),
 		forceAll:          *forceAll,
 	}); err != nil {
 		log.Fatal(err)
@@ -87,4 +91,17 @@ func strToBool(s string) bool {
 	// Treat error as false
 	b, _ := strconv.ParseBool(s)
 	return b
+}
+
+func getSkipPrefixes(s string) []string {
+	if s == "" { // if empty, use default case
+		return []string{
+			"google.golang.org/genproto/googleapis/ads",
+		}
+
+	} else if s == "-" { // if value is "-" return empty filter
+		return nil
+	}
+
+	return strings.Split(s, ",")
 }
