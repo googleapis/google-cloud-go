@@ -388,7 +388,7 @@ func newStringSet() *stringSet {
 }
 
 func normalizeName(in string) string {
-	return strings.ReplaceAll(in, ".", "_")
+	return strings.Replace(in, ".", "_", -1)
 }
 
 // these types don't get normalized into the fully-contained structure.
