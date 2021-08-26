@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 
 // TODO: Remove file when the minimum supported version is Go1.12.
+//go:build !go1.12
 // +build !go1.12
 
 package wire
