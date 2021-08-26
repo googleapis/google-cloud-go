@@ -31,6 +31,7 @@ message AllSupportedTypes {
   optional bool bool_value = 7;
   optional TestEnum enum_value = 8;
   required string string_value = 9;
+  optional fixed64 fixed64_value = 10;
 }
 
 message InnerType {

@@ -434,6 +434,13 @@ func TestNormalizeDescriptor(t *testing.T) {
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
 					},
+					{
+						Name:     proto.String("fixed64_value"),
+						JsonName: proto.String("fixed64Value"),
+						Number:   proto.Int32(10),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_FIXED64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
