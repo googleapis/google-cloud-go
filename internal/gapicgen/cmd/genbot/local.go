@@ -36,6 +36,7 @@ type localConfig struct {
 	genprotoDir        string
 	protoDir           string
 	gapicToGenerate    string
+	skipPrefixes       []string
 	onlyGapics         bool
 	regenOnly          bool
 	forceAll           bool
@@ -73,6 +74,7 @@ func genLocal(ctx context.Context, c localConfig) error {
 		GapicDir:           deafultDir(tmpGocloudDir, c.gocloudDir),
 		ProtoDir:           deafultDir(tmpProtoDir, c.protoDir),
 		GapicToGenerate:    c.gapicToGenerate,
+		SkipPrefixes:       c.skipPrefixes,
 		OnlyGenerateGapic:  c.onlyGapics,
 		LocalMode:          true,
 		RegenOnly:          c.regenOnly,

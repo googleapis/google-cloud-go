@@ -36,6 +36,7 @@ type Config struct {
 	GapicDir           string
 	ProtoDir           string
 	GapicToGenerate    string
+	SkipPrefixes       []string
 	OnlyGenerateGapic  bool
 	LocalMode          bool
 	RegenOnly          bool

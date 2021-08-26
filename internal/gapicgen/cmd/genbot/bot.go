@@ -32,6 +32,7 @@ type botConfig struct {
 	githubUsername    string
 	githubName        string
 	githubEmail       string
+	skipPrefixes      []string
 	forceAll          bool
 }
 

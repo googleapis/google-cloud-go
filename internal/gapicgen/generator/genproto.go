@@ -59,6 +59,7 @@ type GenprotoGenerator struct {
 	googleapisDir      string
 	googleapisDiscoDir string
 	protoSrcDir        string
+	skipPrefixes       []string
 	forceAll           bool
 }
 
@@ -70,11 +71,8 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 		googleapisDiscoDir: c.GoogleapisDiscoDir,
 		protoSrcDir:        filepath.Join(c.ProtoDir, "/src"),
 		forceAll:           c.ForceAll,
+		skipPrefixes:       c.SkipPrefixes,
 	}
-}
-
-var skipPrefixes = []string{
-	"google.golang.org/genproto/googleapis/ads",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
@@ -131,7 +129,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("generating from protos")
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fileNames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, g.skipPrefixes) {
 			continue
 		}
 		pk := pkg
