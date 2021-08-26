@@ -27,22 +27,28 @@ message SimpleMessageProto2 {
 
 
 
-message GithubArchiveEntityProto2 {
-    optional int64 id = 1;
-    optional string login = 2;
-    optional string gravatar_id = 3;
-    optional string avatar_url = 4;
-    optional string url = 5;
-}
 
-message GithubArchiveRepoProto2 {
-    optional int64 id = 1;
-    optional string name = 2;
-    optional string url = 3;
-}
+
+
 
 // GithubArchiveMessageProto2 is the proto2 version of github archive row.
 message GithubArchiveMessageProto2 {
+
+
+    message GithubArchiveEntityProto2 {
+        optional int64 id = 1;
+        optional string login = 2;
+        optional string gravatar_id = 3;
+        optional string avatar_url = 4;
+        optional string url = 5;
+    }
+
+    message GithubArchiveRepoProto2 {
+        optional int64 id = 1;
+        optional string name = 2;
+        optional string url = 3;
+    }
+    
     optional string type = 1;
     optional bool public = 2;
     optional string payload = 3;

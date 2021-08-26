@@ -31,7 +31,14 @@ var (
 	// We allow users to annotate streams with a data origin for monitoring purposes.
 	// See the WithDataOrigin writer option for providing this.
 	keyDataOrigin = tag.MustNewKey("dataOrigin")
+
+	// keyError tags metrics using the status code of returned errors.
+	keyError = tag.MustNewKey("error")
 )
+
+// DefaultOpenCensusViews retains the set of all opencensus views that this
+// library has instrumented, to add view registration for exporters.
+var DefaultOpenCensusViews []*view.View
 
 const statsPrefix = "cloud.google.com/go/bigquery/storage/managedwriter/"
 
@@ -40,13 +47,25 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequests = stats.Int64(statsPrefix+"append_requests", "Number of append requests sent", stats.UnitDimensionless)
 
-	// AppendBytes is a measure of the bytes sent as append requests.
+	// AppendRows is a measure of the number of append rows sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	AppendBytes = stats.Int64(statsPrefix+"append_bytes", "Number of bytes sent as append requests", stats.UnitBytes)
+	AppendRows = stats.Int64(statsPrefix+"append_rows", "Number of append rows sent", stats.UnitDimensionless)
+
+	// AppendRequestBytes is a measure of the bytes sent as append requests.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestBytes = stats.Int64(statsPrefix+"append_request_bytes", "Number of bytes sent as append requests", stats.UnitBytes)
+
+	// AppendRequestErrors is a measure of the number of append requests that errored on send.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestErrors = stats.Int64(statsPrefix+"append_request_errors", "Number of append requests that yielded immediate error", stats.UnitDimensionless)
 
 	// AppendResponses is a measure of the number of append responses received.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponses = stats.Int64(statsPrefix+"append_responses", "Number of append responses sent", stats.UnitDimensionless)
+
+	// AppendResponses is a measure of the number of append responses received with an error attached.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendResponseErrors = stats.Int64(statsPrefix+"append_response_errors", "Number of append responses with errors attached", stats.UnitDimensionless)
 
 	// FlushRequests is a measure of the number of FlushRows requests sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
@@ -66,13 +85,25 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestsView *view.View
 
-	// AppendBytesView is a cumulative sum of AppendBytes.
+	// AppendRowsView is a cumulative sum of AppendRows.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
-	AppendBytesView *view.View
+	AppendRowsView *view.View
+
+	// AppendRequestBytesView is a cumulative sum of AppendRequestBytes.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestBytesView *view.View
+
+	// AppendRequestErrorsView is a cumulative sum of AppendRequestErrors.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestErrorsView *view.View
 
 	// AppendResponsesView is a cumulative sum of AppendResponses.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponsesView *view.View
+
+	// AppendResponseErrorsView is a cumulative sum of AppendResponseErrors.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendResponseErrorsView *view.View
 
 	// FlushRequestsView is a cumulative sum of FlushRequests.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
@@ -89,11 +120,25 @@ var (
 
 func init() {
 	AppendRequestsView = createSumView(stats.Measure(AppendRequests), keyStream, keyDataOrigin)
-	AppendBytesView = createSumView(stats.Measure(AppendBytes), keyStream, keyDataOrigin)
+	AppendRowsView = createSumView(stats.Measure(AppendRows), keyStream, keyDataOrigin)
+	AppendRequestBytesView = createSumView(stats.Measure(AppendRequestBytes), keyStream, keyDataOrigin)
+	AppendRequestErrorsView = createSumView(stats.Measure(AppendRequestErrors), keyStream, keyDataOrigin, keyError)
 	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
+	AppendResponseErrorsView = createSumView(stats.Measure(AppendResponseErrors), keyStream, keyDataOrigin, keyError)
 	FlushRequestsView = createSumView(stats.Measure(FlushRequests), keyStream, keyDataOrigin)
 	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount), keyStream, keyDataOrigin)
 	AppendClientOpenRetryView = createSumView(stats.Measure(AppendClientOpenRetryCount), keyStream, keyDataOrigin)
+
+	DefaultOpenCensusViews = []*view.View{
+		AppendRequestsView,
+		AppendRowsView,
+		AppendRequestBytesView,
+		AppendResponsesView,
+		AppendResponseErrorsView,
+		FlushRequestsView,
+		AppendClientOpenView,
+		AppendClientOpenRetryView,
+	}
 }
 
 func createView(m stats.Measure, agg *view.Aggregation, keys ...tag.Key) *view.View {

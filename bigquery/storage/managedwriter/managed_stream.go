@@ -18,10 +18,13 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -269,7 +272,14 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			err = (*arc).Send(req)
 		}
 		recordStat(ms.ctx, AppendRequests, 1)
+		recordStat(ms.ctx, AppendRows, int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows())))
+		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
 		if err != nil {
+			status := grpcstatus.Convert(err)
+			if status != nil {
+				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
+				recordStat(ctx, AppendRequestErrors, 1)
+			}
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
@@ -366,6 +376,11 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
+				tagCtx, err := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
+				if err != nil {
+					log.Printf("WTF couldn't tag: %v", err)
+				}
+				recordStat(tagCtx, AppendResponseErrors, 1)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}
