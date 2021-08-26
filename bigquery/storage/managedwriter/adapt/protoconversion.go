@@ -279,3 +279,139 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 	}, nil
 }
+
+// ConvertToProtoSchema builds a self-contained DescriptorProto suitable for communicating schema
+// information with the BigQuery Storage write API.  It's primarily used for cases where users are
+// interested in sending data using a predefined protocol buffer message.
+//
+// The storage API accepts a single DescriptorProto for decoding message data.  However, the nature
+// of protocol buffers allows one to define complex messages using independent messages, which normally would
+// then require passing of either multiple DescriptorProto messages, or something like a FileDescriptorProto.
+//
+// DescriptorProto allows one to communicate the structure of a single message, but does contain a mechanism
+// for encoding inner nested messages.  This function leverages that to encode the DescriptorProto by transforming
+// external messages to nested messages, as well as handling other tasks like fully qualifying name references.
+//
+// Other details of note:
+// * Well known types are not normalized.
+// * Enums are encapsulated in an outer struct.
+//
+// Issues:
+// Syntax isn't part of DescriptorProto or MessageOptions - still need that option in ProtoSchema.
+func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
+	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
+}
+
+func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes, enumTypes, structTypes *stringSet, root *descriptorpb.DescriptorProto) (*descriptorpb.DescriptorProto, error) {
+	if in == nil {
+		return nil, fmt.Errorf("no messagedescriptor provided")
+	}
+	resultDP := &descriptorpb.DescriptorProto{}
+	if root == nil {
+		root = resultDP
+	}
+	fullProtoName := string(in.FullName())
+	normalizedProtoName := normalizeName(fullProtoName)
+	resultDP.Name = proto.String(normalizedProtoName)
+	visitedTypes.add(fullProtoName)
+	for i := 0; i < in.Fields().Len(); i++ {
+		inField := in.Fields().Get(i)
+		resultFDP := protodesc.ToFieldDescriptorProto(inField)
+		if inField.Kind() == protoreflect.MessageKind || inField.Kind() == protoreflect.GroupKind {
+			// Handle fields that reference messages.
+			// Groups are a proto2-ism which predated nested messages.
+			msgFullName := string(inField.Message().FullName())
+			if !skipNormalization(msgFullName) {
+				// for everything but well known types, normalize.
+				normName := normalizeName(string(msgFullName))
+				if structTypes.contains(msgFullName) {
+					resultFDP.TypeName = proto.String(normName)
+				} else {
+					if visitedTypes.contains(msgFullName) {
+						return nil, fmt.Errorf("recursize type not supported: %s", inField.FullName())
+					}
+					visitedTypes.add(msgFullName)
+					dp, err := normalizeDescriptorInternal(inField.Message(), visitedTypes, enumTypes, structTypes, root)
+					if err != nil {
+						return nil, fmt.Errorf("error converting message %s: %v", inField.FullName(), err)
+					}
+					root.NestedType = append(root.NestedType, dp)
+					visitedTypes.delete(msgFullName)
+					lastNested := root.GetNestedType()[len(root.GetNestedType())-1].GetName()
+					resultFDP.TypeName = proto.String(lastNested)
+				}
+			}
+		}
+		if inField.Kind() == protoreflect.EnumKind {
+			// Deal with enum types.  BigQuery doesn't support enum types directly.
+			enumFullName := string(inField.Enum().FullName())
+			enclosingTypeName := normalizeName(enumFullName) + "_E"
+			enumName := string(inField.Enum().Name())
+			actualName := fmt.Sprintf("%s.%s", enclosingTypeName, enumName)
+			if enumTypes.contains(enumFullName) {
+				resultFDP.TypeName = proto.String(actualName)
+			} else {
+				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
+				enumDP.Name = proto.String(enumName)
+				resultDP.NestedType = append(resultDP.NestedType, &descriptorpb.DescriptorProto{
+					Name:     proto.String(enclosingTypeName),
+					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
+				})
+				resultFDP.TypeName = proto.String(actualName)
+				enumTypes.add(enumFullName)
+			}
+		}
+		resultDP.Field = append(resultDP.Field, resultFDP)
+	}
+	structTypes.add(fullProtoName)
+	return resultDP, nil
+}
+
+type stringSet struct {
+	m map[string]struct{}
+}
+
+func (s *stringSet) contains(k string) bool {
+	_, ok := s.m[k]
+	return ok
+}
+
+func (s *stringSet) add(k string) {
+	s.m[k] = struct{}{}
+}
+
+func (s *stringSet) delete(k string) {
+	delete(s.m, k)
+}
+
+func newStringSet() *stringSet {
+	return &stringSet{
+		m: make(map[string]struct{}),
+	}
+}
+
+func normalizeName(in string) string {
+	return strings.ReplaceAll(in, ".", "_")
+}
+
+// these types don't get normalized into the fully-contained structure.
+var normalizationSkipList = []string{
+	".google.protobuf.DoubleValue",
+	".google.protobuf.FloatValue",
+	".google.protobuf.Int64Value",
+	".google.protobuf.UInt64Value",
+	".google.protobuf.Int32Value",
+	".google.protobuf.Uint32Value",
+	".google.protobuf.BoolValue",
+	".google.protobuf.StringValue",
+	".google.protobuf.BytesValue",
+}
+
+func skipNormalization(fullName string) bool {
+	for _, v := range normalizationSkipList {
+		if v == fullName {
+			return true
+		}
+	}
+	return false
+}
