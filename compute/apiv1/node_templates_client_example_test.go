@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,20 @@ func ExampleNodeTemplatesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListNodeTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNodeTemplatesRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNodeTemplatesClient_Delete() {
@@ -64,6 +72,7 @@ func ExampleNodeTemplatesClient_Delete() {
 
 	req := &computepb.DeleteNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNodeTemplateRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -83,6 +92,7 @@ func ExampleNodeTemplatesClient_Get() {
 
 	req := &computepb.GetNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNodeTemplateRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -102,6 +112,7 @@ func ExampleNodeTemplatesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyNodeTemplateRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -121,6 +132,7 @@ func ExampleNodeTemplatesClient_Insert() {
 
 	req := &computepb.InsertNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNodeTemplateRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -140,13 +152,20 @@ func ExampleNodeTemplatesClient_List() {
 
 	req := &computepb.ListNodeTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNodeTemplatesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNodeTemplatesClient_SetIamPolicy() {
@@ -159,6 +178,7 @@ func ExampleNodeTemplatesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyNodeTemplateRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -178,6 +198,7 @@ func ExampleNodeTemplatesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsNodeTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsNodeTemplateRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetSslPolicyTargetSslProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslPolicyTargetSslProxyRequest.
 	}
 	resp, err := c.SetSslPolicy(ctx, req)
 	if err != nil {

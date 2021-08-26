@@ -45,6 +45,7 @@ func ExampleWorkflowsServiceV2BetaClient_RunPipeline() {
 
 	req := &lifesciencespb.RunPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/lifesciences/v2beta#RunPipelineRequest.
 	}
 	op, err := c.RunPipeline(ctx, req)
 	if err != nil {

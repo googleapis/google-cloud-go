@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.TransferEntitlementsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#TransferEntitlementsRequest.
 	}
 	op, err := c.TransferEntitlements(ctx, req)
 	if err != nil {

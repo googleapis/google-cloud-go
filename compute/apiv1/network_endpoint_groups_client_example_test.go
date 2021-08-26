@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,20 @@ func ExampleNetworkEndpointGroupsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNetworkEndpointGroupsRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
@@ -64,6 +72,7 @@ func ExampleNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
 
 	req := &computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
 	resp, err := c.AttachNetworkEndpoints(ctx, req)
 	if err != nil {
@@ -83,6 +92,7 @@ func ExampleNetworkEndpointGroupsClient_Delete() {
 
 	req := &computepb.DeleteNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -102,6 +112,7 @@ func ExampleNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
 
 	req := &computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
 	resp, err := c.DetachNetworkEndpoints(ctx, req)
 	if err != nil {
@@ -121,6 +132,7 @@ func ExampleNetworkEndpointGroupsClient_Get() {
 
 	req := &computepb.GetNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,6 +152,7 @@ func ExampleNetworkEndpointGroupsClient_Insert() {
 
 	req := &computepb.InsertNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -159,13 +172,20 @@ func ExampleNetworkEndpointGroupsClient_List() {
 
 	req := &computepb.ListNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworkEndpointGroupsRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNetworkEndpointGroupsClient_ListNetworkEndpoints() {
@@ -178,13 +198,20 @@ func ExampleNetworkEndpointGroupsClient_ListNetworkEndpoints() {
 
 	req := &computepb.ListNetworkEndpointsNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworkEndpointsNetworkEndpointGroupsRequest.
 	}
-	resp, err := c.ListNetworkEndpoints(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListNetworkEndpoints(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNetworkEndpointGroupsClient_TestIamPermissions() {
@@ -197,6 +224,7 @@ func ExampleNetworkEndpointGroupsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsNetworkEndpointGroupRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

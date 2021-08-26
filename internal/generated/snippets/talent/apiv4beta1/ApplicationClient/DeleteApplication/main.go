@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.DeleteApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteApplicationRequest.
 	}
 	err = c.DeleteApplication(ctx, req)
 	if err != nil {

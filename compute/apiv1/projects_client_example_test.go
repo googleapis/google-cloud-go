@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleProjectsClient_DisableXpnHost() {
 
 	req := &computepb.DisableXpnHostProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DisableXpnHostProjectRequest.
 	}
 	resp, err := c.DisableXpnHost(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleProjectsClient_DisableXpnResource() {
 
 	req := &computepb.DisableXpnResourceProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DisableXpnResourceProjectRequest.
 	}
 	resp, err := c.DisableXpnResource(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleProjectsClient_EnableXpnHost() {
 
 	req := &computepb.EnableXpnHostProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#EnableXpnHostProjectRequest.
 	}
 	resp, err := c.EnableXpnHost(ctx, req)
 	if err != nil {
@@ -102,6 +106,7 @@ func ExampleProjectsClient_EnableXpnResource() {
 
 	req := &computepb.EnableXpnResourceProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#EnableXpnResourceProjectRequest.
 	}
 	resp, err := c.EnableXpnResource(ctx, req)
 	if err != nil {
@@ -121,6 +126,7 @@ func ExampleProjectsClient_Get() {
 
 	req := &computepb.GetProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetProjectRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,6 +146,7 @@ func ExampleProjectsClient_GetXpnHost() {
 
 	req := &computepb.GetXpnHostProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetXpnHostProjectRequest.
 	}
 	resp, err := c.GetXpnHost(ctx, req)
 	if err != nil {
@@ -159,13 +166,20 @@ func ExampleProjectsClient_GetXpnResources() {
 
 	req := &computepb.GetXpnResourcesProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetXpnResourcesProjectsRequest.
 	}
-	resp, err := c.GetXpnResources(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.GetXpnResources(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleProjectsClient_ListXpnHosts() {
@@ -178,13 +192,20 @@ func ExampleProjectsClient_ListXpnHosts() {
 
 	req := &computepb.ListXpnHostsProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListXpnHostsProjectsRequest.
 	}
-	resp, err := c.ListXpnHosts(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListXpnHosts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleProjectsClient_MoveDisk() {
@@ -197,6 +218,7 @@ func ExampleProjectsClient_MoveDisk() {
 
 	req := &computepb.MoveDiskProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#MoveDiskProjectRequest.
 	}
 	resp, err := c.MoveDisk(ctx, req)
 	if err != nil {
@@ -216,6 +238,7 @@ func ExampleProjectsClient_MoveInstance() {
 
 	req := &computepb.MoveInstanceProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#MoveInstanceProjectRequest.
 	}
 	resp, err := c.MoveInstance(ctx, req)
 	if err != nil {
@@ -235,6 +258,7 @@ func ExampleProjectsClient_SetCommonInstanceMetadata() {
 
 	req := &computepb.SetCommonInstanceMetadataProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetCommonInstanceMetadataProjectRequest.
 	}
 	resp, err := c.SetCommonInstanceMetadata(ctx, req)
 	if err != nil {
@@ -254,6 +278,7 @@ func ExampleProjectsClient_SetDefaultNetworkTier() {
 
 	req := &computepb.SetDefaultNetworkTierProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDefaultNetworkTierProjectRequest.
 	}
 	resp, err := c.SetDefaultNetworkTier(ctx, req)
 	if err != nil {
@@ -273,6 +298,7 @@ func ExampleProjectsClient_SetUsageExportBucket() {
 
 	req := &computepb.SetUsageExportBucketProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUsageExportBucketProjectRequest.
 	}
 	resp, err := c.SetUsageExportBucket(ctx, req)
 	if err != nil {

@@ -622,6 +622,10 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
 	}
 
+	if _, ok := t.colIndex[cd.Name]; ok {
+		return status.Newf(codes.AlreadyExists, "column %s already exists", cd.Name)
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 

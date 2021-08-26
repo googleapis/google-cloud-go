@@ -79,7 +79,7 @@ type ManagedStream struct {
 	// aspects of the stream client
 	ctx    context.Context // retained context for the stream
 	cancel context.CancelFunc
-	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	open   func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -112,6 +112,10 @@ type streamSettings struct {
 	// TraceID can be set when appending data on a stream. It's
 	// purpose is to aid in debug and diagnostic scenarios.
 	TraceID string
+
+	// dataOrigin can be set for classifying metrics generated
+	// by a stream.
+	dataOrigin string
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -198,7 +202,11 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := defaultRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		arc, err := ms.open()
+		streamID := ""
+		if ms.streamSettings != nil {
+			streamID = ms.streamSettings.streamID
+		}
+		arc, err := ms.open(streamID)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
@@ -358,7 +366,6 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
-				fc.release(nextWrite.reqSize)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}

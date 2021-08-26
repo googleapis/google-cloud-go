@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.ExportEvaluatedExamplesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportEvaluatedExamplesRequest.
 	}
 	op, err := c.ExportEvaluatedExamples(ctx, req)
 	if err != nil {

@@ -42,18 +42,13 @@ var (
 	defaultTestTimeout = 30 * time.Second
 )
 
-var testSimpleSchema = bigquery.Schema{
-	{Name: "name", Type: bigquery.StringFieldType, Required: true},
-	{Name: "value", Type: bigquery.IntegerFieldType, Required: true},
-}
-
 // our test data has cardinality 5 for names, 3 for values
-var testSimpleData = []*testdata.SimpleMessage{
-	{Name: "one", Value: 1},
-	{Name: "two", Value: 2},
-	{Name: "three", Value: 3},
-	{Name: "four", Value: 1},
-	{Name: "five", Value: 2},
+var testSimpleData = []*testdata.SimpleMessageProto2{
+	{Name: proto.String("one"), Value: proto.Int64(1)},
+	{Name: proto.String("two"), Value: proto.Int64(2)},
+	{Name: proto.String("three"), Value: proto.Int64(3)},
+	{Name: proto.String("four"), Value: proto.Int64(1)},
+	{Name: proto.String("five"), Value: proto.Int64(2)},
 }
 
 func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*Client, *bigquery.Client) {
@@ -82,9 +77,9 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 }
 
 // setupTestDataset generates a unique dataset for testing, and a cleanup that can be deferred.
-func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (ds *bigquery.Dataset, cleanup func(), err error) {
+func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, location string) (ds *bigquery.Dataset, cleanup func(), err error) {
 	dataset := bqc.Dataset(datasetIDs.New())
-	if err := dataset.Create(ctx, nil); err != nil {
+	if err := dataset.Create(ctx, &bigquery.DatasetMetadata{Location: location}); err != nil {
 		return nil, nil, err
 	}
 	return dataset, func() {
@@ -101,7 +96,7 @@ func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect
 		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
 	}
 
-	descriptor, err := adapt.StorageSchemaToDescriptor(convertedSchema, "root")
+	descriptor, err := adapt.StorageSchemaToProto2Descriptor(convertedSchema, "root")
 	if err != nil {
 		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
 	}
@@ -117,7 +112,7 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 	defer mwClient.Close()
 	defer bqClient.Close()
 
-	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient)
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
 	if err != nil {
 		t.Fatalf("failed to init test dataset: %v", err)
 	}
@@ -157,12 +152,12 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 
 func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
 	}
 	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
 	// to send as the stream's schema.
-	m := &testdata.SimpleMessage{}
+	m := &testdata.SimpleMessageProto2{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	// setup a new stream.
@@ -203,11 +198,11 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
-		data := append(data, b)
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
-		if err != nil {
-			t.Errorf("grouped-row append failed: %v", err)
-		}
+		data = append(data, b)
+	}
+	results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+	if err != nil {
+		t.Errorf("grouped-row append failed: %v", err)
 	}
 	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
@@ -221,11 +216,11 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 
 func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testSimpleSchema)
+	md, descriptorProto := setupDynamicDescriptors(t, testdata.SimpleMessageSchema)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
@@ -276,11 +271,11 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 
 func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	m := &testdata.SimpleMessage{}
+	m := &testdata.SimpleMessageProto2{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
@@ -336,11 +331,11 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 
 func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	m := &testdata.SimpleMessage{}
+	m := &testdata.SimpleMessageProto2{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	// setup a new stream.
@@ -375,11 +370,11 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	m := &testdata.SimpleMessage{}
+	m := &testdata.SimpleMessageProto2{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
@@ -443,11 +438,11 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 
 	testTable := dataset.Table(tableIDs.New())
-	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testSimpleSchema}); err != nil {
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
 		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	m := &testdata.SimpleMessage{}
+	m := &testdata.SimpleMessageProto2{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	// setup a new stream.
@@ -509,5 +504,23 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 		if math.Abs(got-float64(want)) > 0.1 {
 			t.Errorf("%q: metric mismatch, got %f want %d", tv.Name, got, want)
 		}
+	}
+}
+
+func TestIntegration_DetectProjectID(t *testing.T) {
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+		t.Errorf("test NewClient: %v", err)
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
 	}
 }

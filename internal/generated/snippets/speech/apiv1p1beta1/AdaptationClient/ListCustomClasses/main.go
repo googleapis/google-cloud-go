@@ -36,6 +36,7 @@ func main() {
 
 	req := &speechpb.ListCustomClassesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#ListCustomClassesRequest.
 	}
 	it := c.ListCustomClasses(ctx, req)
 	for {

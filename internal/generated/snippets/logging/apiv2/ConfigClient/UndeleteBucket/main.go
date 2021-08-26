@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.UndeleteBucketRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UndeleteBucketRequest.
 	}
 	err = c.UndeleteBucket(ctx, req)
 	if err != nil {

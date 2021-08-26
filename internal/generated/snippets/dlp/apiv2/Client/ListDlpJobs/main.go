@@ -36,6 +36,7 @@ func main() {
 
 	req := &dlppb.ListDlpJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListDlpJobsRequest.
 	}
 	it := c.ListDlpJobs(ctx, req)
 	for {

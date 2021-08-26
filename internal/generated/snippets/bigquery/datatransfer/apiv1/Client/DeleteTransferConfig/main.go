@@ -35,6 +35,7 @@ func main() {
 
 	req := &datatransferpb.DeleteTransferConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#DeleteTransferConfigRequest.
 	}
 	err = c.DeleteTransferConfig(ctx, req)
 	if err != nil {

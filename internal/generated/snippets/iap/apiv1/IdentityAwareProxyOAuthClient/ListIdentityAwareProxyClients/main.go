@@ -36,6 +36,7 @@ func main() {
 
 	req := &iappb.ListIdentityAwareProxyClientsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#ListIdentityAwareProxyClientsRequest.
 	}
 	it := c.ListIdentityAwareProxyClients(ctx, req)
 	for {

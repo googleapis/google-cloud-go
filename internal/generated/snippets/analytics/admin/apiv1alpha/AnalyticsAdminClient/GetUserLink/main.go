@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetUserLinkRequest.
 	}
 	resp, err := c.GetUserLink(ctx, req)
 	if err != nil {

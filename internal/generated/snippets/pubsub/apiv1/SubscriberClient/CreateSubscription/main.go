@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.Subscription{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#Subscription.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
 	if err != nil {

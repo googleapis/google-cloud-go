@@ -35,6 +35,7 @@ func main() {
 
 	req := &resourcemanagerpb.DeleteFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#DeleteFolderRequest.
 	}
 	resp, err := c.DeleteFolder(ctx, req)
 	if err != nil {

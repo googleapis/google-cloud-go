@@ -46,6 +46,7 @@ func ExampleJobsV1Beta3Client_CreateJob() {
 
 	req := &dataflowpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleJobsV1Beta3Client_GetJob() {
 
 	req := &dataflowpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleJobsV1Beta3Client_UpdateJob() {
 
 	req := &dataflowpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleJobsV1Beta3Client_ListJobs() {
 
 	req := &dataflowpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleJobsV1Beta3Client_AggregatedListJobs() {
 
 	req := &dataflowpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobsRequest.
 	}
 	it := c.AggregatedListJobs(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExampleJobsV1Beta3Client_CheckActiveJobs() {
 
 	req := &dataflowpb.CheckActiveJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CheckActiveJobsRequest.
 	}
 	resp, err := c.CheckActiveJobs(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleJobsV1Beta3Client_SnapshotJob() {
 
 	req := &dataflowpb.SnapshotJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#SnapshotJobRequest.
 	}
 	resp, err := c.SnapshotJob(ctx, req)
 	if err != nil {

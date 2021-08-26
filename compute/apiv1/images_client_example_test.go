@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleImagesClient_Delete() {
 
 	req := &computepb.DeleteImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteImageRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleImagesClient_Deprecate() {
 
 	req := &computepb.DeprecateImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
 	}
 	resp, err := c.Deprecate(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleImagesClient_Get() {
 
 	req := &computepb.GetImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetImageRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -102,6 +106,7 @@ func ExampleImagesClient_GetFromFamily() {
 
 	req := &computepb.GetFromFamilyImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetFromFamilyImageRequest.
 	}
 	resp, err := c.GetFromFamily(ctx, req)
 	if err != nil {
@@ -121,6 +126,7 @@ func ExampleImagesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyImageRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -140,6 +146,7 @@ func ExampleImagesClient_Insert() {
 
 	req := &computepb.InsertImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertImageRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -159,13 +166,20 @@ func ExampleImagesClient_List() {
 
 	req := &computepb.ListImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListImagesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleImagesClient_Patch() {
@@ -178,6 +192,7 @@ func ExampleImagesClient_Patch() {
 
 	req := &computepb.PatchImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchImageRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -197,6 +212,7 @@ func ExampleImagesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyImageRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -216,6 +232,7 @@ func ExampleImagesClient_SetLabels() {
 
 	req := &computepb.SetLabelsImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsImageRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -235,6 +252,7 @@ func ExampleImagesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsImageRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

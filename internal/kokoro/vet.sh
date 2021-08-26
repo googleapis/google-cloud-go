@@ -19,14 +19,9 @@ set -e
 # Display commands being run
 set -x
 
-if [[ $(go version) != *"go1.16"* ]]; then
+if [[ $(go version) != *"go1.17"* ]]; then
   exit 0
 fi
-
-go install \
-  github.com/golang/protobuf/protoc-gen-go \
-  golang.org/x/lint/golint \
-  golang.org/x/tools/cmd/goimports
 
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.

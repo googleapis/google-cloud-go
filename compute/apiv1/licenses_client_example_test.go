@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleLicensesClient_Delete() {
 
 	req := &computepb.DeleteLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteLicenseRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleLicensesClient_Get() {
 
 	req := &computepb.GetLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetLicenseRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleLicensesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyLicenseRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -102,6 +106,7 @@ func ExampleLicensesClient_Insert() {
 
 	req := &computepb.InsertLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertLicenseRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -121,13 +126,20 @@ func ExampleLicensesClient_List() {
 
 	req := &computepb.ListLicensesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListLicensesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleLicensesClient_SetIamPolicy() {
@@ -140,6 +152,7 @@ func ExampleLicensesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyLicenseRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -159,6 +172,7 @@ func ExampleLicensesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsLicenseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsLicenseRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

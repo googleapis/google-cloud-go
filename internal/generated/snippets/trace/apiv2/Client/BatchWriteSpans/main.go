@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudtracepb.BatchWriteSpansRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#BatchWriteSpansRequest.
 	}
 	err = c.BatchWriteSpans(ctx, req)
 	if err != nil {
