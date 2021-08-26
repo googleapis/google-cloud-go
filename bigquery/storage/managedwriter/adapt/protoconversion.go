@@ -295,9 +295,6 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // Other details of note:
 // * Well known types are not normalized.
 // * Enums are encapsulated in an outer struct.
-//
-// Issues:
-// Syntax isn't part of DescriptorProto or MessageOptions - still need that option in ProtoSchema.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
