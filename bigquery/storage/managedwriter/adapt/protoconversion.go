@@ -308,8 +308,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 		root = resultDP
 	}
 	fullProtoName := string(in.FullName())
-	normalizedProtoName := normalizeName(fullProtoName)
-	resultDP.Name = proto.String(normalizedProtoName)
+	resultDP.Name = proto.String(normalizeName(fullProtoName))
 	visitedTypes.add(fullProtoName)
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
@@ -340,13 +339,15 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			}
 		}
 		if inField.Kind() == protoreflect.EnumKind {
-			// Deal with enum types.  BigQuery doesn't support enum types directly.
+			// For enums, in order to avoid value conflict, we will always define
+			// a enclosing struct called enum_full_name_E that includes the actual
+			// enum.
 			enumFullName := string(inField.Enum().FullName())
 			enclosingTypeName := normalizeName(enumFullName) + "_E"
 			enumName := string(inField.Enum().Name())
-			actualName := fmt.Sprintf("%s.%s", enclosingTypeName, enumName)
+			actualFullName := fmt.Sprintf("%s.%s", enclosingTypeName, enumName)
 			if enumTypes.contains(enumFullName) {
-				resultFDP.TypeName = proto.String(actualName)
+				resultFDP.TypeName = proto.String(actualFullName)
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
 				enumDP.Name = proto.String(enumName)
@@ -354,7 +355,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 					Name:     proto.String(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
 				})
-				resultFDP.TypeName = proto.String(actualName)
+				resultFDP.TypeName = proto.String(actualFullName)
 				enumTypes.add(enumFullName)
 			}
 		}
