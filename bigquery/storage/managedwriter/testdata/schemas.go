@@ -61,4 +61,50 @@ var (
 		{Name: "id", Type: bigquery.StringFieldType},
 		{Name: "other", Type: bigquery.StringFieldType},
 	}
+
+	ComplexTypeSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name:     "nested_repeated_type",
+			Type:     bigquery.RecordFieldType,
+			Repeated: true,
+			Schema: bigquery.Schema{
+				{
+					Name:     "inner_type",
+					Type:     bigquery.RecordFieldType,
+					Repeated: true,
+					Schema: bigquery.Schema{
+						{Name: "value", Type: bigquery.StringFieldType, Repeated: true},
+					},
+				},
+			},
+		},
+		{
+			Name: "inner_type",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "value", Type: bigquery.StringFieldType, Repeated: true},
+			},
+		},
+	}
+
+	// We currently follow proto2 rules here, hence the well known types getting treated as records.
+	WithWellKnownTypesSchema bigquery.Schema = bigquery.Schema{
+		{Name: "int64_value", Type: bigquery.IntegerFieldType},
+		{
+			Name: "wrapped_int64",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "value", Type: bigquery.IntegerFieldType},
+			},
+		},
+		{Name: "string_value", Type: bigquery.StringFieldType, Repeated: true},
+		{
+			Name:     "wrapped_string",
+			Type:     bigquery.RecordFieldType,
+			Repeated: true,
+			Schema: bigquery.Schema{
+				{Name: "value", Type: bigquery.StringFieldType},
+			},
+		},
+	}
 )
