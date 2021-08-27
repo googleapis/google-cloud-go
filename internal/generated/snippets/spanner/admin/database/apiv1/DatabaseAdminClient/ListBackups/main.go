@@ -36,6 +36,7 @@ func main() {
 
 	req := &databasepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListBackupsRequest.
 	}
 	it := c.ListBackups(ctx, req)
 	for {

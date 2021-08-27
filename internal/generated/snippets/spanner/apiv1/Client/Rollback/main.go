@@ -35,6 +35,7 @@ func main() {
 
 	req := &spannerpb.RollbackRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {

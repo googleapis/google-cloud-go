@@ -36,6 +36,7 @@ func main() {
 
 	req := &datacatalogpb.ListTagsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ListTagsRequest.
 	}
 	it := c.ListTags(ctx, req)
 	for {

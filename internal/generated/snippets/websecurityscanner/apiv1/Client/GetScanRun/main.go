@@ -35,6 +35,7 @@ func main() {
 
 	req := &websecurityscannerpb.GetScanRunRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#GetScanRunRequest.
 	}
 	resp, err := c.GetScanRun(ctx, req)
 	if err != nil {

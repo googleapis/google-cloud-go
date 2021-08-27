@@ -45,6 +45,7 @@ func ExampleServiceControllerClient_Check() {
 
 	req := &servicecontrolpb.CheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#CheckRequest.
 	}
 	resp, err := c.Check(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleServiceControllerClient_Report() {
 
 	req := &servicecontrolpb.ReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#ReportRequest.
 	}
 	resp, err := c.Report(ctx, req)
 	if err != nil {

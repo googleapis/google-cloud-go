@@ -36,6 +36,7 @@ func main() {
 
 	req := &datatransferpb.ListTransferLogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1#ListTransferLogsRequest.
 	}
 	it := c.ListTransferLogs(ctx, req)
 	for {

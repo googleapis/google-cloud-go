@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.DeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteGameServerClusterRequest.
 	}
 	op, err := c.DeleteGameServerCluster(ctx, req)
 	if err != nil {

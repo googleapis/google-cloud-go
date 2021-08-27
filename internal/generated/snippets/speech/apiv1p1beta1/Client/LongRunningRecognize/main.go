@@ -35,6 +35,7 @@ func main() {
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#LongRunningRecognizeRequest.
 	}
 	op, err := c.LongRunningRecognize(ctx, req)
 	if err != nil {

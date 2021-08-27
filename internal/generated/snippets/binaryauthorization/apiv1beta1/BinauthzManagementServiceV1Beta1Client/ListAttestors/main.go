@@ -36,6 +36,7 @@ func main() {
 
 	req := &binaryauthorizationpb.ListAttestorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1#ListAttestorsRequest.
 	}
 	it := c.ListAttestors(ctx, req)
 	for {

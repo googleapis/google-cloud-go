@@ -36,6 +36,7 @@ func main() {
 
 	req := &websecurityscannerpb.ListCrawledUrlsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#ListCrawledUrlsRequest.
 	}
 	it := c.ListCrawledUrls(ctx, req)
 	for {

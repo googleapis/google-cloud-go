@@ -45,6 +45,7 @@ func ExampleReportErrorsClient_ReportErrorEvent() {
 
 	req := &clouderrorreportingpb.ReportErrorEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ReportErrorEventRequest.
 	}
 	resp, err := c.ReportErrorEvent(ctx, req)
 	if err != nil {

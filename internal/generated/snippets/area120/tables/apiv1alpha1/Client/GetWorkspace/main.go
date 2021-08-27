@@ -35,6 +35,7 @@ func main() {
 
 	req := &tablespb.GetWorkspaceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#GetWorkspaceRequest.
 	}
 	resp, err := c.GetWorkspace(ctx, req)
 	if err != nil {

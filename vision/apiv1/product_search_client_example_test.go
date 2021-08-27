@@ -46,6 +46,7 @@ func ExampleProductSearchClient_CreateProductSet() {
 
 	req := &visionpb.CreateProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductSetRequest.
 	}
 	resp, err := c.CreateProductSet(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleProductSearchClient_ListProductSets() {
 
 	req := &visionpb.ListProductSetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductSetsRequest.
 	}
 	it := c.ListProductSets(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleProductSearchClient_GetProductSet() {
 
 	req := &visionpb.GetProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetProductSetRequest.
 	}
 	resp, err := c.GetProductSet(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleProductSearchClient_UpdateProductSet() {
 
 	req := &visionpb.UpdateProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#UpdateProductSetRequest.
 	}
 	resp, err := c.UpdateProductSet(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleProductSearchClient_DeleteProductSet() {
 
 	req := &visionpb.DeleteProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteProductSetRequest.
 	}
 	err = c.DeleteProductSet(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleProductSearchClient_CreateProduct() {
 
 	req := &visionpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateProductRequest.
 	}
 	resp, err := c.CreateProduct(ctx, req)
 	if err != nil {
@@ -164,6 +170,7 @@ func ExampleProductSearchClient_ListProducts() {
 
 	req := &visionpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductsRequest.
 	}
 	it := c.ListProducts(ctx, req)
 	for {
@@ -189,6 +196,7 @@ func ExampleProductSearchClient_GetProduct() {
 
 	req := &visionpb.GetProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {
@@ -208,6 +216,7 @@ func ExampleProductSearchClient_UpdateProduct() {
 
 	req := &visionpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {
@@ -227,6 +236,7 @@ func ExampleProductSearchClient_DeleteProduct() {
 
 	req := &visionpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {
@@ -244,6 +254,7 @@ func ExampleProductSearchClient_CreateReferenceImage() {
 
 	req := &visionpb.CreateReferenceImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#CreateReferenceImageRequest.
 	}
 	resp, err := c.CreateReferenceImage(ctx, req)
 	if err != nil {
@@ -263,6 +274,7 @@ func ExampleProductSearchClient_DeleteReferenceImage() {
 
 	req := &visionpb.DeleteReferenceImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#DeleteReferenceImageRequest.
 	}
 	err = c.DeleteReferenceImage(ctx, req)
 	if err != nil {
@@ -280,6 +292,7 @@ func ExampleProductSearchClient_ListReferenceImages() {
 
 	req := &visionpb.ListReferenceImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListReferenceImagesRequest.
 	}
 	it := c.ListReferenceImages(ctx, req)
 	for {
@@ -305,6 +318,7 @@ func ExampleProductSearchClient_GetReferenceImage() {
 
 	req := &visionpb.GetReferenceImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetReferenceImageRequest.
 	}
 	resp, err := c.GetReferenceImage(ctx, req)
 	if err != nil {
@@ -324,6 +338,7 @@ func ExampleProductSearchClient_AddProductToProductSet() {
 
 	req := &visionpb.AddProductToProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AddProductToProductSetRequest.
 	}
 	err = c.AddProductToProductSet(ctx, req)
 	if err != nil {
@@ -341,6 +356,7 @@ func ExampleProductSearchClient_RemoveProductFromProductSet() {
 
 	req := &visionpb.RemoveProductFromProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#RemoveProductFromProductSetRequest.
 	}
 	err = c.RemoveProductFromProductSet(ctx, req)
 	if err != nil {
@@ -358,6 +374,7 @@ func ExampleProductSearchClient_ListProductsInProductSet() {
 
 	req := &visionpb.ListProductsInProductSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductsInProductSetRequest.
 	}
 	it := c.ListProductsInProductSet(ctx, req)
 	for {
@@ -383,6 +400,7 @@ func ExampleProductSearchClient_ImportProductSets() {
 
 	req := &visionpb.ImportProductSetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ImportProductSetsRequest.
 	}
 	op, err := c.ImportProductSets(ctx, req)
 	if err != nil {
@@ -407,6 +425,7 @@ func ExampleProductSearchClient_PurgeProducts() {
 
 	req := &visionpb.PurgeProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#PurgeProductsRequest.
 	}
 	op, err := c.PurgeProducts(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#PartitionQueryRequest.
 	}
 	it := c.PartitionQuery(ctx, req)
 	for {

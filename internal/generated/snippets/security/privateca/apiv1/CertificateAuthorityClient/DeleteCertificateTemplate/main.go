@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.DeleteCertificateTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#DeleteCertificateTemplateRequest.
 	}
 	op, err := c.DeleteCertificateTemplate(ctx, req)
 	if err != nil {

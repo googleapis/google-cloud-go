@@ -36,6 +36,7 @@ func main() {
 
 	req := &secretmanagerpb.ListSecretVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1#ListSecretVersionsRequest.
 	}
 	it := c.ListSecretVersions(ctx, req)
 	for {

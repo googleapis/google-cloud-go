@@ -36,6 +36,7 @@ func main() {
 
 	req := &datastreampb.ListStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListStreamsRequest.
 	}
 	it := c.ListStreams(ctx, req)
 	for {

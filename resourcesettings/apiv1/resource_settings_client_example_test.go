@@ -46,6 +46,7 @@ func ExampleClient_ListSettings() {
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#ListSettingsRequest.
 	}
 	it := c.ListSettings(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetSetting() {
 
 	req := &resourcesettingspb.GetSettingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#GetSettingRequest.
 	}
 	resp, err := c.GetSetting(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_UpdateSetting() {
 
 	req := &resourcesettingspb.UpdateSettingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#UpdateSettingRequest.
 	}
 	resp, err := c.UpdateSetting(ctx, req)
 	if err != nil {

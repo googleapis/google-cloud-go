@@ -35,6 +35,7 @@ func main() {
 
 	req := &eventarcpb.UpdateTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#UpdateTriggerRequest.
 	}
 	op, err := c.UpdateTrigger(ctx, req)
 	if err != nil {

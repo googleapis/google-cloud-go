@@ -36,6 +36,7 @@ func main() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
 	for {

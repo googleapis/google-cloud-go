@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddmspb.GenerateSshScriptRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#GenerateSshScriptRequest.
 	}
 	resp, err := c.GenerateSshScript(ctx, req)
 	if err != nil {

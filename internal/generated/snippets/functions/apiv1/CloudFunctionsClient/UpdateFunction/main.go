@@ -35,6 +35,7 @@ func main() {
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#UpdateFunctionRequest.
 	}
 	op, err := c.UpdateFunction(ctx, req)
 	if err != nil {

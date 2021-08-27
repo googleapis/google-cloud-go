@@ -35,6 +35,7 @@ func main() {
 
 	req := &translatepb.GetGlossaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#GetGlossaryRequest.
 	}
 	resp, err := c.GetGlossary(ctx, req)
 	if err != nil {
