@@ -36,6 +36,7 @@ func main() {
 
 	req := &talentpb.ListProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListProfilesRequest.
 	}
 	it := c.ListProfiles(ctx, req)
 	for {

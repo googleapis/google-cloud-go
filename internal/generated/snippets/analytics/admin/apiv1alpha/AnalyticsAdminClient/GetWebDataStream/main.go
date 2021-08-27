@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetWebDataStreamRequest.
 	}
 	resp, err := c.GetWebDataStream(ctx, req)
 	if err != nil {

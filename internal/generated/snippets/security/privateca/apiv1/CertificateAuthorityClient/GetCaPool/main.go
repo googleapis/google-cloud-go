@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.GetCaPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#GetCaPoolRequest.
 	}
 	resp, err := c.GetCaPool(ctx, req)
 	if err != nil {

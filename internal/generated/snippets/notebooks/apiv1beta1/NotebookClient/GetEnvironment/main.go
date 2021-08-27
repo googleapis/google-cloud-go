@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {

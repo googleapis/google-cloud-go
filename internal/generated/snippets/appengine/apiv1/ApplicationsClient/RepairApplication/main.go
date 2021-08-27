@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.RepairApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#RepairApplicationRequest.
 	}
 	op, err := c.RepairApplication(ctx, req)
 	if err != nil {

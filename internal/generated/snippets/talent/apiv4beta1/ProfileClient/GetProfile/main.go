@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.GetProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetProfileRequest.
 	}
 	resp, err := c.GetProfile(ctx, req)
 	if err != nil {

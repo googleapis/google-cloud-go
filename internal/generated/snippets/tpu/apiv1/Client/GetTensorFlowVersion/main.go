@@ -35,6 +35,7 @@ func main() {
 
 	req := &tpupb.GetTensorFlowVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#GetTensorFlowVersionRequest.
 	}
 	resp, err := c.GetTensorFlowVersion(ctx, req)
 	if err != nil {

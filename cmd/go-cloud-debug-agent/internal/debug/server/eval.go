@@ -20,6 +20,7 @@
 // Stricter type checking.
 // More expression types.
 
+//go:build linux
 // +build linux
 
 package server

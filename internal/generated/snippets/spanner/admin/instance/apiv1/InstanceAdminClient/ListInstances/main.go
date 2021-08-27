@@ -36,6 +36,7 @@ func main() {
 
 	req := &instancepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {

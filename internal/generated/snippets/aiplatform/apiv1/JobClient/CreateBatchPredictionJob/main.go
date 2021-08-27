@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.CreateBatchPredictionJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateBatchPredictionJobRequest.
 	}
 	resp, err := c.CreateBatchPredictionJob(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &firestorepb.CommitRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CommitRequest.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {

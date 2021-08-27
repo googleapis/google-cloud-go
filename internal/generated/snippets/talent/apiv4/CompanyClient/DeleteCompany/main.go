@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.DeleteCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#DeleteCompanyRequest.
 	}
 	err = c.DeleteCompany(ctx, req)
 	if err != nil {

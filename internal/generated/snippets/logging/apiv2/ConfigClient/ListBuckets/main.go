@@ -36,6 +36,7 @@ func main() {
 
 	req := &loggingpb.ListBucketsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListBucketsRequest.
 	}
 	it := c.ListBuckets(ctx, req)
 	for {

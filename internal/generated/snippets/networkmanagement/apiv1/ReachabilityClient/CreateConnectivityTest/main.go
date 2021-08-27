@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkmanagementpb.CreateConnectivityTestRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#CreateConnectivityTestRequest.
 	}
 	op, err := c.CreateConnectivityTest(ctx, req)
 	if err != nil {

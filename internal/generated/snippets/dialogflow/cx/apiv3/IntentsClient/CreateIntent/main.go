@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.CreateIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateIntentRequest.
 	}
 	resp, err := c.CreateIntent(ctx, req)
 	if err != nil {

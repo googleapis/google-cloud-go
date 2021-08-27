@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.UpdateWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateWebhookRequest.
 	}
 	resp, err := c.UpdateWebhook(ctx, req)
 	if err != nil {

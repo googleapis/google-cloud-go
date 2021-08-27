@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.UpdatePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePeeringNetworkRequest.
 	}
 	resp, err := c.UpdatePeering(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.GetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetDefaultBranchRequest.
 	}
 	resp, err := c.GetDefaultBranch(ctx, req)
 	if err != nil {

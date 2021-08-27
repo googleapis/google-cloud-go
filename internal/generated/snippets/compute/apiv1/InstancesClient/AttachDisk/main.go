@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AttachDiskInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachDiskInstanceRequest.
 	}
 	resp, err := c.AttachDisk(ctx, req)
 	if err != nil {

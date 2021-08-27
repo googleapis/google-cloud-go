@@ -35,6 +35,7 @@ func main() {
 
 	req := &resourcesettingspb.GetSettingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#GetSettingRequest.
 	}
 	resp, err := c.GetSetting(ctx, req)
 	if err != nil {

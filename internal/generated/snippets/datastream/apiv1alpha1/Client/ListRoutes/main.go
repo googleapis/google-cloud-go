@@ -36,6 +36,7 @@ func main() {
 
 	req := &datastreampb.ListRoutesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListRoutesRequest.
 	}
 	it := c.ListRoutes(ctx, req)
 	for {

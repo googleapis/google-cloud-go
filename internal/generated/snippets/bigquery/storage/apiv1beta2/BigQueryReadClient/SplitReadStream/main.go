@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#SplitReadStreamRequest.
 	}
 	resp, err := c.SplitReadStream(ctx, req)
 	if err != nil {
