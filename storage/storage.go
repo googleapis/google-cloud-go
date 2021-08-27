@@ -46,6 +46,9 @@ import (
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Methods which can be used in signed URLs.
@@ -1132,6 +1135,42 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	}
 }
 
+// toProtoObject copies the editable attributes from o to the proto library's Object type.
+func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
+	checksums := &storagepb.ObjectChecksums{Md5Hash: o.MD5}
+	if o.CRC32C > 0 {
+		checksums.Crc32C = proto.Uint32(o.CRC32C)
+	}
+
+	// For now, there are only globally unique buckets, and "_" is the alias
+	// project ID for such buckets.
+	b = bucketResourceName("_", b)
+
+	return &storagepb.Object{
+		Bucket:              b,
+		Name:                o.Name,
+		EventBasedHold:      proto.Bool(o.EventBasedHold),
+		TemporaryHold:       o.TemporaryHold,
+		ContentType:         o.ContentType,
+		ContentEncoding:     o.ContentEncoding,
+		ContentLanguage:     o.ContentLanguage,
+		CacheControl:        o.CacheControl,
+		ContentDisposition:  o.ContentDisposition,
+		StorageClass:        o.StorageClass,
+		Acl:                 toProtoObjectACL(o.ACL),
+		Metadata:            o.Metadata,
+		CreateTime:          toProtoTimestamp(o.Created),
+		CustomTime:          toProtoTimestamp(o.CustomTime),
+		DeleteTime:          toProtoTimestamp(o.Deleted),
+		RetentionExpireTime: toProtoTimestamp(o.RetentionExpirationTime),
+		UpdateTime:          toProtoTimestamp(o.Updated),
+		KmsKey:              o.KMSKeyName,
+		Generation:          o.Generation,
+		Size:                o.Size,
+		Checksums:           checksums,
+	}
+}
+
 // ObjectAttrs represents the metadata for a Google Cloud Storage (GCS) object.
 type ObjectAttrs struct {
 	// Bucket is the name of the bucket containing this GCS object.
@@ -1288,6 +1327,22 @@ func convertTime(t string) time.Time {
 	return r
 }
 
+func convertProtoTime(t *timestamppb.Timestamp) time.Time {
+	var r time.Time
+	if t != nil {
+		r = t.AsTime()
+	}
+	return r
+}
+
+func toProtoTimestamp(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+
+	return timestamppb.New(t)
+}
+
 func newObject(o *raw.Object) *ObjectAttrs {
 	if o == nil {
 		return nil
@@ -1330,6 +1385,40 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
 		CustomTime:              convertTime(o.CustomTime),
+	}
+}
+
+func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
+	o := r.GetResource()
+	if r == nil || o == nil {
+		return nil
+	}
+	return &ObjectAttrs{
+		Bucket:                  parseBucketName(o.Bucket),
+		Name:                    o.Name,
+		ContentType:             o.ContentType,
+		ContentLanguage:         o.ContentLanguage,
+		CacheControl:            o.CacheControl,
+		EventBasedHold:          o.GetEventBasedHold(),
+		TemporaryHold:           o.TemporaryHold,
+		RetentionExpirationTime: convertProtoTime(o.GetRetentionExpireTime()),
+		ACL:                     fromProtoToObjectACLRules(o.GetAcl()),
+		Owner:                   o.GetOwner().GetEntity(),
+		ContentEncoding:         o.ContentEncoding,
+		ContentDisposition:      o.ContentDisposition,
+		Size:                    int64(o.Size),
+		MD5:                     o.GetChecksums().GetMd5Hash(),
+		CRC32C:                  o.GetChecksums().GetCrc32C(),
+		Metadata:                o.Metadata,
+		Generation:              o.Generation,
+		Metageneration:          o.Metageneration,
+		StorageClass:            o.StorageClass,
+		CustomerKeySHA256:       o.GetCustomerEncryption().GetKeySha256(),
+		KMSKeyName:              o.GetKmsKey(),
+		Created:                 convertProtoTime(o.GetCreateTime()),
+		Deleted:                 convertProtoTime(o.GetDeleteTime()),
+		Updated:                 convertProtoTime(o.GetUpdateTime()),
+		CustomTime:              convertProtoTime(o.GetCustomTime()),
 	}
 }
 
@@ -1687,9 +1776,15 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	return res.EmailAddress, nil
 }
 
-// bucket formats the given project ID and bucket ID into a Bucket resource
-// name. This is the format necessary for the gRPC API as it conforms to the
-// Resource-oriented design practices in https://google.aip.dev/121.
-func bucket(p, b string) string {
+// bucketResourceName formats the given project ID and bucketResourceName ID
+// into a Bucket resource name. This is the format necessary for the gRPC API as
+// it conforms to the Resource-oriented design practices in https://google.aip.dev/121.
+func bucketResourceName(p, b string) string {
 	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
+}
+
+// parseBucketName strips the leading resource path segment and returns the
+// bucket ID, which is the simple Bucket name typical of the v1 API.
+func parseBucketName(b string) string {
+	return strings.TrimPrefix(b, "projects/_/buckets/")
 }

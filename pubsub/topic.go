@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
@@ -37,6 +38,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -143,13 +145,9 @@ func (c *Client) CreateTopic(ctx context.Context, topicID string) (*Topic, error
 // If the topic already exists, an error will be returned.
 func (c *Client) CreateTopicWithConfig(ctx context.Context, topicID string, tc *TopicConfig) (*Topic, error) {
 	t := c.Topic(topicID)
-	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{
-		Name:                 t.name,
-		Labels:               tc.Labels,
-		MessageStoragePolicy: messageStoragePolicyToProto(&tc.MessageStoragePolicy),
-		KmsKeyName:           tc.KMSKeyName,
-		SchemaSettings:       schemaSettingsToProto(tc.SchemaSettings),
-	})
+	topic := tc.toProto()
+	topic.Name = t.name
+	_, err := c.pubc.CreateTopic(ctx, topic)
 	if err != nil {
 		return nil, err
 	}
@@ -200,6 +198,33 @@ type TopicConfig struct {
 	// Schema defines the schema settings upon topic creation. This cannot
 	// be modified after a topic has been created.
 	SchemaSettings *SchemaSettings
+
+	// RetentionDuration configures the minimum duration to retain a message
+	// after it is published to the topic. If this field is set, messages published
+	// to the topic in the last `RetentionDuration` are always available to subscribers.
+	// For instance, it allows any attached subscription to [seek to a
+	// timestamp](https://cloud.google.com/pubsub/docs/replay-overview#seek_to_a_time)
+	// that is up to `RetentionDuration` in the past. If this field is
+	// not set, message retention is controlled by settings on individual
+	// subscriptions. Cannot be more than 7 days or less than 10 minutes.
+	//
+	// For more information, see https://cloud.google.com/pubsub/docs/replay-overview#topic_message_retention.
+	RetentionDuration optional.Duration
+}
+
+func (tc *TopicConfig) toProto() *pb.Topic {
+	var retDur *durationpb.Duration
+	if tc.RetentionDuration != nil {
+		retDur = durationpb.New(optional.ToDuration(tc.RetentionDuration))
+	}
+	pbt := &pb.Topic{
+		Labels:                   tc.Labels,
+		MessageStoragePolicy:     messageStoragePolicyToProto(&tc.MessageStoragePolicy),
+		KmsKeyName:               tc.KMSKeyName,
+		SchemaSettings:           schemaSettingsToProto(tc.SchemaSettings),
+		MessageRetentionDuration: retDur,
+	}
+	return pbt
 }
 
 // TopicConfigToUpdate describes how to update a topic.
@@ -219,15 +244,24 @@ type TopicConfigToUpdate struct {
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
+
+	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
+	// If set to a negative value, this clears RetentionDuration from the topic.
+	// If nil, the retention duration remains unchanged.
+	RetentionDuration optional.Duration
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
-	return TopicConfig{
+	tc := TopicConfig{
 		Labels:               pbt.Labels,
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
 		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
 	}
+	if pbt.GetMessageRetentionDuration() != nil {
+		tc.RetentionDuration = pbt.GetMessageRetentionDuration().AsDuration()
+	}
+	return tc
 }
 
 // DetachSubscriptionResult is the response for the DetachSubscription method.
@@ -315,6 +349,15 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	if cfg.MessageStoragePolicy != nil {
 		pt.MessageStoragePolicy = messageStoragePolicyToProto(cfg.MessageStoragePolicy)
 		paths = append(paths, "message_storage_policy")
+	}
+	if cfg.RetentionDuration != nil {
+		r := optional.ToDuration(cfg.RetentionDuration)
+		pt.MessageRetentionDuration = durationpb.New(r)
+		if r < 0 {
+			// Clear MessageRetentionDuration if sentinel value is read.
+			pt.MessageRetentionDuration = nil
+		}
+		paths = append(paths, "message_retention_duration")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
