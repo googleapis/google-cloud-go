@@ -34,6 +34,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var (
@@ -147,7 +148,6 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
 		})
 	})
-
 }
 
 func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -522,5 +522,98 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 
 	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
 		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.projectID)
+	}
+}
+
+func TestIntegration_ProtoNormalization(t *testing.T) {
+	mwClient, bqClient := getTestClients(context.Background(), t)
+	defer mwClient.Close()
+	defer bqClient.Close()
+
+	dataset, cleanup, err := setupTestDataset(context.Background(), t, bqClient, "us-east1")
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
+
+	t.Run("group", func(t *testing.T) {
+		t.Run("ComplexType", func(t *testing.T) {
+			t.Parallel()
+			schema := testdata.ComplexTypeSchema
+			mesg := &testdata.ComplexType{
+				NestedRepeatedType: []*testdata.NestedType{
+					{
+						InnerType: []*testdata.InnerType{
+							{Value: []string{"a", "b", "c"}},
+							{Value: []string{"x", "y", "z"}},
+						},
+					},
+				},
+				InnerType: &testdata.InnerType{
+					Value: []string{"top"},
+				},
+			}
+			b, err := proto.Marshal(mesg)
+			if err != nil {
+				t.Fatalf("proto.Marshal: %v", err)
+			}
+			descriptor := (mesg).ProtoReflect().Descriptor()
+			testProtoNormalization(ctx, t, mwClient, bqClient, dataset, schema, descriptor, b)
+		})
+		t.Run("WithWellKnownTypes", func(t *testing.T) {
+			t.Parallel()
+			schema := testdata.WithWellKnownTypesSchema
+			mesg := &testdata.WithWellKnownTypes{
+				Int64Value: proto.Int64(123),
+				WrappedInt64: &wrapperspb.Int64Value{
+					Value: 456,
+				},
+				StringValue: []string{"a", "b"},
+				WrappedString: []*wrapperspb.StringValue{
+					{Value: "foo"},
+					{Value: "bar"},
+				},
+			}
+			b, err := proto.Marshal(mesg)
+			if err != nil {
+				t.Fatalf("proto.Marshal: %v", err)
+			}
+			descriptor := (mesg).ProtoReflect().Descriptor()
+			testProtoNormalization(ctx, t, mwClient, bqClient, dataset, schema, descriptor, b)
+		})
+	})
+}
+
+func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, schema bigquery.Schema, descriptor protoreflect.MessageDescriptor, sampleRow []byte) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
+		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	dp, err := adapt.NormalizeDescriptor(descriptor)
+	if err != nil {
+		t.Fatalf("NormalizeDescriptor: %v", err)
+	}
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(DefaultStream),
+		WithSchemaDescriptor(dp),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	results, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
+	if err != nil {
+		t.Errorf("append failed: %v", err)
+	}
+
+	_, err = results[0].GetResult(ctx)
+	if err != nil {
+		t.Errorf("error in response: %v", err)
 	}
 }

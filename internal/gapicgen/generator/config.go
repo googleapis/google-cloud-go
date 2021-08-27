@@ -389,14 +389,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/dataproc/v1beta2",
-		pkg:                   "dataproc",
-		importPath:            "cloud.google.com/go/dataproc/apiv1beta2",
-		gRPCServiceConfigPath: "dataproc_grpc_service_config.json",
-		apiServiceConfigPath:  "dataproc_v1beta2.yaml",
-		releaseLevel:          "beta",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/kms/v1",
 		pkg:                   "kms",
 		importPath:            "cloud.google.com/go/kms/apiv1",
