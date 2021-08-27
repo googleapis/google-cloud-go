@@ -544,7 +544,7 @@ func TestNormalizeDescriptor(t *testing.T) {
 						JsonName: proto.String("wrappedInt64"),
 						Number:   proto.Int32(2),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".google.protobuf.Int64Value"),
+						TypeName: proto.String("google_protobuf_Int64Value"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 					{
@@ -559,8 +559,34 @@ func TestNormalizeDescriptor(t *testing.T) {
 						JsonName: proto.String("wrappedString"),
 						Number:   proto.Int32(4),
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".google.protobuf.StringValue"),
+						TypeName: proto.String("google_protobuf_StringValue"),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("google_protobuf_Int64Value"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("google_protobuf_StringValue"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
 					},
 				},
 			},
