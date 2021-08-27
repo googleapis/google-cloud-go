@@ -66,7 +66,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -78,7 +78,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -267,7 +267,7 @@ func (c *completionGRPCClient) Close() error {
 
 func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.CompleteQueryRequest, opts ...gax.CallOption) (*retailpb.CompleteQueryResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -288,7 +288,7 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.
 
 func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *retailpb.ImportCompletionDataRequest, opts ...gax.CallOption) (*ImportCompletionDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
