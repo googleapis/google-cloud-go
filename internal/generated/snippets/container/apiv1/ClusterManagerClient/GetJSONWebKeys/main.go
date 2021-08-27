@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.GetJSONWebKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#GetJSONWebKeysRequest.
 	}
 	resp, err := c.GetJSONWebKeys(ctx, req)
 	if err != nil {

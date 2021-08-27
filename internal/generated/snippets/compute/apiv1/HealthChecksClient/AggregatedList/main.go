@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListHealthChecksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListHealthChecksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

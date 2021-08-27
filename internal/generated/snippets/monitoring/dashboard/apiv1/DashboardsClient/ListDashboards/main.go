@@ -36,6 +36,7 @@ func main() {
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#ListDashboardsRequest.
 	}
 	it := c.ListDashboards(ctx, req)
 	for {

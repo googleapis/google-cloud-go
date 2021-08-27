@@ -36,6 +36,7 @@ func main() {
 
 	req := &aiplatformpb.ListModelEvaluationSlicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelEvaluationSlicesRequest.
 	}
 	it := c.ListModelEvaluationSlices(ctx, req)
 	for {

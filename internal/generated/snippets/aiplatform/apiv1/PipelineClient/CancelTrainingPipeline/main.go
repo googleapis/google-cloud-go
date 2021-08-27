@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.CancelTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelTrainingPipelineRequest.
 	}
 	err = c.CancelTrainingPipeline(ctx, req)
 	if err != nil {

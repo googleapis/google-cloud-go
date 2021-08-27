@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicecontrolpb.CheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#CheckRequest.
 	}
 	resp, err := c.Check(ctx, req)
 	if err != nil {

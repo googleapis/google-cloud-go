@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.DeleteEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteEvaluationJobRequest.
 	}
 	err = c.DeleteEvaluationJob(ctx, req)
 	if err != nil {

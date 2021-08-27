@@ -35,6 +35,7 @@ func main() {
 
 	req := &visionpb.PurgeProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#PurgeProductsRequest.
 	}
 	op, err := c.PurgeProducts(ctx, req)
 	if err != nil {

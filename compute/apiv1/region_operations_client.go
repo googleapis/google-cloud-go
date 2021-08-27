@@ -25,6 +25,7 @@ import (
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -52,7 +53,7 @@ type internalRegionOperationsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteRegionOperationRequest, ...gax.CallOption) (*computepb.DeleteRegionOperationResponse, error)
-	Get(context.Context, *computepb.GetRegionOperationRequest, ...gax.CallOption) (*Operation, error)
+	Get(context.Context, *computepb.GetRegionOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 	List(context.Context, *computepb.ListRegionOperationsRequest, ...gax.CallOption) *OperationIterator
 	Wait(context.Context, *computepb.WaitRegionOperationRequest, ...gax.CallOption) (*Operation, error)
 }
@@ -97,7 +98,7 @@ func (c *RegionOperationsClient) Delete(ctx context.Context, req *computepb.Dele
 }
 
 // Get retrieves the specified region-specific Operations resource.
-func (c *RegionOperationsClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *RegionOperationsClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
@@ -203,8 +204,8 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -219,7 +220,7 @@ func (c *regionOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 }
 
 // Get retrieves the specified region-specific Operations resource.
-func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.GetRegionOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/operations/%v", req.GetProject(), req.GetRegion(), req.GetOperation())
 
@@ -240,8 +241,8 @@ func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -252,11 +253,7 @@ func (c *regionOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
-	}
-	op := &Operation{proto: rsp}
-	return op, err
+	return rsp, unm.Unmarshal(buf, rsp)
 }
 
 // List retrieves a list of Operation resources contained within the specified region.
@@ -313,8 +310,8 @@ func (c *regionOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -371,8 +368,8 @@ func (c *regionOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.TrainAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#TrainAgentRequest.
 	}
 	op, err := c.TrainAgent(ctx, req)
 	if err != nil {

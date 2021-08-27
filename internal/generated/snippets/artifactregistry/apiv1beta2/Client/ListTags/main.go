@@ -36,6 +36,7 @@ func main() {
 
 	req := &artifactregistrypb.ListTagsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListTagsRequest.
 	}
 	it := c.ListTags(ctx, req)
 	for {

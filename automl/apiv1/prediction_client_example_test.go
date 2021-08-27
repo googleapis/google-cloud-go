@@ -45,6 +45,7 @@ func ExamplePredictionClient_Predict() {
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExamplePredictionClient_BatchPredict() {
 
 	req := &automlpb.BatchPredictRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#BatchPredictRequest.
 	}
 	op, err := c.BatchPredict(ctx, req)
 	if err != nil {

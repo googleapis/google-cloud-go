@@ -35,6 +35,7 @@ func main() {
 
 	req := &billingpb.UpdateBillingAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#UpdateBillingAccountRequest.
 	}
 	resp, err := c.UpdateBillingAccount(ctx, req)
 	if err != nil {

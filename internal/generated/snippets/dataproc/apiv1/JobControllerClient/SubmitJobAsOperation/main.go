@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.SubmitJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#SubmitJobRequest.
 	}
 	op, err := c.SubmitJobAsOperation(ctx, req)
 	if err != nil {

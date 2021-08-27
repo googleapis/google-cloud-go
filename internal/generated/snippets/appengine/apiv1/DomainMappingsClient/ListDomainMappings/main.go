@@ -36,6 +36,7 @@ func main() {
 
 	req := &appenginepb.ListDomainMappingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListDomainMappingsRequest.
 	}
 	it := c.ListDomainMappings(ctx, req)
 	for {

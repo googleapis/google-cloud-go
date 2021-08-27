@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListIosAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListIosAppDataStreamsRequest.
 	}
 	it := c.ListIosAppDataStreams(ctx, req)
 	for {

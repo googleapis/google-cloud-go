@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.GetAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetAutoscalingPolicyRequest.
 	}
 	resp, err := c.GetAutoscalingPolicy(ctx, req)
 	if err != nil {

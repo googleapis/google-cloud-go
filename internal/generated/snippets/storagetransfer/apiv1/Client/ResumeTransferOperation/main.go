@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagetransferpb.ResumeTransferOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ResumeTransferOperationRequest.
 	}
 	err = c.ResumeTransferOperation(ctx, req)
 	if err != nil {

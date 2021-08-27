@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListUsableSubnetworksRequest.
 	}
 	it := c.ListUsable(ctx, req)
 	for {

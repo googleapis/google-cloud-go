@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicedirectorypb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1#CreateEndpointRequest.
 	}
 	resp, err := c.CreateEndpoint(ctx, req)
 	if err != nil {

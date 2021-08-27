@@ -35,6 +35,7 @@ func main() {
 
 	req := &gsuiteaddonspb.InstallDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#InstallDeploymentRequest.
 	}
 	err = c.InstallDeployment(ctx, req)
 	if err != nil {

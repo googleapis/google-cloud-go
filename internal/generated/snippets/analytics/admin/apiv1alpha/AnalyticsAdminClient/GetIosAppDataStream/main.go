@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetIosAppDataStreamRequest.
 	}
 	resp, err := c.GetIosAppDataStream(ctx, req)
 	if err != nil {

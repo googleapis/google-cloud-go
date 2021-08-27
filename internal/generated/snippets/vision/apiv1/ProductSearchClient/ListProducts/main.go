@@ -36,6 +36,7 @@ func main() {
 
 	req := &visionpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#ListProductsRequest.
 	}
 	it := c.ListProducts(ctx, req)
 	for {

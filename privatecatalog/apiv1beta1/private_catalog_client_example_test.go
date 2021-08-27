@@ -46,6 +46,7 @@ func ExampleClient_SearchCatalogs() {
 
 	req := &privatecatalogpb.SearchCatalogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
 	}
 	it := c.SearchCatalogs(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_SearchProducts() {
 
 	req := &privatecatalogpb.SearchProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchProductsRequest.
 	}
 	it := c.SearchProducts(ctx, req)
 	for {
@@ -96,6 +98,7 @@ func ExampleClient_SearchVersions() {
 
 	req := &privatecatalogpb.SearchVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchVersionsRequest.
 	}
 	it := c.SearchVersions(ctx, req)
 	for {
