@@ -587,7 +587,7 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 	})
 }
 
-func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, schema bigquery.Schema, descriptor protoreflect.MessageDescriptor, sample_row []byte) {
+func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset, schema bigquery.Schema, descriptor protoreflect.MessageDescriptor, sampleRow []byte) {
 	testTable := dataset.Table(tableIDs.New())
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
 		t.Fatalf("failed to create test table %q: %v", testTable.FullyQualifiedName(), err)
@@ -607,7 +607,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	results, err := ms.AppendRows(ctx, [][]byte{sample_row}, NoStreamOffset)
+	results, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
 	if err != nil {
 		t.Errorf("append failed: %v", err)
 	}
