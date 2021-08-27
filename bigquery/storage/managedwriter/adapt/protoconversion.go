@@ -394,15 +394,17 @@ func normalizeName(in string) string {
 
 // these types don't get normalized into the fully-contained structure.
 var normalizationSkipList = []string{
-	".google.protobuf.DoubleValue",
-	".google.protobuf.FloatValue",
-	".google.protobuf.Int64Value",
-	".google.protobuf.UInt64Value",
-	".google.protobuf.Int32Value",
-	".google.protobuf.Uint32Value",
-	".google.protobuf.BoolValue",
-	".google.protobuf.StringValue",
-	".google.protobuf.BytesValue",
+	/*
+		"google.protobuf.DoubleValue",
+		"google.protobuf.FloatValue",
+		"google.protobuf.Int64Value",
+		"google.protobuf.UInt64Value",
+		"google.protobuf.Int32Value",
+		"google.protobuf.Uint32Value",
+		"google.protobuf.BoolValue",
+		"google.protobuf.StringValue",
+		"google.protobuf.BytesValue",
+	*/
 }
 
 func skipNormalization(fullName string) bool {

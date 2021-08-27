@@ -526,6 +526,45 @@ func TestNormalizeDescriptor(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "WithWellKnownTypes",
+			in:          (&testdata.WithWellKnownTypes{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_WithWellKnownTypes"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int64_value"),
+						JsonName: proto.String("int64Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("wrapped_int64"),
+						JsonName: proto.String("wrappedInt64"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int64Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("wrapped_string"),
+						JsonName: proto.String("wrappedString"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.StringValue"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
