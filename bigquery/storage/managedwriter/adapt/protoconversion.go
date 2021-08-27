@@ -284,17 +284,14 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // information with the BigQuery Storage write API.  It's primarily used for cases where users are
 // interested in sending data using a predefined protocol buffer message.
 //
-// The storage API accepts a single DescriptorProto for decoding message data.  However, the nature
-// of protocol buffers allows one to define complex messages using independent messages, which normally would
-// then require passing of either multiple DescriptorProto messages, or something like a FileDescriptorProto.
+// The storage API accepts a single DescriptorProto for decoding message data.  In many cases, a message
+// is comprised of multiple independent messages, from the same .proto file or from multiple sources.  Rather
+// than being forced to communicate all these messages independently, what this method does is rewrite the
+// DescriptorProto to inline all messages as nested submessages.  As the backend only cares about the types
+// and not the namespaces when decoding, this is sufficient for the needs of the API's representation.
 //
-// DescriptorProto allows one to communicate the structure of a single message, but does contain a mechanism
-// for encoding inner nested messages.  This function leverages that to encode the DescriptorProto by transforming
-// external messages to nested messages, as well as handling other tasks like fully qualifying name references.
-//
-// Other details of note:
-// * Well known types are not normalized.
-// * Enums are encapsulated in an outer struct.
+// In addition to nesting messages, this method also handles some encapsulation of enum types to avoid possible
+// conflicts due to ambiguities.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
@@ -395,6 +392,7 @@ func normalizeName(in string) string {
 // these types don't get normalized into the fully-contained structure.
 var normalizationSkipList = []string{
 	/*
+		TODO: when backend supports resolving well known types, this list should be enabled.
 		"google.protobuf.DoubleValue",
 		"google.protobuf.FloatValue",
 		"google.protobuf.Int64Value",
