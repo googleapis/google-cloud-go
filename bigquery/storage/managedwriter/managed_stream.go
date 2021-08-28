@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -376,9 +375,9 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
-				tagCtx, err := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
+				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
 				if err != nil {
-					log.Printf("WTF couldn't tag: %v", err)
+					tagCtx = ctx
 				}
 				recordStat(tagCtx, AppendResponseErrors, 1)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
