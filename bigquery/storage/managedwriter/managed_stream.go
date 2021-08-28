@@ -272,8 +272,8 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			err = (*arc).Send(req)
 		}
 		recordStat(ms.ctx, AppendRequests, 1)
-		recordStat(ms.ctx, AppendRows, int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows())))
 		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordStat(ms.ctx, AppendRequestRows, int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows())))
 		if err != nil {
 			status := grpcstatus.Convert(err)
 			if status != nil {
