@@ -27,23 +27,22 @@ message SimpleMessageProto3 {
 }
 
 
+message GithubArchiveEntityProto3 {
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue login = 2;
+    google.protobuf.StringValue gravatar_id = 3;
+    google.protobuf.StringValue avatar_url = 4;
+    google.protobuf.StringValue url = 5;
+}
+
+message GithubArchiveRepoProto3 {
+    google.protobuf.Int64Value id = 1;
+    google.protobuf.StringValue name = 2;
+    google.protobuf.StringValue url = 3;
+}
+
 // GithubArchiveMessageProto3 is the proto3 version of github archive row.
 message GithubArchiveMessageProto3 {
-
-    message GithubArchiveEntityProto3 {
-        google.protobuf.Int64Value id = 1;
-        google.protobuf.StringValue login = 2;
-        google.protobuf.StringValue gravatar_id = 3;
-        google.protobuf.StringValue avatar_url = 4;
-        google.protobuf.StringValue url = 5;
-    }
-
-    message GithubArchiveRepoProto3 {
-        google.protobuf.Int64Value id = 1;
-        google.protobuf.StringValue name = 2;
-        google.protobuf.StringValue url = 3;
-    }
-
     google.protobuf.StringValue type = 1;
     google.protobuf.BoolValue public = 2;
     google.protobuf.StringValue payload = 3;
