@@ -71,7 +71,7 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponses = stats.Int64(statsPrefix+"append_responses", "Number of append responses sent", stats.UnitDimensionless)
 
-	// AppendResponses is a measure of the number of append responses received with an error attached.
+	// AppendResponseErrors is a measure of the number of append responses received with an error attached.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendResponseErrors = stats.Int64(statsPrefix+"append_response_errors", "Number of append responses with errors attached", stats.UnitDimensionless)
 
