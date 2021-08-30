@@ -1,5 +1,81 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.0.0...pubsublite/v1.1.0) (2021-08-09)
+
+
+### Features
+
+* **pubsublite:** support seek subscription in AdminClient ([#4316](https://www.github.com/googleapis/google-cloud-go/issues/4316)) ([2dea319](https://www.github.com/googleapis/google-cloud-go/commit/2dea3196a73764bd10842a3da5d0fa29ae84e101))
+
+
+### Bug Fixes
+
+* **pubsublite:** set a default grpc connection pool size of 8 ([#4462](https://www.github.com/googleapis/google-cloud-go/issues/4462)) ([b7ce742](https://www.github.com/googleapis/google-cloud-go/commit/b7ce742db1acdd18b5a597ebb2a2111953c0942a))
+
+## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.2...pubsublite/v1.0.0) (2021-07-08)
+
+
+### Bug Fixes
+
+* **pubsublite:** hide CreateSubscriptionOption.apply ([#4344](https://www.github.com/googleapis/google-cloud-go/issues/4344)) ([f31fac6](https://www.github.com/googleapis/google-cloud-go/commit/f31fac6c2674a1bb9180a75ae7dbeda55721482d))
+* **pubsublite:** lower gRPC keepalive timeouts ([#4378](https://www.github.com/googleapis/google-cloud-go/issues/4378)) ([35d98c8](https://www.github.com/googleapis/google-cloud-go/commit/35d98c8cad3a71400c2b47218a0fb9c80154e613))
+
+
+### Documentation
+
+* **pubsublite:** promote pubsublite to stable ([#4301](https://www.github.com/googleapis/google-cloud-go/issues/4301)) ([c841d7f](https://www.github.com/googleapis/google-cloud-go/commit/c841d7feb48fc66e90ec7e63f35002712d5e6dbf))
+
+### [0.10.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.1...pubsublite/v0.10.2) (2021-06-29)
+
+
+### Bug Fixes
+
+* **pubsublite:** ensure timeout settings are respected ([#4329](https://www.github.com/googleapis/google-cloud-go/issues/4329)) ([e75262c](https://www.github.com/googleapis/google-cloud-go/commit/e75262cf5eba845271965eab3c28c0a23bec14c4))
+* **pubsublite:** wire user context to api clients ([#4318](https://www.github.com/googleapis/google-cloud-go/issues/4318)) ([ae34396](https://www.github.com/googleapis/google-cloud-go/commit/ae34396b1a2a970a0d871cd5496527294f3310d4))
+
+### [0.10.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.0...pubsublite/v0.10.1) (2021-06-22)
+
+
+### Bug Fixes
+
+* **pubsublite:** fixes for background partition count updates ([#4293](https://www.github.com/googleapis/google-cloud-go/issues/4293)) ([634847b](https://www.github.com/googleapis/google-cloud-go/commit/634847b7499fb58575e3e5001dd8e6da0661fccd))
+* **pubsublite:** make SubscriberClient.Receive identical to pubsub ([#4281](https://www.github.com/googleapis/google-cloud-go/issues/4281)) ([5b5d0f7](https://www.github.com/googleapis/google-cloud-go/commit/5b5d0f782b224f324dcfa13cc4145ee33a395d09))
+
+## [0.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.1...pubsublite/v0.10.0) (2021-06-15)
+
+
+### Features
+
+* **pubsublite:** support out of band seeks ([#4208](https://www.github.com/googleapis/google-cloud-go/issues/4208)) ([1432e67](https://www.github.com/googleapis/google-cloud-go/commit/1432e678d5510f6a60b5319e7c70b0c15229b88c))
+
+
+### Bug Fixes
+
+* **pubsublite:** ack assignment after removed subscribers have terminated ([#4217](https://www.github.com/googleapis/google-cloud-go/issues/4217)) ([0ad3f16](https://www.github.com/googleapis/google-cloud-go/commit/0ad3f168b8525033e6926882059cb0b430d1f350))
+
+### [0.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.0...pubsublite/v0.9.1) (2021-06-10)
+
+
+### Bug Fixes
+
+* **pubsublite:** ensure api clients are closed when startup fails ([#4239](https://www.github.com/googleapis/google-cloud-go/issues/4239)) ([55025a1](https://www.github.com/googleapis/google-cloud-go/commit/55025a1c6abe0ef4e57dd31347265aab3b78bdf8))
+
+## [0.9.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.8.0...pubsublite/v0.9.0) (2021-06-08)
+
+
+### Features
+
+* **pubsublite:** Add initial_cursor field to InitialSubscribeRequest ([6f9c8b0](https://www.github.com/googleapis/google-cloud-go/commit/6f9c8b0a5d6e4509f056a146cb586f310f3336a9))
+* **pubsublite:** Add Pub/Sub Lite Reservation APIs ([18375e5](https://www.github.com/googleapis/google-cloud-go/commit/18375e50e8f16e63506129b8927a7b62f85e407b))
+* **pubsublite:** ComputeTimeCursor RPC for Pub/Sub Lite ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+* **pubsublite:** detect stream reset signal ([#4144](https://www.github.com/googleapis/google-cloud-go/issues/4144)) ([ff5f8c9](https://www.github.com/googleapis/google-cloud-go/commit/ff5f8c989cba2751dcc77745483ef3828e6df78c))
+* **pubsublite:** flush and reset committer ([#4143](https://www.github.com/googleapis/google-cloud-go/issues/4143)) ([0ecd732](https://www.github.com/googleapis/google-cloud-go/commit/0ecd732e3f57928e7999ae4e78871be070c184d9))
+
+
+### Bug Fixes
+
+* **pubsublite:** prevent subscriber flow control token races ([#4060](https://www.github.com/googleapis/google-cloud-go/issues/4060)) ([dc0103b](https://www.github.com/googleapis/google-cloud-go/commit/dc0103baeaf168474b9e163f0aa5f7555170ffc4))
+
 ## [0.8.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.7.0...pubsublite/v0.8.0) (2021-03-25)
 
 

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newWebhooksClientHook clientHook
@@ -46,12 +46,13 @@ type WebhooksCallOptions struct {
 	DeleteWebhook []gax.CallOption
 }
 
-func defaultWebhooksClientOptions() []option.ClientOption {
+func defaultWebhooksGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -118,32 +119,103 @@ func defaultWebhooksCallOptions() *WebhooksCallOptions {
 	}
 }
 
+// internalWebhooksClient is an interface that defines the methods availaible from Dialogflow API.
+type internalWebhooksClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListWebhooks(context.Context, *cxpb.ListWebhooksRequest, ...gax.CallOption) *WebhookIterator
+	GetWebhook(context.Context, *cxpb.GetWebhookRequest, ...gax.CallOption) (*cxpb.Webhook, error)
+	CreateWebhook(context.Context, *cxpb.CreateWebhookRequest, ...gax.CallOption) (*cxpb.Webhook, error)
+	UpdateWebhook(context.Context, *cxpb.UpdateWebhookRequest, ...gax.CallOption) (*cxpb.Webhook, error)
+	DeleteWebhook(context.Context, *cxpb.DeleteWebhookRequest, ...gax.CallOption) error
+}
+
 // WebhooksClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Webhooks.
+type WebhooksClient struct {
+	// The internal transport-dependent client.
+	internalClient internalWebhooksClient
+
+	// The call options for this service.
+	CallOptions *WebhooksCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *WebhooksClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *WebhooksClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *WebhooksClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListWebhooks returns the list of all webhooks in the specified agent.
+func (c *WebhooksClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhooksRequest, opts ...gax.CallOption) *WebhookIterator {
+	return c.internalClient.ListWebhooks(ctx, req, opts...)
+}
+
+// GetWebhook retrieves the specified webhook.
+func (c *WebhooksClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+	return c.internalClient.GetWebhook(ctx, req, opts...)
+}
+
+// CreateWebhook creates a webhook in the specified agent.
+func (c *WebhooksClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+	return c.internalClient.CreateWebhook(ctx, req, opts...)
+}
+
+// UpdateWebhook updates the specified webhook.
+func (c *WebhooksClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+	return c.internalClient.UpdateWebhook(ctx, req, opts...)
+}
+
+// DeleteWebhook deletes the specified webhook.
+func (c *WebhooksClient) DeleteWebhook(ctx context.Context, req *cxpb.DeleteWebhookRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteWebhook(ctx, req, opts...)
+}
+
+// webhooksGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type WebhooksClient struct {
+type webhooksGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing WebhooksClient
+	CallOptions **WebhooksCallOptions
+
 	// The gRPC API client.
 	webhooksClient cxpb.WebhooksClient
-
-	// The call options for this service.
-	CallOptions *WebhooksCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewWebhooksClient creates a new webhooks client.
+// NewWebhooksClient creates a new webhooks client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Webhooks.
 func NewWebhooksClient(ctx context.Context, opts ...option.ClientOption) (*WebhooksClient, error) {
-	clientOpts := defaultWebhooksClientOptions()
-
+	clientOpts := defaultWebhooksGRPCClientOptions()
 	if newWebhooksClientHook != nil {
 		hookOpts, err := newWebhooksClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,53 +233,57 @@ func NewWebhooksClient(ctx context.Context, opts ...option.ClientOption) (*Webho
 	if err != nil {
 		return nil, err
 	}
-	c := &WebhooksClient{
+	client := WebhooksClient{CallOptions: defaultWebhooksCallOptions()}
+
+	c := &webhooksGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultWebhooksCallOptions(),
-
-		webhooksClient: cxpb.NewWebhooksClient(connPool),
+		webhooksClient:   cxpb.NewWebhooksClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *WebhooksClient) Connection() *grpc.ClientConn {
+func (c *webhooksGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *WebhooksClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *WebhooksClient) setGoogleClientInfo(keyval ...string) {
+func (c *webhooksGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListWebhooks returns the list of all webhooks in the specified agent.
-func (c *WebhooksClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhooksRequest, opts ...gax.CallOption) *WebhookIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *webhooksGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *webhooksGRPCClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhooksRequest, opts ...gax.CallOption) *WebhookIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListWebhooks[0:len(c.CallOptions.ListWebhooks):len(c.CallOptions.ListWebhooks)], opts...)
+	opts = append((*c.CallOptions).ListWebhooks[0:len((*c.CallOptions).ListWebhooks):len((*c.CallOptions).ListWebhooks)], opts...)
 	it := &WebhookIterator{}
 	req = proto.Clone(req).(*cxpb.ListWebhooksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Webhook, string, error) {
-		var resp *cxpb.ListWebhooksResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListWebhooksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,14 +306,15 @@ func (c *WebhooksClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhook
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetWebhook retrieves the specified webhook.
-func (c *WebhooksClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+func (c *webhooksGRPCClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -245,7 +322,7 @@ func (c *WebhooksClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookReq
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetWebhook[0:len(c.CallOptions.GetWebhook):len(c.CallOptions.GetWebhook)], opts...)
+	opts = append((*c.CallOptions).GetWebhook[0:len((*c.CallOptions).GetWebhook):len((*c.CallOptions).GetWebhook)], opts...)
 	var resp *cxpb.Webhook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -258,8 +335,7 @@ func (c *WebhooksClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhookReq
 	return resp, nil
 }
 
-// CreateWebhook creates a webhook in the specified agent.
-func (c *WebhooksClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+func (c *webhooksGRPCClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -267,7 +343,7 @@ func (c *WebhooksClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateWebhook[0:len(c.CallOptions.CreateWebhook):len(c.CallOptions.CreateWebhook)], opts...)
+	opts = append((*c.CallOptions).CreateWebhook[0:len((*c.CallOptions).CreateWebhook):len((*c.CallOptions).CreateWebhook)], opts...)
 	var resp *cxpb.Webhook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,8 +356,7 @@ func (c *WebhooksClient) CreateWebhook(ctx context.Context, req *cxpb.CreateWebh
 	return resp, nil
 }
 
-// UpdateWebhook updates the specified webhook.
-func (c *WebhooksClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
+func (c *webhooksGRPCClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebhookRequest, opts ...gax.CallOption) (*cxpb.Webhook, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -289,7 +364,7 @@ func (c *WebhooksClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "webhook.name", url.QueryEscape(req.GetWebhook().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateWebhook[0:len(c.CallOptions.UpdateWebhook):len(c.CallOptions.UpdateWebhook)], opts...)
+	opts = append((*c.CallOptions).UpdateWebhook[0:len((*c.CallOptions).UpdateWebhook):len((*c.CallOptions).UpdateWebhook)], opts...)
 	var resp *cxpb.Webhook
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -302,8 +377,7 @@ func (c *WebhooksClient) UpdateWebhook(ctx context.Context, req *cxpb.UpdateWebh
 	return resp, nil
 }
 
-// DeleteWebhook deletes the specified webhook.
-func (c *WebhooksClient) DeleteWebhook(ctx context.Context, req *cxpb.DeleteWebhookRequest, opts ...gax.CallOption) error {
+func (c *webhooksGRPCClient) DeleteWebhook(ctx context.Context, req *cxpb.DeleteWebhookRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -311,7 +385,7 @@ func (c *WebhooksClient) DeleteWebhook(ctx context.Context, req *cxpb.DeleteWebh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteWebhook[0:len(c.CallOptions.DeleteWebhook):len(c.CallOptions.DeleteWebhook)], opts...)
+	opts = append((*c.CallOptions).DeleteWebhook[0:len((*c.CallOptions).DeleteWebhook):len((*c.CallOptions).DeleteWebhook)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.webhooksClient.DeleteWebhook(ctx, req, settings.GRPC...)

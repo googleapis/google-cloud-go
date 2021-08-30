@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -75,12 +75,13 @@ type CallOptions struct {
 	FinishDlpJob             []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dlp.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dlp.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -346,27 +347,375 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Cloud Data Loss Prevention (DLP) API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	InspectContent(context.Context, *dlppb.InspectContentRequest, ...gax.CallOption) (*dlppb.InspectContentResponse, error)
+	RedactImage(context.Context, *dlppb.RedactImageRequest, ...gax.CallOption) (*dlppb.RedactImageResponse, error)
+	DeidentifyContent(context.Context, *dlppb.DeidentifyContentRequest, ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error)
+	ReidentifyContent(context.Context, *dlppb.ReidentifyContentRequest, ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error)
+	ListInfoTypes(context.Context, *dlppb.ListInfoTypesRequest, ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error)
+	CreateInspectTemplate(context.Context, *dlppb.CreateInspectTemplateRequest, ...gax.CallOption) (*dlppb.InspectTemplate, error)
+	UpdateInspectTemplate(context.Context, *dlppb.UpdateInspectTemplateRequest, ...gax.CallOption) (*dlppb.InspectTemplate, error)
+	GetInspectTemplate(context.Context, *dlppb.GetInspectTemplateRequest, ...gax.CallOption) (*dlppb.InspectTemplate, error)
+	ListInspectTemplates(context.Context, *dlppb.ListInspectTemplatesRequest, ...gax.CallOption) *InspectTemplateIterator
+	DeleteInspectTemplate(context.Context, *dlppb.DeleteInspectTemplateRequest, ...gax.CallOption) error
+	CreateDeidentifyTemplate(context.Context, *dlppb.CreateDeidentifyTemplateRequest, ...gax.CallOption) (*dlppb.DeidentifyTemplate, error)
+	UpdateDeidentifyTemplate(context.Context, *dlppb.UpdateDeidentifyTemplateRequest, ...gax.CallOption) (*dlppb.DeidentifyTemplate, error)
+	GetDeidentifyTemplate(context.Context, *dlppb.GetDeidentifyTemplateRequest, ...gax.CallOption) (*dlppb.DeidentifyTemplate, error)
+	ListDeidentifyTemplates(context.Context, *dlppb.ListDeidentifyTemplatesRequest, ...gax.CallOption) *DeidentifyTemplateIterator
+	DeleteDeidentifyTemplate(context.Context, *dlppb.DeleteDeidentifyTemplateRequest, ...gax.CallOption) error
+	CreateJobTrigger(context.Context, *dlppb.CreateJobTriggerRequest, ...gax.CallOption) (*dlppb.JobTrigger, error)
+	UpdateJobTrigger(context.Context, *dlppb.UpdateJobTriggerRequest, ...gax.CallOption) (*dlppb.JobTrigger, error)
+	HybridInspectJobTrigger(context.Context, *dlppb.HybridInspectJobTriggerRequest, ...gax.CallOption) (*dlppb.HybridInspectResponse, error)
+	GetJobTrigger(context.Context, *dlppb.GetJobTriggerRequest, ...gax.CallOption) (*dlppb.JobTrigger, error)
+	ListJobTriggers(context.Context, *dlppb.ListJobTriggersRequest, ...gax.CallOption) *JobTriggerIterator
+	DeleteJobTrigger(context.Context, *dlppb.DeleteJobTriggerRequest, ...gax.CallOption) error
+	ActivateJobTrigger(context.Context, *dlppb.ActivateJobTriggerRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
+	CreateDlpJob(context.Context, *dlppb.CreateDlpJobRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
+	ListDlpJobs(context.Context, *dlppb.ListDlpJobsRequest, ...gax.CallOption) *DlpJobIterator
+	GetDlpJob(context.Context, *dlppb.GetDlpJobRequest, ...gax.CallOption) (*dlppb.DlpJob, error)
+	DeleteDlpJob(context.Context, *dlppb.DeleteDlpJobRequest, ...gax.CallOption) error
+	CancelDlpJob(context.Context, *dlppb.CancelDlpJobRequest, ...gax.CallOption) error
+	CreateStoredInfoType(context.Context, *dlppb.CreateStoredInfoTypeRequest, ...gax.CallOption) (*dlppb.StoredInfoType, error)
+	UpdateStoredInfoType(context.Context, *dlppb.UpdateStoredInfoTypeRequest, ...gax.CallOption) (*dlppb.StoredInfoType, error)
+	GetStoredInfoType(context.Context, *dlppb.GetStoredInfoTypeRequest, ...gax.CallOption) (*dlppb.StoredInfoType, error)
+	ListStoredInfoTypes(context.Context, *dlppb.ListStoredInfoTypesRequest, ...gax.CallOption) *StoredInfoTypeIterator
+	DeleteStoredInfoType(context.Context, *dlppb.DeleteStoredInfoTypeRequest, ...gax.CallOption) error
+	HybridInspectDlpJob(context.Context, *dlppb.HybridInspectDlpJobRequest, ...gax.CallOption) (*dlppb.HybridInspectResponse, error)
+	FinishDlpJob(context.Context, *dlppb.FinishDlpJobRequest, ...gax.CallOption) error
+}
+
 // Client is a client for interacting with Cloud Data Loss Prevention (DLP) API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Cloud Data Loss Prevention (DLP) API is a service that allows clients
+// to detect the presence of Personally Identifiable Information (PII) and other
+// privacy-sensitive data in user-supplied, unstructured data streams, like text
+// blocks or images.
+// The service also includes methods for sensitive data redaction and
+// scheduling of data scans on Google Cloud Platform based data sets.
+//
+// To learn more about concepts and find how-to guides see
+// https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// InspectContent finds potentially sensitive info in content.
+// This method has limits on input size, processing time, and output size.
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
+//
+// For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images (at https://cloud.google.com/dlp/docs/inspecting-images)
+// and https://cloud.google.com/dlp/docs/inspecting-text (at https://cloud.google.com/dlp/docs/inspecting-text),
+func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
+	return c.internalClient.InspectContent(ctx, req, opts...)
+}
+
+// RedactImage redacts potentially sensitive info from an image.
+// This method has limits on input size, processing time, and output size.
+// See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images (at https://cloud.google.com/dlp/docs/redacting-sensitive-data-images) to
+// learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
+func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
+	return c.internalClient.RedactImage(ctx, req, opts...)
+}
+
+// DeidentifyContent de-identifies potentially sensitive info from a ContentItem.
+// This method has limits on input size and output size.
+// See https://cloud.google.com/dlp/docs/deidentify-sensitive-data (at https://cloud.google.com/dlp/docs/deidentify-sensitive-data) to
+// learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in this request, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
+func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyContentRequest, opts ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error) {
+	return c.internalClient.DeidentifyContent(ctx, req, opts...)
+}
+
+// ReidentifyContent re-identifies content that has been de-identified.
+// See
+// https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example)
+// to learn more.
+func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
+	return c.internalClient.ReidentifyContent(ctx, req, opts...)
+}
+
+// ListInfoTypes returns a list of the sensitive information types that the DLP API
+// supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
+// learn more.
+func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
+	return c.internalClient.ListInfoTypes(ctx, req, opts...)
+}
+
+// CreateInspectTemplate creates an InspectTemplate for re-using frequently used configuration
+// for inspecting content, images, and storage.
+// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+	return c.internalClient.CreateInspectTemplate(ctx, req, opts...)
+}
+
+// UpdateInspectTemplate updates the InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+	return c.internalClient.UpdateInspectTemplate(ctx, req, opts...)
+}
+
+// GetInspectTemplate gets an InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+	return c.internalClient.GetInspectTemplate(ctx, req, opts...)
+}
+
+// ListInspectTemplates lists InspectTemplates.
+// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
+	return c.internalClient.ListInspectTemplates(ctx, req, opts...)
+}
+
+// DeleteInspectTemplate deletes an InspectTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteInspectTemplate(ctx, req, opts...)
+}
+
+// CreateDeidentifyTemplate creates a DeidentifyTemplate for re-using frequently used configuration
+// for de-identifying content, images, and storage.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
+// more.
+func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+	return c.internalClient.CreateDeidentifyTemplate(ctx, req, opts...)
+}
+
+// UpdateDeidentifyTemplate updates the DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
+// more.
+func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+	return c.internalClient.UpdateDeidentifyTemplate(ctx, req, opts...)
+}
+
+// GetDeidentifyTemplate gets a DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
+// more.
+func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+	return c.internalClient.GetDeidentifyTemplate(ctx, req, opts...)
+}
+
+// ListDeidentifyTemplates lists DeidentifyTemplates.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
+// more.
+func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
+	return c.internalClient.ListDeidentifyTemplates(ctx, req, opts...)
+}
+
+// DeleteDeidentifyTemplate deletes a DeidentifyTemplate.
+// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
+// more.
+func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDeidentifyTemplate(ctx, req, opts...)
+}
+
+// CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for
+// sensitive information on a set schedule.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+	return c.internalClient.CreateJobTrigger(ctx, req, opts...)
+}
+
+// UpdateJobTrigger updates a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+	return c.internalClient.UpdateJobTrigger(ctx, req, opts...)
+}
+
+// HybridInspectJobTrigger inspect hybrid content and store findings to a trigger. The inspection
+// will be processed asynchronously. To review the findings monitor the
+// jobs within the trigger.
+// Early access feature is in a pre-release state and might change or have
+// limited support. For more information, see
+// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
+func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridInspectJobTriggerRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
+	return c.internalClient.HybridInspectJobTrigger(ctx, req, opts...)
+}
+
+// GetJobTrigger gets a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+	return c.internalClient.GetJobTrigger(ctx, req, opts...)
+}
+
+// ListJobTriggers lists job triggers.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
+	return c.internalClient.ListJobTriggers(ctx, req, opts...)
+}
+
+// DeleteJobTrigger deletes a job trigger.
+// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteJobTrigger(ctx, req, opts...)
+}
+
+// ActivateJobTrigger activate a job trigger. Causes the immediate execute of a trigger
+// instead of waiting on the trigger event to occur.
+func (c *Client) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+	return c.internalClient.ActivateJobTrigger(ctx, req, opts...)
+}
+
+// CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
+// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+//
+// When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
+// system will automatically choose what detectors to run. By default this may
+// be all types, but may change over time as detectors are updated.
+func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+	return c.internalClient.CreateDlpJob(ctx, req, opts...)
+}
+
+// ListDlpJobs lists DlpJobs that match the specified filter in the request.
+// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
+	return c.internalClient.ListDlpJobs(ctx, req, opts...)
+}
+
+// GetDlpJob gets the latest state of a long-running DlpJob.
+// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+	return c.internalClient.GetDlpJob(ctx, req, opts...)
+}
+
+// DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
+// no longer interested in the DlpJob result. The job will be cancelled if
+// possible.
+// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDlpJob(ctx, req, opts...)
+}
+
+// CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server
+// makes a best effort to cancel the DlpJob, but success is not
+// guaranteed.
+// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
+// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelDlpJob(ctx, req, opts...)
+}
+
+// CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
+// learn more.
+func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	return c.internalClient.CreateStoredInfoType(ctx, req, opts...)
+}
+
+// UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version
+// will continue to be used until the new version is ready.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
+// learn more.
+func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	return c.internalClient.UpdateStoredInfoType(ctx, req, opts...)
+}
+
+// GetStoredInfoType gets a stored infoType.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
+// learn more.
+func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+	return c.internalClient.GetStoredInfoType(ctx, req, opts...)
+}
+
+// ListStoredInfoTypes lists stored infoTypes.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
+// learn more.
+func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
+	return c.internalClient.ListStoredInfoTypes(ctx, req, opts...)
+}
+
+// DeleteStoredInfoType deletes a stored infoType.
+// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
+// learn more.
+func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteStoredInfoType(ctx, req, opts...)
+}
+
+// HybridInspectDlpJob inspect hybrid content and store findings to a job.
+// To review the findings inspect the job. Inspection will occur
+// asynchronously.
+// Early access feature is in a pre-release state and might change or have
+// limited support. For more information, see
+// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
+func (c *Client) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspectDlpJobRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
+	return c.internalClient.HybridInspectDlpJob(ctx, req, opts...)
+}
+
+// FinishDlpJob finish a running hybrid DlpJob. Triggers the finalization steps and running
+// of any enabled actions that have not yet run.
+// Early access feature is in a pre-release state and might change or have
+// limited support. For more information, see
+// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
+func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.FinishDlpJob(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud Data Loss Prevention (DLP) API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client dlppb.DlpServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new dlp service client.
+// NewClient creates a new dlp service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Cloud Data Loss Prevention (DLP) API is a service that allows clients
 // to detect the presence of Personally Identifiable Information (PII) and other
@@ -378,8 +727,7 @@ type Client struct {
 // To learn more about concepts and find how-to guides see
 // https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -397,50 +745,44 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: dlppb.NewDlpServiceClient(connPool),
+		client:           dlppb.NewDlpServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// InspectContent finds potentially sensitive info in content.
-// This method has limits on input size, processing time, and output size.
-//
-// When no InfoTypes or CustomInfoTypes are specified in this request, the
-// system will automatically choose what detectors to run. By default this may
-// be all types, but may change over time as detectors are updated.
-//
-// For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images (at https://cloud.google.com/dlp/docs/inspecting-images)
-// and https://cloud.google.com/dlp/docs/inspecting-text (at https://cloud.google.com/dlp/docs/inspecting-text),
-func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -448,7 +790,7 @@ func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.InspectContent[0:len(c.CallOptions.InspectContent):len(c.CallOptions.InspectContent)], opts...)
+	opts = append((*c.CallOptions).InspectContent[0:len((*c.CallOptions).InspectContent):len((*c.CallOptions).InspectContent)], opts...)
 	var resp *dlppb.InspectContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -461,15 +803,7 @@ func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRe
 	return resp, nil
 }
 
-// RedactImage redacts potentially sensitive info from an image.
-// This method has limits on input size, processing time, and output size.
-// See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images (at https://cloud.google.com/dlp/docs/redacting-sensitive-data-images) to
-// learn more.
-//
-// When no InfoTypes or CustomInfoTypes are specified in this request, the
-// system will automatically choose what detectors to run. By default this may
-// be all types, but may change over time as detectors are updated.
-func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
+func (c *gRPCClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest, opts ...gax.CallOption) (*dlppb.RedactImageResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -477,7 +811,7 @@ func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RedactImage[0:len(c.CallOptions.RedactImage):len(c.CallOptions.RedactImage)], opts...)
+	opts = append((*c.CallOptions).RedactImage[0:len((*c.CallOptions).RedactImage):len((*c.CallOptions).RedactImage)], opts...)
 	var resp *dlppb.RedactImageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -490,15 +824,7 @@ func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest,
 	return resp, nil
 }
 
-// DeidentifyContent de-identifies potentially sensitive info from a ContentItem.
-// This method has limits on input size and output size.
-// See https://cloud.google.com/dlp/docs/deidentify-sensitive-data (at https://cloud.google.com/dlp/docs/deidentify-sensitive-data) to
-// learn more.
-//
-// When no InfoTypes or CustomInfoTypes are specified in this request, the
-// system will automatically choose what detectors to run. By default this may
-// be all types, but may change over time as detectors are updated.
-func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyContentRequest, opts ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error) {
+func (c *gRPCClient) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyContentRequest, opts ...gax.CallOption) (*dlppb.DeidentifyContentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -506,7 +832,7 @@ func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyCon
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeidentifyContent[0:len(c.CallOptions.DeidentifyContent):len(c.CallOptions.DeidentifyContent)], opts...)
+	opts = append((*c.CallOptions).DeidentifyContent[0:len((*c.CallOptions).DeidentifyContent):len((*c.CallOptions).DeidentifyContent)], opts...)
 	var resp *dlppb.DeidentifyContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -519,11 +845,7 @@ func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyCon
 	return resp, nil
 }
 
-// ReidentifyContent re-identifies content that has been de-identified.
-// See
-// https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example)
-// to learn more.
-func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
+func (c *gRPCClient) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -531,7 +853,7 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReidentifyContent[0:len(c.CallOptions.ReidentifyContent):len(c.CallOptions.ReidentifyContent)], opts...)
+	opts = append((*c.CallOptions).ReidentifyContent[0:len((*c.CallOptions).ReidentifyContent):len((*c.CallOptions).ReidentifyContent)], opts...)
 	var resp *dlppb.ReidentifyContentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -544,10 +866,7 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 	return resp, nil
 }
 
-// ListInfoTypes returns a list of the sensitive information types that the DLP API
-// supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
-// learn more.
-func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
+func (c *gRPCClient) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -555,7 +874,7 @@ func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequ
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInfoTypes[0:len(c.CallOptions.ListInfoTypes):len(c.CallOptions.ListInfoTypes)], opts...)
+	opts = append((*c.CallOptions).ListInfoTypes[0:len((*c.CallOptions).ListInfoTypes):len((*c.CallOptions).ListInfoTypes)], opts...)
 	var resp *dlppb.ListInfoTypesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -568,10 +887,7 @@ func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequ
 	return resp, nil
 }
 
-// CreateInspectTemplate creates an InspectTemplate for re-using frequently used configuration
-// for inspecting content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
-func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+func (c *gRPCClient) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -579,7 +895,7 @@ func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateIns
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateInspectTemplate[0:len(c.CallOptions.CreateInspectTemplate):len(c.CallOptions.CreateInspectTemplate)], opts...)
+	opts = append((*c.CallOptions).CreateInspectTemplate[0:len((*c.CallOptions).CreateInspectTemplate):len((*c.CallOptions).CreateInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -592,9 +908,7 @@ func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateIns
 	return resp, nil
 }
 
-// UpdateInspectTemplate updates the InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
-func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+func (c *gRPCClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -602,7 +916,7 @@ func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateIns
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateInspectTemplate[0:len(c.CallOptions.UpdateInspectTemplate):len(c.CallOptions.UpdateInspectTemplate)], opts...)
+	opts = append((*c.CallOptions).UpdateInspectTemplate[0:len((*c.CallOptions).UpdateInspectTemplate):len((*c.CallOptions).UpdateInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -615,9 +929,7 @@ func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateIns
 	return resp, nil
 }
 
-// GetInspectTemplate gets an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
-func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
+func (c *gRPCClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -625,7 +937,7 @@ func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInspectTemplate[0:len(c.CallOptions.GetInspectTemplate):len(c.CallOptions.GetInspectTemplate)], opts...)
+	opts = append((*c.CallOptions).GetInspectTemplate[0:len((*c.CallOptions).GetInspectTemplate):len((*c.CallOptions).GetInspectTemplate)], opts...)
 	var resp *dlppb.InspectTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -638,20 +950,20 @@ func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTe
 	return resp, nil
 }
 
-// ListInspectTemplates lists InspectTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
-func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
+func (c *gRPCClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInspectTemplates[0:len(c.CallOptions.ListInspectTemplates):len(c.CallOptions.ListInspectTemplates)], opts...)
+	opts = append((*c.CallOptions).ListInspectTemplates[0:len((*c.CallOptions).ListInspectTemplates):len((*c.CallOptions).ListInspectTemplates)], opts...)
 	it := &InspectTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.InspectTemplate, string, error) {
-		var resp *dlppb.ListInspectTemplatesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListInspectTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -674,15 +986,15 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteInspectTemplate deletes an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
-func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -690,7 +1002,7 @@ func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteIns
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteInspectTemplate[0:len(c.CallOptions.DeleteInspectTemplate):len(c.CallOptions.DeleteInspectTemplate)], opts...)
+	opts = append((*c.CallOptions).DeleteInspectTemplate[0:len((*c.CallOptions).DeleteInspectTemplate):len((*c.CallOptions).DeleteInspectTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteInspectTemplate(ctx, req, settings.GRPC...)
@@ -699,11 +1011,7 @@ func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteIns
 	return err
 }
 
-// CreateDeidentifyTemplate creates a DeidentifyTemplate for re-using frequently used configuration
-// for de-identifying content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
-func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+func (c *gRPCClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -711,7 +1019,7 @@ func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Create
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDeidentifyTemplate[0:len(c.CallOptions.CreateDeidentifyTemplate):len(c.CallOptions.CreateDeidentifyTemplate)], opts...)
+	opts = append((*c.CallOptions).CreateDeidentifyTemplate[0:len((*c.CallOptions).CreateDeidentifyTemplate):len((*c.CallOptions).CreateDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -724,10 +1032,7 @@ func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Create
 	return resp, nil
 }
 
-// UpdateDeidentifyTemplate updates the DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
-func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+func (c *gRPCClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -735,7 +1040,7 @@ func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Update
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDeidentifyTemplate[0:len(c.CallOptions.UpdateDeidentifyTemplate):len(c.CallOptions.UpdateDeidentifyTemplate)], opts...)
+	opts = append((*c.CallOptions).UpdateDeidentifyTemplate[0:len((*c.CallOptions).UpdateDeidentifyTemplate):len((*c.CallOptions).UpdateDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -748,10 +1053,7 @@ func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Update
 	return resp, nil
 }
 
-// GetDeidentifyTemplate gets a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
-func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
+func (c *gRPCClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -759,7 +1061,7 @@ func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeiden
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDeidentifyTemplate[0:len(c.CallOptions.GetDeidentifyTemplate):len(c.CallOptions.GetDeidentifyTemplate)], opts...)
+	opts = append((*c.CallOptions).GetDeidentifyTemplate[0:len((*c.CallOptions).GetDeidentifyTemplate):len((*c.CallOptions).GetDeidentifyTemplate)], opts...)
 	var resp *dlppb.DeidentifyTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -772,21 +1074,20 @@ func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeiden
 	return resp, nil
 }
 
-// ListDeidentifyTemplates lists DeidentifyTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
-func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
+func (c *gRPCClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDeidentifyTemplates[0:len(c.CallOptions.ListDeidentifyTemplates):len(c.CallOptions.ListDeidentifyTemplates)], opts...)
+	opts = append((*c.CallOptions).ListDeidentifyTemplates[0:len((*c.CallOptions).ListDeidentifyTemplates):len((*c.CallOptions).ListDeidentifyTemplates)], opts...)
 	it := &DeidentifyTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DeidentifyTemplate, string, error) {
-		var resp *dlppb.ListDeidentifyTemplatesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListDeidentifyTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -809,16 +1110,15 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteDeidentifyTemplate deletes a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
-func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -826,7 +1126,7 @@ func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.Delete
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDeidentifyTemplate[0:len(c.CallOptions.DeleteDeidentifyTemplate):len(c.CallOptions.DeleteDeidentifyTemplate)], opts...)
+	opts = append((*c.CallOptions).DeleteDeidentifyTemplate[0:len((*c.CallOptions).DeleteDeidentifyTemplate):len((*c.CallOptions).DeleteDeidentifyTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteDeidentifyTemplate(ctx, req, settings.GRPC...)
@@ -835,10 +1135,7 @@ func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.Delete
 	return err
 }
 
-// CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for
-// sensitive information on a set schedule.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
-func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+func (c *gRPCClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -846,7 +1143,7 @@ func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTrigg
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateJobTrigger[0:len(c.CallOptions.CreateJobTrigger):len(c.CallOptions.CreateJobTrigger)], opts...)
+	opts = append((*c.CallOptions).CreateJobTrigger[0:len((*c.CallOptions).CreateJobTrigger):len((*c.CallOptions).CreateJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -859,9 +1156,7 @@ func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTrigg
 	return resp, nil
 }
 
-// UpdateJobTrigger updates a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
-func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+func (c *gRPCClient) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -869,7 +1164,7 @@ func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTrigg
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateJobTrigger[0:len(c.CallOptions.UpdateJobTrigger):len(c.CallOptions.UpdateJobTrigger)], opts...)
+	opts = append((*c.CallOptions).UpdateJobTrigger[0:len((*c.CallOptions).UpdateJobTrigger):len((*c.CallOptions).UpdateJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -882,13 +1177,7 @@ func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTrigg
 	return resp, nil
 }
 
-// HybridInspectJobTrigger inspect hybrid content and store findings to a trigger. The inspection
-// will be processed asynchronously. To review the findings monitor the
-// jobs within the trigger.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
-func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridInspectJobTriggerRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
+func (c *gRPCClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridInspectJobTriggerRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -896,7 +1185,7 @@ func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridI
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.HybridInspectJobTrigger[0:len(c.CallOptions.HybridInspectJobTrigger):len(c.CallOptions.HybridInspectJobTrigger)], opts...)
+	opts = append((*c.CallOptions).HybridInspectJobTrigger[0:len((*c.CallOptions).HybridInspectJobTrigger):len((*c.CallOptions).HybridInspectJobTrigger)], opts...)
 	var resp *dlppb.HybridInspectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -909,9 +1198,7 @@ func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridI
 	return resp, nil
 }
 
-// GetJobTrigger gets a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
-func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
+func (c *gRPCClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -919,7 +1206,7 @@ func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequ
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetJobTrigger[0:len(c.CallOptions.GetJobTrigger):len(c.CallOptions.GetJobTrigger)], opts...)
+	opts = append((*c.CallOptions).GetJobTrigger[0:len((*c.CallOptions).GetJobTrigger):len((*c.CallOptions).GetJobTrigger)], opts...)
 	var resp *dlppb.JobTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -932,20 +1219,20 @@ func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequ
 	return resp, nil
 }
 
-// ListJobTriggers lists job triggers.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
-func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
+func (c *gRPCClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListJobTriggers[0:len(c.CallOptions.ListJobTriggers):len(c.CallOptions.ListJobTriggers)], opts...)
+	opts = append((*c.CallOptions).ListJobTriggers[0:len((*c.CallOptions).ListJobTriggers):len((*c.CallOptions).ListJobTriggers)], opts...)
 	it := &JobTriggerIterator{}
 	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.JobTrigger, string, error) {
-		var resp *dlppb.ListJobTriggersResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListJobTriggersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -968,15 +1255,15 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteJobTrigger deletes a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
-func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -984,7 +1271,7 @@ func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTrigg
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteJobTrigger[0:len(c.CallOptions.DeleteJobTrigger):len(c.CallOptions.DeleteJobTrigger)], opts...)
+	opts = append((*c.CallOptions).DeleteJobTrigger[0:len((*c.CallOptions).DeleteJobTrigger):len((*c.CallOptions).DeleteJobTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteJobTrigger(ctx, req, settings.GRPC...)
@@ -993,9 +1280,7 @@ func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTrigg
 	return err
 }
 
-// ActivateJobTrigger activate a job trigger. Causes the immediate execute of a trigger
-// instead of waiting on the trigger event to occur.
-func (c *Client) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+func (c *gRPCClient) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1003,7 +1288,7 @@ func (c *Client) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ActivateJobTrigger[0:len(c.CallOptions.ActivateJobTrigger):len(c.CallOptions.ActivateJobTrigger)], opts...)
+	opts = append((*c.CallOptions).ActivateJobTrigger[0:len((*c.CallOptions).ActivateJobTrigger):len((*c.CallOptions).ActivateJobTrigger)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1016,14 +1301,7 @@ func (c *Client) ActivateJobTrigger(ctx context.Context, req *dlppb.ActivateJobT
 	return resp, nil
 }
 
-// CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
-//
-// When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
-// system will automatically choose what detectors to run. By default this may
-// be all types, but may change over time as detectors are updated.
-func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+func (c *gRPCClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1031,7 +1309,7 @@ func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDlpJob[0:len(c.CallOptions.CreateDlpJob):len(c.CallOptions.CreateDlpJob)], opts...)
+	opts = append((*c.CallOptions).CreateDlpJob[0:len((*c.CallOptions).CreateDlpJob):len((*c.CallOptions).CreateDlpJob)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1044,21 +1322,20 @@ func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobReques
 	return resp, nil
 }
 
-// ListDlpJobs lists DlpJobs that match the specified filter in the request.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
-func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
+func (c *gRPCClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDlpJobs[0:len(c.CallOptions.ListDlpJobs):len(c.CallOptions.ListDlpJobs)], opts...)
+	opts = append((*c.CallOptions).ListDlpJobs[0:len((*c.CallOptions).ListDlpJobs):len((*c.CallOptions).ListDlpJobs)], opts...)
 	it := &DlpJobIterator{}
 	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DlpJob, string, error) {
-		var resp *dlppb.ListDlpJobsResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListDlpJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1081,16 +1358,15 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetDlpJob gets the latest state of a long-running DlpJob.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
-func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
+func (c *gRPCClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1098,7 +1374,7 @@ func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opt
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDlpJob[0:len(c.CallOptions.GetDlpJob):len(c.CallOptions.GetDlpJob)], opts...)
+	opts = append((*c.CallOptions).GetDlpJob[0:len((*c.CallOptions).GetDlpJob):len((*c.CallOptions).GetDlpJob)], opts...)
 	var resp *dlppb.DlpJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1111,12 +1387,7 @@ func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opt
 	return resp, nil
 }
 
-// DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
-// no longer interested in the DlpJob result. The job will be cancelled if
-// possible.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
-func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1124,7 +1395,7 @@ func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDlpJob[0:len(c.CallOptions.DeleteDlpJob):len(c.CallOptions.DeleteDlpJob)], opts...)
+	opts = append((*c.CallOptions).DeleteDlpJob[0:len((*c.CallOptions).DeleteDlpJob):len((*c.CallOptions).DeleteDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteDlpJob(ctx, req, settings.GRPC...)
@@ -1133,12 +1404,7 @@ func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobReques
 	return err
 }
 
-// CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server
-// makes a best effort to cancel the DlpJob, but success is not
-// guaranteed.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
-func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1146,7 +1412,7 @@ func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CancelDlpJob[0:len(c.CallOptions.CancelDlpJob):len(c.CallOptions.CancelDlpJob)], opts...)
+	opts = append((*c.CallOptions).CancelDlpJob[0:len((*c.CallOptions).CancelDlpJob):len((*c.CallOptions).CancelDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.CancelDlpJob(ctx, req, settings.GRPC...)
@@ -1155,10 +1421,7 @@ func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobReques
 	return err
 }
 
-// CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
-func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+func (c *gRPCClient) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1166,7 +1429,7 @@ func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStor
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateStoredInfoType[0:len(c.CallOptions.CreateStoredInfoType):len(c.CallOptions.CreateStoredInfoType)], opts...)
+	opts = append((*c.CallOptions).CreateStoredInfoType[0:len((*c.CallOptions).CreateStoredInfoType):len((*c.CallOptions).CreateStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1179,11 +1442,7 @@ func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStor
 	return resp, nil
 }
 
-// UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version
-// will continue to be used until the new version is ready.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
-func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+func (c *gRPCClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1191,7 +1450,7 @@ func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStor
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateStoredInfoType[0:len(c.CallOptions.UpdateStoredInfoType):len(c.CallOptions.UpdateStoredInfoType)], opts...)
+	opts = append((*c.CallOptions).UpdateStoredInfoType[0:len((*c.CallOptions).UpdateStoredInfoType):len((*c.CallOptions).UpdateStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1204,10 +1463,7 @@ func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStor
 	return resp, nil
 }
 
-// GetStoredInfoType gets a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
-func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
+func (c *gRPCClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1215,7 +1471,7 @@ func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetStoredInfoType[0:len(c.CallOptions.GetStoredInfoType):len(c.CallOptions.GetStoredInfoType)], opts...)
+	opts = append((*c.CallOptions).GetStoredInfoType[0:len((*c.CallOptions).GetStoredInfoType):len((*c.CallOptions).GetStoredInfoType)], opts...)
 	var resp *dlppb.StoredInfoType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1228,21 +1484,20 @@ func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfo
 	return resp, nil
 }
 
-// ListStoredInfoTypes lists stored infoTypes.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
-func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
+func (c *gRPCClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListStoredInfoTypes[0:len(c.CallOptions.ListStoredInfoTypes):len(c.CallOptions.ListStoredInfoTypes)], opts...)
+	opts = append((*c.CallOptions).ListStoredInfoTypes[0:len((*c.CallOptions).ListStoredInfoTypes):len((*c.CallOptions).ListStoredInfoTypes)], opts...)
 	it := &StoredInfoTypeIterator{}
 	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.StoredInfoType, string, error) {
-		var resp *dlppb.ListStoredInfoTypesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListStoredInfoTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1265,16 +1520,15 @@ func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredI
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteStoredInfoType deletes a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
-func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1282,7 +1536,7 @@ func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStor
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteStoredInfoType[0:len(c.CallOptions.DeleteStoredInfoType):len(c.CallOptions.DeleteStoredInfoType)], opts...)
+	opts = append((*c.CallOptions).DeleteStoredInfoType[0:len((*c.CallOptions).DeleteStoredInfoType):len((*c.CallOptions).DeleteStoredInfoType)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteStoredInfoType(ctx, req, settings.GRPC...)
@@ -1291,13 +1545,7 @@ func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStor
 	return err
 }
 
-// HybridInspectDlpJob inspect hybrid content and store findings to a job.
-// To review the findings inspect the job. Inspection will occur
-// asynchronously.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
-func (c *Client) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspectDlpJobRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
+func (c *gRPCClient) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspectDlpJobRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1305,7 +1553,7 @@ func (c *Client) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.HybridInspectDlpJob[0:len(c.CallOptions.HybridInspectDlpJob):len(c.CallOptions.HybridInspectDlpJob)], opts...)
+	opts = append((*c.CallOptions).HybridInspectDlpJob[0:len((*c.CallOptions).HybridInspectDlpJob):len((*c.CallOptions).HybridInspectDlpJob)], opts...)
 	var resp *dlppb.HybridInspectResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1318,12 +1566,7 @@ func (c *Client) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspe
 	return resp, nil
 }
 
-// FinishDlpJob finish a running hybrid DlpJob. Triggers the finalization steps and running
-// of any enabled actions that have not yet run.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
-func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -1331,7 +1574,7 @@ func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.FinishDlpJob[0:len(c.CallOptions.FinishDlpJob):len(c.CallOptions.FinishDlpJob)], opts...)
+	opts = append((*c.CallOptions).FinishDlpJob[0:len((*c.CallOptions).FinishDlpJob):len((*c.CallOptions).FinishDlpJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.FinishDlpJob(ctx, req, settings.GRPC...)

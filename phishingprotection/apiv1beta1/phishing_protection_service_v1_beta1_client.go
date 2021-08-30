@@ -39,12 +39,13 @@ type PhishingProtectionServiceV1Beta1CallOptions struct {
 	ReportPhishing []gax.CallOption
 }
 
-func defaultPhishingProtectionServiceV1Beta1ClientOptions() []option.ClientOption {
+func defaultPhishingProtectionServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("phishingprotection.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("phishingprotection.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -57,32 +58,85 @@ func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionSer
 	}
 }
 
+// internalPhishingProtectionServiceV1Beta1Client is an interface that defines the methods availaible from Phishing Protection API.
+type internalPhishingProtectionServiceV1Beta1Client interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ReportPhishing(context.Context, *phishingprotectionpb.ReportPhishingRequest, ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error)
+}
+
 // PhishingProtectionServiceV1Beta1Client is a client for interacting with Phishing Protection API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to report phishing URIs.
+type PhishingProtectionServiceV1Beta1Client struct {
+	// The internal transport-dependent client.
+	internalClient internalPhishingProtectionServiceV1Beta1Client
+
+	// The call options for this service.
+	CallOptions *PhishingProtectionServiceV1Beta1CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *PhishingProtectionServiceV1Beta1Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *PhishingProtectionServiceV1Beta1Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *PhishingProtectionServiceV1Beta1Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ReportPhishing reports a URI suspected of containing phishing content to be reviewed. Once
+// the report review is complete, its result can be found in the Cloud
+// Security Command Center findings dashboard for Phishing Protection. If the
+// result verifies the existence of malicious phishing content, the site will
+// be added the to Google’s Social Engineering
+// lists (at https://support.google.com/webmasters/answer/6350487/) in order to
+// protect users that could get exposed to this threat in the future.
+func (c *PhishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
+	return c.internalClient.ReportPhishing(ctx, req, opts...)
+}
+
+// phishingProtectionServiceV1Beta1GRPCClient is a client for interacting with Phishing Protection API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type PhishingProtectionServiceV1Beta1Client struct {
+type phishingProtectionServiceV1Beta1GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing PhishingProtectionServiceV1Beta1Client
+	CallOptions **PhishingProtectionServiceV1Beta1CallOptions
+
 	// The gRPC API client.
 	phishingProtectionServiceV1Beta1Client phishingprotectionpb.PhishingProtectionServiceV1Beta1Client
-
-	// The call options for this service.
-	CallOptions *PhishingProtectionServiceV1Beta1CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewPhishingProtectionServiceV1Beta1Client creates a new phishing protection service v1 beta1 client.
+// NewPhishingProtectionServiceV1Beta1Client creates a new phishing protection service v1 beta1 client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to report phishing URIs.
 func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (*PhishingProtectionServiceV1Beta1Client, error) {
-	clientOpts := defaultPhishingProtectionServiceV1Beta1ClientOptions()
-
+	clientOpts := defaultPhishingProtectionServiceV1Beta1GRPCClientOptions()
 	if newPhishingProtectionServiceV1Beta1ClientHook != nil {
 		hookOpts, err := newPhishingProtectionServiceV1Beta1ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -100,48 +154,44 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 	if err != nil {
 		return nil, err
 	}
-	c := &PhishingProtectionServiceV1Beta1Client{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultPhishingProtectionServiceV1Beta1CallOptions(),
+	client := PhishingProtectionServiceV1Beta1Client{CallOptions: defaultPhishingProtectionServiceV1Beta1CallOptions()}
 
+	c := &phishingProtectionServiceV1Beta1GRPCClient{
+		connPool:                               connPool,
+		disableDeadlines:                       disableDeadlines,
 		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
+		CallOptions:                            &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *PhishingProtectionServiceV1Beta1Client) Connection() *grpc.ClientConn {
+func (c *phishingProtectionServiceV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *PhishingProtectionServiceV1Beta1Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PhishingProtectionServiceV1Beta1Client) setGoogleClientInfo(keyval ...string) {
+func (c *phishingProtectionServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ReportPhishing reports a URI suspected of containing phishing content to be reviewed. Once
-// the report review is complete, its result can be found in the Cloud
-// Security Command Center findings dashboard for Phishing Protection. If the
-// result verifies the existence of malicious phishing content, the site will
-// be added the to Google’s Social Engineering
-// lists (at https://support.google.com/webmasters/answer/6350487/) in order to
-// protect users that could get exposed to this threat in the future.
-func (c *PhishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *phishingProtectionServiceV1Beta1GRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -149,7 +199,7 @@ func (c *PhishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReportPhishing[0:len(c.CallOptions.ReportPhishing):len(c.CallOptions.ReportPhishing)], opts...)
+	opts = append((*c.CallOptions).ReportPhishing[0:len((*c.CallOptions).ReportPhishing):len((*c.CallOptions).ReportPhishing)], opts...)
 	var resp *phishingprotectionpb.ReportPhishingResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

@@ -29,21 +29,23 @@ func ExampleNewApplicationsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleApplicationsClient_GetApplication() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetApplicationRequest.
 	}
 	resp, err := c.GetApplication(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleApplicationsClient_GetApplication() {
 }
 
 func ExampleApplicationsClient_CreateApplication() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.CreateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateApplicationRequest.
 	}
 	op, err := c.CreateApplication(ctx, req)
 	if err != nil {
@@ -79,16 +81,16 @@ func ExampleApplicationsClient_CreateApplication() {
 }
 
 func ExampleApplicationsClient_UpdateApplication() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateApplicationRequest.
 	}
 	op, err := c.UpdateApplication(ctx, req)
 	if err != nil {
@@ -104,16 +106,16 @@ func ExampleApplicationsClient_UpdateApplication() {
 }
 
 func ExampleApplicationsClient_RepairApplication() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.RepairApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#RepairApplicationRequest.
 	}
 	op, err := c.RepairApplication(ctx, req)
 	if err != nil {

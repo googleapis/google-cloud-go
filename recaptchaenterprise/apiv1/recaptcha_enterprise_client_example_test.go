@@ -30,21 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateAssessment() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleClient_CreateAssessment() {
 }
 
 func ExampleClient_AnnotateAssessment() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#AnnotateAssessmentRequest.
 	}
 	resp, err := c.AnnotateAssessment(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleClient_AnnotateAssessment() {
 }
 
 func ExampleClient_CreateKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.CreateKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateKeyRequest.
 	}
 	resp, err := c.CreateKey(ctx, req)
 	if err != nil {
@@ -95,17 +97,16 @@ func ExampleClient_CreateKey() {
 }
 
 func ExampleClient_ListKeys() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.ListKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListKeysRequest.
 	}
 	it := c.ListKeys(ctx, req)
 	for {
@@ -122,16 +123,16 @@ func ExampleClient_ListKeys() {
 }
 
 func ExampleClient_GetKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.GetKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetKeyRequest.
 	}
 	resp, err := c.GetKey(ctx, req)
 	if err != nil {
@@ -142,16 +143,16 @@ func ExampleClient_GetKey() {
 }
 
 func ExampleClient_UpdateKey() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.UpdateKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#UpdateKeyRequest.
 	}
 	resp, err := c.UpdateKey(ctx, req)
 	if err != nil {
@@ -167,9 +168,11 @@ func ExampleClient_DeleteKey() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.DeleteKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#DeleteKeyRequest.
 	}
 	err = c.DeleteKey(ctx, req)
 	if err != nil {

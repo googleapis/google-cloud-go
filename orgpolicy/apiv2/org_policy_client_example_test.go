@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListConstraints() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
 	}
 	it := c.ListConstraints(ctx, req)
 	for {
@@ -62,17 +63,16 @@ func ExampleClient_ListConstraints() {
 }
 
 func ExampleClient_ListPolicies() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {
@@ -89,16 +89,16 @@ func ExampleClient_ListPolicies() {
 }
 
 func ExampleClient_GetPolicy() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
@@ -109,16 +109,16 @@ func ExampleClient_GetPolicy() {
 }
 
 func ExampleClient_GetEffectivePolicy() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.GetEffectivePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetEffectivePolicyRequest.
 	}
 	resp, err := c.GetEffectivePolicy(ctx, req)
 	if err != nil {
@@ -129,16 +129,16 @@ func ExampleClient_GetEffectivePolicy() {
 }
 
 func ExampleClient_CreatePolicy() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#CreatePolicyRequest.
 	}
 	resp, err := c.CreatePolicy(ctx, req)
 	if err != nil {
@@ -149,16 +149,16 @@ func ExampleClient_CreatePolicy() {
 }
 
 func ExampleClient_UpdatePolicy() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#UpdatePolicyRequest.
 	}
 	resp, err := c.UpdatePolicy(ctx, req)
 	if err != nil {
@@ -174,9 +174,11 @@ func ExampleClient_DeletePolicy() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.DeletePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#DeletePolicyRequest.
 	}
 	err = c.DeletePolicy(ctx, req)
 	if err != nil {

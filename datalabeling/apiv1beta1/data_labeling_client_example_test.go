@@ -30,21 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateDataset() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateDatasetRequest.
 	}
 	resp, err := c.CreateDataset(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleClient_CreateDataset() {
 }
 
 func ExampleClient_GetDataset() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetDatasetRequest.
 	}
 	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
@@ -75,17 +77,16 @@ func ExampleClient_GetDataset() {
 }
 
 func ExampleClient_ListDatasets() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {
@@ -107,9 +108,11 @@ func ExampleClient_DeleteDataset() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteDatasetRequest.
 	}
 	err = c.DeleteDataset(ctx, req)
 	if err != nil {
@@ -118,16 +121,16 @@ func ExampleClient_DeleteDataset() {
 }
 
 func ExampleClient_ImportData() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ImportDataRequest.
 	}
 	op, err := c.ImportData(ctx, req)
 	if err != nil {
@@ -143,16 +146,16 @@ func ExampleClient_ImportData() {
 }
 
 func ExampleClient_ExportData() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ExportDataRequest.
 	}
 	op, err := c.ExportData(ctx, req)
 	if err != nil {
@@ -168,16 +171,16 @@ func ExampleClient_ExportData() {
 }
 
 func ExampleClient_GetDataItem() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetDataItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetDataItemRequest.
 	}
 	resp, err := c.GetDataItem(ctx, req)
 	if err != nil {
@@ -188,17 +191,16 @@ func ExampleClient_GetDataItem() {
 }
 
 func ExampleClient_ListDataItems() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListDataItemsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListDataItemsRequest.
 	}
 	it := c.ListDataItems(ctx, req)
 	for {
@@ -215,16 +217,16 @@ func ExampleClient_ListDataItems() {
 }
 
 func ExampleClient_GetAnnotatedDataset() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetAnnotatedDatasetRequest.
 	}
 	resp, err := c.GetAnnotatedDataset(ctx, req)
 	if err != nil {
@@ -235,17 +237,16 @@ func ExampleClient_GetAnnotatedDataset() {
 }
 
 func ExampleClient_ListAnnotatedDatasets() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListAnnotatedDatasetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListAnnotatedDatasetsRequest.
 	}
 	it := c.ListAnnotatedDatasets(ctx, req)
 	for {
@@ -267,9 +268,11 @@ func ExampleClient_DeleteAnnotatedDataset() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteAnnotatedDatasetRequest.
 	}
 	err = c.DeleteAnnotatedDataset(ctx, req)
 	if err != nil {
@@ -278,16 +281,16 @@ func ExampleClient_DeleteAnnotatedDataset() {
 }
 
 func ExampleClient_LabelImage() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.LabelImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelImageRequest.
 	}
 	op, err := c.LabelImage(ctx, req)
 	if err != nil {
@@ -303,16 +306,16 @@ func ExampleClient_LabelImage() {
 }
 
 func ExampleClient_LabelVideo() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.LabelVideoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelVideoRequest.
 	}
 	op, err := c.LabelVideo(ctx, req)
 	if err != nil {
@@ -328,16 +331,16 @@ func ExampleClient_LabelVideo() {
 }
 
 func ExampleClient_LabelText() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.LabelTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#LabelTextRequest.
 	}
 	op, err := c.LabelText(ctx, req)
 	if err != nil {
@@ -353,16 +356,16 @@ func ExampleClient_LabelText() {
 }
 
 func ExampleClient_GetExample() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetExampleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetExampleRequest.
 	}
 	resp, err := c.GetExample(ctx, req)
 	if err != nil {
@@ -373,17 +376,16 @@ func ExampleClient_GetExample() {
 }
 
 func ExampleClient_ListExamples() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListExamplesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListExamplesRequest.
 	}
 	it := c.ListExamples(ctx, req)
 	for {
@@ -400,16 +402,16 @@ func ExampleClient_ListExamples() {
 }
 
 func ExampleClient_CreateAnnotationSpecSet() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.CreateAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateAnnotationSpecSetRequest.
 	}
 	resp, err := c.CreateAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -420,16 +422,16 @@ func ExampleClient_CreateAnnotationSpecSet() {
 }
 
 func ExampleClient_GetAnnotationSpecSet() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetAnnotationSpecSetRequest.
 	}
 	resp, err := c.GetAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -440,17 +442,16 @@ func ExampleClient_GetAnnotationSpecSet() {
 }
 
 func ExampleClient_ListAnnotationSpecSets() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListAnnotationSpecSetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListAnnotationSpecSetsRequest.
 	}
 	it := c.ListAnnotationSpecSets(ctx, req)
 	for {
@@ -472,9 +473,11 @@ func ExampleClient_DeleteAnnotationSpecSet() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteAnnotationSpecSetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteAnnotationSpecSetRequest.
 	}
 	err = c.DeleteAnnotationSpecSet(ctx, req)
 	if err != nil {
@@ -483,16 +486,16 @@ func ExampleClient_DeleteAnnotationSpecSet() {
 }
 
 func ExampleClient_CreateInstruction() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.CreateInstructionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateInstructionRequest.
 	}
 	op, err := c.CreateInstruction(ctx, req)
 	if err != nil {
@@ -508,16 +511,16 @@ func ExampleClient_CreateInstruction() {
 }
 
 func ExampleClient_GetInstruction() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetInstructionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetInstructionRequest.
 	}
 	resp, err := c.GetInstruction(ctx, req)
 	if err != nil {
@@ -528,17 +531,16 @@ func ExampleClient_GetInstruction() {
 }
 
 func ExampleClient_ListInstructions() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListInstructionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListInstructionsRequest.
 	}
 	it := c.ListInstructions(ctx, req)
 	for {
@@ -560,9 +562,11 @@ func ExampleClient_DeleteInstruction() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteInstructionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteInstructionRequest.
 	}
 	err = c.DeleteInstruction(ctx, req)
 	if err != nil {
@@ -571,16 +575,16 @@ func ExampleClient_DeleteInstruction() {
 }
 
 func ExampleClient_GetEvaluation() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetEvaluationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetEvaluationRequest.
 	}
 	resp, err := c.GetEvaluation(ctx, req)
 	if err != nil {
@@ -591,17 +595,16 @@ func ExampleClient_GetEvaluation() {
 }
 
 func ExampleClient_SearchEvaluations() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.SearchEvaluationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#SearchEvaluationsRequest.
 	}
 	it := c.SearchEvaluations(ctx, req)
 	for {
@@ -618,17 +621,16 @@ func ExampleClient_SearchEvaluations() {
 }
 
 func ExampleClient_SearchExampleComparisons() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.SearchExampleComparisonsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#SearchExampleComparisonsRequest.
 	}
 	it := c.SearchExampleComparisons(ctx, req)
 	for {
@@ -645,16 +647,16 @@ func ExampleClient_SearchExampleComparisons() {
 }
 
 func ExampleClient_CreateEvaluationJob() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.CreateEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateEvaluationJobRequest.
 	}
 	resp, err := c.CreateEvaluationJob(ctx, req)
 	if err != nil {
@@ -665,16 +667,16 @@ func ExampleClient_CreateEvaluationJob() {
 }
 
 func ExampleClient_UpdateEvaluationJob() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.UpdateEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#UpdateEvaluationJobRequest.
 	}
 	resp, err := c.UpdateEvaluationJob(ctx, req)
 	if err != nil {
@@ -685,16 +687,16 @@ func ExampleClient_UpdateEvaluationJob() {
 }
 
 func ExampleClient_GetEvaluationJob() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetEvaluationJobRequest.
 	}
 	resp, err := c.GetEvaluationJob(ctx, req)
 	if err != nil {
@@ -710,9 +712,11 @@ func ExampleClient_PauseEvaluationJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.PauseEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#PauseEvaluationJobRequest.
 	}
 	err = c.PauseEvaluationJob(ctx, req)
 	if err != nil {
@@ -726,9 +730,11 @@ func ExampleClient_ResumeEvaluationJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ResumeEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ResumeEvaluationJobRequest.
 	}
 	err = c.ResumeEvaluationJob(ctx, req)
 	if err != nil {
@@ -742,9 +748,11 @@ func ExampleClient_DeleteEvaluationJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#DeleteEvaluationJobRequest.
 	}
 	err = c.DeleteEvaluationJob(ctx, req)
 	if err != nil {
@@ -753,17 +761,16 @@ func ExampleClient_DeleteEvaluationJob() {
 }
 
 func ExampleClient_ListEvaluationJobs() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ListEvaluationJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#ListEvaluationJobsRequest.
 	}
 	it := c.ListEvaluationJobs(ctx, req)
 	for {

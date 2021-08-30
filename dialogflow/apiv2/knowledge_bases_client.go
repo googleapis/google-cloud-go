@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newKnowledgeBasesClientHook clientHook
@@ -46,12 +46,13 @@ type KnowledgeBasesCallOptions struct {
 	UpdateKnowledgeBase []gax.CallOption
 }
 
-func defaultKnowledgeBasesClientOptions() []option.ClientOption {
+func defaultKnowledgeBasesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -118,32 +119,103 @@ func defaultKnowledgeBasesCallOptions() *KnowledgeBasesCallOptions {
 	}
 }
 
+// internalKnowledgeBasesClient is an interface that defines the methods availaible from Dialogflow API.
+type internalKnowledgeBasesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListKnowledgeBases(context.Context, *dialogflowpb.ListKnowledgeBasesRequest, ...gax.CallOption) *KnowledgeBaseIterator
+	GetKnowledgeBase(context.Context, *dialogflowpb.GetKnowledgeBaseRequest, ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error)
+	CreateKnowledgeBase(context.Context, *dialogflowpb.CreateKnowledgeBaseRequest, ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error)
+	DeleteKnowledgeBase(context.Context, *dialogflowpb.DeleteKnowledgeBaseRequest, ...gax.CallOption) error
+	UpdateKnowledgeBase(context.Context, *dialogflowpb.UpdateKnowledgeBaseRequest, ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error)
+}
+
 // KnowledgeBasesClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing KnowledgeBases.
+type KnowledgeBasesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalKnowledgeBasesClient
+
+	// The call options for this service.
+	CallOptions *KnowledgeBasesCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *KnowledgeBasesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *KnowledgeBasesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *KnowledgeBasesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListKnowledgeBases returns the list of all knowledge bases of the specified agent.
+func (c *KnowledgeBasesClient) ListKnowledgeBases(ctx context.Context, req *dialogflowpb.ListKnowledgeBasesRequest, opts ...gax.CallOption) *KnowledgeBaseIterator {
+	return c.internalClient.ListKnowledgeBases(ctx, req, opts...)
+}
+
+// GetKnowledgeBase retrieves the specified knowledge base.
+func (c *KnowledgeBasesClient) GetKnowledgeBase(ctx context.Context, req *dialogflowpb.GetKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+	return c.internalClient.GetKnowledgeBase(ctx, req, opts...)
+}
+
+// CreateKnowledgeBase creates a knowledge base.
+func (c *KnowledgeBasesClient) CreateKnowledgeBase(ctx context.Context, req *dialogflowpb.CreateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+	return c.internalClient.CreateKnowledgeBase(ctx, req, opts...)
+}
+
+// DeleteKnowledgeBase deletes the specified knowledge base.
+func (c *KnowledgeBasesClient) DeleteKnowledgeBase(ctx context.Context, req *dialogflowpb.DeleteKnowledgeBaseRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteKnowledgeBase(ctx, req, opts...)
+}
+
+// UpdateKnowledgeBase updates the specified knowledge base.
+func (c *KnowledgeBasesClient) UpdateKnowledgeBase(ctx context.Context, req *dialogflowpb.UpdateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+	return c.internalClient.UpdateKnowledgeBase(ctx, req, opts...)
+}
+
+// knowledgeBasesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type KnowledgeBasesClient struct {
+type knowledgeBasesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing KnowledgeBasesClient
+	CallOptions **KnowledgeBasesCallOptions
+
 	// The gRPC API client.
 	knowledgeBasesClient dialogflowpb.KnowledgeBasesClient
-
-	// The call options for this service.
-	CallOptions *KnowledgeBasesCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewKnowledgeBasesClient creates a new knowledge bases client.
+// NewKnowledgeBasesClient creates a new knowledge bases client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing KnowledgeBases.
 func NewKnowledgeBasesClient(ctx context.Context, opts ...option.ClientOption) (*KnowledgeBasesClient, error) {
-	clientOpts := defaultKnowledgeBasesClientOptions()
-
+	clientOpts := defaultKnowledgeBasesGRPCClientOptions()
 	if newKnowledgeBasesClientHook != nil {
 		hookOpts, err := newKnowledgeBasesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,53 +233,57 @@ func NewKnowledgeBasesClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &KnowledgeBasesClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultKnowledgeBasesCallOptions(),
+	client := KnowledgeBasesClient{CallOptions: defaultKnowledgeBasesCallOptions()}
 
+	c := &knowledgeBasesGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		knowledgeBasesClient: dialogflowpb.NewKnowledgeBasesClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *KnowledgeBasesClient) Connection() *grpc.ClientConn {
+func (c *knowledgeBasesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *KnowledgeBasesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *KnowledgeBasesClient) setGoogleClientInfo(keyval ...string) {
+func (c *knowledgeBasesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListKnowledgeBases returns the list of all knowledge bases of the specified agent.
-func (c *KnowledgeBasesClient) ListKnowledgeBases(ctx context.Context, req *dialogflowpb.ListKnowledgeBasesRequest, opts ...gax.CallOption) *KnowledgeBaseIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *knowledgeBasesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *knowledgeBasesGRPCClient) ListKnowledgeBases(ctx context.Context, req *dialogflowpb.ListKnowledgeBasesRequest, opts ...gax.CallOption) *KnowledgeBaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListKnowledgeBases[0:len(c.CallOptions.ListKnowledgeBases):len(c.CallOptions.ListKnowledgeBases)], opts...)
+	opts = append((*c.CallOptions).ListKnowledgeBases[0:len((*c.CallOptions).ListKnowledgeBases):len((*c.CallOptions).ListKnowledgeBases)], opts...)
 	it := &KnowledgeBaseIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListKnowledgeBasesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.KnowledgeBase, string, error) {
-		var resp *dialogflowpb.ListKnowledgeBasesResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListKnowledgeBasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,14 +306,15 @@ func (c *KnowledgeBasesClient) ListKnowledgeBases(ctx context.Context, req *dial
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetKnowledgeBase retrieves the specified knowledge base.
-func (c *KnowledgeBasesClient) GetKnowledgeBase(ctx context.Context, req *dialogflowpb.GetKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+func (c *knowledgeBasesGRPCClient) GetKnowledgeBase(ctx context.Context, req *dialogflowpb.GetKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -245,7 +322,7 @@ func (c *KnowledgeBasesClient) GetKnowledgeBase(ctx context.Context, req *dialog
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetKnowledgeBase[0:len(c.CallOptions.GetKnowledgeBase):len(c.CallOptions.GetKnowledgeBase)], opts...)
+	opts = append((*c.CallOptions).GetKnowledgeBase[0:len((*c.CallOptions).GetKnowledgeBase):len((*c.CallOptions).GetKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -258,8 +335,7 @@ func (c *KnowledgeBasesClient) GetKnowledgeBase(ctx context.Context, req *dialog
 	return resp, nil
 }
 
-// CreateKnowledgeBase creates a knowledge base.
-func (c *KnowledgeBasesClient) CreateKnowledgeBase(ctx context.Context, req *dialogflowpb.CreateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+func (c *knowledgeBasesGRPCClient) CreateKnowledgeBase(ctx context.Context, req *dialogflowpb.CreateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -267,7 +343,7 @@ func (c *KnowledgeBasesClient) CreateKnowledgeBase(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateKnowledgeBase[0:len(c.CallOptions.CreateKnowledgeBase):len(c.CallOptions.CreateKnowledgeBase)], opts...)
+	opts = append((*c.CallOptions).CreateKnowledgeBase[0:len((*c.CallOptions).CreateKnowledgeBase):len((*c.CallOptions).CreateKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,8 +356,7 @@ func (c *KnowledgeBasesClient) CreateKnowledgeBase(ctx context.Context, req *dia
 	return resp, nil
 }
 
-// DeleteKnowledgeBase deletes the specified knowledge base.
-func (c *KnowledgeBasesClient) DeleteKnowledgeBase(ctx context.Context, req *dialogflowpb.DeleteKnowledgeBaseRequest, opts ...gax.CallOption) error {
+func (c *knowledgeBasesGRPCClient) DeleteKnowledgeBase(ctx context.Context, req *dialogflowpb.DeleteKnowledgeBaseRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -289,7 +364,7 @@ func (c *KnowledgeBasesClient) DeleteKnowledgeBase(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteKnowledgeBase[0:len(c.CallOptions.DeleteKnowledgeBase):len(c.CallOptions.DeleteKnowledgeBase)], opts...)
+	opts = append((*c.CallOptions).DeleteKnowledgeBase[0:len((*c.CallOptions).DeleteKnowledgeBase):len((*c.CallOptions).DeleteKnowledgeBase)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.knowledgeBasesClient.DeleteKnowledgeBase(ctx, req, settings.GRPC...)
@@ -298,8 +373,7 @@ func (c *KnowledgeBasesClient) DeleteKnowledgeBase(ctx context.Context, req *dia
 	return err
 }
 
-// UpdateKnowledgeBase updates the specified knowledge base.
-func (c *KnowledgeBasesClient) UpdateKnowledgeBase(ctx context.Context, req *dialogflowpb.UpdateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
+func (c *knowledgeBasesGRPCClient) UpdateKnowledgeBase(ctx context.Context, req *dialogflowpb.UpdateKnowledgeBaseRequest, opts ...gax.CallOption) (*dialogflowpb.KnowledgeBase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -307,7 +381,7 @@ func (c *KnowledgeBasesClient) UpdateKnowledgeBase(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "knowledge_base.name", url.QueryEscape(req.GetKnowledgeBase().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateKnowledgeBase[0:len(c.CallOptions.UpdateKnowledgeBase):len(c.CallOptions.UpdateKnowledgeBase)], opts...)
+	opts = append((*c.CallOptions).UpdateKnowledgeBase[0:len((*c.CallOptions).UpdateKnowledgeBase):len((*c.CallOptions).UpdateKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

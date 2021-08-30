@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 package main
@@ -26,12 +27,20 @@ import (
 	"cloud.google.com/go/internal/gapicgen/git"
 )
 
-func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, githubEmail string) error {
+type botConfig struct {
+	githubAccessToken string
+	githubUsername    string
+	githubName        string
+	githubEmail       string
+	forceAll          bool
+}
+
+func genBot(ctx context.Context, c botConfig) error {
 	for k, v := range map[string]string{
-		"githubAccessToken": githubAccessToken,
-		"githubUsername":    githubUsername,
-		"githubName":        githubName,
-		"githubEmail":       githubEmail,
+		"githubAccessToken": c.githubAccessToken,
+		"githubUsername":    c.githubUsername,
+		"githubName":        c.githubName,
+		"githubEmail":       c.githubEmail,
 	} {
 		if v == "" {
 			log.Printf("missing or empty value for required flag --%s\n", k)
@@ -40,7 +49,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	}
 
 	// Setup the client and git environment.
-	githubClient, err := git.NewGithubClient(ctx, githubUsername, githubName, githubEmail, githubAccessToken)
+	githubClient, err := git.NewGithubClient(ctx, c.githubUsername, c.githubName, c.githubEmail, c.githubAccessToken)
 	if err != nil {
 		return err
 	}
@@ -73,7 +82,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 		return nil
 	}
 
-	return generate(ctx, githubClient)
+	return generate(ctx, githubClient, c.forceAll)
 }
 
 // hasCreatedPRToday checks if the created time of a PR is from today.

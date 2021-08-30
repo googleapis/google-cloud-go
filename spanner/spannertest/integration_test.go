@@ -748,9 +748,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello"`,
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B')`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello")}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
@@ -817,11 +817,33 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			`SELECT str FROM SomeStrings WHERE str LIKE "a%"`,
+			nil,
+			[][]interface{}{
+				{"afoo"},
+				{"abar"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE Name LIKE "%e"`,
+			nil,
+			[][]interface{}{
+				{"George"},
+			},
+		},
+		{
 			`SELECT Name FROM Staff WHERE Name LIKE "J%k" OR Name LIKE "_am"`,
 			nil,
 			[][]interface{}{
 				{"Jack"},
 				{"Sam"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE STARTS_WITH(Name, 'Ja')`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
 			},
 		},
 		{
@@ -1143,6 +1165,62 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				{"Jack"},
 				{"Daniel"},
+			},
+		},
+		{
+			`SELECT MIN(Name), MAX(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel", "Teal'c"},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, "George", "Jack", int64(2)},
+				{false, "Daniel", "Sam", int64(2)},
+				{true, "Teal'c", "Teal'c", int64(1)},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, Name FROM Staff WHERE Tenure/2 > 5`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false, "Daniel"},
+			},
+		},
+		{
+			`SELECT Tenure/2, MAX(Cool) FROM Staff WHERE Tenure/2 > 5 GROUP BY Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, MIN(Name) FROM Staff WHERE Tenure/2 >= 4 GROUP BY Tenure/2, Cool ORDER BY Cool DESC, Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(4), true, "Teal'c"},
+				{float64(4.5), false, "Sam"},
+				{float64(5.5), false, "Daniel"},
+				{float64(5), nil, "Jack"},
+			},
+		},
+		{
+			`SELECT MIN(Cool), MAX(Cool), MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{false, true, int64(6), int64(11), 1.73, 1.91, "Daniel", "Teal'c", int64(5)},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, int64(6), int64(10), 1.73, 1.85, "George", "Jack", int64(2)},
+				{false, int64(9), int64(11), 1.75, 1.83, "Daniel", "Sam", int64(2)},
+				{true, int64(8), int64(8), 1.91, 1.91, "Teal'c", "Teal'c", int64(1)},
 			},
 		},
 	}

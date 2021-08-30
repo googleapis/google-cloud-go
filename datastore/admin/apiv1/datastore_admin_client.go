@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDatastoreAdminClientHook clientHook
@@ -50,12 +50,13 @@ type DatastoreAdminCallOptions struct {
 	ListIndexes    []gax.CallOption
 }
 
-func defaultDatastoreAdminClientOptions() []option.ClientOption {
+func defaultDatastoreAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datastore.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("datastore.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://datastore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -95,32 +96,225 @@ func defaultDatastoreAdminCallOptions() *DatastoreAdminCallOptions {
 	}
 }
 
+// internalDatastoreAdminClient is an interface that defines the methods availaible from Cloud Datastore API.
+type internalDatastoreAdminClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ExportEntities(context.Context, *adminpb.ExportEntitiesRequest, ...gax.CallOption) (*ExportEntitiesOperation, error)
+	ExportEntitiesOperation(name string) *ExportEntitiesOperation
+	ImportEntities(context.Context, *adminpb.ImportEntitiesRequest, ...gax.CallOption) (*ImportEntitiesOperation, error)
+	ImportEntitiesOperation(name string) *ImportEntitiesOperation
+	CreateIndex(context.Context, *adminpb.CreateIndexRequest, ...gax.CallOption) (*CreateIndexOperation, error)
+	CreateIndexOperation(name string) *CreateIndexOperation
+	DeleteIndex(context.Context, *adminpb.DeleteIndexRequest, ...gax.CallOption) (*DeleteIndexOperation, error)
+	DeleteIndexOperation(name string) *DeleteIndexOperation
+	GetIndex(context.Context, *adminpb.GetIndexRequest, ...gax.CallOption) (*adminpb.Index, error)
+	ListIndexes(context.Context, *adminpb.ListIndexesRequest, ...gax.CallOption) *IndexIterator
+}
+
 // DatastoreAdminClient is a client for interacting with Cloud Datastore API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Google Cloud Datastore Admin API
+//
+// The Datastore Admin API provides several admin services for Cloud Datastore.
+//
+// ConceptsProject, namespace, kind, and entity as defined in the Google Cloud Datastore
+// API.
+//
+// Operation: An Operation represents work being performed in the background.
+//
+// EntityFilter: Allows specifying a subset of entities in a project. This is
+// specified as a combination of kinds and namespaces (either or both of which
+// may be all).
+//
+// ServicesExport/ImportThe Export/Import service provides the ability to copy all or a subset of
+// entities to/from Google Cloud Storage.
+//
+// Exported data may be imported into Cloud Datastore for any Google Cloud
+// Platform project. It is not restricted to the export source project. It is
+// possible to export from one project and then import into another.
+//
+// Exported data can also be loaded into Google BigQuery for analysis.
+//
+// Exports and imports are performed asynchronously. An Operation resource is
+// created for each export/import. The state (including any errors encountered)
+// of the export/import may be queried via the Operation resource.
+//
+// IndexThe index service manages Cloud Datastore composite indexes.
+//
+// Index creation and deletion are performed asynchronously.
+// An Operation resource is created for each such asynchronous operation.
+// The state of the operation (including any errors encountered)
+// may be queried via the Operation resource.
+//
+// OperationThe Operations collection provides a record of actions performed for the
+// specified project (including any operations in progress). Operations are not
+// created directly but through calls on other collections or resources.
+//
+// An operation that is not yet done may be cancelled. The request to cancel is
+// asynchronous and the operation may continue to run for some time after the
+// request to cancel is made.
+//
+// An operation that is done may be deleted so that it is no longer listed as
+// part of the Operation collection.
+//
+// ListOperations returns all pending operations, but not completed operations.
+//
+// Operations are created by service DatastoreAdmin,
+// but are accessed via service google.longrunning.Operations.
+type DatastoreAdminClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDatastoreAdminClient
+
+	// The call options for this service.
+	CallOptions *DatastoreAdminCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DatastoreAdminClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DatastoreAdminClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DatastoreAdminClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ExportEntities exports a copy of all or a subset of entities from Google Cloud Datastore
+// to another storage system, such as Google Cloud Storage. Recent updates to
+// entities may not be reflected in the export. The export occurs in the
+// background and its progress can be monitored and managed via the
+// Operation resource that is created. The output of an export may only be
+// used once the associated operation is done. If an export operation is
+// cancelled before completion it may leave partial data behind in Google
+// Cloud Storage.
+func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.ExportEntitiesRequest, opts ...gax.CallOption) (*ExportEntitiesOperation, error) {
+	return c.internalClient.ExportEntities(ctx, req, opts...)
+}
+
+// ExportEntitiesOperation returns a new ExportEntitiesOperation from a given name.
+// The name must be that of a previously created ExportEntitiesOperation, possibly from a different process.
+func (c *DatastoreAdminClient) ExportEntitiesOperation(name string) *ExportEntitiesOperation {
+	return c.internalClient.ExportEntitiesOperation(name)
+}
+
+// ImportEntities imports entities into Google Cloud Datastore. Existing entities with the
+// same key are overwritten. The import occurs in the background and its
+// progress can be monitored and managed via the Operation resource that is
+// created. If an ImportEntities operation is cancelled, it is possible
+// that a subset of the data has already been imported to Cloud Datastore.
+func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.ImportEntitiesRequest, opts ...gax.CallOption) (*ImportEntitiesOperation, error) {
+	return c.internalClient.ImportEntities(ctx, req, opts...)
+}
+
+// ImportEntitiesOperation returns a new ImportEntitiesOperation from a given name.
+// The name must be that of a previously created ImportEntitiesOperation, possibly from a different process.
+func (c *DatastoreAdminClient) ImportEntitiesOperation(name string) *ImportEntitiesOperation {
+	return c.internalClient.ImportEntitiesOperation(name)
+}
+
+// CreateIndex creates the specified index.
+// A newly created index’s initial state is CREATING. On completion of the
+// returned google.longrunning.Operation, the state will be READY.
+// If the index already exists, the call will return an ALREADY_EXISTS
+// status.
+//
+// During index creation, the process could result in an error, in which
+// case the index will move to the ERROR state. The process can be recovered
+// by fixing the data that caused the error, removing the index with
+// delete, then
+// re-creating the index with [create]
+// [google.datastore.admin.v1.DatastoreAdmin.CreateIndex].
+//
+// Indexes with a single property cannot be created.
+func (c *DatastoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+	return c.internalClient.CreateIndex(ctx, req, opts...)
+}
+
+// CreateIndexOperation returns a new CreateIndexOperation from a given name.
+// The name must be that of a previously created CreateIndexOperation, possibly from a different process.
+func (c *DatastoreAdminClient) CreateIndexOperation(name string) *CreateIndexOperation {
+	return c.internalClient.CreateIndexOperation(name)
+}
+
+// DeleteIndex deletes an existing index.
+// An index can only be deleted if it is in a READY or ERROR state. On
+// successful execution of the request, the index will be in a DELETING
+// state. And on completion of the
+// returned google.longrunning.Operation, the index will be removed.
+//
+// During index deletion, the process could result in an error, in which
+// case the index will move to the ERROR state. The process can be recovered
+// by fixing the data that caused the error, followed by calling
+// delete again.
+func (c *DatastoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
+	return c.internalClient.DeleteIndex(ctx, req, opts...)
+}
+
+// DeleteIndexOperation returns a new DeleteIndexOperation from a given name.
+// The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
+func (c *DatastoreAdminClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
+	return c.internalClient.DeleteIndexOperation(name)
+}
+
+// GetIndex gets an index.
+func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
+	return c.internalClient.GetIndex(ctx, req, opts...)
+}
+
+// ListIndexes lists the indexes that match the specified filters.  Datastore uses an
+// eventually consistent query to fetch the list of indexes and may
+// occasionally return stale results.
+func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
+	return c.internalClient.ListIndexes(ctx, req, opts...)
+}
+
+// datastoreAdminGRPCClient is a client for interacting with Cloud Datastore API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DatastoreAdminClient struct {
+type datastoreAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DatastoreAdminClient
+	CallOptions **DatastoreAdminCallOptions
+
 	// The gRPC API client.
 	datastoreAdminClient adminpb.DatastoreAdminClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DatastoreAdminCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDatastoreAdminClient creates a new datastore admin client.
+// NewDatastoreAdminClient creates a new datastore admin client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Google Cloud Datastore Admin API
 //
@@ -171,8 +365,7 @@ type DatastoreAdminClient struct {
 // Operations are created by service DatastoreAdmin,
 // but are accessed via service google.longrunning.Operations.
 func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatastoreAdminClient, error) {
-	clientOpts := defaultDatastoreAdminClientOptions()
-
+	clientOpts := defaultDatastoreAdminGRPCClientOptions()
 	if newDatastoreAdminClientHook != nil {
 		hookOpts, err := newDatastoreAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -190,16 +383,19 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &DatastoreAdminClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDatastoreAdminCallOptions(),
+	client := DatastoreAdminClient{CallOptions: defaultDatastoreAdminCallOptions()}
 
+	c := &datastoreAdminGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		datastoreAdminClient: adminpb.NewDatastoreAdminClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -209,40 +405,33 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DatastoreAdminClient) Connection() *grpc.ClientConn {
+func (c *datastoreAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DatastoreAdminClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DatastoreAdminClient) setGoogleClientInfo(keyval ...string) {
+func (c *datastoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ExportEntities exports a copy of all or a subset of entities from Google Cloud Datastore
-// to another storage system, such as Google Cloud Storage. Recent updates to
-// entities may not be reflected in the export. The export occurs in the
-// background and its progress can be monitored and managed via the
-// Operation resource that is created. The output of an export may only be
-// used once the associated operation is done. If an export operation is
-// cancelled before completion it may leave partial data behind in Google
-// Cloud Storage.
-func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.ExportEntitiesRequest, opts ...gax.CallOption) (*ExportEntitiesOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *datastoreAdminGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *datastoreAdminGRPCClient) ExportEntities(ctx context.Context, req *adminpb.ExportEntitiesRequest, opts ...gax.CallOption) (*ExportEntitiesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -250,7 +439,7 @@ func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportEntities[0:len(c.CallOptions.ExportEntities):len(c.CallOptions.ExportEntities)], opts...)
+	opts = append((*c.CallOptions).ExportEntities[0:len((*c.CallOptions).ExportEntities):len((*c.CallOptions).ExportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -261,16 +450,11 @@ func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.
 		return nil, err
 	}
 	return &ExportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ImportEntities imports entities into Google Cloud Datastore. Existing entities with the
-// same key are overwritten. The import occurs in the background and its
-// progress can be monitored and managed via the Operation resource that is
-// created. If an ImportEntities operation is cancelled, it is possible
-// that a subset of the data has already been imported to Cloud Datastore.
-func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.ImportEntitiesRequest, opts ...gax.CallOption) (*ImportEntitiesOperation, error) {
+func (c *datastoreAdminGRPCClient) ImportEntities(ctx context.Context, req *adminpb.ImportEntitiesRequest, opts ...gax.CallOption) (*ImportEntitiesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -278,7 +462,7 @@ func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportEntities[0:len(c.CallOptions.ImportEntities):len(c.CallOptions.ImportEntities)], opts...)
+	opts = append((*c.CallOptions).ImportEntities[0:len((*c.CallOptions).ImportEntities):len((*c.CallOptions).ImportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -289,25 +473,11 @@ func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.
 		return nil, err
 	}
 	return &ImportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// CreateIndex creates the specified index.
-// A newly created index’s initial state is CREATING. On completion of the
-// returned google.longrunning.Operation, the state will be READY.
-// If the index already exists, the call will return an ALREADY_EXISTS
-// status.
-//
-// During index creation, the process could result in an error, in which
-// case the index will move to the ERROR state. The process can be recovered
-// by fixing the data that caused the error, removing the index with
-// delete, then
-// re-creating the index with [create]
-// [google.datastore.admin.v1.DatastoreAdmin.CreateIndex].
-//
-// Indexes with a single property cannot be created.
-func (c *DatastoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+func (c *datastoreAdminGRPCClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -315,7 +485,7 @@ func (c *DatastoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.Cre
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateIndex[0:len(c.CallOptions.CreateIndex):len(c.CallOptions.CreateIndex)], opts...)
+	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -326,21 +496,11 @@ func (c *DatastoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.Cre
 		return nil, err
 	}
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteIndex deletes an existing index.
-// An index can only be deleted if it is in a READY or ERROR state. On
-// successful execution of the request, the index will be in a DELETING
-// state. And on completion of the
-// returned google.longrunning.Operation, the index will be removed.
-//
-// During index deletion, the process could result in an error, in which
-// case the index will move to the ERROR state. The process can be recovered
-// by fixing the data that caused the error, followed by calling
-// delete again.
-func (c *DatastoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
+func (c *datastoreAdminGRPCClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -348,7 +508,7 @@ func (c *DatastoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.Del
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteIndex[0:len(c.CallOptions.DeleteIndex):len(c.CallOptions.DeleteIndex)], opts...)
+	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -359,12 +519,11 @@ func (c *DatastoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.Del
 		return nil, err
 	}
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetIndex gets an index.
-func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
+func (c *datastoreAdminGRPCClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -372,7 +531,7 @@ func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetInd
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIndex[0:len(c.CallOptions.GetIndex):len(c.CallOptions.GetIndex)], opts...)
+	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -385,21 +544,20 @@ func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetInd
 	return resp, nil
 }
 
-// ListIndexes lists the indexes that match the specified filters.  Datastore uses an
-// eventually consistent query to fetch the list of indexes and may
-// occasionally return stale results.
-func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
+func (c *datastoreAdminGRPCClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListIndexes[0:len(c.CallOptions.ListIndexes):len(c.CallOptions.ListIndexes)], opts...)
+	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
 	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Index, string, error) {
-		var resp *adminpb.ListIndexesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListIndexesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,9 +580,11 @@ func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -435,9 +595,9 @@ type CreateIndexOperation struct {
 
 // CreateIndexOperation returns a new CreateIndexOperation from a given name.
 // The name must be that of a previously created CreateIndexOperation, possibly from a different process.
-func (c *DatastoreAdminClient) CreateIndexOperation(name string) *CreateIndexOperation {
+func (c *datastoreAdminGRPCClient) CreateIndexOperation(name string) *CreateIndexOperation {
 	return &CreateIndexOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -504,9 +664,9 @@ type DeleteIndexOperation struct {
 
 // DeleteIndexOperation returns a new DeleteIndexOperation from a given name.
 // The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
-func (c *DatastoreAdminClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
+func (c *datastoreAdminGRPCClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
 	return &DeleteIndexOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -573,9 +733,9 @@ type ExportEntitiesOperation struct {
 
 // ExportEntitiesOperation returns a new ExportEntitiesOperation from a given name.
 // The name must be that of a previously created ExportEntitiesOperation, possibly from a different process.
-func (c *DatastoreAdminClient) ExportEntitiesOperation(name string) *ExportEntitiesOperation {
+func (c *datastoreAdminGRPCClient) ExportEntitiesOperation(name string) *ExportEntitiesOperation {
 	return &ExportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -642,9 +802,9 @@ type ImportEntitiesOperation struct {
 
 // ImportEntitiesOperation returns a new ImportEntitiesOperation from a given name.
 // The name must be that of a previously created ImportEntitiesOperation, possibly from a different process.
-func (c *DatastoreAdminClient) ImportEntitiesOperation(name string) *ImportEntitiesOperation {
+func (c *datastoreAdminGRPCClient) ImportEntitiesOperation(name string) *ImportEntitiesOperation {
 	return &ImportEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

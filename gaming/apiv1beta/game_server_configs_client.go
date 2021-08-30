@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGameServerConfigsClientHook clientHook
@@ -48,12 +48,13 @@ type GameServerConfigsCallOptions struct {
 	DeleteGameServerConfig []gax.CallOption
 }
 
-func defaultGameServerConfigsClientOptions() []option.ClientOption {
+func defaultGameServerConfigsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -89,37 +90,125 @@ func defaultGameServerConfigsCallOptions() *GameServerConfigsCallOptions {
 	}
 }
 
+// internalGameServerConfigsClient is an interface that defines the methods availaible from Game Services API.
+type internalGameServerConfigsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListGameServerConfigs(context.Context, *gamingpb.ListGameServerConfigsRequest, ...gax.CallOption) *GameServerConfigIterator
+	GetGameServerConfig(context.Context, *gamingpb.GetGameServerConfigRequest, ...gax.CallOption) (*gamingpb.GameServerConfig, error)
+	CreateGameServerConfig(context.Context, *gamingpb.CreateGameServerConfigRequest, ...gax.CallOption) (*CreateGameServerConfigOperation, error)
+	CreateGameServerConfigOperation(name string) *CreateGameServerConfigOperation
+	DeleteGameServerConfig(context.Context, *gamingpb.DeleteGameServerConfigRequest, ...gax.CallOption) (*DeleteGameServerConfigOperation, error)
+	DeleteGameServerConfigOperation(name string) *DeleteGameServerConfigOperation
+}
+
 // GameServerConfigsClient is a client for interacting with Game Services API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The game server config configures the game servers in an Agones fleet.
+type GameServerConfigsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalGameServerConfigsClient
+
+	// The call options for this service.
+	CallOptions *GameServerConfigsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *GameServerConfigsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *GameServerConfigsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *GameServerConfigsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListGameServerConfigs lists game server configs in a given project, location, and game server
+// deployment.
+func (c *GameServerConfigsClient) ListGameServerConfigs(ctx context.Context, req *gamingpb.ListGameServerConfigsRequest, opts ...gax.CallOption) *GameServerConfigIterator {
+	return c.internalClient.ListGameServerConfigs(ctx, req, opts...)
+}
+
+// GetGameServerConfig gets details of a single game server config.
+func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *gamingpb.GetGameServerConfigRequest, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
+	return c.internalClient.GetGameServerConfig(ctx, req, opts...)
+}
+
+// CreateGameServerConfig creates a new game server config in a given project, location, and game
+// server deployment. Game server configs are immutable, and are not applied
+// until referenced in the game server deployment rollout resource.
+func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, req *gamingpb.CreateGameServerConfigRequest, opts ...gax.CallOption) (*CreateGameServerConfigOperation, error) {
+	return c.internalClient.CreateGameServerConfig(ctx, req, opts...)
+}
+
+// CreateGameServerConfigOperation returns a new CreateGameServerConfigOperation from a given name.
+// The name must be that of a previously created CreateGameServerConfigOperation, possibly from a different process.
+func (c *GameServerConfigsClient) CreateGameServerConfigOperation(name string) *CreateGameServerConfigOperation {
+	return c.internalClient.CreateGameServerConfigOperation(name)
+}
+
+// DeleteGameServerConfig deletes a single game server config. The deletion will fail if the game
+// server config is referenced in a game server deployment rollout.
+func (c *GameServerConfigsClient) DeleteGameServerConfig(ctx context.Context, req *gamingpb.DeleteGameServerConfigRequest, opts ...gax.CallOption) (*DeleteGameServerConfigOperation, error) {
+	return c.internalClient.DeleteGameServerConfig(ctx, req, opts...)
+}
+
+// DeleteGameServerConfigOperation returns a new DeleteGameServerConfigOperation from a given name.
+// The name must be that of a previously created DeleteGameServerConfigOperation, possibly from a different process.
+func (c *GameServerConfigsClient) DeleteGameServerConfigOperation(name string) *DeleteGameServerConfigOperation {
+	return c.internalClient.DeleteGameServerConfigOperation(name)
+}
+
+// gameServerConfigsGRPCClient is a client for interacting with Game Services API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GameServerConfigsClient struct {
+type gameServerConfigsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing GameServerConfigsClient
+	CallOptions **GameServerConfigsCallOptions
+
 	// The gRPC API client.
 	gameServerConfigsClient gamingpb.GameServerConfigsServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *GameServerConfigsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewGameServerConfigsClient creates a new game server configs service client.
+// NewGameServerConfigsClient creates a new game server configs service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The game server config configures the game servers in an Agones fleet.
 func NewGameServerConfigsClient(ctx context.Context, opts ...option.ClientOption) (*GameServerConfigsClient, error) {
-	clientOpts := defaultGameServerConfigsClientOptions()
-
+	clientOpts := defaultGameServerConfigsGRPCClientOptions()
 	if newGameServerConfigsClientHook != nil {
 		hookOpts, err := newGameServerConfigsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -137,16 +226,19 @@ func NewGameServerConfigsClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &GameServerConfigsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultGameServerConfigsCallOptions(),
+	client := GameServerConfigsClient{CallOptions: defaultGameServerConfigsCallOptions()}
 
+	c := &gameServerConfigsGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		gameServerConfigsClient: gamingpb.NewGameServerConfigsServiceClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -156,45 +248,46 @@ func NewGameServerConfigsClient(ctx context.Context, opts ...option.ClientOption
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *GameServerConfigsClient) Connection() *grpc.ClientConn {
+func (c *gameServerConfigsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GameServerConfigsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GameServerConfigsClient) setGoogleClientInfo(keyval ...string) {
+func (c *gameServerConfigsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListGameServerConfigs lists game server configs in a given project, location, and game server
-// deployment.
-func (c *GameServerConfigsClient) ListGameServerConfigs(ctx context.Context, req *gamingpb.ListGameServerConfigsRequest, opts ...gax.CallOption) *GameServerConfigIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gameServerConfigsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gameServerConfigsGRPCClient) ListGameServerConfigs(ctx context.Context, req *gamingpb.ListGameServerConfigsRequest, opts ...gax.CallOption) *GameServerConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGameServerConfigs[0:len(c.CallOptions.ListGameServerConfigs):len(c.CallOptions.ListGameServerConfigs)], opts...)
+	opts = append((*c.CallOptions).ListGameServerConfigs[0:len((*c.CallOptions).ListGameServerConfigs):len((*c.CallOptions).ListGameServerConfigs)], opts...)
 	it := &GameServerConfigIterator{}
 	req = proto.Clone(req).(*gamingpb.ListGameServerConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.GameServerConfig, string, error) {
-		var resp *gamingpb.ListGameServerConfigsResponse
-		req.PageToken = pageToken
+		resp := &gamingpb.ListGameServerConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -217,14 +310,15 @@ func (c *GameServerConfigsClient) ListGameServerConfigs(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetGameServerConfig gets details of a single game server config.
-func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *gamingpb.GetGameServerConfigRequest, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
+func (c *gameServerConfigsGRPCClient) GetGameServerConfig(ctx context.Context, req *gamingpb.GetGameServerConfigRequest, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -232,7 +326,7 @@ func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGameServerConfig[0:len(c.CallOptions.GetGameServerConfig):len(c.CallOptions.GetGameServerConfig)], opts...)
+	opts = append((*c.CallOptions).GetGameServerConfig[0:len((*c.CallOptions).GetGameServerConfig):len((*c.CallOptions).GetGameServerConfig)], opts...)
 	var resp *gamingpb.GameServerConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -245,10 +339,7 @@ func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *
 	return resp, nil
 }
 
-// CreateGameServerConfig creates a new game server config in a given project, location, and game
-// server deployment. Game server configs are immutable, and are not applied
-// until referenced in the game server deployment rollout resource.
-func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, req *gamingpb.CreateGameServerConfigRequest, opts ...gax.CallOption) (*CreateGameServerConfigOperation, error) {
+func (c *gameServerConfigsGRPCClient) CreateGameServerConfig(ctx context.Context, req *gamingpb.CreateGameServerConfigRequest, opts ...gax.CallOption) (*CreateGameServerConfigOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -256,7 +347,7 @@ func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, re
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGameServerConfig[0:len(c.CallOptions.CreateGameServerConfig):len(c.CallOptions.CreateGameServerConfig)], opts...)
+	opts = append((*c.CallOptions).CreateGameServerConfig[0:len((*c.CallOptions).CreateGameServerConfig):len((*c.CallOptions).CreateGameServerConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -267,13 +358,11 @@ func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, re
 		return nil, err
 	}
 	return &CreateGameServerConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteGameServerConfig deletes a single game server config. The deletion will fail if the game
-// server config is referenced in a game server deployment rollout.
-func (c *GameServerConfigsClient) DeleteGameServerConfig(ctx context.Context, req *gamingpb.DeleteGameServerConfigRequest, opts ...gax.CallOption) (*DeleteGameServerConfigOperation, error) {
+func (c *gameServerConfigsGRPCClient) DeleteGameServerConfig(ctx context.Context, req *gamingpb.DeleteGameServerConfigRequest, opts ...gax.CallOption) (*DeleteGameServerConfigOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -281,7 +370,7 @@ func (c *GameServerConfigsClient) DeleteGameServerConfig(ctx context.Context, re
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGameServerConfig[0:len(c.CallOptions.DeleteGameServerConfig):len(c.CallOptions.DeleteGameServerConfig)], opts...)
+	opts = append((*c.CallOptions).DeleteGameServerConfig[0:len((*c.CallOptions).DeleteGameServerConfig):len((*c.CallOptions).DeleteGameServerConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -292,7 +381,7 @@ func (c *GameServerConfigsClient) DeleteGameServerConfig(ctx context.Context, re
 		return nil, err
 	}
 	return &DeleteGameServerConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -303,9 +392,9 @@ type CreateGameServerConfigOperation struct {
 
 // CreateGameServerConfigOperation returns a new CreateGameServerConfigOperation from a given name.
 // The name must be that of a previously created CreateGameServerConfigOperation, possibly from a different process.
-func (c *GameServerConfigsClient) CreateGameServerConfigOperation(name string) *CreateGameServerConfigOperation {
+func (c *gameServerConfigsGRPCClient) CreateGameServerConfigOperation(name string) *CreateGameServerConfigOperation {
 	return &CreateGameServerConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -372,9 +461,9 @@ type DeleteGameServerConfigOperation struct {
 
 // DeleteGameServerConfigOperation returns a new DeleteGameServerConfigOperation from a given name.
 // The name must be that of a previously created DeleteGameServerConfigOperation, possibly from a different process.
-func (c *GameServerConfigsClient) DeleteGameServerConfigOperation(name string) *DeleteGameServerConfigOperation {
+func (c *gameServerConfigsGRPCClient) DeleteGameServerConfigOperation(name string) *DeleteGameServerConfigOperation {
 	return &DeleteGameServerConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

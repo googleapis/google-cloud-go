@@ -29,21 +29,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ComputeThreatListDiff() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#ComputeThreatListDiffRequest.
 	}
 	resp, err := c.ComputeThreatListDiff(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleClient_ComputeThreatListDiff() {
 }
 
 func ExampleClient_SearchUris() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleClient_SearchUris() {
 }
 
 func ExampleClient_SearchHashes() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {
@@ -94,16 +96,16 @@ func ExampleClient_SearchHashes() {
 }
 
 func ExampleClient_CreateSubmission() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.CreateSubmissionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#CreateSubmissionRequest.
 	}
 	resp, err := c.CreateSubmission(ctx, req)
 	if err != nil {
