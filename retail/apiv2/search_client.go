@@ -64,7 +64,7 @@ func defaultSearchCallOptions() *SearchCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
