@@ -99,7 +99,11 @@ that have already been processed.
 */
 package bigtable // import "cloud.google.com/go/bigtable"
 
-// Scope constants for authentication credentials. These should be used when
+import (
+	"fmt"
+	"log"
+	"runtime/debug"
+) // Scope constants for authentication credentials. These should be used when
 // using credential creation functions such as oauth.NewServiceAccountFromFile.
 const (
 	// Scope is the OAuth scope for Cloud Bigtable data operations.
@@ -118,7 +122,23 @@ const (
 
 // clientUserAgent identifies the version of this package.
 // It should be the same as https://pkg.go.dev/cloud.google.com/go/bigtable.
-const clientUserAgent = "cbt-go/v1.6.0"
+// const clientUserAgent = "cbt-go/v1.6.0"
+
+func getVersion() string {
+	var cbtVersion = "unknown"
+
+	if bi, exists := debug.ReadBuildInfo(); exists {
+		cbtVersion = bi.Main.Version
+	} else {
+		log.Printf("No version information found. Make sure to use " +
+			"GO111MODULE=on when running 'go get' in order to use specific " +
+			"version of the binary.")
+	}
+
+	return cbtVersion
+}
+
+var clientUserAgent = fmt.Sprintf("cbt-go/%s", getVersion())
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
