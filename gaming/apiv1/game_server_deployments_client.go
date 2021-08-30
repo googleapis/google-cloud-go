@@ -565,7 +565,7 @@ func (c *gameServerDeploymentsGRPCClient) PreviewGameServerDeploymentRollout(ctx
 
 func (c *gameServerDeploymentsGRPCClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
