@@ -349,7 +349,7 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -389,7 +389,10 @@ func (c *reservationsRESTClient) Get(ctx context.Context, req *computepb.GetRese
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Reservation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
@@ -433,7 +436,10 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Policy{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a new reservation. For more information, read Reserving zonal resources.
@@ -485,7 +491,7 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -624,7 +630,7 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -671,7 +677,10 @@ func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Policy{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -715,7 +724,10 @@ func (c *reservationsRESTClient) TestIamPermissions(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.TestPermissionsResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // ReservationIterator manages a stream of *computepb.Reservation.

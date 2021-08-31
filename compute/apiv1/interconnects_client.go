@@ -233,7 +233,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -273,7 +273,10 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Interconnect{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
@@ -310,7 +313,10 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.InterconnectsGetDiagnosticsResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a Interconnect in the specified project using the data included in the request.
@@ -362,7 +368,7 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -501,7 +507,7 @@ func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.Patc
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

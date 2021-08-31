@@ -318,7 +318,10 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DeleteGlobalOperationResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
@@ -355,7 +358,10 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of Operation resources contained within the specified project.
@@ -482,7 +488,10 @@ func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // OperationIterator manages a stream of *computepb.Operation.

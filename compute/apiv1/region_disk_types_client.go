@@ -196,7 +196,10 @@ func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetR
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DiskType{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of regional disk types available to the specified project.

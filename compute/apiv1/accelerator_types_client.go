@@ -302,7 +302,10 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.AcceleratorType{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of accelerator types that are available to the specified project.

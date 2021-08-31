@@ -219,7 +219,7 @@ func (c *regionSslCertificatesRESTClient) Delete(ctx context.Context, req *compu
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -259,7 +259,10 @@ func (c *regionSslCertificatesRESTClient) Get(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.SslCertificate{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a SslCertificate resource in the specified project and region using the data included in the request
@@ -311,7 +314,7 @@ func (c *regionSslCertificatesRESTClient) Insert(ctx context.Context, req *compu
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

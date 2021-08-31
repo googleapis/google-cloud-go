@@ -335,7 +335,7 @@ func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -375,7 +375,10 @@ func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutos
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Autoscaler{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
@@ -427,7 +430,7 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -569,7 +572,7 @@ func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchA
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -627,7 +630,7 @@ func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.Updat
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

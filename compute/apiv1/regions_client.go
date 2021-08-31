@@ -196,7 +196,10 @@ func (c *regionsRESTClient) Get(ctx context.Context, req *computepb.GetRegionReq
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Region{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves the list of region resources available to the specified project.

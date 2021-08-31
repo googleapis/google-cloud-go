@@ -81,6 +81,7 @@ import (
 	"strings"
 	"unicode"
 
+	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 )
@@ -157,4 +158,13 @@ func versionGo() string {
 		return s
 	}
 	return "UNKNOWN"
+}
+
+// maybeUnknownEnum wraps the given proto-JSON parsing error if it is the result
+// of receiving an unknown enum value.
+func maybeUnknownEnum(err error) error {
+	if strings.Contains(err.Error(), "invalid value for enum type") {
+		err = xerrors.Errorf("received an unknown enum value, a later version of the library may support it: %w", err)
+	}
+	return err
 }

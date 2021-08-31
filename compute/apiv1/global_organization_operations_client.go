@@ -210,7 +210,10 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DeleteGlobalOrganizationOperationResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
@@ -254,7 +257,10 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of Operation resources contained within the specified organization.
