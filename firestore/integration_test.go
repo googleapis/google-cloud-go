@@ -1683,8 +1683,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 		// Check that the same results are returned even if we use the proto converted query
 		pbStructuredQuery, _ := query.ToProto()
-		q := *iClient.Query()
-		q, err = q.FromProto(pbStructuredQuery)
+		q, err := iClient.CollectionGroup("DNE").FromProto(pbStructuredQuery)
 		if err != nil {
 			t.Fatalf("FromProto error: %v", err)
 		}

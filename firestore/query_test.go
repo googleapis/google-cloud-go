@@ -471,7 +471,7 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 			continue
 		}
 		fmt.Printf("proto: %v\n", proto)
-		got, err := c.Query().FromProto(proto)
+		got, err := Query{c: c}.FromProto(proto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 			continue

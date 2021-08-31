@@ -280,10 +280,8 @@ func (q Query) query() *Query { return &q }
 // in combintation with ToProto to serialize Query objects.
 func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// Ensure we are starting from an empty query, but with this client.
-	q = *q.c.Query()
+	q = Query{c: q.c}
 
-	// 	err                    error
-	q.err = nil
 	pbq := pbQuery.GetStructuredQuery()
 	if from := pbq.GetFrom(); len(from) > 0 {
 		if len(from) > 1 {
