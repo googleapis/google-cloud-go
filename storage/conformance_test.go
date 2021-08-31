@@ -20,9 +20,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"strconv"
@@ -112,41 +112,12 @@ type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions
 // because multiple library methods may use the same call (e.g. get could be a
 // read or just a metadata get).
 var methods = map[string][]retryFunc{
-	"storage.objects.get": {
+	"storage.buckets.get": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
-			return err
-		},
-		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
-			if err != nil {
-				return err
-			}
-			_, err = io.Copy(ioutil.Discard, r)
+			_, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
 			return err
 		},
 	},
-	"storage.objects.update": {
-		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
-			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
-			if preconditions {
-				obj = obj.If(Conditions{MetagenerationMatch: fs.object.Metageneration})
-			}
-			_, err := obj.Update(ctx, uattrs)
-			return err
-		},
-	},
-	"storage.buckets.update": {
-		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
-			bkt := c.Bucket(fs.bucket.Name)
-			if preconditions {
-				bkt = bkt.If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration})
-			}
-			_, err := bkt.Update(ctx, uattrs)
-			return err
-		}},
 }
 
 func TestRetryConformance(t *testing.T) {
@@ -154,67 +125,64 @@ func TestRetryConformance(t *testing.T) {
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
-	host = "http://" + host
 
 	ctx := context.Background()
 
 	// Create non-wrapped client to use for setup steps.
-	client, err := NewClient(ctx, option.WithEndpoint(host+"/storage/v1/"))
+	client, err := NewClient(ctx)
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
 	_, _, testFiles := parseFiles(t)
+
 	for _, testFile := range testFiles {
-		for _, tc := range testFile.RetryTests {
-			for _, instructions := range tc.Cases {
-				for _, m := range tc.Methods {
-					if len(methods[m.Name]) == 0 {
-						t.Logf("No tests for operation %v", m.Name)
+		for _, retryTest := range testFile.RetryTests {
+			for _, instructions := range retryTest.Cases {
+				for _, method := range retryTest.Methods {
+					if len(methods[method.Name]) == 0 {
+						t.Logf("No tests for operation %v", method.Name)
 					}
-					for i, f := range methods[m.Name] {
-						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Id, instructions.Instructions, m.Name, i)
+					for i, fn := range methods[method.Name] {
+						testName := fmt.Sprintf("%v-%v-%v-%v", retryTest.Id, instructions.Instructions, method.Name, i)
 						t.Run(testName, func(t *testing.T) {
 
-							// Create the retry test in the emulator to handle instructions.
-							testID, err := createRetryTest(host, map[string][]string{
-								m.Name: instructions.Instructions,
+							// Create the retry subtest
+							subtest := &retrySubtest{T: t, name: testName}
+							err := subtest.create(host, map[string][]string{
+								method.Name: instructions.Instructions,
 							})
 							if err != nil {
 								t.Fatalf("setting up retry test: %v", err)
 							}
 
+							// Create necessary test resources in the emulator
 							fs := &resources{}
-							for _, f := range m.Resources {
-								if err := fs.populate(ctx, client, f); err != nil {
+							for _, resource := range method.Resources {
+								if err := fs.populate(ctx, client, resource); err != nil {
 									t.Fatalf("creating test resources: %v", err)
 								}
 							}
 
-							// Create wrapped client which will send emulator instructions.
-							wrapped, err := wrappedClient(host, testID)
-							if err != nil {
-								t.Errorf("error creating wrapped client: %v", err)
-							}
-							err = f(ctx, wrapped, fs, tc.PreconditionProvided)
-							if tc.ExpectSuccess && err != nil {
+							// Test
+							err = fn(ctx, subtest.wrappedClient, fs, retryTest.PreconditionProvided)
+							if retryTest.ExpectSuccess && err != nil {
 								t.Errorf("want success, got %v", err)
 							}
-							if !tc.ExpectSuccess && err == nil {
+							if !retryTest.ExpectSuccess && err == nil {
 								t.Errorf("want failure, got success")
 							}
 
 							// Verify that all instructions were used up during the test
 							// (indicates that the client sent the correct requests).
-							if err := checkRetryTest(host, testID); err != nil {
+							if err := subtest.check(); err != nil {
 								t.Errorf("checking instructions: %v", err)
 							}
 
 							// Close out test in emulator.
-							if err := deleteRetryTest(host, testID); err != nil {
+							if err := subtest.delete(); err != nil {
 								t.Errorf("deleting retry test: %v", err)
 							}
-
 						})
 					}
 
@@ -225,44 +193,79 @@ func TestRetryConformance(t *testing.T) {
 
 }
 
-// Create a retry test resource in the emulator. Returns the ID to pass as
-// a header in the test execution.
-func createRetryTest(host string, instructions map[string][]string) (string, error) {
-	endpoint := host + "/retry_test"
+type retrySubtest struct {
+	*testing.T
+	name          string
+	id            string   // ID to pass as a header in the test execution
+	host          *url.URL // set the path when using; path is not guaranteed betwen calls
+	wrappedClient *Client
+}
+
+// Create a retry test resource in the emulator
+func (rt *retrySubtest) create(host string, instructions map[string][]string) error {
+	endpoint, err := parseURL(host)
+	if err != nil {
+		return err
+	}
+	rt.host = endpoint
+
 	c := http.DefaultClient
 	data := struct {
-		Instructions map[string][]string `json:"test_instructions"`
+		Instructions map[string][]string `json:"instructions"`
 	}{
 		Instructions: instructions,
 	}
 
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
-		return "", fmt.Errorf("encoding request: %v", err)
+		return fmt.Errorf("encoding request: %v", err)
 	}
-	resp, err := c.Post(endpoint, "application/json", buf)
+
+	rt.host.Path = "retry_test"
+	resp, err := c.Post(rt.host.String(), "application/json", buf)
 	if err != nil || resp.StatusCode != 200 {
-		return "", fmt.Errorf("creating retry test: err: %v, resp: %+v", err, resp)
+		return fmt.Errorf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 	testRes := struct {
 		TestID string `json:"id"`
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
-		return "", fmt.Errorf("decoding test ID: %v", err)
+		return fmt.Errorf("decoding test ID: %v", err)
 	}
-	return testRes.TestID, nil
+
+	rt.id = testRes.TestID
+
+	// Create wrapped client which will send emulator instructions
+	rt.host.Path = ""
+	client, err := wrappedClient(rt.T, rt.host.String(), rt.id)
+	if err != nil {
+		return fmt.Errorf("creating wrapped client: %v", err)
+	}
+	rt.wrappedClient = client
+
+	return nil
 }
 
 // Verify that all instructions for a given retry testID have been used up.
-func checkRetryTest(host, testID string) error {
-	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
+func (rt *retrySubtest) check() error {
+	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
 	c := http.DefaultClient
-	resp, err := c.Get(endpoint)
+	resp, err := c.Get(rt.host.String())
 	if err != nil || resp.StatusCode != 200 {
 		return fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		closeErr := resp.Body.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}()
 	testRes := struct {
 		Instructions map[string][]string
 		Completed    bool
@@ -277,10 +280,10 @@ func checkRetryTest(host, testID string) error {
 }
 
 // Delete a retry test resource.
-func deleteRetryTest(host, testID string) error {
-	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
+func (rt *retrySubtest) delete() error {
+	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
 	c := http.DefaultClient
-	req, err := http.NewRequest("DELETE", endpoint, nil)
+	req, err := http.NewRequest("DELETE", rt.host.String(), nil)
 	if err != nil {
 		return fmt.Errorf("creating request: %v", err)
 	}
@@ -291,22 +294,29 @@ func deleteRetryTest(host, testID string) error {
 	return nil
 }
 
-type withTestID struct {
+type testRoundTripper struct {
+	*testing.T
 	rt     http.RoundTripper
 	testID string
 }
 
-func (wt *withTestID) RoundTrip(r *http.Request) (*http.Response, error) {
-	r.Header.Add("x-retry-test-id", wt.testID)
+func (wt *testRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Set("x-retry-test-id", wt.testID)
+
+	requestDump, err := httputil.DumpRequest(r, false)
+	if err != nil {
+		wt.Logf("error creating request dump: %v", err)
+	}
+
 	resp, err := wt.rt.RoundTrip(r)
-	//if err != nil{
-	//	log.Printf("Error: %+v", err)
-	//}
+	if err != nil {
+		wt.Logf("roundtrip error (may be expected): %v\nrequest: %s", err, requestDump)
+	}
 	return resp, err
 }
 
 // Create custom client that sends instruction
-func wrappedClient(host, testID string) (*Client, error) {
+func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
@@ -316,13 +326,25 @@ func wrappedClient(host, testID string) (*Client, error) {
 	}
 	c := http.Client{Transport: trans}
 
-	// Add RoundTripper to the created HTTP client.
-	wrappedTrans := &withTestID{rt: c.Transport, testID: testID}
+	// Add RoundTripper to the created HTTP client
+	wrappedTrans := &testRoundTripper{rt: c.Transport, testID: testID, T: t}
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
 	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
 	return client, err
+}
+
+// A url is only parsed correctly by the url package if it has a scheme,
+// so we have to check and build it ourselves if not supplied in host
+// Assumes http if not provided
+func parseURL(host string) (*url.URL, error) {
+	if strings.Contains(host, "://") {
+		return url.Parse(host)
+	} else {
+		url := &url.URL{Scheme: "http", Host: host}
+		return url, nil
+	}
 }
 
 func TestPostPolicyV4Conformance(t *testing.T) {
