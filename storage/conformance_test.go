@@ -159,7 +159,7 @@ func TestRetryConformance(t *testing.T) {
 	ctx := context.Background()
 
 	// Create non-wrapped client to use for setup steps.
-	client, err := NewClient(ctx, option.WithEndpoint(host + "/storage/v1/"))
+	client, err := NewClient(ctx, option.WithEndpoint(host+"/storage/v1/"))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
@@ -265,7 +265,7 @@ func checkRetryTest(host, testID string) error {
 	defer resp.Body.Close()
 	testRes := struct {
 		Instructions map[string][]string
-		Completed bool
+		Completed    bool
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
 		return fmt.Errorf("decoding response: %v", err)
@@ -321,7 +321,7 @@ func wrappedClient(host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host + "/storage/v1/"))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
 	return client, err
 }
 
