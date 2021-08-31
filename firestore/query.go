@@ -119,13 +119,7 @@ func (q Query) Where(path, op string, value interface{}) Query {
 		q.err = err
 		return q
 	}
-	proto, err := filter{fp, op, value}.toProto()
-	if err != nil {
-		q.err = err
-		return q
-	}
-	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
-	return q
+	return q.WherePath(fp, op, value)
 }
 
 // WherePath returns a new Query that filters the set of results.
