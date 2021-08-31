@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux && go1.15
 // +build linux,go1.15
 
 /*Command godocfx generates DocFX YAML for Go code.
@@ -49,6 +50,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 )
 
@@ -58,42 +60,43 @@ func main() {
 	outDir := flag.String("out", "obj/api", "Output directory (default obj/api)")
 	projectID := flag.String("project", "", "Project ID to use. Required when using -new-modules.")
 	newMods := flag.Bool("new-modules", false, "Process all new modules with the given prefix. Uses timestamp in Datastore. Stores results in $out/$mod.")
+	// TODO: flag to set output URL path
 
 	log.SetPrefix("[godocfx] ")
 
 	flag.Parse()
-	if flag.NArg() != 1 {
+	if flag.NArg() == 0 {
 		log.Fatalf("%s missing required argument: module path/prefix", os.Args[0])
 	}
 
-	mod := flag.Arg(0)
+	modNames := flag.Args()
 	var mods []indexEntry
 	if *newMods {
 		if *projectID == "" {
 			log.Fatal("Must set -project when using -new-modules")
 		}
 		var err error
-		mods, err = newModules(context.Background(), indexClient{}, &dsTimeSaver{projectID: *projectID}, mod)
+		mods, err = newModules(context.Background(), indexClient{}, &dsTimeSaver{projectID: *projectID}, modNames)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		modPath := mod
-		version := "latest"
-		if strings.Contains(mod, "@") {
-			parts := strings.Split(mod, "@")
-			if len(parts) != 2 {
-				log.Fatal("module arg expected only one '@'")
+		for _, mod := range modNames {
+			modPath := mod
+			version := "latest"
+			if strings.Contains(mod, "@") {
+				parts := strings.Split(mod, "@")
+				if len(parts) != 2 {
+					log.Fatal("module arg expected only one '@'")
+				}
+				modPath = parts[0]
+				version = parts[1]
 			}
-			modPath = parts[0]
-			version = parts[1]
-		}
-		modPath = strings.TrimSuffix(modPath, "/...") // No /... needed.
-		mods = []indexEntry{
-			{
+			modPath = strings.TrimSuffix(modPath, "/...") // No /... needed.
+			mods = append(mods, indexEntry{
 				Path:    modPath,
 				Version: version,
-			},
+			})
 		}
 	}
 
@@ -105,23 +108,27 @@ func main() {
 		return
 	}
 	// Create a temp module so we can get the exact version asked for.
-	tempDir, err := ioutil.TempDir("", "godocfx-*")
+	workingDir, err := ioutil.TempDir("", "godocfx-*")
 	if err != nil {
 		log.Fatalf("ioutil.TempDir: %v", err)
 	}
-	runCmd(tempDir, "go", "mod", "init", "cloud.google.com/go/lets-build-some-docs")
+	// Use a fake module that doesn't start with cloud.google.com/go.
+	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
+
+	failed := false
 	for _, m := range mods {
 		log.Printf("Processing %s@%s", m.Path, m.Version)
 
-		path := *outDir
-		// If we have more than one module, we need a more specific out path.
-		if len(mods) > 1 {
-			path = filepath.Join(path, fmt.Sprintf("%s@%s", m.Path, m.Version))
-		}
-		if err := process(m, tempDir, path, *print); err != nil {
-			log.Printf("Failed to process %v", m)
+		// Always output to specific directory.
+		path := filepath.Join(*outDir, fmt.Sprintf("%s@%s", m.Path, m.Version))
+		if err := process(m, workingDir, path, *print); err != nil {
+			log.Printf("Failed to process %v: %v", m, err)
+			failed = true
 		}
 		log.Printf("Done with %s@%s", m.Path, m.Version)
+	}
+	if failed {
+		os.Exit(1)
 	}
 }
 
@@ -129,6 +136,8 @@ func runCmd(dir, name string, args ...string) error {
 	log.Printf("> [%s] %s %s", dir, name, strings.Join(args, " "))
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("Start: %v", err)
 	}
@@ -138,21 +147,26 @@ func runCmd(dir, name string, args ...string) error {
 	return nil
 }
 
-func process(mod indexEntry, tempDir, outDir string, print bool) error {
+func process(mod indexEntry, workingDir, outDir string, print bool) error {
 	// Be sure to get the module and run the module loader in the tempDir.
-	if err := runCmd(tempDir, "go", "mod", "tidy"); err != nil {
-		return err
+	if err := runCmd(workingDir, "go", "mod", "tidy"); err != nil {
+		return fmt.Errorf("go mod tidy error: %v", err)
 	}
-	if err := runCmd(tempDir, "go", "get", mod.Path+"@"+mod.Version); err != nil {
-		return err
+	// Don't do /... because it fails on submodules.
+	if err := runCmd(workingDir, "go", "get", "-d", "-t", mod.Path+"@"+mod.Version); err != nil {
+		return fmt.Errorf("go get %s@%s: %v", mod.Path, mod.Version, err)
 	}
 
+	log.Println("Starting to parse")
 	optionalExtraFiles := []string{}
 	filter := []string{
 		"cloud.google.com/go/analytics",
 		"cloud.google.com/go/area120",
+		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
 	}
-	r, err := parse(mod.Path+"/...", tempDir, optionalExtraFiles, filter)
+	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
 	}
@@ -244,12 +258,27 @@ func write(outDir string, r *result) error {
 	}
 	defer f.Close()
 	now := time.Now().UTC()
-	fmt.Fprintf(f, `update_time {
-  seconds: %d
-  nanos: %d
+	writeMetadata(f, now, r.module)
+	return nil
+}
+
+func writeMetadata(w io.Writer, now time.Time, module *packages.Module) {
+	fmt.Fprintf(w, `update_time {
+	seconds: %d
+	nanos: %d
 }
 name: %q
 version: %q
-language: "go"`, now.Unix(), now.Nanosecond(), r.module.Path, r.module.Version)
-	return nil
+language: "go"
+`, now.Unix(), now.Nanosecond(), module.Path, module.Version)
+
+	// Some modules specify a different path to serve from.
+	// The URL will be /[stem]/[version]/[pkg path relative to module].
+	// Alternatively, we could plumb this through command line flags.
+	switch module.Path {
+	case "google.golang.org/appengine":
+		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go111/reference\"\n")
+	case "google.golang.org/appengine/v2":
+		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
+	}
 }

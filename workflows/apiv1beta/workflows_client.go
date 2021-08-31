@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -48,12 +48,13 @@ type CallOptions struct {
 	UpdateWorkflow []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("workflows.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("workflows.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://workflows.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -70,39 +71,147 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Workflows API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListWorkflows(context.Context, *workflowspb.ListWorkflowsRequest, ...gax.CallOption) *WorkflowIterator
+	GetWorkflow(context.Context, *workflowspb.GetWorkflowRequest, ...gax.CallOption) (*workflowspb.Workflow, error)
+	CreateWorkflow(context.Context, *workflowspb.CreateWorkflowRequest, ...gax.CallOption) (*CreateWorkflowOperation, error)
+	CreateWorkflowOperation(name string) *CreateWorkflowOperation
+	DeleteWorkflow(context.Context, *workflowspb.DeleteWorkflowRequest, ...gax.CallOption) (*DeleteWorkflowOperation, error)
+	DeleteWorkflowOperation(name string) *DeleteWorkflowOperation
+	UpdateWorkflow(context.Context, *workflowspb.UpdateWorkflowRequest, ...gax.CallOption) (*UpdateWorkflowOperation, error)
+	UpdateWorkflowOperation(name string) *UpdateWorkflowOperation
+}
+
 // Client is a client for interacting with Workflows API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Workflows is used to deploy and execute workflow programs.
+// Workflows makes sure the program executes reliably, despite hardware and
+// networking interruptions.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListWorkflows lists Workflows in a given project and location.
+// The default order is not specified.
+func (c *Client) ListWorkflows(ctx context.Context, req *workflowspb.ListWorkflowsRequest, opts ...gax.CallOption) *WorkflowIterator {
+	return c.internalClient.ListWorkflows(ctx, req, opts...)
+}
+
+// GetWorkflow gets details of a single Workflow.
+func (c *Client) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkflowRequest, opts ...gax.CallOption) (*workflowspb.Workflow, error) {
+	return c.internalClient.GetWorkflow(ctx, req, opts...)
+}
+
+// CreateWorkflow creates a new workflow. If a workflow with the specified name already
+// exists in the specified project and location, the long running operation
+// will return ALREADY_EXISTS error.
+func (c *Client) CreateWorkflow(ctx context.Context, req *workflowspb.CreateWorkflowRequest, opts ...gax.CallOption) (*CreateWorkflowOperation, error) {
+	return c.internalClient.CreateWorkflow(ctx, req, opts...)
+}
+
+// CreateWorkflowOperation returns a new CreateWorkflowOperation from a given name.
+// The name must be that of a previously created CreateWorkflowOperation, possibly from a different process.
+func (c *Client) CreateWorkflowOperation(name string) *CreateWorkflowOperation {
+	return c.internalClient.CreateWorkflowOperation(name)
+}
+
+// DeleteWorkflow deletes a workflow with the specified name.
+// This method also cancels and deletes all running executions of the
+// workflow.
+func (c *Client) DeleteWorkflow(ctx context.Context, req *workflowspb.DeleteWorkflowRequest, opts ...gax.CallOption) (*DeleteWorkflowOperation, error) {
+	return c.internalClient.DeleteWorkflow(ctx, req, opts...)
+}
+
+// DeleteWorkflowOperation returns a new DeleteWorkflowOperation from a given name.
+// The name must be that of a previously created DeleteWorkflowOperation, possibly from a different process.
+func (c *Client) DeleteWorkflowOperation(name string) *DeleteWorkflowOperation {
+	return c.internalClient.DeleteWorkflowOperation(name)
+}
+
+// UpdateWorkflow updates an existing workflow.
+// Running this method has no impact on already running executions of the
+// workflow. A new revision of the workflow may be created as a result of a
+// successful update operation. In that case, such revision will be used
+// in new workflow executions.
+func (c *Client) UpdateWorkflow(ctx context.Context, req *workflowspb.UpdateWorkflowRequest, opts ...gax.CallOption) (*UpdateWorkflowOperation, error) {
+	return c.internalClient.UpdateWorkflow(ctx, req, opts...)
+}
+
+// UpdateWorkflowOperation returns a new UpdateWorkflowOperation from a given name.
+// The name must be that of a previously created UpdateWorkflowOperation, possibly from a different process.
+func (c *Client) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
+	return c.internalClient.UpdateWorkflowOperation(name)
+}
+
+// gRPCClient is a client for interacting with Workflows API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client workflowspb.WorkflowsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new workflows client.
+// NewClient creates a new workflows client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Workflows is used to deploy and execute workflow programs.
 // Workflows makes sure the program executes reliably, despite hardware and
 // networking interruptions.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -120,16 +229,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: workflowspb.NewWorkflowsClient(connPool),
+		client:           workflowspb.NewWorkflowsClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -139,45 +251,46 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListWorkflows lists Workflows in a given project and location.
-// The default order is not specified.
-func (c *Client) ListWorkflows(ctx context.Context, req *workflowspb.ListWorkflowsRequest, opts ...gax.CallOption) *WorkflowIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListWorkflows(ctx context.Context, req *workflowspb.ListWorkflowsRequest, opts ...gax.CallOption) *WorkflowIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListWorkflows[0:len(c.CallOptions.ListWorkflows):len(c.CallOptions.ListWorkflows)], opts...)
+	opts = append((*c.CallOptions).ListWorkflows[0:len((*c.CallOptions).ListWorkflows):len((*c.CallOptions).ListWorkflows)], opts...)
 	it := &WorkflowIterator{}
 	req = proto.Clone(req).(*workflowspb.ListWorkflowsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*workflowspb.Workflow, string, error) {
-		var resp *workflowspb.ListWorkflowsResponse
-		req.PageToken = pageToken
+		resp := &workflowspb.ListWorkflowsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -200,17 +313,18 @@ func (c *Client) ListWorkflows(ctx context.Context, req *workflowspb.ListWorkflo
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetWorkflow gets details of a single Workflow.
-func (c *Client) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkflowRequest, opts ...gax.CallOption) (*workflowspb.Workflow, error) {
+func (c *gRPCClient) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkflowRequest, opts ...gax.CallOption) (*workflowspb.Workflow, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetWorkflow[0:len(c.CallOptions.GetWorkflow):len(c.CallOptions.GetWorkflow)], opts...)
+	opts = append((*c.CallOptions).GetWorkflow[0:len((*c.CallOptions).GetWorkflow):len((*c.CallOptions).GetWorkflow)], opts...)
 	var resp *workflowspb.Workflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -223,13 +337,10 @@ func (c *Client) GetWorkflow(ctx context.Context, req *workflowspb.GetWorkflowRe
 	return resp, nil
 }
 
-// CreateWorkflow creates a new workflow. If a workflow with the specified name already
-// exists in the specified project and location, the long running operation
-// will return ALREADY_EXISTS error.
-func (c *Client) CreateWorkflow(ctx context.Context, req *workflowspb.CreateWorkflowRequest, opts ...gax.CallOption) (*CreateWorkflowOperation, error) {
+func (c *gRPCClient) CreateWorkflow(ctx context.Context, req *workflowspb.CreateWorkflowRequest, opts ...gax.CallOption) (*CreateWorkflowOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateWorkflow[0:len(c.CallOptions.CreateWorkflow):len(c.CallOptions.CreateWorkflow)], opts...)
+	opts = append((*c.CallOptions).CreateWorkflow[0:len((*c.CallOptions).CreateWorkflow):len((*c.CallOptions).CreateWorkflow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,17 +351,14 @@ func (c *Client) CreateWorkflow(ctx context.Context, req *workflowspb.CreateWork
 		return nil, err
 	}
 	return &CreateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteWorkflow deletes a workflow with the specified name.
-// This method also cancels and deletes all running executions of the
-// workflow.
-func (c *Client) DeleteWorkflow(ctx context.Context, req *workflowspb.DeleteWorkflowRequest, opts ...gax.CallOption) (*DeleteWorkflowOperation, error) {
+func (c *gRPCClient) DeleteWorkflow(ctx context.Context, req *workflowspb.DeleteWorkflowRequest, opts ...gax.CallOption) (*DeleteWorkflowOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteWorkflow[0:len(c.CallOptions.DeleteWorkflow):len(c.CallOptions.DeleteWorkflow)], opts...)
+	opts = append((*c.CallOptions).DeleteWorkflow[0:len((*c.CallOptions).DeleteWorkflow):len((*c.CallOptions).DeleteWorkflow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -261,19 +369,14 @@ func (c *Client) DeleteWorkflow(ctx context.Context, req *workflowspb.DeleteWork
 		return nil, err
 	}
 	return &DeleteWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateWorkflow updates an existing workflow.
-// Running this method has no impact on already running executions of the
-// workflow. A new revision of the workflow may be created as a result of a
-// successful update operation. In that case, such revision will be used
-// in new workflow executions.
-func (c *Client) UpdateWorkflow(ctx context.Context, req *workflowspb.UpdateWorkflowRequest, opts ...gax.CallOption) (*UpdateWorkflowOperation, error) {
+func (c *gRPCClient) UpdateWorkflow(ctx context.Context, req *workflowspb.UpdateWorkflowRequest, opts ...gax.CallOption) (*UpdateWorkflowOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workflow.name", url.QueryEscape(req.GetWorkflow().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateWorkflow[0:len(c.CallOptions.UpdateWorkflow):len(c.CallOptions.UpdateWorkflow)], opts...)
+	opts = append((*c.CallOptions).UpdateWorkflow[0:len((*c.CallOptions).UpdateWorkflow):len((*c.CallOptions).UpdateWorkflow)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -284,7 +387,7 @@ func (c *Client) UpdateWorkflow(ctx context.Context, req *workflowspb.UpdateWork
 		return nil, err
 	}
 	return &UpdateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -295,9 +398,9 @@ type CreateWorkflowOperation struct {
 
 // CreateWorkflowOperation returns a new CreateWorkflowOperation from a given name.
 // The name must be that of a previously created CreateWorkflowOperation, possibly from a different process.
-func (c *Client) CreateWorkflowOperation(name string) *CreateWorkflowOperation {
+func (c *gRPCClient) CreateWorkflowOperation(name string) *CreateWorkflowOperation {
 	return &CreateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -364,9 +467,9 @@ type DeleteWorkflowOperation struct {
 
 // DeleteWorkflowOperation returns a new DeleteWorkflowOperation from a given name.
 // The name must be that of a previously created DeleteWorkflowOperation, possibly from a different process.
-func (c *Client) DeleteWorkflowOperation(name string) *DeleteWorkflowOperation {
+func (c *gRPCClient) DeleteWorkflowOperation(name string) *DeleteWorkflowOperation {
 	return &DeleteWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -422,9 +525,9 @@ type UpdateWorkflowOperation struct {
 
 // UpdateWorkflowOperation returns a new UpdateWorkflowOperation from a given name.
 // The name must be that of a previously created UpdateWorkflowOperation, possibly from a different process.
-func (c *Client) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
+func (c *gRPCClient) UpdateWorkflowOperation(name string) *UpdateWorkflowOperation {
 	return &UpdateWorkflowOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

@@ -60,6 +60,11 @@ type ServerReactorOption struct {
 	Reactor  Reactor
 }
 
+type publishResponse struct {
+	resp *pb.PublishResponse
+	err  error
+}
+
 // For testing. Note that even though changes to the now variable are atomic, a call
 // to the stored function can race with a change to that function. This could be a
 // problem if tests are run in parallel, or even if concurrent parts of the same test
@@ -98,13 +103,26 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
+	schemas        map[string]*pb.Schema
+
+	// PublishResponses is a channel of responses to use for Publish.
+	publishResponses chan *publishResponse
+	// autoPublishResponse enables the server to automatically generate
+	// PublishResponse when publish is called. Otherwise, responses
+	// are generated from the publishResponses channel.
+	autoPublishResponse bool
 }
 
 // NewServer creates a new fake server running in the current process.
 func NewServer(opts ...ServerReactorOption) *Server {
-	srv, err := testutil.NewServer()
+	return NewServerWithPort(0, opts...)
+}
+
+// NewServerWithPort creates a new fake server running in the current process at the specified port.
+func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
-		panic(fmt.Sprintf("pstest.NewServer: %v", err))
+		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
 	}
 	reactorOptions := ReactorOptions{}
 	for _, opt := range opts {
@@ -114,15 +132,19 @@ func NewServer(opts ...ServerReactorOption) *Server {
 		srv:  srv,
 		Addr: srv.Addr,
 		GServer: GServer{
-			topics:         map[string]*topic{},
-			subs:           map[string]*subscription{},
-			msgsByID:       map[string]*Message{},
-			timeNowFunc:    timeNow,
-			reactorOptions: reactorOptions,
+			topics:              map[string]*topic{},
+			subs:                map[string]*subscription{},
+			msgsByID:            map[string]*Message{},
+			timeNowFunc:         timeNow,
+			reactorOptions:      reactorOptions,
+			publishResponses:    make(chan *publishResponse, 100),
+			autoPublishResponse: true,
+			schemas:             map[string]*pb.Schema{},
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
+	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
 	srv.Start()
 	return s
 }
@@ -166,6 +188,35 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 		panic(fmt.Sprintf("pstest.Server.Publish: %v", err))
 	}
 	return res.MessageIds[0]
+}
+
+// AddPublishResponse adds a new publish response to the channel used for
+// responding to publish requests.
+func (s *Server) AddPublishResponse(pbr *pb.PublishResponse, err error) {
+	pr := &publishResponse{}
+	if err != nil {
+		pr.err = err
+	} else {
+		pr.resp = pbr
+	}
+	s.GServer.publishResponses <- pr
+}
+
+// SetAutoPublishResponse controls whether to automatically respond
+// to messages published or to use user-added responses from the
+// publishResponses channel.
+func (s *Server) SetAutoPublishResponse(autoPublishResponse bool) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.autoPublishResponse = autoPublishResponse
+}
+
+// ResetPublishResponses resets the buffered publishResponses channel
+// with a new buffered channel with the given size.
+func (s *Server) ResetPublishResponses(size int) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.publishResponses = make(chan *publishResponse, size)
 }
 
 // SetStreamTimeout sets the amount of time a stream will be active before it shuts
@@ -613,6 +664,15 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 	if top == nil {
 		return nil, status.Errorf(codes.NotFound, "topic %q", req.Topic)
 	}
+
+	if !s.autoPublishResponse {
+		r := <-s.publishResponses
+		if r.err != nil {
+			return nil, r.err
+		}
+		return r.resp, nil
+	}
+
 	var ids []string
 	for _, pm := range req.Messages {
 		id := fmt.Sprintf("m%d", s.nextID)
@@ -1179,4 +1239,116 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 		FuncName: funcName,
 		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
+}
+
+func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CreateSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
+	sc := &pb.Schema{
+		Name:       name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	s.schemas[name] = sc
+
+	return sc, nil
+}
+
+func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "GetSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc, ok := s.schemas[req.Name]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
+	}
+	return sc, nil
+}
+
+func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemas", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemasResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	for _, sc := range s.schemas {
+		ss = append(ss, sc)
+	}
+	return &pb.ListSchemasResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchema", &emptypb.Empty{}); handled || err != nil {
+		return ret.(*emptypb.Empty), err
+	}
+
+	schema := s.schemas[req.Name]
+	if schema == nil {
+		return nil, status.Errorf(codes.NotFound, "schema %q", req.Name)
+	}
+
+	delete(s.schemas, req.Name)
+	return &emptypb.Empty{}, nil
+}
+
+// ValidateSchema mocks the ValidateSchema call but only checks that the schema definition is not empty.
+func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateSchema", &pb.ValidateSchemaResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateSchemaResponse), err
+	}
+
+	if req.Schema.Definition == "" {
+		return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+	}
+	return &pb.ValidateSchemaResponse{}, nil
+}
+
+// ValidateMessage mocks the ValidateMessage call but only checks that the schema definition to validate the
+// message against is not empty.
+func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequest) (*pb.ValidateMessageResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateMessage", &pb.ValidateMessageResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateMessageResponse), err
+	}
+
+	spec := req.GetSchemaSpec()
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
+		sc, ok := s.schemas[valReq.Name]
+		if !ok {
+			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
+		}
+		if sc.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
+		if valReq.Schema.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+
+	return &pb.ValidateMessageResponse{}, nil
 }

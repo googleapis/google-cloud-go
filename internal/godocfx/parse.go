@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.15
 // +build go1.15
 
 // TODO:
@@ -49,10 +50,11 @@ type tableOfContents []*tocItem
 
 // tocItem is an item in a TOC.
 type tocItem struct {
-	UID   string     `yaml:"uid,omitempty"`
-	Name  string     `yaml:"name,omitempty"`
-	Items []*tocItem `yaml:"items,omitempty"`
-	Href  string     `yaml:"href,omitempty"`
+	UID    string     `yaml:"uid,omitempty"`
+	Name   string     `yaml:"name,omitempty"`
+	Items  []*tocItem `yaml:"items,omitempty"`
+	Href   string     `yaml:"href,omitempty"`
+	Status string     `yaml:"status,omitempty"`
 }
 
 func (t *tocItem) addItem(i *tocItem) {
@@ -93,6 +95,7 @@ type item struct {
 	Examples []example `yaml:"codeexamples,omitempty"`
 	Children []child   `yaml:"children,omitempty"`
 	AltLink  string    `yaml:"alt_link,omitempty"`
+	Status   string    `yaml:"status,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -168,6 +171,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 			Type:     "package",
 			Examples: processExamples(pi.Doc.Examples, pi.Fset),
 			AltLink:  "https://pkg.go.dev/" + pi.Doc.ImportPath,
+			Status:   pi.Status,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.Doc.ImportPath] = pkgPage
@@ -186,6 +190,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Summary: c.Doc,
 				Langs:   onlyGo,
 				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
+				Status:  getStatus(c.Doc),
 			})
 		}
 		for _, v := range pi.Doc.Vars {
@@ -202,6 +207,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Summary: v.Doc,
 				Langs:   onlyGo,
 				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
+				Status:  getStatus(v.Doc),
 			})
 		}
 		for _, t := range pi.Doc.Types {
@@ -217,6 +223,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Langs:    onlyGo,
 				Syntax:   syntax{Content: pkgsite.PrintType(pi.Fset, t.Decl, link.toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.Fset),
+				Status:   getStatus(t.Doc),
 			}
 			// Note: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
@@ -235,6 +242,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Summary: c.Doc,
 					Langs:   onlyGo,
 					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
+					Status:  getStatus(c.Doc),
 				})
 			}
 			for _, v := range t.Vars {
@@ -251,6 +259,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Summary: v.Doc,
 					Langs:   onlyGo,
 					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
+					Status:  getStatus(v.Doc),
 				})
 			}
 
@@ -267,6 +276,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Langs:    onlyGo,
 					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.Fset),
+					Status:   getStatus(fn.Doc),
 				})
 			}
 			for _, fn := range t.Methods {
@@ -282,6 +292,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Langs:    onlyGo,
 					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.Fset),
+					Status:   getStatus(fn.Doc),
 				})
 			}
 		}
@@ -298,6 +309,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 				Langs:    onlyGo,
 				Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
 				Examples: processExamples(fn.Examples, pi.Fset),
+				Status:   getStatus(fn.Doc),
 			})
 		}
 	}
@@ -308,6 +320,16 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 		module:     module,
 		extraFiles: extraFiles,
 	}, nil
+}
+
+// getStatus returns a possibly empty status string for the given
+// docs.
+func getStatus(doc string) string {
+	deprecated := "\nDeprecated:"
+	if strings.Contains(doc, deprecated) {
+		return "deprecated"
+	}
+	return ""
 }
 
 type linker struct {
@@ -452,8 +474,6 @@ func (l *linker) linkify(s string) string {
 	return fmt.Sprintf("%s%s.%s", prefix, href(l.toURL(pkgPath, ""), pkg), href(l.toURL(pkgPath, name), name))
 }
 
-// TODO: link to the right baseURL, with the right module name and version
-// pattern.
 func (l *linker) toURL(pkg, name string) string {
 	if pkg == "" {
 		if anchor := l.idToAnchor[""][name]; anchor != "" {
@@ -467,6 +487,7 @@ func (l *linker) toURL(pkg, name string) string {
 			pkgRemainder = pkg[len(mod.Path)+1:] // +1 to skip slash.
 		}
 		// Note: we always link to latest. One day, we'll link to mod.Version.
+		// Also, other packages may have different paths.
 		baseURL := fmt.Sprintf("/go/docs/reference/%v/latest/%v", mod.Path, pkgRemainder)
 		if anchor := l.idToAnchor[pkg][name]; anchor != "" {
 			return fmt.Sprintf("%s#%s", baseURL, anchor)
@@ -527,12 +548,6 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		Name: mod,
 	}
 
-	// Assume the module root has a package.
-	modTOC.addItem(&tocItem{
-		UID:  mod,
-		Name: mod,
-	})
-
 	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
 			Href: ef.dstRelativePath,
@@ -542,15 +557,17 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 
 	toc = append(toc, modTOC)
 
-	if len(pis) == 1 {
-		// The module only has one package.
-		return toc
-	}
-
 	trimmedPkgs := []string{}
+	statuses := map[string]string{}
 	for _, pi := range pis {
 		importPath := pi.Doc.ImportPath
 		if importPath == mod {
+			// Add the module root package immediately with the full name.
+			modTOC.addItem(&tocItem{
+				UID:    mod,
+				Name:   mod,
+				Status: pi.Status,
+			})
 			continue
 		}
 		if !strings.HasPrefix(importPath, mod) {
@@ -558,6 +575,7 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		}
 		trimmed := strings.TrimPrefix(importPath, mod+"/")
 		trimmedPkgs = append(trimmedPkgs, trimmed)
+		statuses[trimmed] = pi.Status
 	}
 
 	sort.Strings(trimmedPkgs)
@@ -565,8 +583,9 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 	for _, trimmed := range trimmedPkgs {
 		uid := mod + "/" + trimmed
 		pkgTOCItem := &tocItem{
-			UID:  uid,
-			Name: trimmed,
+			UID:    uid,
+			Name:   trimmed,
+			Status: statuses[trimmed],
 		}
 		modTOC.addItem(pkgTOCItem)
 	}

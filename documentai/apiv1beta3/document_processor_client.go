@@ -26,6 +26,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDocumentProcessorClientHook clientHook
@@ -42,15 +44,22 @@ var newDocumentProcessorClientHook clientHook
 type DocumentProcessorCallOptions struct {
 	ProcessDocument       []gax.CallOption
 	BatchProcessDocuments []gax.CallOption
+	FetchProcessorTypes   []gax.CallOption
+	ListProcessors        []gax.CallOption
+	CreateProcessor       []gax.CallOption
+	DeleteProcessor       []gax.CallOption
+	EnableProcessor       []gax.CallOption
+	DisableProcessor      []gax.CallOption
 	ReviewDocument        []gax.CallOption
 }
 
-func defaultDocumentProcessorClientOptions() []option.ClientOption {
+func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("us-documentai.googleapis.com:443"),
-		internaloption.WithDefaultMTLSEndpoint("us-documentai.mtls.googleapis.com:443"),
-		internaloption.WithDefaultAudience("https://us-documentai.googleapis.com/"),
+		internaloption.WithDefaultEndpoint("documentai.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("documentai.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -83,6 +92,12 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 				})
 			}),
 		},
+		FetchProcessorTypes: []gax.CallOption{},
+		ListProcessors:      []gax.CallOption{},
+		CreateProcessor:     []gax.CallOption{},
+		DeleteProcessor:     []gax.CallOption{},
+		EnableProcessor:     []gax.CallOption{},
+		DisableProcessor:    []gax.CallOption{},
 		ReviewDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -98,40 +113,182 @@ func defaultDocumentProcessorCallOptions() *DocumentProcessorCallOptions {
 	}
 }
 
+// internalDocumentProcessorClient is an interface that defines the methods availaible from Cloud Document AI API.
+type internalDocumentProcessorClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ProcessDocument(context.Context, *documentaipb.ProcessRequest, ...gax.CallOption) (*documentaipb.ProcessResponse, error)
+	BatchProcessDocuments(context.Context, *documentaipb.BatchProcessRequest, ...gax.CallOption) (*BatchProcessDocumentsOperation, error)
+	BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation
+	FetchProcessorTypes(context.Context, *documentaipb.FetchProcessorTypesRequest, ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error)
+	ListProcessors(context.Context, *documentaipb.ListProcessorsRequest, ...gax.CallOption) *ProcessorIterator
+	CreateProcessor(context.Context, *documentaipb.CreateProcessorRequest, ...gax.CallOption) (*documentaipb.Processor, error)
+	DeleteProcessor(context.Context, *documentaipb.DeleteProcessorRequest, ...gax.CallOption) (*DeleteProcessorOperation, error)
+	DeleteProcessorOperation(name string) *DeleteProcessorOperation
+	EnableProcessor(context.Context, *documentaipb.EnableProcessorRequest, ...gax.CallOption) (*EnableProcessorOperation, error)
+	EnableProcessorOperation(name string) *EnableProcessorOperation
+	DisableProcessor(context.Context, *documentaipb.DisableProcessorRequest, ...gax.CallOption) (*DisableProcessorOperation, error)
+	DisableProcessorOperation(name string) *DisableProcessorOperation
+	ReviewDocument(context.Context, *documentaipb.ReviewDocumentRequest, ...gax.CallOption) (*ReviewDocumentOperation, error)
+	ReviewDocumentOperation(name string) *ReviewDocumentOperation
+}
+
 // DocumentProcessorClient is a client for interacting with Cloud Document AI API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to call Cloud DocumentAI to process documents according to the
+// processor’s definition. Processors are built using state-of-the-art Google
+// AI such as natural language, computer vision, and translation to extract
+// structured information from unstructured or semi-structured documents.
+type DocumentProcessorClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDocumentProcessorClient
+
+	// The call options for this service.
+	CallOptions *DocumentProcessorCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DocumentProcessorClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DocumentProcessorClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DocumentProcessorClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ProcessDocument processes a single document.
+func (c *DocumentProcessorClient) ProcessDocument(ctx context.Context, req *documentaipb.ProcessRequest, opts ...gax.CallOption) (*documentaipb.ProcessResponse, error) {
+	return c.internalClient.ProcessDocument(ctx, req, opts...)
+}
+
+// BatchProcessDocuments lRO endpoint to batch process many documents. The output is written
+// to Cloud Storage as JSON in the [Document] format.
+func (c *DocumentProcessorClient) BatchProcessDocuments(ctx context.Context, req *documentaipb.BatchProcessRequest, opts ...gax.CallOption) (*BatchProcessDocumentsOperation, error) {
+	return c.internalClient.BatchProcessDocuments(ctx, req, opts...)
+}
+
+// BatchProcessDocumentsOperation returns a new BatchProcessDocumentsOperation from a given name.
+// The name must be that of a previously created BatchProcessDocumentsOperation, possibly from a different process.
+func (c *DocumentProcessorClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
+	return c.internalClient.BatchProcessDocumentsOperation(name)
+}
+
+// FetchProcessorTypes fetches processor types.
+func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
+	return c.internalClient.FetchProcessorTypes(ctx, req, opts...)
+}
+
+// ListProcessors lists all processors which belong to this project.
+func (c *DocumentProcessorClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
+	return c.internalClient.ListProcessors(ctx, req, opts...)
+}
+
+// CreateProcessor creates a processor from the type processor that the user chose.
+// The processor will be at “ENABLED” state by default after its creation.
+func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
+	return c.internalClient.CreateProcessor(ctx, req, opts...)
+}
+
+// DeleteProcessor deletes the processor, unloads all deployed model artifacts if it was
+// enabled and then deletes all artifacts associated with this processor.
+func (c *DocumentProcessorClient) DeleteProcessor(ctx context.Context, req *documentaipb.DeleteProcessorRequest, opts ...gax.CallOption) (*DeleteProcessorOperation, error) {
+	return c.internalClient.DeleteProcessor(ctx, req, opts...)
+}
+
+// DeleteProcessorOperation returns a new DeleteProcessorOperation from a given name.
+// The name must be that of a previously created DeleteProcessorOperation, possibly from a different process.
+func (c *DocumentProcessorClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
+	return c.internalClient.DeleteProcessorOperation(name)
+}
+
+// EnableProcessor enables a processor
+func (c *DocumentProcessorClient) EnableProcessor(ctx context.Context, req *documentaipb.EnableProcessorRequest, opts ...gax.CallOption) (*EnableProcessorOperation, error) {
+	return c.internalClient.EnableProcessor(ctx, req, opts...)
+}
+
+// EnableProcessorOperation returns a new EnableProcessorOperation from a given name.
+// The name must be that of a previously created EnableProcessorOperation, possibly from a different process.
+func (c *DocumentProcessorClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
+	return c.internalClient.EnableProcessorOperation(name)
+}
+
+// DisableProcessor disables a processor
+func (c *DocumentProcessorClient) DisableProcessor(ctx context.Context, req *documentaipb.DisableProcessorRequest, opts ...gax.CallOption) (*DisableProcessorOperation, error) {
+	return c.internalClient.DisableProcessor(ctx, req, opts...)
+}
+
+// DisableProcessorOperation returns a new DisableProcessorOperation from a given name.
+// The name must be that of a previously created DisableProcessorOperation, possibly from a different process.
+func (c *DocumentProcessorClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
+	return c.internalClient.DisableProcessorOperation(name)
+}
+
+// ReviewDocument send a document for Human Review. The input document should be processed by
+// the specified processor.
+func (c *DocumentProcessorClient) ReviewDocument(ctx context.Context, req *documentaipb.ReviewDocumentRequest, opts ...gax.CallOption) (*ReviewDocumentOperation, error) {
+	return c.internalClient.ReviewDocument(ctx, req, opts...)
+}
+
+// ReviewDocumentOperation returns a new ReviewDocumentOperation from a given name.
+// The name must be that of a previously created ReviewDocumentOperation, possibly from a different process.
+func (c *DocumentProcessorClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
+	return c.internalClient.ReviewDocumentOperation(name)
+}
+
+// documentProcessorGRPCClient is a client for interacting with Cloud Document AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DocumentProcessorClient struct {
+type documentProcessorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DocumentProcessorClient
+	CallOptions **DocumentProcessorCallOptions
+
 	// The gRPC API client.
 	documentProcessorClient documentaipb.DocumentProcessorServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DocumentProcessorCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDocumentProcessorClient creates a new document processor service client.
+// NewDocumentProcessorClient creates a new document processor service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to call Cloud DocumentAI to process documents according to the
 // processor’s definition. Processors are built using state-of-the-art Google
 // AI such as natural language, computer vision, and translation to extract
 // structured information from unstructured or semi-structured documents.
 func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption) (*DocumentProcessorClient, error) {
-	clientOpts := defaultDocumentProcessorClientOptions()
-
+	clientOpts := defaultDocumentProcessorGRPCClientOptions()
 	if newDocumentProcessorClientHook != nil {
 		hookOpts, err := newDocumentProcessorClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -149,16 +306,19 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &DocumentProcessorClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDocumentProcessorCallOptions(),
+	client := DocumentProcessorClient{CallOptions: defaultDocumentProcessorCallOptions()}
 
+	c := &documentProcessorGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		documentProcessorClient: documentaipb.NewDocumentProcessorServiceClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -168,33 +328,33 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DocumentProcessorClient) Connection() *grpc.ClientConn {
+func (c *documentProcessorGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DocumentProcessorClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DocumentProcessorClient) setGoogleClientInfo(keyval ...string) {
+func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ProcessDocument processes a single document.
-func (c *DocumentProcessorClient) ProcessDocument(ctx context.Context, req *documentaipb.ProcessRequest, opts ...gax.CallOption) (*documentaipb.ProcessResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *documentProcessorGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *documentaipb.ProcessRequest, opts ...gax.CallOption) (*documentaipb.ProcessResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -202,7 +362,7 @@ func (c *DocumentProcessorClient) ProcessDocument(ctx context.Context, req *docu
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ProcessDocument[0:len(c.CallOptions.ProcessDocument):len(c.CallOptions.ProcessDocument)], opts...)
+	opts = append((*c.CallOptions).ProcessDocument[0:len((*c.CallOptions).ProcessDocument):len((*c.CallOptions).ProcessDocument)], opts...)
 	var resp *documentaipb.ProcessResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -215,9 +375,7 @@ func (c *DocumentProcessorClient) ProcessDocument(ctx context.Context, req *docu
 	return resp, nil
 }
 
-// BatchProcessDocuments lRO endpoint to batch process many documents. The output is written
-// to Cloud Storage as JSON in the [Document] format.
-func (c *DocumentProcessorClient) BatchProcessDocuments(ctx context.Context, req *documentaipb.BatchProcessRequest, opts ...gax.CallOption) (*BatchProcessDocumentsOperation, error) {
+func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context, req *documentaipb.BatchProcessRequest, opts ...gax.CallOption) (*BatchProcessDocumentsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -225,7 +383,7 @@ func (c *DocumentProcessorClient) BatchProcessDocuments(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchProcessDocuments[0:len(c.CallOptions.BatchProcessDocuments):len(c.CallOptions.BatchProcessDocuments)], opts...)
+	opts = append((*c.CallOptions).BatchProcessDocuments[0:len((*c.CallOptions).BatchProcessDocuments):len((*c.CallOptions).BatchProcessDocuments)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -236,13 +394,141 @@ func (c *DocumentProcessorClient) BatchProcessDocuments(ctx context.Context, req
 		return nil, err
 	}
 	return &BatchProcessDocumentsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ReviewDocument send a document for Human Review. The input document should be processed by
-// the specified processor.
-func (c *DocumentProcessorClient) ReviewDocument(ctx context.Context, req *documentaipb.ReviewDocumentRequest, opts ...gax.CallOption) (*ReviewDocumentOperation, error) {
+func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).FetchProcessorTypes[0:len((*c.CallOptions).FetchProcessorTypes):len((*c.CallOptions).FetchProcessorTypes)], opts...)
+	var resp *documentaipb.FetchProcessorTypesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.FetchProcessorTypes(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListProcessors[0:len((*c.CallOptions).ListProcessors):len((*c.CallOptions).ListProcessors)], opts...)
+	it := &ProcessorIterator{}
+	req = proto.Clone(req).(*documentaipb.ListProcessorsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.Processor, string, error) {
+		resp := &documentaipb.ListProcessorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.documentProcessorClient.ListProcessors(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetProcessors(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateProcessor[0:len((*c.CallOptions).CreateProcessor):len((*c.CallOptions).CreateProcessor)], opts...)
+	var resp *documentaipb.Processor
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.CreateProcessor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *documentaipb.DeleteProcessorRequest, opts ...gax.CallOption) (*DeleteProcessorOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteProcessor[0:len((*c.CallOptions).DeleteProcessor):len((*c.CallOptions).DeleteProcessor)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.DeleteProcessor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *documentaipb.EnableProcessorRequest, opts ...gax.CallOption) (*EnableProcessorOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).EnableProcessor[0:len((*c.CallOptions).EnableProcessor):len((*c.CallOptions).EnableProcessor)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.EnableProcessor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &EnableProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req *documentaipb.DisableProcessorRequest, opts ...gax.CallOption) (*DisableProcessorOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DisableProcessor[0:len((*c.CallOptions).DisableProcessor):len((*c.CallOptions).DisableProcessor)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentProcessorClient.DisableProcessor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DisableProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *documentaipb.ReviewDocumentRequest, opts ...gax.CallOption) (*ReviewDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -250,7 +536,7 @@ func (c *DocumentProcessorClient) ReviewDocument(ctx context.Context, req *docum
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "human_review_config", url.QueryEscape(req.GetHumanReviewConfig())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReviewDocument[0:len(c.CallOptions.ReviewDocument):len(c.CallOptions.ReviewDocument)], opts...)
+	opts = append((*c.CallOptions).ReviewDocument[0:len((*c.CallOptions).ReviewDocument):len((*c.CallOptions).ReviewDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -261,7 +547,7 @@ func (c *DocumentProcessorClient) ReviewDocument(ctx context.Context, req *docum
 		return nil, err
 	}
 	return &ReviewDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -272,9 +558,9 @@ type BatchProcessDocumentsOperation struct {
 
 // BatchProcessDocumentsOperation returns a new BatchProcessDocumentsOperation from a given name.
 // The name must be that of a previously created BatchProcessDocumentsOperation, possibly from a different process.
-func (c *DocumentProcessorClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
+func (c *documentProcessorGRPCClient) BatchProcessDocumentsOperation(name string) *BatchProcessDocumentsOperation {
 	return &BatchProcessDocumentsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -334,6 +620,202 @@ func (op *BatchProcessDocumentsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteProcessorOperation manages a long-running operation from DeleteProcessor.
+type DeleteProcessorOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteProcessorOperation returns a new DeleteProcessorOperation from a given name.
+// The name must be that of a previously created DeleteProcessorOperation, possibly from a different process.
+func (c *documentProcessorGRPCClient) DeleteProcessorOperation(name string) *DeleteProcessorOperation {
+	return &DeleteProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteProcessorOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteProcessorOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteProcessorOperation) Metadata() (*documentaipb.DeleteProcessorMetadata, error) {
+	var meta documentaipb.DeleteProcessorMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteProcessorOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteProcessorOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DisableProcessorOperation manages a long-running operation from DisableProcessor.
+type DisableProcessorOperation struct {
+	lro *longrunning.Operation
+}
+
+// DisableProcessorOperation returns a new DisableProcessorOperation from a given name.
+// The name must be that of a previously created DisableProcessorOperation, possibly from a different process.
+func (c *documentProcessorGRPCClient) DisableProcessorOperation(name string) *DisableProcessorOperation {
+	return &DisableProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DisableProcessorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.DisableProcessorResponse, error) {
+	var resp documentaipb.DisableProcessorResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DisableProcessorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.DisableProcessorResponse, error) {
+	var resp documentaipb.DisableProcessorResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DisableProcessorOperation) Metadata() (*documentaipb.DisableProcessorMetadata, error) {
+	var meta documentaipb.DisableProcessorMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DisableProcessorOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DisableProcessorOperation) Name() string {
+	return op.lro.Name()
+}
+
+// EnableProcessorOperation manages a long-running operation from EnableProcessor.
+type EnableProcessorOperation struct {
+	lro *longrunning.Operation
+}
+
+// EnableProcessorOperation returns a new EnableProcessorOperation from a given name.
+// The name must be that of a previously created EnableProcessorOperation, possibly from a different process.
+func (c *documentProcessorGRPCClient) EnableProcessorOperation(name string) *EnableProcessorOperation {
+	return &EnableProcessorOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *EnableProcessorOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.EnableProcessorResponse, error) {
+	var resp documentaipb.EnableProcessorResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *EnableProcessorOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.EnableProcessorResponse, error) {
+	var resp documentaipb.EnableProcessorResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *EnableProcessorOperation) Metadata() (*documentaipb.EnableProcessorMetadata, error) {
+	var meta documentaipb.EnableProcessorMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *EnableProcessorOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *EnableProcessorOperation) Name() string {
+	return op.lro.Name()
+}
+
 // ReviewDocumentOperation manages a long-running operation from ReviewDocument.
 type ReviewDocumentOperation struct {
 	lro *longrunning.Operation
@@ -341,9 +823,9 @@ type ReviewDocumentOperation struct {
 
 // ReviewDocumentOperation returns a new ReviewDocumentOperation from a given name.
 // The name must be that of a previously created ReviewDocumentOperation, possibly from a different process.
-func (c *DocumentProcessorClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
+func (c *documentProcessorGRPCClient) ReviewDocumentOperation(name string) *ReviewDocumentOperation {
 	return &ReviewDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -401,4 +883,51 @@ func (op *ReviewDocumentOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ReviewDocumentOperation) Name() string {
 	return op.lro.Name()
+}
+
+// ProcessorIterator manages a stream of *documentaipb.Processor.
+type ProcessorIterator struct {
+	items    []*documentaipb.Processor
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*documentaipb.Processor, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ProcessorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ProcessorIterator) Next() (*documentaipb.Processor, error) {
+	var item *documentaipb.Processor
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ProcessorIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ProcessorIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

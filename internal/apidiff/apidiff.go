@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux || darwin
 // +build linux darwin
 
 package main
@@ -35,9 +36,11 @@ const rootMod = "cloud.google.com/go"
 
 var repoMetadataPath string
 var verbose bool
+var gapic string
 
 func init() {
 	flag.StringVar(&repoMetadataPath, "repo-metadata", "", "path to a repo-metadata-full JSON file [required]")
+	flag.StringVar(&gapic, "gapic", "", "import path of a specific GAPIC to diff")
 	flag.BoolVar(&verbose, "verbose", false, "enable verbose command logging")
 }
 
@@ -126,6 +129,10 @@ func diffModules(root, baseDir string, m manifest) (map[string]string, map[strin
 	issues := map[string]error{}
 
 	for imp, entry := range m {
+		if gapic != "" && imp != gapic {
+			continue
+		}
+
 		// Prepare module directory paths relative to the repo root.
 		pkg := strings.TrimPrefix(imp, rootMod+"/")
 		baseModDir := baseDir
@@ -205,7 +212,7 @@ func diff(m manifest, modDir, imp, pkg, base string) (string, error) {
 		if err := cd(parent); err != nil {
 			return "", err
 		}
-		out, err = exec("apidiff", "-w", base, imp)
+		out, err = exec("apidiff", "-incompatible", base, imp)
 		if err != nil {
 			return "", fmt.Errorf("%s: %s", err, out)
 		}

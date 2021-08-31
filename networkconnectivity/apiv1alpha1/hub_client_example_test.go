@@ -30,22 +30,23 @@ func ExampleNewHubClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleHubClient_ListHubs() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListHubsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#ListHubsRequest.
 	}
 	it := c.ListHubs(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleHubClient_ListHubs() {
 }
 
 func ExampleHubClient_GetHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.GetHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#GetHubRequest.
 	}
 	resp, err := c.GetHub(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleHubClient_GetHub() {
 }
 
 func ExampleHubClient_CreateHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.CreateHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#CreateHubRequest.
 	}
 	op, err := c.CreateHub(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleHubClient_CreateHub() {
 }
 
 func ExampleHubClient_UpdateHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.UpdateHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#UpdateHubRequest.
 	}
 	op, err := c.UpdateHub(ctx, req)
 	if err != nil {
@@ -132,16 +133,16 @@ func ExampleHubClient_UpdateHub() {
 }
 
 func ExampleHubClient_DeleteHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.DeleteHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#DeleteHubRequest.
 	}
 	op, err := c.DeleteHub(ctx, req)
 	if err != nil {
@@ -155,17 +156,16 @@ func ExampleHubClient_DeleteHub() {
 }
 
 func ExampleHubClient_ListSpokes() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListSpokesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#ListSpokesRequest.
 	}
 	it := c.ListSpokes(ctx, req)
 	for {
@@ -182,16 +182,16 @@ func ExampleHubClient_ListSpokes() {
 }
 
 func ExampleHubClient_GetSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.GetSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#GetSpokeRequest.
 	}
 	resp, err := c.GetSpoke(ctx, req)
 	if err != nil {
@@ -202,16 +202,16 @@ func ExampleHubClient_GetSpoke() {
 }
 
 func ExampleHubClient_CreateSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.CreateSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#CreateSpokeRequest.
 	}
 	op, err := c.CreateSpoke(ctx, req)
 	if err != nil {
@@ -227,16 +227,16 @@ func ExampleHubClient_CreateSpoke() {
 }
 
 func ExampleHubClient_UpdateSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.UpdateSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#UpdateSpokeRequest.
 	}
 	op, err := c.UpdateSpoke(ctx, req)
 	if err != nil {
@@ -252,16 +252,16 @@ func ExampleHubClient_UpdateSpoke() {
 }
 
 func ExampleHubClient_DeleteSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.DeleteSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#DeleteSpokeRequest.
 	}
 	op, err := c.DeleteSpoke(ctx, req)
 	if err != nil {

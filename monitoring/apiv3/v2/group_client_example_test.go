@@ -30,22 +30,23 @@ func ExampleNewGroupClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGroupClient_ListGroups() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListGroupsRequest.
 	}
 	it := c.ListGroups(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleGroupClient_ListGroups() {
 }
 
 func ExampleGroupClient_GetGroup() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetGroupRequest.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleGroupClient_GetGroup() {
 }
 
 func ExampleGroupClient_CreateGroup() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateGroupRequest.
 	}
 	resp, err := c.CreateGroup(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleGroupClient_CreateGroup() {
 }
 
 func ExampleGroupClient_UpdateGroup() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateGroupRequest.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleGroupClient_DeleteGroup() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteGroupRequest.
 	}
 	err = c.DeleteGroup(ctx, req)
 	if err != nil {
@@ -138,17 +141,16 @@ func ExampleGroupClient_DeleteGroup() {
 }
 
 func ExampleGroupClient_ListGroupMembers() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListGroupMembersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListGroupMembersRequest.
 	}
 	it := c.ListGroupMembers(ctx, req)
 	for {

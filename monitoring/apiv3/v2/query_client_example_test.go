@@ -30,22 +30,23 @@ func ExampleNewQueryClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleQueryClient_QueryTimeSeries() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewQueryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.QueryTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#QueryTimeSeriesRequest.
 	}
 	it := c.QueryTimeSeries(ctx, req)
 	for {

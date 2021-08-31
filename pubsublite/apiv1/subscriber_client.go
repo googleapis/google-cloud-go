@@ -36,12 +36,13 @@ type SubscriberCallOptions struct {
 	Subscribe []gax.CallOption
 }
 
-func defaultSubscriberClientOptions() []option.ClientOption {
+func defaultSubscriberGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -54,33 +55,81 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 	}
 }
 
+// internalSubscriberClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+type internalSubscriberClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	Subscribe(context.Context, ...gax.CallOption) (pubsublitepb.SubscriberService_SubscribeClient, error)
+}
+
 // SubscriberClient is a client for interacting with Pub/Sub Lite API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The service that a subscriber client application uses to receive messages
+// from subscriptions.
+type SubscriberClient struct {
+	// The internal transport-dependent client.
+	internalClient internalSubscriberClient
+
+	// The call options for this service.
+	CallOptions *SubscriberCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *SubscriberClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *SubscriberClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *SubscriberClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// Subscribe establishes a stream with the server for receiving messages.
+func (c *SubscriberClient) Subscribe(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.SubscriberService_SubscribeClient, error) {
+	return c.internalClient.Subscribe(ctx, opts...)
+}
+
+// subscriberGRPCClient is a client for interacting with Pub/Sub Lite API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type SubscriberClient struct {
+type subscriberGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing SubscriberClient
+	CallOptions **SubscriberCallOptions
+
 	// The gRPC API client.
 	subscriberClient pubsublitepb.SubscriberServiceClient
-
-	// The call options for this service.
-	CallOptions *SubscriberCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewSubscriberClient creates a new subscriber service client.
+// NewSubscriberClient creates a new subscriber service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The service that a subscriber client application uses to receive messages
 // from subscriptions.
 func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*SubscriberClient, error) {
-	clientOpts := defaultSubscriberClientOptions()
-
+	clientOpts := defaultSubscriberGRPCClientOptions()
 	if newSubscriberClientHook != nil {
 		hookOpts, err := newSubscriberClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -98,45 +147,47 @@ func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*Sub
 	if err != nil {
 		return nil, err
 	}
-	c := &SubscriberClient{
+	client := SubscriberClient{CallOptions: defaultSubscriberCallOptions()}
+
+	c := &subscriberGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultSubscriberCallOptions(),
-
 		subscriberClient: pubsublitepb.NewSubscriberServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *SubscriberClient) Connection() *grpc.ClientConn {
+func (c *subscriberGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *SubscriberClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *SubscriberClient) setGoogleClientInfo(keyval ...string) {
+func (c *subscriberGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// Subscribe establishes a stream with the server for receiving messages.
-func (c *SubscriberClient) Subscribe(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.SubscriberService_SubscribeClient, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *subscriberGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *subscriberGRPCClient) Subscribe(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.SubscriberService_SubscribeClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.Subscribe[0:len(c.CallOptions.Subscribe):len(c.CallOptions.Subscribe)], opts...)
 	var resp pubsublitepb.SubscriberService_SubscribeClient
+	opts = append((*c.CallOptions).Subscribe[0:len((*c.CallOptions).Subscribe):len((*c.CallOptions).Subscribe)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.subscriberClient.Subscribe(ctx, settings.GRPC...)

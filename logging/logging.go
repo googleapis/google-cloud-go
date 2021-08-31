@@ -32,7 +32,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -40,7 +39,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"cloud.google.com/go/compute/metadata"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
@@ -77,7 +75,7 @@ const (
 	DefaultEntryCountThreshold = 1000
 
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
-	DefaultEntryByteThreshold = 1 << 20 // 1MiB
+	DefaultEntryByteThreshold = 1 << 23 // 8MiB
 
 	// DefaultBufferedByteLimit is the default value for the BufferedByteLimit LoggerOption.
 	DefaultBufferedByteLimit = 1 << 30 // 1GiB
@@ -240,180 +238,6 @@ type Logger struct {
 // A LoggerOption is a configuration option for a Logger.
 type LoggerOption interface {
 	set(*Logger)
-}
-
-// CommonResource sets the monitored resource associated with all log entries
-// written from a Logger. If not provided, the resource is automatically
-// detected based on the running environment (on GCE, GCR, GCF and GAE Standard only).
-// This value can be overridden per-entry by setting an Entry's Resource field.
-func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
-
-type commonResource struct{ *mrpb.MonitoredResource }
-
-func (r commonResource) set(l *Logger) { l.commonResource = r.MonitoredResource }
-
-var detectedResource struct {
-	pb   *mrpb.MonitoredResource
-	once sync.Once
-}
-
-func detectGCEResource() *mrpb.MonitoredResource {
-	projectID, err := metadata.ProjectID()
-	if err != nil {
-		return nil
-	}
-	id, err := metadata.InstanceID()
-	if err != nil {
-		return nil
-	}
-	zone, err := metadata.Zone()
-	if err != nil {
-		return nil
-	}
-	name, err := metadata.InstanceName()
-	if err != nil {
-		return nil
-	}
-	return &mrpb.MonitoredResource{
-		Type: "gce_instance",
-		Labels: map[string]string{
-			"project_id":    projectID,
-			"instance_id":   id,
-			"instance_name": name,
-			"zone":          zone,
-		},
-	}
-}
-
-func detectGAEResource() *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "gae_app",
-		Labels: map[string]string{
-			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
-			"module_id":   os.Getenv("GAE_SERVICE"),
-			"version_id":  os.Getenv("GAE_VERSION"),
-			"instance_id": os.Getenv("GAE_INSTANCE"),
-			"runtime":     os.Getenv("GAE_RUNTIME"),
-		},
-	}
-}
-
-func isCloudRun() bool {
-	_, config := os.LookupEnv("K_CONFIGURATION")
-	_, service := os.LookupEnv("K_SERVICE")
-	_, revision := os.LookupEnv("K_REVISION")
-	return config && service && revision
-}
-
-func detectCloudRunResource() *mrpb.MonitoredResource {
-	projectID, err := metadata.ProjectID()
-	if err != nil {
-		return nil
-	}
-	zone, err := metadata.Zone()
-	if err != nil {
-		return nil
-	}
-	return &mrpb.MonitoredResource{
-		Type: "cloud_run_revision",
-		Labels: map[string]string{
-			"project_id":         projectID,
-			"location":           regionFromZone(zone),
-			"service_name":       os.Getenv("K_SERVICE"),
-			"revision_name":      os.Getenv("K_REVISION"),
-			"configuration_name": os.Getenv("K_CONFIGURATION"),
-		},
-	}
-}
-
-func isCloudFunction() bool {
-	// Reserved envvars in older function runtimes, e.g. Node.js 8, Python 3.7 and Go 1.11.
-	_, name := os.LookupEnv("FUNCTION_NAME")
-	_, region := os.LookupEnv("FUNCTION_REGION")
-	_, entry := os.LookupEnv("ENTRY_POINT")
-
-	// Reserved envvars in newer function runtimes.
-	_, target := os.LookupEnv("FUNCTION_TARGET")
-	_, signature := os.LookupEnv("FUNCTION_SIGNATURE_TYPE")
-	_, service := os.LookupEnv("K_SERVICE")
-	return (name && region && entry) || (target && signature && service)
-}
-
-func detectCloudFunction() *mrpb.MonitoredResource {
-	projectID, err := metadata.ProjectID()
-	if err != nil {
-		return nil
-	}
-	zone, err := metadata.Zone()
-	if err != nil {
-		return nil
-	}
-	// Newer functions runtimes store name in K_SERVICE.
-	functionName, exists := os.LookupEnv("K_SERVICE")
-	if !exists {
-		functionName, _ = os.LookupEnv("FUNCTION_NAME")
-	}
-	return &mrpb.MonitoredResource{
-		Type: "cloud_function",
-		Labels: map[string]string{
-			"project_id":    projectID,
-			"region":        regionFromZone(zone),
-			"function_name": functionName,
-		},
-	}
-}
-
-func detectResource() *mrpb.MonitoredResource {
-	detectedResource.once.Do(func() {
-		switch {
-		// AppEngine, Functions, CloudRun are detected first, as metadata.OnGCE()
-		// erroneously returns true on these runtimes.
-		case os.Getenv("GAE_ENV") == "standard":
-			detectedResource.pb = detectGAEResource()
-		case isCloudFunction():
-			detectedResource.pb = detectCloudFunction()
-		case isCloudRun():
-			detectedResource.pb = detectCloudRunResource()
-		case metadata.OnGCE():
-			detectedResource.pb = detectGCEResource()
-		}
-	})
-	return detectedResource.pb
-}
-
-var resourceInfo = map[string]struct{ rtype, label string }{
-	"organizations":   {"organization", "organization_id"},
-	"folders":         {"folder", "folder_id"},
-	"projects":        {"project", "project_id"},
-	"billingAccounts": {"billing_account", "account_id"},
-}
-
-func monitoredResource(parent string) *mrpb.MonitoredResource {
-	parts := strings.SplitN(parent, "/", 2)
-	if len(parts) != 2 {
-		return globalResource(parent)
-	}
-	info, ok := resourceInfo[parts[0]]
-	if !ok {
-		return globalResource(parts[1])
-	}
-	return &mrpb.MonitoredResource{
-		Type:   info.rtype,
-		Labels: map[string]string{info.label: parts[1]},
-	}
-}
-
-func regionFromZone(zone string) string {
-	return zone[:strings.LastIndex(zone, "-")]
-}
-
-func globalResource(projectID string) *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "global",
-		Labels: map[string]string{
-			"project_id": projectID,
-		},
-	}
 }
 
 // CommonLabels are labels that apply to all log entries written from a Logger,
@@ -640,10 +464,14 @@ func (v Severity) String() string {
 // Severity.
 func (v *Severity) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
+	var i int
+	if strErr := json.Unmarshal(data, &s); strErr == nil {
+		*v = ParseSeverity(s)
+	} else if intErr := json.Unmarshal(data, &i); intErr == nil {
+		*v = Severity(i)
+	} else {
+		return fmt.Errorf("%v; %v", strErr, intErr)
 	}
-	*v = ParseSeverity(s)
 	return nil
 }
 

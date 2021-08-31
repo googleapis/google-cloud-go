@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 package main
@@ -30,7 +31,7 @@ func updateGocloudPR(ctx context.Context, githubClient *git.GithubClient, pr *gi
 	}
 
 	// Checkout PR and update go.mod
-	if err := githubClient.UpdateGocloudGoMod(pr); err != nil {
+	if err := githubClient.UpdateGocloudGoMod(); err != nil {
 		return err
 	}
 

@@ -30,22 +30,23 @@ func ExampleNewExperimentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleExperimentsClient_ListExperiments() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListExperimentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListExperimentsRequest.
 	}
 	it := c.ListExperiments(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleExperimentsClient_ListExperiments() {
 }
 
 func ExampleExperimentsClient_GetExperiment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetExperimentRequest.
 	}
 	resp, err := c.GetExperiment(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleExperimentsClient_GetExperiment() {
 }
 
 func ExampleExperimentsClient_CreateExperiment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateExperimentRequest.
 	}
 	resp, err := c.CreateExperiment(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleExperimentsClient_CreateExperiment() {
 }
 
 func ExampleExperimentsClient_UpdateExperiment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateExperimentRequest.
 	}
 	resp, err := c.UpdateExperiment(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleExperimentsClient_DeleteExperiment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteExperimentRequest.
 	}
 	err = c.DeleteExperiment(ctx, req)
 	if err != nil {
@@ -138,16 +141,16 @@ func ExampleExperimentsClient_DeleteExperiment() {
 }
 
 func ExampleExperimentsClient_StartExperiment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.StartExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#StartExperimentRequest.
 	}
 	resp, err := c.StartExperiment(ctx, req)
 	if err != nil {
@@ -158,16 +161,16 @@ func ExampleExperimentsClient_StartExperiment() {
 }
 
 func ExampleExperimentsClient_StopExperiment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.StopExperimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#StopExperimentRequest.
 	}
 	resp, err := c.StopExperiment(ctx, req)
 	if err != nil {

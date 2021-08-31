@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newFoldersClientHook clientHook
@@ -55,12 +55,13 @@ type FoldersCallOptions struct {
 	TestIamPermissions []gax.CallOption
 }
 
-func defaultFoldersClientOptions() []option.ClientOption {
+func defaultFoldersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudresourcemanager.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudresourcemanager.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudresourcemanager.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -83,98 +84,65 @@ func defaultFoldersCallOptions() *FoldersCallOptions {
 	}
 }
 
-// FoldersClient is a client for interacting with Cloud Resource Manager API.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type FoldersClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	foldersClient resourcemanagerpb.FoldersClient
-
-	// LROClient is used internally to handle longrunning operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *FoldersCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+// internalFoldersClient is an interface that defines the methods availaible from Cloud Resource Manager API.
+type internalFoldersClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListFolders(context.Context, *resourcemanagerpb.ListFoldersRequest, ...gax.CallOption) *FolderIterator
+	SearchFolders(context.Context, *resourcemanagerpb.SearchFoldersRequest, ...gax.CallOption) *FolderIterator
+	GetFolder(context.Context, *resourcemanagerpb.GetFolderRequest, ...gax.CallOption) (*resourcemanagerpb.Folder, error)
+	CreateFolder(context.Context, *resourcemanagerpb.CreateFolderRequest, ...gax.CallOption) (*CreateFolderOperation, error)
+	CreateFolderOperation(name string) *CreateFolderOperation
+	UpdateFolder(context.Context, *resourcemanagerpb.UpdateFolderRequest, ...gax.CallOption) (*resourcemanagerpb.Folder, error)
+	MoveFolder(context.Context, *resourcemanagerpb.MoveFolderRequest, ...gax.CallOption) (*MoveFolderOperation, error)
+	MoveFolderOperation(name string) *MoveFolderOperation
+	DeleteFolder(context.Context, *resourcemanagerpb.DeleteFolderRequest, ...gax.CallOption) (*resourcemanagerpb.Folder, error)
+	UndeleteFolder(context.Context, *resourcemanagerpb.UndeleteFolderRequest, ...gax.CallOption) (*resourcemanagerpb.Folder, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
-// NewFoldersClient creates a new folders client.
+// FoldersClient is a client for interacting with Cloud Resource Manager API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Manages Cloud Resource Folders.
 // Cloud Resource Folders can be used to organize the resources under an
 // organization and to control the IAM policies applied to groups of resources.
-func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*FoldersClient, error) {
-	clientOpts := defaultFoldersClientOptions()
+type FoldersClient struct {
+	// The internal transport-dependent client.
+	internalClient internalFoldersClient
 
-	if newFoldersClientHook != nil {
-		hookOpts, err := newFoldersClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
+	// The call options for this service.
+	CallOptions *FoldersCallOptions
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &FoldersClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultFoldersCallOptions(),
-
-		foldersClient: resourcemanagerpb.NewFoldersClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
-	if err != nil {
-		// This error "should not happen", since we are just reusing old connection pool
-		// and never actually need to dial.
-		// If this does happen, we could leak connp. However, we cannot close conn:
-		// If the user invoked the constructor with option.WithGRPCConn,
-		// we would close a connection that's still in use.
-		// TODO: investigate error conditions.
-		return nil, err
-	}
-	return c, nil
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *FoldersClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *FoldersClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *FoldersClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *FoldersClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // ListFolders lists the Folders that are direct descendants of supplied parent resource.
@@ -185,42 +153,7 @@ func (c *FoldersClient) setGoogleClientInfo(keyval ...string) {
 // The caller must have resourcemanager.folders.list permission on the
 // identified parent.
 func (c *FoldersClient) ListFolders(ctx context.Context, req *resourcemanagerpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListFolders[0:len(c.CallOptions.ListFolders):len(c.CallOptions.ListFolders)], opts...)
-	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
-		var resp *resourcemanagerpb.ListFoldersResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.foldersClient.ListFolders(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetFolders(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
+	return c.internalClient.ListFolders(ctx, req, opts...)
 }
 
 // SearchFolders search for folders that match specific filter criteria.
@@ -230,42 +163,7 @@ func (c *FoldersClient) ListFolders(ctx context.Context, req *resourcemanagerpb.
 // This will only return folders on which the caller has the
 // permission resourcemanager.folders.get.
 func (c *FoldersClient) SearchFolders(ctx context.Context, req *resourcemanagerpb.SearchFoldersRequest, opts ...gax.CallOption) *FolderIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.SearchFolders[0:len(c.CallOptions.SearchFolders):len(c.CallOptions.SearchFolders)], opts...)
-	it := &FolderIterator{}
-	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
-		var resp *resourcemanagerpb.SearchFoldersResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.foldersClient.SearchFolders(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetFolders(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
+	return c.internalClient.SearchFolders(ctx, req, opts...)
 }
 
 // GetFolder retrieves a Folder identified by the supplied resource name.
@@ -274,19 +172,7 @@ func (c *FoldersClient) SearchFolders(ctx context.Context, req *resourcemanagerp
 // The caller must have resourcemanager.folders.get permission on the
 // identified folder.
 func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.GetFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetFolder[0:len(c.CallOptions.GetFolder):len(c.CallOptions.GetFolder)], opts...)
-	var resp *resourcemanagerpb.Folder
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.foldersClient.GetFolder(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.GetFolder(ctx, req, opts...)
 }
 
 // CreateFolder creates a Folder in the resource hierarchy.
@@ -319,20 +205,13 @@ func (c *FoldersClient) GetFolder(ctx context.Context, req *resourcemanagerpb.Ge
 // The caller must have resourcemanager.folders.create permission on the
 // identified parent.
 func (c *FoldersClient) CreateFolder(ctx context.Context, req *resourcemanagerpb.CreateFolderRequest, opts ...gax.CallOption) (*CreateFolderOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CreateFolder[0:len(c.CallOptions.CreateFolder):len(c.CallOptions.CreateFolder)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.foldersClient.CreateFolder(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
+	return c.internalClient.CreateFolder(ctx, req, opts...)
+}
+
+// CreateFolderOperation returns a new CreateFolderOperation from a given name.
+// The name must be that of a previously created CreateFolderOperation, possibly from a different process.
+func (c *FoldersClient) CreateFolderOperation(name string) *CreateFolderOperation {
+	return c.internalClient.CreateFolderOperation(name)
 }
 
 // UpdateFolder updates a Folder, changing its display_name.
@@ -351,19 +230,7 @@ func (c *FoldersClient) CreateFolder(ctx context.Context, req *resourcemanagerpb
 // PreconditionFailure explaining this violation will be returned
 // in the Status.details field.
 func (c *FoldersClient) UpdateFolder(ctx context.Context, req *resourcemanagerpb.UpdateFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "folder.name", url.QueryEscape(req.GetFolder().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateFolder[0:len(c.CallOptions.UpdateFolder):len(c.CallOptions.UpdateFolder)], opts...)
-	var resp *resourcemanagerpb.Folder
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.foldersClient.UpdateFolder(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.UpdateFolder(ctx, req, opts...)
 }
 
 // MoveFolder moves a Folder under a new resource parent.
@@ -384,21 +251,13 @@ func (c *FoldersClient) UpdateFolder(ctx context.Context, req *resourcemanagerpb
 // The caller must have resourcemanager.folders.move permission on the
 // folder’s current and proposed new parent.
 func (c *FoldersClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.MoveFolder[0:len(c.CallOptions.MoveFolder):len(c.CallOptions.MoveFolder)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.foldersClient.MoveFolder(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
+	return c.internalClient.MoveFolder(ctx, req, opts...)
+}
+
+// MoveFolderOperation returns a new MoveFolderOperation from a given name.
+// The name must be that of a previously created MoveFolderOperation, possibly from a different process.
+func (c *FoldersClient) MoveFolderOperation(name string) *MoveFolderOperation {
+	return c.internalClient.MoveFolderOperation(name)
 }
 
 // DeleteFolder requests deletion of a Folder. The Folder is moved into the
@@ -411,19 +270,7 @@ func (c *FoldersClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.M
 // The caller must have resourcemanager.folders.delete permission on the
 // identified folder.
 func (c *FoldersClient) DeleteFolder(ctx context.Context, req *resourcemanagerpb.DeleteFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteFolder[0:len(c.CallOptions.DeleteFolder):len(c.CallOptions.DeleteFolder)], opts...)
-	var resp *resourcemanagerpb.Folder
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.foldersClient.DeleteFolder(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.DeleteFolder(ctx, req, opts...)
 }
 
 // UndeleteFolder cancels the deletion request for a Folder. This method may only be
@@ -437,9 +284,307 @@ func (c *FoldersClient) DeleteFolder(ctx context.Context, req *resourcemanagerpb
 // The caller must have resourcemanager.folders.undelete permission on the
 // identified folder.
 func (c *FoldersClient) UndeleteFolder(ctx context.Context, req *resourcemanagerpb.UndeleteFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
+	return c.internalClient.UndeleteFolder(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a Folder. The returned policy may be
+// empty if no such policy or resource exists. The resource field should
+// be the Folder’s resource name, e.g. “folders/1234”.
+// The caller must have resourcemanager.folders.getIamPolicy permission
+// on the identified folder.
+func (c *FoldersClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on a Folder, replacing any existing policy.
+// The resource field should be the Folder’s resource name, e.g.
+// “folders/1234”.
+// The caller must have resourcemanager.folders.setIamPolicy permission
+// on the identified folder.
+func (c *FoldersClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified Folder.
+// The resource field should be the Folder’s resource name,
+// e.g. “folders/1234”.
+//
+// There are no permissions required for making this API call.
+func (c *FoldersClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// foldersGRPCClient is a client for interacting with Cloud Resource Manager API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type foldersGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing FoldersClient
+	CallOptions **FoldersCallOptions
+
+	// The gRPC API client.
+	foldersClient resourcemanagerpb.FoldersClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewFoldersClient creates a new folders client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Manages Cloud Resource Folders.
+// Cloud Resource Folders can be used to organize the resources under an
+// organization and to control the IAM policies applied to groups of resources.
+func NewFoldersClient(ctx context.Context, opts ...option.ClientOption) (*FoldersClient, error) {
+	clientOpts := defaultFoldersGRPCClientOptions()
+	if newFoldersClientHook != nil {
+		hookOpts, err := newFoldersClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := FoldersClient{CallOptions: defaultFoldersCallOptions()}
+
+	c := &foldersGRPCClient{
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		foldersClient:    resourcemanagerpb.NewFoldersClient(connPool),
+		CallOptions:      &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *foldersGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *foldersGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *foldersGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *foldersGRPCClient) ListFolders(ctx context.Context, req *resourcemanagerpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListFolders[0:len((*c.CallOptions).ListFolders):len((*c.CallOptions).ListFolders)], opts...)
+	it := &FolderIterator{}
+	req = proto.Clone(req).(*resourcemanagerpb.ListFoldersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
+		resp := &resourcemanagerpb.ListFoldersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.foldersClient.ListFolders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFolders(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *foldersGRPCClient) SearchFolders(ctx context.Context, req *resourcemanagerpb.SearchFoldersRequest, opts ...gax.CallOption) *FolderIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SearchFolders[0:len((*c.CallOptions).SearchFolders):len((*c.CallOptions).SearchFolders)], opts...)
+	it := &FolderIterator{}
+	req = proto.Clone(req).(*resourcemanagerpb.SearchFoldersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*resourcemanagerpb.Folder, string, error) {
+		resp := &resourcemanagerpb.SearchFoldersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.foldersClient.SearchFolders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFolders(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *foldersGRPCClient) GetFolder(ctx context.Context, req *resourcemanagerpb.GetFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UndeleteFolder[0:len(c.CallOptions.UndeleteFolder):len(c.CallOptions.UndeleteFolder)], opts...)
+	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
+	var resp *resourcemanagerpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.foldersClient.GetFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *foldersGRPCClient) CreateFolder(ctx context.Context, req *resourcemanagerpb.CreateFolderRequest, opts ...gax.CallOption) (*CreateFolderOperation, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.foldersClient.CreateFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateFolderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *foldersGRPCClient) UpdateFolder(ctx context.Context, req *resourcemanagerpb.UpdateFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "folder.name", url.QueryEscape(req.GetFolder().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
+	var resp *resourcemanagerpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.foldersClient.UpdateFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *foldersGRPCClient) MoveFolder(ctx context.Context, req *resourcemanagerpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MoveFolder[0:len((*c.CallOptions).MoveFolder):len((*c.CallOptions).MoveFolder)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.foldersClient.MoveFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MoveFolderOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *foldersGRPCClient) DeleteFolder(ctx context.Context, req *resourcemanagerpb.DeleteFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
+	var resp *resourcemanagerpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.foldersClient.DeleteFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *foldersGRPCClient) UndeleteFolder(ctx context.Context, req *resourcemanagerpb.UndeleteFolderRequest, opts ...gax.CallOption) (*resourcemanagerpb.Folder, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UndeleteFolder[0:len((*c.CallOptions).UndeleteFolder):len((*c.CallOptions).UndeleteFolder)], opts...)
 	var resp *resourcemanagerpb.Folder
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -452,15 +597,10 @@ func (c *FoldersClient) UndeleteFolder(ctx context.Context, req *resourcemanager
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a Folder. The returned policy may be
-// empty if no such policy or resource exists. The resource field should
-// be the Folder’s resource name, e.g. “folders/1234”.
-// The caller must have resourcemanager.folders.getIamPolicy permission
-// on the identified folder.
-func (c *FoldersClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *foldersGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -473,15 +613,10 @@ func (c *FoldersClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolic
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy on a Folder, replacing any existing policy.
-// The resource field should be the Folder’s resource name, e.g.
-// “folders/1234”.
-// The caller must have resourcemanager.folders.setIamPolicy permission
-// on the identified folder.
-func (c *FoldersClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *foldersGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -494,15 +629,10 @@ func (c *FoldersClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolic
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified Folder.
-// The resource field should be the Folder’s resource name,
-// e.g. “folders/1234”.
-//
-// There are no permissions required for making this API call.
-func (c *FoldersClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *foldersGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -522,9 +652,9 @@ type CreateFolderOperation struct {
 
 // CreateFolderOperation returns a new CreateFolderOperation from a given name.
 // The name must be that of a previously created CreateFolderOperation, possibly from a different process.
-func (c *FoldersClient) CreateFolderOperation(name string) *CreateFolderOperation {
+func (c *foldersGRPCClient) CreateFolderOperation(name string) *CreateFolderOperation {
 	return &CreateFolderOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -591,9 +721,9 @@ type MoveFolderOperation struct {
 
 // MoveFolderOperation returns a new MoveFolderOperation from a given name.
 // The name must be that of a previously created MoveFolderOperation, possibly from a different process.
-func (c *FoldersClient) MoveFolderOperation(name string) *MoveFolderOperation {
+func (c *foldersGRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
 	return &MoveFolderOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

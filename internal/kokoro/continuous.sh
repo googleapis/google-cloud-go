@@ -37,6 +37,13 @@ export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 
+# Bigtable integration tests expect an existing instance and cluster
+#  ❯ cbt createinstance gcloud-bt-it-tests-instance gcloud-bt-it-tests-instance \
+#    gcloud-bt-it-tests-cluster us-west1-b 1 SSD
+export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test
+export GCLOUD_TESTS_BIGTABLE_CLUSTER="gcloud-bt-it-tests-cluster"
+export GCLOUD_TESTS_BIGTABLE_INSTANCE="gcloud-bt-it-tests-instance"
+
 # Fail on any error
 set -eo pipefail
 
@@ -62,7 +69,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 # All packages, including +build tools, are fetched.
 try3 go mod download
-go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
 # runTests runs all tests in the current directory.

@@ -10,6 +10,21 @@
         "grpc": {
           "libraryClient": "AnalyticsAdminClient",
           "rpcs": {
+            "ApproveDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "ApproveDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "ArchiveCustomDimension": {
+              "methods": [
+                "ArchiveCustomDimension"
+              ]
+            },
+            "ArchiveCustomMetric": {
+              "methods": [
+                "ArchiveCustomMetric"
+              ]
+            },
             "AuditUserLinks": {
               "methods": [
                 "AuditUserLinks"
@@ -35,9 +50,34 @@
                 "BatchUpdateUserLinks"
               ]
             },
-            "CreateAndroidAppDataStream": {
+            "CancelDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
-                "CreateAndroidAppDataStream"
+                "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateConversionEvent": {
+              "methods": [
+                "CreateConversionEvent"
+              ]
+            },
+            "CreateCustomDimension": {
+              "methods": [
+                "CreateCustomDimension"
+              ]
+            },
+            "CreateCustomMetric": {
+              "methods": [
+                "CreateCustomMetric"
+              ]
+            },
+            "CreateDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "CreateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "CreateDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "CreateDisplayVideo360AdvertiserLinkProposal"
               ]
             },
             "CreateFirebaseLink": {
@@ -50,9 +90,9 @@
                 "CreateGoogleAdsLink"
               ]
             },
-            "CreateIosAppDataStream": {
+            "CreateMeasurementProtocolSecret": {
               "methods": [
-                "CreateIosAppDataStream"
+                "CreateMeasurementProtocolSecret"
               ]
             },
             "CreateProperty": {
@@ -80,6 +120,21 @@
                 "DeleteAndroidAppDataStream"
               ]
             },
+            "DeleteConversionEvent": {
+              "methods": [
+                "DeleteConversionEvent"
+              ]
+            },
+            "DeleteDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "DeleteDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "DeleteDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
             "DeleteFirebaseLink": {
               "methods": [
                 "DeleteFirebaseLink"
@@ -93,6 +148,11 @@
             "DeleteIosAppDataStream": {
               "methods": [
                 "DeleteIosAppDataStream"
+              ]
+            },
+            "DeleteMeasurementProtocolSecret": {
+              "methods": [
+                "DeleteMeasurementProtocolSecret"
               ]
             },
             "DeleteProperty": {
@@ -120,9 +180,39 @@
                 "GetAndroidAppDataStream"
               ]
             },
+            "GetConversionEvent": {
+              "methods": [
+                "GetConversionEvent"
+              ]
+            },
+            "GetCustomDimension": {
+              "methods": [
+                "GetCustomDimension"
+              ]
+            },
+            "GetCustomMetric": {
+              "methods": [
+                "GetCustomMetric"
+              ]
+            },
+            "GetDataRetentionSettings": {
+              "methods": [
+                "GetDataRetentionSettings"
+              ]
+            },
             "GetDataSharingSettings": {
               "methods": [
                 "GetDataSharingSettings"
+              ]
+            },
+            "GetDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "GetDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "GetDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
             "GetEnhancedMeasurementSettings": {
@@ -135,9 +225,19 @@
                 "GetGlobalSiteTag"
               ]
             },
+            "GetGoogleSignalsSettings": {
+              "methods": [
+                "GetGoogleSignalsSettings"
+              ]
+            },
             "GetIosAppDataStream": {
               "methods": [
                 "GetIosAppDataStream"
+              ]
+            },
+            "GetMeasurementProtocolSecret": {
+              "methods": [
+                "GetMeasurementProtocolSecret"
               ]
             },
             "GetProperty": {
@@ -170,6 +270,31 @@
                 "ListAndroidAppDataStreams"
               ]
             },
+            "ListConversionEvents": {
+              "methods": [
+                "ListConversionEvents"
+              ]
+            },
+            "ListCustomDimensions": {
+              "methods": [
+                "ListCustomDimensions"
+              ]
+            },
+            "ListCustomMetrics": {
+              "methods": [
+                "ListCustomMetrics"
+              ]
+            },
+            "ListDisplayVideo360AdvertiserLinkProposals": {
+              "methods": [
+                "ListDisplayVideo360AdvertiserLinkProposals"
+              ]
+            },
+            "ListDisplayVideo360AdvertiserLinks": {
+              "methods": [
+                "ListDisplayVideo360AdvertiserLinks"
+              ]
+            },
             "ListFirebaseLinks": {
               "methods": [
                 "ListFirebaseLinks"
@@ -183,6 +308,11 @@
             "ListIosAppDataStreams": {
               "methods": [
                 "ListIosAppDataStreams"
+              ]
+            },
+            "ListMeasurementProtocolSecrets": {
+              "methods": [
+                "ListMeasurementProtocolSecrets"
               ]
             },
             "ListProperties": {
@@ -205,6 +335,11 @@
                 "ProvisionAccountTicket"
               ]
             },
+            "SearchChangeHistoryEvents": {
+              "methods": [
+                "SearchChangeHistoryEvents"
+              ]
+            },
             "UpdateAccount": {
               "methods": [
                 "UpdateAccount"
@@ -215,14 +350,29 @@
                 "UpdateAndroidAppDataStream"
               ]
             },
+            "UpdateCustomDimension": {
+              "methods": [
+                "UpdateCustomDimension"
+              ]
+            },
+            "UpdateCustomMetric": {
+              "methods": [
+                "UpdateCustomMetric"
+              ]
+            },
+            "UpdateDataRetentionSettings": {
+              "methods": [
+                "UpdateDataRetentionSettings"
+              ]
+            },
+            "UpdateDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
             "UpdateEnhancedMeasurementSettings": {
               "methods": [
                 "UpdateEnhancedMeasurementSettings"
-              ]
-            },
-            "UpdateFirebaseLink": {
-              "methods": [
-                "UpdateFirebaseLink"
               ]
             },
             "UpdateGoogleAdsLink": {
@@ -230,9 +380,19 @@
                 "UpdateGoogleAdsLink"
               ]
             },
+            "UpdateGoogleSignalsSettings": {
+              "methods": [
+                "UpdateGoogleSignalsSettings"
+              ]
+            },
             "UpdateIosAppDataStream": {
               "methods": [
                 "UpdateIosAppDataStream"
+              ]
+            },
+            "UpdateMeasurementProtocolSecret": {
+              "methods": [
+                "UpdateMeasurementProtocolSecret"
               ]
             },
             "UpdateProperty": {

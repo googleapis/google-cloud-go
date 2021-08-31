@@ -30,21 +30,23 @@ func ExampleNewApplicationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleApplicationClient_CreateApplication() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewApplicationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateApplicationRequest.
 	}
 	resp, err := c.CreateApplication(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleApplicationClient_CreateApplication() {
 }
 
 func ExampleApplicationClient_GetApplication() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewApplicationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetApplicationRequest.
 	}
 	resp, err := c.GetApplication(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleApplicationClient_GetApplication() {
 }
 
 func ExampleApplicationClient_UpdateApplication() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewApplicationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.UpdateApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateApplicationRequest.
 	}
 	resp, err := c.UpdateApplication(ctx, req)
 	if err != nil {
@@ -100,9 +102,11 @@ func ExampleApplicationClient_DeleteApplication() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.DeleteApplicationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteApplicationRequest.
 	}
 	err = c.DeleteApplication(ctx, req)
 	if err != nil {
@@ -111,17 +115,16 @@ func ExampleApplicationClient_DeleteApplication() {
 }
 
 func ExampleApplicationClient_ListApplications() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewApplicationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListApplicationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListApplicationsRequest.
 	}
 	it := c.ListApplications(ctx, req)
 	for {

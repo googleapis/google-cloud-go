@@ -82,6 +82,12 @@ type Client struct {
 	qo           QueryOptions
 }
 
+// DatabaseName returns the full name of a database, e.g.,
+// "projects/spanner-cloud-test/instances/foo/databases/foodb".
+func (c *Client) DatabaseName() string {
+	return c.sc.database
+}
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
@@ -221,12 +227,16 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 // via application-level configuration. If the environment variables are set,
 // this will return the overwritten query options.
 func getQueryOptions(opts QueryOptions) QueryOptions {
+	if opts.Options == nil {
+		opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
+	}
 	opv := os.Getenv("SPANNER_OPTIMIZER_VERSION")
 	if opv != "" {
-		if opts.Options == nil {
-			opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
-		}
 		opts.Options.OptimizerVersion = opv
+	}
+	opsp := os.Getenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE")
+	if opsp != "" {
+		opts.Options.OptimizerStatisticsPackage = opsp
 	}
 	return opts
 }
@@ -487,6 +497,8 @@ type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud
 	// Spanner at least once.
 	atLeastOnce bool
+	// transactionTag will be included with the CommitRequest.
+	transactionTag string
 	// priority is the RPC priority that is used for the commit operation.
 	priority sppb.RequestOptions_Priority
 }
@@ -511,6 +523,14 @@ func ApplyAtLeastOnce() ApplyOption {
 	}
 }
 
+// TransactionTag returns an ApplyOption that will include the given tag as a
+// transaction tag for a write-only transaction.
+func TransactionTag(tag string) ApplyOption {
+	return func(ao *applyOption) {
+		ao.transactionTag = tag
+	}
+}
+
 // Priority returns an ApplyOptions that sets the RPC priority to use for the
 // commit operation.
 func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
@@ -532,10 +552,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 

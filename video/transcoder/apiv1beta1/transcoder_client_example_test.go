@@ -30,21 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateJob() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -55,17 +57,16 @@ func ExampleClient_CreateJob() {
 }
 
 func ExampleClient_ListJobs() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -82,16 +83,16 @@ func ExampleClient_ListJobs() {
 }
 
 func ExampleClient_GetJob() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -107,9 +108,11 @@ func ExampleClient_DeleteJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {
@@ -118,16 +121,16 @@ func ExampleClient_DeleteJob() {
 }
 
 func ExampleClient_CreateJobTemplate() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.CreateJobTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#CreateJobTemplateRequest.
 	}
 	resp, err := c.CreateJobTemplate(ctx, req)
 	if err != nil {
@@ -138,17 +141,16 @@ func ExampleClient_CreateJobTemplate() {
 }
 
 func ExampleClient_ListJobTemplates() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.ListJobTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#ListJobTemplatesRequest.
 	}
 	it := c.ListJobTemplates(ctx, req)
 	for {
@@ -165,16 +167,16 @@ func ExampleClient_ListJobTemplates() {
 }
 
 func ExampleClient_GetJobTemplate() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.GetJobTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#GetJobTemplateRequest.
 	}
 	resp, err := c.GetJobTemplate(ctx, req)
 	if err != nil {
@@ -190,9 +192,11 @@ func ExampleClient_DeleteJobTemplate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.DeleteJobTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#DeleteJobTemplateRequest.
 	}
 	err = c.DeleteJobTemplate(ctx, req)
 	if err != nil {

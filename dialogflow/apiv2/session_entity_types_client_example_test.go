@@ -30,22 +30,23 @@ func ExampleNewSessionEntityTypesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListSessionEntityTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListSessionEntityTypesRequest.
 	}
 	it := c.ListSessionEntityTypes(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
 }
 
 func ExampleSessionEntityTypesClient_GetSessionEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetSessionEntityTypeRequest.
 	}
 	resp, err := c.GetSessionEntityType(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleSessionEntityTypesClient_GetSessionEntityType() {
 }
 
 func ExampleSessionEntityTypesClient_CreateSessionEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateSessionEntityTypeRequest.
 	}
 	resp, err := c.CreateSessionEntityType(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleSessionEntityTypesClient_CreateSessionEntityType() {
 }
 
 func ExampleSessionEntityTypesClient_UpdateSessionEntityType() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateSessionEntityTypeRequest.
 	}
 	resp, err := c.UpdateSessionEntityType(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleSessionEntityTypesClient_DeleteSessionEntityType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteSessionEntityTypeRequest.
 	}
 	err = c.DeleteSessionEntityType(ctx, req)
 	if err != nil {

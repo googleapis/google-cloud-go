@@ -29,21 +29,23 @@ func ExampleNewErrorGroupClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleErrorGroupClient_GetGroup() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.GetGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#GetGroupRequest.
 	}
 	resp, err := c.GetGroup(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleErrorGroupClient_GetGroup() {
 }
 
 func ExampleErrorGroupClient_UpdateGroup() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#UpdateGroupRequest.
 	}
 	resp, err := c.UpdateGroup(ctx, req)
 	if err != nil {
