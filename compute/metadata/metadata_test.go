@@ -192,7 +192,10 @@ func (r *failingTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	r.called++
 	if r.failedAttempts < r.timesToFail {
 		r.failedAttempts++
-		return &http.Response{StatusCode: r.failCode}, r.failErr
+		if r.failErr != nil {
+			return nil, r.failErr
+		}
+		return &http.Response{StatusCode: r.failCode}, nil
 	}
 	return &http.Response{StatusCode: http.StatusOK, Body: ioutil.NopCloser(strings.NewReader(r.response))}, nil
 }
