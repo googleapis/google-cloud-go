@@ -43,6 +43,9 @@ type metadataRetryer struct {
 }
 
 func (r *metadataRetryer) Retry(status int, err error) (time.Duration, bool) {
+	if status == 200 {
+		return 0, false
+	}
 	retryOk := shouldRetry(status, err)
 	if !retryOk {
 		return 0, false
