@@ -44,9 +44,9 @@ func TestRetry(t *testing.T) {
 			timesToFail: 1,
 		},
 		{
-			name:        "retry syscall.ECONNRESET once",
+			name:        "retry io.ErrUnexpectedEOF once",
 			response:    "test",
-			failErr:     syscall.ECONNRESET,
+			failErr:     io.ErrUnexpectedEOF,
 			timesToFail: 1,
 		},
 	}
