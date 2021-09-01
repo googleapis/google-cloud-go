@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
@@ -38,7 +39,6 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	vkit "cloud.google.com/go/pubsub/apiv1"
 	"google.golang.org/protobuf/types/known/durationpb"
 )
 
