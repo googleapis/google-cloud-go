@@ -67,7 +67,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -79,7 +79,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -91,7 +91,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -103,7 +103,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -347,7 +347,7 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 
 func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -368,7 +368,7 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 
 func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -385,7 +385,7 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 
 func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

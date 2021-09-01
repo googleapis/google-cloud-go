@@ -88,6 +88,7 @@ func TestCreateTopicWithConfig(t *testing.T) {
 			Schema:   "projects/P/schemas/S",
 			Encoding: EncodingJSON,
 		},
+		RetentionDuration: 5 * time.Hour,
 	}
 
 	topic := mustCreateTopicWithConfig(t, c, id, &want)
