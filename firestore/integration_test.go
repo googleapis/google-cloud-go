@@ -1671,26 +1671,6 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		t.Errorf("Unexpected Partition Count. Expected 2 or more: got %d, want 2+", len(partitions))
 	}
 
-	queryProtos := make([][]byte, 0)
-	for _, query := range partitions {
-		protoBytes, err := query.Serialize()
-		if err != nil {
-			fmt.Println(err)
-			// blah
-		}
-		queryProtos = append(queryProtos, protoBytes)
-	}
-
-	for _, protoBytes := range queryProtos {
-		query, err := iClient.CollectionGroup("").Deserialize(protoBytes)
-		if err != nil {
-			// blah
-			fmt.Println(err)
-
-		}
-		fmt.Println(query)
-	}
-
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
 	totalCount := 0
 	for _, query := range partitions {
