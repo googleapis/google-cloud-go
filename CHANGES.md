@@ -1,5 +1,64 @@
 # Changes
 
+## [0.94.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.92.0...v0.94.0) (2021-08-31)
+
+
+### Features
+
+* **aiplatform:** add XAI, model monitoring, and index services to aiplatform v1 ([e385b40](https://www.github.com/googleapis/google-cloud-go/commit/e385b40a1e2ecf81f5fd0910de5c37275951f86b))
+* **analytics/admin:** add `GetDataRetentionSettings`, `UpdateDataRetentionSettings` methods to the API ([8467899](https://www.github.com/googleapis/google-cloud-go/commit/8467899ab6ebf0328c543bfb5fbcddeb2f53a082))
+* **asset:** Release of relationships in v1, Add content type Relationship to support relationship export Committer: lvv@ ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **assuredworkloads:** Add Canada Regions And Support compliance regime ([b9226eb](https://www.github.com/googleapis/google-cloud-go/commit/b9226eb0b34473cb6f920c2526ad0d6dacb03f3c))
+* **cloudbuild/apiv1:** Add ability to configure BuildTriggers to create Builds that require approval before executing and ApproveBuild API to approve or reject pending Builds ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **cloudbuild/apiv1:** add script field to BuildStep message ([b9226eb](https://www.github.com/googleapis/google-cloud-go/commit/b9226eb0b34473cb6f920c2526ad0d6dacb03f3c))
+* **cloudbuild/apiv1:** Update cloudbuild proto with the service_account for BYOSA Triggers. ([b9226eb](https://www.github.com/googleapis/google-cloud-go/commit/b9226eb0b34473cb6f920c2526ad0d6dacb03f3c))
+* **compute/metadata:** retry error when talking to metadata service ([#4648](https://www.github.com/googleapis/google-cloud-go/issues/4648)) ([81c6039](https://www.github.com/googleapis/google-cloud-go/commit/81c6039503121f8da3de4f4cd957b8488a3ef620)), refs [#4642](https://www.github.com/googleapis/google-cloud-go/issues/4642)
+* **dataproc:** remove apiv1beta2 client ([#4682](https://www.github.com/googleapis/google-cloud-go/issues/4682)) ([2248554](https://www.github.com/googleapis/google-cloud-go/commit/22485541affb1251604df292670a20e794111d3e))
+* **gaming:** support version reporting API ([cd65cec](https://www.github.com/googleapis/google-cloud-go/commit/cd65cecf15c4a01648da7f8f4f4d497772961510))
+* **gkehub:** Add request_id under `DeleteMembershipRequest` and `UpdateMembershipRequest` ([b9226eb](https://www.github.com/googleapis/google-cloud-go/commit/b9226eb0b34473cb6f920c2526ad0d6dacb03f3c))
+* **internal/carver:** support carving batches ([#4623](https://www.github.com/googleapis/google-cloud-go/issues/4623)) ([2972d19](https://www.github.com/googleapis/google-cloud-go/commit/2972d194da19bedf16d76fda471c06a965cfdcd6))
+* **kms:** add support for Key Reimport ([bf4378b](https://www.github.com/googleapis/google-cloud-go/commit/bf4378b5b859f7b835946891dbfebfee31c4b123))
+* **metastore:** Added the Backup resource and Backup resource GetIamPolicy/SetIamPolicy to V1 feat: Added the RestoreService method to V1 ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **monitoring/dashboard:** Added support for logs-based alerts: https://cloud.google.com/logging/docs/alerting/log-based-alerts feat: Added support for user-defined labels on cloud monitoring's Service and ServiceLevelObjective objects fix!: mark required fields in QueryTimeSeriesRequest as required ([b9226eb](https://www.github.com/googleapis/google-cloud-go/commit/b9226eb0b34473cb6f920c2526ad0d6dacb03f3c))
+* **osconfig:** Update osconfig v1 and v1alpha with WindowsApplication ([bf4378b](https://www.github.com/googleapis/google-cloud-go/commit/bf4378b5b859f7b835946891dbfebfee31c4b123))
+* **speech:** Add transcript normalization ([b31646d](https://www.github.com/googleapis/google-cloud-go/commit/b31646d1e12037731df4b5c0ba9f60b6434d7b9b))
+* **talent:** Add new commute methods in Search APIs feat: Add new histogram type 'publish_time_in_day' feat: Support filtering by requisitionId is ListJobs API ([d4c3340](https://www.github.com/googleapis/google-cloud-go/commit/d4c3340bfc8b6793d6d2c8a3ed8ccdb472e1efd3))
+* **translate:** added v3 proto for online/batch document translation and updated v3beta1 proto for format conversion ([bf4378b](https://www.github.com/googleapis/google-cloud-go/commit/bf4378b5b859f7b835946891dbfebfee31c4b123))
+
+
+### Bug Fixes
+
+* **datastream:** Change a few resource pattern variables from camelCase to snake_case ([bf4378b](https://www.github.com/googleapis/google-cloud-go/commit/bf4378b5b859f7b835946891dbfebfee31c4b123))
+
+## [0.92.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.91.0...v0.92.0) (2021-08-16)
+
+
+### Features
+
+* **all:** remove testing deps ([#4580](https://www.github.com/googleapis/google-cloud-go/issues/4580)) ([15c1eb9](https://www.github.com/googleapis/google-cloud-go/commit/15c1eb9730f0b514edb911161f9c59e8d790a5ec)), refs [#4061](https://www.github.com/googleapis/google-cloud-go/issues/4061)
+* **internal/detect:** add helper to detect projectID from env ([#4582](https://www.github.com/googleapis/google-cloud-go/issues/4582)) ([cc65d94](https://www.github.com/googleapis/google-cloud-go/commit/cc65d945688ac446602bce6ef86a935714dfe2f8)), refs [#1294](https://www.github.com/googleapis/google-cloud-go/issues/1294)
+* **spannertest:** Add validation of duplicated column names ([#4611](https://www.github.com/googleapis/google-cloud-go/issues/4611)) ([84f86a6](https://www.github.com/googleapis/google-cloud-go/commit/84f86a605c809ab36dd3cb4b3ab1df15a5302083))
+
+## [0.91.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.90.0...v0.91.0) (2021-08-11)
+
+
+### Features
+
+* **.github:** support dynamic submodule detection ([#4537](https://www.github.com/googleapis/google-cloud-go/issues/4537)) ([4374b90](https://www.github.com/googleapis/google-cloud-go/commit/4374b907e9f166da6bd23a8ef94399872b00afd6))
+* **dialogflow/cx:** add advanced settings for agent level feat: add rollout config, state and failure reason for experiment feat: add insights export settings for security setting feat: add language code for streaming recognition result and flow versions for query parameters docs: deprecate legacy logging settings ([ed73554](https://www.github.com/googleapis/google-cloud-go/commit/ed735541dc57d0681d84b46853393eac5f7ccec3))
+* **dialogflow/cx:** add advanced settings for agent level feat: add rollout config, state and failure reason for experiment feat: add insights export settings for security setting feat: add language code for streaming recognition result and flow versions for query parameters docs: deprecate legacy logging settings ([ed73554](https://www.github.com/googleapis/google-cloud-go/commit/ed735541dc57d0681d84b46853393eac5f7ccec3))
+* **dialogflow/cx:** added support for DLP templates; expose `Locations` service to get/list avaliable locations of Dialogflow products ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+* **dialogflow/cx:** added support for DLP templates; expose `Locations` service to get/list avaliable locations of Dialogflow products docs: reorder some fields ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+* **dialogflow:** expose `Locations` service to get/list avaliable locations of Dialogflow products; fixed some API annotations ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+* **kms:** add support for HMAC, Variable Key Destruction, and GenerateRandom ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+* **speech:** add total_billed_time response field ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+* **video/transcoder:** Add video cropping feature feat: Add video padding feature feat: Add ttl_after_completion_days field to Job docs: Update proto documentation docs: Indicate v1beta1 deprecation ([5996846](https://www.github.com/googleapis/google-cloud-go/commit/59968462a3870c6289166fa1161f9b6d9c10e093))
+
+
+### Bug Fixes
+
+* **functions:** Updating behavior of source_upload_url during Get/List function calls ([381a494](https://www.github.com/googleapis/google-cloud-go/commit/381a494c29da388977b0bdda2177058328cc4afe))
+
 ## [0.90.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.89.0...v0.90.0) (2021-08-03)
 
 

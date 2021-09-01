@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListReferrersInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListReferrersInstancesRequest.
 	}
 	it := c.ListReferrers(ctx, req)
 	for {

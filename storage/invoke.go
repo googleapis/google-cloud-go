@@ -23,6 +23,8 @@ import (
 	"cloud.google.com/go/internal"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // runWithRetry calls the function until it returns nil or a non-retryable error, or
@@ -63,6 +65,13 @@ func shouldRetry(err error) bool {
 		if e.Temporary() {
 			return true
 		}
+	}
+	// HTTP 429, 502, 503, and 504 all map to gRPC UNAVAILABLE per
+	// https://grpc.github.io/grpc/core/md_doc_http-grpc-status-mapping.html.
+	//
+	// This is only necessary for the experimental gRPC-based media operations.
+	if st, ok := status.FromError(err); ok && st.Code() == codes.Unavailable {
+		return true
 	}
 	// Unwrap is only supported in go1.13.x+
 	if e, ok := err.(interface{ Unwrap() error }); ok {

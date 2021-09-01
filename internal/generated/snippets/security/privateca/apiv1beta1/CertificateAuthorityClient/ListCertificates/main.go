@@ -36,6 +36,7 @@ func main() {
 
 	req := &privatecapb.ListCertificatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#ListCertificatesRequest.
 	}
 	it := c.ListCertificates(ctx, req)
 	for {

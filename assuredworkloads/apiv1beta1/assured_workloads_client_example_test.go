@@ -46,6 +46,7 @@ func ExampleClient_CreateWorkload() {
 
 	req := &assuredworkloadspb.CreateWorkloadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#CreateWorkloadRequest.
 	}
 	op, err := c.CreateWorkload(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleClient_UpdateWorkload() {
 
 	req := &assuredworkloadspb.UpdateWorkloadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#UpdateWorkloadRequest.
 	}
 	resp, err := c.UpdateWorkload(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleClient_DeleteWorkload() {
 
 	req := &assuredworkloadspb.DeleteWorkloadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#DeleteWorkloadRequest.
 	}
 	err = c.DeleteWorkload(ctx, req)
 	if err != nil {
@@ -106,6 +109,7 @@ func ExampleClient_GetWorkload() {
 
 	req := &assuredworkloadspb.GetWorkloadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#GetWorkloadRequest.
 	}
 	resp, err := c.GetWorkload(ctx, req)
 	if err != nil {
@@ -125,6 +129,7 @@ func ExampleClient_ListWorkloads() {
 
 	req := &assuredworkloadspb.ListWorkloadsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#ListWorkloadsRequest.
 	}
 	it := c.ListWorkloads(ctx, req)
 	for {

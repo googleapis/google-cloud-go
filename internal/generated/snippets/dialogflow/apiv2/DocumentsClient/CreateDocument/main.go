@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateDocumentRequest.
 	}
 	op, err := c.CreateDocument(ctx, req)
 	if err != nil {

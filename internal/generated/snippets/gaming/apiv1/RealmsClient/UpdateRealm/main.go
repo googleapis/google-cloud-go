@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.UpdateRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateRealmRequest.
 	}
 	op, err := c.UpdateRealm(ctx, req)
 	if err != nil {

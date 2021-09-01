@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux && go1.15
 // +build linux,go1.15
 
 /*Command godocfx generates DocFX YAML for Go code.
@@ -162,6 +163,8 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 		"cloud.google.com/go/analytics",
 		"cloud.google.com/go/area120",
 		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
 	}
 	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
 	if err != nil {

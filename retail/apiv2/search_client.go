@@ -64,7 +64,7 @@ func defaultSearchCallOptions() *SearchCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -86,8 +86,8 @@ type internalSearchClient interface {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 type SearchClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSearchClient
@@ -121,8 +121,8 @@ func (c *SearchClient) Connection() *grpc.ClientConn {
 // Search performs a search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *SearchClient) Search(ctx context.Context, req *retailpb.SearchRequest, opts ...gax.CallOption) *SearchResponse_SearchResultIterator {
 	return c.internalClient.Search(ctx, req, opts...)
 }
@@ -153,8 +153,8 @@ type searchGRPCClient struct {
 // Service for search.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func NewSearchClient(ctx context.Context, opts ...option.ClientOption) (*SearchClient, error) {
 	clientOpts := defaultSearchGRPCClientOptions()
 	if newSearchClientHook != nil {

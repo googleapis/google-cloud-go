@@ -36,6 +36,7 @@ func main() {
 
 	req := &websecurityscannerpb.ListScanRunsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#ListScanRunsRequest.
 	}
 	it := c.ListScanRuns(ctx, req)
 	for {

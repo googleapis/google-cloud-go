@@ -35,6 +35,7 @@ func main() {
 
 	req := &functionspb.GenerateUploadUrlRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/functions/v1#GenerateUploadUrlRequest.
 	}
 	resp, err := c.GenerateUploadUrl(ctx, req)
 	if err != nil {

@@ -48,7 +48,6 @@ type Subscription struct {
 	mu            sync.Mutex
 	receiveActive bool
 
-	once           sync.Once
 	enableOrdering bool
 }
 
@@ -257,6 +256,17 @@ type SubscriptionConfig struct {
 	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
 	// the endpoint will not be made.
 	Detached bool
+
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is
+	// retained after it is published to the subscription's topic. If this field is
+	// set, messages published to the subscription's topic in the last
+	// `TopicMessageRetentionDuration` are always available to subscribers.
+	// You can enable both topic and subscription retention for the same topic.
+	// In this situation, the maximum of the retention durations takes effect.
+	//
+	// This is an output only field, meaning it will only appear in responses from the backend
+	// and will be ignored if sent in a request.
+	TopicMessageRetentionDuration time.Duration
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -305,17 +315,18 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:                 newTopic(c, pbSub.Topic),
-		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages:   pbSub.RetainAckedMessages,
-		RetentionDuration:     rd,
-		Labels:                pbSub.Labels,
-		ExpirationPolicy:      expirationPolicy,
-		EnableMessageOrdering: pbSub.EnableMessageOrdering,
-		DeadLetterPolicy:      dlp,
-		Filter:                pbSub.Filter,
-		RetryPolicy:           rp,
-		Detached:              pbSub.Detached,
+		Topic:                         newTopic(c, pbSub.Topic),
+		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:           pbSub.RetainAckedMessages,
+		RetentionDuration:             rd,
+		Labels:                        pbSub.Labels,
+		ExpirationPolicy:              expirationPolicy,
+		EnableMessageOrdering:         pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:              dlp,
+		Filter:                        pbSub.Filter,
+		RetryPolicy:                   rp,
+		Detached:                      pbSub.Detached,
+		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -785,6 +796,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
+	s.checkOrdering()
+
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -914,9 +927,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
-					if msg.OrderingKey != "" {
-						s.once.Do(s.checkOrdering)
-					}
 					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
 					if s.enableOrdering {

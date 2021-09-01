@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.UpdateAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAccountRequest.
 	}
 	resp, err := c.UpdateAccount(ctx, req)
 	if err != nil {

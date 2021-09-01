@@ -21,11 +21,22 @@ import (
 	"strings"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	"cloud.google.com/go/internal/detect"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 )
+
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
 type Client struct {
@@ -45,6 +56,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 
 	rawClient, err := storage.NewBigQueryWriteClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+
+	// Handle project autodetection.
+	projectID, err = detect.ProjectID(ctx, projectID, "", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +98,11 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		c:              c,
 		ctx:            ctx,
 		cancel:         cancel,
-		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			arc, err := streamFunc(ctx, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
+		open: func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			arc, err := streamFunc(
+				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
+				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)),
+				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
 			if err != nil {
 				return nil, err
 			}
@@ -122,7 +142,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 	}
 	if ms.streamSettings != nil {
 		if ms.ctx != nil {
-			ms.ctx = keyContextWithStreamID(ms.ctx, ms.streamSettings.streamID)
+			ms.ctx = keyContextWithTags(ms.ctx, ms.streamSettings.streamID, ms.streamSettings.dataOrigin)
 		}
 		ms.fc = newFlowController(ms.streamSettings.MaxInflightRequests, ms.streamSettings.MaxInflightBytes)
 	} else {

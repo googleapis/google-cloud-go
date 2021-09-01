@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemovePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemovePeeringNetworkRequest.
 	}
 	resp, err := c.RemovePeering(ctx, req)
 	if err != nil {

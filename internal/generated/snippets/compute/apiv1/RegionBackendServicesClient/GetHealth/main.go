@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetHealthRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthRegionBackendServiceRequest.
 	}
 	resp, err := c.GetHealth(ctx, req)
 	if err != nil {

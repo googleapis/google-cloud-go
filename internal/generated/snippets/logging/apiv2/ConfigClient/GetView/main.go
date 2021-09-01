@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.GetViewRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetViewRequest.
 	}
 	resp, err := c.GetView(ctx, req)
 	if err != nil {

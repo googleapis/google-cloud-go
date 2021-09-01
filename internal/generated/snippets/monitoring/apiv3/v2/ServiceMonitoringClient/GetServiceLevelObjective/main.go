@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetServiceLevelObjectiveRequest.
 	}
 	resp, err := c.GetServiceLevelObjective(ctx, req)
 	if err != nil {

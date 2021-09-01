@@ -21,7 +21,9 @@ import (
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -79,7 +81,7 @@ type ManagedStream struct {
 	// aspects of the stream client
 	ctx    context.Context // retained context for the stream
 	cancel context.CancelFunc
-	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	open   func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -112,6 +114,10 @@ type streamSettings struct {
 	// TraceID can be set when appending data on a stream. It's
 	// purpose is to aid in debug and diagnostic scenarios.
 	TraceID string
+
+	// dataOrigin can be set for classifying metrics generated
+	// by a stream.
+	dataOrigin string
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -198,7 +204,11 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 	r := defaultRetryer{}
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		arc, err := ms.open()
+		streamID := ""
+		if ms.streamSettings != nil {
+			streamID = ms.streamSettings.streamID
+		}
+		arc, err := ms.open(streamID)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
@@ -261,7 +271,14 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			err = (*arc).Send(req)
 		}
 		recordStat(ms.ctx, AppendRequests, 1)
+		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordStat(ms.ctx, AppendRequestRows, int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows())))
 		if err != nil {
+			status := grpcstatus.Convert(err)
+			if status != nil {
+				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
+				recordStat(ctx, AppendRequestErrors, 1)
+			}
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
@@ -358,6 +375,11 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
+				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
+				if err != nil {
+					tagCtx = ctx
+				}
+				recordStat(tagCtx, AppendResponseErrors, 1)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}
