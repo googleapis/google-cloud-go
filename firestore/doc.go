@@ -214,11 +214,6 @@ to other processes to stream the documents in another process, machine, etc.
 		query, err = Query{}.FromProto(runQueryRequest)
 	}
 
-
-
-
-
-
 Transactions
 
 Use a transaction to execute reads and writes atomically. All reads must happen
