@@ -195,14 +195,13 @@ as a query.
 
 Collection Group Partition Queries
 
-You can partition segments of a Collection Group into partitions. This will allow smaller
-subquerying.
+You can partition the documents of a Collection Group allowing for smaller subqueries.
 
 	collectionGroup = client.CollectionGroup("States")
 	partitions, err = collectionGroup.GetPartitionedQueries(ctx, 20)
 
-You can also convert those partitions Serialize/Deserialize making it possible to serialize
-to other processes to stream the documents in another process, machine, etc.
+You can also Serialize/Deserialize queries making it possible to run/stream the
+queries elsewhere; another process or machine for instance.
 
 	queryProtos := make([][]byte, 0)
 	for _, query := range partitions {
