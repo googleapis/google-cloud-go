@@ -271,7 +271,8 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 func (q Query) query() *Query { return &q }
 
 // FromProto creates a new Query object from a RunQueryRequest. This can be used
-// in combintation with ToProto to serialize Query objects.
+// in combination with ToProto to serialize Query objects. This could be useful,
+// for instance, if executing a query formed in one process in another.
 func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// Ensure we are starting from an empty query, but with this client.
 	q = Query{c: q.c}
@@ -372,13 +373,14 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.limit = limit
 	}
 
-	// NOTE: limit to last isn't part of the proto, this is a clientside idea.
+	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
 }
 
 // ToProto creates a RunQueryRequest from a Query object. This can be used
-// in combintation with FromProto to serialize Query objects.
+// in combination with FromProto to serialize Query objects. This could be useful,
+// for instance, if executing a query formed in one process in another.
 func (q Query) ToProto() (*pb.RunQueryRequest, error) {
 	structuredQuery, err := q.toProto()
 	if err != nil {
