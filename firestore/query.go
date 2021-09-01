@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
+	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -270,10 +271,41 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q Query) query() *Query { return &q }
 
-// FromProto creates a new Query object from a RunQueryRequest. This can be used
+// Serialize creates a RunQueryRequest wire-format byte slice from a Query object.
+// This can be used in combination with Deserialize to marshal Query objects.
+// This could be useful, for instance, if executing a query formed in one
+// process in another.
+func (q Query) Serialize() ([]byte, error) {
+	structuredQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	p := &pb.RunQueryRequest{
+		Parent:    q.parentPath,
+		QueryType: &pb.RunQueryRequest_StructuredQuery{StructuredQuery: structuredQuery},
+	}
+
+	return proto.Marshal(p)
+}
+
+// Deserialize takes a slice of bytes holding the wire-format message of RunQueryRequest,
+// the underlying proto message used by Queries. It then populates and returns a
+// Query object that can be used to execut that Query.
+func (q Query) Deserialize(bytes []byte) (Query, error) {
+	runQueryRequest := pb.RunQueryRequest{}
+	err := proto.Unmarshal(bytes, &runQueryRequest)
+	if err != nil {
+		q.err = err
+		return q, err
+	}
+	return q.fromProto(&runQueryRequest)
+}
+
+// fromProto creates a new Query object from a RunQueryRequest. This can be used
 // in combination with ToProto to serialize Query objects. This could be useful,
 // for instance, if executing a query formed in one process in another.
-func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
+func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// Ensure we are starting from an empty query, but with this client.
 	q = Query{c: q.c}
 
@@ -376,22 +408,6 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
-}
-
-// ToProto creates a RunQueryRequest from a Query object. This can be used
-// in combination with FromProto to serialize Query objects. This could be useful,
-// for instance, if executing a query formed in one process in another.
-func (q Query) ToProto() (*pb.RunQueryRequest, error) {
-	structuredQuery, err := q.toProto()
-	if err != nil {
-		return nil, err
-	}
-
-	req := &pb.RunQueryRequest{
-		Parent:    q.parentPath,
-		QueryType: &pb.RunQueryRequest_StructuredQuery{structuredQuery},
-	}
-	return req, nil
 }
 
 func (q Query) toProto() (*pb.StructuredQuery, error) {

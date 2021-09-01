@@ -204,14 +204,17 @@ subquerying.
 You can also convert those partitions ToProto/FromProto making it possible to serialize
 to other processes to stream the documents in another process, machine, etc.
 
-	queryProtos := make([]*pb.RunQueryRequest, 0)
+	queryProtos := make([][]byte, 0)
 	for _, query := range partitions {
-		runQueryRequest, err := query.ToProto()
-		queryProtos = append(queryProtos, runQueryRequest)
+		protoBytes, err := query.Serialize()
+		// handle err
+		queryProtos = append(queryProtos, protoBytes)
+		...
 	}
 
-	for _, runQueryRequest := range queryProtos {
-		query, err = Query{}.FromProto(runQueryRequest)
+	for _, protoBytes := range queryProtos {
+		query, err := client.CollectionGroup("").Deserialize(protoBytes)
+		...
 	}
 
 Transactions

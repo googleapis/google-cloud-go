@@ -465,20 +465,20 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 
 	for _, test := range createTestScenarios(t) {
 		fmt.Println(test.desc)
-		proto, err := test.in.ToProto()
+		proto, err := test.in.Serialize()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 			continue
 		}
 		fmt.Printf("proto: %v\n", proto)
-		got, err := Query{c: c}.FromProto(proto)
+		got, err := Query{c: c}.Deserialize(proto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 			continue
 		}
 
 		want := test.in
-		gotProto, err := got.ToProto()
+		gotProto, err := got.Serialize()
 		fmt.Println(gotProto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)

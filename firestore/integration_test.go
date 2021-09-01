@@ -1603,7 +1603,6 @@ func TestDetectProjectID(t *testing.T) {
 }
 
 func TestIntegration_ColGroupRefPartitions(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4325")
 	h := testHelper{t}
 	coll := integrationColl(t)
 	ctx := context.Background()
@@ -1672,6 +1671,26 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		t.Errorf("Unexpected Partition Count. Expected 2 or more: got %d, want 2+", len(partitions))
 	}
 
+	queryProtos := make([][]byte, 0)
+	for _, query := range partitions {
+		protoBytes, err := query.Serialize()
+		if err != nil {
+			fmt.Println(err)
+			// blah
+		}
+		queryProtos = append(queryProtos, protoBytes)
+	}
+
+	for _, protoBytes := range queryProtos {
+		query, err := iClient.CollectionGroup("").Deserialize(protoBytes)
+		if err != nil {
+			// blah
+			fmt.Println(err)
+
+		}
+		fmt.Println(query)
+	}
+
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
 	totalCount := 0
 	for _, query := range partitions {
@@ -1681,12 +1700,17 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		}
 		totalCount += len(allDocs)
 
-		// Check that the same results are returned even if we use the proto converted query
-		pbStructuredQuery, _ := query.ToProto()
-		q, err := iClient.CollectionGroup("DNE").FromProto(pbStructuredQuery)
+		// Verify that serialization round-trips. Check that the same results are
+		// returned even if we use the proto converted query
+		queryBytes, err := query.Serialize()
 		if err != nil {
-			t.Fatalf("FromProto error: %v", err)
+			t.Fatalf("Serialize error: %v", err)
 		}
+		q, err := iClient.CollectionGroup("DNE").Deserialize(queryBytes)
+		if err != nil {
+			t.Fatalf("Deserialize error: %v", err)
+		}
+
 		protoReturnedDocs, err := q.Documents(ctx).GetAll()
 		if err != nil {
 			t.Fatalf("GetAll error: %v", err)
