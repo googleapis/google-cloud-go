@@ -193,6 +193,32 @@ as a query.
 
 	iter = client.Collection("States").Documents(ctx)
 
+Collection Group Partition Queries
+
+You can partition segments of a Collection Group into partitions. This will allow smaller
+subquerying.
+
+	collectionGroup = client.CollectionGroup("States")
+	partitions, err = collectionGroup.GetPartitionedQueries(ctx, 20)
+
+You can also convert those partitions ToProto/FromProto making it possible to serialize
+to other processes to stream the documents in another process, machine, etc.
+
+	queryProtos := make([]*pb.RunQueryRequest, 0)
+	for _, query := range partitions {
+		runQueryRequest, err := query.ToProto()
+		queryProtos = append(queryProtos, runQueryRequest)
+	}
+
+	for _, runQueryRequest := range queryProtos {
+		query, err = Query{}.FromProto(runQueryRequest)
+	}
+
+
+
+
+
+
 Transactions
 
 Use a transaction to execute reads and writes atomically. All reads must happen

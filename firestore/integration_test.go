@@ -1622,7 +1622,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		{collectionID: coll.collectionID, expectedPartitionCount: 1},
 	} {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
-		partitions, err := colGroup.getPartitions(ctx, 10)
+		partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
 		if err != nil {
 			t.Fatalf("getPartitions: received unexpected error: %v", err)
 		}
