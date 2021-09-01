@@ -592,7 +592,10 @@ func (t *Topic) initBundler() {
 		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
-		fcs.MaxOutstandingBytes = t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
+		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
+		fcs.MaxOutstandingBytes = b
+		// If MaxOutstandingBytes is set, override BufferedByteLimit.
+		t.PublishSettings.BufferedByteLimit = b
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
