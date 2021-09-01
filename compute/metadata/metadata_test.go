@@ -16,10 +16,12 @@ package metadata
 
 import (
 	"bytes"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 )
@@ -100,6 +102,54 @@ func TestGet_LeadingSlash(t *testing.T) {
 	}
 }
 
+func TestRetry(t *testing.T) {
+	tests := []struct {
+		name        string
+		timesToFail int
+		failCode    int
+		failErr     error
+		response    string
+	}{
+		{
+			name:     "no retries",
+			response: "test",
+		},
+		{
+			name:        "retry 500 once",
+			response:    "test",
+			failCode:    500,
+			timesToFail: 1,
+		},
+		{
+			name:        "retry io.ErrUnexpectedEOF once",
+			response:    "test",
+			failErr:     io.ErrUnexpectedEOF,
+			timesToFail: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ft := &failingTransport{
+				timesToFail: tt.timesToFail,
+				failCode:    tt.failCode,
+				failErr:     tt.failErr,
+				response:    tt.response,
+			}
+			c := NewClient(&http.Client{Transport: ft})
+			s, err := c.Get("")
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if ft.called != ft.failedAttempts+1 {
+				t.Fatalf("failed %d times, want %d", ft.failedAttempts, tt.timesToFail)
+			}
+			if s != tt.response {
+				t.Fatalf("c.Get() = %q, want %q", s, tt.response)
+			}
+		})
+	}
+}
+
 type captureTransport struct {
 	url string
 }
@@ -126,4 +176,23 @@ type rrt struct {
 func (r *rrt) RoundTrip(req *http.Request) (*http.Response, error) {
 	r.gotUserAgent = req.Header.Get("User-Agent")
 	return &http.Response{Body: ioutil.NopCloser(bytes.NewReader(nil))}, nil
+}
+
+type failingTransport struct {
+	timesToFail int
+	failCode    int
+	failErr     error
+	response    string
+
+	failedAttempts int
+	called         int
+}
+
+func (r *failingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	r.called++
+	if r.failedAttempts < r.timesToFail {
+		r.failedAttempts++
+		return &http.Response{StatusCode: r.failCode}, r.failErr
+	}
+	return &http.Response{StatusCode: http.StatusOK, Body: ioutil.NopCloser(strings.NewReader(r.response))}, nil
 }
