@@ -201,7 +201,7 @@ subquerying.
 	collectionGroup = client.CollectionGroup("States")
 	partitions, err = collectionGroup.GetPartitionedQueries(ctx, 20)
 
-You can also convert those partitions ToProto/FromProto making it possible to serialize
+You can also convert those partitions Serialize/Deserialize making it possible to serialize
 to other processes to stream the documents in another process, machine, etc.
 
 	queryProtos := make([][]byte, 0)
