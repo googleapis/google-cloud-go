@@ -12,16 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build linux
-// +build linux
+//go:build go1.13
+// +build go1.13
 
 package metadata
 
 import (
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
-	"syscall"
 	"testing"
 )
 
@@ -44,9 +44,9 @@ func TestRetry(t *testing.T) {
 			timesToFail: 1,
 		},
 		{
-			name:        "retry syscall.ECONNRESET once",
+			name:        "retry io.ErrUnexpectedEOF once",
 			response:    "test",
-			failErr:     syscall.ECONNRESET,
+			failErr:     io.ErrUnexpectedEOF,
 			timesToFail: 1,
 		},
 	}
