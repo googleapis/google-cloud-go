@@ -18,10 +18,10 @@
 package metadata
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"syscall"
 	"testing"
 )
 
