@@ -1611,7 +1611,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 	doc := coll.NewDoc()
 	h.mustCreate(doc, integrationTestMap)
 
-	for _, tc := range []struct {
+	for idx, tc := range []struct {
 		collectionID           string
 		expectedPartitionCount int
 	}{
@@ -1626,7 +1626,10 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 			t.Fatalf("getPartitions: received unexpected error: %v", err)
 		}
 		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
-			t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
+			t.Errorf("Unexpected Partition Count:index:%d, got %d, want %d", idx, got, want)
+			for _, v := range partitions {
+				t.Errorf("Partition: %v, %v", v.startDoc, v.endDoc)
+			}
 		}
 	}
 }
