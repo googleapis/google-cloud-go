@@ -124,7 +124,7 @@ var DefaultPublishSettings = PublishSettings{
 	FlowControlSettings: FlowControlSettings{
 		MaxOutstandingMessages: 1000,
 		MaxOutstandingBytes:    -1,
-		LimitExceededBehavior:  FlowControlBlock,
+		LimitExceededBehavior:  FlowControlIgnore,
 	},
 }
 
