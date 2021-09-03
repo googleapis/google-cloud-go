@@ -1769,7 +1769,12 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	r := c.raw.Projects.ServiceAccount.Get(projectID)
-	res, err := r.Context(ctx).Do()
+	var res *raw.ServiceAccount
+	var err error
+	err = runWithRetry(ctx, func() error {
+		res, err = r.Context(ctx).Do()
+		return err
+	})
 	if err != nil {
 		return "", err
 	}

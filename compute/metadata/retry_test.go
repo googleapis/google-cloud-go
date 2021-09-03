@@ -87,6 +87,13 @@ func TestMetadataRetryer(t *testing.T) {
 			wantDelay:       0,
 			wantShouldRetry: false,
 		},
+		{
+			name:            "don't retry 200",
+			code:            200,
+			err:             nil,
+			wantDelay:       0,
+			wantShouldRetry: false,
+		},
 	}
 
 	for _, tc := range tests {
