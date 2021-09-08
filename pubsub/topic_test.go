@@ -106,17 +106,36 @@ func TestCreateTopicWithConfig(t *testing.T) {
 }
 
 func TestListTopics(t *testing.T) {
+	ctx := context.Background()
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
 	var ids []string
-	for i := 1; i <= 4; i++ {
+	numTopics := 4
+	for i := 1; i <= numTopics; i++ {
 		id := fmt.Sprintf("t%d", i)
 		ids = append(ids, id)
 		mustCreateTopic(t, c, id)
 	}
 	checkTopicListing(t, c, ids)
+
+	var tt []*TopicConfig
+	it := c.Topics(ctx)
+	for {
+		topic, err := it.NextConfig()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("TopicIterator.NextConfig() got err: %v", err)
+		} else {
+			tt = append(tt, topic)
+		}
+	}
+	if got := len(tt); got != numTopics {
+		t.Errorf("c.Topics(ctx) returned %d topics, expected %d", got, numTopics)
+	}
 }
 
 func TestListCompletelyEmptyTopics(t *testing.T) {
