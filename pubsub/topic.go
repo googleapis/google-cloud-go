@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
@@ -381,7 +382,8 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 func (c *Client) Topics(ctx context.Context) *TopicIterator {
 	it := c.pubc.ListTopics(ctx, &pb.ListTopicsRequest{Project: c.fullyQualifiedProjectName()})
 	return &TopicIterator{
-		c: c,
+		c:  c,
+		it: it,
 		next: func() (string, error) {
 			topic, err := it.Next()
 			if err != nil {
@@ -395,6 +397,7 @@ func (c *Client) Topics(ctx context.Context) *TopicIterator {
 // TopicIterator is an iterator that returns a series of topics.
 type TopicIterator struct {
 	c    *Client
+	it   *vkit.TopicIterator
 	next func() (string, error)
 }
 
@@ -405,6 +408,19 @@ func (tps *TopicIterator) Next() (*Topic, error) {
 		return nil, err
 	}
 	return newTopic(tps.c, topicName), nil
+}
+
+// NextConfig returns the next topic config. If there are no more topics,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `TopicIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
+func (t *TopicIterator) NextConfig() (*TopicConfig, error) {
+	tpb, err := t.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	cfg := protoToTopicConfig(tpb)
+	return &cfg, nil
 }
 
 // ID returns the unique identifier of the topic within its project.
