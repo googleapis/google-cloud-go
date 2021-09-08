@@ -43,7 +43,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	c, err := spanner.NewClient(ctx, "projects/appdev-soda-spanner-staging/instances/someinstance/databases/somedatabase")
+	c, err := spanner.NewClient(ctx, "projects/someproject/instances/someinstance/databases/somedatabase")
 	if err != nil {
 		log.Fatal(err)
 	}
