@@ -837,7 +837,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(maxCount, maxBytes)
+	fc := newFlowController(FlowControlSettings{
+		MaxOutstandingMessages: maxCount,
+		MaxOutstandingBytes:    maxBytes,
+		LimitExceededBehavior:  FlowControlBlock,
+	})
 
 	sched := scheduler.NewReceiveScheduler(maxCount)
 
@@ -982,7 +986,7 @@ func (s *Subscription) checkOrdering() {
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
-	maxPrefetch        int32
+	maxPrefetch        int32         // the max number of outstanding messages, used to calculate maxToPull
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool
