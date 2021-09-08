@@ -173,20 +173,20 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		withExactRowCount(0))
 
 	// First, send the test rows individually.
-	var results []*AppendResult
+	var result *AppendResult
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
 	// wait for the result to indicate ready, then validate.
-	results[0].Ready()
+	result.Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after first send round",
 		withExactRowCount(int64(len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))))
@@ -200,13 +200,13 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		}
 		data = append(data, b)
 	}
-	results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+	result, err = ms.AppendRows(ctx, data, NoStreamOffset)
 	if err != nil {
 		t.Errorf("grouped-row append failed: %v", err)
 	}
 	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
-	results[0].Ready()
+	result.Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after second send round",
 		withExactRowCount(int64(2*len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))),
@@ -241,7 +241,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		[]byte(`{"name": "five", "value": 5}`),
 	}
 
-	var results []*AppendResult
+	var result *AppendResult
 	for k, v := range sampleJSONData {
 		message := dynamicpb.NewMessage(md)
 
@@ -255,14 +255,14 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		if err != nil {
 			t.Fatalf("failed to marshal proto bytes for row %d: %v", k, err)
 		}
-		results, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
 
 	// wait for the result to indicate ready, then validate.
-	results[0].Ready()
+	result.Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleJSONData))),
 		withDistinctValues("name", int64(len(sampleJSONData))),
@@ -309,7 +309,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 		// wait for ack
-		offset, err := results[0].GetResult(ctx)
+		offset, err := results.GetResult(ctx)
 		if err != nil {
 			t.Errorf("got error from pending result %d: %v", k, err)
 		}
@@ -350,20 +350,20 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
-	var results []*AppendResult
+	var result *AppendResult
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
 	// wait for the result to indicate ready, then validate.
-	results[0].Ready()
+	result.Ready()
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
 }
@@ -389,19 +389,19 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		withExactRowCount(0))
 
 	// Send data.
-	var results []*AppendResult
+	var result *AppendResult
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	results[0].Ready()
+	result.Ready()
 	wantRows := int64(len(testSimpleData))
 
 	// Mark stream complete.
@@ -455,20 +455,20 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Fatalf("NewManagedStream: %v", err)
 	}
 
-	var results []*AppendResult
+	var result *AppendResult
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
 	// wait for the result to indicate ready.
-	results[0].Ready()
+	result.Ready()
 	// Ick.  Stats reporting can't force flushing, and there's a race here.  Sleep to give the recv goroutine a chance
 	// to report.
 	time.Sleep(time.Second)
@@ -607,12 +607,12 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	results, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
+	result, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
 	if err != nil {
 		t.Errorf("append failed: %v", err)
 	}
 
-	_, err = results[0].GetResult(ctx)
+	_, err = result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("error in response: %v", err)
 	}
