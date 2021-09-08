@@ -35,6 +35,7 @@ func main() {
 
 	req := &orgpolicypb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#GetPolicyRequest.
 	}
 	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {

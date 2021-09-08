@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.UpdateAuthorizedCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateAuthorizedCertificateRequest.
 	}
 	resp, err := c.UpdateAuthorizedCertificate(ctx, req)
 	if err != nil {

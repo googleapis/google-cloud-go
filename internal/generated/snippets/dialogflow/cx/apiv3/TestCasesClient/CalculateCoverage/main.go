@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.CalculateCoverageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CalculateCoverageRequest.
 	}
 	resp, err := c.CalculateCoverage(ctx, req)
 	if err != nil {

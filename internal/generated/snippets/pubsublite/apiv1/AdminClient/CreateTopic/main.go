@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsublitepb.CreateTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateTopicRequest.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {

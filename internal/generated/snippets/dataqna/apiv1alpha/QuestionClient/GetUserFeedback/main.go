@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataqnapb.GetUserFeedbackRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetUserFeedbackRequest.
 	}
 	resp, err := c.GetUserFeedback(ctx, req)
 	if err != nil {

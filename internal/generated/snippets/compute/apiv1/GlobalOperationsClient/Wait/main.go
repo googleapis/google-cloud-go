@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.WaitGlobalOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitGlobalOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

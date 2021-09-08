@@ -46,6 +46,7 @@ func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 
 	req := &monitoringpb.ListNotificationChannelDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListNotificationChannelDescriptorsRequest.
 	}
 	it := c.ListNotificationChannelDescriptors(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
 
 	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelDescriptorRequest.
 	}
 	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleNotificationChannelClient_ListNotificationChannels() {
 
 	req := &monitoringpb.ListNotificationChannelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListNotificationChannelsRequest.
 	}
 	it := c.ListNotificationChannels(ctx, req)
 	for {
@@ -115,6 +118,7 @@ func ExampleNotificationChannelClient_GetNotificationChannel() {
 
 	req := &monitoringpb.GetNotificationChannelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelRequest.
 	}
 	resp, err := c.GetNotificationChannel(ctx, req)
 	if err != nil {
@@ -134,6 +138,7 @@ func ExampleNotificationChannelClient_CreateNotificationChannel() {
 
 	req := &monitoringpb.CreateNotificationChannelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateNotificationChannelRequest.
 	}
 	resp, err := c.CreateNotificationChannel(ctx, req)
 	if err != nil {
@@ -153,6 +158,7 @@ func ExampleNotificationChannelClient_UpdateNotificationChannel() {
 
 	req := &monitoringpb.UpdateNotificationChannelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateNotificationChannelRequest.
 	}
 	resp, err := c.UpdateNotificationChannel(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleNotificationChannelClient_DeleteNotificationChannel() {
 
 	req := &monitoringpb.DeleteNotificationChannelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteNotificationChannelRequest.
 	}
 	err = c.DeleteNotificationChannel(ctx, req)
 	if err != nil {
@@ -189,6 +196,7 @@ func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() 
 
 	req := &monitoringpb.SendNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#SendNotificationChannelVerificationCodeRequest.
 	}
 	err = c.SendNotificationChannelVerificationCode(ctx, req)
 	if err != nil {
@@ -206,6 +214,7 @@ func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
 
 	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelVerificationCodeRequest.
 	}
 	resp, err := c.GetNotificationChannelVerificationCode(ctx, req)
 	if err != nil {
@@ -225,6 +234,7 @@ func ExampleNotificationChannelClient_VerifyNotificationChannel() {
 
 	req := &monitoringpb.VerifyNotificationChannelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#VerifyNotificationChannelRequest.
 	}
 	resp, err := c.VerifyNotificationChannel(ctx, req)
 	if err != nil {

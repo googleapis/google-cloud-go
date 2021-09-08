@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.AnalyzeContentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#AnalyzeContentRequest.
 	}
 	resp, err := c.AnalyzeContent(ctx, req)
 	if err != nil {

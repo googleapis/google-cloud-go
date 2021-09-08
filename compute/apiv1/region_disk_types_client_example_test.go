@@ -46,6 +46,7 @@ func ExampleRegionDiskTypesClient_Get() {
 
 	req := &computepb.GetRegionDiskTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionDiskTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionDiskTypesClient_List() {
 
 	req := &computepb.ListRegionDiskTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionDiskTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

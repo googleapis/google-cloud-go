@@ -35,6 +35,7 @@ func main() {
 
 	req := &visionpb.GetReferenceImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#GetReferenceImageRequest.
 	}
 	resp, err := c.GetReferenceImage(ctx, req)
 	if err != nil {

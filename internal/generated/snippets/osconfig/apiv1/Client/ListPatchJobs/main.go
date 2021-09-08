@@ -36,6 +36,7 @@ func main() {
 
 	req := &osconfigpb.ListPatchJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListPatchJobsRequest.
 	}
 	it := c.ListPatchJobs(ctx, req)
 	for {

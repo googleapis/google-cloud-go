@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UpdateTaxonomyRequest.
 	}
 	resp, err := c.UpdateTaxonomy(ctx, req)
 	if err != nil {

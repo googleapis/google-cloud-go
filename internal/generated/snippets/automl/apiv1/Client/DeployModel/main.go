@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#DeployModelRequest.
 	}
 	op, err := c.DeployModel(ctx, req)
 	if err != nil {

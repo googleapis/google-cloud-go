@@ -45,6 +45,7 @@ func ExampleClient_CreateFeed() {
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#CreateFeedRequest.
 	}
 	resp, err := c.CreateFeed(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleClient_GetFeed() {
 
 	req := &assetpb.GetFeedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#GetFeedRequest.
 	}
 	resp, err := c.GetFeed(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleClient_ListFeeds() {
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#ListFeedsRequest.
 	}
 	resp, err := c.ListFeeds(ctx, req)
 	if err != nil {
@@ -102,6 +105,7 @@ func ExampleClient_UpdateFeed() {
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#UpdateFeedRequest.
 	}
 	resp, err := c.UpdateFeed(ctx, req)
 	if err != nil {
@@ -121,6 +125,7 @@ func ExampleClient_DeleteFeed() {
 
 	req := &assetpb.DeleteFeedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1#DeleteFeedRequest.
 	}
 	err = c.DeleteFeed(ctx, req)
 	if err != nil {

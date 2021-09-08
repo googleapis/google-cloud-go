@@ -45,6 +45,7 @@ func ExampleCloudShellClient_GetEnvironment() {
 
 	req := &shellpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#GetEnvironmentRequest.
 	}
 	resp, err := c.GetEnvironment(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleCloudShellClient_StartEnvironment() {
 
 	req := &shellpb.StartEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#StartEnvironmentRequest.
 	}
 	op, err := c.StartEnvironment(ctx, req)
 	if err != nil {
@@ -88,6 +90,7 @@ func ExampleCloudShellClient_AuthorizeEnvironment() {
 
 	req := &shellpb.AuthorizeEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#AuthorizeEnvironmentRequest.
 	}
 	op, err := c.AuthorizeEnvironment(ctx, req)
 	if err != nil {
@@ -112,6 +115,7 @@ func ExampleCloudShellClient_AddPublicKey() {
 
 	req := &shellpb.AddPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#AddPublicKeyRequest.
 	}
 	op, err := c.AddPublicKey(ctx, req)
 	if err != nil {
@@ -136,6 +140,7 @@ func ExampleCloudShellClient_RemovePublicKey() {
 
 	req := &shellpb.RemovePublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#RemovePublicKeyRequest.
 	}
 	op, err := c.RemovePublicKey(ctx, req)
 	if err != nil {

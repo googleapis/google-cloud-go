@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsubpb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSubscriptionsRequest.
 	}
 	it := c.ListSubscriptions(ctx, req)
 	for {

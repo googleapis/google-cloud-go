@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.DeleteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteGroupRequest.
 	}
 	err = c.DeleteGroup(ctx, req)
 	if err != nil {

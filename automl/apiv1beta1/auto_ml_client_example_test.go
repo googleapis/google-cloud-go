@@ -46,6 +46,7 @@ func ExampleClient_CreateDataset() {
 
 	req := &automlpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#CreateDatasetRequest.
 	}
 	resp, err := c.CreateDataset(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_GetDataset() {
 
 	req := &automlpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetDatasetRequest.
 	}
 	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_ListDatasets() {
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExampleClient_UpdateDataset() {
 
 	req := &automlpb.UpdateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateDatasetRequest.
 	}
 	resp, err := c.UpdateDataset(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleClient_DeleteDataset() {
 
 	req := &automlpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeleteDatasetRequest.
 	}
 	op, err := c.DeleteDataset(ctx, req)
 	if err != nil {
@@ -150,6 +155,7 @@ func ExampleClient_ImportData() {
 
 	req := &automlpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ImportDataRequest.
 	}
 	op, err := c.ImportData(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleClient_ExportData() {
 
 	req := &automlpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportDataRequest.
 	}
 	op, err := c.ExportData(ctx, req)
 	if err != nil {
@@ -194,6 +201,7 @@ func ExampleClient_GetAnnotationSpec() {
 
 	req := &automlpb.GetAnnotationSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetAnnotationSpecRequest.
 	}
 	resp, err := c.GetAnnotationSpec(ctx, req)
 	if err != nil {
@@ -213,6 +221,7 @@ func ExampleClient_GetTableSpec() {
 
 	req := &automlpb.GetTableSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetTableSpecRequest.
 	}
 	resp, err := c.GetTableSpec(ctx, req)
 	if err != nil {
@@ -232,6 +241,7 @@ func ExampleClient_ListTableSpecs() {
 
 	req := &automlpb.ListTableSpecsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListTableSpecsRequest.
 	}
 	it := c.ListTableSpecs(ctx, req)
 	for {
@@ -257,6 +267,7 @@ func ExampleClient_UpdateTableSpec() {
 
 	req := &automlpb.UpdateTableSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateTableSpecRequest.
 	}
 	resp, err := c.UpdateTableSpec(ctx, req)
 	if err != nil {
@@ -276,6 +287,7 @@ func ExampleClient_GetColumnSpec() {
 
 	req := &automlpb.GetColumnSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetColumnSpecRequest.
 	}
 	resp, err := c.GetColumnSpec(ctx, req)
 	if err != nil {
@@ -295,6 +307,7 @@ func ExampleClient_ListColumnSpecs() {
 
 	req := &automlpb.ListColumnSpecsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListColumnSpecsRequest.
 	}
 	it := c.ListColumnSpecs(ctx, req)
 	for {
@@ -320,6 +333,7 @@ func ExampleClient_UpdateColumnSpec() {
 
 	req := &automlpb.UpdateColumnSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateColumnSpecRequest.
 	}
 	resp, err := c.UpdateColumnSpec(ctx, req)
 	if err != nil {
@@ -339,6 +353,7 @@ func ExampleClient_CreateModel() {
 
 	req := &automlpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#CreateModelRequest.
 	}
 	op, err := c.CreateModel(ctx, req)
 	if err != nil {
@@ -363,6 +378,7 @@ func ExampleClient_GetModel() {
 
 	req := &automlpb.GetModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetModelRequest.
 	}
 	resp, err := c.GetModel(ctx, req)
 	if err != nil {
@@ -382,6 +398,7 @@ func ExampleClient_ListModels() {
 
 	req := &automlpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {
@@ -407,6 +424,7 @@ func ExampleClient_DeleteModel() {
 
 	req := &automlpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {
@@ -429,6 +447,7 @@ func ExampleClient_DeployModel() {
 
 	req := &automlpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeployModelRequest.
 	}
 	op, err := c.DeployModel(ctx, req)
 	if err != nil {
@@ -451,6 +470,7 @@ func ExampleClient_UndeployModel() {
 
 	req := &automlpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UndeployModelRequest.
 	}
 	op, err := c.UndeployModel(ctx, req)
 	if err != nil {
@@ -473,6 +493,7 @@ func ExampleClient_ExportModel() {
 
 	req := &automlpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportModelRequest.
 	}
 	op, err := c.ExportModel(ctx, req)
 	if err != nil {
@@ -495,6 +516,7 @@ func ExampleClient_ExportEvaluatedExamples() {
 
 	req := &automlpb.ExportEvaluatedExamplesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ExportEvaluatedExamplesRequest.
 	}
 	op, err := c.ExportEvaluatedExamples(ctx, req)
 	if err != nil {
@@ -517,6 +539,7 @@ func ExampleClient_GetModelEvaluation() {
 
 	req := &automlpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {
@@ -536,6 +559,7 @@ func ExampleClient_ListModelEvaluations() {
 
 	req := &automlpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#ListModelEvaluationsRequest.
 	}
 	it := c.ListModelEvaluations(ctx, req)
 	for {

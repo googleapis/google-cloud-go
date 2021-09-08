@@ -35,6 +35,7 @@ func main() {
 
 	req := &spannerpb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#BeginTransactionRequest.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {

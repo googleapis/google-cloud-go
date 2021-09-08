@@ -46,6 +46,7 @@ func ExamplePublicAdvertisedPrefixesClient_Delete() {
 
 	req := &computepb.DeletePublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePublicAdvertisedPrefixeRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExamplePublicAdvertisedPrefixesClient_Get() {
 
 	req := &computepb.GetPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPublicAdvertisedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExamplePublicAdvertisedPrefixesClient_Insert() {
 
 	req := &computepb.InsertPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPublicAdvertisedPrefixeRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExamplePublicAdvertisedPrefixesClient_List() {
 
 	req := &computepb.ListPublicAdvertisedPrefixesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPublicAdvertisedPrefixesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExamplePublicAdvertisedPrefixesClient_Patch() {
 
 	req := &computepb.PatchPublicAdvertisedPrefixeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPublicAdvertisedPrefixeRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

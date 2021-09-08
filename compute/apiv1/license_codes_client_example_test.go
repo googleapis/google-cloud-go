@@ -45,6 +45,7 @@ func ExampleLicenseCodesClient_Get() {
 
 	req := &computepb.GetLicenseCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetLicenseCodeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleLicenseCodesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsLicenseCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsLicenseCodeRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

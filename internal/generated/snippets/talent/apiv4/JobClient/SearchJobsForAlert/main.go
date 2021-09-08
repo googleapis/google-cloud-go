@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.SearchJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#SearchJobsRequest.
 	}
 	resp, err := c.SearchJobsForAlert(ctx, req)
 	if err != nil {

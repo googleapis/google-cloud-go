@@ -35,6 +35,7 @@ func main() {
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {

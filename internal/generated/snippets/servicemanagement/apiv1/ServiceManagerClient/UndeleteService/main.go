@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicemanagementpb.UndeleteServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#UndeleteServiceRequest.
 	}
 	op, err := c.UndeleteService(ctx, req)
 	if err != nil {

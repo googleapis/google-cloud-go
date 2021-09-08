@@ -46,6 +46,7 @@ func ExampleInterconnectLocationsClient_Get() {
 
 	req := &computepb.GetInterconnectLocationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInterconnectLocationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleInterconnectLocationsClient_List() {
 
 	req := &computepb.ListInterconnectLocationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectLocationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

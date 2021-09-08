@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListPartitionCursorsRequest.
 	}
 	it := c.ListPartitionCursors(ctx, req)
 	for {
