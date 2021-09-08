@@ -228,10 +228,10 @@ func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPa
 	return req, nil
 }
 
-// SignedURL returns a URL for the specified object. Signed URLs allow
-// the users access to a restricted resource for a limited time without having a
-// Google account or signing in. For more information about the signed
-// URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
+// SignedURL returns a URL for the specified object. Signed URLs allow anyone
+// access to a restricted resource for a limited time without needing a
+// Google account or signing in. For more information about signed URLs, see
+// https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
