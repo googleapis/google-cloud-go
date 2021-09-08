@@ -3996,7 +3996,6 @@ func TestIntegration_Scopes(t *testing.T) {
 }
 
 func TestBucketSignURL(t *testing.T) {
-	// go install github.com/go-delve/delve/cmd/dlv@latest
 	ctx := context.Background()
 
 	if testing.Short() && !replaying {
