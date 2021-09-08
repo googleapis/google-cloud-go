@@ -522,10 +522,10 @@ func v4SanitizeHeaders(hdrs []string) []string {
 	return sanitizedHeaders
 }
 
-// SignedURL returns a URL for the specified object. Signed URLs allow
-// the users access to a restricted resource for a limited time without having a
-// Google account or signing in. For more information about the signed
-// URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
+// SignedURL returns a URL for the specified object. Signed URLs allow anyone
+// access to a restricted resource for a limited time without needing a
+// Google account or signing in. For more information about signed URLs, see
+// https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
