@@ -35,6 +35,7 @@ func main() {
 
 	req := &credentialspb.SignJwtRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignJwtRequest.
 	}
 	resp, err := c.SignJwt(ctx, req)
 	if err != nil {

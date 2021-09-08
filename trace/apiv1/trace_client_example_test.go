@@ -46,6 +46,7 @@ func ExampleClient_ListTraces() {
 
 	req := &cloudtracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
 	}
 	it := c.ListTraces(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetTrace() {
 
 	req := &cloudtracepb.GetTraceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#GetTraceRequest.
 	}
 	resp, err := c.GetTrace(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_PatchTraces() {
 
 	req := &cloudtracepb.PatchTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#PatchTracesRequest.
 	}
 	err = c.PatchTraces(ctx, req)
 	if err != nil {

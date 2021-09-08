@@ -35,6 +35,7 @@ func main() {
 
 	req := &transcoderpb.GetJobTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#GetJobTemplateRequest.
 	}
 	resp, err := c.GetJobTemplate(ctx, req)
 	if err != nil {

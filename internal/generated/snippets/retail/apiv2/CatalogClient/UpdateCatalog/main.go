@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.UpdateCatalogRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCatalogRequest.
 	}
 	resp, err := c.UpdateCatalog(ctx, req)
 	if err != nil {

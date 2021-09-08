@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.AuditUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#AuditUserLinksRequest.
 	}
 	it := c.AuditUserLinks(ctx, req)
 	for {

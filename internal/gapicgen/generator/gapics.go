@@ -296,19 +296,22 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
-		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", conf.apiServiceConfigPath)}
+		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.apiServiceConfigPath))}
 
 	if conf.releaseLevel != "" {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel))
 	}
 	if conf.gRPCServiceConfigPath != "" {
-		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.gRPCServiceConfigPath)))
 	}
 	if !conf.disableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
 	if len(conf.transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.transports, "+")))
+	}
+	if conf.googleapisDiscovery {
+		args = append(args, "--go_gapic_opt", "diregapic")
 	}
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
@@ -495,7 +498,7 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 		if conf.googleapisDiscovery {
 			dir = g.googleapisDiscoDir
 		}
-		yamlPath := filepath.Join(dir, conf.apiServiceConfigPath)
+		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return err
@@ -506,12 +509,16 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
 			return fmt.Errorf("decode: %v", err)
 		}
+		docURL, err := docURL(g.googleCloudDir, conf.importPath)
+		if err != nil {
+			return fmt.Errorf("unable to build docs URL: %v", err)
+		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
 			Description:       yamlConfig.Title,
 			Language:          "Go",
 			ClientLibraryType: "generated",
-			DocsURL:           docURL(conf.importPath),
+			DocsURL:           docURL,
 			ReleaseLevel:      conf.releaseLevel,
 		}
 		entries[conf.importPath] = entry
@@ -543,7 +550,7 @@ func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntri
 		if conf.googleapisDiscovery {
 			dir = g.googleapisDiscoDir
 		}
-		yamlPath := filepath.Join(dir, conf.apiServiceConfigPath)
+		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
@@ -596,6 +603,12 @@ func (g *GapicGenerator) findModifiedDirs() ([]string, error) {
 	return dirList, nil
 }
 
-func docURL(importPath string) string {
-	return "https://cloud.google.com/go/docs/reference/" + importPath[:20] + "latest/" + importPath[20:]
+func docURL(cloudDir, importPath string) (string, error) {
+	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+	if err != nil {
+		return "", err
+	}
+	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
+	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }

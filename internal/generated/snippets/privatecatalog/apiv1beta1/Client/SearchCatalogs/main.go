@@ -36,6 +36,7 @@ func main() {
 
 	req := &privatecatalogpb.SearchCatalogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1#SearchCatalogsRequest.
 	}
 	it := c.SearchCatalogs(ctx, req)
 	for {

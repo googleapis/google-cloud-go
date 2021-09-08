@@ -36,6 +36,7 @@ func main() {
 
 	req := &recommenderpb.ListRecommendationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#ListRecommendationsRequest.
 	}
 	it := c.ListRecommendations(ctx, req)
 	for {

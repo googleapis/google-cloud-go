@@ -35,8 +35,14 @@ func main() {
 
 	req := &cloudbuildpb.DeleteWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteWorkerPoolRequest.
 	}
-	err = c.DeleteWorkerPool(ctx, req)
+	op, err := c.DeleteWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

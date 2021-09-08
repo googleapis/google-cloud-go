@@ -35,6 +35,7 @@ func main() {
 
 	req := &schedulerpb.PauseJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1#PauseJobRequest.
 	}
 	resp, err := c.PauseJob(ctx, req)
 	if err != nil {

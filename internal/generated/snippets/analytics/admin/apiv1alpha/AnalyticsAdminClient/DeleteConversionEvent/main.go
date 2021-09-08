@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteConversionEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteConversionEventRequest.
 	}
 	err = c.DeleteConversionEvent(ctx, req)
 	if err != nil {

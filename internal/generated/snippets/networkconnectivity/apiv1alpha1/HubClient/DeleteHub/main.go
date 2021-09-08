@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkconnectivitypb.DeleteHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#DeleteHubRequest.
 	}
 	op, err := c.DeleteHub(ctx, req)
 	if err != nil {

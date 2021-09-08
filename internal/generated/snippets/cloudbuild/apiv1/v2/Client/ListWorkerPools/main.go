@@ -22,6 +22,7 @@ import (
 	"context"
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	"google.golang.org/api/iterator"
 	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
@@ -35,13 +36,20 @@ func main() {
 
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListWorkerPoolsRequest.
 	}
-	resp, err := c.ListWorkerPools(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListWorkerPools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 // [END cloudbuild_v1_generated_CloudBuild_ListWorkerPools_sync]

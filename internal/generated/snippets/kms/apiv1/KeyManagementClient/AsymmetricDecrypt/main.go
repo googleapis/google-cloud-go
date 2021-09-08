@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.AsymmetricDecryptRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#AsymmetricDecryptRequest.
 	}
 	resp, err := c.AsymmetricDecrypt(ctx, req)
 	if err != nil {

@@ -45,6 +45,7 @@ func ExampleClient_GetResource() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.GetResource(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleClient_PostResource() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.PostResource(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleClient_DeleteResource() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.DeleteResource(ctx, req)
 	if err != nil {
@@ -102,6 +105,7 @@ func ExampleClient_PutResource() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.PutResource(ctx, req)
 	if err != nil {
@@ -121,6 +125,7 @@ func ExampleClient_PatchResource() {
 
 	req := &httpbodypb.HttpBody{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/httpbody#HttpBody.
 	}
 	resp, err := c.PatchResource(ctx, req)
 	if err != nil {

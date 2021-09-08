@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux && go1.15
 // +build linux,go1.15
 
 /*Command godocfx generates DocFX YAML for Go code.
@@ -113,6 +114,8 @@ func main() {
 	}
 	// Use a fake module that doesn't start with cloud.google.com/go.
 	runCmd(workingDir, "go", "mod", "init", "cloud.google.com/lets-build-some-docs")
+
+	failed := false
 	for _, m := range mods {
 		log.Printf("Processing %s@%s", m.Path, m.Version)
 
@@ -120,8 +123,12 @@ func main() {
 		path := filepath.Join(*outDir, fmt.Sprintf("%s@%s", m.Path, m.Version))
 		if err := process(m, workingDir, path, *print); err != nil {
 			log.Printf("Failed to process %v: %v", m, err)
+			failed = true
 		}
 		log.Printf("Done with %s@%s", m.Path, m.Version)
+	}
+	if failed {
+		os.Exit(1)
 	}
 }
 
@@ -129,6 +136,8 @@ func runCmd(dir, name string, args ...string) error {
 	log.Printf("> [%s] %s %s", dir, name, strings.Join(args, " "))
 	cmd := exec.Command(name, args...)
 	cmd.Dir = dir
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	if err := cmd.Start(); err != nil {
 		return fmt.Errorf("Start: %v", err)
 	}
@@ -143,7 +152,8 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 	if err := runCmd(workingDir, "go", "mod", "tidy"); err != nil {
 		return fmt.Errorf("go mod tidy error: %v", err)
 	}
-	if err := runCmd(workingDir, "go", "get", "-d", "-t", mod.Path+"/...@"+mod.Version); err != nil {
+	// Don't do /... because it fails on submodules.
+	if err := runCmd(workingDir, "go", "get", "-d", "-t", mod.Path+"@"+mod.Version); err != nil {
 		return fmt.Errorf("go get %s@%s: %v", mod.Path, mod.Version, err)
 	}
 
@@ -153,6 +163,8 @@ func process(mod indexEntry, workingDir, outDir string, print bool) error {
 		"cloud.google.com/go/analytics",
 		"cloud.google.com/go/area120",
 		"cloud.google.com/go/gsuiteaddons",
+
+		"google.golang.org/appengine/v2/cmd",
 	}
 	r, err := parse(mod.Path+"/...", workingDir, optionalExtraFiles, filter)
 	if err != nil {

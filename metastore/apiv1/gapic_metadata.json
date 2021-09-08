@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "DataprocMetastoreClient",
           "rpcs": {
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
             "CreateMetadataImport": {
               "methods": [
                 "CreateMetadataImport"
@@ -18,6 +23,11 @@
             "CreateService": {
               "methods": [
                 "CreateService"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
               ]
             },
             "DeleteService": {
@@ -30,6 +40,11 @@
                 "ExportMetadata"
               ]
             },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
             "GetMetadataImport": {
               "methods": [
                 "GetMetadataImport"
@@ -40,6 +55,11 @@
                 "GetService"
               ]
             },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListMetadataImports": {
               "methods": [
                 "ListMetadataImports"
@@ -48,6 +68,11 @@
             "ListServices": {
               "methods": [
                 "ListServices"
+              ]
+            },
+            "RestoreService": {
+              "methods": [
+                "RestoreService"
               ]
             },
             "UpdateMetadataImport": {

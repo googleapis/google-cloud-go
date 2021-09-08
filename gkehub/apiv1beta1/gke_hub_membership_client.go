@@ -158,7 +158,7 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 	}
 }
 
-// internalGkeHubMembershipClient is an interface that defines the methods availaible from GKE Hub.
+// internalGkeHubMembershipClient is an interface that defines the methods availaible from GKE Hub API.
 type internalGkeHubMembershipClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -176,11 +176,17 @@ type internalGkeHubMembershipClient interface {
 	GenerateExclusivityManifest(context.Context, *gkehubpb.GenerateExclusivityManifestRequest, ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error)
 }
 
-// GkeHubMembershipClient is a client for interacting with GKE Hub.
+// GkeHubMembershipClient is a client for interacting with GKE Hub API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// GKE Hub CRUD API for the Membership resource.
-// The Membership service is currently only available in the global location.
+// The GKE Hub MembershipService handles the registration of many Kubernetes
+// clusters to Google Cloud, represented with the Membership resource.
+//
+// GKE Hub is currently only available in the global region.
+//
+// Membership management may be non-trivial: it is recommended to use one
+// of the Google-provided client libraries or tools where possible when working
+// with Membership resources.
 type GkeHubMembershipClient struct {
 	// The internal transport-dependent client.
 	internalClient internalGkeHubMembershipClient
@@ -226,7 +232,11 @@ func (c *GkeHubMembershipClient) GetMembership(ctx context.Context, req *gkehubp
 	return c.internalClient.GetMembership(ctx, req, opts...)
 }
 
-// CreateMembership adds a new Membership.
+// CreateMembership creates a new Membership.
+//
+// This is currently only supported for GKE clusters on Google Cloud.
+// To register other clusters, follow the instructions at
+// https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster (at https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster).
 func (c *GkeHubMembershipClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
 	return c.internalClient.CreateMembership(ctx, req, opts...)
 }
@@ -238,6 +248,10 @@ func (c *GkeHubMembershipClient) CreateMembershipOperation(name string) *CreateM
 }
 
 // DeleteMembership removes a Membership.
+//
+// This is currently only supported for GKE clusters on Google Cloud.
+// To unregister other clusters, follow the instructions at
+// https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster (at https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster).
 func (c *GkeHubMembershipClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
 	return c.internalClient.DeleteMembership(ctx, req, opts...)
 }
@@ -260,6 +274,9 @@ func (c *GkeHubMembershipClient) UpdateMembershipOperation(name string) *UpdateM
 }
 
 // GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.
+//
+// This method is used internally by Google-provided libraries.
+// Most clients should not need to call this method directly.
 func (c *GkeHubMembershipClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
 	return c.internalClient.GenerateConnectManifest(ctx, req, opts...)
 }
@@ -286,7 +303,7 @@ func (c *GkeHubMembershipClient) GenerateExclusivityManifest(ctx context.Context
 	return c.internalClient.GenerateExclusivityManifest(ctx, req, opts...)
 }
 
-// gkeHubMembershipGRPCClient is a client for interacting with GKE Hub over gRPC transport.
+// gkeHubMembershipGRPCClient is a client for interacting with GKE Hub API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gkeHubMembershipGRPCClient struct {
@@ -314,8 +331,14 @@ type gkeHubMembershipGRPCClient struct {
 // NewGkeHubMembershipClient creates a new gke hub membership service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// GKE Hub CRUD API for the Membership resource.
-// The Membership service is currently only available in the global location.
+// The GKE Hub MembershipService handles the registration of many Kubernetes
+// clusters to Google Cloud, represented with the Membership resource.
+//
+// GKE Hub is currently only available in the global region.
+//
+// Membership management may be non-trivial: it is recommended to use one
+// of the Google-provided client libraries or tools where possible when working
+// with Membership resources.
 func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption) (*GkeHubMembershipClient, error) {
 	clientOpts := defaultGkeHubMembershipGRPCClientOptions()
 	if newGkeHubMembershipClientHook != nil {
@@ -390,11 +413,13 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 	it := &MembershipIterator{}
 	req = proto.Clone(req).(*gkehubpb.ListMembershipsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkehubpb.Membership, string, error) {
-		var resp *gkehubpb.ListMembershipsResponse
-		req.PageToken = pageToken
+		resp := &gkehubpb.ListMembershipsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -417,9 +442,11 @@ func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *g
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

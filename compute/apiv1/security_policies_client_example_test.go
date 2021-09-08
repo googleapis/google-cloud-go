@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleSecurityPoliciesClient_AddRule() {
 
 	req := &computepb.AddRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleSecurityPolicyRequest.
 	}
 	resp, err := c.AddRule(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleSecurityPoliciesClient_Delete() {
 
 	req := &computepb.DeleteSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSecurityPolicyRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleSecurityPoliciesClient_Get() {
 
 	req := &computepb.GetSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSecurityPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -102,6 +106,7 @@ func ExampleSecurityPoliciesClient_GetRule() {
 
 	req := &computepb.GetRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRuleSecurityPolicyRequest.
 	}
 	resp, err := c.GetRule(ctx, req)
 	if err != nil {
@@ -121,6 +126,7 @@ func ExampleSecurityPoliciesClient_Insert() {
 
 	req := &computepb.InsertSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSecurityPolicyRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -140,13 +146,20 @@ func ExampleSecurityPoliciesClient_List() {
 
 	req := &computepb.ListSecurityPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSecurityPoliciesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleSecurityPoliciesClient_ListPreconfiguredExpressionSets() {
@@ -159,6 +172,7 @@ func ExampleSecurityPoliciesClient_ListPreconfiguredExpressionSets() {
 
 	req := &computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPreconfiguredExpressionSetsSecurityPoliciesRequest.
 	}
 	resp, err := c.ListPreconfiguredExpressionSets(ctx, req)
 	if err != nil {
@@ -178,6 +192,7 @@ func ExampleSecurityPoliciesClient_Patch() {
 
 	req := &computepb.PatchSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchSecurityPolicyRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -197,6 +212,7 @@ func ExampleSecurityPoliciesClient_PatchRule() {
 
 	req := &computepb.PatchRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRuleSecurityPolicyRequest.
 	}
 	resp, err := c.PatchRule(ctx, req)
 	if err != nil {
@@ -216,6 +232,7 @@ func ExampleSecurityPoliciesClient_RemoveRule() {
 
 	req := &computepb.RemoveRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveRuleSecurityPolicyRequest.
 	}
 	resp, err := c.RemoveRule(ctx, req)
 	if err != nil {

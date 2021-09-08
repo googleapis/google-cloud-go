@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetGoogleSignalsSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGoogleSignalsSettingsRequest.
 	}
 	resp, err := c.GetGoogleSignalsSettings(ctx, req)
 	if err != nil {

@@ -21,10 +21,13 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newFirewallPoliciesClientHook clientHook
@@ -63,22 +67,22 @@ type internalFirewallPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AddAssociation(context.Context, *computepb.AddAssociationFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	AddRule(context.Context, *computepb.AddRuleFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	CloneRules(context.Context, *computepb.CloneRulesFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Delete(context.Context, *computepb.DeleteFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AddAssociation(context.Context, *computepb.AddAssociationFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	AddRule(context.Context, *computepb.AddRuleFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	CloneRules(context.Context, *computepb.CloneRulesFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	Delete(context.Context, *computepb.DeleteFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicy, error)
 	GetAssociation(context.Context, *computepb.GetAssociationFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyFirewallPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	GetRule(context.Context, *computepb.GetRuleFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPolicyRule, error)
-	Insert(context.Context, *computepb.InsertFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListFirewallPoliciesRequest, ...gax.CallOption) (*computepb.FirewallPolicyList, error)
+	Insert(context.Context, *computepb.InsertFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	List(context.Context, *computepb.ListFirewallPoliciesRequest, ...gax.CallOption) *FirewallPolicyIterator
 	ListAssociations(context.Context, *computepb.ListAssociationsFirewallPolicyRequest, ...gax.CallOption) (*computepb.FirewallPoliciesListAssociationsResponse, error)
-	Move(context.Context, *computepb.MoveFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	Patch(context.Context, *computepb.PatchFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	PatchRule(context.Context, *computepb.PatchRuleFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	RemoveAssociation(context.Context, *computepb.RemoveAssociationFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
-	RemoveRule(context.Context, *computepb.RemoveRuleFirewallPolicyRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Move(context.Context, *computepb.MoveFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	Patch(context.Context, *computepb.PatchFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	PatchRule(context.Context, *computepb.PatchRuleFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	RemoveAssociation(context.Context, *computepb.RemoveAssociationFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
+	RemoveRule(context.Context, *computepb.RemoveRuleFirewallPolicyRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyFirewallPolicyRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsFirewallPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
@@ -118,22 +122,22 @@ func (c *FirewallPoliciesClient) Connection() *grpc.ClientConn {
 }
 
 // AddAssociation inserts an association for the specified firewall policy.
-func (c *FirewallPoliciesClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddAssociation(ctx, req, opts...)
 }
 
 // AddRule inserts a rule into a firewall policy.
-func (c *FirewallPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
 // CloneRules copies rules to the specified firewall policy.
-func (c *FirewallPoliciesClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CloneRules(ctx, req, opts...)
 }
 
 // Delete deletes the specified policy.
-func (c *FirewallPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) Delete(ctx context.Context, req *computepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -158,12 +162,12 @@ func (c *FirewallPoliciesClient) GetRule(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a new policy in the specified project using the data included in the request.
-func (c *FirewallPoliciesClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List lists all the policies that have been configured for the specified project.
-func (c *FirewallPoliciesClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyList, error) {
+func (c *FirewallPoliciesClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
@@ -173,27 +177,27 @@ func (c *FirewallPoliciesClient) ListAssociations(ctx context.Context, req *comp
 }
 
 // Move moves the specified firewall policy.
-func (c *FirewallPoliciesClient) Move(ctx context.Context, req *computepb.MoveFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) Move(ctx context.Context, req *computepb.MoveFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Move(ctx, req, opts...)
 }
 
 // Patch patches the specified policy with the data included in the request.
-func (c *FirewallPoliciesClient) Patch(ctx context.Context, req *computepb.PatchFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) Patch(ctx context.Context, req *computepb.PatchFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // PatchRule patches a rule of the specified priority.
-func (c *FirewallPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) PatchRule(ctx context.Context, req *computepb.PatchRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchRule(ctx, req, opts...)
 }
 
 // RemoveAssociation removes an association for the specified firewall policy.
-func (c *FirewallPoliciesClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveAssociation(ctx, req, opts...)
 }
 
 // RemoveRule deletes a rule of the specified priority.
-func (c *FirewallPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *FirewallPoliciesClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveRule(ctx, req, opts...)
 }
 
@@ -240,8 +244,8 @@ func NewFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultFirewallPoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -272,8 +276,8 @@ func (c *firewallPoliciesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AddAssociation inserts an association for the specified firewall policy.
-func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyAssociationResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -310,8 +314,8 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -322,12 +326,16 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // AddRule inserts a rule into a firewall policy.
-func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -361,8 +369,8 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -373,17 +381,15 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // CloneRules copies rules to the specified firewall policy.
-func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *computepb.CloneRulesFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/cloneRules", req.GetFirewallPolicy())
 
@@ -397,7 +403,7 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -414,8 +420,8 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -426,17 +432,15 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Delete deletes the specified policy.
-func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
@@ -447,7 +451,7 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -464,8 +468,8 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -476,21 +480,19 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified firewall policy.
 func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v", req.GetFirewallPolicy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -507,8 +509,8 @@ func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -524,12 +526,6 @@ func (c *firewallPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // GetAssociation gets an association with the specified name.
 func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *computepb.GetAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyAssociation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getAssociation", req.GetFirewallPolicy())
 
@@ -540,7 +536,7 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -557,8 +553,8 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -574,12 +570,6 @@ func (c *firewallPoliciesRESTClient) GetAssociation(ctx context.Context, req *co
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getIamPolicy", req.GetResource())
 
@@ -590,7 +580,7 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -607,8 +597,8 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -624,12 +614,6 @@ func (c *firewallPoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 // GetRule gets a rule of the specified priority.
 func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyRule, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/getRule", req.GetFirewallPolicy())
 
@@ -640,7 +624,7 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -657,8 +641,8 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -673,8 +657,8 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 }
 
 // Insert creates a new policy in the specified project using the data included in the request.
-func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -711,8 +695,8 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -723,82 +707,102 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List lists all the policies that have been configured for the specified project.
-func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) (*computepb.FirewallPolicyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ParentId != nil {
-		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
+	it := &FirewallPolicyIterator{}
+	req = proto.Clone(req).(*computepb.ListFirewallPoliciesRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.FirewallPolicyList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.FirewallPolicy, string, error) {
+		resp := &computepb.FirewallPolicyList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ParentId != nil {
+			params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListAssociations lists associations of a specified target, i.e., organization or folder.
 func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *computepb.ListAssociationsFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.FirewallPoliciesListAssociationsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/listAssociations")
 
@@ -809,7 +813,7 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -826,8 +830,8 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -842,13 +846,7 @@ func (c *firewallPoliciesRESTClient) ListAssociations(ctx context.Context, req *
 }
 
 // Move moves the specified firewall policy.
-func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.MoveFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.MoveFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/move", req.GetFirewallPolicy())
 
@@ -862,7 +860,7 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -879,8 +877,8 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -891,12 +889,16 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Patch patches the specified policy with the data included in the request.
-func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -930,8 +932,8 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -942,12 +944,16 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // PatchRule patches a rule of the specified priority.
-func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -984,8 +990,8 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -996,17 +1002,15 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // RemoveAssociation removes an association for the specified firewall policy.
-func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req *computepb.RemoveAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeAssociation", req.GetFirewallPolicy())
 
@@ -1020,7 +1024,7 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1037,8 +1041,8 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1049,17 +1053,15 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // RemoveRule deletes a rule of the specified priority.
-func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleFirewallPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/removeRule", req.GetFirewallPolicy())
 
@@ -1073,7 +1075,7 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1090,8 +1092,8 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1102,12 +1104,16 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalOrganizationSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1134,8 +1140,8 @@ func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1151,7 +1157,7 @@ func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1178,8 +1184,8 @@ func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -1191,4 +1197,51 @@ func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req
 	rsp := &computepb.TestPermissionsResponse{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// FirewallPolicyIterator manages a stream of *computepb.FirewallPolicy.
+type FirewallPolicyIterator struct {
+	items    []*computepb.FirewallPolicy
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.FirewallPolicy, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *FirewallPolicyIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FirewallPolicyIterator) Next() (*computepb.FirewallPolicy, error) {
+	var item *computepb.FirewallPolicy
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FirewallPolicyIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FirewallPolicyIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
