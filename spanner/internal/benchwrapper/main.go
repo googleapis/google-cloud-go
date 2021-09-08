@@ -43,7 +43,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	c, err := spanner.NewClient(ctx, "projects/someproject/instances/someinstance/databases/somedatabase")
+	c, err := spanner.NewClient(ctx, "projects/appdev-soda-spanner-staging/instances/someinstance/databases/somedatabase")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -60,6 +60,7 @@ func main() {
 }
 
 type server struct {
+	pb.UnimplementedSpannerBenchWrapperServer
 	c *spanner.Client
 }
 
@@ -80,6 +81,7 @@ func (s *server) Read(ctx context.Context, req *pb.ReadQuery) (*pb.EmptyResponse
 
 func (s *server) Insert(ctx context.Context, req *pb.InsertQuery) (*pb.EmptyResponse, error) {
 	var muts []*spanner.Mutation
+	fmt.Print(req.Singers)
 	for _, i := range req.Singers {
 		muts = append(muts, spanner.Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{i.Id, i.FirstName, i.LastName}))
 	}
