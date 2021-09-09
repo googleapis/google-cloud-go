@@ -498,6 +498,11 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool) (*
 	}
 
 	// Close the stream to "commit" the data sent.
+	//
+	// TODO: Retry upload if committing it fails. For Resumable Upload,
+	// this means querying the write status for committed size to use as an
+	// offset. For simple uploads, this is just starting back from sent = 0,
+	// offset = 0, and resending it all.
 	resp, finalized, err := w.commit()
 	if err != nil {
 		return nil, 0, false, err
