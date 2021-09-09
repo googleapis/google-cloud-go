@@ -47,7 +47,6 @@ message UpdateQuery {
   repeated string queries = 1;
 }
 
-// TODO(deklerk): Replace with Google's canonical Empty.
 message EmptyResponse {}
 
 service SpannerBenchWrapper {

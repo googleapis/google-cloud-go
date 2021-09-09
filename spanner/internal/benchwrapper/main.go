@@ -81,7 +81,6 @@ func (s *server) Read(ctx context.Context, req *pb.ReadQuery) (*pb.EmptyResponse
 
 func (s *server) Insert(ctx context.Context, req *pb.InsertQuery) (*pb.EmptyResponse, error) {
 	var muts []*spanner.Mutation
-	fmt.Print(req.Singers)
 	for _, i := range req.Singers {
 		muts = append(muts, spanner.Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{i.Id, i.FirstName, i.LastName}))
 	}
