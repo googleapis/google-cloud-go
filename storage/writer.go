@@ -393,7 +393,10 @@ func (w *Writer) openGRPC() error {
 				return
 			}
 
-			// Query the progress then upload another chunk.
+			// Query the progress then upload another chunk. This is necessary
+			// for an unfinalized resumable upload. Committing a chunk by
+			// closing the stream in this case will just get an EOF, indicating
+			// that the stream was closed successfully.
 			if err := w.queryProgress(); err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
