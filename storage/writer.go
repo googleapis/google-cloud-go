@@ -341,6 +341,7 @@ func (w *Writer) openGRPC() error {
 	if w.ChunkSize == 0 {
 		bufSize = maxPerMessageWriteSize
 	}
+	buf := make([]byte, bufSize)
 
 	var offset int64
 
@@ -351,8 +352,6 @@ func (w *Writer) openGRPC() error {
 
 		// Loop until there is an error or the Object has been finalized.
 		for {
-			// Initiliaze client buffer with ChunkSize.
-			buf := make([]byte, bufSize)
 			// Note: This blocks until either the buffer is full or EOF is read.
 			recvd, done, err := read(pr, buf)
 			if err != nil {
@@ -360,6 +359,7 @@ func (w *Writer) openGRPC() error {
 				pr.CloseWithError(err)
 				return
 			}
+			toWrite := buf[:recvd]
 
 			// TODO: Figure out how to set up encryption via CommonObjectRequestParams.
 			// TODO: Apply Object write conditions to the request.
@@ -376,7 +376,7 @@ func (w *Writer) openGRPC() error {
 				}
 			}
 
-			o, off, finalized, err := w.uploadBuffer(buf, recvd, offset, done)
+			o, off, finalized, err := w.uploadBuffer(toWrite, recvd, offset, done)
 			if err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
