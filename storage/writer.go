@@ -31,9 +31,13 @@ import (
 const (
 	// Maximum amount of content that can be sent per WriteObjectRequest message.
 	// A buffer reaching this amount will precipitate a flush of the buffer.
+	//
+	// This is only used for the gRPC-based Writer.
 	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
 
 	// Default per stream, or "chunk", size is 16 MB.
+	//
+	// This is only used for the gRPC-based Writer.
 	defaultPerStreamWriteSize int = 16 << 20
 )
 
@@ -95,6 +99,9 @@ type Writer struct {
 	mu  sync.Mutex
 	err error
 
+	// The gRPC client-stream used for sending buffers.
+	//
+	// This is an experimental API and not intended for public use.
 	stream storagepb.Storage_WriteObjectClient
 }
 
@@ -122,6 +129,8 @@ func (w *Writer) openGRPC() error {
 	var offset int64
 	var upid string
 
+	// This function reads the data sent to the pipe and sends sets of messages
+	// on the gRPC client-stream as the buffer is filled.
 	go func() {
 		defer close(w.donec)
 
@@ -129,6 +138,7 @@ func (w *Writer) openGRPC() error {
 		for {
 			// Initiliaze client buffer with ChunkSize.
 			buf := make([]byte, bufSize)
+			// Note: This blocks until either the buffer is full or EOF is read.
 			recvd, done, err := read(pr, buf)
 			if err != nil {
 				w.error(err)
@@ -151,7 +161,7 @@ func (w *Writer) openGRPC() error {
 				}
 			}
 
-			o, off, finalized, err := w.upload(buf, recvd, offset, done, upid)
+			o, off, finalized, err := w.uploadBuffer(buf, recvd, offset, done, upid)
 			if err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
@@ -180,7 +190,8 @@ func (w *Writer) openGRPC() error {
 	return nil
 }
 
-// startResumableUpload initializes a Resumable Upload and returns the upload ID.
+// startResumableUpload initializes a Resumable Upload with gRPC and returns the
+// upload ID.
 //
 // This is an experimental API and not intended for public use.
 func (w *Writer) startResumableUpload() (string, error) {
@@ -211,15 +222,15 @@ func (w *Writer) queryProgress(upid string) error {
 	return err
 }
 
-// upload opens a Write stream and uploads the buffer at the given offset (if
-// uploading a chunk for a resumable upload), and will mark the write as
+// uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
+// uploading a chunk for a resumable uploadBuffer), and will mark the write as
 // finished if we are done receiving data from the user. The resulting write
 // offset after uploading the buffer is returned, as well as a boolean
 // indicating if the Object has been finalized. If it has been finalized, the
 // final Object will be returned as well.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) upload(buf []byte, recvd int, offset int64, done bool, upid string) (*storagepb.Object, int64, bool, error) {
+func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool, upid string) (*storagepb.Object, int64, bool, error) {
 	var err error
 
 	sent := 0
