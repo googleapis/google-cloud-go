@@ -353,7 +353,7 @@ func (w *Writer) openGRPC() error {
 		// Loop until there is an error or the Object has been finalized.
 		for {
 			// Note: This blocks until either the buffer is full or EOF is read.
-			recvd, done, err := read(pr, buf)
+			recvd, doneReading, err := read(pr, buf)
 			if err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
@@ -367,7 +367,7 @@ func (w *Writer) openGRPC() error {
 
 			// The chunk buffer is full, but there is no end in sight. Start a
 			// resumable upload if it has not already been started.
-			if !done && w.upid == "" {
+			if !doneReading && w.upid == "" {
 				err = w.startResumableUpload()
 				if err != nil {
 					w.error(err)
@@ -376,7 +376,7 @@ func (w *Writer) openGRPC() error {
 				}
 			}
 
-			o, off, finalized, err := w.uploadBuffer(toWrite, recvd, offset, done)
+			o, off, finalized, err := w.uploadBuffer(toWrite, recvd, offset, doneReading)
 			if err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
@@ -389,7 +389,7 @@ func (w *Writer) openGRPC() error {
 
 			// When we are done reading data and the chunk has been finalized,
 			// we are done.
-			if done && finalized {
+			if doneReading && finalized {
 				// Build Object from server's response and report progress.
 				w.obj = newObjectFromProto(o)
 				w.progress(o.GetSize())
