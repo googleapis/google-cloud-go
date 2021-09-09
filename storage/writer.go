@@ -382,6 +382,9 @@ func (w *Writer) openGRPC() error {
 				pr.CloseWithError(err)
 				return
 			}
+			// At this point, the current buffer has been uploaded. Capture the
+			// committed offset here in case the upload was not finalized and
+			// another chunk is to be uploaded.
 			offset = off
 
 			// When we are done reading data and the chunk has been finalized,
@@ -459,7 +462,7 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool) (*
 	for recvd-sent > 0 {
 		// This indicates that this is the last message and the remaining
 		// data fits in one message.
-		if sent+limit >= recvd {
+		if recvd-sent <= limit {
 			limit = recvd - sent
 			finished = true
 
