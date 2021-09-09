@@ -103,6 +103,11 @@ type Writer struct {
 	//
 	// This is an experimental API and not intended for public use.
 	stream storagepb.Storage_WriteObjectClient
+
+	// The Resumable Upload ID started by a gRPC-based Writer.
+	//
+	// This is an experimental API and not intended for public use.
+	upid string
 }
 
 func (w *Writer) open() error {
@@ -328,14 +333,16 @@ func (w *Writer) openGRPC() error {
 
 	go w.monitorCancel()
 
-	// TODO: Handle this case later.
+	// TODO: We need to accommodate user-specified chunk size. This will
+	// take precedence over defaultPerStreamWriteSize.
+	// TODO: Determine a strategy if the user wants chunks smaller than
+	// maxPerMessageWriteSize.
 	bufSize := w.ChunkSize
 	if w.ChunkSize == 0 {
 		bufSize = maxPerMessageWriteSize
 	}
 
 	var offset int64
-	var upid string
 
 	// This function reads the data sent to the pipe and sends sets of messages
 	// on the gRPC client-stream as the buffer is filled.
@@ -360,8 +367,8 @@ func (w *Writer) openGRPC() error {
 
 			// The chunk buffer is full, but there is no end in sight. Start a
 			// resumable upload if it has not already been started.
-			if !done && upid == "" {
-				upid, err = w.startResumableUpload()
+			if !done && w.upid == "" {
+				err = w.startResumableUpload()
 				if err != nil {
 					w.error(err)
 					pr.CloseWithError(err)
@@ -369,7 +376,7 @@ func (w *Writer) openGRPC() error {
 				}
 			}
 
-			o, off, finalized, err := w.uploadBuffer(buf, recvd, offset, done, upid)
+			o, off, finalized, err := w.uploadBuffer(buf, recvd, offset, done)
 			if err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
@@ -387,7 +394,7 @@ func (w *Writer) openGRPC() error {
 			}
 
 			// Query the progress then upload another chunk.
-			if err := w.queryProgress(upid); err != nil {
+			if err := w.queryProgress(); err != nil {
 				w.error(err)
 				pr.CloseWithError(err)
 				return
@@ -398,11 +405,11 @@ func (w *Writer) openGRPC() error {
 	return nil
 }
 
-// startResumableUpload initializes a Resumable Upload with gRPC and returns the
-// upload ID.
+// startResumableUpload initializes a Resumable Upload with gRPC and sets the
+// upload ID on the Writer.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) startResumableUpload() (string, error) {
+func (w *Writer) startResumableUpload() error {
 	var common *storagepb.CommonRequestParams
 	if w.o.userProject != "" {
 		common = &storagepb.CommonRequestParams{UserProject: w.o.userProject}
@@ -414,7 +421,8 @@ func (w *Writer) startResumableUpload() (string, error) {
 		CommonRequestParams: common,
 	})
 
-	return upres.GetUploadId(), err
+	w.upid = upres.GetUploadId()
+	return err
 }
 
 // queryProgress is a helper that queries the status of the resumable upload
@@ -422,8 +430,8 @@ func (w *Writer) startResumableUpload() (string, error) {
 // size from the write status.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) queryProgress(upid string) error {
-	q, err := w.o.c.gc.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: upid})
+func (w *Writer) queryProgress() error {
+	q, err := w.o.c.gc.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
 
 	// q.GetCommittedSize() will return 0 if q is nil, and progress() will ignore 0 progress.
 	w.progress(q.GetCommittedSize())
@@ -438,7 +446,7 @@ func (w *Writer) queryProgress(upid string) error {
 // final Object will be returned as well.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool, upid string) (*storagepb.Object, int64, bool, error) {
+func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool) (*storagepb.Object, int64, bool, error) {
 	var err error
 
 	sent := 0
@@ -454,7 +462,7 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool, up
 
 			// Do not indicate finished for Resumable Uploads until we have
 			// received all data for writing from the user.
-			if !done && upid != "" {
+			if !done && w.upid != "" {
 				finished = false
 			}
 		}
@@ -471,7 +479,7 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool, up
 			FinishWrite: finished,
 		}
 
-		n, err := w.sendWithRetry(req, first, upid)
+		n, err := w.sendWithRetry(req, first)
 		if err != nil {
 			return nil, 0, false, err
 		}
@@ -515,7 +523,7 @@ func (w *Writer) commit() (*storagepb.WriteObjectResponse, bool, error) {
 // sendWithRetry will attempt to Send a WriteObjectRequest on the stream, and
 // will reopen the stream and retry that send if it fails for a retryable
 // reason until the Writer's context is canceled.
-func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool, upid string) (int, error) {
+func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool) (int, error) {
 	var err error
 	err = runWithRetry(w.ctx, func() error {
 		// Open a new stream and set the first_message field on the request.
@@ -527,8 +535,8 @@ func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool, up
 				return err
 			}
 
-			if upid != "" {
-				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: upid}
+			if w.upid != "" {
+				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
 			} else {
 				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: &storagepb.WriteObjectSpec{
