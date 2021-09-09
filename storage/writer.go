@@ -105,6 +105,214 @@ type Writer struct {
 	stream storagepb.Storage_WriteObjectClient
 }
 
+func (w *Writer) open() error {
+	if err := w.validateWriteAttrs(); err != nil {
+		return err
+	}
+
+	pr, pw := io.Pipe()
+	w.pw = pw
+	w.opened = true
+
+	go w.monitorCancel()
+
+	attrs := w.ObjectAttrs
+	mediaOpts := []googleapi.MediaOption{
+		googleapi.ChunkSize(w.ChunkSize),
+	}
+	if c := attrs.ContentType; c != "" {
+		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
+	}
+
+	go func() {
+		defer close(w.donec)
+
+		rawObj := attrs.toRawObject(w.o.bucket)
+		if w.SendCRC32C {
+			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
+		}
+		if w.MD5 != nil {
+			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(w.MD5)
+		}
+		call := w.o.c.raw.Objects.Insert(w.o.bucket, rawObj).
+			Media(pr, mediaOpts...).
+			Projection("full").
+			Context(w.ctx).
+			Name(w.o.object)
+
+		if w.ProgressFunc != nil {
+			call.ProgressUpdater(func(n, _ int64) { w.ProgressFunc(n) })
+		}
+		if attrs.KMSKeyName != "" {
+			call.KmsKeyName(attrs.KMSKeyName)
+		}
+		if attrs.PredefinedACL != "" {
+			call.PredefinedAcl(attrs.PredefinedACL)
+		}
+		if err := setEncryptionHeaders(call.Header(), w.o.encryptionKey, false); err != nil {
+			w.mu.Lock()
+			w.err = err
+			w.mu.Unlock()
+			pr.CloseWithError(err)
+			return
+		}
+		var resp *raw.Object
+		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
+		if err == nil {
+			if w.o.userProject != "" {
+				call.UserProject(w.o.userProject)
+			}
+			setClientHeader(call.Header())
+
+			// The internals that perform call.Do automatically retry both the initial
+			// call to set up the upload as well as calls to upload individual chunks
+			// for a resumable upload (as long as the chunk size is non-zero). Hence
+			// there is no need to add retries here.
+			resp, err = call.Do()
+		}
+		if err != nil {
+			w.mu.Lock()
+			w.err = err
+			w.mu.Unlock()
+			pr.CloseWithError(err)
+			return
+		}
+		w.obj = newObject(resp)
+	}()
+	return nil
+}
+
+// Write appends to w. It implements the io.Writer interface.
+//
+// Since writes happen asynchronously, Write may return a nil
+// error even though the write failed (or will fail). Always
+// use the error returned from Writer.Close to determine if
+// the upload was successful.
+//
+// Writes will be retried on transient errors from the server, unless
+// Writer.ChunkSize has been set to zero.
+func (w *Writer) Write(p []byte) (n int, err error) {
+	w.mu.Lock()
+	werr := w.err
+	w.mu.Unlock()
+	if werr != nil {
+		return 0, werr
+	}
+	if !w.opened {
+		// gRPC client has been initialized - use gRPC to upload.
+		if w.o.c.gc != nil {
+			if err := w.openGRPC(); err != nil {
+				return 0, err
+			}
+		} else if err := w.open(); err != nil {
+			return 0, err
+		}
+	}
+	n, err = w.pw.Write(p)
+	if err != nil {
+		w.mu.Lock()
+		werr := w.err
+		w.mu.Unlock()
+		// Preserve existing functionality that when context is canceled, Write will return
+		// context.Canceled instead of "io: read/write on closed pipe". This hides the
+		// pipe implementation detail from users and makes Write seem as though it's an RPC.
+		if werr == context.Canceled || werr == context.DeadlineExceeded {
+			return n, werr
+		}
+	}
+	return n, err
+}
+
+// Close completes the write operation and flushes any buffered data.
+// If Close doesn't return an error, metadata about the written object
+// can be retrieved by calling Attrs.
+func (w *Writer) Close() error {
+	if !w.opened {
+		if err := w.open(); err != nil {
+			return err
+		}
+	}
+
+	// Closing either the read or write causes the entire pipe to close.
+	if err := w.pw.Close(); err != nil {
+		return err
+	}
+
+	<-w.donec
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.err
+}
+
+// monitorCancel is intended to be used as a background goroutine. It monitors the
+// context, and when it observes that the context has been canceled, it manually
+// closes things that do not take a context.
+func (w *Writer) monitorCancel() {
+	select {
+	case <-w.ctx.Done():
+		w.mu.Lock()
+		werr := w.ctx.Err()
+		w.err = werr
+		w.mu.Unlock()
+
+		// Closing either the read or write causes the entire pipe to close.
+		w.CloseWithError(werr)
+	case <-w.donec:
+	}
+}
+
+// CloseWithError aborts the write operation with the provided error.
+// CloseWithError always returns nil.
+//
+// Deprecated: cancel the context passed to NewWriter instead.
+func (w *Writer) CloseWithError(err error) error {
+	if !w.opened {
+		return nil
+	}
+	return w.pw.CloseWithError(err)
+}
+
+// Attrs returns metadata about a successfully-written object.
+// It's only valid to call it after Close returns nil.
+func (w *Writer) Attrs() *ObjectAttrs {
+	return w.obj
+}
+
+func (w *Writer) validateWriteAttrs() error {
+	attrs := w.ObjectAttrs
+	// Check the developer didn't change the object Name (this is unfortunate, but
+	// we don't want to store an object under the wrong name).
+	if attrs.Name != w.o.object {
+		return fmt.Errorf("storage: Writer.Name %q does not match object name %q", attrs.Name, w.o.object)
+	}
+	if !utf8.ValidString(attrs.Name) {
+		return fmt.Errorf("storage: object name %q is not valid UTF-8", attrs.Name)
+	}
+	if attrs.KMSKeyName != "" && w.o.encryptionKey != nil {
+		return errors.New("storage: cannot use KMSKeyName with a customer-supplied encryption key")
+	}
+	if w.ChunkSize < 0 {
+		return errors.New("storage: Writer.ChunkSize must be non-negative")
+	}
+	return nil
+}
+
+// progress is a convenience wrapper that reports write progress to the Writer
+// ProgressFunc if it is set and progress is non-zero.
+func (w *Writer) progress(p int64) {
+	if w.ProgressFunc != nil && p != 0 {
+		w.ProgressFunc(p)
+	}
+}
+
+// error acquires the Writer's lock, sets the Writer's err to the given error,
+// then relinquishes the lock.
+func (w *Writer) error(err error) {
+	w.mu.Lock()
+	w.err = err
+	w.mu.Unlock()
+}
+
 // openGRPC initializes a pipe for the user to write data to, and a routine to
 // read from that pipe and upload the data to GCS via gRPC.
 //
@@ -370,212 +578,4 @@ func read(r io.Reader, buf []byte) (int, bool, error) {
 		err = nil
 	}
 	return recvd, done, err
-}
-
-// progress is a convenience wrapper that reports write progress to the Writer
-// ProgressFunc if it is set and progress is non-zero.
-func (w *Writer) progress(p int64) {
-	if w.ProgressFunc != nil && p != 0 {
-		w.ProgressFunc(p)
-	}
-}
-
-// error acquires the Writer's lock, sets the Writer's err to the given error,
-// then relinquishes the lock.
-func (w *Writer) error(err error) {
-	w.mu.Lock()
-	w.err = err
-	w.mu.Unlock()
-}
-
-func (w *Writer) open() error {
-	if err := w.validateWriteAttrs(); err != nil {
-		return err
-	}
-
-	pr, pw := io.Pipe()
-	w.pw = pw
-	w.opened = true
-
-	go w.monitorCancel()
-
-	attrs := w.ObjectAttrs
-	mediaOpts := []googleapi.MediaOption{
-		googleapi.ChunkSize(w.ChunkSize),
-	}
-	if c := attrs.ContentType; c != "" {
-		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
-	}
-
-	go func() {
-		defer close(w.donec)
-
-		rawObj := attrs.toRawObject(w.o.bucket)
-		if w.SendCRC32C {
-			rawObj.Crc32c = encodeUint32(attrs.CRC32C)
-		}
-		if w.MD5 != nil {
-			rawObj.Md5Hash = base64.StdEncoding.EncodeToString(w.MD5)
-		}
-		call := w.o.c.raw.Objects.Insert(w.o.bucket, rawObj).
-			Media(pr, mediaOpts...).
-			Projection("full").
-			Context(w.ctx).
-			Name(w.o.object)
-
-		if w.ProgressFunc != nil {
-			call.ProgressUpdater(func(n, _ int64) { w.ProgressFunc(n) })
-		}
-		if attrs.KMSKeyName != "" {
-			call.KmsKeyName(attrs.KMSKeyName)
-		}
-		if attrs.PredefinedACL != "" {
-			call.PredefinedAcl(attrs.PredefinedACL)
-		}
-		if err := setEncryptionHeaders(call.Header(), w.o.encryptionKey, false); err != nil {
-			w.mu.Lock()
-			w.err = err
-			w.mu.Unlock()
-			pr.CloseWithError(err)
-			return
-		}
-		var resp *raw.Object
-		err := applyConds("NewWriter", w.o.gen, w.o.conds, call)
-		if err == nil {
-			if w.o.userProject != "" {
-				call.UserProject(w.o.userProject)
-			}
-			setClientHeader(call.Header())
-
-			// The internals that perform call.Do automatically retry both the initial
-			// call to set up the upload as well as calls to upload individual chunks
-			// for a resumable upload (as long as the chunk size is non-zero). Hence
-			// there is no need to add retries here.
-			resp, err = call.Do()
-		}
-		if err != nil {
-			w.mu.Lock()
-			w.err = err
-			w.mu.Unlock()
-			pr.CloseWithError(err)
-			return
-		}
-		w.obj = newObject(resp)
-	}()
-	return nil
-}
-
-// Write appends to w. It implements the io.Writer interface.
-//
-// Since writes happen asynchronously, Write may return a nil
-// error even though the write failed (or will fail). Always
-// use the error returned from Writer.Close to determine if
-// the upload was successful.
-//
-// Writes will be retried on transient errors from the server, unless
-// Writer.ChunkSize has been set to zero.
-func (w *Writer) Write(p []byte) (n int, err error) {
-	w.mu.Lock()
-	werr := w.err
-	w.mu.Unlock()
-	if werr != nil {
-		return 0, werr
-	}
-	if !w.opened {
-		// gRPC client has been initialized - use gRPC to upload.
-		if w.o.c.gc != nil {
-			if err := w.openGRPC(); err != nil {
-				return 0, err
-			}
-		} else if err := w.open(); err != nil {
-			return 0, err
-		}
-	}
-	n, err = w.pw.Write(p)
-	if err != nil {
-		w.mu.Lock()
-		werr := w.err
-		w.mu.Unlock()
-		// Preserve existing functionality that when context is canceled, Write will return
-		// context.Canceled instead of "io: read/write on closed pipe". This hides the
-		// pipe implementation detail from users and makes Write seem as though it's an RPC.
-		if werr == context.Canceled || werr == context.DeadlineExceeded {
-			return n, werr
-		}
-	}
-	return n, err
-}
-
-// Close completes the write operation and flushes any buffered data.
-// If Close doesn't return an error, metadata about the written object
-// can be retrieved by calling Attrs.
-func (w *Writer) Close() error {
-	if !w.opened {
-		if err := w.open(); err != nil {
-			return err
-		}
-	}
-
-	// Closing either the read or write causes the entire pipe to close.
-	if err := w.pw.Close(); err != nil {
-		return err
-	}
-
-	<-w.donec
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	return w.err
-}
-
-// monitorCancel is intended to be used as a background goroutine. It monitors the
-// context, and when it observes that the context has been canceled, it manually
-// closes things that do not take a context.
-func (w *Writer) monitorCancel() {
-	select {
-	case <-w.ctx.Done():
-		w.mu.Lock()
-		werr := w.ctx.Err()
-		w.err = werr
-		w.mu.Unlock()
-
-		// Closing either the read or write causes the entire pipe to close.
-		w.CloseWithError(werr)
-	case <-w.donec:
-	}
-}
-
-// CloseWithError aborts the write operation with the provided error.
-// CloseWithError always returns nil.
-//
-// Deprecated: cancel the context passed to NewWriter instead.
-func (w *Writer) CloseWithError(err error) error {
-	if !w.opened {
-		return nil
-	}
-	return w.pw.CloseWithError(err)
-}
-
-// Attrs returns metadata about a successfully-written object.
-// It's only valid to call it after Close returns nil.
-func (w *Writer) Attrs() *ObjectAttrs {
-	return w.obj
-}
-
-func (w *Writer) validateWriteAttrs() error {
-	attrs := w.ObjectAttrs
-	// Check the developer didn't change the object Name (this is unfortunate, but
-	// we don't want to store an object under the wrong name).
-	if attrs.Name != w.o.object {
-		return fmt.Errorf("storage: Writer.Name %q does not match object name %q", attrs.Name, w.o.object)
-	}
-	if !utf8.ValidString(attrs.Name) {
-		return fmt.Errorf("storage: object name %q is not valid UTF-8", attrs.Name)
-	}
-	if attrs.KMSKeyName != "" && w.o.encryptionKey != nil {
-		return errors.New("storage: cannot use KMSKeyName with a customer-supplied encryption key")
-	}
-	if w.ChunkSize < 0 {
-		return errors.New("storage: Writer.ChunkSize must be non-negative")
-	}
-	return nil
 }
