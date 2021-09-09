@@ -452,7 +452,7 @@ func (w *Writer) queryProgress() error {
 // final Object will be returned as well.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool) (*storagepb.Object, int64, bool, error) {
+func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, doneReading bool) (*storagepb.Object, int64, bool, error) {
 	var err error
 
 	sent := 0
@@ -468,7 +468,7 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, done bool) (*
 
 			// Do not indicate finished for Resumable Uploads until we have
 			// received all data for writing from the user.
-			if !done && w.upid != "" {
+			if !doneReading && w.upid != "" {
 				finished = false
 			}
 		}
