@@ -77,7 +77,7 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(topicPath.Zone)
+	region, err := wire.LocationToRegion(topicPath.Location)
 	if err != nil {
 		return nil, err
 	}

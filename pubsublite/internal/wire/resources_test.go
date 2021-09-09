@@ -15,37 +15,6 @@ package wire
 
 import "testing"
 
-func TestValidateZone(t *testing.T) {
-	for _, tc := range []struct {
-		desc    string
-		input   string
-		wantErr bool
-	}{
-		{
-			desc:    "valid",
-			input:   "us-central1-a",
-			wantErr: false,
-		},
-		{
-			desc:    "invalid: insufficient dashes",
-			input:   "us-central1",
-			wantErr: true,
-		},
-		{
-			desc:    "invalid: excess dashes",
-			input:   "us-central1-a-b",
-			wantErr: true,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := ValidateZone(tc.input)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("ValidateZone(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
-			}
-		})
-	}
-}
-
 func TestValidateRegion(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string
@@ -77,7 +46,7 @@ func TestValidateRegion(t *testing.T) {
 	}
 }
 
-func TestZoneToRegion(t *testing.T) {
+func TestLocationToRegion(t *testing.T) {
 	for _, tc := range []struct {
 		desc       string
 		zone       string
@@ -85,14 +54,20 @@ func TestZoneToRegion(t *testing.T) {
 		wantErr    bool
 	}{
 		{
-			desc:       "valid",
+			desc:       "valid zone",
 			zone:       "europe-west1-d",
 			wantRegion: "europe-west1",
 			wantErr:    false,
 		},
 		{
-			desc:    "invalid: insufficient dashes",
-			zone:    "europe-west1",
+			desc:       "valid region",
+			zone:       "europe-west1",
+			wantRegion: "europe-west1",
+			wantErr:    false,
+		},
+		{
+			desc:    "invalid: too many dashes",
+			zone:    "europe-west1-b-d",
 			wantErr: true,
 		},
 		{
@@ -102,9 +77,9 @@ func TestZoneToRegion(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotRegion, gotErr := ZoneToRegion(tc.zone)
+			gotRegion, gotErr := LocationToRegion(tc.zone)
 			if gotRegion != tc.wantRegion || (gotErr != nil) != tc.wantErr {
-				t.Errorf("ZoneToRegion(%q) = (%v, %v), want (%v, err=%v)", tc.zone, gotRegion, gotErr, tc.wantRegion, tc.wantErr)
+				t.Errorf("LocationToRegion(%q) = (%v, %v), want (%v, err=%v)", tc.zone, gotRegion, gotErr, tc.wantRegion, tc.wantErr)
 			}
 		})
 	}
@@ -118,9 +93,14 @@ func TestParseLocationPath(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			desc:     "valid: location path",
+			desc:     "valid: zone path",
 			input:    "projects/987654321/locations/europe-west1-d",
 			wantPath: LocationPath{Project: "987654321", Location: "europe-west1-d"},
+		},
+		{
+			desc:     "valid: region path",
+			input:    "projects/987654321/locations/europe-west1",
+			wantPath: LocationPath{Project: "987654321", Location: "europe-west1"},
 		},
 		{
 			desc:    "invalid: zone",
@@ -165,9 +145,14 @@ func TestParseTopicPath(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			desc:     "valid: topic path",
+			desc:     "valid: topic in zone",
 			input:    "projects/987654321/locations/europe-west1-d/topics/my-topic",
-			wantPath: TopicPath{Project: "987654321", Zone: "europe-west1-d", TopicID: "my-topic"},
+			wantPath: TopicPath{Project: "987654321", Location: "europe-west1-d", TopicID: "my-topic"},
+		},
+		{
+			desc:     "valid: topic in region",
+			input:    "projects/987654321/locations/europe-west1/topics/my-topic",
+			wantPath: TopicPath{Project: "987654321", Location: "europe-west1", TopicID: "my-topic"},
 		},
 		{
 			desc:    "invalid: zone",
@@ -222,9 +207,14 @@ func TestParseSubscriptionPath(t *testing.T) {
 		wantErr  bool
 	}{
 		{
-			desc:     "valid: subscription path",
+			desc:     "valid: subscription in zone",
 			input:    "projects/987654321/locations/europe-west1-d/subscriptions/my-subs",
-			wantPath: SubscriptionPath{Project: "987654321", Zone: "europe-west1-d", SubscriptionID: "my-subs"},
+			wantPath: SubscriptionPath{Project: "987654321", Location: "europe-west1-d", SubscriptionID: "my-subs"},
+		},
+		{
+			desc:     "valid: subscription in region",
+			input:    "projects/987654321/locations/europe-west1/subscriptions/my-subs",
+			wantPath: SubscriptionPath{Project: "987654321", Location: "europe-west1", SubscriptionID: "my-subs"},
 		},
 		{
 			desc:    "invalid: zone",

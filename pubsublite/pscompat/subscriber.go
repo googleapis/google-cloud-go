@@ -256,7 +256,7 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(subscriptionPath.Zone)
+	region, err := wire.LocationToRegion(subscriptionPath.Location)
 	if err != nil {
 		return nil, err
 	}
