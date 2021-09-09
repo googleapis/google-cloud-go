@@ -1101,6 +1101,53 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 
 }
 
+func TestIntegration_CancelWriteGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to verify test and a gRPC client to test writing.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		// As insurance attempt to delete the object, ignore the error if it
+		// doesn't exist, because it wasn't made.
+		gobj.Delete(ctx)
+	}()
+
+	cctx, cancel := context.WithCancel(ctx)
+	content := []byte("Hello, world this is a grpc request")
+
+	w := gobj.NewWriter(cctx)
+	_, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Cancel the Writer context before flushing.
+	cancel()
+
+	// The next Write should return context.Canceled.
+	_, err = w.Write(content)
+	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
+	// check for context cancellation instead.
+	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+		t.Fatalf("got %v, wanted context.Canceled", err)
+	}
+	// The Close should too.
+	err = w.Close()
+	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+		t.Fatalf("got %v, wanted context.Canceled", err)
+	}
+
+	// Use HTTP client to ensure the object wasn't written.
+	if attrs, err := hc.Bucket(grpcBucketName).Object(name).Attrs(ctx); err == nil {
+		t.Fatalf("Expected Object to not be written, but got attrs: %+v", attrs)
+	}
+}
+
 func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	ctx := context.Background()
 

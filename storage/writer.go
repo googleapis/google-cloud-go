@@ -365,7 +365,9 @@ func (w *Writer) openGRPC() error {
 			// TODO: Apply Object write conditions to the request.
 			// TODO: Send Object checksum.
 
-			// The chunk buffer is full, but there is no end in sight. Start a
+			// The chunk buffer is full, but there is no end in sight. This
+			// means that a resumable upload will need to be used to send
+			// multiple chunks, until we are done reading data. Start a
 			// resumable upload if it has not already been started.
 			if !doneReading && w.upid == "" {
 				err = w.startResumableUpload()
