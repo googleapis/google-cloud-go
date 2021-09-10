@@ -23,7 +23,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"strconv"
@@ -69,6 +68,7 @@ func (fs *resources) populate(ctx context.Context, c *Client, resource storage_v
 		if err != nil {
 			return fmt.Errorf("getting bucket attrs: %v", err)
 		}
+
 		fs.bucket = attrs
 	case storage_v1_tests.Resource_OBJECT:
 		// Assumes bucket has been populated first.
@@ -102,6 +102,51 @@ func (fs *resources) populate(ctx context.Context, c *Client, resource storage_v
 			return fmt.Errorf("creating HMAC key: %v", err)
 		}
 		fs.hmacKey = key
+	}
+	return nil
+}
+
+func (fs *resources) cleanResources(ctx context.Context, c *Client, resource storage_v1_tests.Resource) error {
+	switch resource {
+	case storage_v1_tests.Resource_OBJECT:
+		// not necessary since every object must be attached to a bucket
+		fs.object = nil
+	case storage_v1_tests.Resource_NOTIFICATION:
+		// not necessary since notifications are attached to buckets
+		fs.notification = nil
+	case storage_v1_tests.Resource_HMAC_KEY:
+		_, doesNotExist := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Get(ctx)
+		if doesNotExist != nil {
+			// assume key no longer exists, skip
+			break
+		}
+		c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
+		if err := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Delete(ctx); err != nil {
+			return err
+		}
+		fs.hmacKey = nil
+	case storage_v1_tests.Resource_BUCKET:
+		bucket := c.Bucket(fs.bucket.Name)
+		_, doesNotExist := bucket.Attrs(ctx)
+		if doesNotExist != nil {
+			// assume bucket no longer exists, skip
+			break
+		}
+		// Delete files from bucket before deleting bucket
+		it := bucket.Objects(ctx, nil)
+		attrs, err := it.Next()
+		for err == nil {
+			obj := bucket.Object(attrs.Name).If(Conditions{GenerationMatch: attrs.Generation})
+			obj.Delete(ctx)
+			attrs, err = it.Next()
+		}
+		if err != iterator.Done {
+			return err
+		}
+		if err := bucket.Delete(ctx); err != nil {
+			return err
+		}
+		fs.bucket = nil
 	}
 	return nil
 }
@@ -161,19 +206,30 @@ var methods = map[string][]retryFunc{
 	"storage.buckets.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.Buckets(ctx, projectID)
-			it.Next()
-			//_, err := it.Next()
-			return nil
+			_, err := it.Next()
+			if err == iterator.Done {
+				return nil
+			}
+			return err
 		},
 	},
 	"storage.buckets.lockRetentionPolicy": {
-		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			attrs, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
-			if err != nil {
-				return err
-			}
-			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
-		},
+		// func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+		// 	//testbench currently causes issues here
+		// 	return nil
+		// 	bucketAttrsToUpdate := BucketAttrsToUpdate{
+		// 		RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 24},
+		// 	}
+		// 	if _, err := c.Bucket(fs.bucket.Name).Update(ctx, bucketAttrsToUpdate); err != nil {
+		// 		return err
+		// 	}
+
+		// 	attrs, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+		// },
 	},
 	"storage.buckets.testIamPermissions": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
@@ -189,7 +245,7 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.hmacKey.delete": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			// key must be inactive to delete
+			// key must be inactive to delete:
 			c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
 			return c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Delete(ctx)
 		},
@@ -208,10 +264,9 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.notifications.delete": {
-		// this fails currently:
-		// func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-		// 	return c.Bucket(fs.bucket.Name).DeleteNotification(ctx, fs.notification.ID)
-		// },
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DeleteNotification(ctx, fs.notification.ID)
+		},
 	},
 	"storage.notifications.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
@@ -247,11 +302,10 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.serviceaccount.get": {
-		// fails currently:
-		// func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-		// 	_, err := c.ServiceAccount(ctx, projectID)
-		// 	return err
-		// },
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.ServiceAccount(ctx, projectID)
+			return err
+		},
 	},
 	// all conditionally idempotent operations currently fail:
 	"storage.buckets.patch": {
@@ -273,12 +327,10 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 
-			err = bkt.IAM().SetPolicy(ctx, policy)
-
-			if preconditions {
-				return fmt.Errorf("Etag preconditions not supported")
+			if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
+				return err
 			}
-			return err
+			return fmt.Errorf("Etag preconditions not supported")
 		},
 	},
 	"storage.hmacKey.update": {
@@ -286,15 +338,15 @@ var methods = map[string][]retryFunc{
 			key := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID)
 
 			_, err := key.Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
-			if preconditions {
-				return fmt.Errorf("Etag preconditions not supported")
+			if err != nil {
+				return err
 			}
-			return err
+			return fmt.Errorf("Etag preconditions not supported")
 		},
 	},
 	"storage.objects.compose": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
-			dstName := "new-object.txt"
+			dstName := "new-object"
 			src := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
 			dst := c.Bucket(fs.bucket.Name).Object(dstName)
 
@@ -303,6 +355,7 @@ var methods = map[string][]retryFunc{
 			}
 
 			_, err := dst.ComposerFrom(src).Run(ctx)
+			//currently always retries !
 			return err
 		},
 	},
@@ -311,9 +364,9 @@ var methods = map[string][]retryFunc{
 			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
 
 			if preconditions {
-				obj = c.Bucket(fs.bucket.Name).Object("toObject").If(Conditions{GenerationMatch: fs.object.Generation})
+				obj = c.Bucket(fs.bucket.Name).Object(fs.object.Name).If(Conditions{GenerationMatch: fs.object.Generation})
 			}
-
+			//always retries
 			return obj.Delete(ctx)
 		},
 	},
@@ -332,7 +385,7 @@ var methods = map[string][]retryFunc{
 			if err := objW.Close(); err != nil {
 				return fmt.Errorf("Writer.Close: %v", err)
 			}
-
+			//always retries
 			return nil
 		},
 	},
@@ -344,6 +397,7 @@ var methods = map[string][]retryFunc{
 				obj = obj.If(Conditions{MetagenerationMatch: fs.object.Metageneration})
 			}
 			_, err := obj.Update(ctx, uattrs)
+			//always retries
 			return err
 		},
 	},
@@ -358,7 +412,55 @@ var methods = map[string][]retryFunc{
 			}
 
 			_, err := dst.CopierFrom(src).Run(ctx)
+			// always retries!!
 			return err
+		},
+	},
+	"storage.bucket_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).ACL().Delete(ctx, AllUsers)
+		},
+	},
+	"storage.bucket_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).ACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
+		},
+	},
+	"storage.default_object_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DefaultObjectACL().Delete(ctx, AllAuthenticatedUsers)
+		},
+	},
+	"storage.default_object_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DefaultObjectACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
+		},
+	},
+	"storage.hmacKey.create": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+			return err
+		},
+	},
+	"storage.notifications.insert": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			notification := Notification{
+				TopicID:        "my-topic",
+				TopicProjectID: projectID,
+				PayloadFormat:  "json",
+			}
+			_, err := c.Bucket(fs.bucket.Name).AddNotification(ctx, &notification)
+			return err
+		},
+	},
+	"storage.object_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).Object(fs.object.Name).ACL().Delete(ctx, AllAuthenticatedUsers)
+		},
+	},
+	"storage.object_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).Object(fs.object.Name).ACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
 		},
 	},
 }
@@ -425,6 +527,13 @@ func TestRetryConformance(t *testing.T) {
 							// Close out test in emulator.
 							if err := subtest.delete(); err != nil {
 								t.Errorf("deleting retry test: %v", err)
+							}
+
+							// Clean resources
+							for _, resource := range method.Resources {
+								if err := fs.cleanResources(ctx, client, resource); err != nil {
+									t.Fatalf("cleaning test resources: %v", err)
+								}
 							}
 						})
 					}
@@ -534,6 +643,7 @@ func (rt *retrySubtest) delete() error {
 	if err != nil || resp.StatusCode != 200 {
 		return fmt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
+
 	return nil
 }
 
@@ -546,24 +656,24 @@ type testRoundTripper struct {
 func (wt *testRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("x-retry-test-id", wt.testID)
 
-	requestDump, err := httputil.DumpRequest(r, true)
-	if err != nil {
-		wt.Logf("error creating request dump: %v", err)
-	}
+	// requestDump, err := httputil.DumpRequest(r, true)
+	// if err != nil {
+	// 	wt.Logf("error creating request dump: %v", err)
+	// }
 
 	resp, err := wt.rt.RoundTrip(r)
 
-	if err != nil {
-		wt.Logf("roundtrip error (may be expected): %v\nrequest: %s", err, requestDump)
+	// if err != nil {
+	// wt.Logf("roundtrip error (may be expected): %v\nrequest: %s", err, requestDump)
 
-		if resp != nil {
-			responseDump, err := httputil.DumpResponse(resp, true)
-			if err != nil {
-				wt.Logf("error creating response dump: %v", err)
-			}
-			wt.Logf("roundtrip error (may be expected): %v\nresponse: %s", err, responseDump)
-		}
-	}
+	// if resp != nil {
+	// 	responseDump, err := httputil.DumpResponse(resp, true)
+	// 	if err != nil {
+	// 		wt.Logf("error creating response dump: %v", err)
+	// 	}
+	// 	wt.Logf("roundtrip error (may be expected): %v\nresponse: %s", err, responseDump)
+	// }
+	//}
 	return resp, err
 }
 
