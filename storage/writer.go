@@ -335,8 +335,6 @@ func (w *Writer) openGRPC() error {
 
 	// TODO: We need to accommodate user-specified chunk size. This will
 	// take precedence over defaultPerStreamWriteSize.
-	// TODO: Determine a strategy if the user wants chunks smaller than
-	// maxPerMessageWriteSize.
 	bufSize := w.ChunkSize
 	if w.ChunkSize == 0 {
 		bufSize = maxPerMessageWriteSize
@@ -422,10 +420,12 @@ func (w *Writer) startResumableUpload() error {
 	if w.o.userProject != "" {
 		common = &storagepb.CommonRequestParams{UserProject: w.o.userProject}
 	}
+	spec, err := w.writeObjectSpec()
+	if err != nil {
+		return err
+	}
 	upres, err := w.o.c.gc.StartResumableWrite(w.ctx, &storagepb.StartResumableWriteRequest{
-		WriteObjectSpec: &storagepb.WriteObjectSpec{
-			Resource: w.ObjectAttrs.toProtoObject(w.o.bucket),
-		},
+		WriteObjectSpec:     spec,
 		CommonRequestParams: common,
 	})
 
@@ -551,10 +551,12 @@ func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool) (i
 			if w.upid != "" {
 				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
 			} else {
+				spec, err := w.writeObjectSpec()
+				if err != nil {
+					return err
+				}
 				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
-					WriteObjectSpec: &storagepb.WriteObjectSpec{
-						Resource: w.ObjectAttrs.toProtoObject(w.o.bucket),
-					},
+					WriteObjectSpec: spec,
 				}
 			}
 		}
@@ -578,6 +580,21 @@ func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool) (i
 	})
 
 	return len(req.GetChecksummedData().GetContent()), err
+}
+
+// writeObjectSpec constructs a WriteObjectSpec proto using the Writer's
+// ObjectAttrs and applies its Conditions. This is only used for gRPC.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) writeObjectSpec() (*storagepb.WriteObjectSpec, error) {
+	spec := &storagepb.WriteObjectSpec{
+		Resource: w.ObjectAttrs.toProtoObject(w.o.bucket),
+	}
+	// WriteObject doesn't support the generation condition, so use -1.
+	if err := applyCondsProto("WriteObject", -1, w.o.conds, spec); err != nil {
+		return nil, err
+	}
+	return spec, nil
 }
 
 // read copies the data in the reader to the given buffer and reports how much
