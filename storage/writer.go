@@ -34,11 +34,6 @@ const (
 	//
 	// This is only used for the gRPC-based Writer.
 	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
-
-	// Default per stream, or "chunk", size is 16 MB.
-	//
-	// This is only used for the gRPC-based Writer.
-	defaultPerStreamWriteSize int = 16 << 20
 )
 
 // A Writer writes a Cloud Storage object.
@@ -333,10 +328,14 @@ func (w *Writer) openGRPC() error {
 
 	go w.monitorCancel()
 
-	// TODO: We need to accommodate user-specified chunk size. This will
-	// take precedence over defaultPerStreamWriteSize.
 	bufSize := w.ChunkSize
 	if w.ChunkSize == 0 {
+		// TODO: Should we actually use the minimum of 256 KB here when the user
+		// indicates they want minimal memory usage? We cannot do a zero-copy,
+		// bufferless upload like HTTP/JSON can.
+		// TODO: We need to determine if we can avoid starting a
+		// resumable upload when the user *plans* to send more than bufSize but
+		// with a bufferless upload.
 		bufSize = maxPerMessageWriteSize
 	}
 	buf := make([]byte, bufSize)
@@ -360,13 +359,13 @@ func (w *Writer) openGRPC() error {
 			toWrite := buf[:recvd]
 
 			// TODO: Figure out how to set up encryption via CommonObjectRequestParams.
-			// TODO: Apply Object write conditions to the request.
 			// TODO: Send Object checksum.
 
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that a resumable upload will need to be used to send
 			// multiple chunks, until we are done reading data. Start a
 			// resumable upload if it has not already been started.
+			// Otherwise, all data will be sent over a single gRPC stream.
 			if !doneReading && w.upid == "" {
 				err = w.startResumableUpload()
 				if err != nil {
@@ -386,23 +385,13 @@ func (w *Writer) openGRPC() error {
 			// committed offset here in case the upload was not finalized and
 			// another chunk is to be uploaded.
 			offset = off
+			w.progress(offset)
 
 			// When we are done reading data and the chunk has been finalized,
 			// we are done.
 			if doneReading && finalized {
-				// Build Object from server's response and report progress.
+				// Build Object from server's response.
 				w.obj = newObjectFromProto(o)
-				w.progress(o.GetSize())
-				return
-			}
-
-			// Query the progress then upload another chunk. This is necessary
-			// for an unfinalized resumable upload. Committing a chunk by
-			// closing the stream in this case will just get an EOF, indicating
-			// that the stream was closed successfully.
-			if err := w.queryProgress(); err != nil {
-				w.error(err)
-				pr.CloseWithError(err)
 				return
 			}
 		}
@@ -434,16 +423,14 @@ func (w *Writer) startResumableUpload() error {
 }
 
 // queryProgress is a helper that queries the status of the resumable upload
-// associated with the given upload ID. Progress is reported with the committed
-// size from the write status.
+// associated with the given upload ID.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) queryProgress() error {
+func (w *Writer) queryProgress() (int64, error) {
 	q, err := w.o.c.gc.QueryWriteStatus(w.ctx, &storagepb.QueryWriteStatusRequest{UploadId: w.upid})
 
-	// q.GetCommittedSize() will return 0 if q is nil, and progress() will ignore 0 progress.
-	w.progress(q.GetCommittedSize())
-	return err
+	// q.GetCommittedSize() will return 0 if q is nil.
+	return q.GetCommittedSize(), err
 }
 
 // uploadBuffer opens a Write stream and uploads the buffer at the given offset (if
@@ -451,28 +438,26 @@ func (w *Writer) queryProgress() error {
 // finished if we are done receiving data from the user. The resulting write
 // offset after uploading the buffer is returned, as well as a boolean
 // indicating if the Object has been finalized. If it has been finalized, the
-// final Object will be returned as well.
+// final Object will be returned as well. Finalizing the upload is primarily
+// important for Resumable Uploads. A simple or multi-part upload will always
+// be finalized once the entire buffer has been written.
 //
 // This is an experimental API and not intended for public use.
-func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, doneReading bool) (*storagepb.Object, int64, bool, error) {
+func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bool) (*storagepb.Object, int64, bool, error) {
 	var err error
-
-	sent := 0
-	first := true
-	finished := false
-	limit := maxPerMessageWriteSize
-	for recvd-sent > 0 {
+	var finishWrite bool
+	var sent, limit int = 0, maxPerMessageWriteSize
+	offset := start
+	for {
+		first := sent == 0
 		// This indicates that this is the last message and the remaining
 		// data fits in one message.
-		if recvd-sent <= limit {
+		belowLimit := recvd-sent <= limit
+		if belowLimit {
 			limit = recvd - sent
-			finished = true
-
-			// Do not indicate finished for Resumable Uploads until we have
-			// received all data for writing from the user.
-			if !doneReading && w.upid != "" {
-				finished = false
-			}
+		}
+		if belowLimit && doneReading {
+			finishWrite = true
 		}
 
 		// Prepare chunk section for upload.
@@ -484,33 +469,106 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, doneReading b
 				},
 			},
 			WriteOffset: offset,
-			FinishWrite: finished,
+			FinishWrite: finishWrite,
 		}
 
-		n, err := w.sendWithRetry(req, first)
+		// Open a new stream and set the first_message field on the request.
+		// The first message on the WriteObject stream must either be the
+		// Object or the Resumable Upload ID.
+		if first {
+			w.stream, err = w.o.c.gc.WriteObject(w.ctx)
+			if err != nil {
+				return nil, 0, false, err
+			}
+
+			if w.upid != "" {
+				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
+			} else {
+				spec, err := w.writeObjectSpec()
+				if err != nil {
+					return nil, 0, false, err
+				}
+				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
+					WriteObjectSpec: spec,
+				}
+			}
+		}
+
+		err = w.stream.Send(req)
+		if err == io.EOF {
+			// err was io.EOF. The client-side of a stream only gets an EOF on Send
+			// when the backend closes the stream and wants to return an error
+			// status. Closing the stream receives the status as an error.
+			_, err = w.stream.CloseAndRecv()
+
+			// Retriable errors mean we should start over and attempt to
+			// resend the entire buffer via a new stream.
+			// If not retriable, falling through will return the error received
+			// from closing the stream.
+			if shouldRetry(err) {
+				sent = 0
+				finishWrite = false
+				offset, err = w.determineOffset(start)
+				if err != nil {
+					return nil, 0, false, err
+				}
+				continue
+			}
+		}
 		if err != nil {
 			return nil, 0, false, err
 		}
-		first = false
 
-		// Update the immediate stream's sent total and the global upload
-		// offset with the data sent.
-		sent += n
-		offset += int64(n)
+		// Update the immediate stream's sent total and the upload offset with
+		// the data sent.
+		sent += len(data)
+		offset += int64(len(data))
+
+		// Not done sending data, do not attempt to commit it yet, loop around
+		// and send more data.
+		if recvd-sent > 0 {
+			continue
+		}
+
+		// Done sending data. Close the stream to "commit" the data sent.
+		resp, finalized, err := w.commit()
+		// Retriable errors mean we should start over and attempt to
+		// resend the entire buffer via a new stream.
+		// If not retriable, falling through will return the error received
+		// from closing the stream.
+		if shouldRetry(err) {
+			sent = 0
+			finishWrite = false
+			offset, err = w.determineOffset(start)
+			if err != nil {
+				return nil, 0, false, err
+			}
+			continue
+		}
+		if err != nil {
+			return nil, 0, false, err
+		}
+
+		return resp.GetResource(), offset, finalized, nil
 	}
+}
 
-	// Close the stream to "commit" the data sent.
-	//
-	// TODO: Retry upload if committing it fails. For Resumable Upload,
-	// this means querying the write status for committed size to use as an
-	// offset. For simple uploads, this is just starting back from sent = 0,
-	// offset = 0, and resending it all.
-	resp, finalized, err := w.commit()
-	if err != nil {
-		return nil, 0, false, err
+// determineOffset either returns the offset given to it in the case of a simple
+// upload, or queries the write status in the case a resumable upload is being
+// used.
+//
+// This is an experimental API and not intended for public use.
+func (w *Writer) determineOffset(offset int64) (int64, error) {
+	// For a Resumable Upload, we must start from however much data
+	// was committed.
+	if w.upid != "" {
+		committed, err := w.queryProgress()
+		if err != nil {
+			return 0, err
+		}
+		offset = committed
 	}
-
-	return resp.GetResource(), offset, finalized, err
+	return offset, nil
 }
 
 // commit closes the stream to commit the data sent and potentially receive
@@ -518,6 +576,8 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, offset int64, doneReading b
 // indicated that writing was finished, the Object will be finalized and
 // returned. If not, then the Object will be nil, and the boolean returned will
 // be false.
+//
+// This is an experimental API and not intended for public use.
 func (w *Writer) commit() (*storagepb.WriteObjectResponse, bool, error) {
 	finalized := true
 	resp, err := w.stream.CloseAndRecv()
@@ -531,55 +591,6 @@ func (w *Writer) commit() (*storagepb.WriteObjectResponse, bool, error) {
 	w.stream = nil
 
 	return resp, finalized, err
-}
-
-// sendWithRetry will attempt to Send a WriteObjectRequest on the stream, and
-// will reopen the stream and retry that send if it fails for a retryable
-// reason until the Writer's context is canceled.
-func (w *Writer) sendWithRetry(req *storagepb.WriteObjectRequest, first bool) (int, error) {
-	var err error
-	err = runWithRetry(w.ctx, func() error {
-		// Open a new stream and set the first_message field on the request.
-		// The first message on the WriteObject stream must either be the
-		// Object or the Resumable Upload ID.
-		if first {
-			w.stream, err = w.o.c.gc.WriteObject(w.ctx)
-			if err != nil {
-				return err
-			}
-
-			if w.upid != "" {
-				req.FirstMessage = &storagepb.WriteObjectRequest_UploadId{UploadId: w.upid}
-			} else {
-				spec, err := w.writeObjectSpec()
-				if err != nil {
-					return err
-				}
-				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
-					WriteObjectSpec: spec,
-				}
-			}
-		}
-
-		err = w.stream.Send(req)
-		if err == nil {
-			return nil
-		} else if err != nil && err != io.EOF {
-			return err
-		}
-
-		// err was io.EOF. The client-side of a stream only gets an EOF on Send
-		// when the backend closes the stream and wants to return an error
-		// status. Closing the stream receives the status as an error.
-		_, err = w.stream.CloseAndRecv()
-
-		// Set first to true so that if the request is retried, the stream is
-		// reopened.
-		first = true
-		return err
-	})
-
-	return len(req.GetChecksummedData().GetContent()), err
 }
 
 // writeObjectSpec constructs a WriteObjectSpec proto using the Writer's
