@@ -1,5 +1,13 @@
 # Changes
 
+## [1.17.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.16.0...pubsub/v1.17.0) (2021-09-08)
+
+
+### Features
+
+* **pubsub:** add list configs for topic & sub ([#4607](https://www.github.com/googleapis/google-cloud-go/issues/4607)) ([a6550c5](https://www.github.com/googleapis/google-cloud-go/commit/a6550c5dfb381e286fea6a905dc658c4a865d643))
+* **pubsub:** add publisher flow control support ([#4292](https://www.github.com/googleapis/google-cloud-go/issues/4292)) ([bff24c3](https://www.github.com/googleapis/google-cloud-go/commit/bff24c3a62a2f037c1ccef14986f917e41953734))
+
 ## [1.16.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.15.0...pubsub/v1.16.0) (2021-08-24)
 
 
