@@ -1063,10 +1063,13 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	}()
 
 	content := []byte("Hello, world this is a grpc request")
+	crc32c := crc32.Checksum(content, crc32cTable)
 	w := gobj.NewWriter(ctx)
 	w.ProgressFunc = func(p int64) {
 		t.Logf("%s: committed %d\n", t.Name(), p)
 	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
 		t.Fatal(err)
@@ -1097,8 +1100,6 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	if gotr != int64(want) {
 		t.Errorf("While reading got: %d want %d", gotr, want)
 	}
-	// TODO: Verify content via checksums.
-
 }
 
 func TestIntegration_CancelWriteGRPC(t *testing.T) {
@@ -1169,10 +1170,13 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	// Use a larger blob to test multi-message logic. This is a little over 5MB.
 	content := bytes.Repeat([]byte("a"), 5<<20)
 
+	crc32c := crc32.Checksum(content, crc32cTable)
 	w := gobj.NewWriter(ctx)
 	w.ProgressFunc = func(p int64) {
 		t.Logf("%s: committed %d\n", t.Name(), p)
 	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
 		t.Fatal(err)
@@ -1203,7 +1207,6 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	if gotr != int64(want) {
 		t.Errorf("While reading got: %d want %d", gotr, want)
 	}
-	// TODO: Verify content via checksums.
 }
 
 func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
@@ -1227,8 +1230,11 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 
 	// Use a larger blob to test multi-message logic. This is a little over 5MB.
 	content := bytes.Repeat([]byte("a"), 5<<20)
+	crc32c := crc32.Checksum(content, crc32cTable)
 
 	w := gobj.NewWriter(ctx)
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
 	// Use a 1 MB chunk size.
 	w.ChunkSize = 1 << 20
 	w.ProgressFunc = func(p int64) {
@@ -1265,7 +1271,6 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	if gotr != int64(want) {
 		t.Errorf("While reading got: %d want %d", gotr, want)
 	}
-	// TODO: Verify content via checksums.
 }
 
 func TestIntegration_ConditionalDownload(t *testing.T) {

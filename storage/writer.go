@@ -23,6 +23,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
@@ -490,6 +491,15 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bo
 				}
 				req.FirstMessage = &storagepb.WriteObjectRequest_WriteObjectSpec{
 					WriteObjectSpec: spec,
+				}
+			}
+
+			// TODO: Support sending the CRC32 checksum on either the first or
+			// last message of the stream.
+			if w.SendCRC32C {
+				req.ObjectChecksums = &storagepb.ObjectChecksums{
+					Crc32C:  proto.Uint32(w.CRC32C),
+					Md5Hash: w.MD5,
 				}
 			}
 		}
