@@ -52,6 +52,14 @@ var functions = map[string]function{
 			return strings.HasPrefix(s, prefix), spansql.Type{Base: spansql.Bool}, nil
 		},
 	},
+	"LOWER": {
+		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+			if len(values) != 1 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function LOWER for the given argument types")
+			}
+			return strings.ToLower(values[0].(string)), spansql.Type{Base: spansql.String}, nil
+		},
+	},
 }
 
 type aggregateFunc struct {
