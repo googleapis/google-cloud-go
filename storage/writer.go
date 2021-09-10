@@ -519,10 +519,9 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bo
 				sent = 0
 				finishWrite = false
 				offset, err = w.determineOffset(start)
-				if err != nil {
-					return nil, 0, false, err
+				if err == nil {
+					continue
 				}
-				continue
 			}
 		}
 		if err != nil {
@@ -550,10 +549,9 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bo
 			sent = 0
 			finishWrite = false
 			offset, err = w.determineOffset(start)
-			if err != nil {
-				return nil, 0, false, err
+			if err == nil {
+				continue
 			}
-			continue
 		}
 		if err != nil {
 			return nil, 0, false, err
