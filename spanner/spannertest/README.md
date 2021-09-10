@@ -22,7 +22,7 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - more literal types
-- generated columns
+- generated columns referencing other generated columns
 - expression type casting, coercion
 - multiple joins
 - subselects

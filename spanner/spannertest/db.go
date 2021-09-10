@@ -64,13 +64,20 @@ type table struct {
 	rows []row
 }
 
+// generatedColInfo has the required information to compute generated columns
+type generatedColInfo struct {
+	dependentCols []spansql.ID // only generate value if all the columns it depends on are not null
+	expr          spansql.Expr
+}
+
 // colInfo represents information about a column in a table or result set.
 type colInfo struct {
-	Name     spansql.ID
-	Type     spansql.Type
-	NotNull  bool            // only set for table columns
-	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
-	Alias    spansql.PathExp // an alternate name for this column (result sets only)
+	Name      spansql.ID
+	Type      spansql.Type
+	Generated generatedColInfo
+	NotNull   bool            // only set for table columns
+	AggIndex  int             // Index+1 of SELECT list for which this is an aggregate value.
+	Alias     spansql.PathExp // an alternate name for this column (result sets only)
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -395,6 +402,9 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 		for j, v := range vs.Values {
 			i := colIndexes[j]
 
+			if t.cols[i].Generated.expr != nil {
+				return status.Error(codes.InvalidArgument, "values can't be written to a generated column")
+			}
 			x, err := valForType(v, t.cols[i].Type)
 			if err != nil {
 				return err
@@ -413,6 +423,45 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 
 		if err := f(t, colIndexes, r); err != nil {
 			return err
+		}
+
+		// Get row again after potential update merge to ensure we compute
+		// generated columns with fresh data.
+		pk := r[:t.pkCols]
+		rowNum, found := t.rowForPK(pk)
+		// this should never fail as the row was just inserted
+		if !found {
+			return status.Error(codes.Internal, "row failed to be inserted")
+		}
+		row := t.rows[rowNum]
+		ec := evalContext{
+			cols: t.cols,
+			row:  row,
+		}
+
+		// TODO: We would need to do a topoligical sort on dependencies to ensure we can
+		// handle generated columns which reference other generated columns
+		for i, col := range t.cols {
+			if col.Generated.expr != nil {
+				allNotNull := true
+				// We should only generate if all dependent columns are not null
+				for _, dependency := range col.Generated.dependentCols {
+					if row[t.colIndex[dependency]] == nil {
+						allNotNull = false
+						break
+					}
+				}
+				// We skip this column if any of its dependencies are null
+				if !allNotNull {
+					continue
+				}
+
+				res, err := ec.evalExpr(col.Generated.expr)
+				if err != nil {
+					return status.Errorf(codes.Internal, "evaluating generator expression failed: %v", err)
+				}
+				row[i] = res
+			}
 		}
 	}
 
@@ -634,6 +683,10 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 			// TODO: what happens in this case?
 			return status.Newf(codes.Unimplemented, "can't add NOT NULL columns to non-empty tables yet")
 		}
+		if cd.Generated != nil {
+			// TODO: should backfill the data to maintain behaviour with real spanner
+			return status.Newf(codes.Unimplemented, "can't add generated columns to non-empty tables yet")
+		}
 		for i := range t.rows {
 			t.rows[i] = append(t.rows[i], nil)
 		}
@@ -643,6 +696,10 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		Name:    cd.Name,
 		Type:    cd.Type,
 		NotNull: cd.NotNull,
+		Generated: generatedColInfo{
+			expr:          cd.Generated,
+			dependentCols: getIDsForGeneratedExpression(cd.Generated),
+		},
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
 	if !newTable {
@@ -1089,4 +1146,41 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 func parseAsDate(s string) (civil.Date, error) { return civil.ParseDate(s) }
 func parseAsTimestamp(s string) (time.Time, error) {
 	return time.Parse("2006-01-02T15:04:05.999999999Z", s)
+}
+
+// getIDsForGeneratedExpression returns a list of column names the expression depends on
+func getIDsForGeneratedExpression(e spansql.Expr) []spansql.ID {
+	var res []spansql.ID
+	switch e := e.(type) {
+	case spansql.ArithOp:
+		res = append(res, getIDsForGeneratedExpression(e.LHS)...)
+		res = append(res, getIDsForGeneratedExpression(e.RHS)...)
+	case spansql.LogicalOp:
+		res = append(res, getIDsForGeneratedExpression(e.LHS)...)
+		res = append(res, getIDsForGeneratedExpression(e.RHS)...)
+	case spansql.ComparisonOp:
+		res = append(res, getIDsForGeneratedExpression(e.LHS)...)
+		res = append(res, getIDsForGeneratedExpression(e.RHS)...)
+		res = append(res, getIDsForGeneratedExpression(e.RHS2)...)
+	case spansql.InOp:
+		res = append(res, getIDsForGeneratedExpression(e.LHS)...)
+		for _, e := range e.RHS {
+			res = append(res, getIDsForGeneratedExpression(e)...)
+		}
+	case spansql.Paren:
+		res = append(res, getIDsForGeneratedExpression(e.Expr)...)
+	case spansql.ID:
+		return []spansql.ID{e}
+	default:
+		return []spansql.ID{}
+	}
+	var ids []spansql.ID
+	idSet := make(map[spansql.ID]struct{})
+	for _, id := range res {
+		if _, present := idSet[id]; !present {
+			ids = append(ids, id)
+			idSet[id] = struct{}{}
+		}
+	}
+	return ids
 }

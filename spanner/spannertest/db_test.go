@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
@@ -359,6 +360,83 @@ func TestConcurrentReadInsert(t *testing.T) {
 	if n := len(out); n != 1 && n != 2 {
 		t.Fatalf("Concurrent read returned %d rows, want 1 or 2", n)
 	}
+}
+
+func TestGeneratedColumn(t *testing.T) {
+	sql := `CREATE TABLE Songwriters (
+		Id INT64 NOT NULL,
+		A INT64,
+		B INT64,
+		C INT64 AS ((2 * A) * B) STORED,
+	) PRIMARY KEY (Id);`
+	var db database
+
+	ddl, err := spansql.ParseDDL("filename", sql)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	for _, stmt := range ddl.List {
+		if st := db.ApplyDDL(stmt); st.Code() != codes.OK {
+			t.Fatal()
+		}
+	}
+	tx := db.NewTransaction()
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id", "C"},
+		[]*structpb.ListValue{
+			listV(stringV("3"), stringV("3")),
+		})
+	if err == nil || status.Code(err) != codes.InvalidArgument {
+		t.Fatal("Should have failed to insert to generated column")
+	}
+
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id", "A", "B"},
+		[]*structpb.ListValue{
+			listV(stringV("3"), stringV("3"), stringV("3")),
+		})
+	if err != nil {
+		t.Fatalf("Should have succeeded to insert to without generated column: %v", err)
+	}
+
+	var kr keyRangeList
+	iter, err := db.Read("Songwriters", []spansql.ID{"Id", "C"},
+		[]*structpb.ListValue{
+			listV(stringV("3")),
+		}, kr, 0)
+	if err != nil {
+		t.Fatalf("failed to read: %v", err)
+	}
+	rows := slurp(t, iter)
+	// 2 * A * B = 2 * 3 * 3
+	if rows[0][1].(int64) != 18 {
+		t.Fatal("Generated value for C should have been 18")
+	}
+
+	// Should be fine to write to only one column that the generated is dependent on
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id", "A"},
+		[]*structpb.ListValue{
+			listV(stringV("2"), stringV("2")),
+		})
+	if err != nil {
+		t.Fatalf("Should have succeeded to insert: %v", err)
+	}
+
+	iter, err = db.Read("Songwriters", []spansql.ID{"Id", "C"},
+		[]*structpb.ListValue{
+			listV(stringV("2")),
+		}, kr, 0)
+	if err != nil {
+		t.Fatalf("failed to read: %v", err)
+	}
+	rows = slurp(t, iter)
+	// Should be nil as only A was set not B
+	if rows[0][1] != nil {
+		t.Fatal("Generated value for C should be nil")
+	}
+
+	t.Fail()
 }
 
 func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
