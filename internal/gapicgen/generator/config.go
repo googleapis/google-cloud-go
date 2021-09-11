@@ -1253,6 +1253,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/10/11
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/identity/accesscontextmanager/v1",
+		pkg:                   "accesscontextmanager",
+		importPath:            "cloud.google.com/go/accesscontextmanager/apiv1",
+		gRPCServiceConfigPath: "accesscontextmanager_grpc_service_config.json",
+		apiServiceConfigPath:  "accesscontextmanager_v1.yaml",
+		// GA after 2021/10/11
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

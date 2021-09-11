@@ -92,7 +92,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 			if err := generateModule(modPath, modImportPath); err != nil {
 				return err
 			}
-			newMods = append(newMods, modInfo{path: modPath, importPath: modImportPath})
+			newMods = append(newMods, modInfo{path: filepath.Dir(filepath.Join(g.googleCloudDir, strings.TrimPrefix(c.importPath, "cloud.google.com/go"))), importPath: modImportPath})
 		}
 		if err := g.microgen(c); err != nil {
 			return err
