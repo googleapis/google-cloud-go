@@ -799,6 +799,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/networkconnectivity/v1",
+		pkg:                   "networkconnectivity",
+		importPath:            "cloud.google.com/go/networkconnectivity/apiv1",
+		gRPCServiceConfigPath: "networkconnectivity_v1_grpc_service_config.json",
+		apiServiceConfigPath:  "networkconnectivity_v1.yaml",
+		// GA after 2021/10/11
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
 		pkg:                   "networkconnectivity",
 		importPath:            "cloud.google.com/go/networkconnectivity/apiv1alpha1",
