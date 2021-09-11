@@ -974,6 +974,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:         "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/resourcemanager/v3",
+		pkg:                   "resourcemanager",
+		importPath:            "cloud.google.com/go/resourcemanager/apiv3",
+		gRPCServiceConfigPath: "cloudresourcemanager_v3_grpc_service_config.json",
+		apiServiceConfigPath:  "cloudresourcemanager_v3.yaml",
+		// GA after 2021/10/11
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/datalabeling/v1beta1",
 		pkg:                   "datalabeling",
 		importPath:            "cloud.google.com/go/datalabeling/apiv1beta1",

@@ -1106,6 +1106,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/resourcemanager/apiv3": {
+    "distribution_name": "cloud.google.com/go/resourcemanager/apiv3",
+    "description": "Cloud Resource Manager API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/resourcemanager/latest/apiv3",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/resourcesettings/apiv1": {
     "distribution_name": "cloud.google.com/go/resourcesettings/apiv1",
     "description": "Resource Settings API",
