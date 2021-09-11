@@ -1262,6 +1262,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/10/11
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/contactcenterinsights/v1",
+		pkg:                   "contactcenterinsights",
+		importPath:            "cloud.google.com/go/contactcenterinsights/apiv1",
+		gRPCServiceConfigPath: "contactcenterinsights_grpc_service_config.json",
+		apiServiceConfigPath:  "contactcenterinsights_v1.yaml",
+		// GA after 2021/10/11
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
