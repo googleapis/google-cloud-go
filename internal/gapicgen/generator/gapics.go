@@ -69,15 +69,15 @@ func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 	}
 }
 
+type modInfo struct {
+	path       string
+	importPath string
+}
+
 // Regen generates gapics.
 func (g *GapicGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating gapics")
-	manifest, err := g.manifest(microgenGapicConfigs)
-	if err != nil {
-		return err
-	}
-	_ = manifest
-
+	var newMods []modInfo
 	for _, c := range microgenGapicConfigs {
 		// Skip generation if generating all of the gapics and the associated
 		// config has a block on it. Or if generating a single gapic and it does
@@ -89,20 +89,19 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		modPath := filepath.Dir(filepath.Join(g.googleCloudDir, c.importPath))
 		modImportPath := filepath.Dir(c.importPath)
 		if g.genModule {
-			if err := generateModule(modPath, modImportPath, manifest[c.importPath].Description); err != nil {
+			if err := generateModule(modPath, modImportPath); err != nil {
 				return err
 			}
+			newMods = append(newMods, modInfo{path: modPath, importPath: modImportPath})
 		}
 		if err := g.microgen(c); err != nil {
 			return err
 		}
-
 		if g.genModule {
 			if err := gocmd.ModTidy(modPath); err != nil {
 				return nil
 			}
 		}
-
 	}
 
 	if err := g.copyMicrogenFiles(); err != nil {
@@ -115,6 +114,17 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 
 	if g.regenOnly {
 		return nil
+	}
+
+	manifest, err := g.manifest(microgenGapicConfigs)
+	if err != nil {
+		return err
+	}
+
+	if g.genModule {
+		for _, modInfo := range newMods {
+			generateReadmeAndChanges(modInfo.path, modInfo.importPath, manifest[modInfo.importPath].Description)
+		}
 	}
 
 	if err := g.setVersion(); err != nil {
@@ -638,12 +648,17 @@ func docURL(cloudDir, importPath string) (string, error) {
 	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
 }
 
-func generateModule(path, importPath, apiName string) error {
-	readmePath := filepath.Join(path, "README.md")
-	log.Printf("Creating %q", readmePath)
+func generateModule(path, importPath string) error {
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return nil
 	}
+	log.Printf("Creating %s/go.mod", path)
+	return gocmd.ModInit(path, importPath)
+}
+
+func generateReadmeAndChanges(path, importPath, apiName string) error {
+	readmePath := filepath.Join(path, "README.md")
+	log.Printf("Creating %q", readmePath)
 	readmeFile, err := os.Create(readmePath)
 	if err != nil {
 		return err
@@ -674,12 +689,7 @@ func generateModule(path, importPath, apiName string) error {
 	}{
 		Package: pkgName(importPath),
 	}
-	if err := t2.Execute(changesFile, changesData); err != nil {
-		return err
-	}
-
-	log.Println("Creating go.mod")
-	return gocmd.ModInit(path, importPath)
+	return t2.Execute(changesFile, changesData)
 }
 
 func pkgName(importPath string) string {
