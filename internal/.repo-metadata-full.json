@@ -383,7 +383,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datafusion/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/datalabeling/apiv1beta1": {
@@ -545,7 +545,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/firestore": {
@@ -662,7 +662,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iap/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/iot/apiv1": {
@@ -833,6 +833,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/networkmanagement/latest/apiv1",
+    "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/networksecurity/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/networksecurity/apiv1beta1",
+    "description": "Network Security API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/networksecurity/apiv1beta1",
     "release_level": "beta",
     "library_type": ""
   },
@@ -1310,7 +1319,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storagetransfer/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/talent/apiv4": {
@@ -1382,7 +1391,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/transcoder/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/video/transcoder/apiv1beta1": {
@@ -1481,7 +1490,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workflows/latest/executions/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/workflows/executions/apiv1beta": {
