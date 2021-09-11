@@ -33,9 +33,15 @@ var (
 	ErrBuildConstraint error = errors.New("build constraints exclude all Go files")
 )
 
-// ModTidy tidies go.mod file in the specified directory
+// ModInit creates a new module in the specified directory.
+func ModInit(dir, importPath string) error {
+	c := execv.Command("go", "mod", "init", importPath)
+	c.Dir = dir
+	return c.Run()
+}
+
+// ModTidy tidies go.mod file in the specified directory.
 func ModTidy(dir string) error {
-	log.Printf("[%s] running go mod tidy", dir)
 	c := execv.Command("go", "mod", "tidy")
 	c.Dir = dir
 	c.Env = []string{
