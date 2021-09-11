@@ -1,0 +1,38 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.monitoring.metricsscope.v1",
+  "libraryPackage": "cloud.google.com/go/monitoring/metricsscope/apiv1",
+  "services": {
+    "MetricsScopes": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MetricsScopesClient",
+          "rpcs": {
+            "CreateMonitoredProject": {
+              "methods": [
+                "CreateMonitoredProject"
+              ]
+            },
+            "DeleteMonitoredProject": {
+              "methods": [
+                "DeleteMonitoredProject"
+              ]
+            },
+            "GetMetricsScope": {
+              "methods": [
+                "GetMetricsScope"
+              ]
+            },
+            "ListMetricsScopesByMonitoredProject": {
+              "methods": [
+                "ListMetricsScopesByMonitoredProject"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
