@@ -374,6 +374,32 @@ func ExampleClient_SearchAssignments() {
 	}
 }
 
+func ExampleClient_SearchAllAssignments() {
+	ctx := context.Background()
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.SearchAllAssignmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAllAssignmentsRequest.
+	}
+	it := c.SearchAllAssignments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_MoveAssignment() {
 	ctx := context.Background()
 	c, err := reservation.NewClient(ctx)
