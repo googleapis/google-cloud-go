@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"sort"
 	"testing"
@@ -23,7 +24,9 @@ import (
 	"cloud.google.com/go/internal/pretty"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func TestFilterToProto(t *testing.T) {
@@ -74,7 +77,14 @@ func TestFilterToProto(t *testing.T) {
 	}
 }
 
-func TestQueryToProto(t *testing.T) {
+type toProtoScenario struct {
+	desc string
+	in   Query
+	want *pb.StructuredQuery
+}
+
+// Creates protos used to test toProto, FromProto, ToProto funcs.
+func createTestScenarios(t *testing.T) []toProtoScenario {
 	filtr := func(path []string, op string, val interface{}) *pb.StructuredQuery_Filter {
 		f, err := filter{path, op, val}.toProto()
 		if err != nil {
@@ -92,11 +102,8 @@ func TestQueryToProto(t *testing.T) {
 			Fields: map[string]*pb.Value{"a": intval(7), "b": intval(8), "c": arrayval(intval(1), intval(2))},
 		},
 	}
-	for _, test := range []struct {
-		desc string
-		in   Query
-		want *pb.StructuredQuery
-	}{
+
+	return []toProtoScenario{
 		{
 			desc: "q.Select()",
 			in:   q.Select(),
@@ -435,7 +442,11 @@ func TestQueryToProto(t *testing.T) {
 				},
 			},
 		},
-	} {
+	}
+}
+
+func TestQueryToProto(t *testing.T) {
+	for _, test := range createTestScenarios(t) {
 		got, err := test.in.toProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
@@ -448,8 +459,41 @@ func TestQueryToProto(t *testing.T) {
 	}
 }
 
+// Convert a Query to a Proto and back again verifying roundtripping
+func TestQueryFromProtoRoundTrip(t *testing.T) {
+	c := &Client{projectID: "P", databaseID: "DB"}
+
+	for _, test := range createTestScenarios(t) {
+		fmt.Println(test.desc)
+		proto, err := test.in.Serialize()
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+			continue
+		}
+		fmt.Printf("proto: %v\n", proto)
+		got, err := Query{c: c}.Deserialize(proto)
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+			continue
+		}
+
+		want := test.in
+		gotProto, err := got.Serialize()
+		fmt.Println(gotProto)
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+		}
+
+		// Compare protos before and after taking to a query. proto -> query -> proto.
+		if diff := cmp.Diff(gotProto, proto, protocmp.Transform()); diff != "" {
+			t.Errorf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), diff)
+		}
+	}
+}
+
 func fref1(s string) *pb.StructuredQuery_FieldReference {
-	return fref([]string{s})
+	ref, _ := fref([]string{s})
+	return ref
 }
 
 func TestQueryToProtoErrors(t *testing.T) {
@@ -568,13 +612,16 @@ func TestQueryFromCollectionRef(t *testing.T) {
 	c := &Client{projectID: "P", databaseID: "D"}
 	coll := c.Collection("C")
 	got := coll.Select("x").Offset(8)
+	ref, _ := fref(FieldPath{"x"})
 	want := Query{
 		c:            c,
 		parentPath:   c.path() + "/documents",
 		path:         "projects/P/databases/D/documents/C",
 		collectionID: "C",
-		selection:    []FieldPath{{"x"}},
-		offset:       8,
+		selection: []*pb.StructuredQuery_FieldReference{
+			ref,
+		},
+		offset: 8,
 	}
 	if !testEqual(got, want) {
 		t.Fatalf("\ngot  %+v, \nwant %+v", got, want)
