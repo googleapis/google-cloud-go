@@ -41,6 +41,22 @@ of interest:
 Remember to close the client after use to free up the sessions in the session
 pool.
 
+To use an emulator with this library, you can set the SPANNER_EMULATOR_HOST
+environment variable to the address at which your emulator is running. This will
+send requests to that address instead of to Cloud Spanner. You can then create
+and use a client as usual:
+
+    // Set SPANNER_EMULATOR_HOST environment variable.
+    err := os.Setenv("SPANNER_EMULATOR_HOST", "localhost:9010")
+    if err != nil {
+        // TODO: Handle error.
+    }
+    // Create client as usual.
+    client, err := spanner.NewClient(ctx, "projects/P/instances/I/databases/D")
+    if err != nil {
+        // TODO: Handle error.
+    }
+
 
 Simple Reads and Writes
 
