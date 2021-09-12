@@ -58,7 +58,7 @@ type internalGlobalOperationsClient interface {
 	Delete(context.Context, *computepb.DeleteGlobalOperationRequest, ...gax.CallOption) (*computepb.DeleteGlobalOperationResponse, error)
 	Get(context.Context, *computepb.GetGlobalOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 	List(context.Context, *computepb.ListGlobalOperationsRequest, ...gax.CallOption) *OperationIterator
-	Wait(context.Context, *computepb.WaitGlobalOperationRequest, ...gax.CallOption) (*Operation, error)
+	Wait(context.Context, *computepb.WaitGlobalOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 }
 
 // GlobalOperationsClient is a client for interacting with Google Compute Engine API.
@@ -122,7 +122,7 @@ func (c *GlobalOperationsClient) List(ctx context.Context, req *computepb.ListGl
 //   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
 //
 //   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
-func (c *GlobalOperationsClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *GlobalOperationsClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Wait(ctx, req, opts...)
 }
 
@@ -449,7 +449,7 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 //   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
 //
 //   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
-func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v/wait", req.GetProject(), req.GetOperation())
 
@@ -482,11 +482,7 @@ func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wa
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
-	}
-	op := &Operation{proto: rsp}
-	return op, err
+	return rsp, unm.Unmarshal(buf, rsp)
 }
 
 // OperationIterator manages a stream of *computepb.Operation.
