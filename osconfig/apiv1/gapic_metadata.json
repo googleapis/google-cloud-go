@@ -58,6 +58,35 @@
           }
         }
       }
+    },
+    "OsConfigZonalService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OsConfigZonalClient",
+          "rpcs": {
+            "GetInventory": {
+              "methods": [
+                "GetInventory"
+              ]
+            },
+            "GetVulnerabilityReport": {
+              "methods": [
+                "GetVulnerabilityReport"
+              ]
+            },
+            "ListInventories": {
+              "methods": [
+                "ListInventories"
+              ]
+            },
+            "ListVulnerabilityReports": {
+              "methods": [
+                "ListVulnerabilityReports"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
