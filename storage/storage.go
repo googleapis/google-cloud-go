@@ -1797,7 +1797,7 @@ func parseBucketName(b string) string {
 // setConditionProtoField uses protobuf reflection to set named condition field
 // to the given condition value if supported on the protobuf message.
 //
-// This is an experimental field and not intended for public use.
+// This is an experimental API and not intended for public use.
 func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
 	fields := m.Descriptor().Fields()
 	if rf := fields.ByName(protoreflect.Name(f)); rf != nil {
@@ -1811,7 +1811,7 @@ func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
 // applyCondsProto validates and attempts to set the conditions on a protobuf
 // message using protobuf reflection.
 //
-// This is an experimental field and not intended for public use.
+// This is an experimental API and not intended for public use.
 func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Message) error {
 	rmsg := msg.ProtoReflect()
 
