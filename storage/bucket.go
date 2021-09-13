@@ -267,6 +267,9 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 	return SignedURL(b.name, object, newopts)
 }
 
+// TODO: Add a similar wrapper for GenerateSignedPostPolicyV4 allowing users to
+// omit PrivateKey/SignBytes
+
 func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 	returnErr := errors.New("no credentials found on client and not on GCE (Google Compute Engine)")
 
@@ -278,7 +281,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		if err == nil && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
 		} else {
-			returnErr = errors.New("empty client email in credentials")
+			returnErr = errors.New("storage: empty client email in credentials")
 			if err != nil {
 				returnErr = err
 			}
@@ -297,7 +300,7 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 			}
 		}
 	}
-	return "", fmt.Errorf("unable to detect default GoogleAccessID: %v", returnErr)
+	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %v", returnErr)
 }
 
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
