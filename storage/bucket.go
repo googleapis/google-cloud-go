@@ -257,7 +257,8 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 			}
 		}
 
-		// Don't error out if we can't marshal, fallback to GCE check.
+		// Don't error out if we can't unmarshal the private key from the client,
+		// fallback to the default sign function for the service account.
 		if len(newopts.PrivateKey) == 0 {
 			newopts.SignBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
 		}
@@ -270,12 +271,13 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		var sa struct {
 			ClientEmail string `json:"client_email"`
 		}
-		// Don't error out if we can't marshal, fallback to GCE check.
 		err := json.Unmarshal(b.c.creds.JSON, &sa)
 		if err == nil && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
 		}
 	}
+
+	// Don't error out if we can't unmarshal, fallback to GCE check.
 	if metadata.OnGCE() {
 		email, err := metadata.Email("default")
 		if err == nil && email != "" {
