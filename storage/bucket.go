@@ -237,20 +237,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 		return SignedURL(b.name, object, opts)
 	}
 	// Make a copy of opts so we don't modify the pointer parameter.
-	newopts := &SignedURLOptions{
-		GoogleAccessID:  opts.GoogleAccessID,
-		SignBytes:       opts.SignBytes,
-		PrivateKey:      opts.PrivateKey,
-		Method:          opts.Method,
-		Expires:         opts.Expires,
-		ContentType:     opts.ContentType,
-		Headers:         opts.Headers,
-		QueryParameters: opts.QueryParameters,
-		MD5:             opts.MD5,
-		Style:           opts.Style,
-		Insecure:        opts.Insecure,
-		Scheme:          opts.Scheme,
-	}
+	newopts := opts.clone()
 
 	if newopts.GoogleAccessID == "" {
 		id, err := b.detectDefaultGoogleAccessID()

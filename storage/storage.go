@@ -409,6 +409,23 @@ type SignedURLOptions struct {
 	Scheme SigningScheme
 }
 
+func (opts *SignedURLOptions) clone() *SignedURLOptions {
+	return &SignedURLOptions{
+		GoogleAccessID:  opts.GoogleAccessID,
+		SignBytes:       opts.SignBytes,
+		PrivateKey:      opts.PrivateKey,
+		Method:          opts.Method,
+		Expires:         opts.Expires,
+		ContentType:     opts.ContentType,
+		Headers:         opts.Headers,
+		QueryParameters: opts.QueryParameters,
+		MD5:             opts.MD5,
+		Style:           opts.Style,
+		Insecure:        opts.Insecure,
+		Scheme:          opts.Scheme,
+	}
+}
+
 var (
 	tabRegex = regexp.MustCompile(`[\t]+`)
 	// I was tempted to call this spacex. :)
