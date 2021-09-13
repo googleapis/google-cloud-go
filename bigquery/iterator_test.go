@@ -471,3 +471,42 @@ func TestIteratorNextTypes(t *testing.T) {
 		}
 	}
 }
+
+func TestIteratorSourceJob(t *testing.T) {
+	testcases := []struct {
+		description string
+		src         *rowSource
+		wantJob     *Job
+	}{
+		{
+			description: "nil source",
+			src:         nil,
+			wantJob:     nil,
+		},
+		{
+			description: "empty source",
+			src:         &rowSource{},
+			wantJob:     nil,
+		},
+		{
+			description: "table source",
+			src:         &rowSource{t: &Table{ProjectID: "p", DatasetID: "d", TableID: "t"}},
+			wantJob:     nil,
+		},
+		{
+			description: "job source",
+			src:         &rowSource{j: &Job{projectID: "p", location: "l", jobID: "j"}},
+			wantJob:     &Job{projectID: "p", location: "l", jobID: "j"},
+		},
+	}
+
+	for _, tc := range testcases {
+		// Don't pass a page func, we're not reading from the iterator.
+		it := newRowIterator(context.Background(), tc.src, nil)
+		got := it.SourceJob()
+		// AllowUnexported because of the embedded client reference, which we're ignoring.
+		if !cmp.Equal(got, tc.wantJob, cmp.AllowUnexported(Job{})) {
+			t.Errorf("%s: mismatch on SourceJob, got %v want %v", tc.description, got, tc.wantJob)
+		}
+	}
+}
