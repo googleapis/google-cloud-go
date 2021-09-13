@@ -15,31 +15,41 @@
 syntax = "proto3";
 
 package spanner_bench;
+option go_package = "spanner_bench";
 
-message ReadQuery{
+
+message Singer {
+  int64 id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string singer_info = 4;
+}
+
+message Album {
+  int64 id = 1;
+  int64 singer_id = 2;
+  string album_title = 3;
+}
+
+message ReadQuery {
   // The query to use in the read call.
-  string Query = 1;
+  string query = 1;
 }
 
-message User{
-  string name = 1;
-  int64 age = 2;
+message InsertQuery {
+  // The query to use in the insert call.
+  repeated Singer singers = 1;
+  repeated Album albums = 2;
 }
 
-message InsertQuery{
-   // The query to use in the insert call.
-  repeated User users = 1;
-}
-
-message UpdateQuery{
+message UpdateQuery {
   // The queries to use in the update call.
-  repeated string Queries = 1;
+  repeated string queries = 1;
 }
 
-message EmptyResponse{
-}
+message EmptyResponse {}
 
-service SpannerBenchWrapper{
+service SpannerBenchWrapper {
   // Read represents operations like Go's ReadOnlyTransaction.Query, Java's
   // ReadOnlyTransaction.executeQuery, Python's snapshot.read, and Node's
   // Transaction.Read.
@@ -52,12 +62,12 @@ service SpannerBenchWrapper{
   // Transaction.Commit.
   //
   // It will typically be used to insert many items.
-  rpc Insert(InsertQuery) returns (EmptyResponse){}
+  rpc Insert(InsertQuery) returns (EmptyResponse) {}
 
   // Update represents operations like Go's ReadWriteTransaction.BatchUpdate,
   // Java's TransactionRunner.run, Python's Batch.update, and Node's
   // Transaction.BatchUpdate.
   //
   // It will typically be used to update many items.
-  rpc Update(UpdateQuery) returns (EmptyResponse){}
+  rpc Update(UpdateQuery) returns (EmptyResponse) {}
 }
