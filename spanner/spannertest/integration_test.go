@@ -1116,6 +1116,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{"a2", "b1", "c2"},
 			},
 		},
+		{
+			`SELECT a, b, c FROM JoinA LEFT JOIN JoinB ON JoinA.w = JoinB.y JOIN JoinC ON JoinC.x = JoinA.w WHERE JoinA.w = 1 OR JoinA.w = 2 ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{"a1", nil, "c1"},
+				{"a2", "b1", "c2"},
+			},
+		},
 		// Check the output of the UPDATE DML.
 		{
 			`SELECT id, first, last FROM Updateable ORDER BY id`,
