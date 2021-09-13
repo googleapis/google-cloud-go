@@ -214,22 +214,13 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.buckets.lockRetentionPolicy": {
-		// func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-		// 	//testbench currently causes issues here
-		// 	return nil
-		// 	bucketAttrsToUpdate := BucketAttrsToUpdate{
-		// 		RetentionPolicy: &RetentionPolicy{RetentionPeriod: time.Hour * 24},
-		// 	}
-		// 	if _, err := c.Bucket(fs.bucket.Name).Update(ctx, bucketAttrsToUpdate); err != nil {
-		// 		return err
-		// 	}
-
-		// 	attrs, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
-		// },
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			attrs, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
+			if err != nil {
+				return err
+			}
+			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+		},
 	},
 	"storage.buckets.testIamPermissions": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
