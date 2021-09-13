@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -267,6 +268,8 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 }
 
 func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
+	returnErr := errors.New("no credentials found on client and not on GCE (Google Compute Engine)")
+
 	if len(b.c.creds.JSON) > 0 {
 		var sa struct {
 			ClientEmail string `json:"client_email"`
@@ -274,6 +277,11 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		err := json.Unmarshal(b.c.creds.JSON, &sa)
 		if err == nil && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
+		} else {
+			returnErr = errors.New("empty client email in credentials")
+			if err != nil {
+				returnErr = err
+			}
 		}
 	}
 
@@ -282,9 +290,14 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		email, err := metadata.Email("default")
 		if err == nil && email != "" {
 			return email, nil
+		} else {
+			returnErr = errors.New("got empty email from GCE metadata service")
+			if err != nil {
+				returnErr = err
+			}
 		}
 	}
-	return "", fmt.Errorf("unable to detect default GoogleAccessID")
+	return "", fmt.Errorf("unable to detect default GoogleAccessID: %v", returnErr)
 }
 
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
