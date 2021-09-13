@@ -251,12 +251,13 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 			var sa struct {
 				PrivateKey string `json:"private_key"`
 			}
-			// Don't error out if we can't marshal, fallback to GCE check.
 			err := json.Unmarshal(b.c.creds.JSON, &sa)
 			if err == nil && sa.PrivateKey != "" {
 				newopts.PrivateKey = []byte(sa.PrivateKey)
 			}
 		}
+
+		// Don't error out if we can't marshal, fallback to GCE check.
 		if len(newopts.PrivateKey) == 0 {
 			newopts.SignBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
 		}
