@@ -48,6 +48,7 @@ type CloudChannelCallOptions struct {
 	CreateCustomer                  []gax.CallOption
 	UpdateCustomer                  []gax.CallOption
 	DeleteCustomer                  []gax.CallOption
+	ImportCustomer                  []gax.CallOption
 	ProvisionCloudIdentity          []gax.CallOption
 	ListEntitlements                []gax.CallOption
 	ListTransferableSkus            []gax.CallOption
@@ -149,6 +150,17 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomer: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportCustomer: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -371,6 +383,7 @@ type internalCloudChannelClient interface {
 	CreateCustomer(context.Context, *channelpb.CreateCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	UpdateCustomer(context.Context, *channelpb.UpdateCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	DeleteCustomer(context.Context, *channelpb.DeleteCustomerRequest, ...gax.CallOption) error
+	ImportCustomer(context.Context, *channelpb.ImportCustomerRequest, ...gax.CallOption) (*channelpb.Customer, error)
 	ProvisionCloudIdentity(context.Context, *channelpb.ProvisionCloudIdentityRequest, ...gax.CallOption) (*ProvisionCloudIdentityOperation, error)
 	ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation
 	ListEntitlements(context.Context, *channelpb.ListEntitlementsRequest, ...gax.CallOption) *EntitlementIterator
@@ -580,6 +593,30 @@ func (c *CloudChannelClient) UpdateCustomer(ctx context.Context, req *channelpb.
 //   NOT_FOUND: No Customer resource found for the name in the request.
 func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCustomer(ctx, req, opts...)
+}
+
+// ImportCustomer imports a Customer from the Cloud Identity associated with the provided
+// Cloud Identity ID or domain before a TransferEntitlements call. If a
+// linked Customer already exists and overwrite_if_exists is true, it will
+// update that Customer’s data.
+//
+// Possible error codes:
+//
+//   PERMISSION_DENIED: The reseller account making the request is different
+//   from the reseller account in the API request.
+//
+//   NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//
+//   INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
+//   expired or invalid.
+//
+//   ALREADY_EXISTS: A customer already exists and has conflicting critical
+//   fields. Requires an overwrite.
+//
+// Return value:
+// The Customer.
+func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	return c.internalClient.ImportCustomer(ctx, req, opts...)
 }
 
 // ProvisionCloudIdentity creates a Cloud Identity for the given customer using the customer’s
@@ -1643,6 +1680,27 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportCustomer[0:len((*c.CallOptions).ImportCustomer):len((*c.CallOptions).ImportCustomer)], opts...)
+	var resp *channelpb.Customer
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.ImportCustomer(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req *channelpb.ProvisionCloudIdentityRequest, opts ...gax.CallOption) (*ProvisionCloudIdentityOperation, error) {

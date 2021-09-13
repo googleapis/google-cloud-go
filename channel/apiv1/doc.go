@@ -17,6 +17,10 @@
 // Package channel is an auto-generated package for the
 // Cloud Channel API.
 //
+// The Cloud Channel API enables Google Cloud partners to have a single
+// unified resale platform and APIs across all of Google Cloud including GCP,
+// Workspace, Maps and Chrome.
+//
 // Example usage
 //
 // To get started with this package, create a client.
@@ -88,7 +92,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210821"
+const versionClient = "20210909"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
