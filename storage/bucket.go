@@ -303,6 +303,9 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, error) {
 	return func(in []byte) ([]byte, error) {
 		ctx := context.Background()
+
+		// It's ok to recreate this service per call since we pass in the http client,
+		// circumventing the cost of recreating the auth/transport layer
 		svc, err := iamcredentials.NewService(ctx, option.WithHTTPClient(b.c.hc))
 		if err != nil {
 			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
