@@ -382,8 +382,8 @@ func TestGeneratedColumn(t *testing.T) {
 		}
 	}
 
-	addColSql := `ALTER TABLE Songwriters ADD COLUMN CanonicalName STRING(20) AS (LOWER(Name)) STORED;`
-	ddl, err = spansql.ParseDDL("filename", addColSql)
+	addColSQL := `ALTER TABLE Songwriters ADD COLUMN CanonicalName STRING(20) AS (LOWER(Name)) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSQL)
 	if err != nil {
 		t.Fatalf("%s: Bad DDL", err)
 	}
@@ -427,8 +427,8 @@ func TestGeneratedColumn(t *testing.T) {
 		t.Fatalf("Generated value for Over18 mismatch\n Got: %v\n Want: true", rows[0][2].(bool))
 	}
 
-	addColSql = `ALTER TABLE Songwriters ADD COLUMN Under18 BOOL AS (Age < 18) STORED;`
-	ddl, err = spansql.ParseDDL("filename", addColSql)
+	addColSQL = `ALTER TABLE Songwriters ADD COLUMN Under18 BOOL AS (Age < 18) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSQL)
 	if err != nil {
 		t.Fatalf("%s: Bad DDL", err)
 	}
