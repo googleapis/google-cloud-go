@@ -15,7 +15,6 @@
 package scheduler
 
 import (
-	"errors"
 	"sync"
 )
 
@@ -68,12 +67,6 @@ func NewReceiveScheduler(workers int) *ReceiveScheduler {
 // call causes pushback to the pubsub service (less Receive calls on the
 // long-lived stream), which keeps memory footprint stable.
 func (s *ReceiveScheduler) Add(key string, item interface{}, handle func(item interface{})) error {
-	select {
-	case <-s.done:
-		return errors.New("draining")
-	default:
-	}
-
 	if key == "" {
 		// Spawn a worker.
 		s.workers <- struct{}{}
