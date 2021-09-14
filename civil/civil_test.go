@@ -193,7 +193,7 @@ func TestDateAfter(t *testing.T) {
 	}
 }
 
-func TestDateIsEmpty(t *testing.T) {
+func TestDateIsZero(t *testing.T) {
 	for _, test := range []struct {
 		date Date
 		want bool
@@ -204,7 +204,7 @@ func TestDateIsEmpty(t *testing.T) {
 		{Date{0, 0, 0}, true},
 		{Date{}, true},
 	} {
-		got := test.date.IsEmpty()
+		got := test.date.IsZero()
 		if got != test.want {
 			t.Errorf("%#v: got %t, want %t", test.date, got, test.want)
 		}
@@ -278,7 +278,7 @@ func TestTimeIsValid(t *testing.T) {
 	}
 }
 
-func TestTimeIsEmpty(t *testing.T) {
+func TestTimeIsZero(t *testing.T) {
 	for _, test := range []struct {
 		time Time
 		want bool
@@ -289,7 +289,7 @@ func TestTimeIsEmpty(t *testing.T) {
 		{Time{-1, 0, 0, 0}, false},
 		{Time{0, -1, 0, 0}, false},
 	} {
-		got := test.time.IsEmpty()
+		got := test.time.IsZero()
 		if got != test.want {
 			t.Errorf("%#v: got %t, want %t", test.time, got, test.want)
 		}
@@ -419,7 +419,7 @@ func TestDateTimeAfter(t *testing.T) {
 	}
 }
 
-func TestDateTimeIsEmpty(t *testing.T) {
+func TestDateTimeIsZero(t *testing.T) {
 	for _, test := range []struct {
 		dt   DateTime
 		want bool
@@ -434,7 +434,7 @@ func TestDateTimeIsEmpty(t *testing.T) {
 		{DateTime{Date{}, Time{0, 0, 0, 0}}, true},
 		{DateTime{Date{0, 0, 0}, Time{}}, true},
 	} {
-		got := test.dt.IsEmpty()
+		got := test.dt.IsZero()
 		if got != test.want {
 			t.Errorf("%#v: got %t, want %t", test.dt, got, test.want)
 		}

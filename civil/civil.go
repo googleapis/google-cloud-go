@@ -107,8 +107,8 @@ func (d1 Date) After(d2 Date) bool {
 	return d2.Before(d1)
 }
 
-// IsEmpty reports whether date fields are empty
-func (d Date) IsEmpty() bool {
+// IsZero reports whether date fields are empty.
+func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
 }
 
@@ -180,8 +180,8 @@ func (t Time) IsValid() bool {
 	return TimeOf(tm) == t
 }
 
-// IsEmpty reports whether time fields are empty
-func (t Time) IsEmpty() bool {
+// IsZero reports whether time fields are empty.
+func (t Time) IsZero() bool {
 	return (t.Hour == 0) && (t.Minute == 0) && (t.Second == 0) && (t.Nanosecond == 0)
 }
 
@@ -272,9 +272,9 @@ func (dt1 DateTime) After(dt2 DateTime) bool {
 	return dt2.Before(dt1)
 }
 
-// IsEmpty reports whether datetime fields are empty
-func (dt DateTime) IsEmpty() bool {
-	return dt.Date.IsEmpty() && dt.Time.IsEmpty()
+// IsZero reports whether datetime fields are empty.
+func (dt DateTime) IsZero() bool {
+	return dt.Date.IsZero() && dt.Time.IsZero()
 }
 
 // MarshalText implements the encoding.TextMarshaler interface.
