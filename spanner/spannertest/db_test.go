@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 
@@ -365,9 +366,9 @@ func TestConcurrentReadInsert(t *testing.T) {
 func TestGeneratedColumn(t *testing.T) {
 	sql := `CREATE TABLE Songwriters (
 		Id INT64 NOT NULL,
-		A INT64,
-		B INT64,
-		C INT64 AS ((2 * A) * B) STORED,
+		Name STRING(20),
+		Age INT64,
+		Over18 BOOL AS (Age > 18) STORED,
 	) PRIMARY KEY (Id);`
 	var db database
 
@@ -380,27 +381,38 @@ func TestGeneratedColumn(t *testing.T) {
 			t.Fatal()
 		}
 	}
+
+	addColSql := `ALTER TABLE Songwriters ADD COLUMN CanonicalName STRING(20) AS (LOWER(Name)) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSql)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Should have been able to add a generated column to empty table\n status: %v", st)
+	}
+
 	tx := db.NewTransaction()
 	err = db.Insert(tx, "Songwriters",
-		[]spansql.ID{"Id", "C"},
+		[]spansql.ID{"Id", "Over18"},
 		[]*structpb.ListValue{
-			listV(stringV("3"), stringV("3")),
+			listV(stringV("3"), boolV(true)),
 		})
 	if err == nil || status.Code(err) != codes.InvalidArgument {
 		t.Fatal("Should have failed to insert to generated column")
 	}
 
+	name := "Famous Writer"
 	err = db.Insert(tx, "Songwriters",
-		[]spansql.ID{"Id", "A", "B"},
+		[]spansql.ID{"Id", "Name", "Age"},
 		[]*structpb.ListValue{
-			listV(stringV("3"), stringV("3"), stringV("3")),
+			listV(stringV("3"), stringV(name), stringV("40")),
 		})
 	if err != nil {
 		t.Fatalf("Should have succeeded to insert to without generated column: %v", err)
 	}
 
 	var kr keyRangeList
-	iter, err := db.Read("Songwriters", []spansql.ID{"Id", "C"},
+	iter, err := db.Read("Songwriters", []spansql.ID{"Id", "CanonicalName", "Over18"},
 		[]*structpb.ListValue{
 			listV(stringV("3")),
 		}, kr, 0)
@@ -408,35 +420,22 @@ func TestGeneratedColumn(t *testing.T) {
 		t.Fatalf("failed to read: %v", err)
 	}
 	rows := slurp(t, iter)
-	// 2 * A * B = 2 * 3 * 3
-	if rows[0][1].(int64) != 18 {
-		t.Fatal("Generated value for C should have been 18")
+	if rows[0][1].(string) != strings.ToLower(name) {
+		t.Fatalf("Generated value for CanonicalName mismatch\n Got: %v\n Want: %v", rows[0][1].(string), strings.ToLower(name))
+	}
+	if !rows[0][2].(bool) {
+		t.Fatalf("Generated value for Over18 mismatch\n Got: %v\n Want: true", rows[0][2].(bool))
 	}
 
-	// Should be fine to write to only one column that the generated is dependent on
-	err = db.Insert(tx, "Songwriters",
-		[]spansql.ID{"Id", "A"},
-		[]*structpb.ListValue{
-			listV(stringV("2"), stringV("2")),
-		})
+	addColSql = `ALTER TABLE Songwriters ADD COLUMN Under18 BOOL AS (Age < 18) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSql)
 	if err != nil {
-		t.Fatalf("Should have succeeded to insert: %v", err)
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() == codes.OK {
+		t.Fatalf("Should have failed to add a generated column to non-empty table\n status: %v", st)
 	}
 
-	iter, err = db.Read("Songwriters", []spansql.ID{"Id", "C"},
-		[]*structpb.ListValue{
-			listV(stringV("2")),
-		}, kr, 0)
-	if err != nil {
-		t.Fatalf("failed to read: %v", err)
-	}
-	rows = slurp(t, iter)
-	// Should be nil as only A was set not B
-	if rows[0][1] != nil {
-		t.Fatal("Generated value for C should be nil")
-	}
-
-	t.Fail()
 }
 
 func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {
