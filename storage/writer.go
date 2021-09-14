@@ -360,7 +360,6 @@ func (w *Writer) openGRPC() error {
 			toWrite := buf[:recvd]
 
 			// TODO: Figure out how to set up encryption via CommonObjectRequestParams.
-			// TODO: Send Object checksum.
 
 			// The chunk buffer is full, but there is no end in sight. This
 			// means that a resumable upload will need to be used to send
