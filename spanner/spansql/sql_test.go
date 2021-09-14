@@ -483,6 +483,34 @@ func TestSQL(t *testing.T) {
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS: SelectFromJoin{
+								Type: InnerJoin,
+								LHS:  SelectFromTable{Table: "Table1"},
+								RHS:  SelectFromTable{Table: "Table2"},
+								On: ComparisonOp{
+									LHS: PathExp{"Table1", "A"},
+									Op:  Eq,
+									RHS: PathExp{"Table2", "A"},
+								},
+							},
+							RHS:   SelectFromTable{Table: "Table3"},
+							Using: []ID{"X"},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
