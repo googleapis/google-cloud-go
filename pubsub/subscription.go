@@ -33,6 +33,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+
+	vkit "cloud.google.com/go/pubsub/apiv1"
 )
 
 // Subscription is a reference to a PubSub subscription.
@@ -85,7 +87,8 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 		Project: c.fullyQualifiedProjectName(),
 	})
 	return &SubscriptionIterator{
-		c: c,
+		c:  c,
+		it: it,
 		next: func() (string, error) {
 			sub, err := it.Next()
 			if err != nil {
@@ -99,6 +102,7 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
 	c    *Client
+	it   *vkit.SubscriptionIterator
 	next func() (string, error)
 }
 
@@ -109,6 +113,22 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 		return nil, err
 	}
 	return &Subscription{c: subs.c, name: subName}, nil
+}
+
+// NextConfig returns the next subscription config. If there are no more subscriptions,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `SubscriptionIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
+func (subs *SubscriptionIterator) NextConfig() (*SubscriptionConfig, error) {
+	spb, err := subs.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := protoToSubscriptionConfig(spb, subs.c)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -837,7 +857,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(maxCount, maxBytes)
+	fc := newFlowController(FlowControlSettings{
+		MaxOutstandingMessages: maxCount,
+		MaxOutstandingBytes:    maxBytes,
+		LimitExceededBehavior:  FlowControlBlock,
+	})
 
 	sched := scheduler.NewReceiveScheduler(maxCount)
 
@@ -901,12 +925,28 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						}
 					}
 				}
+				// If the context is done, don't pull more messages.
+				select {
+				case <-ctx.Done():
+					return nil
+				default:
+				}
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
 				}
 				if err != nil {
 					return err
+				}
+				// If context is done and messages have been pulled,
+				// nack them.
+				select {
+				case <-ctx.Done():
+					for _, m := range msgs {
+						m.Nack()
+					}
+					return nil
+				default:
 				}
 				for i, msg := range msgs {
 					msg := msg
@@ -982,7 +1022,7 @@ func (s *Subscription) checkOrdering() {
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
-	maxPrefetch        int32
+	maxPrefetch        int32         // the max number of outstanding messages, used to calculate maxToPull
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool
