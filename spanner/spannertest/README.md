@@ -22,7 +22,9 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - more literal types
-- generated columns referencing other generated columns as well as proper handling of dropping columns generator expressions refer to
+- expressions that return null for generated columns
+- generated columns referencing other generated columns
+- checking dependencies on a generated column before deleting a column
 - expression type casting, coercion
 - multiple joins
 - subselects

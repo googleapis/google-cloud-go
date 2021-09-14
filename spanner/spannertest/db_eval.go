@@ -55,7 +55,7 @@ type coercedValue struct {
 }
 
 var (
-	// errNotFound represent when an expression evaluates to the wrong type.
+	// errIncorrectType represent when an expression evaluates to the wrong type.
 	errIncorrectType = errors.New("incorrect type")
 )
 
@@ -243,6 +243,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 }
 
 func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
+	// TODO: Better NULL handling
 	switch e.Op {
 	case spansql.Neg:
 		rhs, err := ec.evalExpr(e.RHS)
