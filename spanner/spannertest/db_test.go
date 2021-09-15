@@ -401,6 +401,15 @@ func TestGeneratedColumn(t *testing.T) {
 		t.Fatal("Should have failed to insert to generated column")
 	}
 
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id"},
+		[]*structpb.ListValue{
+			listV(stringV("1")),
+		})
+	if err != nil {
+		t.Fatalf("Should have succeeded to insert to with no dependent columns: %v", err)
+	}
+
 	name := "Famous Writer"
 	err = db.Insert(tx, "Songwriters",
 		[]spansql.ID{"Id", "Name", "Age"},
