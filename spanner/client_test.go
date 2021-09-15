@@ -1809,7 +1809,7 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	errContext, _ := context.WithTimeout(context.Background(), -time.Second)
 	w := toSpannerErrorWithCommitInfo(errContext.Err(), true).(*Error)
 	var se *Error
-	if !errorAs(err, &se) {
+	if !ErrorAs(err, &se) {
 		t.Fatalf("Error mismatch\nGot: %v\nWant: %v", err, w)
 	}
 	if se.GRPCStatus().Code() != w.GRPCStatus().Code() {
@@ -1819,7 +1819,7 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 		t.Fatalf("Error message mismatch:\nGot %s\nWant: %s", se.Error(), w.Error())
 	}
 	var outcome *TransactionOutcomeUnknownError
-	if !errorAs(err, &outcome) {
+	if !ErrorAs(err, &outcome) {
 		t.Fatalf("Missing wrapped TransactionOutcomeUnknownError error")
 	}
 }
@@ -1948,7 +1948,7 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 		t.Fatalf("Error mismatch\nGot: nil\nWant: %s", msg)
 	}
 	var se *Error
-	if ok := errorAs(err, &se); !ok {
+	if ok := ErrorAs(err, &se); !ok {
 		t.Fatalf("Error mismatch\nGot: %v\nWant: An instance of a Spanner error", err)
 	}
 	if g, w := se.GRPCStatus().Code(), codes.InvalidArgument; g != w {

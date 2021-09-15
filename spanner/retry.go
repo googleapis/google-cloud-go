@@ -99,7 +99,7 @@ func runWithRetryOnAbortedOrSessionNotFound(ctx context.Context, f func(context.
 			// interface.
 			var retryErr error
 			var se *Error
-			if errorAs(err, &se) {
+			if ErrorAs(err, &se) {
 				// It is a (wrapped) Spanner error. Use that to check whether
 				// we should retry.
 				retryErr = se
@@ -133,7 +133,7 @@ func ExtractRetryDelay(err error) (time.Duration, bool) {
 	var se *Error
 	var s *status.Status
 	// Unwrap status error.
-	if errorAs(err, &se) {
+	if ErrorAs(err, &se) {
 		s = status.Convert(se.Unwrap())
 	} else {
 		s = status.Convert(err)
