@@ -51,6 +51,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 4,
 		PerPartitionBytes:          30 * gibi,
 		RetentionDuration:          24 * time.Hour,
+		ThroughputReservation:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
 	}
 	updateConfig := TopicConfigToUpdate{
 		Name:                       topicPath,
@@ -58,6 +59,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          40 * gibi,
 		RetentionDuration:          InfiniteRetention,
+		ThroughputReservation:      "",
 	}
 	emptyUpdateConfig := TopicConfigToUpdate{
 		Name: topicPath,
@@ -414,6 +416,194 @@ func TestAdminListSubscriptions(t *testing.T) {
 	}
 }
 
+func TestAdminReservationCRUD(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const reservationPath = "projects/my-proj/locations/us-central1/reservations/my-reservation"
+	reservationConfig := ReservationConfig{
+		Name:               reservationPath,
+		ThroughputCapacity: 4,
+	}
+	updateConfig := ReservationConfigToUpdate{
+		Name:               reservationPath,
+		ThroughputCapacity: 5,
+	}
+	emptyUpdateConfig := ReservationConfigToUpdate{
+		Name: reservationPath,
+	}
+
+	// Expected requests and fake responses
+	wantCreateReq := &pb.CreateReservationRequest{
+		Parent:        "projects/my-proj/locations/us-central1",
+		ReservationId: "my-reservation",
+		Reservation:   reservationConfig.toProto(),
+	}
+	wantUpdateReq := updateConfig.toUpdateRequest()
+	wantGetReq := &pb.GetReservationRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+	wantDeleteReq := &pb.DeleteReservationRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantCreateReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantUpdateReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantGetReq, reservationConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantDeleteReq, &emptypb.Empty{}, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	if gotConfig, err := admin.CreateReservation(ctx, reservationConfig); err != nil {
+		t.Errorf("CreateReservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("CreateReservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if gotConfig, err := admin.UpdateReservation(ctx, updateConfig); err != nil {
+		t.Errorf("UpdateReservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("UpdateReservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if _, err := admin.UpdateReservation(ctx, emptyUpdateConfig); !test.ErrorEqual(err, errNoReservationFieldsUpdated) {
+		t.Errorf("UpdateReservation() got err: (%v), want err: (%v)", err, errNoReservationFieldsUpdated)
+	}
+
+	if gotConfig, err := admin.Reservation(ctx, reservationPath); err != nil {
+		t.Errorf("Reservation() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &reservationConfig) {
+		t.Errorf("Reservation() got: %v\nwant: %v", gotConfig, reservationConfig)
+	}
+
+	if err := admin.DeleteReservation(ctx, reservationPath); err != nil {
+		t.Errorf("DeleteReservation() got err: %v", err)
+	}
+}
+
+func TestAdminListReservations(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const locationPath = "projects/my-proj/locations/us-central1"
+	reservationConfig1 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation1",
+		ThroughputCapacity: 1,
+	}
+	reservationConfig2 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation2",
+		ThroughputCapacity: 2,
+	}
+	reservationConfig3 := ReservationConfig{
+		Name:               "projects/my-proj/locations/us-central1/reservations/reservation3",
+		ThroughputCapacity: 2,
+	}
+
+	// Expected requests and fake responses
+	wantListReq1 := &pb.ListReservationsRequest{
+		Parent: "projects/my-proj/locations/us-central1",
+	}
+	listResp1 := &pb.ListReservationsResponse{
+		Reservations:  []*pb.Reservation{reservationConfig1.toProto(), reservationConfig2.toProto()},
+		NextPageToken: "next_token",
+	}
+	wantListReq2 := &pb.ListReservationsRequest{
+		Parent:    "projects/my-proj/locations/us-central1",
+		PageToken: "next_token",
+	}
+	listResp2 := &pb.ListReservationsResponse{
+		Reservations: []*pb.Reservation{reservationConfig3.toProto()},
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantListReq1, listResp1, nil)
+	verifiers.GlobalVerifier.Push(wantListReq2, listResp2, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	var gotReservationConfigs []*ReservationConfig
+	reservationIt := admin.Reservations(ctx, locationPath)
+	for {
+		reservation, err := reservationIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("ReservationIterator.Next() got err: %v", err)
+		} else {
+			gotReservationConfigs = append(gotReservationConfigs, reservation)
+		}
+	}
+
+	wantReservationConfigs := []*ReservationConfig{&reservationConfig1, &reservationConfig2, &reservationConfig3}
+	if diff := testutil.Diff(gotReservationConfigs, wantReservationConfigs); diff != "" {
+		t.Errorf("Reservations() got: -, want: +\n%s", diff)
+	}
+}
+
+func TestAdminListReservationTopics(t *testing.T) {
+	ctx := context.Background()
+
+	// Inputs
+	const (
+		reservationPath = "projects/my-proj/locations/us-central1/reservations/my-reservation"
+		topic1          = "projects/my-proj/locations/us-central1-a/topics/topic1"
+		topic2          = "projects/my-proj/locations/us-central1-a/topics/topic2"
+		topic3          = "projects/my-proj/locations/us-central1-a/topics/topic3"
+	)
+
+	// Expected requests and fake responses
+	wantListReq1 := &pb.ListReservationTopicsRequest{
+		Name: "projects/my-proj/locations/us-central1/reservations/my-reservation",
+	}
+	listResp1 := &pb.ListReservationTopicsResponse{
+		Topics:        []string{topic1, topic2},
+		NextPageToken: "next_token",
+	}
+	wantListReq2 := &pb.ListReservationTopicsRequest{
+		Name:      "projects/my-proj/locations/us-central1/reservations/my-reservation",
+		PageToken: "next_token",
+	}
+	listResp2 := &pb.ListReservationTopicsResponse{
+		Topics: []string{topic3},
+	}
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(wantListReq1, listResp1, nil)
+	verifiers.GlobalVerifier.Push(wantListReq2, listResp2, nil)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	var gotTopics []string
+	topicPathIt := admin.ReservationTopics(ctx, reservationPath)
+	for {
+		topicPath, err := topicPathIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("TopicPathIterator.Next() got err: %v", err)
+		} else {
+			gotTopics = append(gotTopics, topicPath)
+		}
+	}
+
+	wantTopics := []string{topic1, topic2, topic3}
+	if !testutil.Equal(gotTopics, wantTopics) {
+		t.Errorf("ReservationTopics() got: %v\nwant: %v", gotTopics, wantTopics)
+	}
+}
+
 func TestAdminValidateResourcePaths(t *testing.T) {
 	ctx := context.Background()
 
@@ -438,7 +628,13 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 		t.Errorf("Subscription() should fail")
 	}
 	if err := admin.DeleteSubscription(ctx, "INVALID"); err == nil {
-		t.Errorf("DeleteTopic() should fail")
+		t.Errorf("DeleteSubscription() should fail")
+	}
+	if _, err := admin.Reservation(ctx, "INVALID"); err == nil {
+		t.Errorf("Reservation() should fail")
+	}
+	if err := admin.DeleteReservation(ctx, "INVALID"); err == nil {
+		t.Errorf("DeleteReservation() should fail")
 	}
 
 	topicIt := admin.Topics(ctx, "INVALID")
@@ -452,6 +648,14 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 	subsIt := admin.Subscriptions(ctx, "INVALID")
 	if _, err := subsIt.Next(); err == nil {
 		t.Errorf("SubscriptionIterator.Next() should fail")
+	}
+	resIt := admin.Reservations(ctx, "INVALID")
+	if _, err := resIt.Next(); err == nil {
+		t.Errorf("ReservationIterator.Next() should fail")
+	}
+	topicPathIt := admin.ReservationTopics(ctx, "INVALID")
+	if _, err := topicPathIt.Next(); err == nil {
+		t.Errorf("TopicPathIterator.Next() should fail")
 	}
 }
 
