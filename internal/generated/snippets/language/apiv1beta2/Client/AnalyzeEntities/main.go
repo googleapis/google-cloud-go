@@ -35,6 +35,7 @@ func main() {
 
 	req := &languagepb.AnalyzeEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1beta2#AnalyzeEntitiesRequest.
 	}
 	resp, err := c.AnalyzeEntities(ctx, req)
 	if err != nil {

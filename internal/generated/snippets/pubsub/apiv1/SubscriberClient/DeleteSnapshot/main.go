@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSnapshotRequest.
 	}
 	err = c.DeleteSnapshot(ctx, req)
 	if err != nil {

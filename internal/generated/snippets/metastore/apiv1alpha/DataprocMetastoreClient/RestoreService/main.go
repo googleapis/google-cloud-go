@@ -35,6 +35,7 @@ func main() {
 
 	req := &metastorepb.RestoreServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#RestoreServiceRequest.
 	}
 	op, err := c.RestoreService(ctx, req)
 	if err != nil {

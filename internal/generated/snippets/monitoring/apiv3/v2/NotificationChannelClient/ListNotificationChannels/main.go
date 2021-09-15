@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListNotificationChannelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListNotificationChannelsRequest.
 	}
 	it := c.ListNotificationChannels(ctx, req)
 	for {

@@ -46,6 +46,7 @@ func ExampleClient_EnableService() {
 
 	req := &serviceusagepb.EnableServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#EnableServiceRequest.
 	}
 	op, err := c.EnableService(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleClient_DisableService() {
 
 	req := &serviceusagepb.DisableServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#DisableServiceRequest.
 	}
 	op, err := c.DisableService(ctx, req)
 	if err != nil {
@@ -94,6 +96,7 @@ func ExampleClient_GetService() {
 
 	req := &serviceusagepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -113,6 +116,7 @@ func ExampleClient_ListServices() {
 
 	req := &serviceusagepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -138,6 +142,7 @@ func ExampleClient_BatchEnableServices() {
 
 	req := &serviceusagepb.BatchEnableServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#BatchEnableServicesRequest.
 	}
 	op, err := c.BatchEnableServices(ctx, req)
 	if err != nil {
@@ -162,6 +167,7 @@ func ExampleClient_BatchGetServices() {
 
 	req := &serviceusagepb.BatchGetServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#BatchGetServicesRequest.
 	}
 	resp, err := c.BatchGetServices(ctx, req)
 	if err != nil {

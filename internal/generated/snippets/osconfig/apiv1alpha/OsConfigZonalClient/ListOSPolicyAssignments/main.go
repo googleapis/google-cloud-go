@@ -36,6 +36,7 @@ func main() {
 
 	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#ListOSPolicyAssignmentsRequest.
 	}
 	it := c.ListOSPolicyAssignments(ctx, req)
 	for {

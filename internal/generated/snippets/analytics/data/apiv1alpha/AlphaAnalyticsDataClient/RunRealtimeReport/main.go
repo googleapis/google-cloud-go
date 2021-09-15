@@ -35,6 +35,7 @@ func main() {
 
 	req := &datapb.RunRealtimeReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunRealtimeReportRequest.
 	}
 	resp, err := c.RunRealtimeReport(ctx, req)
 	if err != nil {

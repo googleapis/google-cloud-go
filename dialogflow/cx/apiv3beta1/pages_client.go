@@ -277,11 +277,13 @@ func (c *pagesGRPCClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequ
 	it := &PageIterator{}
 	req = proto.Clone(req).(*cxpb.ListPagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Page, string, error) {
-		var resp *cxpb.ListPagesResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListPagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -304,9 +306,11 @@ func (c *pagesGRPCClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

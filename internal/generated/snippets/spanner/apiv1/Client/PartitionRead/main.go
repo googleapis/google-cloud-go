@@ -35,6 +35,7 @@ func main() {
 
 	req := &spannerpb.PartitionReadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#PartitionReadRequest.
 	}
 	resp, err := c.PartitionRead(ctx, req)
 	if err != nil {

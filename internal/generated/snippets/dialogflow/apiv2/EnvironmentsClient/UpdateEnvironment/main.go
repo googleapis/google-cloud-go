@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateEnvironmentRequest.
 	}
 	resp, err := c.UpdateEnvironment(ctx, req)
 	if err != nil {

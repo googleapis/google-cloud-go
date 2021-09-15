@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleRegionHealthCheckServicesClient_Delete() {
 
 	req := &computepb.DeleteRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleRegionHealthCheckServicesClient_Get() {
 
 	req := &computepb.GetRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleRegionHealthCheckServicesClient_Insert() {
 
 	req := &computepb.InsertRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -102,13 +106,20 @@ func ExampleRegionHealthCheckServicesClient_List() {
 
 	req := &computepb.ListRegionHealthCheckServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionHealthCheckServicesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionHealthCheckServicesClient_Patch() {
@@ -121,6 +132,7 @@ func ExampleRegionHealthCheckServicesClient_Patch() {
 
 	req := &computepb.PatchRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

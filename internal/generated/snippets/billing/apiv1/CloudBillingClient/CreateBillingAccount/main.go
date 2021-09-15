@@ -35,6 +35,7 @@ func main() {
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#CreateBillingAccountRequest.
 	}
 	resp, err := c.CreateBillingAccount(ctx, req)
 	if err != nil {

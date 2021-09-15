@@ -35,6 +35,7 @@ func main() {
 
 	req := &shellpb.RemovePublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#RemovePublicKeyRequest.
 	}
 	op, err := c.RemovePublicKey(ctx, req)
 	if err != nil {

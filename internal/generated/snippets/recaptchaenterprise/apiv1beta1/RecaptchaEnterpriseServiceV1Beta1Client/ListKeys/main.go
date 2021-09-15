@@ -36,6 +36,7 @@ func main() {
 
 	req := &recaptchaenterprisepb.ListKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#ListKeysRequest.
 	}
 	it := c.ListKeys(ctx, req)
 	for {

@@ -175,6 +175,33 @@ func ExampleAdminClient_UpdateSubscription() {
 	}
 }
 
+func ExampleAdminClient_SeekSubscription() {
+	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the subscription.
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	seekOp, err := admin.SeekSubscription(ctx, subscription, pubsublite.Beginning)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Optional: Wait for the seek operation to complete, which indicates when
+	// subscribers for all partitions are receiving messages from the seek target.
+	_, err = seekOp.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	metadata, err := seekOp.Metadata()
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(metadata)
+}
+
 func ExampleAdminClient_DeleteSubscription() {
 	ctx := context.Background()
 	// NOTE: region must correspond to the zone of the subscription.
@@ -208,5 +235,98 @@ func ExampleAdminClient_Subscriptions() {
 			// TODO: Handle error.
 		}
 		fmt.Println(subscriptionConfig)
+	}
+}
+
+// This example demonstrates how to create a new reservation.
+// See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+// regions where Pub/Sub Lite is available.
+func ExampleAdminClient_CreateReservation() {
+	ctx := context.Background()
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	reservationConfig := pubsublite.ReservationConfig{
+		Name:               "projects/my-project/locations/region/reservations/my-reservation",
+		ThroughputCapacity: 10,
+	}
+	_, err = admin.CreateReservation(ctx, reservationConfig)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_UpdateReservation() {
+	ctx := context.Background()
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	updateConfig := pubsublite.ReservationConfigToUpdate{
+		Name:               "projects/my-project/locations/region/reservations/my-reservation",
+		ThroughputCapacity: 20,
+	}
+	_, err = admin.UpdateReservation(ctx, updateConfig)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_DeleteReservation() {
+	ctx := context.Background()
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	const reservation = "projects/my-project/locations/region/reservations/my-reservation"
+	if err := admin.DeleteReservation(ctx, reservation); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_Reservations() {
+	ctx := context.Background()
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// List the configs of all reservations in the given region for the project.
+	it := admin.Reservations(ctx, "projects/my-project/locations/region")
+	for {
+		reservation, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(reservation)
+	}
+}
+
+func ExampleAdminClient_ReservationTopics() {
+	ctx := context.Background()
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// List the paths of all topics using a reservation.
+	const reservation = "projects/my-project/locations/region/reservations/my-reservation"
+	it := admin.ReservationTopics(ctx, reservation)
+	for {
+		topicPath, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Println(topicPath)
 	}
 }

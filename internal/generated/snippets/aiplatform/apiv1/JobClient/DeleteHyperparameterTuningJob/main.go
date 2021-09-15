@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.DeleteHyperparameterTuningJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteHyperparameterTuningJobRequest.
 	}
 	op, err := c.DeleteHyperparameterTuningJob(ctx, req)
 	if err != nil {

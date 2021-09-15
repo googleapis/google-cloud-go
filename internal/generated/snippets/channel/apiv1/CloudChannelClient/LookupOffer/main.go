@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.LookupOfferRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#LookupOfferRequest.
 	}
 	resp, err := c.LookupOffer(ctx, req)
 	if err != nil {

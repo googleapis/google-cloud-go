@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleNodeGroupsClient_AddNodes() {
 
 	req := &computepb.AddNodesNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddNodesNodeGroupRequest.
 	}
 	resp, err := c.AddNodes(ctx, req)
 	if err != nil {
@@ -64,13 +66,20 @@ func ExampleNodeGroupsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListNodeGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNodeGroupsRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNodeGroupsClient_Delete() {
@@ -83,6 +92,7 @@ func ExampleNodeGroupsClient_Delete() {
 
 	req := &computepb.DeleteNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNodeGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -102,6 +112,7 @@ func ExampleNodeGroupsClient_DeleteNodes() {
 
 	req := &computepb.DeleteNodesNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNodesNodeGroupRequest.
 	}
 	resp, err := c.DeleteNodes(ctx, req)
 	if err != nil {
@@ -121,6 +132,7 @@ func ExampleNodeGroupsClient_Get() {
 
 	req := &computepb.GetNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNodeGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,6 +152,7 @@ func ExampleNodeGroupsClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyNodeGroupRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -159,6 +172,7 @@ func ExampleNodeGroupsClient_Insert() {
 
 	req := &computepb.InsertNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNodeGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -178,13 +192,20 @@ func ExampleNodeGroupsClient_List() {
 
 	req := &computepb.ListNodeGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNodeGroupsRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNodeGroupsClient_ListNodes() {
@@ -197,13 +218,20 @@ func ExampleNodeGroupsClient_ListNodes() {
 
 	req := &computepb.ListNodesNodeGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNodesNodeGroupsRequest.
 	}
-	resp, err := c.ListNodes(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListNodes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleNodeGroupsClient_Patch() {
@@ -216,6 +244,7 @@ func ExampleNodeGroupsClient_Patch() {
 
 	req := &computepb.PatchNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNodeGroupRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -235,6 +264,7 @@ func ExampleNodeGroupsClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyNodeGroupRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -254,6 +284,7 @@ func ExampleNodeGroupsClient_SetNodeTemplate() {
 
 	req := &computepb.SetNodeTemplateNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNodeTemplateNodeGroupRequest.
 	}
 	resp, err := c.SetNodeTemplate(ctx, req)
 	if err != nil {
@@ -273,6 +304,7 @@ func ExampleNodeGroupsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsNodeGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsNodeGroupRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

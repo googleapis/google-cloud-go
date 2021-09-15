@@ -45,6 +45,7 @@ func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 
 	req := &datacatalogpb.ImportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ImportTaxonomiesRequest.
 	}
 	resp, err := c.ImportTaxonomies(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
 
 	req := &datacatalogpb.ExportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ExportTaxonomiesRequest.
 	}
 	resp, err := c.ExportTaxonomies(ctx, req)
 	if err != nil {

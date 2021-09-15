@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.PreviewUpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#PreviewUpdateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewUpdateGameServerCluster(ctx, req)
 	if err != nil {

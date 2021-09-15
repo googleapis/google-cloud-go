@@ -2254,7 +2254,7 @@ func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 	ctx := context.Background()
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
 		OptimizerVersion:           "1",
-		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+		OptimizerStatisticsPackage: "latest",
 	}}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
 	defer teardown()
@@ -2273,7 +2273,7 @@ func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
 		OptimizerVersion:           "1",
-		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+		OptimizerStatisticsPackage: "latest",
 	}}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
 	defer teardown()
@@ -2294,7 +2294,7 @@ type QueryOptionsTestCase struct {
 }
 
 func queryOptionsTestCases() []QueryOptionsTestCase {
-	statsPkg := "auto_20191128_14_47_22UTC"
+	statsPkg := "latest"
 	return []QueryOptionsTestCase{
 		{
 			"Client level",

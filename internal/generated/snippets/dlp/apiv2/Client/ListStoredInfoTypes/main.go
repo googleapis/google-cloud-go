@@ -36,6 +36,7 @@ func main() {
 
 	req := &dlppb.ListStoredInfoTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListStoredInfoTypesRequest.
 	}
 	it := c.ListStoredInfoTypes(ctx, req)
 	for {

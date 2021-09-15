@@ -46,6 +46,7 @@ func ExampleMigrationClient_SearchMigratableResources() {
 
 	req := &aiplatformpb.SearchMigratableResourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#SearchMigratableResourcesRequest.
 	}
 	it := c.SearchMigratableResources(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleMigrationClient_BatchMigrateResources() {
 
 	req := &aiplatformpb.BatchMigrateResourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#BatchMigrateResourcesRequest.
 	}
 	op, err := c.BatchMigrateResources(ctx, req)
 	if err != nil {

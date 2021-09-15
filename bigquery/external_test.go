@@ -87,6 +87,10 @@ func TestExternalDataConfig(t *testing.T) {
 				EnableListInference: true,
 			},
 		},
+		{
+			SourceFormat:       Parquet,
+			DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+		},
 	} {
 		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)

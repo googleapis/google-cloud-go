@@ -35,6 +35,7 @@ func main() {
 
 	req := &gkehubpb.ValidateExclusivityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ValidateExclusivityRequest.
 	}
 	resp, err := c.ValidateExclusivity(ctx, req)
 	if err != nil {

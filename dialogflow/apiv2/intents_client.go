@@ -241,6 +241,15 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.Dele
 
 // BatchUpdateIntents updates/Creates multiple intents in the specified agent.
 //
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: BatchUpdateIntentsResponse
+//
 // Note: You should always train an agent prior to sending it queries. See the
 // training
 // documentation (at https://cloud.google.com/dialogflow/es/docs/training).
@@ -255,6 +264,16 @@ func (c *IntentsClient) BatchUpdateIntentsOperation(name string) *BatchUpdateInt
 }
 
 // BatchDeleteIntents deletes intents in the specified agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -372,11 +391,13 @@ func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 	it := &IntentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListIntentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Intent, string, error) {
-		var resp *dialogflowpb.ListIntentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListIntentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -399,9 +420,11 @@ func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

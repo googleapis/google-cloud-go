@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -230,6 +231,12 @@ func parseMessageMetadata(ctx context.Context, t *testing.T, result *pubsub.Publ
 	return metadata
 }
 
+func makeMsgTracker(msgs []string) *test.MsgTracker {
+	msgTracker := test.NewMsgTracker()
+	msgTracker.Add(msgs...)
+	return msgTracker
+}
+
 const maxPrintMsgLen = 70
 
 func truncateMsg(msg string) string {
@@ -243,9 +250,40 @@ func messageDiff(got, want *pubsub.Message) string {
 	return testutil.Diff(got, want, cmpopts.IgnoreUnexported(pubsub.Message{}), cmpopts.IgnoreFields(pubsub.Message{}, "ID", "PublishTime"), cmpopts.EquateEmpty())
 }
 
-func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings ReceiveSettings, subscription wire.SubscriptionPath) {
+type publishTimeRange struct {
+	mu  sync.Mutex
+	min time.Time
+	max time.Time
+}
+
+func (p *publishTimeRange) Min() time.Time {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.min
+}
+
+func (p *publishTimeRange) Max() time.Time {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	return p.max
+}
+
+func (p *publishTimeRange) AddTime(t time.Time) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if p.min.IsZero() || t.Before(p.min) {
+		p.min = t
+	}
+	if p.max.IsZero() || t.After(p.max) {
+		p.max = t
+	}
+}
+
+func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings ReceiveSettings, subscription wire.SubscriptionPath) *publishTimeRange {
 	cctx, stopSubscriber := context.WithTimeout(context.Background(), defaultTestTimeout)
 	orderingValidator := test.NewOrderingReceiver()
+	publishTimes := new(publishTimeRange)
 
 	messageReceiver := func(ctx context.Context, msg *pubsub.Message) {
 		msg.Ack()
@@ -267,6 +305,9 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 			}
 		}
 
+		// Record publish times.
+		publishTimes.AddTime(msg.PublishTime)
+
 		// Stop the subscriber when all messages have been received.
 		if msgTracker.Empty() {
 			stopSubscriber()
@@ -280,6 +321,7 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 	if err := msgTracker.Status(); err != nil {
 		t.Error(err)
 	}
+	return publishTimes
 }
 
 func receiveAndVerifyMessage(t *testing.T, want *pubsub.Message, settings ReceiveSettings, subscription wire.SubscriptionPath) {
@@ -506,9 +548,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, pubSettings, topicPath, "ordering", messageCount, 0)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Checks that subscriber flow control works.
@@ -520,11 +560,9 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "subscriber_flow_control", messageCount, 0)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
 		customSettings := recvSettings
 		customSettings.MaxOutstandingMessages = maxOutstandingMessages
-		receiveAllMessages(t, msgTracker, customSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), customSettings, subscriptionPath)
 	})
 
 	// Verifies that large messages can be sent and received.
@@ -536,9 +574,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "large_messages", messageCount, messageSize)
 
 		// Receive messages.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Verifies that cancelling the context passed to NewPublisherClient can shut
@@ -554,10 +590,11 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		if _, err := result.Get(ctx); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Publish() got err: %v, want code: %v", err, wantCode)
 		}
+
+		publisher.Stop()
 		if err := xerrors.Unwrap(publisher.Error()); !test.ErrorHasCode(err, wantCode) {
 			t.Errorf("Error() got err: %v, want code: %v", err, wantCode)
 		}
-		publisher.Stop()
 	})
 
 	// Verifies that cancelling the context passed to NewSubscriberClient can shut
@@ -640,11 +677,8 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		// Publish messages.
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "routing_no_key", messageCount, 0)
 
-		// Receive messages, not checking for ordering since they do not have a key.
-		// However, they would still be ordered within their partition.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		// Receive messages.
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
 	})
 
 	// Tests messages published with ordering key.
@@ -685,8 +719,7 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "partition_assignment", messageCount, 0)
 
 		// Start multiple subscribers that use partition assignment.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
+		msgTracker := makeMsgTracker(msgs)
 
 		messageReceiver := func(ctx context.Context, msg *pubsub.Message) {
 			msg.Ack()
@@ -752,8 +785,176 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	recvSettings.Partitions = partitionNumbers(partitionCount)
 
 	for _, subscription := range subscriptionPaths {
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgs...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscription)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscription)
 	}
+}
+
+func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+	t.Helper()
+
+	if len(seekOp.Name()) == 0 {
+		t.Error("Seek operation path missing")
+	}
+	if got, want := seekOp.Done(), false; got != want {
+		t.Errorf("Operation.Done() got: %v, want: %v", got, want)
+	}
+
+	m, err := seekOp.Metadata()
+	if err != nil {
+		t.Errorf("Operation.Metadata() got err: %v", err)
+		return
+	}
+	t.Logf("Seek operation initiated: %s, metadata: %v", seekOp.Name(), m)
+}
+
+func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
+	t.Helper()
+
+	_, err := seekOp.Wait(ctx)
+	if err != nil {
+		t.Errorf("Operation.Wait() got err: %v", err)
+		return
+	}
+	if got, want := seekOp.Done(), true; got != want {
+		t.Errorf("Operation.Done() got: %v, want: %v", got, want)
+	}
+
+	m, err := seekOp.Metadata()
+	if err != nil {
+		t.Errorf("Operation.Metadata() got err: %v", err)
+		return
+	}
+	if len(m.Target) == 0 {
+		t.Error("Metadata.Target missing")
+	}
+	if len(m.Verb) == 0 {
+		t.Error("Metadata.Verb missing")
+	}
+	if m.CreateTime.IsZero() {
+		t.Error("Metadata.CreateTime missing")
+	}
+	if m.EndTime.IsZero() {
+		t.Error("Metadata.EndTime missing")
+	}
+	t.Logf("Seek operation complete: %s, metadata: %v", seekOp.Name(), m)
+}
+
+func TestIntegration_SeekSubscription(t *testing.T) {
+	const partitionCount = 4
+	const messageCount = 50 * partitionCount
+	region, topicPath, subscriptionPath := initResourcePaths(t)
+	ctx := context.Background()
+	recvSettings := DefaultReceiveSettings
+	recvSettings.Partitions = partitionNumbers(partitionCount)
+
+	admin := adminClient(ctx, t, region)
+	defer admin.Close()
+	createTopic(ctx, t, admin, topicPath, partitionCount)
+	defer cleanUpTopic(ctx, t, admin, topicPath)
+	createSubscription(ctx, t, admin, subscriptionPath, topicPath)
+	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
+
+	var msgBatch3 []string
+	var publishTimes3 *publishTimeRange
+
+	// Note: Subtests need to be run sequentially.
+
+	t.Run("SeekToBeginning", func(t *testing.T) {
+		// Publish the first batch of messages.
+		msgBatch1 := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch1", messageCount, 0)
+		msgTracker := makeMsgTracker(msgBatch1)
+
+		// Keep the subscriber alive to test the subscriber client's handling of
+		// out-of-band seek notifications from the server.
+		cctx, stopSubscriber := context.WithTimeout(context.Background(), defaultTestTimeout)
+		messageReceiver := func(ctx context.Context, msg *pubsub.Message) {
+			msg.Ack()
+			data := string(msg.Data)
+			if !msgTracker.Remove(data) {
+				stopSubscriber()
+				t.Errorf("Received unexpected message: %q", data)
+			}
+		}
+		subscriber := subscriberClient(context.Background(), t, recvSettings, subscriptionPath)
+		receiveDone := test.NewCondition("subscriber-stopped")
+		go func() {
+			// Receive messages in a goroutine, as Receive is blocking.
+			if err := subscriber.Receive(cctx, messageReceiver); err != nil {
+				t.Errorf("Receive() got err: %v", err)
+			}
+			receiveDone.SetDone()
+		}()
+
+		// Receive batch 1 once.
+		if err := msgTracker.Wait(defaultTestTimeout); err != nil {
+			t.Fatal(err)
+		}
+		msgTracker.Add(msgBatch1...)
+
+		// Seek to beginning.
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.Beginning)
+		if err != nil {
+			t.Errorf("SeekSubscription() got err: %v", err)
+		} else {
+			validateNewSeekOperation(t, subscriptionPath, seekOp)
+		}
+
+		// Verify that messages are received from the beginning of batch 1.
+		if err := msgTracker.Wait(defaultTestTimeout); err != nil {
+			t.Fatal(err)
+		}
+		stopSubscriber()
+		receiveDone.WaitUntilDone(t, defaultTestTimeout)
+
+		if seekOp != nil {
+			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
+		}
+	})
+
+	t.Run("VerifyCommits", func(t *testing.T) {
+		// Verifies that cursors are committed correctly post-seek in the previous
+		// test. Only newly published messages should be received.
+		msgs := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "verify-commits", 5*partitionCount, 0)
+		receiveAllMessages(t, makeMsgTracker(msgs), recvSettings, subscriptionPath)
+	})
+
+	t.Run("SeekToEnd", func(t *testing.T) {
+		// Publish batch 2, but do not receive messages in order to test seeking to
+		// head/end.
+		publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch2", messageCount, 0)
+
+		// Seek to end.
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.End)
+		if err != nil {
+			t.Errorf("SeekSubscription() got err: %v", err)
+		} else {
+			validateNewSeekOperation(t, subscriptionPath, seekOp)
+		}
+
+		// Publish batch 3 and verify that messages are only received from batch 3
+		// (batch 2 skipped).
+		msgBatch3 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
+		publishTimes3 = receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
+
+		if seekOp != nil {
+			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
+		}
+	})
+
+	t.Run("SeekToPublishTime", func(t *testing.T) {
+		// Seek to min publish time of batch 3.
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.PublishTime(publishTimes3.Min()))
+		if err != nil {
+			t.Errorf("SeekSubscription() got err: %v", err)
+		} else {
+			validateNewSeekOperation(t, subscriptionPath, seekOp)
+		}
+
+		// Verify that messages are received from batch 3.
+		receiveAllMessages(t, makeMsgTracker(msgBatch3), recvSettings, subscriptionPath)
+
+		if seekOp != nil {
+			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
+		}
+	})
 }

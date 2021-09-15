@@ -479,7 +479,7 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 		FROM
 		UNNEST(GENERATE_ARRAY(0,999))
 `, qualified)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
 
@@ -872,7 +872,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	sql := fmt.Sprintf(`
 			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -1288,7 +1288,7 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		END`,
 		routine.FullyQualifiedName())
 
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -1948,6 +1948,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 }
 
 func TestIntegration_Load(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4418")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -2013,7 +2014,8 @@ func TestIntegration_DML(t *testing.T) {
 							   ('b', [1], STRUCT<BOOL>(FALSE)),
 							   ('c', [2], STRUCT<BOOL>(TRUE))`,
 		table.DatasetID, table.TableID)
-	if err := runQueryJob(ctx, sql); err != nil {
+	stats, err := runQueryJob(ctx, sql)
+	if err != nil {
 		t.Fatal(err)
 	}
 	wantRows := [][]Value{
@@ -2022,11 +2024,23 @@ func TestIntegration_DML(t *testing.T) {
 		{"c", []Value{int64(2)}, []Value{true}},
 	}
 	checkRead(t, "DML", table.Read(ctx), wantRows)
+	if stats == nil {
+		t.Fatalf("no query stats")
+	}
+	if stats.DMLStats == nil {
+		t.Fatalf("no dml stats")
+	}
+	wantRowCount := int64(len(wantRows))
+	if stats.DMLStats.InsertedRowCount != wantRowCount {
+		t.Fatalf("dml stats mismatch.  got %d inserted rows, want %d", stats.DMLStats.InsertedRowCount, wantRowCount)
+	}
 }
 
 // runQueryJob is useful for running queries where no row data is returned (DDL/DML).
-func runQueryJob(ctx context.Context, sql string) error {
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+func runQueryJob(ctx context.Context, sql string) (*QueryStatistics, error) {
+	var stats *QueryStatistics
+	var err error
+	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := client.Query(sql).Run(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
@@ -2041,8 +2055,15 @@ func runQueryJob(ctx context.Context, sql string) error {
 			}
 			return false, err
 		}
+		status := job.LastStatus()
+		if status.Statistics != nil {
+			if qStats, ok := status.Statistics.Details.(*QueryStatistics); ok {
+				stats = qStats
+			}
+		}
 		return true, nil
 	})
+	return stats, err
 }
 
 func TestIntegration_TimeTypes(t *testing.T) {
@@ -2082,7 +2103,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 		"VALUES ('%s', '%s', '%s', '%s')",
 		table.DatasetID, table.TableID,
 		d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
-	if err := runQueryJob(ctx, query); err != nil {
+	if _, err := runQueryJob(ctx, query); err != nil {
 		t.Fatal(err)
 	}
 	wantRows = append(wantRows, wantRows[0])
@@ -2187,9 +2208,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err := autoTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   AutoHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
@@ -2204,9 +2226,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 
 	err = customTable.Create(ctx, &TableMetadata{
 		ExternalDataConfig: &ExternalDataConfig{
-			SourceFormat: Parquet,
-			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
-			AutoDetect:   true,
+			SourceFormat:       Parquet,
+			SourceURIs:         []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:         true,
+			DecimalTargetTypes: []DecimalTargetType{NumericTargetType, StringTargetType},
 			HivePartitioningOptions: &HivePartitioningOptions{
 				Mode:                   CustomHivePartitioningMode,
 				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",
@@ -2414,6 +2437,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	sql := `
 	-- Declare a variable to hold names as an array.
 	DECLARE top_names ARRAY<STRING>;
+	BEGIN TRANSACTION;
 	-- Build an array of the top 100 names from the year 2017.
 	SET top_names = (
 	  SELECT ARRAY_AGG(name ORDER BY number DESC LIMIT 100)
@@ -2428,6 +2452,7 @@ func TestIntegration_Scripting(t *testing.T) {
 	  SELECT word
 	  FROM ` + "`bigquery-public-data`" + `.samples.shakespeare
 	);
+	COMMIT TRANSACTION;
 	`
 	q := client.Query(sql)
 	job, err := q.Run(ctx)
@@ -2485,6 +2510,12 @@ func TestIntegration_Scripting(t *testing.T) {
 		if cStatus.Statistics.ScriptStatistics.EvaluationKind == "" {
 			t.Errorf("child job %q didn't indicate evaluation kind", cj.ID())
 		}
+		if cStatus.Statistics.TransactionInfo == nil {
+			t.Errorf("child job %q didn't have transaction info present", cj.ID())
+		}
+		if cStatus.Statistics.TransactionInfo.TransactionID == "" {
+			t.Errorf("child job %q didn't have transactionID present", cj.ID())
+		}
 	}
 
 }
@@ -2506,7 +2537,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	sql := fmt.Sprintf(`INSERT %s.%s (name, num)
 		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
 		table.DatasetID, table.TableID)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	// Extract to a GCS object as CSV.
@@ -2932,7 +2963,7 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 	FROM
 	  UNNEST(GENERATE_ARRAY(0,999))
 	`, qualified)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
 
@@ -3060,7 +3091,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
 		)`, modelRef)
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer model.Delete(ctx)
@@ -3243,7 +3274,7 @@ func TestIntegration_RoutineComplexTypes(t *testing.T) {
 			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
 		  )`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -3303,7 +3334,7 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 	sql := fmt.Sprintf(`
 		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
+	if _, err := runQueryJob(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)

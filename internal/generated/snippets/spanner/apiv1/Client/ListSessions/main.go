@@ -36,6 +36,7 @@ func main() {
 
 	req := &spannerpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ListSessionsRequest.
 	}
 	it := c.ListSessions(ctx, req)
 	for {

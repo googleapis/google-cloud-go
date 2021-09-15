@@ -275,11 +275,6 @@ func (c *specialistPoolGRPCClient) Close() error {
 }
 
 func (c *specialistPoolGRPCClient) CreateSpecialistPool(ctx context.Context, req *aiplatformpb.CreateSpecialistPoolRequest, opts ...gax.CallOption) (*CreateSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSpecialistPool[0:len((*c.CallOptions).CreateSpecialistPool):len((*c.CallOptions).CreateSpecialistPool)], opts...)
@@ -298,11 +293,6 @@ func (c *specialistPoolGRPCClient) CreateSpecialistPool(ctx context.Context, req
 }
 
 func (c *specialistPoolGRPCClient) GetSpecialistPool(ctx context.Context, req *aiplatformpb.GetSpecialistPoolRequest, opts ...gax.CallOption) (*aiplatformpb.SpecialistPool, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSpecialistPool[0:len((*c.CallOptions).GetSpecialistPool):len((*c.CallOptions).GetSpecialistPool)], opts...)
@@ -325,11 +315,13 @@ func (c *specialistPoolGRPCClient) ListSpecialistPools(ctx context.Context, req 
 	it := &SpecialistPoolIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListSpecialistPoolsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.SpecialistPool, string, error) {
-		var resp *aiplatformpb.ListSpecialistPoolsResponse
-		req.PageToken = pageToken
+		resp := &aiplatformpb.ListSpecialistPoolsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -352,18 +344,15 @@ func (c *specialistPoolGRPCClient) ListSpecialistPools(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
 func (c *specialistPoolGRPCClient) DeleteSpecialistPool(ctx context.Context, req *aiplatformpb.DeleteSpecialistPoolRequest, opts ...gax.CallOption) (*DeleteSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSpecialistPool[0:len((*c.CallOptions).DeleteSpecialistPool):len((*c.CallOptions).DeleteSpecialistPool)], opts...)
@@ -382,11 +371,6 @@ func (c *specialistPoolGRPCClient) DeleteSpecialistPool(ctx context.Context, req
 }
 
 func (c *specialistPoolGRPCClient) UpdateSpecialistPool(ctx context.Context, req *aiplatformpb.UpdateSpecialistPoolRequest, opts ...gax.CallOption) (*UpdateSpecialistPoolOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "specialist_pool.name", url.QueryEscape(req.GetSpecialistPool().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSpecialistPool[0:len((*c.CallOptions).UpdateSpecialistPool):len((*c.CallOptions).UpdateSpecialistPool)], opts...)

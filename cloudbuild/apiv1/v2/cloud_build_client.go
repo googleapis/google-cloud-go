@@ -47,6 +47,7 @@ type CallOptions struct {
 	ListBuilds            []gax.CallOption
 	CancelBuild           []gax.CallOption
 	RetryBuild            []gax.CallOption
+	ApproveBuild          []gax.CallOption
 	CreateBuildTrigger    []gax.CallOption
 	GetBuildTrigger       []gax.CallOption
 	ListBuildTriggers     []gax.CallOption
@@ -103,6 +104,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		CancelBuild:        []gax.CallOption{},
 		RetryBuild:         []gax.CallOption{},
+		ApproveBuild:       []gax.CallOption{},
 		CreateBuildTrigger: []gax.CallOption{},
 		GetBuildTrigger: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -185,6 +187,8 @@ type internalClient interface {
 	CancelBuild(context.Context, *cloudbuildpb.CancelBuildRequest, ...gax.CallOption) (*cloudbuildpb.Build, error)
 	RetryBuild(context.Context, *cloudbuildpb.RetryBuildRequest, ...gax.CallOption) (*RetryBuildOperation, error)
 	RetryBuildOperation(name string) *RetryBuildOperation
+	ApproveBuild(context.Context, *cloudbuildpb.ApproveBuildRequest, ...gax.CallOption) (*ApproveBuildOperation, error)
+	ApproveBuildOperation(name string) *ApproveBuildOperation
 	CreateBuildTrigger(context.Context, *cloudbuildpb.CreateBuildTriggerRequest, ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error)
 	GetBuildTrigger(context.Context, *cloudbuildpb.GetBuildTriggerRequest, ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error)
 	ListBuildTriggers(context.Context, *cloudbuildpb.ListBuildTriggersRequest, ...gax.CallOption) *BuildTriggerIterator
@@ -193,11 +197,14 @@ type internalClient interface {
 	RunBuildTrigger(context.Context, *cloudbuildpb.RunBuildTriggerRequest, ...gax.CallOption) (*RunBuildTriggerOperation, error)
 	RunBuildTriggerOperation(name string) *RunBuildTriggerOperation
 	ReceiveTriggerWebhook(context.Context, *cloudbuildpb.ReceiveTriggerWebhookRequest, ...gax.CallOption) (*cloudbuildpb.ReceiveTriggerWebhookResponse, error)
-	CreateWorkerPool(context.Context, *cloudbuildpb.CreateWorkerPoolRequest, ...gax.CallOption) (*cloudbuildpb.WorkerPool, error)
+	CreateWorkerPool(context.Context, *cloudbuildpb.CreateWorkerPoolRequest, ...gax.CallOption) (*CreateWorkerPoolOperation, error)
+	CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation
 	GetWorkerPool(context.Context, *cloudbuildpb.GetWorkerPoolRequest, ...gax.CallOption) (*cloudbuildpb.WorkerPool, error)
-	DeleteWorkerPool(context.Context, *cloudbuildpb.DeleteWorkerPoolRequest, ...gax.CallOption) error
-	UpdateWorkerPool(context.Context, *cloudbuildpb.UpdateWorkerPoolRequest, ...gax.CallOption) (*cloudbuildpb.WorkerPool, error)
-	ListWorkerPools(context.Context, *cloudbuildpb.ListWorkerPoolsRequest, ...gax.CallOption) (*cloudbuildpb.ListWorkerPoolsResponse, error)
+	DeleteWorkerPool(context.Context, *cloudbuildpb.DeleteWorkerPoolRequest, ...gax.CallOption) (*DeleteWorkerPoolOperation, error)
+	DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation
+	UpdateWorkerPool(context.Context, *cloudbuildpb.UpdateWorkerPoolRequest, ...gax.CallOption) (*UpdateWorkerPoolOperation, error)
+	UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation
+	ListWorkerPools(context.Context, *cloudbuildpb.ListWorkerPoolsRequest, ...gax.CallOption) *WorkerPoolIterator
 }
 
 // Client is a client for interacting with Cloud Build API.
@@ -321,6 +328,22 @@ func (c *Client) RetryBuildOperation(name string) *RetryBuildOperation {
 	return c.internalClient.RetryBuildOperation(name)
 }
 
+// ApproveBuild approves or rejects a pending build.
+//
+// If approved, the returned LRO will be analogous to the LRO returned from
+// a CreateBuild call.
+//
+// If rejected, the returned LRO will be immediately done.
+func (c *Client) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
+	return c.internalClient.ApproveBuild(ctx, req, opts...)
+}
+
+// ApproveBuildOperation returns a new ApproveBuildOperation from a given name.
+// The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
+func (c *Client) ApproveBuildOperation(name string) *ApproveBuildOperation {
+	return c.internalClient.ApproveBuildOperation(name)
+}
+
 // CreateBuildTrigger creates a new BuildTrigger.
 //
 // This API is experimental.
@@ -373,38 +396,46 @@ func (c *Client) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildpb.Re
 	return c.internalClient.ReceiveTriggerWebhook(ctx, req, opts...)
 }
 
-// CreateWorkerPool creates a WorkerPool to run the builds, and returns the new worker pool.
-//
-// This API is experimental.
-func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+// CreateWorkerPool creates a WorkerPool.
+func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*CreateWorkerPoolOperation, error) {
 	return c.internalClient.CreateWorkerPool(ctx, req, opts...)
 }
 
-// GetWorkerPool returns information about a WorkerPool.
-//
-// This API is experimental.
+// CreateWorkerPoolOperation returns a new CreateWorkerPoolOperation from a given name.
+// The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
+func (c *Client) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
+	return c.internalClient.CreateWorkerPoolOperation(name)
+}
+
+// GetWorkerPool returns details of a WorkerPool.
 func (c *Client) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
 	return c.internalClient.GetWorkerPool(ctx, req, opts...)
 }
 
-// DeleteWorkerPool deletes a WorkerPool by its project ID and WorkerPool name.
-//
-// This API is experimental.
-func (c *Client) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) error {
+// DeleteWorkerPool deletes a WorkerPool.
+func (c *Client) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) (*DeleteWorkerPoolOperation, error) {
 	return c.internalClient.DeleteWorkerPool(ctx, req, opts...)
 }
 
-// UpdateWorkerPool update a WorkerPool.
-//
-// This API is experimental.
-func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+// DeleteWorkerPoolOperation returns a new DeleteWorkerPoolOperation from a given name.
+// The name must be that of a previously created DeleteWorkerPoolOperation, possibly from a different process.
+func (c *Client) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
+	return c.internalClient.DeleteWorkerPoolOperation(name)
+}
+
+// UpdateWorkerPool updates a WorkerPool.
+func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*UpdateWorkerPoolOperation, error) {
 	return c.internalClient.UpdateWorkerPool(ctx, req, opts...)
 }
 
-// ListWorkerPools list project’s WorkerPools.
-//
-// This API is experimental.
-func (c *Client) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) (*cloudbuildpb.ListWorkerPoolsResponse, error) {
+// UpdateWorkerPoolOperation returns a new UpdateWorkerPoolOperation from a given name.
+// The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
+func (c *Client) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
+	return c.internalClient.UpdateWorkerPoolOperation(name)
+}
+
+// ListWorkerPools lists WorkerPools.
+func (c *Client) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
 	return c.internalClient.ListWorkerPools(ctx, req, opts...)
 }
 
@@ -562,11 +593,13 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 	it := &BuildIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.Build, string, error) {
-		var resp *cloudbuildpb.ListBuildsResponse
-		req.PageToken = pageToken
+		resp := &cloudbuildpb.ListBuildsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -589,9 +622,11 @@ func (c *gRPCClient) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuild
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -635,6 +670,24 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 		return nil, err
 	}
 	return &RetryBuildOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ApproveBuild[0:len((*c.CallOptions).ApproveBuild):len((*c.CallOptions).ApproveBuild)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ApproveBuild(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ApproveBuildOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -688,11 +741,13 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 	it := &BuildTriggerIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.BuildTrigger, string, error) {
-		var resp *cloudbuildpb.ListBuildTriggersResponse
-		req.PageToken = pageToken
+		resp := &cloudbuildpb.ListBuildTriggersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,9 +770,11 @@ func (c *gRPCClient) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -798,15 +855,16 @@ func (c *gRPCClient) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildp
 	return resp, nil
 }
 
-func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*CreateWorkerPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateWorkerPool[0:len((*c.CallOptions).CreateWorkerPool):len((*c.CallOptions).CreateWorkerPool)], opts...)
-	var resp *cloudbuildpb.WorkerPool
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateWorkerPool(ctx, req, settings.GRPC...)
@@ -815,7 +873,9 @@ func (c *gRPCClient) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.Cre
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &CreateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
@@ -824,7 +884,8 @@ func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWorkerPool[0:len((*c.CallOptions).GetWorkerPool):len((*c.CallOptions).GetWorkerPool)], opts...)
 	var resp *cloudbuildpb.WorkerPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -838,31 +899,39 @@ func (c *gRPCClient) GetWorkerPool(ctx context.Context, req *cloudbuildpb.GetWor
 	return resp, nil
 }
 
-func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteWorkerPoolRequest, opts ...gax.CallOption) (*DeleteWorkerPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteWorkerPool[0:len((*c.CallOptions).DeleteWorkerPool):len((*c.CallOptions).DeleteWorkerPool)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		_, err = c.client.DeleteWorkerPool(ctx, req, settings.GRPC...)
+		resp, err = c.client.DeleteWorkerPool(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
-	return err
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*UpdateWorkerPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "worker_pool.name", url.QueryEscape(req.GetWorkerPool().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateWorkerPool[0:len((*c.CallOptions).UpdateWorkerPool):len((*c.CallOptions).UpdateWorkerPool)], opts...)
-	var resp *cloudbuildpb.WorkerPool
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateWorkerPool(ctx, req, settings.GRPC...)
@@ -871,27 +940,122 @@ func (c *gRPCClient) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.Upd
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &UpdateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
-func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) (*cloudbuildpb.ListWorkerPoolsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.ListWorkerPoolsRequest, opts ...gax.CallOption) *WorkerPoolIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListWorkerPools[0:len((*c.CallOptions).ListWorkerPools):len((*c.CallOptions).ListWorkerPools)], opts...)
-	var resp *cloudbuildpb.ListWorkerPoolsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListWorkerPools(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
+	it := &WorkerPoolIterator{}
+	req = proto.Clone(req).(*cloudbuildpb.ListWorkerPoolsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudbuildpb.WorkerPool, string, error) {
+		resp := &cloudbuildpb.ListWorkerPoolsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListWorkerPools(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWorkerPools(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ApproveBuildOperation manages a long-running operation from ApproveBuild.
+type ApproveBuildOperation struct {
+	lro *longrunning.Operation
+}
+
+// ApproveBuildOperation returns a new ApproveBuildOperation from a given name.
+// The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
+func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
+	return &ApproveBuildOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ApproveBuildOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
+	var resp cloudbuildpb.Build
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ApproveBuildOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
+	var resp cloudbuildpb.Build
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ApproveBuildOperation) Metadata() (*cloudbuildpb.BuildOperationMetadata, error) {
+	var meta cloudbuildpb.BuildOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ApproveBuildOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ApproveBuildOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateBuildOperation manages a long-running operation from CreateBuild.
@@ -960,6 +1124,133 @@ func (op *CreateBuildOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateBuildOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateWorkerPoolOperation manages a long-running operation from CreateWorkerPool.
+type CreateWorkerPoolOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateWorkerPoolOperation returns a new CreateWorkerPoolOperation from a given name.
+// The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
+func (c *gRPCClient) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
+	return &CreateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateWorkerPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateWorkerPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateWorkerPoolOperation) Metadata() (*cloudbuildpb.CreateWorkerPoolOperationMetadata, error) {
+	var meta cloudbuildpb.CreateWorkerPoolOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateWorkerPoolOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateWorkerPoolOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteWorkerPoolOperation manages a long-running operation from DeleteWorkerPool.
+type DeleteWorkerPoolOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteWorkerPoolOperation returns a new DeleteWorkerPoolOperation from a given name.
+// The name must be that of a previously created DeleteWorkerPoolOperation, possibly from a different process.
+func (c *gRPCClient) DeleteWorkerPoolOperation(name string) *DeleteWorkerPoolOperation {
+	return &DeleteWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteWorkerPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteWorkerPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteWorkerPoolOperation) Metadata() (*cloudbuildpb.DeleteWorkerPoolOperationMetadata, error) {
+	var meta cloudbuildpb.DeleteWorkerPoolOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteWorkerPoolOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteWorkerPoolOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1101,6 +1392,75 @@ func (op *RunBuildTriggerOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateWorkerPoolOperation manages a long-running operation from UpdateWorkerPool.
+type UpdateWorkerPoolOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateWorkerPoolOperation returns a new UpdateWorkerPoolOperation from a given name.
+// The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
+func (c *gRPCClient) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
+	return &UpdateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateWorkerPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateWorkerPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateWorkerPoolOperation) Metadata() (*cloudbuildpb.UpdateWorkerPoolOperationMetadata, error) {
+	var meta cloudbuildpb.UpdateWorkerPoolOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateWorkerPoolOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateWorkerPoolOperation) Name() string {
+	return op.lro.Name()
+}
+
 // BuildIterator manages a stream of *cloudbuildpb.Build.
 type BuildIterator struct {
 	items    []*cloudbuildpb.Build
@@ -1190,6 +1550,53 @@ func (it *BuildTriggerIterator) bufLen() int {
 }
 
 func (it *BuildTriggerIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// WorkerPoolIterator manages a stream of *cloudbuildpb.WorkerPool.
+type WorkerPoolIterator struct {
+	items    []*cloudbuildpb.WorkerPool
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*cloudbuildpb.WorkerPool, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *WorkerPoolIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *WorkerPoolIterator) Next() (*cloudbuildpb.WorkerPool, error) {
+	var item *cloudbuildpb.WorkerPool
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *WorkerPoolIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *WorkerPoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

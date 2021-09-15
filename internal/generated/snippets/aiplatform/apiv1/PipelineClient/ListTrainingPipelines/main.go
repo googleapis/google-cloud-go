@@ -36,6 +36,7 @@ func main() {
 
 	req := &aiplatformpb.ListTrainingPipelinesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListTrainingPipelinesRequest.
 	}
 	it := c.ListTrainingPipelines(ctx, req)
 	for {

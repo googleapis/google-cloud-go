@@ -35,6 +35,7 @@ func main() {
 
 	req := &securitycenterpb.CreateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1beta1#CreateFindingRequest.
 	}
 	resp, err := c.CreateFinding(ctx, req)
 	if err != nil {

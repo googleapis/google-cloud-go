@@ -35,6 +35,7 @@ func main() {
 
 	req := &workflowspb.UpdateWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#UpdateWorkflowRequest.
 	}
 	op, err := c.UpdateWorkflow(ctx, req)
 	if err != nil {

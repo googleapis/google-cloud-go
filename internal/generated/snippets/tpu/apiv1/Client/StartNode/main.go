@@ -35,6 +35,7 @@ func main() {
 
 	req := &tpupb.StartNodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#StartNodeRequest.
 	}
 	op, err := c.StartNode(ctx, req)
 	if err != nil {

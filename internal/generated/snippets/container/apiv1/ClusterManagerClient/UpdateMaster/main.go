@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.UpdateMasterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#UpdateMasterRequest.
 	}
 	resp, err := c.UpdateMaster(ctx, req)
 	if err != nil {

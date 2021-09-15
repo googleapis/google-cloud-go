@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.UnregisterSubscriberRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UnregisterSubscriberRequest.
 	}
 	resp, err := c.UnregisterSubscriber(ctx, req)
 	if err != nil {

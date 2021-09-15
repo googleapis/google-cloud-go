@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.GetConversationProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationProfileRequest.
 	}
 	resp, err := c.GetConversationProfile(ctx, req)
 	if err != nil {

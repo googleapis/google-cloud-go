@@ -35,6 +35,7 @@ func main() {
 
 	req := &artifactregistrypb.DeleteRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeleteRepositoryRequest.
 	}
 	op, err := c.DeleteRepository(ctx, req)
 	if err != nil {

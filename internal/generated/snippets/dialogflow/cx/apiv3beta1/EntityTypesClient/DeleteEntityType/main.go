@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteEntityTypeRequest.
 	}
 	err = c.DeleteEntityType(ctx, req)
 	if err != nil {

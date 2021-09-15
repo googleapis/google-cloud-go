@@ -35,6 +35,7 @@ func main() {
 
 	req := &accessapprovalpb.ApproveApprovalRequestMessage{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/accessapproval/v1#ApproveApprovalRequestMessage.
 	}
 	resp, err := c.ApproveApprovalRequest(ctx, req)
 	if err != nil {

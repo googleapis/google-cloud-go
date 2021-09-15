@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.CreateCustomMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomMetricRequest.
 	}
 	resp, err := c.CreateCustomMetric(ctx, req)
 	if err != nil {

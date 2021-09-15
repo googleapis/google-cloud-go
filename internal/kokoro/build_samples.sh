@@ -54,7 +54,7 @@ for i in $(find . -name go.mod); do
     popd
     continue
   fi
-  # TODO(codyoss): if we spilt out modules someday we should make this programmatic.
+  # TODO(codyoss): if we split out modules someday we should make this programmatic.
   go mod edit -replace cloud.google.com/go=$gcwd
   go mod edit -replace cloud.google.com/go/bigtable=$gcwd/bigtable
   go mod edit -replace cloud.google.com/go/bigquery=$gcwd/bigquery
@@ -62,10 +62,11 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/firestore=$gcwd/firestore
   go mod edit -replace cloud.google.com/go/logging=$gcwd/logging
   go mod edit -replace cloud.google.com/go/pubsub=$gcwd/pubsub
+  go mod edit -replace cloud.google.com/go/pubsublite=$gcwd/pubsublite
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
   go mod edit -replace cloud.google.com/go/storage=$gcwd/storage
   echo "Downloading modules"
-  go mod download
+  go mod tidy
   echo "Building module $i"
   go build ./...
   popd

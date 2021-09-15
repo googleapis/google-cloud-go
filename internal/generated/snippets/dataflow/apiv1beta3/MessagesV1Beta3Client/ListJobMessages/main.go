@@ -36,6 +36,7 @@ func main() {
 
 	req := &dataflowpb.ListJobMessagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListJobMessagesRequest.
 	}
 	it := c.ListJobMessages(ctx, req)
 	for {

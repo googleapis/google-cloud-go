@@ -21,10 +21,14 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newSubnetworksClientHook clientHook
@@ -57,17 +62,17 @@ type internalSubnetworksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AggregatedList(context.Context, *computepb.AggregatedListSubnetworksRequest, ...gax.CallOption) (*computepb.SubnetworkAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
-	ExpandIpCidrRange(context.Context, *computepb.ExpandIpCidrRangeSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListSubnetworksRequest, ...gax.CallOption) *SubnetworksScopedListPairIterator
+	Delete(context.Context, *computepb.DeleteSubnetworkRequest, ...gax.CallOption) (*Operation, error)
+	ExpandIpCidrRange(context.Context, *computepb.ExpandIpCidrRangeSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSubnetworkRequest, ...gax.CallOption) (*computepb.Subnetwork, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicySubnetworkRequest, ...gax.CallOption) (*computepb.Policy, error)
-	Insert(context.Context, *computepb.InsertSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListSubnetworksRequest, ...gax.CallOption) (*computepb.SubnetworkList, error)
-	ListUsable(context.Context, *computepb.ListUsableSubnetworksRequest, ...gax.CallOption) (*computepb.UsableSubnetworksAggregatedList, error)
-	Patch(context.Context, *computepb.PatchSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertSubnetworkRequest, ...gax.CallOption) (*Operation, error)
+	List(context.Context, *computepb.ListSubnetworksRequest, ...gax.CallOption) *SubnetworkIterator
+	ListUsable(context.Context, *computepb.ListUsableSubnetworksRequest, ...gax.CallOption) *UsableSubnetworkIterator
+	Patch(context.Context, *computepb.PatchSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicySubnetworkRequest, ...gax.CallOption) (*computepb.Policy, error)
-	SetPrivateIpGoogleAccess(context.Context, *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, ...gax.CallOption) (*computepb.Operation, error)
+	SetPrivateIpGoogleAccess(context.Context, *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsSubnetworkRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -106,17 +111,17 @@ func (c *SubnetworksClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of subnetworks.
-func (c *SubnetworksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkAggregatedList, error) {
+func (c *SubnetworksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified subnetwork.
-func (c *SubnetworksClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
 // ExpandIpCidrRange expands the IP CIDR range of the subnetwork to a specified value.
-func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.ExpandIpCidrRange(ctx, req, opts...)
 }
 
@@ -131,22 +136,22 @@ func (c *SubnetworksClient) GetIamPolicy(ctx context.Context, req *computepb.Get
 }
 
 // Insert creates a subnetwork in the specified project using the data included in the request.
-func (c *SubnetworksClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List retrieves a list of subnetworks available to the specified project.
-func (c *SubnetworksClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkList, error) {
+func (c *SubnetworksClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) *SubnetworkIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
 // ListUsable retrieves an aggregated list of all usable subnetworks in the project.
-func (c *SubnetworksClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) (*computepb.UsableSubnetworksAggregatedList, error) {
+func (c *SubnetworksClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
 	return c.internalClient.ListUsable(ctx, req, opts...)
 }
 
 // Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
-func (c *SubnetworksClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
@@ -156,7 +161,7 @@ func (c *SubnetworksClient) SetIamPolicy(ctx context.Context, req *computepb.Set
 }
 
 // SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
-func (c *SubnetworksClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *SubnetworksClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetPrivateIpGoogleAccess(ctx, req, opts...)
 }
 
@@ -198,8 +203,8 @@ func NewSubnetworksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultSubnetworksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -230,78 +235,101 @@ func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of subnetworks.
-func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
+	it := &SubnetworksScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListSubnetworksRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.SubnetworkAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]SubnetworksScopedListPair, string, error) {
+		resp := &computepb.SubnetworkAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]SubnetworksScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, SubnetworksScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified subnetwork.
-func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
@@ -312,7 +340,7 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -329,8 +357,8 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -341,12 +369,16 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // ExpandIpCidrRange expands the IP CIDR range of the subnetwork to a specified value.
-func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksExpandIpCidrRangeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -380,8 +412,8 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -392,21 +424,19 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
 func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -423,8 +453,8 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -440,12 +470,6 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
@@ -456,7 +480,7 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -473,8 +497,8 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -489,8 +513,8 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 }
 
 // Insert creates a subnetwork in the specified project using the data included in the request.
-func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -524,8 +548,8 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -536,136 +560,184 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of subnetworks available to the specified project.
-func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) *SubnetworkIterator {
+	it := &SubnetworkIterator{}
+	req = proto.Clone(req).(*computepb.ListSubnetworksRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.SubnetworkList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.Subnetwork, string, error) {
+		resp := &computepb.SubnetworkList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ListUsable retrieves an aggregated list of all usable subnetworks in the project.
-func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) (*computepb.UsableSubnetworksAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) *UsableSubnetworkIterator {
+	it := &UsableSubnetworkIterator{}
+	req = proto.Clone(req).(*computepb.ListUsableSubnetworksRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.UsableSubnetworksAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.UsableSubnetwork, string, error) {
+		resp := &computepb.UsableSubnetworksAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
-func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -702,8 +774,8 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -714,12 +786,16 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -746,8 +822,8 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -762,8 +838,8 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 }
 
 // SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
-func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksSetPrivateIpGoogleAccessRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -797,8 +873,8 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -809,12 +885,16 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsSubnetworkRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -841,8 +921,8 @@ func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -854,4 +934,151 @@ func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *com
 	rsp := &computepb.TestPermissionsResponse{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// SubnetworkIterator manages a stream of *computepb.Subnetwork.
+type SubnetworkIterator struct {
+	items    []*computepb.Subnetwork
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Subnetwork, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SubnetworkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SubnetworkIterator) Next() (*computepb.Subnetwork, error) {
+	var item *computepb.Subnetwork
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SubnetworkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SubnetworkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SubnetworksScopedListPair is a holder type for string/*computepb.SubnetworksScopedList map entries
+type SubnetworksScopedListPair struct {
+	Key   string
+	Value *computepb.SubnetworksScopedList
+}
+
+// SubnetworksScopedListPairIterator manages a stream of SubnetworksScopedListPair.
+type SubnetworksScopedListPairIterator struct {
+	items    []SubnetworksScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []SubnetworksScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SubnetworksScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SubnetworksScopedListPairIterator) Next() (SubnetworksScopedListPair, error) {
+	var item SubnetworksScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SubnetworksScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SubnetworksScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// UsableSubnetworkIterator manages a stream of *computepb.UsableSubnetwork.
+type UsableSubnetworkIterator struct {
+	items    []*computepb.UsableSubnetwork
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.UsableSubnetwork, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *UsableSubnetworkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *UsableSubnetworkIterator) Next() (*computepb.UsableSubnetwork, error) {
+	var item *computepb.UsableSubnetwork
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *UsableSubnetworkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *UsableSubnetworkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

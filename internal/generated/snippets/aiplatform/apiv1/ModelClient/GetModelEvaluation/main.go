@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetModelEvaluationRequest.
 	}
 	resp, err := c.GetModelEvaluation(ctx, req)
 	if err != nil {

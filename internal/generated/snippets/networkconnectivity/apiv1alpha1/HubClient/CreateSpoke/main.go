@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkconnectivitypb.CreateSpokeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#CreateSpokeRequest.
 	}
 	op, err := c.CreateSpoke(ctx, req)
 	if err != nil {

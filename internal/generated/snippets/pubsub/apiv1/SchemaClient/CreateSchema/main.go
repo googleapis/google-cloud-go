@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.CreateSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#CreateSchemaRequest.
 	}
 	resp, err := c.CreateSchema(ctx, req)
 	if err != nil {

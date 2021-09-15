@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Delete() {
 
 	req := &computepb.DeleteRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Get() {
 
 	req := &computepb.GetRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleRegionNetworkEndpointGroupsClient_Insert() {
 
 	req := &computepb.InsertRegionNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -102,11 +106,18 @@ func ExampleRegionNetworkEndpointGroupsClient_List() {
 
 	req := &computepb.ListRegionNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionNetworkEndpointGroupsRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }

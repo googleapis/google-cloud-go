@@ -36,6 +36,7 @@ func main() {
 
 	req := &clouddmspb.ListMigrationJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#ListMigrationJobsRequest.
 	}
 	it := c.ListMigrationJobs(ctx, req)
 	for {

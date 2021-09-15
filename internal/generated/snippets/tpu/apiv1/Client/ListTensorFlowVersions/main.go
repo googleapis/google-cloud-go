@@ -36,6 +36,7 @@ func main() {
 
 	req := &tpupb.ListTensorFlowVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListTensorFlowVersionsRequest.
 	}
 	it := c.ListTensorFlowVersions(ctx, req)
 	for {

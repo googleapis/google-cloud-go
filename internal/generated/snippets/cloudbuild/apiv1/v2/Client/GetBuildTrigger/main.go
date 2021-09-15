@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.GetBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetBuildTriggerRequest.
 	}
 	resp, err := c.GetBuildTrigger(ctx, req)
 	if err != nil {

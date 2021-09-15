@@ -35,6 +35,7 @@ func main() {
 
 	req := &transcoderpb.DeleteJobTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1#DeleteJobTemplateRequest.
 	}
 	err = c.DeleteJobTemplate(ctx, req)
 	if err != nil {

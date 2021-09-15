@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteEndpointRequest.
 	}
 	op, err := c.DeleteEndpoint(ctx, req)
 	if err != nil {

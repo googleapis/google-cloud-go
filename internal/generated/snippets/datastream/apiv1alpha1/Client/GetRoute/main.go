@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.GetRouteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetRouteRequest.
 	}
 	resp, err := c.GetRoute(ctx, req)
 	if err != nil {

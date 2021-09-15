@@ -35,6 +35,7 @@ func main() {
 
 	req := &securitycenterpb.UpdateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateFindingRequest.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
 	if err != nil {

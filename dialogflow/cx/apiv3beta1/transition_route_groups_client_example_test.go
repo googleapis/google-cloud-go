@@ -46,6 +46,7 @@ func ExampleTransitionRouteGroupsClient_ListTransitionRouteGroups() {
 
 	req := &cxpb.ListTransitionRouteGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListTransitionRouteGroupsRequest.
 	}
 	it := c.ListTransitionRouteGroups(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleTransitionRouteGroupsClient_GetTransitionRouteGroup() {
 
 	req := &cxpb.GetTransitionRouteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetTransitionRouteGroupRequest.
 	}
 	resp, err := c.GetTransitionRouteGroup(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleTransitionRouteGroupsClient_CreateTransitionRouteGroup() {
 
 	req := &cxpb.CreateTransitionRouteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateTransitionRouteGroupRequest.
 	}
 	resp, err := c.CreateTransitionRouteGroup(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleTransitionRouteGroupsClient_UpdateTransitionRouteGroup() {
 
 	req := &cxpb.UpdateTransitionRouteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateTransitionRouteGroupRequest.
 	}
 	resp, err := c.UpdateTransitionRouteGroup(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleTransitionRouteGroupsClient_DeleteTransitionRouteGroup() {
 
 	req := &cxpb.DeleteTransitionRouteGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteTransitionRouteGroupRequest.
 	}
 	err = c.DeleteTransitionRouteGroup(ctx, req)
 	if err != nil {

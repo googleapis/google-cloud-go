@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.BatchDeleteJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#BatchDeleteJobsRequest.
 	}
 	op, err := c.BatchDeleteJobs(ctx, req)
 	if err != nil {

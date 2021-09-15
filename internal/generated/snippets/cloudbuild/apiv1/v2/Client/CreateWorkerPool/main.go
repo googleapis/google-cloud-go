@@ -35,8 +35,14 @@ func main() {
 
 	req := &cloudbuildpb.CreateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateWorkerPoolRequest.
 	}
-	resp, err := c.CreateWorkerPool(ctx, req)
+	op, err := c.CreateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

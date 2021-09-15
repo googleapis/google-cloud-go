@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleRegionOperationsClient_Delete() {
 
 	req := &computepb.DeleteRegionOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleRegionOperationsClient_Get() {
 
 	req := &computepb.GetRegionOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionOperationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,13 +86,20 @@ func ExampleRegionOperationsClient_List() {
 
 	req := &computepb.ListRegionOperationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionOperationsRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRegionOperationsClient_Wait() {
@@ -102,6 +112,7 @@ func ExampleRegionOperationsClient_Wait() {
 
 	req := &computepb.WaitRegionOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitRegionOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

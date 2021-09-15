@@ -36,6 +36,7 @@ func main() {
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#ListExecutionsRequest.
 	}
 	it := c.ListExecutions(ctx, req)
 	for {

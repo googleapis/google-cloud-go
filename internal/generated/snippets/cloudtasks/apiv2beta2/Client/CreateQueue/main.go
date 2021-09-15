@@ -35,6 +35,7 @@ func main() {
 
 	req := &taskspb.CreateQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#CreateQueueRequest.
 	}
 	resp, err := c.CreateQueue(ctx, req)
 	if err != nil {

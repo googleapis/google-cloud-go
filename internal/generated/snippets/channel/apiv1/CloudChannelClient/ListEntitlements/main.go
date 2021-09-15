@@ -36,6 +36,7 @@ func main() {
 
 	req := &channelpb.ListEntitlementsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListEntitlementsRequest.
 	}
 	it := c.ListEntitlements(ctx, req)
 	for {

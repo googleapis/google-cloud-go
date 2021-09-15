@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#DeleteEnvironmentRequest.
 	}
 	op, err := c.DeleteEnvironment(ctx, req)
 	if err != nil {

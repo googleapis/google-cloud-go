@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.ExportFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ExportFlowRequest.
 	}
 	op, err := c.ExportFlow(ctx, req)
 	if err != nil {

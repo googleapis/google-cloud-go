@@ -46,6 +46,7 @@ func ExampleTenantClient_CreateTenant() {
 
 	req := &talentpb.CreateTenantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateTenantRequest.
 	}
 	resp, err := c.CreateTenant(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleTenantClient_GetTenant() {
 
 	req := &talentpb.GetTenantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#GetTenantRequest.
 	}
 	resp, err := c.GetTenant(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleTenantClient_UpdateTenant() {
 
 	req := &talentpb.UpdateTenantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#UpdateTenantRequest.
 	}
 	resp, err := c.UpdateTenant(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleTenantClient_DeleteTenant() {
 
 	req := &talentpb.DeleteTenantRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#DeleteTenantRequest.
 	}
 	err = c.DeleteTenant(ctx, req)
 	if err != nil {
@@ -120,6 +124,7 @@ func ExampleTenantClient_ListTenants() {
 
 	req := &talentpb.ListTenantsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#ListTenantsRequest.
 	}
 	it := c.ListTenants(ctx, req)
 	for {

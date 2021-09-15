@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.CreateFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateFirebaseLinkRequest.
 	}
 	resp, err := c.CreateFirebaseLink(ctx, req)
 	if err != nil {

@@ -1611,7 +1611,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 	doc := coll.NewDoc()
 	h.mustCreate(doc, integrationTestMap)
 
-	for _, tc := range []struct {
+	for idx, tc := range []struct {
 		collectionID           string
 		expectedPartitionCount int
 	}{
@@ -1621,12 +1621,15 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		{collectionID: coll.collectionID, expectedPartitionCount: 1},
 	} {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
-		partitions, err := colGroup.getPartitions(ctx, 10)
+		partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
 		if err != nil {
 			t.Fatalf("getPartitions: received unexpected error: %v", err)
 		}
 		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
-			t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
+			t.Errorf("Unexpected Partition Count:index:%d, got %d, want %d", idx, got, want)
+			for _, v := range partitions {
+				t.Errorf("Partition: %v, %v", v.startDoc, v.endDoc)
+			}
 		}
 	}
 }
@@ -1674,12 +1677,30 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
 	totalCount := 0
 	for _, query := range partitions {
-
 		allDocs, err := query.Documents(ctx).GetAll()
 		if err != nil {
 			t.Fatalf("GetAll(): received unexpected error: %v", err)
 		}
 		totalCount += len(allDocs)
+
+		// Verify that serialization round-trips. Check that the same results are
+		// returned even if we use the proto converted query
+		queryBytes, err := query.Serialize()
+		if err != nil {
+			t.Fatalf("Serialize error: %v", err)
+		}
+		q, err := iClient.CollectionGroup("DNE").Deserialize(queryBytes)
+		if err != nil {
+			t.Fatalf("Deserialize error: %v", err)
+		}
+
+		protoReturnedDocs, err := q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("GetAll error: %v", err)
+		}
+		if len(allDocs) != len(protoReturnedDocs) {
+			t.Fatalf("Expected document count to be the same on both query runs: %v", err)
+		}
 	}
 
 	if got, want := totalCount, documentCount; got != want {

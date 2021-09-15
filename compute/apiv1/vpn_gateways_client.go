@@ -21,10 +21,14 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -32,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newVpnGatewaysClientHook clientHook
@@ -53,13 +58,13 @@ type internalVpnGatewaysClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	AggregatedList(context.Context, *computepb.AggregatedListVpnGatewaysRequest, ...gax.CallOption) (*computepb.VpnGatewayAggregatedList, error)
-	Delete(context.Context, *computepb.DeleteVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListVpnGatewaysRequest, ...gax.CallOption) *VpnGatewaysScopedListPairIterator
+	Delete(context.Context, *computepb.DeleteVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetVpnGatewayRequest, ...gax.CallOption) (*computepb.VpnGateway, error)
 	GetStatus(context.Context, *computepb.GetStatusVpnGatewayRequest, ...gax.CallOption) (*computepb.VpnGatewaysGetStatusResponse, error)
-	Insert(context.Context, *computepb.InsertVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
-	List(context.Context, *computepb.ListVpnGatewaysRequest, ...gax.CallOption) (*computepb.VpnGatewayList, error)
-	SetLabels(context.Context, *computepb.SetLabelsVpnGatewayRequest, ...gax.CallOption) (*computepb.Operation, error)
+	Insert(context.Context, *computepb.InsertVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
+	List(context.Context, *computepb.ListVpnGatewaysRequest, ...gax.CallOption) *VpnGatewayIterator
+	SetLabels(context.Context, *computepb.SetLabelsVpnGatewayRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsVpnGatewayRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
@@ -98,12 +103,12 @@ func (c *VpnGatewaysClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of VPN gateways.
-func (c *VpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.VpnGatewayAggregatedList, error) {
+func (c *VpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified VPN gateway.
-func (c *VpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
@@ -118,17 +123,17 @@ func (c *VpnGatewaysClient) GetStatus(ctx context.Context, req *computepb.GetSta
 }
 
 // Insert creates a VPN gateway in the specified project and region using the data included in the request.
-func (c *VpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List retrieves a list of VPN gateways available to the specified project and region.
-func (c *VpnGatewaysClient) List(ctx context.Context, req *computepb.ListVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.VpnGatewayList, error) {
+func (c *VpnGatewaysClient) List(ctx context.Context, req *computepb.ListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewayIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
 // SetLabels sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
-func (c *VpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *VpnGatewaysClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
@@ -170,8 +175,8 @@ func NewVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultVpnGatewaysRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -202,78 +207,101 @@ func (c *vpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 }
 
 // AggregatedList retrieves an aggregated list of VPN gateways.
-func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.VpnGatewayAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnGateways", req.GetProject())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.IncludeAllScopes != nil {
-		params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
+	it := &VpnGatewaysScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListVpnGatewaysRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.VpnGatewayAggregatedList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]VpnGatewaysScopedListPair, string, error) {
+		resp := &computepb.VpnGatewayAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/vpnGateways", req.GetProject())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+
+		elems := make([]VpnGatewaysScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, VpnGatewaysScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified VPN gateway.
-func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
@@ -284,7 +312,7 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -301,8 +329,8 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -313,21 +341,19 @@ func (c *vpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // Get returns the specified VPN gateway. Gets a list of available VPN gateways by making a list() request.
 func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.VpnGateway, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -344,8 +370,8 @@ func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGa
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -361,16 +387,10 @@ func (c *vpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetVpnGa
 
 // GetStatus returns the status for the specified VPN gateway.
 func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.GetStatusVpnGatewayRequest, opts ...gax.CallOption) (*computepb.VpnGatewaysGetStatusResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways/%v/getStatus", req.GetProject(), req.GetRegion(), req.GetVpnGateway())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -387,8 +407,8 @@ func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.Ge
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -403,8 +423,8 @@ func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.Ge
 }
 
 // Insert creates a VPN gateway in the specified project and region using the data included in the request.
-func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -438,8 +458,8 @@ func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -450,74 +470,100 @@ func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // List retrieves a list of VPN gateways available to the specified project and region.
-func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.VpnGatewayList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways", req.GetProject(), req.GetRegion())
-
-	params := url.Values{}
-	if req != nil && req.Filter != nil {
-		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
-	}
-	if req != nil && req.MaxResults != nil {
-		params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
-	}
-	if req != nil && req.OrderBy != nil {
-		params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
-	}
-	if req != nil && req.PageToken != nil {
-		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-	}
-
-	baseUrl.RawQuery = params.Encode()
-
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
-	if err != nil {
-		return nil, err
-	}
-	httpReq = httpReq.WithContext(ctx)
-	// Set the headers
-	for k, v := range c.xGoogMetadata {
-		httpReq.Header[k] = v
-	}
-	httpReq.Header["Content-Type"] = []string{"application/json"}
-
-	httpRsp, err := c.httpClient.Do(httpReq)
-	if err != nil {
-		return nil, err
-	}
-	defer httpRsp.Body.Close()
-
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
-	}
-
-	buf, err := ioutil.ReadAll(httpRsp.Body)
-	if err != nil {
-		return nil, err
-	}
-
+func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewayIterator {
+	it := &VpnGatewayIterator{}
+	req = proto.Clone(req).(*computepb.ListVpnGatewaysRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	rsp := &computepb.VpnGatewayList{}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VpnGateway, string, error) {
+		resp := &computepb.VpnGatewayList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/vpnGateways", req.GetProject(), req.GetRegion())
 
-	return rsp, unm.Unmarshal(buf, rsp)
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return nil, "", err
+		}
+
+		// Set the headers
+		for k, v := range c.xGoogMetadata {
+			httpReq.Header[k] = v
+		}
+
+		httpReq.Header["Content-Type"] = []string{"application/json"}
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return nil, "", err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return nil, "", err
+		}
+
+		unm.Unmarshal(buf, resp)
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // SetLabels sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
-func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -551,8 +597,8 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -563,12 +609,16 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -595,8 +645,8 @@ func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *com
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -608,4 +658,104 @@ func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *com
 	rsp := &computepb.TestPermissionsResponse{}
 
 	return rsp, unm.Unmarshal(buf, rsp)
+}
+
+// VpnGatewayIterator manages a stream of *computepb.VpnGateway.
+type VpnGatewayIterator struct {
+	items    []*computepb.VpnGateway
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VpnGateway, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *VpnGatewayIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *VpnGatewayIterator) Next() (*computepb.VpnGateway, error) {
+	var item *computepb.VpnGateway
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *VpnGatewayIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *VpnGatewayIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// VpnGatewaysScopedListPair is a holder type for string/*computepb.VpnGatewaysScopedList map entries
+type VpnGatewaysScopedListPair struct {
+	Key   string
+	Value *computepb.VpnGatewaysScopedList
+}
+
+// VpnGatewaysScopedListPairIterator manages a stream of VpnGatewaysScopedListPair.
+type VpnGatewaysScopedListPairIterator struct {
+	items    []VpnGatewaysScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []VpnGatewaysScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *VpnGatewaysScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *VpnGatewaysScopedListPairIterator) Next() (VpnGatewaysScopedListPair, error) {
+	var item VpnGatewaysScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *VpnGatewaysScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *VpnGatewaysScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }

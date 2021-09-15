@@ -35,6 +35,7 @@ func main() {
 
 	req := &translatepb.BatchTranslateTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#BatchTranslateTextRequest.
 	}
 	op, err := c.BatchTranslateText(ctx, req)
 	if err != nil {

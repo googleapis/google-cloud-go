@@ -60,6 +60,7 @@ func main() {
 }
 
 type server struct {
+	pb.UnimplementedSpannerBenchWrapperServer
 	c *spanner.Client
 }
 
@@ -80,8 +81,8 @@ func (s *server) Read(ctx context.Context, req *pb.ReadQuery) (*pb.EmptyResponse
 
 func (s *server) Insert(ctx context.Context, req *pb.InsertQuery) (*pb.EmptyResponse, error) {
 	var muts []*spanner.Mutation
-	for _, i := range req.Users {
-		muts = append(muts, spanner.Insert("sometable", []string{"name", "age"}, []interface{}{i.Name, i.Age}))
+	for _, i := range req.Singers {
+		muts = append(muts, spanner.Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{i.Id, i.FirstName, i.LastName}))
 	}
 	if _, err := s.c.Apply(context.Background(), muts); err != nil {
 		log.Fatal(err)

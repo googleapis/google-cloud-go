@@ -36,6 +36,7 @@ func main() {
 
 	req := &clouderrorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ListGroupStatsRequest.
 	}
 	it := c.ListGroupStats(ctx, req)
 	for {

@@ -183,11 +183,19 @@ func isStreamResetSignal(err error) bool {
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
-		// Keep inactive connections alive.
+		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			Time: 5 * time.Minute,
+			Time:                1 * time.Minute,
+			Timeout:             1 * time.Minute,
+			PermitWithoutStream: true,
 		})),
 	}
+}
+
+func streamClientOptions(region string) []option.ClientOption {
+	// To ensure most users don't hit the limit of 100 streams per connection, if
+	// they have a high number of topic partitions.
+	return append(defaultClientOptions(region), option.WithGRPCConnectionPool(8))
 }
 
 // NewAdminClient creates a new gapic AdminClient for a region.
@@ -197,17 +205,17 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewPublisherClient(ctx, options...)
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewSubscriberClient(ctx, options...)
 }
 
 func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewCursorClient(ctx, options...)
 }
 

@@ -46,6 +46,7 @@ func ExampleClient_CreateBuild() {
 
 	req := &cloudbuildpb.CreateBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildRequest.
 	}
 	op, err := c.CreateBuild(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleClient_GetBuild() {
 
 	req := &cloudbuildpb.GetBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetBuildRequest.
 	}
 	resp, err := c.GetBuild(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleClient_ListBuilds() {
 
 	req := &cloudbuildpb.ListBuildsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListBuildsRequest.
 	}
 	it := c.ListBuilds(ctx, req)
 	for {
@@ -114,6 +117,7 @@ func ExampleClient_CancelBuild() {
 
 	req := &cloudbuildpb.CancelBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CancelBuildRequest.
 	}
 	resp, err := c.CancelBuild(ctx, req)
 	if err != nil {
@@ -133,8 +137,34 @@ func ExampleClient_RetryBuild() {
 
 	req := &cloudbuildpb.RetryBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#RetryBuildRequest.
 	}
 	op, err := c.RetryBuild(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ApproveBuild() {
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ApproveBuildRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ApproveBuildRequest.
+	}
+	op, err := c.ApproveBuild(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -157,6 +187,7 @@ func ExampleClient_CreateBuildTrigger() {
 
 	req := &cloudbuildpb.CreateBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildTriggerRequest.
 	}
 	resp, err := c.CreateBuildTrigger(ctx, req)
 	if err != nil {
@@ -176,6 +207,7 @@ func ExampleClient_GetBuildTrigger() {
 
 	req := &cloudbuildpb.GetBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetBuildTriggerRequest.
 	}
 	resp, err := c.GetBuildTrigger(ctx, req)
 	if err != nil {
@@ -195,6 +227,7 @@ func ExampleClient_ListBuildTriggers() {
 
 	req := &cloudbuildpb.ListBuildTriggersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListBuildTriggersRequest.
 	}
 	it := c.ListBuildTriggers(ctx, req)
 	for {
@@ -220,6 +253,7 @@ func ExampleClient_DeleteBuildTrigger() {
 
 	req := &cloudbuildpb.DeleteBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteBuildTriggerRequest.
 	}
 	err = c.DeleteBuildTrigger(ctx, req)
 	if err != nil {
@@ -237,6 +271,7 @@ func ExampleClient_UpdateBuildTrigger() {
 
 	req := &cloudbuildpb.UpdateBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#UpdateBuildTriggerRequest.
 	}
 	resp, err := c.UpdateBuildTrigger(ctx, req)
 	if err != nil {
@@ -256,6 +291,7 @@ func ExampleClient_RunBuildTrigger() {
 
 	req := &cloudbuildpb.RunBuildTriggerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#RunBuildTriggerRequest.
 	}
 	op, err := c.RunBuildTrigger(ctx, req)
 	if err != nil {
@@ -280,6 +316,7 @@ func ExampleClient_ReceiveTriggerWebhook() {
 
 	req := &cloudbuildpb.ReceiveTriggerWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ReceiveTriggerWebhookRequest.
 	}
 	resp, err := c.ReceiveTriggerWebhook(ctx, req)
 	if err != nil {
@@ -299,8 +336,14 @@ func ExampleClient_CreateWorkerPool() {
 
 	req := &cloudbuildpb.CreateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateWorkerPoolRequest.
 	}
-	resp, err := c.CreateWorkerPool(ctx, req)
+	op, err := c.CreateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -318,6 +361,7 @@ func ExampleClient_GetWorkerPool() {
 
 	req := &cloudbuildpb.GetWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetWorkerPoolRequest.
 	}
 	resp, err := c.GetWorkerPool(ctx, req)
 	if err != nil {
@@ -337,8 +381,14 @@ func ExampleClient_DeleteWorkerPool() {
 
 	req := &cloudbuildpb.DeleteWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteWorkerPoolRequest.
 	}
-	err = c.DeleteWorkerPool(ctx, req)
+	op, err := c.DeleteWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -354,8 +404,14 @@ func ExampleClient_UpdateWorkerPool() {
 
 	req := &cloudbuildpb.UpdateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#UpdateWorkerPoolRequest.
 	}
-	resp, err := c.UpdateWorkerPool(ctx, req)
+	op, err := c.UpdateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -373,11 +429,18 @@ func ExampleClient_ListWorkerPools() {
 
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListWorkerPoolsRequest.
 	}
-	resp, err := c.ListWorkerPools(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListWorkerPools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }

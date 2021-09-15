@@ -71,6 +71,8 @@ The options are:
         Cloud Bigtable instance
     -creds string
         Path to the credentials file. If set, uses the application credentials in this file
+    -timeout string
+        Timeout (e.g. 10s, 100ms, 5m )
 
 Example:  cbt -instance=my-instance ls
 
@@ -100,6 +102,7 @@ options to your ~/.cbtrc file in the following format:
     admin-endpoint = hostname:port
     data-endpoint = hostname:port
     auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
+    timeout = 30s
 
 All values are optional and can be overridden at the command prompt.
 

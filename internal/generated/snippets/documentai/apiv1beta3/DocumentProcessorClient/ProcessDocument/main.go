@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.ProcessRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#ProcessRequest.
 	}
 	resp, err := c.ProcessDocument(ctx, req)
 	if err != nil {

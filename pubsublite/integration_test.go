@@ -148,6 +148,32 @@ func cleanUpSubscription(ctx context.Context, t *testing.T, admin *AdminClient, 
 	}
 }
 
+func validateNewSeekOperation(t *testing.T, subscription string, seekOp *SeekSubscriptionOperation) {
+	t.Helper()
+
+	if len(seekOp.Name()) == 0 {
+		t.Error("Seek operation path missing")
+	}
+	if got, want := seekOp.Done(), false; got != want {
+		t.Errorf("Operation.Done() got: %v, want: %v", got, want)
+	}
+
+	m, err := seekOp.Metadata()
+	if err != nil {
+		t.Errorf("Operation.Metadata() got err: %v", err)
+		return
+	}
+	if got, want := m.Target, subscription; !SubscriptionPathsEqual(got, want) {
+		t.Errorf("Metadata.Target got: %v, want: %v", got, want)
+	}
+	if len(m.Verb) == 0 {
+		t.Error("Metadata.Verb missing")
+	}
+	if m.CreateTime.IsZero() {
+		t.Error("Metadata.CreateTime missing")
+	}
+}
+
 func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	initIntegrationTest(t)
 
@@ -396,5 +422,12 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("Failed to update subscription: %v", err)
 	} else if diff := testutil.Diff(gotSubsConfig, wantUpdatedSubsConfig, configCmpOptions...); diff != "" {
 		t.Errorf("UpdateSubscription() got: -, want: +\n%s", diff)
+	}
+
+	// Seek subscription.
+	if seekOp, err := admin.SeekSubscription(ctx, subscriptionPath, Beginning); err != nil {
+		t.Errorf("SeekSubscription() got err: %v", err)
+	} else {
+		validateNewSeekOperation(t, subscriptionPath, seekOp)
 	}
 }

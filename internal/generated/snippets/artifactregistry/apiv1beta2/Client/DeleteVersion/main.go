@@ -35,6 +35,7 @@ func main() {
 
 	req := &artifactregistrypb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#DeleteVersionRequest.
 	}
 	op, err := c.DeleteVersion(ctx, req)
 	if err != nil {

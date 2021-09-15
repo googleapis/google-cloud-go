@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteGoogleAdsLinkRequest.
 	}
 	err = c.DeleteGoogleAdsLink(ctx, req)
 	if err != nil {

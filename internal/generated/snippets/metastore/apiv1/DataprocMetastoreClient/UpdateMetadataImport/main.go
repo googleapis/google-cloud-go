@@ -35,6 +35,7 @@ func main() {
 
 	req := &metastorepb.UpdateMetadataImportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1#UpdateMetadataImportRequest.
 	}
 	op, err := c.UpdateMetadataImport(ctx, req)
 	if err != nil {

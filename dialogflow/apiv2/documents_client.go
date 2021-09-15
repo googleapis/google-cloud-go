@@ -202,8 +202,13 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 
 // CreateDocument creates a new document.
 //
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
 func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	return c.internalClient.CreateDocument(ctx, req, opts...)
 }
@@ -216,8 +221,14 @@ func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOp
 
 // DeleteDocument deletes the specified document.
 //
-// Operation <response: google.protobuf.Empty,
-// metadata: KnowledgeOperationMetadata>
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	return c.internalClient.DeleteDocument(ctx, req, opts...)
 }
@@ -230,8 +241,13 @@ func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOp
 
 // UpdateDocument updates the specified document.
 //
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
 func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	return c.internalClient.UpdateDocument(ctx, req, opts...)
 }
@@ -247,11 +263,16 @@ func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOp
 // Note: Even when the content of the document has not changed, there still
 // may be side effects because of internal implementation changes.
 //
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
+//
 // Note: The projects.agent.knowledgeBases.documents resource is deprecated;
 // only use projects.knowledgeBases.documents.
-//
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
 func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
 	return c.internalClient.ReloadDocument(ctx, req, opts...)
 }
@@ -365,11 +386,13 @@ func (c *documentsGRPCClient) ListDocuments(ctx context.Context, req *dialogflow
 	it := &DocumentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListDocumentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Document, string, error) {
-		var resp *dialogflowpb.ListDocumentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -392,9 +415,11 @@ func (c *documentsGRPCClient) ListDocuments(ctx context.Context, req *dialogflow
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

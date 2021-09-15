@@ -6,8 +6,6 @@
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsublite)
 
-*This library is in BETA. Backwards-incompatible changes may be made before
- stable v1.0.0 is released.*
 
 ### Example Usage
 

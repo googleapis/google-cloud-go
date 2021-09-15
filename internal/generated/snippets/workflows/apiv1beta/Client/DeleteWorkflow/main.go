@@ -35,6 +35,7 @@ func main() {
 
 	req := &workflowspb.DeleteWorkflowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/v1beta#DeleteWorkflowRequest.
 	}
 	op, err := c.DeleteWorkflow(ctx, req)
 	if err != nil {

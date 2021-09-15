@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleInstanceTemplatesClient_Delete() {
 
 	req := &computepb.DeleteInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceTemplateRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleInstanceTemplatesClient_Get() {
 
 	req := &computepb.GetInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceTemplateRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -83,6 +86,7 @@ func ExampleInstanceTemplatesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyInstanceTemplateRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -102,6 +106,7 @@ func ExampleInstanceTemplatesClient_Insert() {
 
 	req := &computepb.InsertInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceTemplateRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -121,13 +126,20 @@ func ExampleInstanceTemplatesClient_List() {
 
 	req := &computepb.ListInstanceTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstanceTemplatesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstanceTemplatesClient_SetIamPolicy() {
@@ -140,6 +152,7 @@ func ExampleInstanceTemplatesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyInstanceTemplateRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -159,6 +172,7 @@ func ExampleInstanceTemplatesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsInstanceTemplateRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

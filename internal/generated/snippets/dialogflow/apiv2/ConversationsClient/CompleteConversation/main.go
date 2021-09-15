@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CompleteConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CompleteConversationRequest.
 	}
 	resp, err := c.CompleteConversation(ctx, req)
 	if err != nil {

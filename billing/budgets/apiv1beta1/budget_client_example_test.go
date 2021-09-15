@@ -46,6 +46,7 @@ func ExampleBudgetClient_CreateBudget() {
 
 	req := &budgetspb.CreateBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#CreateBudgetRequest.
 	}
 	resp, err := c.CreateBudget(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleBudgetClient_UpdateBudget() {
 
 	req := &budgetspb.UpdateBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#UpdateBudgetRequest.
 	}
 	resp, err := c.UpdateBudget(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleBudgetClient_GetBudget() {
 
 	req := &budgetspb.GetBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#GetBudgetRequest.
 	}
 	resp, err := c.GetBudget(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleBudgetClient_ListBudgets() {
 
 	req := &budgetspb.ListBudgetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#ListBudgetsRequest.
 	}
 	it := c.ListBudgets(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleBudgetClient_DeleteBudget() {
 
 	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1#DeleteBudgetRequest.
 	}
 	err = c.DeleteBudget(ctx, req)
 	if err != nil {

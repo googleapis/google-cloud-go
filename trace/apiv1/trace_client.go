@@ -256,11 +256,13 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *cloudtracepb.ListTrace
 	it := &TraceIterator{}
 	req = proto.Clone(req).(*cloudtracepb.ListTracesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cloudtracepb.Trace, string, error) {
-		var resp *cloudtracepb.ListTracesResponse
-		req.PageToken = pageToken
+		resp := &cloudtracepb.ListTracesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -283,9 +285,11 @@ func (c *gRPCClient) ListTraces(ctx context.Context, req *cloudtracepb.ListTrace
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

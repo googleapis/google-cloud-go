@@ -726,11 +726,13 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
-		var resp *automlpb.ListDatasetsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -753,9 +755,11 @@ func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDataset
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -898,11 +902,13 @@ func (c *gRPCClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 	it := &TableSpecIterator{}
 	req = proto.Clone(req).(*automlpb.ListTableSpecsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.TableSpec, string, error) {
-		var resp *automlpb.ListTableSpecsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListTableSpecsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -925,9 +931,11 @@ func (c *gRPCClient) ListTableSpecs(ctx context.Context, req *automlpb.ListTable
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -980,11 +988,13 @@ func (c *gRPCClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 	it := &ColumnSpecIterator{}
 	req = proto.Clone(req).(*automlpb.ListColumnSpecsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ColumnSpec, string, error) {
-		var resp *automlpb.ListColumnSpecsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListColumnSpecsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1007,9 +1017,11 @@ func (c *gRPCClient) ListColumnSpecs(ctx context.Context, req *automlpb.ListColu
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1085,11 +1097,13 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*automlpb.ListModelsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
-		var resp *automlpb.ListModelsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListModelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,9 +1126,11 @@ func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1261,11 +1277,13 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 	it := &ModelEvaluationIterator{}
 	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
-		var resp *automlpb.ListModelEvaluationsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListModelEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1288,9 +1306,11 @@ func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

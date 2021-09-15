@@ -46,6 +46,7 @@ func ExampleVersionsClient_ListVersions() {
 
 	req := &cxpb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleVersionsClient_GetVersion() {
 
 	req := &cxpb.GetVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetVersionRequest.
 	}
 	resp, err := c.GetVersion(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleVersionsClient_CreateVersion() {
 
 	req := &cxpb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateVersionRequest.
 	}
 	op, err := c.CreateVersion(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleVersionsClient_UpdateVersion() {
 
 	req := &cxpb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateVersionRequest.
 	}
 	resp, err := c.UpdateVersion(ctx, req)
 	if err != nil {
@@ -133,6 +137,7 @@ func ExampleVersionsClient_DeleteVersion() {
 
 	req := &cxpb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteVersionRequest.
 	}
 	err = c.DeleteVersion(ctx, req)
 	if err != nil {
@@ -150,6 +155,7 @@ func ExampleVersionsClient_LoadVersion() {
 
 	req := &cxpb.LoadVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#LoadVersionRequest.
 	}
 	op, err := c.LoadVersion(ctx, req)
 	if err != nil {

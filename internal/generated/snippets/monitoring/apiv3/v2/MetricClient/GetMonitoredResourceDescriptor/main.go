@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMonitoredResourceDescriptorRequest.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {

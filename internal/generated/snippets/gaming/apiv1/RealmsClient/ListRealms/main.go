@@ -36,6 +36,7 @@ func main() {
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListRealmsRequest.
 	}
 	it := c.ListRealms(ctx, req)
 	for {

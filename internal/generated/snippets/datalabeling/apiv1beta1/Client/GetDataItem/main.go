@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.GetDataItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#GetDataItemRequest.
 	}
 	resp, err := c.GetDataItem(ctx, req)
 	if err != nil {

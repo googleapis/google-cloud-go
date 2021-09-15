@@ -1,5 +1,58 @@
 # Changes
 
+## [1.22.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.21.0...bigquery/v1.22.0) (2021-08-30)
+
+
+### Features
+
+* **bigquery/storage/managedwriter/adapt:** add NormalizeDescriptor ([#4681](https://www.github.com/googleapis/google-cloud-go/issues/4681)) ([c54aa74](https://www.github.com/googleapis/google-cloud-go/commit/c54aa74f7a0574cbbe3f65dc90b96cf5a0b1aa88))
+* **bigquery/storage/managedwriter:** more metrics instrumentation ([#4690](https://www.github.com/googleapis/google-cloud-go/issues/4690)) ([9505384](https://www.github.com/googleapis/google-cloud-go/commit/9505384b2c771d7d0c95f7786744bdf76174c706))
+
+## [1.21.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.20.1...bigquery/v1.21.0) (2021-08-16)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** add project autodetection ([#4605](https://www.github.com/googleapis/google-cloud-go/issues/4605)) ([d8cc9be](https://www.github.com/googleapis/google-cloud-go/commit/d8cc9be6f0314f585f708638834abfc209799724))
+* **bigquery/storage/managedwriter:** improve protobuf support ([#4589](https://www.github.com/googleapis/google-cloud-go/issues/4589)) ([a455082](https://www.github.com/googleapis/google-cloud-go/commit/a45508272a730e0ad81021695d2d8564e7c81631))
+* **bigquery/storage/managedwriter:** more instrumentation support ([#4601](https://www.github.com/googleapis/google-cloud-go/issues/4601)) ([ff488c8](https://www.github.com/googleapis/google-cloud-go/commit/ff488c86b9c1a1f02397bb579905fa049e59ac05))
+* **bigquery:** switch to centralized project autodetect logic ([#4625](https://www.github.com/googleapis/google-cloud-go/issues/4625)) ([18ff070](https://www.github.com/googleapis/google-cloud-go/commit/18ff070b8baa3ed7d324ca9ea00dcd66d7742340))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** support non-default regions ([#4566](https://www.github.com/googleapis/google-cloud-go/issues/4566)) ([68418f9](https://www.github.com/googleapis/google-cloud-go/commit/68418f9e340def179eb5556aea433c0d07000b79))
+
+### [1.20.1](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.20.0...bigquery/v1.20.1) (2021-08-06)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** fix flowcontroller double-release ([#4555](https://www.github.com/googleapis/google-cloud-go/issues/4555)) ([67facd9](https://www.github.com/googleapis/google-cloud-go/commit/67facd9697e931e193f3cd8e188f1dd819ba31eb))
+
+## [1.20.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.19.0...bigquery/v1.20.0) (2021-07-30)
+
+
+### Features
+
+* **bigquery/connection:** add cloud spanner connection support ([458f15b](https://www.github.com/googleapis/google-cloud-go/commit/458f15bb6f1193ce83dbfc7a82c3f2a672f52c06))
+* **bigquery/storage/managedwriter/adapt:** add schema -> proto support ([#4375](https://www.github.com/googleapis/google-cloud-go/issues/4375)) ([4ff6243](https://www.github.com/googleapis/google-cloud-go/commit/4ff62433f58c1c92976a66e890b7d5394198f77b))
+* **bigquery/storage/managedwriter:** add append stream plumbing ([#4452](https://www.github.com/googleapis/google-cloud-go/issues/4452)) ([b085384](https://www.github.com/googleapis/google-cloud-go/commit/b0853846a34a32ca45deb92a3cc6ab843473acd8))
+* **bigquery/storage/managedwriter:** add base client ([#4422](https://www.github.com/googleapis/google-cloud-go/issues/4422)) ([4f7193b](https://www.github.com/googleapis/google-cloud-go/commit/4f7193b74f4b1954cf7b664d61b5cc9805337e84))
+* **bigquery/storage/managedwriter:** add flow controller ([#4404](https://www.github.com/googleapis/google-cloud-go/issues/4404)) ([9dc78e0](https://www.github.com/googleapis/google-cloud-go/commit/9dc78e073b5f69037c6328460554c4354fcee11f))
+* **bigquery/storage/managedwriter:** add opencensus instrumentation ([#4512](https://www.github.com/googleapis/google-cloud-go/issues/4512)) ([73b6f5e](https://www.github.com/googleapis/google-cloud-go/commit/73b6f5e012d0b89d36850cb986fd7e288bf1e3c5))
+* **bigquery/storage/managedwriter:** add state tracking ([#4407](https://www.github.com/googleapis/google-cloud-go/issues/4407)) ([4638e17](https://www.github.com/googleapis/google-cloud-go/commit/4638e17dacd1fa76f9976f44974c4037fe4358dc))
+* **bigquery/storage/managedwriter:** naming and doc improvements ([#4508](https://www.github.com/googleapis/google-cloud-go/issues/4508)) ([663c899](https://www.github.com/googleapis/google-cloud-go/commit/663c899c3b8aa751527d24f541d964f2ba91a233))
+* **bigquery/storage/managedwriter:** wire in flow controller ([#4501](https://www.github.com/googleapis/google-cloud-go/issues/4501)) ([40571fa](https://www.github.com/googleapis/google-cloud-go/commit/40571fa0e3b5ab326fd592a6907061c2304893aa))
+* **bigquery:** add more dml statistics to query statistics ([#4405](https://www.github.com/googleapis/google-cloud-go/issues/4405)) ([99d5728](https://www.github.com/googleapis/google-cloud-go/commit/99d57282f6668de91390ad29a888a89209689f39))
+* **bigquery:** support decimalTargetType prioritization ([#4343](https://www.github.com/googleapis/google-cloud-go/issues/4343)) ([95a27f7](https://www.github.com/googleapis/google-cloud-go/commit/95a27f711a1c7dfdaa16ae5d3c52644769b6fc39))
+* **bigquery:** support multistatement transaction statistics in jobs ([#4485](https://www.github.com/googleapis/google-cloud-go/issues/4485)) ([4565eb7](https://www.github.com/googleapis/google-cloud-go/commit/4565eb7fe730eade294fb3baa85bd255df008bfa))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** fix double-close error, add tests ([#4502](https://www.github.com/googleapis/google-cloud-go/issues/4502)) ([c6cf659](https://www.github.com/googleapis/google-cloud-go/commit/c6cf6590a41368885b7399c993c47dc965862558))
+
 ## [1.19.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.18.0...bigquery/v1.19.0) (2021-06-29)
 
 

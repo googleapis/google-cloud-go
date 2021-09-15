@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.SetInstanceLabelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#SetInstanceLabelsRequest.
 	}
 	op, err := c.SetInstanceLabels(ctx, req)
 	if err != nil {

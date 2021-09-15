@@ -46,6 +46,7 @@ func ExampleCloudMemcacheClient_ListInstances() {
 
 	req := &memcachepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleCloudMemcacheClient_GetInstance() {
 
 	req := &memcachepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleCloudMemcacheClient_CreateInstance() {
 
 	req := &memcachepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleCloudMemcacheClient_UpdateInstance() {
 
 	req := &memcachepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleCloudMemcacheClient_UpdateParameters() {
 
 	req := &memcachepb.UpdateParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#UpdateParametersRequest.
 	}
 	op, err := c.UpdateParameters(ctx, req)
 	if err != nil {
@@ -162,6 +167,7 @@ func ExampleCloudMemcacheClient_DeleteInstance() {
 
 	req := &memcachepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -184,6 +190,7 @@ func ExampleCloudMemcacheClient_ApplyParameters() {
 
 	req := &memcachepb.ApplyParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#ApplyParametersRequest.
 	}
 	op, err := c.ApplyParameters(ctx, req)
 	if err != nil {
@@ -208,6 +215,7 @@ func ExampleCloudMemcacheClient_ApplySoftwareUpdate() {
 
 	req := &memcachepb.ApplySoftwareUpdateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#ApplySoftwareUpdateRequest.
 	}
 	op, err := c.ApplySoftwareUpdate(ctx, req)
 	if err != nil {

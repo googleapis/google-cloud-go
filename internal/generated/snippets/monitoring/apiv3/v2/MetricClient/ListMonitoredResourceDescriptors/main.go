@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {

@@ -45,13 +45,15 @@ import (
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
 	directPathIPV6Prefix      = "[2001:4860:8040"
 	directPathIPV4Prefix      = "34.126"
-	timeUntilResourceCleanup  = time.Hour * 48 // two days
+	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 )
 
@@ -1534,6 +1536,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 }
 
 func TestIntegration_AdminEncryptionInfo(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4173")
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
@@ -2452,39 +2455,47 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		return infos, err
 	}
 
-	// Precondition: no backups
-	backups, err := list(sourceCluster)
+	// Create backup
+	uniqueID := make([]byte, 8)
+	_, err = rand.Read(uniqueID)
 	if err != nil {
-		t.Fatalf("Initial backup list: %v", err)
-	}
-	if got, want := len(backups), 0; got != want {
-		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
+		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
 
-	// Create backup
-	backupName := "mybackup"
-	defer adminClient.DeleteBackup(ctx, sourceCluster, "mybackup")
+	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
 
 	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err = list(sourceCluster)
+	backups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
-	if got, want := len(backups), 1; got != want {
-		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	if got, want := len(backups), 1; got < want {
+		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
 	}
-	if got, want := backups[0].Name, backupName; got != want {
-		t.Errorf("Backup name: %s, want: %s", got, want)
+
+	foundBackup := false
+	for _, backup := range backups {
+		if backup.Name == backupName {
+			foundBackup = true
+
+			if got, want := backup.SourceTable, tblConf.TableID; got != want {
+				t.Errorf("Backup SourceTable: %s, want: %s", got, want)
+			}
+			if got, want := backup.ExpireTime, backup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
+			}
+
+			break
+		}
 	}
-	if got, want := backups[0].SourceTable, tblConf.TableID; got != want {
-		t.Errorf("Backup SourceTable: %s, want: %s", got, want)
-	}
-	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
+
+	if !foundBackup {
+		t.Errorf("Backup not found: %v", backupName)
 	}
 
 	// Get backup
@@ -2541,7 +2552,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer dAdminClient.Close()
 
 	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
-	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, "mybackup"); err != nil {
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, backupName); err != nil {
 		t.Fatalf("RestoreTableFrom: %v", err)
 	}
 	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
@@ -2643,6 +2654,23 @@ func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, b
 	return false
 }
 
+// Retries a function if it has an unavailable code for up to 30s using a backoff
+func retryOnUnavailable(ctx context.Context, inner func() error) error {
+	err := internal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
+		err = inner()
+		if err == nil {
+			return true, nil
+		}
+		s, ok := status.FromError(err)
+		if !ok {
+			return false, err
+		}
+		// Retry on Unavailable
+		return s.Code() != codes.Unavailable, err
+	})
+	return err
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2661,11 +2689,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	client, err := testEnv.NewClient()
 	if err != nil {
+		t.Logf("Error creating client: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
+		t.Logf("Error creating admin client: %v", err)
+
 		return nil, nil, nil, nil, "", nil, err
 	}
 
@@ -2679,10 +2710,16 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
+		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
+
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamily(ctx, tableName, "follows")
+	})
+	if err != nil {
 		cancel()
+		t.Logf("Error creating column family: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 

@@ -36,6 +36,7 @@ func main() {
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListConstraintsRequest.
 	}
 	it := c.ListConstraints(ctx, req)
 	for {

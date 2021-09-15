@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.CreateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateWorkflowTemplateRequest.
 	}
 	resp, err := c.CreateWorkflowTemplate(ctx, req)
 	if err != nil {

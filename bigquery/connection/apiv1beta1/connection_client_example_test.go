@@ -46,6 +46,7 @@ func ExampleClient_CreateConnection() {
 
 	req := &connectionpb.CreateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#CreateConnectionRequest.
 	}
 	resp, err := c.CreateConnection(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_GetConnection() {
 
 	req := &connectionpb.GetConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#GetConnectionRequest.
 	}
 	resp, err := c.GetConnection(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_ListConnections() {
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#ListConnectionsRequest.
 	}
 	resp, err := c.ListConnections(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleClient_UpdateConnection() {
 
 	req := &connectionpb.UpdateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#UpdateConnectionRequest.
 	}
 	resp, err := c.UpdateConnection(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleClient_UpdateConnectionCredential() {
 
 	req := &connectionpb.UpdateConnectionCredentialRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#UpdateConnectionCredentialRequest.
 	}
 	err = c.UpdateConnectionCredential(ctx, req)
 	if err != nil {
@@ -139,6 +144,7 @@ func ExampleClient_DeleteConnection() {
 
 	req := &connectionpb.DeleteConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1#DeleteConnectionRequest.
 	}
 	err = c.DeleteConnection(ctx, req)
 	if err != nil {
@@ -156,6 +162,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -175,6 +182,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -194,6 +202,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

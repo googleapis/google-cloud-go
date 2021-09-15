@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.BatchCreateUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchCreateUserLinksRequest.
 	}
 	resp, err := c.BatchCreateUserLinks(ctx, req)
 	if err != nil {

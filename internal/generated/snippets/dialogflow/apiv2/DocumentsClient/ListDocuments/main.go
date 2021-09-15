@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListDocumentsRequest.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {

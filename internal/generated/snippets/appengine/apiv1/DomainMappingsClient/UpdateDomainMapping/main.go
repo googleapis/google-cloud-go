@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.UpdateDomainMappingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateDomainMappingRequest.
 	}
 	op, err := c.UpdateDomainMapping(ctx, req)
 	if err != nil {

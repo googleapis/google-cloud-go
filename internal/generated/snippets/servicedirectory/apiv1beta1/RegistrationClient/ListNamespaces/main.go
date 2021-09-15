@@ -36,6 +36,7 @@ func main() {
 
 	req := &servicedirectorypb.ListNamespacesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#ListNamespacesRequest.
 	}
 	it := c.ListNamespaces(ctx, req)
 	for {

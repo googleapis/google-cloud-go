@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.UpdateUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateUserLinkRequest.
 	}
 	resp, err := c.UpdateUserLink(ctx, req)
 	if err != nil {

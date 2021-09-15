@@ -35,6 +35,7 @@ func main() {
 
 	req := &talentpb.CreateCompanyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CreateCompanyRequest.
 	}
 	resp, err := c.CreateCompany(ctx, req)
 	if err != nil {

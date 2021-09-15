@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#UpdateClusterRequest.
 	}
 	resp, err := c.UpdateCluster(ctx, req)
 	if err != nil {

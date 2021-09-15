@@ -36,6 +36,7 @@ func main() {
 
 	req := &dialogflowpb.ListIntentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListIntentsRequest.
 	}
 	it := c.ListIntents(ctx, req)
 	for {

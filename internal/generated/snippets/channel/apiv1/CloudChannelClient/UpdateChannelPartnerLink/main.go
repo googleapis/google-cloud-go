@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.UpdateChannelPartnerLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateChannelPartnerLinkRequest.
 	}
 	resp, err := c.UpdateChannelPartnerLink(ctx, req)
 	if err != nil {

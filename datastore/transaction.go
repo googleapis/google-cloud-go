@@ -213,6 +213,7 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 		return nil, err
 	}
 
+	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
 	for i, p := range t.pending {
 		if i >= len(resp.MutationResults) || resp.MutationResults[i].Key == nil {

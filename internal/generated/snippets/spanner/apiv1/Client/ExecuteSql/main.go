@@ -35,6 +35,7 @@ func main() {
 
 	req := &spannerpb.ExecuteSqlRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/v1#ExecuteSqlRequest.
 	}
 	resp, err := c.ExecuteSql(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouderrorreportingpb.DeleteEventsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#DeleteEventsRequest.
 	}
 	resp, err := c.DeleteEvents(ctx, req)
 	if err != nil {

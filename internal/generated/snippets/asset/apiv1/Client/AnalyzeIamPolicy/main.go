@@ -35,6 +35,7 @@ func main() {
 
 	req := &assetpb.AnalyzeIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1#AnalyzeIamPolicyRequest.
 	}
 	resp, err := c.AnalyzeIamPolicy(ctx, req)
 	if err != nil {

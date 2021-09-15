@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeletePropertyRequest.
 	}
 	resp, err := c.DeleteProperty(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &visionpb.AsyncBatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AsyncBatchAnnotateImagesRequest.
 	}
 	op, err := c.AsyncBatchAnnotateImages(ctx, req)
 	if err != nil {

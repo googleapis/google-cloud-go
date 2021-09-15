@@ -35,6 +35,7 @@ func main() {
 
 	req := &grafeaspb.CreateOccurrenceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas#CreateOccurrenceRequest.
 	}
 	resp, err := c.CreateOccurrence(ctx, req)
 	if err != nil {

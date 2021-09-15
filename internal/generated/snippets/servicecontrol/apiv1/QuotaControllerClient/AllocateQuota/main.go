@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicecontrolpb.AllocateQuotaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicecontrol/v1#AllocateQuotaRequest.
 	}
 	resp, err := c.AllocateQuota(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.DeleteCustomerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#DeleteCustomerRequest.
 	}
 	err = c.DeleteCustomer(ctx, req)
 	if err != nil {

@@ -262,6 +262,16 @@ func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.Searc
 
 // TrainAgent trains the specified agent.
 //
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
 // Note: You should always train an agent prior to sending it queries. See the
 // training
 // documentation (at https://cloud.google.com/dialogflow/es/docs/training).
@@ -276,6 +286,15 @@ func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
 }
 
 // ExportAgent exports the specified agent to a ZIP file.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: ExportAgentResponse
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -296,8 +315,18 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 // call TrainAgent and wait for the operation it returns in order to train
 // explicitly.
 //
-// An operation which tracks when importing is complete. It only tracks
-// when the draft agent is updated not when it is done training.
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// The operation only tracks when importing is complete, not when it is done
+// training.
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -321,8 +350,18 @@ func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
 // completed yet. Please call TrainAgent and wait for the operation it
 // returns in order to train explicitly.
 //
-// An operation which tracks when restoring is complete. It only tracks
-// when the draft agent is updated not when it is done training.
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// The operation only tracks when restoring is complete, not when it is done
+// training.
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training
@@ -505,11 +544,13 @@ func (c *agentsGRPCClient) SearchAgents(ctx context.Context, req *dialogflowpb.S
 	it := &AgentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.SearchAgentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Agent, string, error) {
-		var resp *dialogflowpb.SearchAgentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.SearchAgentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -532,9 +573,11 @@ func (c *agentsGRPCClient) SearchAgents(ctx context.Context, req *dialogflowpb.S
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

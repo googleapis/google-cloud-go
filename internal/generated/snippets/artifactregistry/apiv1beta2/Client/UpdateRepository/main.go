@@ -35,6 +35,7 @@ func main() {
 
 	req := &artifactregistrypb.UpdateRepositoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#UpdateRepositoryRequest.
 	}
 	resp, err := c.UpdateRepository(ctx, req)
 	if err != nil {

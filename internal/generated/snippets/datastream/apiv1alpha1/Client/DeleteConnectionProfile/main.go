@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.DeleteConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#DeleteConnectionProfileRequest.
 	}
 	op, err := c.DeleteConnectionProfile(ctx, req)
 	if err != nil {

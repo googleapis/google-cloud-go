@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateContextRequest.
 	}
 	resp, err := c.CreateContext(ctx, req)
 	if err != nil {

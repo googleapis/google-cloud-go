@@ -36,6 +36,7 @@ func main() {
 
 	req := &cxpb.ListTransitionRouteGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListTransitionRouteGroupsRequest.
 	}
 	it := c.ListTransitionRouteGroups(ctx, req)
 	for {

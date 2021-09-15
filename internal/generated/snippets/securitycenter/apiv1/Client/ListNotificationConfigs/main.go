@@ -36,6 +36,7 @@ func main() {
 
 	req := &securitycenterpb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListNotificationConfigsRequest.
 	}
 	it := c.ListNotificationConfigs(ctx, req)
 	for {

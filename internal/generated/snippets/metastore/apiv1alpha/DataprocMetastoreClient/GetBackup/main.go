@@ -35,6 +35,7 @@ func main() {
 
 	req := &metastorepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
 	if err != nil {

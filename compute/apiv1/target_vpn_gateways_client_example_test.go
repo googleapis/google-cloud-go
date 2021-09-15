@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,13 +46,20 @@ func ExampleTargetVpnGatewaysClient_AggregatedList() {
 
 	req := &computepb.AggregatedListTargetVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListTargetVpnGatewaysRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleTargetVpnGatewaysClient_Delete() {
@@ -64,6 +72,7 @@ func ExampleTargetVpnGatewaysClient_Delete() {
 
 	req := &computepb.DeleteTargetVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetVpnGatewayRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -83,6 +92,7 @@ func ExampleTargetVpnGatewaysClient_Get() {
 
 	req := &computepb.GetTargetVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetVpnGatewayRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -102,6 +112,7 @@ func ExampleTargetVpnGatewaysClient_Insert() {
 
 	req := &computepb.InsertTargetVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetVpnGatewayRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -121,11 +132,18 @@ func ExampleTargetVpnGatewaysClient_List() {
 
 	req := &computepb.ListTargetVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetVpnGatewaysRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }

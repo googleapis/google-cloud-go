@@ -36,6 +36,7 @@ func main() {
 
 	req := &databasepb.ListDatabaseOperationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#ListDatabaseOperationsRequest.
 	}
 	it := c.ListDatabaseOperations(ctx, req)
 	for {

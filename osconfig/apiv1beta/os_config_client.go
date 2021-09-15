@@ -529,11 +529,13 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 	it := &PatchJobIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJob, string, error) {
-		var resp *osconfigpb.ListPatchJobsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -556,9 +558,11 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -569,11 +573,13 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 	it := &PatchJobInstanceDetailsIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchJobInstanceDetailsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJobInstanceDetails, string, error) {
-		var resp *osconfigpb.ListPatchJobInstanceDetailsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchJobInstanceDetailsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -596,9 +602,11 @@ func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *oscon
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -651,11 +659,13 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 	it := &PatchDeploymentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchDeploymentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchDeployment, string, error) {
-		var resp *osconfigpb.ListPatchDeploymentsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -678,9 +688,11 @@ func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -750,11 +762,13 @@ func (c *gRPCClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 	it := &GuestPolicyIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListGuestPoliciesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.GuestPolicy, string, error) {
-		var resp *osconfigpb.ListGuestPoliciesResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListGuestPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -777,9 +791,11 @@ func (c *gRPCClient) ListGuestPolicies(ctx context.Context, req *osconfigpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

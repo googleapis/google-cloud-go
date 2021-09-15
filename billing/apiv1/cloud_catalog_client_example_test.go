@@ -46,6 +46,7 @@ func ExampleCloudCatalogClient_ListServices() {
 
 	req := &billingpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleCloudCatalogClient_ListSkus() {
 
 	req := &billingpb.ListSkusRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListSkusRequest.
 	}
 	it := c.ListSkus(ctx, req)
 	for {

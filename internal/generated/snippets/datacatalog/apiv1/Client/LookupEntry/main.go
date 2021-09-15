@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.LookupEntryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#LookupEntryRequest.
 	}
 	resp, err := c.LookupEntry(ctx, req)
 	if err != nil {

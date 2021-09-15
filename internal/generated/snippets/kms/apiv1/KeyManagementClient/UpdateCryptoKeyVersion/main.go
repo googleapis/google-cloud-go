@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.UpdateCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateCryptoKeyVersionRequest.
 	}
 	resp, err := c.UpdateCryptoKeyVersion(ctx, req)
 	if err != nil {

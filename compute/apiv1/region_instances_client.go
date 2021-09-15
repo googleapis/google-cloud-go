@@ -25,6 +25,7 @@ import (
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
@@ -46,7 +47,7 @@ type internalRegionInstancesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	BulkInsert(context.Context, *computepb.BulkInsertRegionInstanceRequest, ...gax.CallOption) (*computepb.Operation, error)
+	BulkInsert(context.Context, *computepb.BulkInsertRegionInstanceRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionInstancesClient is a client for interacting with Google Compute Engine API.
@@ -84,7 +85,7 @@ func (c *RegionInstancesClient) Connection() *grpc.ClientConn {
 }
 
 // BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
-func (c *RegionInstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
+func (c *RegionInstancesClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
@@ -121,8 +122,8 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultRegionInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -153,8 +154,8 @@ func (c *regionInstancesRESTClient) Connection() *grpc.ClientConn {
 }
 
 // BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
-func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -188,8 +189,8 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -200,5 +201,9 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, err
+	}
+	op := &Operation{proto: rsp}
+	return op, err
 }

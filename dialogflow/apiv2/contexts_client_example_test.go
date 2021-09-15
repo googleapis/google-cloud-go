@@ -46,6 +46,7 @@ func ExampleContextsClient_ListContexts() {
 
 	req := &dialogflowpb.ListContextsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListContextsRequest.
 	}
 	it := c.ListContexts(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleContextsClient_GetContext() {
 
 	req := &dialogflowpb.GetContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetContextRequest.
 	}
 	resp, err := c.GetContext(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleContextsClient_CreateContext() {
 
 	req := &dialogflowpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateContextRequest.
 	}
 	resp, err := c.CreateContext(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleContextsClient_UpdateContext() {
 
 	req := &dialogflowpb.UpdateContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateContextRequest.
 	}
 	resp, err := c.UpdateContext(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleContextsClient_DeleteContext() {
 
 	req := &dialogflowpb.DeleteContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteContextRequest.
 	}
 	err = c.DeleteContext(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleContextsClient_DeleteAllContexts() {
 
 	req := &dialogflowpb.DeleteAllContextsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteAllContextsRequest.
 	}
 	err = c.DeleteAllContexts(ctx, req)
 	if err != nil {

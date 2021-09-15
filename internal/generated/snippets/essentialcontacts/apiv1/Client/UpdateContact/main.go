@@ -35,6 +35,7 @@ func main() {
 
 	req := &essentialcontactspb.UpdateContactRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1#UpdateContactRequest.
 	}
 	resp, err := c.UpdateContact(ctx, req)
 	if err != nil {

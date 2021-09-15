@@ -36,6 +36,7 @@ func main() {
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ListRegistrationsRequest.
 	}
 	it := c.ListRegistrations(ctx, req)
 	for {

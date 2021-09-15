@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.CreateGameServerConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateGameServerConfigRequest.
 	}
 	op, err := c.CreateGameServerConfig(ctx, req)
 	if err != nil {

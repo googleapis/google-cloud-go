@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.DeleteAlertPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteAlertPolicyRequest.
 	}
 	err = c.DeleteAlertPolicy(ctx, req)
 	if err != nil {

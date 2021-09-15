@@ -20,6 +20,7 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
@@ -45,6 +46,7 @@ func ExampleInstancesClient_AddAccessConfig() {
 
 	req := &computepb.AddAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAccessConfigInstanceRequest.
 	}
 	resp, err := c.AddAccessConfig(ctx, req)
 	if err != nil {
@@ -64,6 +66,7 @@ func ExampleInstancesClient_AddResourcePolicies() {
 
 	req := &computepb.AddResourcePoliciesInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesInstanceRequest.
 	}
 	resp, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
@@ -83,13 +86,20 @@ func ExampleInstancesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInstancesRequest.
 	}
-	resp, err := c.AggregatedList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_AttachDisk() {
@@ -102,6 +112,7 @@ func ExampleInstancesClient_AttachDisk() {
 
 	req := &computepb.AttachDiskInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachDiskInstanceRequest.
 	}
 	resp, err := c.AttachDisk(ctx, req)
 	if err != nil {
@@ -121,6 +132,7 @@ func ExampleInstancesClient_BulkInsert() {
 
 	req := &computepb.BulkInsertInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#BulkInsertInstanceRequest.
 	}
 	resp, err := c.BulkInsert(ctx, req)
 	if err != nil {
@@ -140,6 +152,7 @@ func ExampleInstancesClient_Delete() {
 
 	req := &computepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -159,6 +172,7 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 
 	req := &computepb.DeleteAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAccessConfigInstanceRequest.
 	}
 	resp, err := c.DeleteAccessConfig(ctx, req)
 	if err != nil {
@@ -178,6 +192,7 @@ func ExampleInstancesClient_DetachDisk() {
 
 	req := &computepb.DetachDiskInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachDiskInstanceRequest.
 	}
 	resp, err := c.DetachDisk(ctx, req)
 	if err != nil {
@@ -197,6 +212,7 @@ func ExampleInstancesClient_Get() {
 
 	req := &computepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -216,6 +232,7 @@ func ExampleInstancesClient_GetEffectiveFirewalls() {
 
 	req := &computepb.GetEffectiveFirewallsInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetEffectiveFirewallsInstanceRequest.
 	}
 	resp, err := c.GetEffectiveFirewalls(ctx, req)
 	if err != nil {
@@ -235,6 +252,7 @@ func ExampleInstancesClient_GetGuestAttributes() {
 
 	req := &computepb.GetGuestAttributesInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGuestAttributesInstanceRequest.
 	}
 	resp, err := c.GetGuestAttributes(ctx, req)
 	if err != nil {
@@ -254,6 +272,7 @@ func ExampleInstancesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyInstanceRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -273,6 +292,7 @@ func ExampleInstancesClient_GetScreenshot() {
 
 	req := &computepb.GetScreenshotInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetScreenshotInstanceRequest.
 	}
 	resp, err := c.GetScreenshot(ctx, req)
 	if err != nil {
@@ -292,6 +312,7 @@ func ExampleInstancesClient_GetSerialPortOutput() {
 
 	req := &computepb.GetSerialPortOutputInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSerialPortOutputInstanceRequest.
 	}
 	resp, err := c.GetSerialPortOutput(ctx, req)
 	if err != nil {
@@ -311,6 +332,7 @@ func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 
 	req := &computepb.GetShieldedInstanceIdentityInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetShieldedInstanceIdentityInstanceRequest.
 	}
 	resp, err := c.GetShieldedInstanceIdentity(ctx, req)
 	if err != nil {
@@ -330,6 +352,7 @@ func ExampleInstancesClient_Insert() {
 
 	req := &computepb.InsertInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -349,13 +372,20 @@ func ExampleInstancesClient_List() {
 
 	req := &computepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesRequest.
 	}
-	resp, err := c.List(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_ListReferrers() {
@@ -368,13 +398,20 @@ func ExampleInstancesClient_ListReferrers() {
 
 	req := &computepb.ListReferrersInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListReferrersInstancesRequest.
 	}
-	resp, err := c.ListReferrers(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListReferrers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleInstancesClient_RemoveResourcePolicies() {
@@ -387,6 +424,7 @@ func ExampleInstancesClient_RemoveResourcePolicies() {
 
 	req := &computepb.RemoveResourcePoliciesInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesInstanceRequest.
 	}
 	resp, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
@@ -406,6 +444,7 @@ func ExampleInstancesClient_Reset() {
 
 	req := &computepb.ResetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResetInstanceRequest.
 	}
 	resp, err := c.Reset(ctx, req)
 	if err != nil {
@@ -425,6 +464,7 @@ func ExampleInstancesClient_SetDeletionProtection() {
 
 	req := &computepb.SetDeletionProtectionInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDeletionProtectionInstanceRequest.
 	}
 	resp, err := c.SetDeletionProtection(ctx, req)
 	if err != nil {
@@ -444,6 +484,7 @@ func ExampleInstancesClient_SetDiskAutoDelete() {
 
 	req := &computepb.SetDiskAutoDeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDiskAutoDeleteInstanceRequest.
 	}
 	resp, err := c.SetDiskAutoDelete(ctx, req)
 	if err != nil {
@@ -463,6 +504,7 @@ func ExampleInstancesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyInstanceRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -482,6 +524,7 @@ func ExampleInstancesClient_SetLabels() {
 
 	req := &computepb.SetLabelsInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsInstanceRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -501,6 +544,7 @@ func ExampleInstancesClient_SetMachineResources() {
 
 	req := &computepb.SetMachineResourcesInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineResourcesInstanceRequest.
 	}
 	resp, err := c.SetMachineResources(ctx, req)
 	if err != nil {
@@ -520,6 +564,7 @@ func ExampleInstancesClient_SetMachineType() {
 
 	req := &computepb.SetMachineTypeInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineTypeInstanceRequest.
 	}
 	resp, err := c.SetMachineType(ctx, req)
 	if err != nil {
@@ -539,6 +584,7 @@ func ExampleInstancesClient_SetMetadata() {
 
 	req := &computepb.SetMetadataInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMetadataInstanceRequest.
 	}
 	resp, err := c.SetMetadata(ctx, req)
 	if err != nil {
@@ -558,6 +604,7 @@ func ExampleInstancesClient_SetMinCpuPlatform() {
 
 	req := &computepb.SetMinCpuPlatformInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMinCpuPlatformInstanceRequest.
 	}
 	resp, err := c.SetMinCpuPlatform(ctx, req)
 	if err != nil {
@@ -577,6 +624,7 @@ func ExampleInstancesClient_SetScheduling() {
 
 	req := &computepb.SetSchedulingInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSchedulingInstanceRequest.
 	}
 	resp, err := c.SetScheduling(ctx, req)
 	if err != nil {
@@ -596,6 +644,7 @@ func ExampleInstancesClient_SetServiceAccount() {
 
 	req := &computepb.SetServiceAccountInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetServiceAccountInstanceRequest.
 	}
 	resp, err := c.SetServiceAccount(ctx, req)
 	if err != nil {
@@ -615,6 +664,7 @@ func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 
 	req := &computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetShieldedInstanceIntegrityPolicyInstanceRequest.
 	}
 	resp, err := c.SetShieldedInstanceIntegrityPolicy(ctx, req)
 	if err != nil {
@@ -634,6 +684,7 @@ func ExampleInstancesClient_SetTags() {
 
 	req := &computepb.SetTagsInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTagsInstanceRequest.
 	}
 	resp, err := c.SetTags(ctx, req)
 	if err != nil {
@@ -653,6 +704,7 @@ func ExampleInstancesClient_SimulateMaintenanceEvent() {
 
 	req := &computepb.SimulateMaintenanceEventInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SimulateMaintenanceEventInstanceRequest.
 	}
 	resp, err := c.SimulateMaintenanceEvent(ctx, req)
 	if err != nil {
@@ -672,6 +724,7 @@ func ExampleInstancesClient_Start() {
 
 	req := &computepb.StartInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartInstanceRequest.
 	}
 	resp, err := c.Start(ctx, req)
 	if err != nil {
@@ -691,6 +744,7 @@ func ExampleInstancesClient_StartWithEncryptionKey() {
 
 	req := &computepb.StartWithEncryptionKeyInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartWithEncryptionKeyInstanceRequest.
 	}
 	resp, err := c.StartWithEncryptionKey(ctx, req)
 	if err != nil {
@@ -710,6 +764,7 @@ func ExampleInstancesClient_Stop() {
 
 	req := &computepb.StopInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StopInstanceRequest.
 	}
 	resp, err := c.Stop(ctx, req)
 	if err != nil {
@@ -729,6 +784,7 @@ func ExampleInstancesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsInstanceRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -748,6 +804,7 @@ func ExampleInstancesClient_Update() {
 
 	req := &computepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateInstanceRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {
@@ -767,6 +824,7 @@ func ExampleInstancesClient_UpdateAccessConfig() {
 
 	req := &computepb.UpdateAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAccessConfigInstanceRequest.
 	}
 	resp, err := c.UpdateAccessConfig(ctx, req)
 	if err != nil {
@@ -786,6 +844,7 @@ func ExampleInstancesClient_UpdateDisplayDevice() {
 
 	req := &computepb.UpdateDisplayDeviceInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateDisplayDeviceInstanceRequest.
 	}
 	resp, err := c.UpdateDisplayDevice(ctx, req)
 	if err != nil {
@@ -805,6 +864,7 @@ func ExampleInstancesClient_UpdateNetworkInterface() {
 
 	req := &computepb.UpdateNetworkInterfaceInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateNetworkInterfaceInstanceRequest.
 	}
 	resp, err := c.UpdateNetworkInterface(ctx, req)
 	if err != nil {
@@ -824,6 +884,7 @@ func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
 
 	req := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateShieldedInstanceConfigInstanceRequest.
 	}
 	resp, err := c.UpdateShieldedInstanceConfig(ctx, req)
 	if err != nil {

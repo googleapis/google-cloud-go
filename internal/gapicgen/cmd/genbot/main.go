@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 // genbot is a binary for generating gapics and creating CLs/PRs with the results.
@@ -65,6 +66,7 @@ func main() {
 			gapicToGenerate:    *gapicToGenerate,
 			onlyGapics:         *onlyGapics,
 			regenOnly:          *regenOnly,
+			forceAll:           *forceAll,
 		}); err != nil {
 			log.Fatal(err)
 		}

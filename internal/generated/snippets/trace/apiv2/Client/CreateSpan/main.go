@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudtracepb.Span{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#Span.
 	}
 	resp, err := c.CreateSpan(ctx, req)
 	if err != nil {

@@ -45,6 +45,7 @@ func ExampleFulfillmentsClient_GetFulfillment() {
 
 	req := &dialogflowpb.GetFulfillmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetFulfillmentRequest.
 	}
 	resp, err := c.GetFulfillment(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleFulfillmentsClient_UpdateFulfillment() {
 
 	req := &dialogflowpb.UpdateFulfillmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateFulfillmentRequest.
 	}
 	resp, err := c.UpdateFulfillment(ctx, req)
 	if err != nil {

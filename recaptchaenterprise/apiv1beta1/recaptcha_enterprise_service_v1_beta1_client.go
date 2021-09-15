@@ -306,11 +306,13 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) ListKeys(ctx context.Conte
 	it := &KeyIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.Key, string, error) {
-		var resp *recaptchaenterprisepb.ListKeysResponse
-		req.PageToken = pageToken
+		resp := &recaptchaenterprisepb.ListKeysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -333,9 +335,11 @@ func (c *recaptchaEnterpriseServiceV1Beta1GRPCClient) ListKeys(ctx context.Conte
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

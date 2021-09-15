@@ -35,6 +35,7 @@ func main() {
 
 	req := &serviceusagepb.BatchEnableServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/serviceusage/v1#BatchEnableServicesRequest.
 	}
 	op, err := c.BatchEnableServices(ctx, req)
 	if err != nil {

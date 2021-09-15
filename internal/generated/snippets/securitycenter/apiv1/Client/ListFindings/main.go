@@ -36,6 +36,7 @@ func main() {
 
 	req := &securitycenterpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListFindingsRequest.
 	}
 	it := c.ListFindings(ctx, req)
 	for {

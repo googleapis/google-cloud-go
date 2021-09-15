@@ -36,6 +36,7 @@ func main() {
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#ListMembershipsRequest.
 	}
 	it := c.ListMemberships(ctx, req)
 	for {

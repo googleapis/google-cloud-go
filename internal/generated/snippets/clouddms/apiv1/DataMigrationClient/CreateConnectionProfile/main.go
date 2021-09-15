@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddmspb.CreateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/clouddms/v1#CreateConnectionProfileRequest.
 	}
 	op, err := c.CreateConnectionProfile(ctx, req)
 	if err != nil {

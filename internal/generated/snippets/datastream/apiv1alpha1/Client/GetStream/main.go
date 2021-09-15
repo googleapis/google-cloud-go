@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.GetStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#GetStreamRequest.
 	}
 	resp, err := c.GetStream(ctx, req)
 	if err != nil {

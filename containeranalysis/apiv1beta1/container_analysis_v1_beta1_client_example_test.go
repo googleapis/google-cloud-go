@@ -47,6 +47,7 @@ func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleContainerAnalysisV1Beta1Client_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -85,6 +87,7 @@ func ExampleContainerAnalysisV1Beta1Client_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -104,6 +107,7 @@ func ExampleContainerAnalysisV1Beta1Client_GetScanConfig() {
 
 	req := &containeranalysispb.GetScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#GetScanConfigRequest.
 	}
 	resp, err := c.GetScanConfig(ctx, req)
 	if err != nil {
@@ -123,6 +127,7 @@ func ExampleContainerAnalysisV1Beta1Client_ListScanConfigs() {
 
 	req := &containeranalysispb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#ListScanConfigsRequest.
 	}
 	it := c.ListScanConfigs(ctx, req)
 	for {
@@ -148,6 +153,7 @@ func ExampleContainerAnalysisV1Beta1Client_UpdateScanConfig() {
 
 	req := &containeranalysispb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1#UpdateScanConfigRequest.
 	}
 	resp, err := c.UpdateScanConfig(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsublitepb.ListReservationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationsRequest.
 	}
 	it := c.ListReservations(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#DeleteTaxonomyRequest.
 	}
 	err = c.DeleteTaxonomy(ctx, req)
 	if err != nil {

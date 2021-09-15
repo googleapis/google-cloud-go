@@ -493,11 +493,13 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 	it := &GatewayIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
-		var resp *apigatewaypb.ListGatewaysResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListGatewaysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -520,9 +522,11 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -618,11 +622,13 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 	it := &ApiIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
-		var resp *apigatewaypb.ListApisResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApisResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -645,9 +651,11 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -743,11 +751,13 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 	it := &ApiConfigIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
-		var resp *apigatewaypb.ListApiConfigsResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApiConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -770,9 +780,11 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

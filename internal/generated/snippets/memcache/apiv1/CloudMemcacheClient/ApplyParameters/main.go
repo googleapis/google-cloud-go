@@ -35,6 +35,7 @@ func main() {
 
 	req := &memcachepb.ApplyParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#ApplyParametersRequest.
 	}
 	op, err := c.ApplyParameters(ctx, req)
 	if err != nil {

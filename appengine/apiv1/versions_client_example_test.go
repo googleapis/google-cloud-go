@@ -46,6 +46,7 @@ func ExampleVersionsClient_ListVersions() {
 
 	req := &appenginepb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleVersionsClient_GetVersion() {
 
 	req := &appenginepb.GetVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetVersionRequest.
 	}
 	resp, err := c.GetVersion(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleVersionsClient_CreateVersion() {
 
 	req := &appenginepb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateVersionRequest.
 	}
 	op, err := c.CreateVersion(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleVersionsClient_UpdateVersion() {
 
 	req := &appenginepb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateVersionRequest.
 	}
 	op, err := c.UpdateVersion(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleVersionsClient_DeleteVersion() {
 
 	req := &appenginepb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteVersionRequest.
 	}
 	op, err := c.DeleteVersion(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteIosAppDataStreamRequest.
 	}
 	err = c.DeleteIosAppDataStream(ctx, req)
 	if err != nil {

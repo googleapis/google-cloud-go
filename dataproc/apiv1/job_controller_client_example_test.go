@@ -46,6 +46,7 @@ func ExampleJobControllerClient_SubmitJob() {
 
 	req := &dataprocpb.SubmitJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#SubmitJobRequest.
 	}
 	resp, err := c.SubmitJob(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleJobControllerClient_SubmitJobAsOperation() {
 
 	req := &dataprocpb.SubmitJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#SubmitJobRequest.
 	}
 	op, err := c.SubmitJobAsOperation(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleJobControllerClient_GetJob() {
 
 	req := &dataprocpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -108,6 +111,7 @@ func ExampleJobControllerClient_ListJobs() {
 
 	req := &dataprocpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -133,6 +137,7 @@ func ExampleJobControllerClient_UpdateJob() {
 
 	req := &dataprocpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -152,6 +157,7 @@ func ExampleJobControllerClient_CancelJob() {
 
 	req := &dataprocpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CancelJobRequest.
 	}
 	resp, err := c.CancelJob(ctx, req)
 	if err != nil {
@@ -171,6 +177,7 @@ func ExampleJobControllerClient_DeleteJob() {
 
 	req := &dataprocpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {

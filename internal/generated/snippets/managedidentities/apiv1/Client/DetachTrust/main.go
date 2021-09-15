@@ -35,6 +35,7 @@ func main() {
 
 	req := &managedidentitiespb.DetachTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DetachTrustRequest.
 	}
 	op, err := c.DetachTrust(ctx, req)
 	if err != nil {

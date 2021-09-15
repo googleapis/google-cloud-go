@@ -35,6 +35,7 @@ func main() {
 
 	req := &schedulerpb.ResumeJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1#ResumeJobRequest.
 	}
 	resp, err := c.ResumeJob(ctx, req)
 	if err != nil {

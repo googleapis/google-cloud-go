@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteVersionRequest.
 	}
 	err = c.DeleteVersion(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &securitycenterpb.SetFindingStateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1#SetFindingStateRequest.
 	}
 	resp, err := c.SetFindingState(ctx, req)
 	if err != nil {

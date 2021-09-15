@@ -36,6 +36,7 @@ func main() {
 
 	req := &reservationpb.SearchAssignmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1#SearchAssignmentsRequest.
 	}
 	it := c.SearchAssignments(ctx, req)
 	for {

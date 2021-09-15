@@ -35,6 +35,7 @@ func main() {
 
 	req := &tablespb.DeleteRowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#DeleteRowRequest.
 	}
 	err = c.DeleteRow(ctx, req)
 	if err != nil {

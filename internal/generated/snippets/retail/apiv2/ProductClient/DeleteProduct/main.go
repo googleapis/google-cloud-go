@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {

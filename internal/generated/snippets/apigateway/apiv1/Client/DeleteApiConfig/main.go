@@ -35,6 +35,7 @@ func main() {
 
 	req := &apigatewaypb.DeleteApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiConfigRequest.
 	}
 	op, err := c.DeleteApiConfig(ctx, req)
 	if err != nil {

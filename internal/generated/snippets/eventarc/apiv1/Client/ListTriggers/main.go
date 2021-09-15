@@ -36,6 +36,7 @@ func main() {
 
 	req := &eventarcpb.ListTriggersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/v1#ListTriggersRequest.
 	}
 	it := c.ListTriggers(ctx, req)
 	for {

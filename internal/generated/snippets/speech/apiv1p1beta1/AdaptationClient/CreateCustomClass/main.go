@@ -35,6 +35,7 @@ func main() {
 
 	req := &speechpb.CreateCustomClassRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1#CreateCustomClassRequest.
 	}
 	resp, err := c.CreateCustomClass(ctx, req)
 	if err != nil {

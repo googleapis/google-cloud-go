@@ -43,4 +43,4 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-go test -v -timeout 10m ./... -run '^TestIntegration_' 2>&1 | tee sponge_log.log
+go test -v -timeout 10m ./... -run '^TestIntegration_' 2>&1 | tee -a sponge_log.log

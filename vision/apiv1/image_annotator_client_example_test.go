@@ -45,6 +45,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 
 	req := &visionpb.BatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#BatchAnnotateImagesRequest.
 	}
 	resp, err := c.BatchAnnotateImages(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
 
 	req := &visionpb.BatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#BatchAnnotateFilesRequest.
 	}
 	resp, err := c.BatchAnnotateFiles(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
 
 	req := &visionpb.AsyncBatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AsyncBatchAnnotateImagesRequest.
 	}
 	op, err := c.AsyncBatchAnnotateImages(ctx, req)
 	if err != nil {
@@ -107,6 +110,7 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateFiles() {
 
 	req := &visionpb.AsyncBatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#AsyncBatchAnnotateFilesRequest.
 	}
 	op, err := c.AsyncBatchAnnotateFiles(ctx, req)
 	if err != nil {

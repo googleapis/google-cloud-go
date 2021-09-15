@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.BatchCreateReadSessionStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#BatchCreateReadSessionStreamsRequest.
 	}
 	resp, err := c.BatchCreateReadSessionStreams(ctx, req)
 	if err != nil {

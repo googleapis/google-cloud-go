@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListAndroidAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAndroidAppDataStreamsRequest.
 	}
 	it := c.ListAndroidAppDataStreams(ctx, req)
 	for {

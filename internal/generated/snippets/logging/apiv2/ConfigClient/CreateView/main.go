@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.CreateViewRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateViewRequest.
 	}
 	resp, err := c.CreateView(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &webriskpb.CreateSubmissionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#CreateSubmissionRequest.
 	}
 	resp, err := c.CreateSubmission(ctx, req)
 	if err != nil {
