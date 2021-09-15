@@ -2197,6 +2197,29 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 	}
 }
 
+func TestIntegration_IteratorSource(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	q := client.Query("SELECT 17 as foo")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Errorf("Read: %v", err)
+	}
+	src := it.SourceJob()
+	if src == nil {
+		t.Errorf("wanted source job, got nil")
+	}
+	status, err := src.Status(ctx)
+	if err != nil {
+		t.Errorf("Status: %v", err)
+	}
+	if status == nil {
+		t.Errorf("got nil status")
+	}
+}
+
 func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

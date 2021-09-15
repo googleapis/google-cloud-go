@@ -27,6 +27,7 @@ import (
 var (
 	errNoTopicFieldsUpdated        = errors.New("pubsublite: no fields updated for topic")
 	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
+	errNoReservationFieldsUpdated  = errors.New("pubsublite: no fields updated for reservation")
 )
 
 // AdminClient provides admin operations for Pub/Sub Lite resources within a
@@ -273,6 +274,90 @@ func (ac *AdminClient) Subscriptions(ctx context.Context, parent string) *Subscr
 	}
 }
 
+// CreateReservation creates a new reservation from the given config. If the
+// reservation already exists an error will be returned.
+func (ac *AdminClient) CreateReservation(ctx context.Context, config ReservationConfig) (*ReservationConfig, error) {
+	reservationPath, err := wire.ParseReservationPath(config.Name)
+	if err != nil {
+		return nil, err
+	}
+	req := &pb.CreateReservationRequest{
+		Parent:        reservationPath.Location().String(),
+		Reservation:   config.toProto(),
+		ReservationId: reservationPath.ReservationID,
+	}
+	reservationpb, err := ac.admin.CreateReservation(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return protoToReservationConfig(reservationpb), nil
+}
+
+// UpdateReservation updates an existing reservation from the given config and
+// returns the new reservation config. UpdateReservation returns an error if no
+// fields were modified.
+func (ac *AdminClient) UpdateReservation(ctx context.Context, config ReservationConfigToUpdate) (*ReservationConfig, error) {
+	if _, err := wire.ParseReservationPath(config.Name); err != nil {
+		return nil, err
+	}
+	req := config.toUpdateRequest()
+	if len(req.GetUpdateMask().GetPaths()) == 0 {
+		return nil, errNoReservationFieldsUpdated
+	}
+	respb, err := ac.admin.UpdateReservation(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return protoToReservationConfig(respb), nil
+}
+
+// DeleteReservation deletes a reservation. A valid reservation path has the
+// format: "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+func (ac *AdminClient) DeleteReservation(ctx context.Context, reservation string) error {
+	if _, err := wire.ParseReservationPath(reservation); err != nil {
+		return err
+	}
+	return ac.admin.DeleteReservation(ctx, &pb.DeleteReservationRequest{Name: reservation})
+}
+
+// Reservation retrieves the configuration of a reservation. A valid reservation
+// name has the format:
+// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+func (ac *AdminClient) Reservation(ctx context.Context, reservation string) (*ReservationConfig, error) {
+	if _, err := wire.ParseReservationPath(reservation); err != nil {
+		return nil, err
+	}
+	respb, err := ac.admin.GetReservation(ctx, &pb.GetReservationRequest{Name: reservation})
+	if err != nil {
+		return nil, err
+	}
+	return protoToReservationConfig(respb), nil
+}
+
+// Reservations retrieves the list of reservation configs for a given project
+// and region. A valid parent path has the format:
+// "projects/PROJECT_ID/locations/REGION".
+func (ac *AdminClient) Reservations(ctx context.Context, parent string) *ReservationIterator {
+	if _, err := wire.ParseLocationPath(parent); err != nil {
+		return &ReservationIterator{err: err}
+	}
+	return &ReservationIterator{
+		it: ac.admin.ListReservations(ctx, &pb.ListReservationsRequest{Parent: parent}),
+	}
+}
+
+// ReservationTopics retrieves the list of topic paths for a reservation.
+// A valid reservation path has the format:
+// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+func (ac *AdminClient) ReservationTopics(ctx context.Context, reservation string) *TopicPathIterator {
+	if _, err := wire.ParseReservationPath(reservation); err != nil {
+		return &TopicPathIterator{err: err}
+	}
+	return &TopicPathIterator{
+		it: ac.admin.ListReservationTopics(ctx, &pb.ListReservationTopicsRequest{Name: reservation}),
+	}
+}
+
 // Close releases any resources held by the client when it is no longer
 // required. If the client is available for the lifetime of the program, then
 // Close need not be called at exit.
@@ -319,6 +404,26 @@ func (s *SubscriptionIterator) Next() (*SubscriptionConfig, error) {
 	return protoToSubscriptionConfig(subspb), nil
 }
 
+// TopicPathIterator is an iterator that returns a list of topic paths.
+type TopicPathIterator struct {
+	it  *vkit.StringIterator
+	err error
+}
+
+// Next returns the next topic path, which has format:
+// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". The
+// second return value will be iterator.Done if there are no more topic paths.
+func (sp *TopicPathIterator) Next() (string, error) {
+	if sp.err != nil {
+		return "", sp.err
+	}
+	topicPath, err := sp.it.Next()
+	if err != nil {
+		return "", err
+	}
+	return topicPath, nil
+}
+
 // SubscriptionPathIterator is an iterator that returns a list of subscription
 // paths.
 type SubscriptionPathIterator struct {
@@ -339,4 +444,24 @@ func (sp *SubscriptionPathIterator) Next() (string, error) {
 		return "", err
 	}
 	return subsPath, nil
+}
+
+// ReservationIterator is an iterator that returns a list of reservation
+// configs.
+type ReservationIterator struct {
+	it  *vkit.ReservationIterator
+	err error
+}
+
+// Next returns the next reservation config. The second return value will be
+// iterator.Done if there are no more reservation configs.
+func (r *ReservationIterator) Next() (*ReservationConfig, error) {
+	if r.err != nil {
+		return nil, r.err
+	}
+	respb, err := r.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	return protoToReservationConfig(respb), nil
 }

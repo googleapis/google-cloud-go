@@ -323,10 +323,12 @@ func (ms *ManagedStream) Close() error {
 	return err
 }
 
-// AppendRows sends the append requests to the service, and returns one AppendResult per row.
+// AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
+// the set of data.
+//
 // The format of the row data is binary serialized protocol buffer bytes, and and the message
 // must adhere to the format of the schema Descriptor passed in when creating the managed stream.
-func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) ([]*AppendResult, error) {
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) (*AppendResult, error) {
 	pw := newPendingWrite(data, offset)
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
@@ -339,7 +341,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset i
 		pw.markDone(NoStreamOffset, err, ms.fc)
 		return nil, err
 	}
-	return pw.results, nil
+	return pw.result, nil
 }
 
 // recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
