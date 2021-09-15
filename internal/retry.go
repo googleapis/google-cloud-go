@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -46,9 +47,32 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 		p := bo.Pause()
 		if cerr := sleep(ctx, p); cerr != nil {
 			if lastErr != nil {
-				return Annotatef(lastErr, "retry failed with %v; last error", cerr)
+				return wrappedCallErr{cerr: cerr, wrappedErr: lastErr}
 			}
 			return cerr
 		}
 	}
 }
+
+// Use this error type to return an error which allows introspection of both
+// the context error and the error from the service.
+type wrappedCallErr struct {
+	cerr error
+	wrappedErr error
+}
+
+func (e wrappedCallErr) Error() string {
+	return fmt.Sprintf("retry failed with %v; last error: %v", e.cerr, e.wrappedErr)
+}
+
+func (e wrappedCallErr) Unwrap() error {
+	return e.wrappedErr
+}
+
+// Is allows errors.Is to match the error from the call as well as context
+// sentinel errors.
+func (e wrappedCallErr) Is(err error) bool {
+	return e.cerr == err || e.wrappedErr == err
+}
+
+
