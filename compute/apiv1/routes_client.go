@@ -219,7 +219,7 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -259,7 +259,10 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Route{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a Route resource in the specified project using the data included in the request.
@@ -311,7 +314,7 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

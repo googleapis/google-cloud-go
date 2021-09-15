@@ -196,7 +196,10 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Zone{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves the list of Zone resources available to the specified project.
