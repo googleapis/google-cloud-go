@@ -60,7 +60,7 @@ const transactionOutcomeUnknownMsg = "transaction outcome unknown"
 // Error implements error.Error.
 func (*TransactionOutcomeUnknownError) Error() string { return transactionOutcomeUnknownMsg }
 
-// unwrap returns the wrapped error (if any).
+// Unwrap returns the wrapped error (if any).
 func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
 
 // Error implements error.Error.
@@ -75,7 +75,7 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("spanner: code = %q, desc = %q, additional information = %s", code, e.Desc, e.additionalInformation)
 }
 
-// unwrap returns the wrapped error (if any).
+// Unwrap returns the wrapped error (if any).
 func (e *Error) Unwrap() error {
 	return e.err
 }

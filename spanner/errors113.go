@@ -20,7 +20,7 @@ package spanner
 
 import "errors"
 
-// unwrap is a generic implementation of (errors|xerrors).unwrap(error). This
+// unwrap is a generic implementation of (errors|xerrors).Unwrap(error). This
 // implementation uses errors and is included in Go 1.13 and later builds.
 func unwrap(err error) error {
 	return errors.Unwrap(err)
