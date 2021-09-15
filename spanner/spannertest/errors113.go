@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +16,13 @@
 //go:build go1.13
 // +build go1.13
 
-package spanner
+package spannertest
 
 import "errors"
 
-// unwrap is a generic implementation of (errors|xerrors).unwrap(error). This
-// implementation uses errors and is included in Go 1.13 and later builds.
-func unwrap(err error) error {
-	return errors.Unwrap(err)
-}
-
-// errorAs is a generic implementation of
-// (errors|xerrors).As(error, interface{}). This implementation uses errors and
-// is included in Go 1.13 and later builds.
-func errorAs(err error, target interface{}) bool {
-	return errors.As(err, target)
+// errorIs is a generic implementation of
+// (errors|xerrors).Is(error, interface{}). This implementation uses errors
+// and is included in Go 1.13 and later builds.
+func errorIs(err error, target error) bool {
+	return errors.Is(err, target)
 }

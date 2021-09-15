@@ -2183,7 +2183,7 @@ func errNilListValue(sqlType string) error {
 // errDecodeArrayElement returns error for failure in decoding single array element.
 func errDecodeArrayElement(i int, v proto.Message, sqlType string, err error) error {
 	var se *Error
-	if !ErrorAs(err, &se) {
+	if !errorAs(err, &se) {
 		return spannerErrorf(codes.Unknown,
 			"cannot decode %v(array element %v) as %v, error = <%v>", v, i, sqlType, err)
 	}
@@ -2613,7 +2613,7 @@ func errDupSpannerField(f string, ty *sppb.StructType) error {
 // a Cloud Spanner STRUCT.
 func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	var se *Error
-	if !ErrorAs(err, &se) {
+	if !errorAs(err, &se) {
 		return spannerErrorf(codes.Unknown,
 			"cannot decode field %v of Cloud Spanner STRUCT %+v, error = <%v>", f, ty, err)
 	}

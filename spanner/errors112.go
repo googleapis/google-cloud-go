@@ -20,22 +20,15 @@ package spanner
 
 import "golang.org/x/xerrors"
 
-// Unwrap is a generic implementation of (errors|xerrors).Unwrap(error). This
+// unwrap is a generic implementation of (errors|xerrors).unwrap(error). This
 // implementation uses xerrors and is included in Go 1.12 and earlier builds.
-func Unwrap(err error) error {
+func unwrap(err error) error {
 	return xerrors.Unwrap(err)
 }
 
-// ErrorAs is a generic implementation of
+// errorAs is a generic implementation of
 // (errors|xerrors).As(error, interface{}). This implementation uses xerrors
 // and is included in Go 1.12 and earlier builds.
-func ErrorAs(err error, target interface{}) bool {
+func errorAs(err error, target interface{}) bool {
 	return xerrors.As(err, target)
-}
-
-// ErrorIs is a generic implementation of
-// (errors|xerrors).Is(error, interface{}). This implementation uses xerrors
-// and is included in Go 1.12 and earlier builds.
-func ErrorIs(err error, target error) bool {
-	return xerrors.Is(err, target)
 }

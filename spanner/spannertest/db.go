@@ -37,7 +37,6 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
 	"cloud.google.com/go/civil"
-	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -444,7 +443,7 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 					// dependent column is null when it should not be so we can skip
 					// calculating this value for now. This is only valid if the column
 					// is nullable
-					if !col.NotNull && spanner.ErrorIs(err, errIncorrectType) {
+					if !col.NotNull && errorIs(err, errIncorrectType) {
 						row[i] = nil
 						continue
 					}

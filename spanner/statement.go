@@ -75,7 +75,7 @@ func errBindParam(k string, v interface{}, err error) error {
 		return nil
 	}
 	var se *Error
-	if !ErrorAs(err, &se) {
+	if !errorAs(err, &se) {
 		return spannerErrorf(codes.InvalidArgument, "failed to bind query parameter(name: %q, value: %v), error = <%v>", k, v, err)
 	}
 	se.decorate(fmt.Sprintf("failed to bind query parameter(name: %q, value: %v)", k, v))
