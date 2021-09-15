@@ -1,8 +1,8 @@
-# 
+# Contact Center AI Insights API
 
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/contactcenterinsights.svg)](https://pkg.go.dev/cloud.google.com/go/contactcenterinsights)
 
-Go Client Library for .
+Go Client Library for Contact Center AI Insights API.
 
 ## Install
 

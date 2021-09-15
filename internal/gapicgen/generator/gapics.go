@@ -70,8 +70,9 @@ func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 }
 
 type modInfo struct {
-	path       string
-	importPath string
+	path              string
+	importPath        string
+	serviceImportPath string
 }
 
 // Regen generates gapics.
@@ -92,7 +93,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 			if err := generateModule(modPath, modImportPath); err != nil {
 				return err
 			}
-			newMods = append(newMods, modInfo{path: filepath.Dir(filepath.Join(g.googleCloudDir, strings.TrimPrefix(c.importPath, "cloud.google.com/go"))), importPath: modImportPath})
+			newMods = append(newMods, modInfo{
+				path:              filepath.Dir(filepath.Join(g.googleCloudDir, strings.TrimPrefix(c.importPath, "cloud.google.com/go"))),
+				importPath:        modImportPath,
+				serviceImportPath: c.importPath,
+			})
 		}
 		if err := g.microgen(c); err != nil {
 			return err
@@ -123,7 +128,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 
 	if g.genModule {
 		for _, modInfo := range newMods {
-			generateReadmeAndChanges(modInfo.path, modInfo.importPath, manifest[modInfo.importPath].Description)
+			generateReadmeAndChanges(modInfo.path, modInfo.importPath, manifest[modInfo.serviceImportPath].Description)
 		}
 	}
 
