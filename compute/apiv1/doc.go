@@ -81,6 +81,7 @@ import (
 	"strings"
 	"unicode"
 
+	_ "golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 )
