@@ -61,7 +61,7 @@ func (ac *AdminClient) CreateTopic(ctx context.Context, config TopicConfig) (*To
 		return nil, err
 	}
 	req := &pb.CreateTopicRequest{
-		Parent:  topicPath.Location().String(),
+		Parent:  topicPath.LocationPath().String(),
 		Topic:   config.toProto(),
 		TopicId: topicPath.TopicID,
 	}
@@ -190,7 +190,7 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 		return nil, err
 	}
 	req := &pb.CreateSubscriptionRequest{
-		Parent:         subsPath.Location().String(),
+		Parent:         subsPath.LocationPath().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: subsPath.SubscriptionID,
 		SkipBacklog:    settings.backlogLocation != Beginning,
