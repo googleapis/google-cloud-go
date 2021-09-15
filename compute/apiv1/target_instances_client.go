@@ -321,7 +321,7 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -361,7 +361,10 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.TargetInstance{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
@@ -413,7 +416,7 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

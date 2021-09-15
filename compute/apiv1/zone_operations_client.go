@@ -216,7 +216,10 @@ func (c *zoneOperationsRESTClient) Delete(ctx context.Context, req *computepb.De
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DeleteZoneOperationResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Get retrieves the specified zone-specific Operations resource.
@@ -253,7 +256,10 @@ func (c *zoneOperationsRESTClient) Get(ctx context.Context, req *computepb.GetZo
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of Operation resources contained within the specified zone.
@@ -380,5 +386,8 @@ func (c *zoneOperationsRESTClient) Wait(ctx context.Context, req *computepb.Wait
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Operation{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }

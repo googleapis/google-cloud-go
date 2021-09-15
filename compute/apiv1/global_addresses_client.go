@@ -219,7 +219,7 @@ func (c *globalAddressesRESTClient) Delete(ctx context.Context, req *computepb.D
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -259,7 +259,10 @@ func (c *globalAddressesRESTClient) Get(ctx context.Context, req *computepb.GetG
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Address{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates an address resource in the specified project by using the data included in the request.
@@ -311,7 +314,7 @@ func (c *globalAddressesRESTClient) Insert(ctx context.Context, req *computepb.I
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
