@@ -37,12 +37,12 @@ var functions = map[string]function{
 			// TODO: Refine error messages to exactly match Spanner.
 			// Check input values first.
 			if len(values) != 2 {
-				return nil, spansql.Type{}, fmt.Errorf("%w: No matching signature for function STARTS_WITH for the given argument types", errIncorrectType)
+				return nil, spansql.Type{}, fmt.Errorf("No matching signature for function STARTS_WITH for the given argument types")
 			}
 			for _, v := range values {
 				// TODO: STARTS_WITH also supports BYTES as input parameters.
 				if _, ok := v.(string); !ok {
-					return nil, spansql.Type{}, fmt.Errorf("%w: No matching signature for function STARTS_WITH for the given argument types", errIncorrectType)
+					return nil, spansql.Type{}, fmt.Errorf("No matching signature for function STARTS_WITH for the given argument types")
 				}
 			}
 			s := values[0].(string)
@@ -53,10 +53,13 @@ var functions = map[string]function{
 	"LOWER": {
 		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
 			if len(values) != 1 {
-				return nil, spansql.Type{}, fmt.Errorf("%w: No matching signature for function LOWER for the given argument types", errIncorrectType)
+				return nil, spansql.Type{}, fmt.Errorf("No matching signature for function LOWER for the given argument types")
+			}
+			if values[0] == nil {
+				return nil, spansql.Type{Base: spansql.String}, nil
 			}
 			if _, ok := values[0].(string); !ok {
-				return nil, spansql.Type{}, fmt.Errorf("%w: No matching signature for function LOWER for the given argument types", errIncorrectType)
+				return nil, spansql.Type{}, fmt.Errorf("No matching signature for function LOWER for the given argument types")
 			}
 			return strings.ToLower(values[0].(string)), spansql.Type{Base: spansql.String}, nil
 		},

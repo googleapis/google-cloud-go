@@ -20,7 +20,6 @@ package spannertest
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -53,11 +52,6 @@ type coercedValue struct {
 	// TODO: type?
 	orig spansql.Expr
 }
-
-var (
-	// errIncorrectType represent when an expression evaluates to the wrong type.
-	errIncorrectType = errors.New("incorrect type")
-)
 
 func (cv coercedValue) SQL() string { return cv.orig.SQL() }
 
@@ -250,17 +244,23 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if rhs == nil {
+			return nil, nil
+		}
 		switch rhs := rhs.(type) {
 		case float64:
 			return -rhs, nil
 		case int64:
 			return -rhs, nil
 		}
-		return nil, fmt.Errorf("%w: RHS of %s evaluates to %T, want FLOAT64 or INT64", errIncorrectType, e.SQL(), rhs)
+		return nil, fmt.Errorf("RHS of %s evaluates to %T, want FLOAT64 or INT64", e.SQL(), rhs)
 	case spansql.BitNot:
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case int64:
@@ -272,7 +272,7 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 			}
 			return b, nil
 		}
-		return nil, fmt.Errorf("%w: RHS of %s evaluates to %T, want INT64 or BYTES", errIncorrectType, e.SQL(), rhs)
+		return nil, fmt.Errorf("RHS of %s evaluates to %T, want INT64 or BYTES", e.SQL(), rhs)
 	case spansql.Div:
 		lhs, err := ec.evalFloat64(e.LHS)
 		if err != nil {
@@ -292,9 +292,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -329,9 +335,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -348,7 +360,7 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		b1, ok1 := lhs.([]byte)
 		b2, ok2 := rhs.([]byte)
 		if !ok1 || !ok2 {
-			return nil, fmt.Errorf("%w: arguments of %s evaluate to (%T, %T), want (INT64, INT64) or (BYTES, BYTES)", errIncorrectType, e.SQL(), lhs, rhs)
+			return nil, fmt.Errorf("arguments of %s evaluate to (%T, %T), want (INT64, INT64) or (BYTES, BYTES)", e.SQL(), lhs, rhs)
 		}
 		if len(b1) != len(b2) {
 			return nil, fmt.Errorf("arguments of %s evaluate to BYTES of unequal lengths (%d vs %d)", e.SQL(), len(b1), len(b2))
@@ -400,7 +412,7 @@ func (ec evalContext) evalFloat64(e spansql.Expr) (float64, error) {
 func asFloat64(e spansql.Expr, v interface{}) (float64, error) {
 	switch v := v.(type) {
 	default:
-		return 0, fmt.Errorf("%w: expression %s evaluates to %T, want FLOAT64 or INT64", errIncorrectType, e.SQL(), v)
+		return 0, fmt.Errorf("expression %s evaluates to %T, want FLOAT64 or INT64", e.SQL(), v)
 	case float64:
 		return v, nil
 	case int64:
@@ -510,7 +522,7 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 				}
 				arr, ok := rhs.([]interface{})
 				if !ok {
-					return nil, fmt.Errorf("%w: UNNEST argument evaluated as %T, want array", errIncorrectType, rhs)
+					return nil, fmt.Errorf("UNNEST argument evaluated as %T, want array", rhs)
 				}
 				for _, rhs := range arr {
 					// == isn't okay here.

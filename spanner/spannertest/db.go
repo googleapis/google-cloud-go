@@ -439,15 +439,7 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			if col.Generated != nil {
 				res, err := ec.evalExpr(col.Generated)
 				if err != nil {
-					// We assume that if the expression ended up with a type error a
-					// dependent column is null when it should not be so we can skip
-					// calculating this value for now. This is only valid if the column
-					// is nullable
-					if !col.NotNull && errorIs(err, errIncorrectType) {
-						row[i] = nil
-						continue
-					}
-					return status.Errorf(codes.Internal, "evaluating generator expression failed: %v", err)
+					return err
 				}
 				row[i] = res
 			}
