@@ -493,8 +493,9 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bo
 				}
 			}
 
-			// TODO: Support sending the CRC32 checksum on either the first or
-			// last message of the stream.
+			// TODO: Currently the checksums are only sent on the first message
+			// of the stream, but in the future, we must also support sending it
+			// on the *last* message of the stream (instead of the first).
 			if w.SendCRC32C {
 				req.ObjectChecksums = &storagepb.ObjectChecksums{
 					Crc32C:  proto.Uint32(w.CRC32C),
@@ -517,6 +518,7 @@ func (w *Writer) uploadBuffer(buf []byte, recvd int, start int64, doneReading bo
 			if shouldRetry(err) {
 				sent = 0
 				finishWrite = false
+				// TODO: Add test case for failure modes of querying progress.
 				offset, err = w.determineOffset(start)
 				if err == nil {
 					continue

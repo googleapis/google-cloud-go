@@ -49,6 +49,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -1128,18 +1129,17 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Cancel the Writer context before flushing.
+	// TODO: Add a test that writes at least a chunk before canceling part way through.
 	cancel()
 
 	// The next Write should return context.Canceled.
 	_, err = w.Write(content)
-	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
-	// check for context cancellation instead.
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 
