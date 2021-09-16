@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 
@@ -570,7 +571,16 @@ func TestCapitalLetter(t *testing.T) {
 				Firewall: name,
 			})
 		if err != nil {
-			t.Error(err)
+			// sometimes the resource is not "ready" for deletion, sleep and retry.
+			time.Sleep(60 * time.Second)
+			_, err := c.Delete(ctx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			if err != nil {
+				t.Error(err)
+			}
 		}
 	}()
 	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
