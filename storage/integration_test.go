@@ -2472,6 +2472,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
 	// This test needs a second project and user (token source) to test
 	// all possibilities. Since we need these things for Firestore already,
 	// we use them here.
