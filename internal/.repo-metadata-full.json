@@ -329,7 +329,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1",
-    "release_level": "alpha",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/compute/metadata": {
