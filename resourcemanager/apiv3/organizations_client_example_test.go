@@ -47,6 +47,7 @@ func ExampleOrganizationsClient_GetOrganization() {
 
 	req := &resourcemanagerpb.GetOrganizationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetOrganizationRequest.
 	}
 	resp, err := c.GetOrganization(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleOrganizationsClient_SearchOrganizations() {
 
 	req := &resourcemanagerpb.SearchOrganizationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchOrganizationsRequest.
 	}
 	it := c.SearchOrganizations(ctx, req)
 	for {
@@ -91,6 +93,7 @@ func ExampleOrganizationsClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -110,6 +113,7 @@ func ExampleOrganizationsClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -129,6 +133,7 @@ func ExampleOrganizationsClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

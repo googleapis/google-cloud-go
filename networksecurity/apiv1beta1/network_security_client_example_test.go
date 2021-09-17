@@ -46,6 +46,7 @@ func ExampleClient_ListAuthorizationPolicies() {
 
 	req := &networksecuritypb.ListAuthorizationPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#ListAuthorizationPoliciesRequest.
 	}
 	it := c.ListAuthorizationPolicies(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetAuthorizationPolicy() {
 
 	req := &networksecuritypb.GetAuthorizationPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#GetAuthorizationPolicyRequest.
 	}
 	resp, err := c.GetAuthorizationPolicy(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateAuthorizationPolicy() {
 
 	req := &networksecuritypb.CreateAuthorizationPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#CreateAuthorizationPolicyRequest.
 	}
 	op, err := c.CreateAuthorizationPolicy(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_UpdateAuthorizationPolicy() {
 
 	req := &networksecuritypb.UpdateAuthorizationPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#UpdateAuthorizationPolicyRequest.
 	}
 	op, err := c.UpdateAuthorizationPolicy(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_DeleteAuthorizationPolicy() {
 
 	req := &networksecuritypb.DeleteAuthorizationPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#DeleteAuthorizationPolicyRequest.
 	}
 	op, err := c.DeleteAuthorizationPolicy(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleClient_ListServerTlsPolicies() {
 
 	req := &networksecuritypb.ListServerTlsPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#ListServerTlsPoliciesRequest.
 	}
 	it := c.ListServerTlsPolicies(ctx, req)
 	for {
@@ -185,6 +191,7 @@ func ExampleClient_GetServerTlsPolicy() {
 
 	req := &networksecuritypb.GetServerTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#GetServerTlsPolicyRequest.
 	}
 	resp, err := c.GetServerTlsPolicy(ctx, req)
 	if err != nil {
@@ -204,6 +211,7 @@ func ExampleClient_CreateServerTlsPolicy() {
 
 	req := &networksecuritypb.CreateServerTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#CreateServerTlsPolicyRequest.
 	}
 	op, err := c.CreateServerTlsPolicy(ctx, req)
 	if err != nil {
@@ -228,6 +236,7 @@ func ExampleClient_UpdateServerTlsPolicy() {
 
 	req := &networksecuritypb.UpdateServerTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#UpdateServerTlsPolicyRequest.
 	}
 	op, err := c.UpdateServerTlsPolicy(ctx, req)
 	if err != nil {
@@ -252,6 +261,7 @@ func ExampleClient_DeleteServerTlsPolicy() {
 
 	req := &networksecuritypb.DeleteServerTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#DeleteServerTlsPolicyRequest.
 	}
 	op, err := c.DeleteServerTlsPolicy(ctx, req)
 	if err != nil {
@@ -274,6 +284,7 @@ func ExampleClient_ListClientTlsPolicies() {
 
 	req := &networksecuritypb.ListClientTlsPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#ListClientTlsPoliciesRequest.
 	}
 	it := c.ListClientTlsPolicies(ctx, req)
 	for {
@@ -299,6 +310,7 @@ func ExampleClient_GetClientTlsPolicy() {
 
 	req := &networksecuritypb.GetClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#GetClientTlsPolicyRequest.
 	}
 	resp, err := c.GetClientTlsPolicy(ctx, req)
 	if err != nil {
@@ -318,6 +330,7 @@ func ExampleClient_CreateClientTlsPolicy() {
 
 	req := &networksecuritypb.CreateClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#CreateClientTlsPolicyRequest.
 	}
 	op, err := c.CreateClientTlsPolicy(ctx, req)
 	if err != nil {
@@ -342,6 +355,7 @@ func ExampleClient_UpdateClientTlsPolicy() {
 
 	req := &networksecuritypb.UpdateClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#UpdateClientTlsPolicyRequest.
 	}
 	op, err := c.UpdateClientTlsPolicy(ctx, req)
 	if err != nil {
@@ -366,6 +380,7 @@ func ExampleClient_DeleteClientTlsPolicy() {
 
 	req := &networksecuritypb.DeleteClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networksecurity/v1beta1#DeleteClientTlsPolicyRequest.
 	}
 	op, err := c.DeleteClientTlsPolicy(ctx, req)
 	if err != nil {

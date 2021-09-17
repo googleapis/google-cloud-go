@@ -47,6 +47,7 @@ func ExampleProjectsClient_GetProject() {
 
 	req := &resourcemanagerpb.GetProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetProjectRequest.
 	}
 	resp, err := c.GetProject(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleProjectsClient_ListProjects() {
 
 	req := &resourcemanagerpb.ListProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListProjectsRequest.
 	}
 	it := c.ListProjects(ctx, req)
 	for {
@@ -91,6 +93,7 @@ func ExampleProjectsClient_SearchProjects() {
 
 	req := &resourcemanagerpb.SearchProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchProjectsRequest.
 	}
 	it := c.SearchProjects(ctx, req)
 	for {
@@ -116,6 +119,7 @@ func ExampleProjectsClient_CreateProject() {
 
 	req := &resourcemanagerpb.CreateProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateProjectRequest.
 	}
 	op, err := c.CreateProject(ctx, req)
 	if err != nil {
@@ -140,6 +144,7 @@ func ExampleProjectsClient_UpdateProject() {
 
 	req := &resourcemanagerpb.UpdateProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateProjectRequest.
 	}
 	op, err := c.UpdateProject(ctx, req)
 	if err != nil {
@@ -164,6 +169,7 @@ func ExampleProjectsClient_MoveProject() {
 
 	req := &resourcemanagerpb.MoveProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#MoveProjectRequest.
 	}
 	op, err := c.MoveProject(ctx, req)
 	if err != nil {
@@ -188,6 +194,7 @@ func ExampleProjectsClient_DeleteProject() {
 
 	req := &resourcemanagerpb.DeleteProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteProjectRequest.
 	}
 	op, err := c.DeleteProject(ctx, req)
 	if err != nil {
@@ -212,6 +219,7 @@ func ExampleProjectsClient_UndeleteProject() {
 
 	req := &resourcemanagerpb.UndeleteProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UndeleteProjectRequest.
 	}
 	op, err := c.UndeleteProject(ctx, req)
 	if err != nil {
@@ -236,6 +244,7 @@ func ExampleProjectsClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -255,6 +264,7 @@ func ExampleProjectsClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -274,6 +284,7 @@ func ExampleProjectsClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
