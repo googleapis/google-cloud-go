@@ -1351,7 +1351,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 		t.Errorf("Read rows failed: %v", err)
 	}
 
-	// Great writer has nil because NumSongs is nil
+	// poor writer has nil because NumSongs is nil
 	want = [][]interface{}{
 		{"average writer", int64(500)},
 		{"great writer", int64(1000)},
