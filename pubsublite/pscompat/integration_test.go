@@ -105,11 +105,11 @@ func initResourcePaths(t *testing.T) (string, wire.TopicPath, wire.SubscriptionP
 
 	proj := testutil.ProjID()
 	zone := test.RandomLiteZone()
-	region, _ := wire.ZoneToRegion(zone)
+	region, _ := wire.LocationToRegion(zone)
 	resourceID := resourceIDs.New()
 
-	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}
-	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
+	topicPath := wire.TopicPath{Project: proj, Location: zone, TopicID: resourceID}
+	subscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID}
 	return region, topicPath, subscriptionPath
 }
 

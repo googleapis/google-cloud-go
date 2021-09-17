@@ -180,12 +180,12 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	ctx := context.Background()
 	proj := testutil.ProjID()
 	zone := test.RandomLiteZone()
-	region, _ := wire.ZoneToRegion(zone)
+	region, _ := wire.LocationToRegion(zone)
 	resourceID := resourceIDs.New()
 
 	locationPath := wire.LocationPath{Project: proj, Location: zone}.String()
-	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}.String()
-	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}.String()
+	topicPath := wire.TopicPath{Project: proj, Location: zone, TopicID: resourceID}.String()
+	subscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID}.String()
 	reservationPath := wire.ReservationPath{Project: proj, Region: region, ReservationID: resourceID}.String()
 	t.Logf("Topic path: %s", topicPath)
 
