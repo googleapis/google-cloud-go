@@ -233,7 +233,7 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -273,7 +273,10 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.Firewall{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a firewall rule in the specified project using the data included in the request.
@@ -325,7 +328,7 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -464,7 +467,7 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -519,7 +522,7 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
