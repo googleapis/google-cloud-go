@@ -164,6 +164,28 @@ type NackHandler func(*pubsub.Message) error
 // error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
+// ReassignmentHandlerFunc is called any time a new partition assignment is
+// received from the server. It will be called with both the previous and new
+// partition numbers as decided by the server.
+//
+// When this handler is called, partitions that are being assigned away are
+// stopping and new partitions are starting. Acks and nacks for messages from
+// partitions that are being assigned away will have no effect.
+//
+// The client library will not acknowledge the assignment until this handler
+// returns. The server will not assign any of the partitions in
+// `previousPartitions` to another client unless the assignment is acknowledged,
+// or a client takes too long to acknowledge (currently 30 seconds from the time
+// the assignment is sent from server's point of view).
+//
+// Because of the above, as long as reassignment handling is processed quickly,
+// it can be used to abort outstanding operations on partitions which are being
+// assigned away from this client.
+//
+// If this handler returns an error, the SubscriberClient will consider this a
+// fatal error and terminate.
+type ReassignmentHandlerFunc func(previousPartitions, nextPartitions []int) error
+
 // ReceiveSettings configure the SubscriberClient. Flow control settings
 // (MaxOutstandingMessages, MaxOutstandingBytes) apply per partition.
 //
@@ -210,6 +232,10 @@ type ReceiveSettings struct {
 	// Optional custom function that transforms a SequencedMessage API proto to a
 	// pubsub.Message.
 	MessageTransformer ReceiveMessageTransformerFunc
+
+	// Optional custom function that is called when a new partition assignment has
+	// been delivered to the client.
+	ReassignmentHandler ReassignmentHandlerFunc
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
