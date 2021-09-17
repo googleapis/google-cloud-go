@@ -236,8 +236,10 @@ func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPa
 //
 // This method only requires the Method and Expires fields in the specified
 // SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
-// GoogleAccessID and PrivateKey from GOOGLE_APPLICATION_CREDENTIALS. If no private key is found, it attempts
-// to use the GoogleAccessID to sign the URL. This requires the IAM credentials API to be enabled.
+// GoogleAccessID and PrivateKey from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
+// This requires the IAM credentials API to be enabled and iam.serviceAccounts.signBlob
+// permissions on the service account.
 // If you do not want these fields set for you, you may use
 // SignedURL(bucket, name string, opts *SignedURLOptions) instead.
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
@@ -320,6 +322,7 @@ func (b *BucketHandle) defaultSignBytesFunc(email string) func([]byte) ([]byte, 
 		if err != nil {
 			return nil, fmt.Errorf("unable to create iamcredentials client: %v", err)
 		}
+
 		resp, err := svc.Projects.ServiceAccounts.SignBlob(fmt.Sprintf("projects/-/serviceAccounts/%s", email), &iamcredentials.SignBlobRequest{
 			Payload: base64.StdEncoding.EncodeToString(in),
 		}).Do()
