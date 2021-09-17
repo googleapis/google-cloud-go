@@ -233,6 +233,13 @@ func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPa
 // access to a restricted resource for a limited time without needing a
 // Google account or signing in. For more information about signed URLs, see
 // https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+//
+// This method only requires the Method and Expires fields in the specified
+// SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
+// GoogleAccessID and PrivateKey from GOOGLE_APPLICATION_CREDENTIALS. If no private key is found, it attempts
+// to use the GoogleAccessID to sign the URL. This requires the IAM credentials API to be enabled.
+// If you do not want these fields set for you, you may use
+// SignedURL(bucket, name string, opts *SignedURLOptions) instead.
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return SignedURL(b.name, object, opts)
