@@ -202,7 +202,7 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

@@ -36,6 +36,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -1262,8 +1263,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		r := &storagepb.WriteObjectResponse{WriteStatus: &storagepb.WriteObjectResponse_Resource{Resource: tt.in}}
-		got := newObjectFromProto(r)
+		got := newObjectFromProto(tt.in)
 		if diff := testutil.Diff(got, tt.want); diff != "" {
 			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
 		}
@@ -1308,6 +1308,65 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 	got := in.toProtoObject(b)
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("toProtoObject mismatches:\ngot=-, want=+:\n%s", diff)
+	}
+}
+
+func TestApplyCondsProto(t *testing.T) {
+	for _, tst := range []struct {
+		name     string
+		in, want proto.Message
+		err      error
+		gen      int64
+		conds    *Conditions
+	}{
+		{
+			name: "generation",
+			gen:  123,
+			in:   &storagepb.ReadObjectRequest{},
+			want: &storagepb.ReadObjectRequest{Generation: 123},
+		},
+		{
+			name: "invalid_no_generation",
+			gen:  123,
+			in:   &storagepb.WriteObjectRequest{},
+			err:  fmt.Errorf("generation not supported"),
+		},
+		{
+			name:  "if_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(123), IfMetagenerationMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationMatch: 123, MetagenerationMatch: 123},
+		},
+		{
+			name:  "if_dne",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(0)},
+			conds: &Conditions{DoesNotExist: true},
+		},
+		{
+			name:  "if_not_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationNotMatch: proto.Int64(123), IfMetagenerationNotMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationNotMatch: 123, MetagenerationNotMatch: 123},
+		},
+		{
+			name:  "invalid_multiple_conditions",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			conds: &Conditions{MetagenerationMatch: 123, MetagenerationNotMatch: 123},
+			err:   fmt.Errorf("multiple conditions"),
+		},
+	} {
+		if err := applyCondsProto(tst.name, tst.gen, tst.conds, tst.in); tst.err == nil && err != nil {
+			t.Errorf("%s: error got %v, want nil", tst.name, err)
+		} else if tst.err != nil && (err == nil || !strings.Contains(err.Error(), tst.err.Error())) {
+			t.Errorf("%s: error got %v, want %v", tst.name, err, tst.err)
+		} else if diff := cmp.Diff(tst.in, tst.want, cmp.Comparer(proto.Equal)); tst.err == nil && diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", tst.name, diff)
+		}
 	}
 }
 
@@ -1418,6 +1477,22 @@ func TestWithEndpoint(t *testing.T) {
 			WantReadHost:        "fake.gcs.com:8080",
 			WantScheme:          "http",
 		},
+		{
+			desc:                "Endpoint overrides emulator host when host is specified as scheme://host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "https://localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when host is specified as host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
+			WantScheme:          "http",
+		},
 	}
 	ctx := context.Background()
 	for _, tc := range testCases {
@@ -1438,4 +1513,194 @@ func TestWithEndpoint(t *testing.T) {
 		}
 	}
 	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+}
+
+// Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
+// env variable and verify that the client hits the correct endpoint for several
+// different operations performe in sequence.
+// Verifies also that raw.BasePath, readHost and scheme are not changed
+// after running the operations.
+func TestOperationsWithEndpoint(t *testing.T) {
+	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+
+	gotURL := make(chan string, 1)
+	gotHost := make(chan string, 1)
+	gotMethod := make(chan string, 1)
+
+	timedOut := make(chan bool, 1)
+
+	hClient, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		done := make(chan bool, 1)
+		io.Copy(ioutil.Discard, r.Body)
+		fmt.Fprintf(w, "{}")
+		go func() {
+			gotHost <- r.Host
+			gotURL <- r.RequestURI
+			gotMethod <- r.Method
+			done <- true
+		}()
+
+		select {
+		case <-timedOut:
+		case <-done:
+		}
+
+	})
+	defer closeServer()
+
+	testCases := []struct {
+		desc                string
+		CustomEndpoint      string
+		StorageEmulatorHost string
+		wantScheme          string
+		wantHost            string
+	}{
+		{
+			desc:                "No endpoint or emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "storage.googleapis.com",
+		},
+		{
+			desc:                "emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "https://" + "addr",
+			wantScheme:          "https",
+			wantHost:            "addr",
+		},
+		{
+			desc:                "endpoint specified",
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "end",
+		},
+		{
+			desc:                "both emulator and endpoint specified",
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
+			StorageEmulatorHost: "http://host",
+			wantScheme:          "https",
+			wantHost:            "end",
+		},
+	}
+
+	for _, tc := range testCases {
+		ctx := context.Background()
+		t.Run(tc.desc, func(t *testing.T) {
+			timeout := time.After(time.Second)
+			done := make(chan bool, 1)
+			go func() {
+				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+
+				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
+				if err != nil {
+					t.Errorf("error creating client: %v", err)
+					return
+				}
+				originalRawBasePath := c.raw.BasePath
+				originalReadHost := c.readHost
+				originalScheme := c.scheme
+
+				operations := []struct {
+					desc       string
+					runOp      func() error
+					wantURL    string
+					wantMethod string
+				}{
+					{
+						desc: "Create a bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Create(ctx, "pid", nil)
+						},
+						wantURL:    "/storage/v1/b?alt=json&prettyPrint=false&project=pid",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Upload an object",
+						runOp: func() error {
+							w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+							_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+							if err != nil {
+								return err
+							}
+							return w.Close()
+						},
+						wantURL:    "/upload/storage/v1/b/test-bucket/o?alt=json&name=file&prettyPrint=false&projection=full&uploadType=multipart",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Download an object",
+						runOp: func() error {
+							rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+							if err != nil {
+								return err
+							}
+
+							_, err = io.Copy(ioutil.Discard, rc)
+							if err != nil {
+								return err
+							}
+							return rc.Close()
+						},
+						wantURL:    "/test-bucket/file",
+						wantMethod: "GET",
+					},
+					{
+						desc: "Delete bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Delete(ctx)
+						},
+						wantURL:    "/storage/v1/b/test-bucket?alt=json&prettyPrint=false",
+						wantMethod: "DELETE",
+					},
+				}
+
+				// Check that the calls made to the server are as expected
+				// given the operations performed
+				for _, op := range operations {
+					if err := op.runOp(); err != nil {
+						t.Errorf("%s: %v", op.desc, err)
+					}
+					u, method := <-gotURL, <-gotMethod
+					if u != op.wantURL {
+						t.Errorf("%s: unexpected request URL\ngot  %q\nwant %q",
+							op.desc, u, op.wantURL)
+					}
+					if method != op.wantMethod {
+						t.Errorf("%s: unexpected request method\ngot  %q\nwant %q",
+							op.desc, method, op.wantMethod)
+					}
+
+					if got := <-gotHost; got != tc.wantHost {
+						t.Errorf("%s: unexpected request host\ngot  %q\nwant %q",
+							op.desc, got, tc.wantHost)
+					}
+				}
+
+				// Check that the client fields have not changed
+				if c.raw.BasePath != originalRawBasePath {
+					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.raw.BasePath, originalRawBasePath)
+				}
+				if c.readHost != originalReadHost {
+					t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.readHost, originalReadHost)
+				}
+				if c.scheme != originalScheme {
+					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.scheme, originalScheme)
+				}
+				done <- true
+			}()
+			select {
+			case <-timeout:
+				t.Errorf("test timeout")
+				timedOut <- true
+			case <-done:
+			}
+		})
+
+	}
 }

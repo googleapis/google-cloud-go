@@ -41,26 +41,34 @@ var newJobClientHook clientHook
 
 // JobCallOptions contains the retry settings for each method of JobClient.
 type JobCallOptions struct {
-	CreateCustomJob               []gax.CallOption
-	GetCustomJob                  []gax.CallOption
-	ListCustomJobs                []gax.CallOption
-	DeleteCustomJob               []gax.CallOption
-	CancelCustomJob               []gax.CallOption
-	CreateDataLabelingJob         []gax.CallOption
-	GetDataLabelingJob            []gax.CallOption
-	ListDataLabelingJobs          []gax.CallOption
-	DeleteDataLabelingJob         []gax.CallOption
-	CancelDataLabelingJob         []gax.CallOption
-	CreateHyperparameterTuningJob []gax.CallOption
-	GetHyperparameterTuningJob    []gax.CallOption
-	ListHyperparameterTuningJobs  []gax.CallOption
-	DeleteHyperparameterTuningJob []gax.CallOption
-	CancelHyperparameterTuningJob []gax.CallOption
-	CreateBatchPredictionJob      []gax.CallOption
-	GetBatchPredictionJob         []gax.CallOption
-	ListBatchPredictionJobs       []gax.CallOption
-	DeleteBatchPredictionJob      []gax.CallOption
-	CancelBatchPredictionJob      []gax.CallOption
+	CreateCustomJob                               []gax.CallOption
+	GetCustomJob                                  []gax.CallOption
+	ListCustomJobs                                []gax.CallOption
+	DeleteCustomJob                               []gax.CallOption
+	CancelCustomJob                               []gax.CallOption
+	CreateDataLabelingJob                         []gax.CallOption
+	GetDataLabelingJob                            []gax.CallOption
+	ListDataLabelingJobs                          []gax.CallOption
+	DeleteDataLabelingJob                         []gax.CallOption
+	CancelDataLabelingJob                         []gax.CallOption
+	CreateHyperparameterTuningJob                 []gax.CallOption
+	GetHyperparameterTuningJob                    []gax.CallOption
+	ListHyperparameterTuningJobs                  []gax.CallOption
+	DeleteHyperparameterTuningJob                 []gax.CallOption
+	CancelHyperparameterTuningJob                 []gax.CallOption
+	CreateBatchPredictionJob                      []gax.CallOption
+	GetBatchPredictionJob                         []gax.CallOption
+	ListBatchPredictionJobs                       []gax.CallOption
+	DeleteBatchPredictionJob                      []gax.CallOption
+	CancelBatchPredictionJob                      []gax.CallOption
+	CreateModelDeploymentMonitoringJob            []gax.CallOption
+	SearchModelDeploymentMonitoringStatsAnomalies []gax.CallOption
+	GetModelDeploymentMonitoringJob               []gax.CallOption
+	ListModelDeploymentMonitoringJobs             []gax.CallOption
+	UpdateModelDeploymentMonitoringJob            []gax.CallOption
+	DeleteModelDeploymentMonitoringJob            []gax.CallOption
+	PauseModelDeploymentMonitoringJob             []gax.CallOption
+	ResumeModelDeploymentMonitoringJob            []gax.CallOption
 }
 
 func defaultJobGRPCClientOptions() []option.ClientOption {
@@ -78,26 +86,34 @@ func defaultJobGRPCClientOptions() []option.ClientOption {
 
 func defaultJobCallOptions() *JobCallOptions {
 	return &JobCallOptions{
-		CreateCustomJob:               []gax.CallOption{},
-		GetCustomJob:                  []gax.CallOption{},
-		ListCustomJobs:                []gax.CallOption{},
-		DeleteCustomJob:               []gax.CallOption{},
-		CancelCustomJob:               []gax.CallOption{},
-		CreateDataLabelingJob:         []gax.CallOption{},
-		GetDataLabelingJob:            []gax.CallOption{},
-		ListDataLabelingJobs:          []gax.CallOption{},
-		DeleteDataLabelingJob:         []gax.CallOption{},
-		CancelDataLabelingJob:         []gax.CallOption{},
-		CreateHyperparameterTuningJob: []gax.CallOption{},
-		GetHyperparameterTuningJob:    []gax.CallOption{},
-		ListHyperparameterTuningJobs:  []gax.CallOption{},
-		DeleteHyperparameterTuningJob: []gax.CallOption{},
-		CancelHyperparameterTuningJob: []gax.CallOption{},
-		CreateBatchPredictionJob:      []gax.CallOption{},
-		GetBatchPredictionJob:         []gax.CallOption{},
-		ListBatchPredictionJobs:       []gax.CallOption{},
-		DeleteBatchPredictionJob:      []gax.CallOption{},
-		CancelBatchPredictionJob:      []gax.CallOption{},
+		CreateCustomJob:                               []gax.CallOption{},
+		GetCustomJob:                                  []gax.CallOption{},
+		ListCustomJobs:                                []gax.CallOption{},
+		DeleteCustomJob:                               []gax.CallOption{},
+		CancelCustomJob:                               []gax.CallOption{},
+		CreateDataLabelingJob:                         []gax.CallOption{},
+		GetDataLabelingJob:                            []gax.CallOption{},
+		ListDataLabelingJobs:                          []gax.CallOption{},
+		DeleteDataLabelingJob:                         []gax.CallOption{},
+		CancelDataLabelingJob:                         []gax.CallOption{},
+		CreateHyperparameterTuningJob:                 []gax.CallOption{},
+		GetHyperparameterTuningJob:                    []gax.CallOption{},
+		ListHyperparameterTuningJobs:                  []gax.CallOption{},
+		DeleteHyperparameterTuningJob:                 []gax.CallOption{},
+		CancelHyperparameterTuningJob:                 []gax.CallOption{},
+		CreateBatchPredictionJob:                      []gax.CallOption{},
+		GetBatchPredictionJob:                         []gax.CallOption{},
+		ListBatchPredictionJobs:                       []gax.CallOption{},
+		DeleteBatchPredictionJob:                      []gax.CallOption{},
+		CancelBatchPredictionJob:                      []gax.CallOption{},
+		CreateModelDeploymentMonitoringJob:            []gax.CallOption{},
+		SearchModelDeploymentMonitoringStatsAnomalies: []gax.CallOption{},
+		GetModelDeploymentMonitoringJob:               []gax.CallOption{},
+		ListModelDeploymentMonitoringJobs:             []gax.CallOption{},
+		UpdateModelDeploymentMonitoringJob:            []gax.CallOption{},
+		DeleteModelDeploymentMonitoringJob:            []gax.CallOption{},
+		PauseModelDeploymentMonitoringJob:             []gax.CallOption{},
+		ResumeModelDeploymentMonitoringJob:            []gax.CallOption{},
 	}
 }
 
@@ -130,6 +146,16 @@ type internalJobClient interface {
 	DeleteBatchPredictionJob(context.Context, *aiplatformpb.DeleteBatchPredictionJobRequest, ...gax.CallOption) (*DeleteBatchPredictionJobOperation, error)
 	DeleteBatchPredictionJobOperation(name string) *DeleteBatchPredictionJobOperation
 	CancelBatchPredictionJob(context.Context, *aiplatformpb.CancelBatchPredictionJobRequest, ...gax.CallOption) error
+	CreateModelDeploymentMonitoringJob(context.Context, *aiplatformpb.CreateModelDeploymentMonitoringJobRequest, ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error)
+	SearchModelDeploymentMonitoringStatsAnomalies(context.Context, *aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest, ...gax.CallOption) *ModelMonitoringStatsAnomaliesIterator
+	GetModelDeploymentMonitoringJob(context.Context, *aiplatformpb.GetModelDeploymentMonitoringJobRequest, ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error)
+	ListModelDeploymentMonitoringJobs(context.Context, *aiplatformpb.ListModelDeploymentMonitoringJobsRequest, ...gax.CallOption) *ModelDeploymentMonitoringJobIterator
+	UpdateModelDeploymentMonitoringJob(context.Context, *aiplatformpb.UpdateModelDeploymentMonitoringJobRequest, ...gax.CallOption) (*UpdateModelDeploymentMonitoringJobOperation, error)
+	UpdateModelDeploymentMonitoringJobOperation(name string) *UpdateModelDeploymentMonitoringJobOperation
+	DeleteModelDeploymentMonitoringJob(context.Context, *aiplatformpb.DeleteModelDeploymentMonitoringJobRequest, ...gax.CallOption) (*DeleteModelDeploymentMonitoringJobOperation, error)
+	DeleteModelDeploymentMonitoringJobOperation(name string) *DeleteModelDeploymentMonitoringJobOperation
+	PauseModelDeploymentMonitoringJob(context.Context, *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, ...gax.CallOption) error
+	ResumeModelDeploymentMonitoringJob(context.Context, *aiplatformpb.ResumeModelDeploymentMonitoringJobRequest, ...gax.CallOption) error
 }
 
 // JobClient is a client for interacting with Vertex AI API.
@@ -325,6 +351,63 @@ func (c *JobClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatfor
 	return c.internalClient.CancelBatchPredictionJob(ctx, req, opts...)
 }
 
+// CreateModelDeploymentMonitoringJob creates a ModelDeploymentMonitoringJob. It will run periodically on a
+// configured interval.
+func (c *JobClient) CreateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.CreateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	return c.internalClient.CreateModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
+// SearchModelDeploymentMonitoringStatsAnomalies searches Model Monitoring Statistics generated within a given time window.
+func (c *JobClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx context.Context, req *aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest, opts ...gax.CallOption) *ModelMonitoringStatsAnomaliesIterator {
+	return c.internalClient.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req, opts...)
+}
+
+// GetModelDeploymentMonitoringJob gets a ModelDeploymentMonitoringJob.
+func (c *JobClient) GetModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.GetModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	return c.internalClient.GetModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
+// ListModelDeploymentMonitoringJobs lists ModelDeploymentMonitoringJobs in a Location.
+func (c *JobClient) ListModelDeploymentMonitoringJobs(ctx context.Context, req *aiplatformpb.ListModelDeploymentMonitoringJobsRequest, opts ...gax.CallOption) *ModelDeploymentMonitoringJobIterator {
+	return c.internalClient.ListModelDeploymentMonitoringJobs(ctx, req, opts...)
+}
+
+// UpdateModelDeploymentMonitoringJob updates a ModelDeploymentMonitoringJob.
+func (c *JobClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.UpdateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*UpdateModelDeploymentMonitoringJobOperation, error) {
+	return c.internalClient.UpdateModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
+// UpdateModelDeploymentMonitoringJobOperation returns a new UpdateModelDeploymentMonitoringJobOperation from a given name.
+// The name must be that of a previously created UpdateModelDeploymentMonitoringJobOperation, possibly from a different process.
+func (c *JobClient) UpdateModelDeploymentMonitoringJobOperation(name string) *UpdateModelDeploymentMonitoringJobOperation {
+	return c.internalClient.UpdateModelDeploymentMonitoringJobOperation(name)
+}
+
+// DeleteModelDeploymentMonitoringJob deletes a ModelDeploymentMonitoringJob.
+func (c *JobClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.DeleteModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*DeleteModelDeploymentMonitoringJobOperation, error) {
+	return c.internalClient.DeleteModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
+// DeleteModelDeploymentMonitoringJobOperation returns a new DeleteModelDeploymentMonitoringJobOperation from a given name.
+// The name must be that of a previously created DeleteModelDeploymentMonitoringJobOperation, possibly from a different process.
+func (c *JobClient) DeleteModelDeploymentMonitoringJobOperation(name string) *DeleteModelDeploymentMonitoringJobOperation {
+	return c.internalClient.DeleteModelDeploymentMonitoringJobOperation(name)
+}
+
+// PauseModelDeploymentMonitoringJob pauses a ModelDeploymentMonitoringJob. If the job is running, the server
+// makes a best effort to cancel the job. Will mark
+// ModelDeploymentMonitoringJob.state to ‘PAUSED’.
+func (c *JobClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.PauseModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
+// ResumeModelDeploymentMonitoringJob resumes a paused ModelDeploymentMonitoringJob. It will start to run from
+// next scheduled time. A deleted ModelDeploymentMonitoringJob can’t be
+// resumed.
+func (c *JobClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.ResumeModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ResumeModelDeploymentMonitoringJob(ctx, req, opts...)
+}
+
 // jobGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -422,11 +505,6 @@ func (c *jobGRPCClient) Close() error {
 }
 
 func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.CreateCustomJobRequest, opts ...gax.CallOption) (*aiplatformpb.CustomJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCustomJob[0:len((*c.CallOptions).CreateCustomJob):len((*c.CallOptions).CreateCustomJob)], opts...)
@@ -443,11 +521,6 @@ func (c *jobGRPCClient) CreateCustomJob(ctx context.Context, req *aiplatformpb.C
 }
 
 func (c *jobGRPCClient) GetCustomJob(ctx context.Context, req *aiplatformpb.GetCustomJobRequest, opts ...gax.CallOption) (*aiplatformpb.CustomJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCustomJob[0:len((*c.CallOptions).GetCustomJob):len((*c.CallOptions).GetCustomJob)], opts...)
@@ -508,11 +581,6 @@ func (c *jobGRPCClient) ListCustomJobs(ctx context.Context, req *aiplatformpb.Li
 }
 
 func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.DeleteCustomJobRequest, opts ...gax.CallOption) (*DeleteCustomJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCustomJob[0:len((*c.CallOptions).DeleteCustomJob):len((*c.CallOptions).DeleteCustomJob)], opts...)
@@ -531,11 +599,6 @@ func (c *jobGRPCClient) DeleteCustomJob(ctx context.Context, req *aiplatformpb.D
 }
 
 func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.CancelCustomJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelCustomJob[0:len((*c.CallOptions).CancelCustomJob):len((*c.CallOptions).CancelCustomJob)], opts...)
@@ -548,11 +611,6 @@ func (c *jobGRPCClient) CancelCustomJob(ctx context.Context, req *aiplatformpb.C
 }
 
 func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatformpb.CreateDataLabelingJobRequest, opts ...gax.CallOption) (*aiplatformpb.DataLabelingJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDataLabelingJob[0:len((*c.CallOptions).CreateDataLabelingJob):len((*c.CallOptions).CreateDataLabelingJob)], opts...)
@@ -569,11 +627,6 @@ func (c *jobGRPCClient) CreateDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) GetDataLabelingJob(ctx context.Context, req *aiplatformpb.GetDataLabelingJobRequest, opts ...gax.CallOption) (*aiplatformpb.DataLabelingJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDataLabelingJob[0:len((*c.CallOptions).GetDataLabelingJob):len((*c.CallOptions).GetDataLabelingJob)], opts...)
@@ -634,11 +687,6 @@ func (c *jobGRPCClient) ListDataLabelingJobs(ctx context.Context, req *aiplatfor
 }
 
 func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatformpb.DeleteDataLabelingJobRequest, opts ...gax.CallOption) (*DeleteDataLabelingJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDataLabelingJob[0:len((*c.CallOptions).DeleteDataLabelingJob):len((*c.CallOptions).DeleteDataLabelingJob)], opts...)
@@ -657,11 +705,6 @@ func (c *jobGRPCClient) DeleteDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatformpb.CancelDataLabelingJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelDataLabelingJob[0:len((*c.CallOptions).CancelDataLabelingJob):len((*c.CallOptions).CancelDataLabelingJob)], opts...)
@@ -674,11 +717,6 @@ func (c *jobGRPCClient) CancelDataLabelingJob(ctx context.Context, req *aiplatfo
 }
 
 func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CreateHyperparameterTuningJobRequest, opts ...gax.CallOption) (*aiplatformpb.HyperparameterTuningJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateHyperparameterTuningJob[0:len((*c.CallOptions).CreateHyperparameterTuningJob):len((*c.CallOptions).CreateHyperparameterTuningJob)], opts...)
@@ -695,11 +733,6 @@ func (c *jobGRPCClient) CreateHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) GetHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.GetHyperparameterTuningJobRequest, opts ...gax.CallOption) (*aiplatformpb.HyperparameterTuningJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetHyperparameterTuningJob[0:len((*c.CallOptions).GetHyperparameterTuningJob):len((*c.CallOptions).GetHyperparameterTuningJob)], opts...)
@@ -760,11 +793,6 @@ func (c *jobGRPCClient) ListHyperparameterTuningJobs(ctx context.Context, req *a
 }
 
 func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.DeleteHyperparameterTuningJobRequest, opts ...gax.CallOption) (*DeleteHyperparameterTuningJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteHyperparameterTuningJob[0:len((*c.CallOptions).DeleteHyperparameterTuningJob):len((*c.CallOptions).DeleteHyperparameterTuningJob)], opts...)
@@ -783,11 +811,6 @@ func (c *jobGRPCClient) DeleteHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *aiplatformpb.CancelHyperparameterTuningJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelHyperparameterTuningJob[0:len((*c.CallOptions).CancelHyperparameterTuningJob):len((*c.CallOptions).CancelHyperparameterTuningJob)], opts...)
@@ -800,11 +823,6 @@ func (c *jobGRPCClient) CancelHyperparameterTuningJob(ctx context.Context, req *
 }
 
 func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aiplatformpb.CreateBatchPredictionJobRequest, opts ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBatchPredictionJob[0:len((*c.CallOptions).CreateBatchPredictionJob):len((*c.CallOptions).CreateBatchPredictionJob)], opts...)
@@ -821,11 +839,6 @@ func (c *jobGRPCClient) CreateBatchPredictionJob(ctx context.Context, req *aipla
 }
 
 func (c *jobGRPCClient) GetBatchPredictionJob(ctx context.Context, req *aiplatformpb.GetBatchPredictionJobRequest, opts ...gax.CallOption) (*aiplatformpb.BatchPredictionJob, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBatchPredictionJob[0:len((*c.CallOptions).GetBatchPredictionJob):len((*c.CallOptions).GetBatchPredictionJob)], opts...)
@@ -886,11 +899,6 @@ func (c *jobGRPCClient) ListBatchPredictionJobs(ctx context.Context, req *aiplat
 }
 
 func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aiplatformpb.DeleteBatchPredictionJobRequest, opts ...gax.CallOption) (*DeleteBatchPredictionJobOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBatchPredictionJob[0:len((*c.CallOptions).DeleteBatchPredictionJob):len((*c.CallOptions).DeleteBatchPredictionJob)], opts...)
@@ -909,17 +917,192 @@ func (c *jobGRPCClient) DeleteBatchPredictionJob(ctx context.Context, req *aipla
 }
 
 func (c *jobGRPCClient) CancelBatchPredictionJob(ctx context.Context, req *aiplatformpb.CancelBatchPredictionJobRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelBatchPredictionJob[0:len((*c.CallOptions).CancelBatchPredictionJob):len((*c.CallOptions).CancelBatchPredictionJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.jobClient.CancelBatchPredictionJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *jobGRPCClient) CreateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.CreateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateModelDeploymentMonitoringJob[0:len((*c.CallOptions).CreateModelDeploymentMonitoringJob):len((*c.CallOptions).CreateModelDeploymentMonitoringJob)], opts...)
+	var resp *aiplatformpb.ModelDeploymentMonitoringJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.CreateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *jobGRPCClient) SearchModelDeploymentMonitoringStatsAnomalies(ctx context.Context, req *aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest, opts ...gax.CallOption) *ModelMonitoringStatsAnomaliesIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job", url.QueryEscape(req.GetModelDeploymentMonitoringJob())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies[0:len((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies):len((*c.CallOptions).SearchModelDeploymentMonitoringStatsAnomalies)], opts...)
+	it := &ModelMonitoringStatsAnomaliesIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.ModelMonitoringStatsAnomalies, string, error) {
+		resp := &aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.jobClient.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMonitoringStats(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *jobGRPCClient) GetModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.GetModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetModelDeploymentMonitoringJob[0:len((*c.CallOptions).GetModelDeploymentMonitoringJob):len((*c.CallOptions).GetModelDeploymentMonitoringJob)], opts...)
+	var resp *aiplatformpb.ModelDeploymentMonitoringJob
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.GetModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *jobGRPCClient) ListModelDeploymentMonitoringJobs(ctx context.Context, req *aiplatformpb.ListModelDeploymentMonitoringJobsRequest, opts ...gax.CallOption) *ModelDeploymentMonitoringJobIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListModelDeploymentMonitoringJobs[0:len((*c.CallOptions).ListModelDeploymentMonitoringJobs):len((*c.CallOptions).ListModelDeploymentMonitoringJobs)], opts...)
+	it := &ModelDeploymentMonitoringJobIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListModelDeploymentMonitoringJobsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.ModelDeploymentMonitoringJob, string, error) {
+		resp := &aiplatformpb.ListModelDeploymentMonitoringJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.jobClient.ListModelDeploymentMonitoringJobs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetModelDeploymentMonitoringJobs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.UpdateModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*UpdateModelDeploymentMonitoringJobOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model_deployment_monitoring_job.name", url.QueryEscape(req.GetModelDeploymentMonitoringJob().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateModelDeploymentMonitoringJob[0:len((*c.CallOptions).UpdateModelDeploymentMonitoringJob):len((*c.CallOptions).UpdateModelDeploymentMonitoringJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.UpdateModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateModelDeploymentMonitoringJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.DeleteModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) (*DeleteModelDeploymentMonitoringJobOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteModelDeploymentMonitoringJob[0:len((*c.CallOptions).DeleteModelDeploymentMonitoringJob):len((*c.CallOptions).DeleteModelDeploymentMonitoringJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.jobClient.DeleteModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteModelDeploymentMonitoringJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *jobGRPCClient) PauseModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.PauseModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PauseModelDeploymentMonitoringJob[0:len((*c.CallOptions).PauseModelDeploymentMonitoringJob):len((*c.CallOptions).PauseModelDeploymentMonitoringJob)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.jobClient.PauseModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *jobGRPCClient) ResumeModelDeploymentMonitoringJob(ctx context.Context, req *aiplatformpb.ResumeModelDeploymentMonitoringJobRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ResumeModelDeploymentMonitoringJob[0:len((*c.CallOptions).ResumeModelDeploymentMonitoringJob):len((*c.CallOptions).ResumeModelDeploymentMonitoringJob)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.jobClient.ResumeModelDeploymentMonitoringJob(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err
@@ -1157,6 +1340,133 @@ func (op *DeleteHyperparameterTuningJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteModelDeploymentMonitoringJobOperation manages a long-running operation from DeleteModelDeploymentMonitoringJob.
+type DeleteModelDeploymentMonitoringJobOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteModelDeploymentMonitoringJobOperation returns a new DeleteModelDeploymentMonitoringJobOperation from a given name.
+// The name must be that of a previously created DeleteModelDeploymentMonitoringJobOperation, possibly from a different process.
+func (c *jobGRPCClient) DeleteModelDeploymentMonitoringJobOperation(name string) *DeleteModelDeploymentMonitoringJobOperation {
+	return &DeleteModelDeploymentMonitoringJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteModelDeploymentMonitoringJobOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteModelDeploymentMonitoringJobOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateModelDeploymentMonitoringJobOperation manages a long-running operation from UpdateModelDeploymentMonitoringJob.
+type UpdateModelDeploymentMonitoringJobOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateModelDeploymentMonitoringJobOperation returns a new UpdateModelDeploymentMonitoringJobOperation from a given name.
+// The name must be that of a previously created UpdateModelDeploymentMonitoringJobOperation, possibly from a different process.
+func (c *jobGRPCClient) UpdateModelDeploymentMonitoringJobOperation(name string) *UpdateModelDeploymentMonitoringJobOperation {
+	return &UpdateModelDeploymentMonitoringJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateModelDeploymentMonitoringJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	var resp aiplatformpb.ModelDeploymentMonitoringJob
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateModelDeploymentMonitoringJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	var resp aiplatformpb.ModelDeploymentMonitoringJob
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateModelDeploymentMonitoringJobOperation) Metadata() (*aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata, error) {
+	var meta aiplatformpb.UpdateModelDeploymentMonitoringJobOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateModelDeploymentMonitoringJobOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateModelDeploymentMonitoringJobOperation) Name() string {
+	return op.lro.Name()
+}
+
 // BatchPredictionJobIterator manages a stream of *aiplatformpb.BatchPredictionJob.
 type BatchPredictionJobIterator struct {
 	items    []*aiplatformpb.BatchPredictionJob
@@ -1340,6 +1650,100 @@ func (it *HyperparameterTuningJobIterator) bufLen() int {
 }
 
 func (it *HyperparameterTuningJobIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ModelDeploymentMonitoringJobIterator manages a stream of *aiplatformpb.ModelDeploymentMonitoringJob.
+type ModelDeploymentMonitoringJobIterator struct {
+	items    []*aiplatformpb.ModelDeploymentMonitoringJob
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelDeploymentMonitoringJob, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ModelDeploymentMonitoringJobIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ModelDeploymentMonitoringJobIterator) Next() (*aiplatformpb.ModelDeploymentMonitoringJob, error) {
+	var item *aiplatformpb.ModelDeploymentMonitoringJob
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ModelDeploymentMonitoringJobIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ModelDeploymentMonitoringJobIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ModelMonitoringStatsAnomaliesIterator manages a stream of *aiplatformpb.ModelMonitoringStatsAnomalies.
+type ModelMonitoringStatsAnomaliesIterator struct {
+	items    []*aiplatformpb.ModelMonitoringStatsAnomalies
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.ModelMonitoringStatsAnomalies, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ModelMonitoringStatsAnomaliesIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ModelMonitoringStatsAnomaliesIterator) Next() (*aiplatformpb.ModelMonitoringStatsAnomalies, error) {
+	var item *aiplatformpb.ModelMonitoringStatsAnomalies
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ModelMonitoringStatsAnomaliesIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ModelMonitoringStatsAnomaliesIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

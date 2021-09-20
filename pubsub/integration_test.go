@@ -435,6 +435,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	msg := &Message{
 		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
 	}
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlSignalError
 	r := topic.Publish(ctx, msg)
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("Failed to publish max length message: %v", err)

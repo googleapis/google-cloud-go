@@ -298,7 +298,10 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DiskType{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of disk types available to the specified project.
