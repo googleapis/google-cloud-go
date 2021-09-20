@@ -36,6 +36,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -1262,8 +1263,7 @@ func TestProtoObjectToObjectAttrs(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		r := &storagepb.WriteObjectResponse{WriteStatus: &storagepb.WriteObjectResponse_Resource{Resource: tt.in}}
-		got := newObjectFromProto(r)
+		got := newObjectFromProto(tt.in)
 		if diff := testutil.Diff(got, tt.want); diff != "" {
 			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
 		}
@@ -1308,6 +1308,65 @@ func TestObjectAttrsToProtoObject(t *testing.T) {
 	got := in.toProtoObject(b)
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("toProtoObject mismatches:\ngot=-, want=+:\n%s", diff)
+	}
+}
+
+func TestApplyCondsProto(t *testing.T) {
+	for _, tst := range []struct {
+		name     string
+		in, want proto.Message
+		err      error
+		gen      int64
+		conds    *Conditions
+	}{
+		{
+			name: "generation",
+			gen:  123,
+			in:   &storagepb.ReadObjectRequest{},
+			want: &storagepb.ReadObjectRequest{Generation: 123},
+		},
+		{
+			name: "invalid_no_generation",
+			gen:  123,
+			in:   &storagepb.WriteObjectRequest{},
+			err:  fmt.Errorf("generation not supported"),
+		},
+		{
+			name:  "if_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(123), IfMetagenerationMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationMatch: 123, MetagenerationMatch: 123},
+		},
+		{
+			name:  "if_dne",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(0)},
+			conds: &Conditions{DoesNotExist: true},
+		},
+		{
+			name:  "if_not_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationNotMatch: proto.Int64(123), IfMetagenerationNotMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationNotMatch: 123, MetagenerationNotMatch: 123},
+		},
+		{
+			name:  "invalid_multiple_conditions",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			conds: &Conditions{MetagenerationMatch: 123, MetagenerationNotMatch: 123},
+			err:   fmt.Errorf("multiple conditions"),
+		},
+	} {
+		if err := applyCondsProto(tst.name, tst.gen, tst.conds, tst.in); tst.err == nil && err != nil {
+			t.Errorf("%s: error got %v, want nil", tst.name, err)
+		} else if tst.err != nil && (err == nil || !strings.Contains(err.Error(), tst.err.Error())) {
+			t.Errorf("%s: error got %v, want %v", tst.name, err, tst.err)
+		} else if diff := cmp.Diff(tst.in, tst.want, cmp.Comparer(proto.Equal)); tst.err == nil && diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", tst.name, diff)
+		}
 	}
 }
 
