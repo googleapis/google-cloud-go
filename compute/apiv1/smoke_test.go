@@ -17,8 +17,10 @@
 package compute
 
 import (
+	"cloud.google.com/go/internal"
 	"context"
 	"fmt"
+	"github.com/googleapis/gax-go/v2"
 	"testing"
 	"time"
 
@@ -565,22 +567,18 @@ func TestCapitalLetter(t *testing.T) {
 		t.Error(err)
 	}
 	defer func() {
-		_, err := c.Delete(ctx,
-			&computepb.DeleteFirewallRequest{
-				Project:  projectId,
-				Firewall: name,
-			})
-		if err != nil {
-			// sometimes the resource is not "ready" for deletion, sleep and retry.
-			time.Sleep(60 * time.Second)
-			_, err := c.Delete(ctx,
+		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			_, err = c.Delete(timeoutCtx,
 				&computepb.DeleteFirewallRequest{
 					Project:  projectId,
 					Firewall: name,
 				})
-			if err != nil {
-				t.Error(err)
-			}
+			return err == nil, err
+		})
+		if err != nil {
+			t.Error(err)
 		}
 	}()
 	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
