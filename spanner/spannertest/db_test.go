@@ -378,7 +378,7 @@ func TestGeneratedColumn(t *testing.T) {
 	}
 	for _, stmt := range ddl.List {
 		if st := db.ApplyDDL(stmt); st.Code() != codes.OK {
-			t.Fatal()
+			t.Fatalf("ApplyDDL failed: %v", st)
 		}
 	}
 

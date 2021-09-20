@@ -1360,6 +1360,31 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
 	}
+
+	// Delete Poor Writer.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Delete(tableName, spanner.KeySetFromKeys(spanner.Key{"Poor Writer"})),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	ri = client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err = slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// Poor Writer should no longer be in the result.
+	want = [][]interface{}{
+		{"average writer", int64(500)},
+		{"great writer", int64(1000)},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
 }
 
 func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
