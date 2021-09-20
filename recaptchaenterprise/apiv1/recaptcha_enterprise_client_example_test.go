@@ -179,3 +179,43 @@ func ExampleClient_DeleteKey() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleClient_MigrateKey() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.MigrateKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#MigrateKeyRequest.
+	}
+	resp, err := c.MigrateKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetMetrics() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.GetMetricsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetMetricsRequest.
+	}
+	resp, err := c.GetMetrics(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

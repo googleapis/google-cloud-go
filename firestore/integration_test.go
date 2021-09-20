@@ -1603,6 +1603,7 @@ func TestDetectProjectID(t *testing.T) {
 }
 
 func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4717")
 	h := testHelper{t}
 	coll := integrationColl(t)
 	ctx := context.Background()
