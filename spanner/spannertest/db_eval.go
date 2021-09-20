@@ -237,11 +237,15 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 }
 
 func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
+	// TODO: Better NULL handling
 	switch e.Op {
 	case spansql.Neg:
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case float64:
@@ -254,6 +258,9 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case int64:
@@ -285,9 +292,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -322,9 +335,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
