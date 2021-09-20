@@ -1262,6 +1262,131 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 }
 
+func TestIntegration_GeneratedColumns(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	tableName := "SongWriters"
+
+	err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			Name STRING(50) NOT NULL,
+			NumSongs INT64,
+			EstimatedSales INT64 NOT NULL,
+			CanonicalName STRING(50) AS (LOWER(Name)) STORED,
+		) PRIMARY KEY (Name)`)
+	if err != nil {
+		t.Fatalf("Setting up fresh table: %v", err)
+	}
+	err = updateDDL(t, adminClient,
+		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales INT64 AS (NumSongs * EstimatedSales) STORED`)
+	if err != nil {
+		t.Fatalf("Adding new column: %v", err)
+	}
+
+	// Insert some data.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales", "NumSongs"},
+			[]interface{}{"Average Writer", 10, 10}),
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales"},
+			[]interface{}{"Great Writer", 100}),
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales", "NumSongs"},
+			[]interface{}{"Poor Writer", 1, 50}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	err = updateDDL(t, adminClient,
+		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales2 INT64 AS (NumSongs * EstimatedSales) STORED`)
+	if err == nil {
+		t.Fatalf("Should have failed to add a generated column to non empty table")
+	}
+
+	ri := client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err := slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// Great writer has nil because NumSongs is nil
+	want := [][]interface{}{
+		{"average writer", int64(100)},
+		{"great writer", nil},
+		{"poor writer", int64(50)},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+
+	// Test modifying the generated values and nulling one
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Average Writer", 50}),
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Great Writer", 10}),
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Poor Writer", nil}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	ri = client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err = slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// poor writer has nil because NumSongs is nil
+	want = [][]interface{}{
+		{"average writer", int64(500)},
+		{"great writer", int64(1000)},
+		{"poor writer", nil},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+
+	// Delete Poor Writer.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Delete(tableName, spanner.KeySetFromKeys(spanner.Key{"Poor Writer"})),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	ri = client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err = slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// Poor Writer should no longer be in the result.
+	want = [][]interface{}{
+		{"average writer", int64(500)},
+		{"great writer", int64(1000)},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+}
+
 func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
 	t.Helper()
 	err := updateDDL(t, adminClient, "DROP TABLE "+table)
