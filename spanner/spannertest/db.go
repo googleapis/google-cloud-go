@@ -423,7 +423,7 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 		// generated columns with fresh data.
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
-		// this should never fail as the row was just inserted
+		// This should never fail as the row was just inserted.
 		if !found {
 			return status.Error(codes.Internal, "row failed to be inserted")
 		}
@@ -433,8 +433,9 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			row:  row,
 		}
 
-		// TODO: We would need to do a topological sort on dependencies (i.e. what other columns the expression references)
-		// to ensure we can handle generated columns which reference other generated columns
+		// TODO: We would need to do a topological sort on dependencies
+		// (i.e. what other columns the expression references) to ensure we
+		// can handle generated columns which reference other generated columns
 		for i, col := range t.cols {
 			if col.Generated != nil {
 				res, err := ec.evalExpr(col.Generated)
@@ -677,8 +678,10 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		Name:    cd.Name,
 		Type:    cd.Type,
 		NotNull: cd.NotNull,
-		// TODO: We should figure out what columns the Generator expression relies on and check validate it at this time
-		// currently it will just fail when writing data instead.
+		// TODO: We should figure out what columns the Generator expression
+		// relies on and check it is valid at this time currently it will
+		// fail when writing data instead as it is the first time we
+		// evaluate the expression.
 		Generated: cd.Generated,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
