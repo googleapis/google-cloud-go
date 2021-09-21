@@ -1188,7 +1188,7 @@ func TestPublishResponse(t *testing.T) {
 
 func TestTopicRetentionAdmin(t *testing.T) {
 	ctx := context.Background()
-	pclient, _, _, cleanup := newFake(ctx, t)
+	pclient, _, sclient, cleanup := newFake(ctx, t)
 	defer cleanup()
 
 	initialDur := durationpb.New(10 * time.Hour)
@@ -1212,13 +1212,13 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		t.Errorf("top2.MessageRetentionDuration got %v\nwant %v", top2.MessageRetentionDuration, updateTopic.MessageRetentionDuration)
 	}
 
-	// sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
-	// 	AckDeadlineSeconds: minAckDeadlineSecs,
-	// 	Name:               "projects/P/subscriptions/S",
-	// 	Topic:              top2.Name,
-	// })
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top2.Name,
+	})
 
-	// if sub.TopicMessageRetentionDuration != top2.MessageRetentionDuration {
-	// 	t.Errorf("sub.TopicMessageRetentionDuration got %v\nwant %v", sub.MessageRetentionDuration, top2.MessageRetentionDuration)
-	// }
+	if got, want := sub.MessageRetentionDuration, top2.MessageRetentionDuration; testutil.Diff(got, want) != "" {
+		t.Errorf("sub.TopicMessageRetentionDuration got %v\nwant %v", sub.MessageRetentionDuration, top2.MessageRetentionDuration)
+	}
 }
