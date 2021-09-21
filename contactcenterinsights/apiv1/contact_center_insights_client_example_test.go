@@ -46,6 +46,7 @@ func ExampleClient_CreateConversation() {
 
 	req := &contactcenterinsightspb.CreateConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_UpdateConversation() {
 
 	req := &contactcenterinsightspb.UpdateConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateConversationRequest.
 	}
 	resp, err := c.UpdateConversation(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_GetConversation() {
 
 	req := &contactcenterinsightspb.GetConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetConversationRequest.
 	}
 	resp, err := c.GetConversation(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleClient_ListConversations() {
 
 	req := &contactcenterinsightspb.ListConversationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListConversationsRequest.
 	}
 	it := c.ListConversations(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleClient_DeleteConversation() {
 
 	req := &contactcenterinsightspb.DeleteConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteConversationRequest.
 	}
 	err = c.DeleteConversation(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleClient_CreateAnalysis() {
 
 	req := &contactcenterinsightspb.CreateAnalysisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateAnalysisRequest.
 	}
 	op, err := c.CreateAnalysis(ctx, req)
 	if err != nil {
@@ -169,6 +175,7 @@ func ExampleClient_GetAnalysis() {
 
 	req := &contactcenterinsightspb.GetAnalysisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetAnalysisRequest.
 	}
 	resp, err := c.GetAnalysis(ctx, req)
 	if err != nil {
@@ -188,6 +195,7 @@ func ExampleClient_ListAnalyses() {
 
 	req := &contactcenterinsightspb.ListAnalysesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListAnalysesRequest.
 	}
 	it := c.ListAnalyses(ctx, req)
 	for {
@@ -213,6 +221,7 @@ func ExampleClient_DeleteAnalysis() {
 
 	req := &contactcenterinsightspb.DeleteAnalysisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteAnalysisRequest.
 	}
 	err = c.DeleteAnalysis(ctx, req)
 	if err != nil {
@@ -230,6 +239,7 @@ func ExampleClient_ExportInsightsData() {
 
 	req := &contactcenterinsightspb.ExportInsightsDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ExportInsightsDataRequest.
 	}
 	op, err := c.ExportInsightsData(ctx, req)
 	if err != nil {
@@ -254,6 +264,7 @@ func ExampleClient_CreateIssueModel() {
 
 	req := &contactcenterinsightspb.CreateIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreateIssueModelRequest.
 	}
 	op, err := c.CreateIssueModel(ctx, req)
 	if err != nil {
@@ -278,6 +289,7 @@ func ExampleClient_UpdateIssueModel() {
 
 	req := &contactcenterinsightspb.UpdateIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateIssueModelRequest.
 	}
 	resp, err := c.UpdateIssueModel(ctx, req)
 	if err != nil {
@@ -297,6 +309,7 @@ func ExampleClient_GetIssueModel() {
 
 	req := &contactcenterinsightspb.GetIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetIssueModelRequest.
 	}
 	resp, err := c.GetIssueModel(ctx, req)
 	if err != nil {
@@ -316,6 +329,7 @@ func ExampleClient_ListIssueModels() {
 
 	req := &contactcenterinsightspb.ListIssueModelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListIssueModelsRequest.
 	}
 	resp, err := c.ListIssueModels(ctx, req)
 	if err != nil {
@@ -335,6 +349,7 @@ func ExampleClient_DeleteIssueModel() {
 
 	req := &contactcenterinsightspb.DeleteIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeleteIssueModelRequest.
 	}
 	op, err := c.DeleteIssueModel(ctx, req)
 	if err != nil {
@@ -357,6 +372,7 @@ func ExampleClient_DeployIssueModel() {
 
 	req := &contactcenterinsightspb.DeployIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeployIssueModelRequest.
 	}
 	op, err := c.DeployIssueModel(ctx, req)
 	if err != nil {
@@ -381,6 +397,7 @@ func ExampleClient_UndeployIssueModel() {
 
 	req := &contactcenterinsightspb.UndeployIssueModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UndeployIssueModelRequest.
 	}
 	op, err := c.UndeployIssueModel(ctx, req)
 	if err != nil {
@@ -405,6 +422,7 @@ func ExampleClient_GetIssue() {
 
 	req := &contactcenterinsightspb.GetIssueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetIssueRequest.
 	}
 	resp, err := c.GetIssue(ctx, req)
 	if err != nil {
@@ -424,6 +442,7 @@ func ExampleClient_ListIssues() {
 
 	req := &contactcenterinsightspb.ListIssuesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListIssuesRequest.
 	}
 	resp, err := c.ListIssues(ctx, req)
 	if err != nil {
@@ -443,6 +462,7 @@ func ExampleClient_UpdateIssue() {
 
 	req := &contactcenterinsightspb.UpdateIssueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateIssueRequest.
 	}
 	resp, err := c.UpdateIssue(ctx, req)
 	if err != nil {
@@ -462,6 +482,7 @@ func ExampleClient_CalculateIssueModelStats() {
 
 	req := &contactcenterinsightspb.CalculateIssueModelStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CalculateIssueModelStatsRequest.
 	}
 	resp, err := c.CalculateIssueModelStats(ctx, req)
 	if err != nil {
@@ -481,6 +502,7 @@ func ExampleClient_CreatePhraseMatcher() {
 
 	req := &contactcenterinsightspb.CreatePhraseMatcherRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CreatePhraseMatcherRequest.
 	}
 	resp, err := c.CreatePhraseMatcher(ctx, req)
 	if err != nil {
@@ -500,6 +522,7 @@ func ExampleClient_GetPhraseMatcher() {
 
 	req := &contactcenterinsightspb.GetPhraseMatcherRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetPhraseMatcherRequest.
 	}
 	resp, err := c.GetPhraseMatcher(ctx, req)
 	if err != nil {
@@ -519,6 +542,7 @@ func ExampleClient_ListPhraseMatchers() {
 
 	req := &contactcenterinsightspb.ListPhraseMatchersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#ListPhraseMatchersRequest.
 	}
 	it := c.ListPhraseMatchers(ctx, req)
 	for {
@@ -544,6 +568,7 @@ func ExampleClient_DeletePhraseMatcher() {
 
 	req := &contactcenterinsightspb.DeletePhraseMatcherRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#DeletePhraseMatcherRequest.
 	}
 	err = c.DeletePhraseMatcher(ctx, req)
 	if err != nil {
@@ -561,6 +586,7 @@ func ExampleClient_CalculateStats() {
 
 	req := &contactcenterinsightspb.CalculateStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#CalculateStatsRequest.
 	}
 	resp, err := c.CalculateStats(ctx, req)
 	if err != nil {
@@ -580,6 +606,7 @@ func ExampleClient_GetSettings() {
 
 	req := &contactcenterinsightspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {
@@ -599,6 +626,7 @@ func ExampleClient_UpdateSettings() {
 
 	req := &contactcenterinsightspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdateSettingsRequest.
 	}
 	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {

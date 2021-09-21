@@ -46,6 +46,7 @@ func ExampleClient_ListAccessPolicies() {
 
 	req := &accesscontextmanagerpb.ListAccessPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListAccessPoliciesRequest.
 	}
 	it := c.ListAccessPolicies(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetAccessPolicy() {
 
 	req := &accesscontextmanagerpb.GetAccessPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetAccessPolicyRequest.
 	}
 	resp, err := c.GetAccessPolicy(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateAccessPolicy() {
 
 	req := &accesscontextmanagerpb.AccessPolicy{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#AccessPolicy.
 	}
 	op, err := c.CreateAccessPolicy(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_UpdateAccessPolicy() {
 
 	req := &accesscontextmanagerpb.UpdateAccessPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateAccessPolicyRequest.
 	}
 	op, err := c.UpdateAccessPolicy(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_DeleteAccessPolicy() {
 
 	req := &accesscontextmanagerpb.DeleteAccessPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteAccessPolicyRequest.
 	}
 	op, err := c.DeleteAccessPolicy(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleClient_ListAccessLevels() {
 
 	req := &accesscontextmanagerpb.ListAccessLevelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListAccessLevelsRequest.
 	}
 	it := c.ListAccessLevels(ctx, req)
 	for {
@@ -185,6 +191,7 @@ func ExampleClient_GetAccessLevel() {
 
 	req := &accesscontextmanagerpb.GetAccessLevelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetAccessLevelRequest.
 	}
 	resp, err := c.GetAccessLevel(ctx, req)
 	if err != nil {
@@ -204,6 +211,7 @@ func ExampleClient_CreateAccessLevel() {
 
 	req := &accesscontextmanagerpb.CreateAccessLevelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateAccessLevelRequest.
 	}
 	op, err := c.CreateAccessLevel(ctx, req)
 	if err != nil {
@@ -228,6 +236,7 @@ func ExampleClient_UpdateAccessLevel() {
 
 	req := &accesscontextmanagerpb.UpdateAccessLevelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateAccessLevelRequest.
 	}
 	op, err := c.UpdateAccessLevel(ctx, req)
 	if err != nil {
@@ -252,6 +261,7 @@ func ExampleClient_DeleteAccessLevel() {
 
 	req := &accesscontextmanagerpb.DeleteAccessLevelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteAccessLevelRequest.
 	}
 	op, err := c.DeleteAccessLevel(ctx, req)
 	if err != nil {
@@ -274,6 +284,7 @@ func ExampleClient_ReplaceAccessLevels() {
 
 	req := &accesscontextmanagerpb.ReplaceAccessLevelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ReplaceAccessLevelsRequest.
 	}
 	op, err := c.ReplaceAccessLevels(ctx, req)
 	if err != nil {
@@ -298,6 +309,7 @@ func ExampleClient_ListServicePerimeters() {
 
 	req := &accesscontextmanagerpb.ListServicePerimetersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListServicePerimetersRequest.
 	}
 	it := c.ListServicePerimeters(ctx, req)
 	for {
@@ -323,6 +335,7 @@ func ExampleClient_GetServicePerimeter() {
 
 	req := &accesscontextmanagerpb.GetServicePerimeterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetServicePerimeterRequest.
 	}
 	resp, err := c.GetServicePerimeter(ctx, req)
 	if err != nil {
@@ -342,6 +355,7 @@ func ExampleClient_CreateServicePerimeter() {
 
 	req := &accesscontextmanagerpb.CreateServicePerimeterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateServicePerimeterRequest.
 	}
 	op, err := c.CreateServicePerimeter(ctx, req)
 	if err != nil {
@@ -366,6 +380,7 @@ func ExampleClient_UpdateServicePerimeter() {
 
 	req := &accesscontextmanagerpb.UpdateServicePerimeterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateServicePerimeterRequest.
 	}
 	op, err := c.UpdateServicePerimeter(ctx, req)
 	if err != nil {
@@ -390,6 +405,7 @@ func ExampleClient_DeleteServicePerimeter() {
 
 	req := &accesscontextmanagerpb.DeleteServicePerimeterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteServicePerimeterRequest.
 	}
 	op, err := c.DeleteServicePerimeter(ctx, req)
 	if err != nil {
@@ -412,6 +428,7 @@ func ExampleClient_ReplaceServicePerimeters() {
 
 	req := &accesscontextmanagerpb.ReplaceServicePerimetersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ReplaceServicePerimetersRequest.
 	}
 	op, err := c.ReplaceServicePerimeters(ctx, req)
 	if err != nil {
@@ -436,6 +453,7 @@ func ExampleClient_CommitServicePerimeters() {
 
 	req := &accesscontextmanagerpb.CommitServicePerimetersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CommitServicePerimetersRequest.
 	}
 	op, err := c.CommitServicePerimeters(ctx, req)
 	if err != nil {
@@ -460,6 +478,7 @@ func ExampleClient_ListGcpUserAccessBindings() {
 
 	req := &accesscontextmanagerpb.ListGcpUserAccessBindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#ListGcpUserAccessBindingsRequest.
 	}
 	it := c.ListGcpUserAccessBindings(ctx, req)
 	for {
@@ -485,6 +504,7 @@ func ExampleClient_GetGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.GetGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#GetGcpUserAccessBindingRequest.
 	}
 	resp, err := c.GetGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -504,6 +524,7 @@ func ExampleClient_CreateGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.CreateGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#CreateGcpUserAccessBindingRequest.
 	}
 	op, err := c.CreateGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -528,6 +549,7 @@ func ExampleClient_UpdateGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.UpdateGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#UpdateGcpUserAccessBindingRequest.
 	}
 	op, err := c.UpdateGcpUserAccessBinding(ctx, req)
 	if err != nil {
@@ -552,6 +574,7 @@ func ExampleClient_DeleteGcpUserAccessBinding() {
 
 	req := &accesscontextmanagerpb.DeleteGcpUserAccessBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/identity/accesscontextmanager/v1#DeleteGcpUserAccessBindingRequest.
 	}
 	op, err := c.DeleteGcpUserAccessBinding(ctx, req)
 	if err != nil {

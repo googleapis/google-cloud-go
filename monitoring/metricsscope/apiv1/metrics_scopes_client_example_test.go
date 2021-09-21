@@ -45,6 +45,7 @@ func ExampleMetricsScopesClient_GetMetricsScope() {
 
 	req := &metricsscopepb.GetMetricsScopeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#GetMetricsScopeRequest.
 	}
 	resp, err := c.GetMetricsScope(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleMetricsScopesClient_ListMetricsScopesByMonitoredProject() {
 
 	req := &metricsscopepb.ListMetricsScopesByMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#ListMetricsScopesByMonitoredProjectRequest.
 	}
 	resp, err := c.ListMetricsScopesByMonitoredProject(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleMetricsScopesClient_CreateMonitoredProject() {
 
 	req := &metricsscopepb.CreateMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#CreateMonitoredProjectRequest.
 	}
 	op, err := c.CreateMonitoredProject(ctx, req)
 	if err != nil {
@@ -107,6 +110,7 @@ func ExampleMetricsScopesClient_DeleteMonitoredProject() {
 
 	req := &metricsscopepb.DeleteMonitoredProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/metricsscope/v1#DeleteMonitoredProjectRequest.
 	}
 	op, err := c.DeleteMonitoredProject(ctx, req)
 	if err != nil {
