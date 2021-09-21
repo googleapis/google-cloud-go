@@ -375,6 +375,9 @@ type JobStatistics struct {
 
 	// TransactionInfo indicates the transaction ID associated with the job, if any.
 	TransactionInfo *TransactionInfo
+
+	// SessionInfo contains information about the session if this job is part of one.
+	SessionInfo *SessionInfo
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -884,6 +887,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
 		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
 		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:         bqToSessionInfo(s.SessionInfo),
 	}
 	switch {
 	case s.Extract != nil:
@@ -1000,5 +1004,28 @@ func bqToTransactionInfo(in *bq.TransactionInfo) *TransactionInfo {
 	}
 	return &TransactionInfo{
 		TransactionID: in.TransactionId,
+	}
+}
+
+// SessionInfo contains information about a session associated with a job.
+type SessionInfo struct {
+	SessionID string
+}
+
+func (s *SessionInfo) toBQ() *bq.SessionInfo {
+	if s == nil {
+		return nil
+	}
+	return &bq.SessionInfo{
+		SessionId: s.SessionID,
+	}
+}
+
+func bqToSessionInfo(in *bq.SessionInfo) *SessionInfo {
+	if in == nil {
+		return nil
+	}
+	return &SessionInfo{
+		SessionID: in.SessionId,
 	}
 }
