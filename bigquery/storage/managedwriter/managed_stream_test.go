@@ -18,7 +18,7 @@ import (
 	"context"
 	"testing"
 
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"

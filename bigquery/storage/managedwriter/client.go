@@ -20,11 +20,11 @@ import (
 	"runtime"
 	"strings"
 
-	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"cloud.google.com/go/internal/detect"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
