@@ -26,7 +26,7 @@ import (
 
 // NoDedupeID indicates a streaming insert row wants to opt out of best-effort
 // deduplication.
-// It is EXPERIMENTAL and subject to change or removal without notice.
+// Deprecated: use an empty string instead.
 const NoDedupeID = "NoDedupeID"
 
 // An Inserter does streaming inserts into a BigQuery table.
@@ -205,11 +205,8 @@ func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAll
 		if err != nil {
 			return nil, err
 		}
-		if insertID == NoDedupeID {
-			// User wants to opt-out of sending deduplication ID.
+		if insertID == NoDedupeID { // For backwards compatibility.
 			insertID = ""
-		} else if insertID == "" {
-			insertID = randomIDFn()
 		}
 		m := make(map[string]bq.JsonValue)
 		for k, v := range row {

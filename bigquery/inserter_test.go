@@ -17,7 +17,6 @@ package bigquery
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"testing"
 
 	"cloud.google.com/go/internal/pretty"
@@ -37,11 +36,6 @@ func (ts testSaver) Save() (map[string]Value, string, error) {
 }
 
 func TestNewInsertRequest(t *testing.T) {
-	prev := randomIDFn
-	n := 0
-	randomIDFn = func() string { n++; return strconv.Itoa(n) }
-	defer func() { randomIDFn = prev }()
-
 	tests := []struct {
 		ul     *Uploader
 		savers []ValueSaver
@@ -61,8 +55,8 @@ func TestNewInsertRequest(t *testing.T) {
 			},
 			req: &bq.TableDataInsertAllRequest{
 				Rows: []*bq.TableDataInsertAllRequestRows{
-					{InsertId: "1", Json: map[string]bq.JsonValue{"one": 1}},
-					{InsertId: "2", Json: map[string]bq.JsonValue{"two": 2}},
+					{InsertId: "", Json: map[string]bq.JsonValue{"one": 1}},
+					{InsertId: "", Json: map[string]bq.JsonValue{"two": 2}},
 					{InsertId: "", Json: map[string]bq.JsonValue{"three": 3}},
 				},
 			},
@@ -80,7 +74,7 @@ func TestNewInsertRequest(t *testing.T) {
 			req: &bq.TableDataInsertAllRequest{
 				Rows: []*bq.TableDataInsertAllRequestRows{
 					{InsertId: "a", Json: map[string]bq.JsonValue{"one": 1}},
-					{InsertId: "3", Json: map[string]bq.JsonValue{"two": 2}},
+					{InsertId: "", Json: map[string]bq.JsonValue{"two": 2}},
 				},
 				TemplateSuffix:      "suffix",
 				SkipInvalidRows:     true,
