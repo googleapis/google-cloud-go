@@ -80,18 +80,7 @@ func defaultBigQueryReadCallOptions() *BigQueryReadCallOptions {
 				})
 			}),
 		},
-		SplitReadStream: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		SplitReadStream: []gax.CallOption{},
 	}
 }
 
@@ -158,7 +147,7 @@ func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
 // limits are enforced based on the number of pre-filtered rows, so some
 // filters can lead to lopsided assignments.
 //
-// Read sessions automatically expire 24 hours after they are created and do
+// Read sessions automatically expire 6 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
 	return c.internalClient.CreateReadSession(ctx, req, opts...)
@@ -310,11 +299,6 @@ func (c *bigQueryReadGRPCClient) ReadRows(ctx context.Context, req *storagepb.Re
 }
 
 func (c *bigQueryReadGRPCClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SplitReadStream[0:len((*c.CallOptions).SplitReadStream):len((*c.CallOptions).SplitReadStream)], opts...)

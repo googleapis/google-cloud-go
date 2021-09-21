@@ -40,6 +40,7 @@ type Config struct {
 	LocalMode          bool
 	RegenOnly          bool
 	ForceAll           bool
+	GenModule          bool
 }
 
 // Generate generates genproto and gapics.

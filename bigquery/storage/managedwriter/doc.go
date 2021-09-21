@@ -19,7 +19,7 @@ More information about this new write client may also be found in the public doc
 It is EXPERIMENTAL and subject to change or removal without notice.  This library is in a pre-alpha
 state, and breaking changes are frequent.
 
-Currently, this client targets the BigQueryWriteClient present in the v1beta2 endpoint, and is intended as a more
+Currently, this client targets the BigQueryWriteClient present in the v1 endpoint, and is intended as a more
 feature-rich successor to the classic BigQuery streaming interface, which is presented as the Inserter abstraction
 in cloud.google.com/go/bigquery, and the tabledata.insertAll method if you're more familiar with the BigQuery v2 REST
 methods.

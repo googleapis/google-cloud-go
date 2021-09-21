@@ -280,7 +280,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -422,7 +422,7 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -473,7 +473,7 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -513,7 +513,10 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.BackendService{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // GetHealth gets the most recent health check results for this BackendService.
@@ -561,7 +564,10 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.BackendServiceGroupHealth{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
@@ -613,7 +619,7 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -752,7 +758,7 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -807,7 +813,7 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -862,7 +868,7 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
