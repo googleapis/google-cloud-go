@@ -1196,7 +1196,7 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		Name:                     "projects/P/topics/T",
 		MessageRetentionDuration: initialDur,
 	})
-	if top.MessageRetentionDuration != initialDur {
+	if got, want := top.MessageRetentionDuration, initialDur; testutil.Diff(got, want) != "" {
 		t.Errorf("topic.MessageRetentionDuration got %v\nwant %v", top.MessageRetentionDuration, initialDur)
 	}
 
@@ -1208,7 +1208,7 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		Topic:      updateTopic,
 		UpdateMask: &field_mask.FieldMask{Paths: []string{"message_retention_duration"}},
 	})
-	if top2.MessageRetentionDuration != updateTopic.MessageRetentionDuration {
+	if got, want := top2.MessageRetentionDuration, updateTopic.MessageRetentionDuration; testutil.Diff(got, want) != "" {
 		t.Errorf("top2.MessageRetentionDuration got %v\nwant %v", top2.MessageRetentionDuration, updateTopic.MessageRetentionDuration)
 	}
 
