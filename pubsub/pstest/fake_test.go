@@ -1188,7 +1188,7 @@ func TestPublishResponse(t *testing.T) {
 
 func TestTopicRetentionAdmin(t *testing.T) {
 	ctx := context.Background()
-	pclient, _, sclient, cleanup := newFake(ctx, t)
+	pclient, sclient, _, cleanup := newFake(ctx, t)
 	defer cleanup()
 
 	initialDur := durationpb.New(10 * time.Hour)
