@@ -2,30 +2,10 @@
 
 ## [0.95.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.94.1...v0.95.0) (2021-09-21)
 
-
-### Features
-
-* **accesscontextmanager:** start generating clients ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **aiplatform:** add Vizier service to aiplatform v1 ([33e4d89](https://www.github.com/googleapis/google-cloud-go/commit/33e4d895373dc8ec1dad13645ee5f342b2b15282))
-* **asset:** Release of relationships in v1, Add content type Relationship to support relationship search Committer: yuwangyw@ ([d9ce9d0](https://www.github.com/googleapis/google-cloud-go/commit/d9ce9d0ee64f59c4e07ce4752bfd721051a95ac7))
-* **channel:** add API ImportCustomer for Cloud Channel API docs: update comments for a few fields ([2473b50](https://www.github.com/googleapis/google-cloud-go/commit/2473b50bb6ec55d76e7ced89ab9810be2871eeba))
-* **contactcenterinsights:** filter is used to filter conversations used for issue model training feat: update_time is used to indicate when the phrase matcher was updated ([cb3a823](https://www.github.com/googleapis/google-cloud-go/commit/cb3a8236252fe0e64abb6f98448c5bf9d085d448))
-* **contactcenterinsights:** start generating clients ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **functions:** add SecurityLevel option on HttpsTrigger ([8ffed36](https://www.github.com/googleapis/google-cloud-go/commit/8ffed36c9db818a24073cf865f626d29afd01716))
-* **internal/gapicgen:** add ability to carve a module when generating ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **monitoring/metricsscope:** start generating apiv1 ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **networkconnectivity:** start generating apiv1 ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **networksecurity:** start generating clients ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **osconfig:** add OSConfigZonalService API Committer: [@jaiminsh](https://www.github.com/jaiminsh) ([d9ce9d0](https://www.github.com/googleapis/google-cloud-go/commit/d9ce9d0ee64f59c4e07ce4752bfd721051a95ac7))
-* **recaptchaenterprise:** add GetMetrics and MigrateKey methods to reCAPTCHA enterprise API ([829f15a](https://www.github.com/googleapis/google-cloud-go/commit/829f15a01da2a564a05ee980b994c56d9fad9c95))
-* **resourcemanager:** start generating apiv3 ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
-* **speech:** add output_config request field ([e52c204](https://www.github.com/googleapis/google-cloud-go/commit/e52c2042a2b7cdd7dd799a561421f32fecc5d1d2))
-* **talent:** Added a new `KeywordMatchMode` field to support more keyword matching options feat: Added more `DiversificationLevel` configuration options ([8ffed36](https://www.github.com/googleapis/google-cloud-go/commit/8ffed36c9db818a24073cf865f626d29afd01716))
-
-
 ### Bug Fixes
 
 * **internal/gapicgen:** add a temporary import ([#4756](https://www.github.com/googleapis/google-cloud-go/issues/4756)) ([4d9c046](https://www.github.com/googleapis/google-cloud-go/commit/4d9c046b66a2dc205e2c14b676995771301440da))
+* **compute/metadata:** remove heavy gax dependency ([#4784](https://www.github.com/googleapis/google-cloud-go/issues/4784)) ([ea00264](https://www.github.com/googleapis/google-cloud-go/commit/ea00264428137471805f2ec67f04f3a5a42928fa))
 
 ### [0.94.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.94.0...v0.94.1) (2021-09-02)
 
