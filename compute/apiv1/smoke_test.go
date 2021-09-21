@@ -17,12 +17,13 @@
 package compute
 
 import (
-	"cloud.google.com/go/internal"
 	"context"
 	"fmt"
-	"github.com/googleapis/gax-go/v2"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/internal"
+	"github.com/googleapis/gax-go/v2"
 
 	"github.com/google/go-cmp/cmp"
 
