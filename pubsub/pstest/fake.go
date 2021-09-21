@@ -319,6 +319,9 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if s.topics[t.Name] != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "topic %q", t.Name)
 	}
+	if err := checkMRD(t.MessageRetentionDuration); err != nil {
+		return nil, err
+	}
 	top := newTopic(t)
 	s.topics[t.Name] = top
 	return top.proto, nil
@@ -356,6 +359,11 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 			t.proto.Labels = req.Topic.Labels
 		case "message_storage_policy":
 			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
+		case "message_retention_duration":
+			if err := checkMRD(req.Topic.MessageRetentionDuration); err != nil {
+				return nil, err
+			}
+			t.proto.MessageRetentionDuration = req.Topic.MessageRetentionDuration
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -466,6 +474,8 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	}
 
 	sub := newSubscription(top, &s.mu, s.timeNowFunc, ps)
+
+	sub.proto.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
