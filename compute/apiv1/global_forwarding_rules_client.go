@@ -240,7 +240,7 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -280,7 +280,10 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.ForwardingRule{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
@@ -332,7 +335,7 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -471,7 +474,7 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -519,7 +522,7 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err
@@ -574,7 +577,7 @@ func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *co
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
 	op := &Operation{proto: rsp}
 	return op, err

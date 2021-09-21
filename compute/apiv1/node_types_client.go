@@ -298,7 +298,10 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.NodeType{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // List retrieves a list of node types available to the specified project.
