@@ -323,6 +323,27 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				ConnectionProperties: []*ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.ForceSendFields = nil
+				j.Configuration.Query.ConnectionProperties = []*bq.ConnectionProperty{
+					{Key: "key-a", Value: "value-a"},
+					{Key: "key-b", Value: "value-b"},
+				}
+				return j
+			}(),
+		},
 	}
 	for i, tc := range testCases {
 		query := c.Query("")
