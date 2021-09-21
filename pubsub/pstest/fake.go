@@ -472,10 +472,10 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
+	ps.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 
 	sub := newSubscription(top, &s.mu, s.timeNowFunc, ps)
 
-	sub.proto.TopicMessageRetentionDuration = top.proto.MessageRetentionDuration
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)

@@ -1196,8 +1196,10 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		Name:                     "projects/P/topics/T",
 		MessageRetentionDuration: initialDur,
 	})
-	if got, want := top.MessageRetentionDuration, initialDur; testutil.Diff(got, want) != "" {
-		t.Errorf("topic.MessageRetentionDuration got %v\nwant %v", top.MessageRetentionDuration, initialDur)
+	got := top.MessageRetentionDuration
+	want := initialDur
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top.MessageRetentionDuration mismatch: %s", diff)
 	}
 
 	updateTopic := &pb.Topic{
@@ -1208,8 +1210,10 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		Topic:      updateTopic,
 		UpdateMask: &field_mask.FieldMask{Paths: []string{"message_retention_duration"}},
 	})
-	if got, want := top2.MessageRetentionDuration, updateTopic.MessageRetentionDuration; testutil.Diff(got, want) != "" {
-		t.Errorf("top2.MessageRetentionDuration got %v\nwant %v", top2.MessageRetentionDuration, updateTopic.MessageRetentionDuration)
+	got = top2.MessageRetentionDuration
+	want = updateTopic.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top2.MessageRetentionDuration mismatch: %s", diff)
 	}
 
 	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
@@ -1218,7 +1222,9 @@ func TestTopicRetentionAdmin(t *testing.T) {
 		Topic:              top2.Name,
 	})
 
-	if got, want := sub.MessageRetentionDuration, top2.MessageRetentionDuration; testutil.Diff(got, want) != "" {
-		t.Errorf("sub.TopicMessageRetentionDuration got %v\nwant %v", sub.MessageRetentionDuration, top2.MessageRetentionDuration)
+	got = sub.TopicMessageRetentionDuration
+	want = top2.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("sub.TopicMessageRetentionDuration mismatch: %s", diff)
 	}
 }
