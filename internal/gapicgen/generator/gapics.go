@@ -113,6 +113,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	// Get rid of diffs related to bad formatting.
+	if err := gocmd.Vet(g.googleCloudDir); err != nil {
+		return err
+	}
+
 	if err := g.resetUnknownVersion(); err != nil {
 		return err
 	}
