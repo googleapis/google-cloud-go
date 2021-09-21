@@ -33,10 +33,9 @@ var (
 // defaultBackoff is basically equivalent to gax.Backoff without the need for
 // the dependency.
 type defaultBackoff struct {
-	initial time.Duration
-	max     time.Duration
-	mul     float64
-	cur     time.Duration
+	max time.Duration
+	mul float64
+	cur time.Duration
 }
 
 func (b *defaultBackoff) Pause() time.Duration {
@@ -62,9 +61,9 @@ func sleep(ctx context.Context, d time.Duration) error {
 
 func newRetryer() *metadataRetryer {
 	return &metadataRetryer{bo: &defaultBackoff{
-		initial: 100 * time.Millisecond,
-		max:     30 * time.Second,
-		mul:     2,
+		cur: 100 * time.Millisecond,
+		max: 30 * time.Second,
+		mul: 2,
 	}}
 }
 
