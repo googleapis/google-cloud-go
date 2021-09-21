@@ -20,6 +20,10 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/internal"
+	"github.com/googleapis/gax-go/v2"
 
 	"github.com/google/go-cmp/cmp"
 
@@ -564,11 +568,16 @@ func TestCapitalLetter(t *testing.T) {
 		t.Error(err)
 	}
 	defer func() {
-		_, err := c.Delete(ctx,
-			&computepb.DeleteFirewallRequest{
-				Project:  projectId,
-				Firewall: name,
-			})
+		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			_, err = c.Delete(timeoutCtx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			return err == nil, err
+		})
 		if err != nil {
 			t.Error(err)
 		}
