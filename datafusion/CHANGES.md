@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surfaces.
+
 ## v0.1.0
 
 This is the first tag to carve out datafusion as its own module. See

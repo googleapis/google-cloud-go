@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surfaces.
+
 ## v0.1.0
 
 This is the first tag to carve out tpu as its own module. See

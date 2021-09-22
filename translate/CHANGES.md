@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surfaces.
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/translate/v0.1.0...translate/v0.2.0) (2021-08-30)
 
 
