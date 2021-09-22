@@ -31,6 +31,7 @@ import (
 	"time"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -41,7 +42,8 @@ import (
 func newSessionNotFoundError(name string) error {
 	s := status.Newf(codes.NotFound, "Session not found: Session with id %s not found", name)
 	s, _ = s.WithDetails(&errdetails.ResourceInfo{ResourceType: sessionResourceType, ResourceName: name})
-	return s.Err()
+	err, _ := apierror.FromError(s.Err())
+	return err
 }
 
 // TestSessionPoolConfigValidation tests session pool config validation.
