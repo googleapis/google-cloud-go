@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.GetCertificateRevocationListRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#GetCertificateRevocationListRequest.
 	}
 	resp, err := c.GetCertificateRevocationList(ctx, req)
 	if err != nil {

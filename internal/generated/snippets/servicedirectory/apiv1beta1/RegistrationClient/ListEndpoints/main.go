@@ -36,6 +36,7 @@ func main() {
 
 	req := &servicedirectorypb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#ListEndpointsRequest.
 	}
 	it := c.ListEndpoints(ctx, req)
 	for {

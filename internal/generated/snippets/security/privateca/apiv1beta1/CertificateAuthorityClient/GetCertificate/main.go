@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.GetCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1#GetCertificateRequest.
 	}
 	resp, err := c.GetCertificate(ctx, req)
 	if err != nil {

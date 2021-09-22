@@ -36,6 +36,7 @@ func main() {
 
 	req := &redispb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {

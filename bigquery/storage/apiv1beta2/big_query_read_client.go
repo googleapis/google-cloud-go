@@ -48,6 +48,7 @@ func defaultBigQueryReadGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("bigquerystorage.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -160,7 +161,7 @@ func (c *BigQueryReadClient) Connection() *grpc.ClientConn {
 // limits are enforced based on the number of pre-filtered rows, so some
 // filters can lead to lopsided assignments.
 //
-// Read sessions automatically expire 24 hours after they are created and do
+// Read sessions automatically expire 6 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
 	return c.internalClient.CreateReadSession(ctx, req, opts...)

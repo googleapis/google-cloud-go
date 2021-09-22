@@ -35,6 +35,7 @@ func main() {
 
 	req := &iotpb.ModifyCloudToDeviceConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ModifyCloudToDeviceConfigRequest.
 	}
 	resp, err := c.ModifyCloudToDeviceConfig(ctx, req)
 	if err != nil {

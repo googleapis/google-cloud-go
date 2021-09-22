@@ -131,7 +131,8 @@ func (h http2Error) Error() string {
 }
 
 func TestRangeReaderRetry(t *testing.T) {
-	retryErr := http2Error("blah blah INTERNAL_ERROR")
+	internalErr := http2Error("blah blah INTERNAL_ERROR")
+	goawayErr := http2Error("http2: server sent GOAWAY and closed the connection; LastStreamID=15, ErrCode=NO_ERROR, debug=\"load_shed\"")
 	readBytes := []byte(readData)
 	hc, close := newTestServer(handleRangeRead)
 	defer close()
@@ -159,7 +160,7 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 0,
 			length: -1,
 			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: retryErr},
+				{data: readBytes, counts: []int{3}, err: internalErr},
 				{data: readBytes[3:], counts: []int{5, 2}, err: io.EOF},
 			},
 			want: readData,
@@ -168,8 +169,8 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 0,
 			length: -1,
 			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{5}, err: retryErr},
-				{data: readBytes[5:], counts: []int{1, 3}, err: retryErr},
+				{data: readBytes, counts: []int{5}, err: internalErr},
+				{data: readBytes[5:], counts: []int{1, 3}, err: goawayErr},
 				{data: readBytes[9:], counts: []int{1}, err: io.EOF},
 			},
 			want: readData,
@@ -178,7 +179,16 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 0,
 			length: 5,
 			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: retryErr},
+				{data: readBytes, counts: []int{3}, err: internalErr},
+				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
+			},
+			want: readData[:5],
+		},
+		{
+			offset: 0,
+			length: 5,
+			bodies: []fakeReadCloser{
+				{data: readBytes, counts: []int{3}, err: goawayErr},
 				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
 			},
 			want: readData[:5],
@@ -187,7 +197,7 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 1,
 			length: 5,
 			bodies: []fakeReadCloser{
-				{data: readBytes, counts: []int{3}, err: retryErr},
+				{data: readBytes, counts: []int{3}, err: internalErr},
 				{data: readBytes[3:], counts: []int{2}, err: io.EOF},
 			},
 			want: readData[:5],
@@ -196,7 +206,7 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 1,
 			length: 3,
 			bodies: []fakeReadCloser{
-				{data: readBytes[1:], counts: []int{1}, err: retryErr},
+				{data: readBytes[1:], counts: []int{1}, err: internalErr},
 				{data: readBytes[2:], counts: []int{2}, err: io.EOF},
 			},
 			want: readData[1:4],
@@ -205,8 +215,8 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: 4,
 			length: -1,
 			bodies: []fakeReadCloser{
-				{data: readBytes[4:], counts: []int{1}, err: retryErr},
-				{data: readBytes[5:], counts: []int{4}, err: retryErr},
+				{data: readBytes[4:], counts: []int{1}, err: internalErr},
+				{data: readBytes[5:], counts: []int{4}, err: internalErr},
 				{data: readBytes[9:], counts: []int{1}, err: io.EOF},
 			},
 			want: readData[4:],
@@ -215,7 +225,7 @@ func TestRangeReaderRetry(t *testing.T) {
 			offset: -4,
 			length: -1,
 			bodies: []fakeReadCloser{
-				{data: readBytes[6:], counts: []int{1}, err: retryErr},
+				{data: readBytes[6:], counts: []int{1}, err: internalErr},
 				{data: readBytes[7:], counts: []int{3}, err: io.EOF},
 			},
 			want: readData[6:],

@@ -36,6 +36,7 @@ func main() {
 
 	req := &iotpb.ListDevicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDevicesRequest.
 	}
 	it := c.ListDevices(ctx, req)
 	for {

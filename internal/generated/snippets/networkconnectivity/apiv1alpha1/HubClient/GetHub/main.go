@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkconnectivitypb.GetHubRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1#GetHubRequest.
 	}
 	resp, err := c.GetHub(ctx, req)
 	if err != nil {

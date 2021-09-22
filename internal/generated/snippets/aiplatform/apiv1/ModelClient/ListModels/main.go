@@ -36,6 +36,7 @@ func main() {
 
 	req := &aiplatformpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {

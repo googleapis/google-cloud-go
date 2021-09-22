@@ -36,6 +36,7 @@ func main() {
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/orgpolicy/v2#ListPoliciesRequest.
 	}
 	it := c.ListPolicies(ctx, req)
 	for {

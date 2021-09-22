@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddebuggerpb.ListDebuggeesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListDebuggeesRequest.
 	}
 	resp, err := c.ListDebuggees(ctx, req)
 	if err != nil {

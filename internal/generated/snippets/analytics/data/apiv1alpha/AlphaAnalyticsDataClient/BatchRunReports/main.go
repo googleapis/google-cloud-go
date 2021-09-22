@@ -35,6 +35,7 @@ func main() {
 
 	req := &datapb.BatchRunReportsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#BatchRunReportsRequest.
 	}
 	resp, err := c.BatchRunReports(ctx, req)
 	if err != nil {

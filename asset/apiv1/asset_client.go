@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -54,6 +54,7 @@ type CallOptions struct {
 	SearchAllIamPolicies        []gax.CallOption
 	AnalyzeIamPolicy            []gax.CallOption
 	AnalyzeIamPolicyLongrunning []gax.CallOption
+	AnalyzeMove                 []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -62,6 +63,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("cloudasset.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -136,7 +138,6 @@ func defaultCallOptions() *CallOptions {
 		SearchAllResources: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -148,7 +149,6 @@ func defaultCallOptions() *CallOptions {
 		SearchAllIamPolicies: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -169,6 +169,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
+		AnalyzeMove:                 []gax.CallOption{},
 	}
 }
 
@@ -191,6 +192,7 @@ type internalClient interface {
 	AnalyzeIamPolicy(context.Context, *assetpb.AnalyzeIamPolicyRequest, ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error)
 	AnalyzeIamPolicyLongrunning(context.Context, *assetpb.AnalyzeIamPolicyLongrunningRequest, ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error)
 	AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation
+	AnalyzeMove(context.Context, *assetpb.AnalyzeMoveRequest, ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error)
 }
 
 // Client is a client for interacting with Cloud Asset API.
@@ -325,7 +327,7 @@ func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPo
 // google.longrunning.Operation, which allows you to track the operation
 // status. We recommend intervals of at least 2 seconds with exponential
 // backoff retry to poll the operation result. The metadata contains the
-// request to help callers to map responses to requests.
+// metadata for the long-running operation.
 func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
 	return c.internalClient.AnalyzeIamPolicyLongrunning(ctx, req, opts...)
 }
@@ -334,6 +336,15 @@ func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.A
 // The name must be that of a previously created AnalyzeIamPolicyLongrunningOperation, possibly from a different process.
 func (c *Client) AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation {
 	return c.internalClient.AnalyzeIamPolicyLongrunningOperation(name)
+}
+
+// AnalyzeMove analyze moving a resource to a specified destination without kicking off
+// the actual move. The analysis is best effort depending on the user’s
+// permissions of viewing different hierarchical policies and configurations.
+// The policies and configuration are subject to change before the actual
+// resource migration takes place.
+func (c *Client) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
+	return c.internalClient.AnalyzeMove(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Asset API over gRPC transport.
@@ -462,11 +473,13 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 	it := &AssetIterator{}
 	req = proto.Clone(req).(*assetpb.ListAssetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.Asset, string, error) {
-		var resp *assetpb.ListAssetsResponse
-		req.PageToken = pageToken
+		resp := &assetpb.ListAssetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -489,9 +502,11 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -624,11 +639,13 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 	it := &ResourceSearchResultIterator{}
 	req = proto.Clone(req).(*assetpb.SearchAllResourcesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.ResourceSearchResult, string, error) {
-		var resp *assetpb.SearchAllResourcesResponse
-		req.PageToken = pageToken
+		resp := &assetpb.SearchAllResourcesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -651,9 +668,11 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -664,11 +683,13 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 	it := &IamPolicySearchResultIterator{}
 	req = proto.Clone(req).(*assetpb.SearchAllIamPoliciesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.IamPolicySearchResult, string, error) {
-		var resp *assetpb.SearchAllIamPoliciesResponse
-		req.PageToken = pageToken
+		resp := &assetpb.SearchAllIamPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -691,9 +712,11 @@ func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.Sear
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -739,6 +762,22 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 	return &AnalyzeIamPolicyLongrunningOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AnalyzeMove[0:len((*c.CallOptions).AnalyzeMove):len((*c.CallOptions).AnalyzeMove)], opts...)
+	var resp *assetpb.AnalyzeMoveResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AnalyzeMove(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // AnalyzeIamPolicyLongrunningOperation manages a long-running operation from AnalyzeIamPolicyLongrunning.
@@ -789,8 +828,8 @@ func (op *AnalyzeIamPolicyLongrunningOperation) Poll(ctx context.Context, opts .
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningRequest, error) {
-	var meta assetpb.AnalyzeIamPolicyLongrunningRequest
+func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningMetadata, error) {
+	var meta assetpb.AnalyzeIamPolicyLongrunningMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

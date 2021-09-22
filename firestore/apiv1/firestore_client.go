@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -62,6 +62,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("firestore.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -529,11 +530,13 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 	it := &DocumentIterator{}
 	req = proto.Clone(req).(*firestorepb.ListDocumentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Document, string, error) {
-		var resp *firestorepb.ListDocumentsResponse
-		req.PageToken = pageToken
+		resp := &firestorepb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -556,9 +559,11 @@ func (c *gRPCClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -696,11 +701,13 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 	it := &CursorIterator{}
 	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
-		var resp *firestorepb.PartitionQueryResponse
-		req.PageToken = pageToken
+		resp := &firestorepb.PartitionQueryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -723,9 +730,11 @@ func (c *gRPCClient) PartitionQuery(ctx context.Context, req *firestorepb.Partit
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -766,11 +775,13 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 	it := &StringIterator{}
 	req = proto.Clone(req).(*firestorepb.ListCollectionIdsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
-		var resp *firestorepb.ListCollectionIdsResponse
-		req.PageToken = pageToken
+		resp := &firestorepb.ListCollectionIdsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -793,9 +804,11 @@ func (c *gRPCClient) ListCollectionIds(ctx context.Context, req *firestorepb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

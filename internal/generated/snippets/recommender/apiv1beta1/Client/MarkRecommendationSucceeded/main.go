@@ -35,6 +35,7 @@ func main() {
 
 	req := &recommenderpb.MarkRecommendationSucceededRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkRecommendationSucceededRequest.
 	}
 	resp, err := c.MarkRecommendationSucceeded(ctx, req)
 	if err != nil {

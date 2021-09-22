@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.DeleteDataLabelingJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteDataLabelingJobRequest.
 	}
 	op, err := c.DeleteDataLabelingJob(ctx, req)
 	if err != nil {

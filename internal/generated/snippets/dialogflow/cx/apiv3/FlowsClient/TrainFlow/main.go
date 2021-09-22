@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#TrainFlowRequest.
 	}
 	op, err := c.TrainFlow(ctx, req)
 	if err != nil {

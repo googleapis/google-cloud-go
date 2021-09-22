@@ -36,6 +36,7 @@ func main() {
 
 	req := &memcachepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1beta2#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {

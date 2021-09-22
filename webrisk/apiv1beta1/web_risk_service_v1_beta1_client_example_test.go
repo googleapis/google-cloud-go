@@ -45,6 +45,7 @@ func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#ComputeThreatListDiffRequest.
 	}
 	resp, err := c.ComputeThreatListDiff(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleWebRiskServiceV1Beta1Client_SearchHashes() {
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {

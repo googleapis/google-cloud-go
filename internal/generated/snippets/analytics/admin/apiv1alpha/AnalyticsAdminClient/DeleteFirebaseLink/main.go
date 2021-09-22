@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteFirebaseLinkRequest.
 	}
 	err = c.DeleteFirebaseLink(ctx, req)
 	if err != nil {

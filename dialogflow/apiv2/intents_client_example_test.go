@@ -46,6 +46,7 @@ func ExampleIntentsClient_ListIntents() {
 
 	req := &dialogflowpb.ListIntentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListIntentsRequest.
 	}
 	it := c.ListIntents(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleIntentsClient_GetIntent() {
 
 	req := &dialogflowpb.GetIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetIntentRequest.
 	}
 	resp, err := c.GetIntent(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleIntentsClient_CreateIntent() {
 
 	req := &dialogflowpb.CreateIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateIntentRequest.
 	}
 	resp, err := c.CreateIntent(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleIntentsClient_UpdateIntent() {
 
 	req := &dialogflowpb.UpdateIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateIntentRequest.
 	}
 	resp, err := c.UpdateIntent(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleIntentsClient_DeleteIntent() {
 
 	req := &dialogflowpb.DeleteIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteIntentRequest.
 	}
 	err = c.DeleteIntent(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleIntentsClient_BatchUpdateIntents() {
 
 	req := &dialogflowpb.BatchUpdateIntentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#BatchUpdateIntentsRequest.
 	}
 	op, err := c.BatchUpdateIntents(ctx, req)
 	if err != nil {
@@ -169,6 +175,7 @@ func ExampleIntentsClient_BatchDeleteIntents() {
 
 	req := &dialogflowpb.BatchDeleteIntentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#BatchDeleteIntentsRequest.
 	}
 	op, err := c.BatchDeleteIntents(ctx, req)
 	if err != nil {

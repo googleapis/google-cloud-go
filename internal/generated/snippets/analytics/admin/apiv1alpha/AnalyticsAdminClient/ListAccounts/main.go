@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListAccountsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAccountsRequest.
 	}
 	it := c.ListAccounts(ctx, req)
 	for {

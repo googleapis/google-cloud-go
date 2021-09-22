@@ -36,6 +36,7 @@ func main() {
 
 	req := &automlpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#ListModelsRequest.
 	}
 	it := c.ListModels(ctx, req)
 	for {

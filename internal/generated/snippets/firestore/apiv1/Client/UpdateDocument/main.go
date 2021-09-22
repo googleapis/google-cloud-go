@@ -35,6 +35,7 @@ func main() {
 
 	req := &firestorepb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#UpdateDocumentRequest.
 	}
 	resp, err := c.UpdateDocument(ctx, req)
 	if err != nil {

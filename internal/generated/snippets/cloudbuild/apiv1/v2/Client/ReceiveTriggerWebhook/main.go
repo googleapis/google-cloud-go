@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.ReceiveTriggerWebhookRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ReceiveTriggerWebhookRequest.
 	}
 	resp, err := c.ReceiveTriggerWebhook(ctx, req)
 	if err != nil {

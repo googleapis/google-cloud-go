@@ -35,6 +35,7 @@ func main() {
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#DeleteMembershipRequest.
 	}
 	op, err := c.DeleteMembership(ctx, req)
 	if err != nil {

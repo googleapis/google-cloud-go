@@ -73,6 +73,8 @@ type PublishSettings struct {
 	// details of the last error that occurred while trying to reconnect to
 	// backends. Note that if the timeout duration is long, ErrOverflow may occur
 	// first.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -191,6 +193,8 @@ type ReceiveSettings struct {
 	// exceeded, the SubscriberClient will terminate with ErrBackendUnavailable
 	// and details of the last error that occurred while trying to reconnect to
 	// backends.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.

@@ -35,6 +35,7 @@ func main() {
 
 	req := &websecurityscannerpb.DeleteScanConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#DeleteScanConfigRequest.
 	}
 	err = c.DeleteScanConfig(ctx, req)
 	if err != nil {

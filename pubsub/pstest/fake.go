@@ -103,6 +103,7 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
+	schemas        map[string]*pb.Schema
 
 	// PublishResponses is a channel of responses to use for Publish.
 	publishResponses chan *publishResponse
@@ -114,9 +115,14 @@ type GServer struct {
 
 // NewServer creates a new fake server running in the current process.
 func NewServer(opts ...ServerReactorOption) *Server {
-	srv, err := testutil.NewServer()
+	return NewServerWithPort(0, opts...)
+}
+
+// NewServerWithPort creates a new fake server running in the current process at the specified port.
+func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
-		panic(fmt.Sprintf("pstest.NewServer: %v", err))
+		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
 	}
 	reactorOptions := ReactorOptions{}
 	for _, opt := range opts {
@@ -133,10 +139,12 @@ func NewServer(opts ...ServerReactorOption) *Server {
 			reactorOptions:      reactorOptions,
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
+			schemas:             map[string]*pb.Schema{},
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
+	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
 	srv.Start()
 	return s
 }
@@ -1231,4 +1239,116 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 		FuncName: funcName,
 		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
+}
+
+func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CreateSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
+	sc := &pb.Schema{
+		Name:       name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	s.schemas[name] = sc
+
+	return sc, nil
+}
+
+func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "GetSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc, ok := s.schemas[req.Name]
+	if !ok {
+		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
+	}
+	return sc, nil
+}
+
+func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemas", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemasResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	for _, sc := range s.schemas {
+		ss = append(ss, sc)
+	}
+	return &pb.ListSchemasResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchema", &emptypb.Empty{}); handled || err != nil {
+		return ret.(*emptypb.Empty), err
+	}
+
+	schema := s.schemas[req.Name]
+	if schema == nil {
+		return nil, status.Errorf(codes.NotFound, "schema %q", req.Name)
+	}
+
+	delete(s.schemas, req.Name)
+	return &emptypb.Empty{}, nil
+}
+
+// ValidateSchema mocks the ValidateSchema call but only checks that the schema definition is not empty.
+func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateSchema", &pb.ValidateSchemaResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateSchemaResponse), err
+	}
+
+	if req.Schema.Definition == "" {
+		return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+	}
+	return &pb.ValidateSchemaResponse{}, nil
+}
+
+// ValidateMessage mocks the ValidateMessage call but only checks that the schema definition to validate the
+// message against is not empty.
+func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequest) (*pb.ValidateMessageResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateMessage", &pb.ValidateMessageResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateMessageResponse), err
+	}
+
+	spec := req.GetSchemaSpec()
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
+		sc, ok := s.schemas[valReq.Name]
+		if !ok {
+			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
+		}
+		if sc.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
+		if valReq.Schema.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
+	}
+
+	return &pb.ValidateMessageResponse{}, nil
 }

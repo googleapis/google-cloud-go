@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.UpdateSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#UpdateSnapshotRequest.
 	}
 	resp, err := c.UpdateSnapshot(ctx, req)
 	if err != nil {

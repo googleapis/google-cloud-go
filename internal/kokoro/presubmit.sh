@@ -40,7 +40,6 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 
 # All packages, including +build tools, are fetched.
 try3 go mod download
-go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 ./internal/kokoro/check_incompat_changes.sh
 

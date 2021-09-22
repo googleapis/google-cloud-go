@@ -36,6 +36,7 @@ func main() {
 
 	req := &pubsubpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListSnapshotsRequest.
 	}
 	it := c.ListSnapshots(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.UpdateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateSecuritySettingsRequest.
 	}
 	resp, err := c.UpdateSecuritySettings(ctx, req)
 	if err != nil {

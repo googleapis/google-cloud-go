@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -113,6 +114,8 @@ var (
 				DateArray	ARRAY<DATE>,
 				Timestamp	TIMESTAMP,
 				TimestampArray	ARRAY<TIMESTAMP>,
+				Numeric		NUMERIC,
+				NumericArray	ARRAY<NUMERIC>
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -169,6 +172,8 @@ var (
 						DateArray	ARRAY<DATE>,
 						Timestamp	TIMESTAMP,
 						TimestampArray	ARRAY<TIMESTAMP>,
+						Numeric		NUMERIC,
+						NumericArray	ARRAY<NUMERIC>
 					) PRIMARY KEY (RowID)`,
 	}
 
@@ -637,7 +642,7 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	}
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
 		OptimizerVersion:           "1",
-		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+		OptimizerStatisticsPackage: "latest",
 	}}
 	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
 		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
@@ -1561,21 +1566,22 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := singerDBStatements
-	stmts = []string{
-		`CREATE TABLE Singers (
+	if !isEmulatorEnvSet() {
+		stmts = []string{
+			`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-		`CREATE TABLE Accounts (
+			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+			`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-		`CREATE TABLE Types (
+			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+			`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1592,8 +1598,11 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Timestamp	TIMESTAMP,
 					TimestampArray	ARRAY<TIMESTAMP>,
 					Numeric		NUMERIC,
-					NumericArray	ARRAY<NUMERIC>
+					NumericArray	ARRAY<NUMERIC>,
+					JSON		JSON,
+					JSONArray	ARRAY<JSON>
 				) PRIMARY KEY (RowID)`,
+		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1612,6 +1621,16 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
 	n1 := *n1p
 	n2 := *n2p
+
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	msg := Message{"Alice", "Hello", 1294706395881547000}
+	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+	var unmarshalledJSONstruct interface{}
+	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
 
 	tests := []struct {
 		col  string
@@ -1715,9 +1734,78 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "NumericArray", val: []NullNumeric(nil)},
 		{col: "NumericArray", val: []NullNumeric{}},
 		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		{col: "String", val: nil, want: NullString{}},
+		{col: "StringArray", val: nil, want: []NullString(nil)},
+		{col: "Bytes", val: nil, want: []byte(nil)},
+		{col: "BytesArray", val: nil, want: [][]byte(nil)},
+		{col: "Int64a", val: nil, want: NullInt64{}},
+		{col: "Int64Array", val: nil, want: []NullInt64(nil)},
+		{col: "Bool", val: nil, want: NullBool{}},
+		{col: "BoolArray", val: nil, want: []NullBool(nil)},
+		{col: "Float64", val: nil, want: NullFloat64{}},
+		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
+		{col: "Date", val: nil, want: NullDate{}},
+		{col: "DateArray", val: nil, want: []NullDate(nil)},
+		{col: "Timestamp", val: nil, want: NullTime{}},
+		{col: "TimestampArray", val: nil, want: []NullTime(nil)},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
 	}
 
-	// Write rows into table first.
+	// Write rows into table first using DML. Only do this on real Spanner
+	// as the emulator does not support untyped parameters.
+	// TODO: Remove when the emulator supports untyped parameters.
+	if !isEmulatorEnvSet() {
+		statements := make([]Statement, 0)
+		for i, test := range tests {
+			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+			// Note: We are not setting the parameter type here to ensure that it
+			// can be automatically recognized when it is actually needed.
+			stmt.Params["id"] = i
+			stmt.Params["value"] = test.val
+			statements = append(statements, stmt)
+		}
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			rowCounts, err := tx.BatchUpdate(ctx, statements)
+			if err != nil {
+				return err
+			}
+			if len(rowCounts) != len(tests) {
+				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			}
+			for i, c := range rowCounts {
+				if c != 1 {
+					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("failed to insert values using DML: %v", err)
+		}
+		// Delete all the rows so we can insert them using mutations as well.
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatalf("failed to delete all rows: %v", err)
+		}
+	}
+
+	if !isEmulatorEnvSet() {
+		tests = append(tests, []struct {
+			col  string
+			val  interface{}
+			want interface{}
+		}{
+			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
+			{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+			{col: "JSON", val: nil, want: NullJSON{}},
+			{col: "JSONArray", val: []NullJSON(nil)},
+			{col: "JSONArray", val: []NullJSON{}},
+			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
+		}...)
+	}
+
+	// Verify that we can insert the rows using mutations.
 	var muts []*Mutation
 	for i, test := range tests {
 		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))

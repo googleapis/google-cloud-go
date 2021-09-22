@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateModelRequest.
 	}
 	resp, err := c.UpdateModel(ctx, req)
 	if err != nil {

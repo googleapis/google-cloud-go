@@ -46,6 +46,7 @@ func ExampleDatasetClient_CreateDataset() {
 
 	req := &aiplatformpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateDatasetRequest.
 	}
 	op, err := c.CreateDataset(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleDatasetClient_GetDataset() {
 
 	req := &aiplatformpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetDatasetRequest.
 	}
 	resp, err := c.GetDataset(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleDatasetClient_UpdateDataset() {
 
 	req := &aiplatformpb.UpdateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateDatasetRequest.
 	}
 	resp, err := c.UpdateDataset(ctx, req)
 	if err != nil {
@@ -108,6 +111,7 @@ func ExampleDatasetClient_ListDatasets() {
 
 	req := &aiplatformpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {
@@ -133,6 +137,7 @@ func ExampleDatasetClient_DeleteDataset() {
 
 	req := &aiplatformpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteDatasetRequest.
 	}
 	op, err := c.DeleteDataset(ctx, req)
 	if err != nil {
@@ -155,6 +160,7 @@ func ExampleDatasetClient_ImportData() {
 
 	req := &aiplatformpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ImportDataRequest.
 	}
 	op, err := c.ImportData(ctx, req)
 	if err != nil {
@@ -179,6 +185,7 @@ func ExampleDatasetClient_ExportData() {
 
 	req := &aiplatformpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ExportDataRequest.
 	}
 	op, err := c.ExportData(ctx, req)
 	if err != nil {
@@ -203,6 +210,7 @@ func ExampleDatasetClient_ListDataItems() {
 
 	req := &aiplatformpb.ListDataItemsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListDataItemsRequest.
 	}
 	it := c.ListDataItems(ctx, req)
 	for {
@@ -228,6 +236,7 @@ func ExampleDatasetClient_GetAnnotationSpec() {
 
 	req := &aiplatformpb.GetAnnotationSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetAnnotationSpecRequest.
 	}
 	resp, err := c.GetAnnotationSpec(ctx, req)
 	if err != nil {
@@ -247,6 +256,7 @@ func ExampleDatasetClient_ListAnnotations() {
 
 	req := &aiplatformpb.ListAnnotationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListAnnotationsRequest.
 	}
 	it := c.ListAnnotations(ctx, req)
 	for {

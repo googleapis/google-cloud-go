@@ -16,8 +16,10 @@ package generator
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,35 +32,53 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var (
+	//go:embed _CHANGES.md.txt
+	changesTmpl string
+	//go:embed _README.md.txt
+	readmeTmpl string
+)
+
 // GapicGenerator is used to regenerate gapic libraries.
 type GapicGenerator struct {
-	googleapisDir     string
-	protoDir          string
-	googleCloudDir    string
-	genprotoDir       string
-	gapicToGenerate   string
-	regenOnly         bool
-	onlyGenerateGapic bool
-	modifiedPkgs      []string
+	googleapisDir      string
+	googleapisDiscoDir string
+	protoDir           string
+	googleCloudDir     string
+	genprotoDir        string
+	gapicToGenerate    string
+	regenOnly          bool
+	onlyGenerateGapic  bool
+	genModule          bool
+	modifiedPkgs       []string
 }
 
 // NewGapicGenerator creates a GapicGenerator.
 func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:     c.GoogleapisDir,
-		protoDir:          c.ProtoDir,
-		googleCloudDir:    c.GapicDir,
-		genprotoDir:       c.GenprotoDir,
-		gapicToGenerate:   c.GapicToGenerate,
-		regenOnly:         c.RegenOnly,
-		onlyGenerateGapic: c.OnlyGenerateGapic,
-		modifiedPkgs:      modifiedPkgs,
+		googleapisDir:      c.GoogleapisDir,
+		googleapisDiscoDir: c.GoogleapisDiscoDir,
+		protoDir:           c.ProtoDir,
+		googleCloudDir:     c.GapicDir,
+		genprotoDir:        c.GenprotoDir,
+		gapicToGenerate:    c.GapicToGenerate,
+		regenOnly:          c.RegenOnly,
+		onlyGenerateGapic:  c.OnlyGenerateGapic,
+		genModule:          c.GenModule,
+		modifiedPkgs:       modifiedPkgs,
 	}
+}
+
+type modInfo struct {
+	path              string
+	importPath        string
+	serviceImportPath string
 }
 
 // Regen generates gapics.
 func (g *GapicGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating gapics")
+	var newMods []modInfo
 	for _, c := range microgenGapicConfigs {
 		// Skip generation if generating all of the gapics and the associated
 		// config has a block on it. Or if generating a single gapic and it does
@@ -67,8 +87,25 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 			(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.importPath)) {
 			continue
 		}
+		modPath := filepath.Dir(filepath.Join(g.googleCloudDir, c.importPath))
+		modImportPath := filepath.Dir(c.importPath)
+		if g.genModule {
+			if err := generateModule(modPath, modImportPath); err != nil {
+				return err
+			}
+			newMods = append(newMods, modInfo{
+				path:              filepath.Dir(filepath.Join(g.googleCloudDir, strings.TrimPrefix(c.importPath, "cloud.google.com/go"))),
+				importPath:        modImportPath,
+				serviceImportPath: c.importPath,
+			})
+		}
 		if err := g.microgen(c); err != nil {
 			return err
+		}
+		if g.genModule {
+			if err := gocmd.ModTidy(modPath); err != nil {
+				return nil
+			}
 		}
 	}
 
@@ -76,8 +113,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	// TODO(codyoss): Remove once https://github.com/googleapis/gapic-generator-go/pull/606
-	// is released.
+	// Get rid of diffs related to bad formatting.
 	if err := gocmd.Vet(g.googleCloudDir); err != nil {
 		return err
 	}
@@ -90,8 +126,15 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return nil
 	}
 
-	if err := g.manifest(microgenGapicConfigs); err != nil {
+	manifest, err := g.manifest(microgenGapicConfigs)
+	if err != nil {
 		return err
+	}
+
+	if g.genModule {
+		for _, modInfo := range newMods {
+			generateReadmeAndChanges(modInfo.path, modInfo.importPath, manifest[modInfo.serviceImportPath].Description)
+		}
 	}
 
 	if err := g.setVersion(); err != nil {
@@ -104,8 +147,10 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		}
 	}
 
-	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
-		return err
+	if !g.onlyGenerateGapic {
+		if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
+			return err
+		}
 	}
 
 	if err := gocmd.Vet(g.googleCloudDir); err != nil {
@@ -116,8 +161,10 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
-		return err
+	if !g.onlyGenerateGapic {
+		if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -267,13 +314,20 @@ find . -name '*.backup' -delete
 // microgen runs the microgenerator on a single microgen config.
 func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	log.Println("microgen generating", conf.pkg)
+	dir := g.googleapisDir
+	if conf.googleapisDiscovery {
+		dir = g.googleapisDiscoDir
+	}
 
 	var protoFiles []string
-	if err := filepath.Walk(g.googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(dir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if strings.Contains(info.Name(), ".proto") {
+		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
+		//
+		// TODO(noahdietz): Remove this when it is no longer needed.
+		if strings.Contains(info.Name(), ".proto") && !strings.Contains(info.Name(), "compute_small.proto") {
 			protoFiles = append(protoFiles, path)
 		}
 		return nil
@@ -282,24 +336,31 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	}
 
 	args := []string{"-I", g.googleapisDir,
+		"-I", g.googleapisDiscoDir,
 		"--experimental_allow_proto3_optional",
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
-		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", conf.apiServiceConfigPath)}
+		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.apiServiceConfigPath))}
 
 	if conf.releaseLevel != "" {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel))
 	}
 	if conf.gRPCServiceConfigPath != "" {
-		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.gRPCServiceConfigPath)))
 	}
 	if !conf.disableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
+	if len(conf.transports) > 0 {
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.transports, "+")))
+	}
+	if conf.googleapisDiscovery {
+		args = append(args, "--go_gapic_opt", "diregapic")
+	}
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
-	c.Dir = g.googleapisDir
+	c.Dir = dir
 	return c.Run()
 }
 
@@ -466,42 +527,50 @@ var manualEntries = []manifestEntry{
 }
 
 // manifest writes a manifest file with info about all of the confs.
-func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
+func (g *GapicGenerator) manifest(confs []*microgenConfig) (map[string]manifestEntry, error) {
 	log.Println("updating gapic manifest")
 	entries := map[string]manifestEntry{} // Key is the package name.
 	f, err := os.Create(filepath.Join(g.googleCloudDir, "internal", ".repo-metadata-full.json"))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer f.Close()
 	for _, manual := range manualEntries {
 		entries[manual.DistributionName] = manual
 	}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		dir := g.googleapisDir
+		if conf.googleapisDiscovery {
+			dir = g.googleapisDiscoDir
+		}
+		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		yamlConfig := struct {
 			Title string `yaml:"title"` // We only need the title field.
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return fmt.Errorf("decode: %v", err)
+			return nil, fmt.Errorf("decode: %v", err)
+		}
+		docURL, err := docURL(g.googleCloudDir, conf.importPath)
+		if err != nil {
+			return nil, fmt.Errorf("unable to build docs URL: %v", err)
 		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
 			Description:       yamlConfig.Title,
 			Language:          "Go",
 			ClientLibraryType: "generated",
-			DocsURL:           docURL(conf.importPath),
+			DocsURL:           docURL,
 			ReleaseLevel:      conf.releaseLevel,
 		}
 		entries[conf.importPath] = entry
 	}
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
-	return enc.Encode(entries)
+	return entries, enc.Encode(entries)
 }
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
@@ -522,7 +591,11 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntries []manifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		dir := g.googleapisDir
+		if conf.googleapisDiscovery {
+			dir = g.googleapisDiscoDir
+		}
+		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
@@ -575,6 +648,61 @@ func (g *GapicGenerator) findModifiedDirs() ([]string, error) {
 	return dirList, nil
 }
 
-func docURL(importPath string) string {
-	return "https://cloud.google.com/go/docs/reference/" + importPath[:20] + "latest/" + importPath[20:]
+func docURL(cloudDir, importPath string) (string, error) {
+	suffix := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	mod, err := gocmd.CurrentMod(filepath.Join(cloudDir, suffix))
+	if err != nil {
+		return "", err
+	}
+	pkgPath := strings.TrimPrefix(strings.TrimPrefix(importPath, mod), "/")
+	return "https://cloud.google.com/go/docs/reference/" + mod + "/latest/" + pkgPath, nil
+}
+
+func generateModule(path, importPath string) error {
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
+		return nil
+	}
+	log.Printf("Creating %s/go.mod", path)
+	return gocmd.ModInit(path, importPath)
+}
+
+func generateReadmeAndChanges(path, importPath, apiName string) error {
+	readmePath := filepath.Join(path, "README.md")
+	log.Printf("Creating %q", readmePath)
+	readmeFile, err := os.Create(readmePath)
+	if err != nil {
+		return err
+	}
+	defer readmeFile.Close()
+	t := template.Must(template.New("readme").Parse(readmeTmpl))
+	readmeData := struct {
+		Name       string
+		ImportPath string
+	}{
+		Name:       apiName,
+		ImportPath: importPath,
+	}
+	if err := t.Execute(readmeFile, readmeData); err != nil {
+		return err
+	}
+
+	changesPath := filepath.Join(path, "CHANGES.md")
+	log.Printf("Creating %q", changesPath)
+	changesFile, err := os.Create(changesPath)
+	if err != nil {
+		return err
+	}
+	defer changesFile.Close()
+	t2 := template.Must(template.New("changes").Parse(changesTmpl))
+	changesData := struct {
+		Package string
+	}{
+		Package: pkgName(importPath),
+	}
+	return t2.Execute(changesFile, changesData)
+}
+
+func pkgName(importPath string) string {
+	ss := strings.Split(importPath, "/")
+	return ss[len(ss)-1]
 }

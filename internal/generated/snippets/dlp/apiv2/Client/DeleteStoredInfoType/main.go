@@ -35,6 +35,7 @@ func main() {
 
 	req := &dlppb.DeleteStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteStoredInfoTypeRequest.
 	}
 	err = c.DeleteStoredInfoType(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.GetValidationResultRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetValidationResultRequest.
 	}
 	resp, err := c.GetValidationResult(ctx, req)
 	if err != nil {

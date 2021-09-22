@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetMaintenancePolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetMaintenancePolicyRequest.
 	}
 	resp, err := c.SetMaintenancePolicy(ctx, req)
 	if err != nil {

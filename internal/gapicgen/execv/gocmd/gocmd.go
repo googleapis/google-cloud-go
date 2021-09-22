@@ -18,9 +18,11 @@ package gocmd
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -31,9 +33,15 @@ var (
 	ErrBuildConstraint error = errors.New("build constraints exclude all Go files")
 )
 
-// ModTidy tidies go.mod file in the specified directory
+// ModInit creates a new module in the specified directory.
+func ModInit(dir, importPath string) error {
+	c := execv.Command("go", "mod", "init", importPath)
+	c.Dir = dir
+	return c.Run()
+}
+
+// ModTidy tidies go.mod file in the specified directory.
 func ModTidy(dir string) error {
-	log.Printf("[%s] running go mod tidy", dir)
 	c := execv.Command("go", "mod", "tidy")
 	c.Dir = dir
 	c.Env = []string{
@@ -41,6 +49,30 @@ func ModTidy(dir string) error {
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
 	return c.Run()
+}
+
+// ModTidyAll tidies all mod files from the specified root directory.
+func ModTidyAll(dir string) error {
+	log.Printf("[%s] finding all modules", dir)
+	var modDirs []string
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == "go.mod" {
+			modDirs = append(modDirs, filepath.Dir(path))
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	for _, modDir := range modDirs {
+		if err := ModTidy(modDir); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ListModName finds a modules name for a given directory.
@@ -74,7 +106,13 @@ func Build(dir string) error {
 	log.Println("building generated code")
 	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
-	return c.Run()
+	if _, err := c.Output(); err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Printf("Error Output: %s", ee.Stderr)
+		}
+		return err
+	}
+	return nil
 }
 
 // Vet runs linters on all .go files recursively from the given directory.
@@ -89,4 +127,17 @@ func Vet(dir string) error {
 	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()
+}
+
+// CurrentMod returns the module name of the provided directory.
+func CurrentMod(dir string) (string, error) {
+	log.Println("detecting current module")
+	c := execv.Command("go", "list", "-m")
+	c.Dir = dir
+	var out []byte
+	var err error
+	if out, err = c.Output(); err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
 }

@@ -46,6 +46,7 @@ func ExampleClient_CreateAssessment() {
 
 	req := &recaptchaenterprisepb.CreateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateAssessmentRequest.
 	}
 	resp, err := c.CreateAssessment(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_AnnotateAssessment() {
 
 	req := &recaptchaenterprisepb.AnnotateAssessmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#AnnotateAssessmentRequest.
 	}
 	resp, err := c.AnnotateAssessment(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_CreateKey() {
 
 	req := &recaptchaenterprisepb.CreateKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#CreateKeyRequest.
 	}
 	resp, err := c.CreateKey(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleClient_ListKeys() {
 
 	req := &recaptchaenterprisepb.ListKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListKeysRequest.
 	}
 	it := c.ListKeys(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleClient_GetKey() {
 
 	req := &recaptchaenterprisepb.GetKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetKeyRequest.
 	}
 	resp, err := c.GetKey(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleClient_UpdateKey() {
 
 	req := &recaptchaenterprisepb.UpdateKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#UpdateKeyRequest.
 	}
 	resp, err := c.UpdateKey(ctx, req)
 	if err != nil {
@@ -166,9 +172,50 @@ func ExampleClient_DeleteKey() {
 
 	req := &recaptchaenterprisepb.DeleteKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#DeleteKeyRequest.
 	}
 	err = c.DeleteKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_MigrateKey() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.MigrateKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#MigrateKeyRequest.
+	}
+	resp, err := c.MigrateKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetMetrics() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.GetMetricsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#GetMetricsRequest.
+	}
+	resp, err := c.GetMetrics(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

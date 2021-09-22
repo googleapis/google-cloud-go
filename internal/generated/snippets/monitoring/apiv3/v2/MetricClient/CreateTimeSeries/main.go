@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
 	if err != nil {

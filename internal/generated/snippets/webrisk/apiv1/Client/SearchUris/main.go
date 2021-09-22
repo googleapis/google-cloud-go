@@ -35,6 +35,7 @@ func main() {
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {

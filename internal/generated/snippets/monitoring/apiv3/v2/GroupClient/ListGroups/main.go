@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListGroupsRequest.
 	}
 	it := c.ListGroups(ctx, req)
 	for {

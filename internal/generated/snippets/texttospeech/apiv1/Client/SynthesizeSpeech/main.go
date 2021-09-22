@@ -35,6 +35,7 @@ func main() {
 
 	req := &texttospeechpb.SynthesizeSpeechRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#SynthesizeSpeechRequest.
 	}
 	resp, err := c.SynthesizeSpeech(ctx, req)
 	if err != nil {

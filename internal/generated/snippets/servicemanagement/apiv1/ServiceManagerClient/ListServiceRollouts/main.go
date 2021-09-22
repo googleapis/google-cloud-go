@@ -36,6 +36,7 @@ func main() {
 
 	req := &servicemanagementpb.ListServiceRolloutsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#ListServiceRolloutsRequest.
 	}
 	it := c.ListServiceRollouts(ctx, req)
 	for {

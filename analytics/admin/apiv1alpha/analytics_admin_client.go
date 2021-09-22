@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,80 +32,93 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAnalyticsAdminClientHook clientHook
 
 // AnalyticsAdminCallOptions contains the retry settings for each method of AnalyticsAdminClient.
 type AnalyticsAdminCallOptions struct {
-	GetAccount                        []gax.CallOption
-	ListAccounts                      []gax.CallOption
-	DeleteAccount                     []gax.CallOption
-	UpdateAccount                     []gax.CallOption
-	ProvisionAccountTicket            []gax.CallOption
-	ListAccountSummaries              []gax.CallOption
-	GetProperty                       []gax.CallOption
-	ListProperties                    []gax.CallOption
-	CreateProperty                    []gax.CallOption
-	DeleteProperty                    []gax.CallOption
-	UpdateProperty                    []gax.CallOption
-	GetUserLink                       []gax.CallOption
-	BatchGetUserLinks                 []gax.CallOption
-	ListUserLinks                     []gax.CallOption
-	AuditUserLinks                    []gax.CallOption
-	CreateUserLink                    []gax.CallOption
-	BatchCreateUserLinks              []gax.CallOption
-	UpdateUserLink                    []gax.CallOption
-	BatchUpdateUserLinks              []gax.CallOption
-	DeleteUserLink                    []gax.CallOption
-	BatchDeleteUserLinks              []gax.CallOption
-	GetWebDataStream                  []gax.CallOption
-	DeleteWebDataStream               []gax.CallOption
-	UpdateWebDataStream               []gax.CallOption
-	CreateWebDataStream               []gax.CallOption
-	ListWebDataStreams                []gax.CallOption
-	GetIosAppDataStream               []gax.CallOption
-	DeleteIosAppDataStream            []gax.CallOption
-	UpdateIosAppDataStream            []gax.CallOption
-	ListIosAppDataStreams             []gax.CallOption
-	GetAndroidAppDataStream           []gax.CallOption
-	DeleteAndroidAppDataStream        []gax.CallOption
-	UpdateAndroidAppDataStream        []gax.CallOption
-	ListAndroidAppDataStreams         []gax.CallOption
-	GetEnhancedMeasurementSettings    []gax.CallOption
-	UpdateEnhancedMeasurementSettings []gax.CallOption
-	CreateFirebaseLink                []gax.CallOption
-	UpdateFirebaseLink                []gax.CallOption
-	DeleteFirebaseLink                []gax.CallOption
-	ListFirebaseLinks                 []gax.CallOption
-	GetGlobalSiteTag                  []gax.CallOption
-	CreateGoogleAdsLink               []gax.CallOption
-	UpdateGoogleAdsLink               []gax.CallOption
-	DeleteGoogleAdsLink               []gax.CallOption
-	ListGoogleAdsLinks                []gax.CallOption
-	GetDataSharingSettings            []gax.CallOption
-	GetMeasurementProtocolSecret      []gax.CallOption
-	ListMeasurementProtocolSecrets    []gax.CallOption
-	CreateMeasurementProtocolSecret   []gax.CallOption
-	DeleteMeasurementProtocolSecret   []gax.CallOption
-	UpdateMeasurementProtocolSecret   []gax.CallOption
-	SearchChangeHistoryEvents         []gax.CallOption
-	GetGoogleSignalsSettings          []gax.CallOption
-	UpdateGoogleSignalsSettings       []gax.CallOption
-	CreateConversionEvent             []gax.CallOption
-	GetConversionEvent                []gax.CallOption
-	DeleteConversionEvent             []gax.CallOption
-	ListConversionEvents              []gax.CallOption
-	CreateCustomDimension             []gax.CallOption
-	UpdateCustomDimension             []gax.CallOption
-	ListCustomDimensions              []gax.CallOption
-	ArchiveCustomDimension            []gax.CallOption
-	GetCustomDimension                []gax.CallOption
-	CreateCustomMetric                []gax.CallOption
-	UpdateCustomMetric                []gax.CallOption
-	ListCustomMetrics                 []gax.CallOption
-	ArchiveCustomMetric               []gax.CallOption
-	GetCustomMetric                   []gax.CallOption
+	GetAccount                                   []gax.CallOption
+	ListAccounts                                 []gax.CallOption
+	DeleteAccount                                []gax.CallOption
+	UpdateAccount                                []gax.CallOption
+	ProvisionAccountTicket                       []gax.CallOption
+	ListAccountSummaries                         []gax.CallOption
+	GetProperty                                  []gax.CallOption
+	ListProperties                               []gax.CallOption
+	CreateProperty                               []gax.CallOption
+	DeleteProperty                               []gax.CallOption
+	UpdateProperty                               []gax.CallOption
+	GetUserLink                                  []gax.CallOption
+	BatchGetUserLinks                            []gax.CallOption
+	ListUserLinks                                []gax.CallOption
+	AuditUserLinks                               []gax.CallOption
+	CreateUserLink                               []gax.CallOption
+	BatchCreateUserLinks                         []gax.CallOption
+	UpdateUserLink                               []gax.CallOption
+	BatchUpdateUserLinks                         []gax.CallOption
+	DeleteUserLink                               []gax.CallOption
+	BatchDeleteUserLinks                         []gax.CallOption
+	GetWebDataStream                             []gax.CallOption
+	DeleteWebDataStream                          []gax.CallOption
+	UpdateWebDataStream                          []gax.CallOption
+	CreateWebDataStream                          []gax.CallOption
+	ListWebDataStreams                           []gax.CallOption
+	GetIosAppDataStream                          []gax.CallOption
+	DeleteIosAppDataStream                       []gax.CallOption
+	UpdateIosAppDataStream                       []gax.CallOption
+	ListIosAppDataStreams                        []gax.CallOption
+	GetAndroidAppDataStream                      []gax.CallOption
+	DeleteAndroidAppDataStream                   []gax.CallOption
+	UpdateAndroidAppDataStream                   []gax.CallOption
+	ListAndroidAppDataStreams                    []gax.CallOption
+	GetEnhancedMeasurementSettings               []gax.CallOption
+	UpdateEnhancedMeasurementSettings            []gax.CallOption
+	CreateFirebaseLink                           []gax.CallOption
+	DeleteFirebaseLink                           []gax.CallOption
+	ListFirebaseLinks                            []gax.CallOption
+	GetGlobalSiteTag                             []gax.CallOption
+	CreateGoogleAdsLink                          []gax.CallOption
+	UpdateGoogleAdsLink                          []gax.CallOption
+	DeleteGoogleAdsLink                          []gax.CallOption
+	ListGoogleAdsLinks                           []gax.CallOption
+	GetDataSharingSettings                       []gax.CallOption
+	GetMeasurementProtocolSecret                 []gax.CallOption
+	ListMeasurementProtocolSecrets               []gax.CallOption
+	CreateMeasurementProtocolSecret              []gax.CallOption
+	DeleteMeasurementProtocolSecret              []gax.CallOption
+	UpdateMeasurementProtocolSecret              []gax.CallOption
+	SearchChangeHistoryEvents                    []gax.CallOption
+	GetGoogleSignalsSettings                     []gax.CallOption
+	UpdateGoogleSignalsSettings                  []gax.CallOption
+	CreateConversionEvent                        []gax.CallOption
+	GetConversionEvent                           []gax.CallOption
+	DeleteConversionEvent                        []gax.CallOption
+	ListConversionEvents                         []gax.CallOption
+	GetDisplayVideo360AdvertiserLink             []gax.CallOption
+	ListDisplayVideo360AdvertiserLinks           []gax.CallOption
+	CreateDisplayVideo360AdvertiserLink          []gax.CallOption
+	DeleteDisplayVideo360AdvertiserLink          []gax.CallOption
+	UpdateDisplayVideo360AdvertiserLink          []gax.CallOption
+	GetDisplayVideo360AdvertiserLinkProposal     []gax.CallOption
+	ListDisplayVideo360AdvertiserLinkProposals   []gax.CallOption
+	CreateDisplayVideo360AdvertiserLinkProposal  []gax.CallOption
+	DeleteDisplayVideo360AdvertiserLinkProposal  []gax.CallOption
+	ApproveDisplayVideo360AdvertiserLinkProposal []gax.CallOption
+	CancelDisplayVideo360AdvertiserLinkProposal  []gax.CallOption
+	CreateCustomDimension                        []gax.CallOption
+	UpdateCustomDimension                        []gax.CallOption
+	ListCustomDimensions                         []gax.CallOption
+	ArchiveCustomDimension                       []gax.CallOption
+	GetCustomDimension                           []gax.CallOption
+	CreateCustomMetric                           []gax.CallOption
+	UpdateCustomMetric                           []gax.CallOption
+	ListCustomMetrics                            []gax.CallOption
+	ArchiveCustomMetric                          []gax.CallOption
+	GetCustomMetric                              []gax.CallOption
+	GetDataRetentionSettings                     []gax.CallOption
+	UpdateDataRetentionSettings                  []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -115,6 +127,7 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -182,7 +195,6 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 		GetEnhancedMeasurementSettings:    []gax.CallOption{},
 		UpdateEnhancedMeasurementSettings: []gax.CallOption{},
 		CreateFirebaseLink:                []gax.CallOption{},
-		UpdateFirebaseLink:                []gax.CallOption{},
 		DeleteFirebaseLink:                []gax.CallOption{},
 		ListFirebaseLinks:                 []gax.CallOption{},
 		GetGlobalSiteTag:                  []gax.CallOption{},
@@ -346,6 +358,138 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetDisplayVideo360AdvertiserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDisplayVideo360AdvertiserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateDisplayVideo360AdvertiserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDisplayVideo360AdvertiserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDisplayVideo360AdvertiserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDisplayVideo360AdvertiserLinkProposal: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDisplayVideo360AdvertiserLinkProposals: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateDisplayVideo360AdvertiserLinkProposal: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDisplayVideo360AdvertiserLinkProposal: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ApproveDisplayVideo360AdvertiserLinkProposal: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelDisplayVideo360AdvertiserLinkProposal: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateCustomDimension: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -466,6 +610,30 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetDataRetentionSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDataRetentionSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -511,7 +679,6 @@ type internalAnalyticsAdminClient interface {
 	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	CreateFirebaseLink(context.Context, *adminpb.CreateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
-	UpdateFirebaseLink(context.Context, *adminpb.UpdateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
 	DeleteFirebaseLink(context.Context, *adminpb.DeleteFirebaseLinkRequest, ...gax.CallOption) error
 	ListFirebaseLinks(context.Context, *adminpb.ListFirebaseLinksRequest, ...gax.CallOption) *FirebaseLinkIterator
 	GetGlobalSiteTag(context.Context, *adminpb.GetGlobalSiteTagRequest, ...gax.CallOption) (*adminpb.GlobalSiteTag, error)
@@ -532,6 +699,17 @@ type internalAnalyticsAdminClient interface {
 	GetConversionEvent(context.Context, *adminpb.GetConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
 	DeleteConversionEvent(context.Context, *adminpb.DeleteConversionEventRequest, ...gax.CallOption) error
 	ListConversionEvents(context.Context, *adminpb.ListConversionEventsRequest, ...gax.CallOption) *ConversionEventIterator
+	GetDisplayVideo360AdvertiserLink(context.Context, *adminpb.GetDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error)
+	ListDisplayVideo360AdvertiserLinks(context.Context, *adminpb.ListDisplayVideo360AdvertiserLinksRequest, ...gax.CallOption) *DisplayVideo360AdvertiserLinkIterator
+	CreateDisplayVideo360AdvertiserLink(context.Context, *adminpb.CreateDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error)
+	DeleteDisplayVideo360AdvertiserLink(context.Context, *adminpb.DeleteDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) error
+	UpdateDisplayVideo360AdvertiserLink(context.Context, *adminpb.UpdateDisplayVideo360AdvertiserLinkRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error)
+	GetDisplayVideo360AdvertiserLinkProposal(context.Context, *adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error)
+	ListDisplayVideo360AdvertiserLinkProposals(context.Context, *adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest, ...gax.CallOption) *DisplayVideo360AdvertiserLinkProposalIterator
+	CreateDisplayVideo360AdvertiserLinkProposal(context.Context, *adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error)
+	DeleteDisplayVideo360AdvertiserLinkProposal(context.Context, *adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest, ...gax.CallOption) error
+	ApproveDisplayVideo360AdvertiserLinkProposal(context.Context, *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest, ...gax.CallOption) (*adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse, error)
+	CancelDisplayVideo360AdvertiserLinkProposal(context.Context, *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error)
 	CreateCustomDimension(context.Context, *adminpb.CreateCustomDimensionRequest, ...gax.CallOption) (*adminpb.CustomDimension, error)
 	UpdateCustomDimension(context.Context, *adminpb.UpdateCustomDimensionRequest, ...gax.CallOption) (*adminpb.CustomDimension, error)
 	ListCustomDimensions(context.Context, *adminpb.ListCustomDimensionsRequest, ...gax.CallOption) *CustomDimensionIterator
@@ -542,6 +720,8 @@ type internalAnalyticsAdminClient interface {
 	ListCustomMetrics(context.Context, *adminpb.ListCustomMetricsRequest, ...gax.CallOption) *CustomMetricIterator
 	ArchiveCustomMetric(context.Context, *adminpb.ArchiveCustomMetricRequest, ...gax.CallOption) error
 	GetCustomMetric(context.Context, *adminpb.GetCustomMetricRequest, ...gax.CallOption) (*adminpb.CustomMetric, error)
+	GetDataRetentionSettings(context.Context, *adminpb.GetDataRetentionSettingsRequest, ...gax.CallOption) (*adminpb.DataRetentionSettings, error)
+	UpdateDataRetentionSettings(context.Context, *adminpb.UpdateDataRetentionSettingsRequest, ...gax.CallOption) (*adminpb.DataRetentionSettings, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -822,11 +1002,6 @@ func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *admi
 	return c.internalClient.CreateFirebaseLink(ctx, req, opts...)
 }
 
-// UpdateFirebaseLink updates a FirebaseLink on a property
-func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
-	return c.internalClient.UpdateFirebaseLink(ctx, req, opts...)
-}
-
 // DeleteFirebaseLink deletes a FirebaseLink on a property
 func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFirebaseLink(ctx, req, opts...)
@@ -934,6 +1109,74 @@ func (c *AnalyticsAdminClient) ListConversionEvents(ctx context.Context, req *ad
 	return c.internalClient.ListConversionEvents(ctx, req, opts...)
 }
 
+// GetDisplayVideo360AdvertiserLink look up a single DisplayVideo360AdvertiserLink
+func (c *AnalyticsAdminClient) GetDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.GetDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	return c.internalClient.GetDisplayVideo360AdvertiserLink(ctx, req, opts...)
+}
+
+// ListDisplayVideo360AdvertiserLinks lists all DisplayVideo360AdvertiserLinks on a property.
+func (c *AnalyticsAdminClient) ListDisplayVideo360AdvertiserLinks(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinksRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkIterator {
+	return c.internalClient.ListDisplayVideo360AdvertiserLinks(ctx, req, opts...)
+}
+
+// CreateDisplayVideo360AdvertiserLink creates a DisplayVideo360AdvertiserLink.
+// This can only be utilized by users who have proper authorization both on
+// the Google Analytics property and on the Display & Video 360 advertiser.
+// Users who do not have access to the Display & Video 360 advertiser should
+// instead seek to create a DisplayVideo360LinkProposal.
+func (c *AnalyticsAdminClient) CreateDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.CreateDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	return c.internalClient.CreateDisplayVideo360AdvertiserLink(ctx, req, opts...)
+}
+
+// DeleteDisplayVideo360AdvertiserLink deletes a DisplayVideo360AdvertiserLink on a property.
+func (c *AnalyticsAdminClient) DeleteDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.DeleteDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDisplayVideo360AdvertiserLink(ctx, req, opts...)
+}
+
+// UpdateDisplayVideo360AdvertiserLink updates a DisplayVideo360AdvertiserLink on a property.
+func (c *AnalyticsAdminClient) UpdateDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.UpdateDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	return c.internalClient.UpdateDisplayVideo360AdvertiserLink(ctx, req, opts...)
+}
+
+// GetDisplayVideo360AdvertiserLinkProposal lookup for a single DisplayVideo360AdvertiserLinkProposal.
+func (c *AnalyticsAdminClient) GetDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	return c.internalClient.GetDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
+}
+
+// ListDisplayVideo360AdvertiserLinkProposals lists DisplayVideo360AdvertiserLinkProposals on a property.
+func (c *AnalyticsAdminClient) ListDisplayVideo360AdvertiserLinkProposals(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkProposalIterator {
+	return c.internalClient.ListDisplayVideo360AdvertiserLinkProposals(ctx, req, opts...)
+}
+
+// CreateDisplayVideo360AdvertiserLinkProposal creates a DisplayVideo360AdvertiserLinkProposal.
+func (c *AnalyticsAdminClient) CreateDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	return c.internalClient.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
+}
+
+// DeleteDisplayVideo360AdvertiserLinkProposal deletes a DisplayVideo360AdvertiserLinkProposal on a property.
+// This can only be used on cancelled proposals.
+func (c *AnalyticsAdminClient) DeleteDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
+}
+
+// ApproveDisplayVideo360AdvertiserLinkProposal approves a DisplayVideo360AdvertiserLinkProposal.
+// The DisplayVideo360AdvertiserLinkProposal will be deleted and a new
+// DisplayVideo360AdvertiserLink will be created.
+func (c *AnalyticsAdminClient) ApproveDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse, error) {
+	return c.internalClient.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
+}
+
+// CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.
+// Cancelling can mean either:
+//
+//   Declining a proposal initiated from Display & Video 360
+//
+//   Withdrawing a proposal initiated from Google Analytics
+//   After being cancelled, a proposal will eventually be deleted automatically.
+func (c *AnalyticsAdminClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	return c.internalClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, opts...)
+}
+
 // CreateCustomDimension creates a CustomDimension.
 func (c *AnalyticsAdminClient) CreateCustomDimension(ctx context.Context, req *adminpb.CreateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
 	return c.internalClient.CreateCustomDimension(ctx, req, opts...)
@@ -982,6 +1225,16 @@ func (c *AnalyticsAdminClient) ArchiveCustomMetric(ctx context.Context, req *adm
 // GetCustomMetric lookup for a single CustomMetric.
 func (c *AnalyticsAdminClient) GetCustomMetric(ctx context.Context, req *adminpb.GetCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
 	return c.internalClient.GetCustomMetric(ctx, req, opts...)
+}
+
+// GetDataRetentionSettings returns the singleton data retention settings for this property.
+func (c *AnalyticsAdminClient) GetDataRetentionSettings(ctx context.Context, req *adminpb.GetDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
+	return c.internalClient.GetDataRetentionSettings(ctx, req, opts...)
+}
+
+// UpdateDataRetentionSettings updates the singleton data retention settings for this property.
+func (c *AnalyticsAdminClient) UpdateDataRetentionSettings(ctx context.Context, req *adminpb.UpdateDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
+	return c.internalClient.UpdateDataRetentionSettings(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -1091,11 +1344,13 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Account, string, error) {
-		var resp *adminpb.ListAccountsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAccountsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1118,9 +1373,11 @@ func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1188,11 +1445,13 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 	it := &AccountSummaryIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
-		var resp *adminpb.ListAccountSummariesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAccountSummariesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1215,9 +1474,11 @@ func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1248,11 +1509,13 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 	it := &PropertyIterator{}
 	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Property, string, error) {
-		var resp *adminpb.ListPropertiesResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListPropertiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1275,9 +1538,11 @@ func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *admi
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1392,11 +1657,13 @@ func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *admin
 	it := &UserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.UserLink, string, error) {
-		var resp *adminpb.ListUserLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListUserLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1419,9 +1686,11 @@ func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *admin
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1432,11 +1701,13 @@ func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *admi
 	it := &AuditUserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.AuditUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AuditUserLink, string, error) {
-		var resp *adminpb.AuditUserLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.AuditUserLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1459,9 +1730,11 @@ func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *admi
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1670,11 +1943,13 @@ func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *
 	it := &WebDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListWebDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.WebDataStream, string, error) {
-		var resp *adminpb.ListWebDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListWebDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1697,9 +1972,11 @@ func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1769,11 +2046,13 @@ func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, re
 	it := &IosAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListIosAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.IosAppDataStream, string, error) {
-		var resp *adminpb.ListIosAppDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListIosAppDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1796,9 +2075,11 @@ func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, re
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1868,11 +2149,13 @@ func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context
 	it := &AndroidAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListAndroidAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AndroidAppDataStream, string, error) {
-		var resp *adminpb.ListAndroidAppDataStreamsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListAndroidAppDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1895,9 +2178,11 @@ func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1964,27 +2249,6 @@ func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *
 	return resp, nil
 }
 
-func (c *analyticsAdminGRPCClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firebase_link.name", url.QueryEscape(req.GetFirebaseLink().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateFirebaseLink[0:len((*c.CallOptions).UpdateFirebaseLink):len((*c.CallOptions).UpdateFirebaseLink)], opts...)
-	var resp *adminpb.FirebaseLink
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateFirebaseLink(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *analyticsAdminGRPCClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -2009,11 +2273,13 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 	it := &FirebaseLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
-		var resp *adminpb.ListFirebaseLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListFirebaseLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2036,9 +2302,11 @@ func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *a
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2129,11 +2397,13 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 	it := &GoogleAdsLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.GoogleAdsLink, string, error) {
-		var resp *adminpb.ListGoogleAdsLinksResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListGoogleAdsLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2156,9 +2426,11 @@ func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2211,11 +2483,13 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 	it := &MeasurementProtocolSecretIterator{}
 	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.MeasurementProtocolSecret, string, error) {
-		var resp *adminpb.ListMeasurementProtocolSecretsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListMeasurementProtocolSecretsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2238,9 +2512,11 @@ func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2310,11 +2586,13 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChangeHistoryEvent, string, error) {
-		var resp *adminpb.SearchChangeHistoryEventsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.SearchChangeHistoryEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2337,9 +2615,11 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2451,11 +2731,13 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 	it := &ConversionEventIterator{}
 	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ConversionEvent, string, error) {
-		var resp *adminpb.ListConversionEventsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListConversionEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2478,10 +2760,281 @@ func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
+}
+
+func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.GetDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLink):len((*c.CallOptions).GetDisplayVideo360AdvertiserLink)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinks(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinksRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinks[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinks)], opts...)
+	it := &DisplayVideo360AdvertiserLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLink, string, error) {
+		resp := &adminpb.ListDisplayVideo360AdvertiserLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinks(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDisplayVideo_360AdvertiserLinks(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.CreateDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLink)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.DeleteDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLink)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateDisplayVideo360AdvertiserLink(ctx context.Context, req *adminpb.UpdateDisplayVideo360AdvertiserLinkRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "display_video_360_advertiser_link.name", url.QueryEscape(req.GetDisplayVideo_360AdvertiserLink().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink[0:len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink):len((*c.CallOptions).UpdateDisplayVideo360AdvertiserLink)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLink
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateDisplayVideo360AdvertiserLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).GetDisplayVideo360AdvertiserLinkProposal)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListDisplayVideo360AdvertiserLinkProposals(ctx context.Context, req *adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest, opts ...gax.CallOption) *DisplayVideo360AdvertiserLinkProposalIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals[0:len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals):len((*c.CallOptions).ListDisplayVideo360AdvertiserLinkProposals)], opts...)
+	it := &DisplayVideo360AdvertiserLinkProposalIterator{}
+	req = proto.Clone(req).(*adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DisplayVideo360AdvertiserLinkProposal, string, error) {
+		resp := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListDisplayVideo360AdvertiserLinkProposals(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDisplayVideo_360AdvertiserLinkProposals(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CreateDisplayVideo360AdvertiserLinkProposal)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).DeleteDisplayVideo360AdvertiserLinkProposal)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ApproveDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).ApproveDisplayVideo360AdvertiserLinkProposal)], opts...)
+	var resp *adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CancelDisplayVideo360AdvertiserLinkProposal(ctx context.Context, req *adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest, opts ...gax.CallOption) (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal[0:len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal):len((*c.CallOptions).CancelDisplayVideo360AdvertiserLinkProposal)], opts...)
+	var resp *adminpb.DisplayVideo360AdvertiserLinkProposal
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *analyticsAdminGRPCClient) CreateCustomDimension(ctx context.Context, req *adminpb.CreateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
@@ -2533,11 +3086,13 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 	it := &CustomDimensionIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomDimension, string, error) {
-		var resp *adminpb.ListCustomDimensionsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListCustomDimensionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2560,9 +3115,11 @@ func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2653,11 +3210,13 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 	it := &CustomMetricIterator{}
 	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomMetric, string, error) {
-		var resp *adminpb.ListCustomMetricsResponse
-		req.PageToken = pageToken
+		resp := &adminpb.ListCustomMetricsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2680,9 +3239,11 @@ func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *a
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -2716,6 +3277,48 @@ func (c *analyticsAdminGRPCClient) GetCustomMetric(ctx context.Context, req *adm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.analyticsAdminClient.GetCustomMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetDataRetentionSettings(ctx context.Context, req *adminpb.GetDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDataRetentionSettings[0:len((*c.CallOptions).GetDataRetentionSettings):len((*c.CallOptions).GetDataRetentionSettings)], opts...)
+	var resp *adminpb.DataRetentionSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetDataRetentionSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateDataRetentionSettings(ctx context.Context, req *adminpb.UpdateDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_retention_settings.name", url.QueryEscape(req.GetDataRetentionSettings().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateDataRetentionSettings[0:len((*c.CallOptions).UpdateDataRetentionSettings):len((*c.CallOptions).UpdateDataRetentionSettings)], opts...)
+	var resp *adminpb.DataRetentionSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateDataRetentionSettings(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3095,6 +3698,100 @@ func (it *CustomMetricIterator) bufLen() int {
 }
 
 func (it *CustomMetricIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DisplayVideo360AdvertiserLinkIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLink.
+type DisplayVideo360AdvertiserLinkIterator struct {
+	items    []*adminpb.DisplayVideo360AdvertiserLink
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLink, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DisplayVideo360AdvertiserLinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DisplayVideo360AdvertiserLinkIterator) Next() (*adminpb.DisplayVideo360AdvertiserLink, error) {
+	var item *adminpb.DisplayVideo360AdvertiserLink
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DisplayVideo360AdvertiserLinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DisplayVideo360AdvertiserLinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DisplayVideo360AdvertiserLinkProposalIterator manages a stream of *adminpb.DisplayVideo360AdvertiserLinkProposal.
+type DisplayVideo360AdvertiserLinkProposalIterator struct {
+	items    []*adminpb.DisplayVideo360AdvertiserLinkProposal
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DisplayVideo360AdvertiserLinkProposal, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DisplayVideo360AdvertiserLinkProposalIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DisplayVideo360AdvertiserLinkProposalIterator) Next() (*adminpb.DisplayVideo360AdvertiserLinkProposal, error) {
+	var item *adminpb.DisplayVideo360AdvertiserLinkProposal
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DisplayVideo360AdvertiserLinkProposalIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DisplayVideo360AdvertiserLinkProposalIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

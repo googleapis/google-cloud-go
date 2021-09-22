@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -31,6 +30,7 @@ import (
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAuthorizedDomainsClientHook clientHook
@@ -46,6 +46,7 @@ func defaultAuthorizedDomainsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -196,11 +197,13 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 	it := &AuthorizedDomainIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedDomain, string, error) {
-		var resp *appenginepb.ListAuthorizedDomainsResponse
-		req.PageToken = pageToken
+		resp := &appenginepb.ListAuthorizedDomainsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -223,9 +226,11 @@ func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newServiceManagerClientHook clientHook
@@ -65,6 +65,7 @@ func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("servicemanagement.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -457,11 +458,13 @@ func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servic
 	it := &ManagedServiceIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.ManagedService, string, error) {
-		var resp *servicemanagementpb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -484,9 +487,11 @@ func (c *serviceManagerGRPCClient) ListServices(ctx context.Context, req *servic
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -586,11 +591,13 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServiceConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceconfigpb.Service, string, error) {
-		var resp *servicemanagementpb.ListServiceConfigsResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServiceConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -613,9 +620,11 @@ func (c *serviceManagerGRPCClient) ListServiceConfigs(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -691,11 +700,13 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 	it := &RolloutIterator{}
 	req = proto.Clone(req).(*servicemanagementpb.ListServiceRolloutsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicemanagementpb.Rollout, string, error) {
-		var resp *servicemanagementpb.ListServiceRolloutsResponse
-		req.PageToken = pageToken
+		resp := &servicemanagementpb.ListServiceRolloutsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -718,9 +729,11 @@ func (c *serviceManagerGRPCClient) ListServiceRollouts(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

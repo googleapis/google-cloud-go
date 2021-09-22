@@ -35,6 +35,7 @@ func main() {
 
 	req := &reservationpb.GetReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1#GetReservationRequest.
 	}
 	resp, err := c.GetReservation(ctx, req)
 	if err != nil {

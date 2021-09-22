@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.GetCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#GetCertificateAuthorityRequest.
 	}
 	resp, err := c.GetCertificateAuthority(ctx, req)
 	if err != nil {

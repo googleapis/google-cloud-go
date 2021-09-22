@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 package main
@@ -31,7 +32,7 @@ import (
 
 // generate downloads sources and generates pull requests for go-genproto and
 // google-cloud-go if needed.
-func generate(ctx context.Context, githubClient *git.GithubClient) error {
+func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -42,6 +43,7 @@ func generate(ctx context.Context, githubClient *git.GithubClient) error {
 	log.Printf("working out %s\n", tmpDir)
 
 	googleapisDir := filepath.Join(tmpDir, "googleapis")
+	googleapisDiscoDir := filepath.Join(tmpDir, "googleapis-discovery")
 	gocloudDir := filepath.Join(tmpDir, "gocloud")
 	genprotoDir := filepath.Join(tmpDir, "genproto")
 	protoDir := filepath.Join(tmpDir, "proto")
@@ -51,6 +53,9 @@ func generate(ctx context.Context, githubClient *git.GithubClient) error {
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+	})
+	grp.Go(func() error {
+		return git.DeepClone("https://github.com/googleapis/googleapis-discovery", googleapisDiscoDir)
 	})
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
@@ -67,10 +72,12 @@ func generate(ctx context.Context, githubClient *git.GithubClient) error {
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir: googleapisDir,
-		GenprotoDir:   genprotoDir,
-		GapicDir:      gocloudDir,
-		ProtoDir:      protoDir,
+		GoogleapisDir:      googleapisDir,
+		GoogleapisDiscoDir: googleapisDiscoDir,
+		GenprotoDir:        genprotoDir,
+		GapicDir:           gocloudDir,
+		ProtoDir:           protoDir,
+		ForceAll:           forceAll,
 	}
 	changes, err := generator.Generate(ctx, conf)
 	if err != nil {

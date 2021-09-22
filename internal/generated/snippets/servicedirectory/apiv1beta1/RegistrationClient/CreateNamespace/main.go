@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicedirectorypb.CreateNamespaceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1#CreateNamespaceRequest.
 	}
 	resp, err := c.CreateNamespace(ctx, req)
 	if err != nil {

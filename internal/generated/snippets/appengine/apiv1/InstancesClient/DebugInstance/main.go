@@ -35,6 +35,7 @@ func main() {
 
 	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DebugInstanceRequest.
 	}
 	op, err := c.DebugInstance(ctx, req)
 	if err != nil {

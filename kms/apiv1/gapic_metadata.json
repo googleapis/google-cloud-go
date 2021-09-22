@@ -55,6 +55,11 @@
                 "Encrypt"
               ]
             },
+            "GenerateRandomBytes": {
+              "methods": [
+                "GenerateRandomBytes"
+              ]
+            },
             "GetCryptoKey": {
               "methods": [
                 "GetCryptoKey"
@@ -108,6 +113,16 @@
             "ListKeyRings": {
               "methods": [
                 "ListKeyRings"
+              ]
+            },
+            "MacSign": {
+              "methods": [
+                "MacSign"
+              ]
+            },
+            "MacVerify": {
+              "methods": [
+                "MacVerify"
               ]
             },
             "RestoreCryptoKeyVersion": {

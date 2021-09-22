@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.ImportEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ImportEntitiesRequest.
 	}
 	op, err := c.ImportEntities(ctx, req)
 	if err != nil {

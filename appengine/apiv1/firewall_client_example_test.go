@@ -46,6 +46,7 @@ func ExampleFirewallClient_ListIngressRules() {
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListIngressRulesRequest.
 	}
 	it := c.ListIngressRules(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 
 	req := &appenginepb.BatchUpdateIngressRulesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#BatchUpdateIngressRulesRequest.
 	}
 	resp, err := c.BatchUpdateIngressRules(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleFirewallClient_CreateIngressRule() {
 
 	req := &appenginepb.CreateIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateIngressRuleRequest.
 	}
 	resp, err := c.CreateIngressRule(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleFirewallClient_GetIngressRule() {
 
 	req := &appenginepb.GetIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetIngressRuleRequest.
 	}
 	resp, err := c.GetIngressRule(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleFirewallClient_UpdateIngressRule() {
 
 	req := &appenginepb.UpdateIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateIngressRuleRequest.
 	}
 	resp, err := c.UpdateIngressRule(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleFirewallClient_DeleteIngressRule() {
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteIngressRuleRequest.
 	}
 	err = c.DeleteIngressRule(ctx, req)
 	if err != nil {

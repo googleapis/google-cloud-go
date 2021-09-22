@@ -35,6 +35,7 @@ func main() {
 
 	req := &osloginpb.GetLoginProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1beta#GetLoginProfileRequest.
 	}
 	resp, err := c.GetLoginProfile(ctx, req)
 	if err != nil {

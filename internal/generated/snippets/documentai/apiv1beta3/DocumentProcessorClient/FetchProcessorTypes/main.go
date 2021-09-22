@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.FetchProcessorTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#FetchProcessorTypesRequest.
 	}
 	resp, err := c.FetchProcessorTypes(ctx, req)
 	if err != nil {

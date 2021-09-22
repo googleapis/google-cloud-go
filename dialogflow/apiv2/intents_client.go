@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newIntentsClientHook clientHook
@@ -58,6 +58,7 @@ func defaultIntentsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -212,23 +213,46 @@ func (c *IntentsClient) GetIntent(ctx context.Context, req *dialogflowpb.GetInte
 }
 
 // CreateIntent creates an intent in the specified agent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *IntentsClient) CreateIntent(ctx context.Context, req *dialogflowpb.CreateIntentRequest, opts ...gax.CallOption) (*dialogflowpb.Intent, error) {
 	return c.internalClient.CreateIntent(ctx, req, opts...)
 }
 
 // UpdateIntent updates the specified intent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *IntentsClient) UpdateIntent(ctx context.Context, req *dialogflowpb.UpdateIntentRequest, opts ...gax.CallOption) (*dialogflowpb.Intent, error) {
 	return c.internalClient.UpdateIntent(ctx, req, opts...)
 }
 
 // DeleteIntent deletes the specified intent and its direct or indirect followup intents.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.DeleteIntentRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteIntent(ctx, req, opts...)
 }
 
 // BatchUpdateIntents updates/Creates multiple intents in the specified agent.
 //
-// Operation <response: BatchUpdateIntentsResponse>
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: BatchUpdateIntentsResponse
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *IntentsClient) BatchUpdateIntents(ctx context.Context, req *dialogflowpb.BatchUpdateIntentsRequest, opts ...gax.CallOption) (*BatchUpdateIntentsOperation, error) {
 	return c.internalClient.BatchUpdateIntents(ctx, req, opts...)
 }
@@ -241,7 +265,19 @@ func (c *IntentsClient) BatchUpdateIntentsOperation(name string) *BatchUpdateInt
 
 // BatchDeleteIntents deletes intents in the specified agent.
 //
-// Operation <response: google.protobuf.Empty>
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *IntentsClient) BatchDeleteIntents(ctx context.Context, req *dialogflowpb.BatchDeleteIntentsRequest, opts ...gax.CallOption) (*BatchDeleteIntentsOperation, error) {
 	return c.internalClient.BatchDeleteIntents(ctx, req, opts...)
 }
@@ -355,11 +391,13 @@ func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 	it := &IntentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListIntentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Intent, string, error) {
-		var resp *dialogflowpb.ListIntentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListIntentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,9 +420,11 @@ func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *dialogflowpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

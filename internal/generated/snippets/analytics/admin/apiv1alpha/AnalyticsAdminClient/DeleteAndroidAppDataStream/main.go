@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteAndroidAppDataStreamRequest.
 	}
 	err = c.DeleteAndroidAppDataStream(ctx, req)
 	if err != nil {

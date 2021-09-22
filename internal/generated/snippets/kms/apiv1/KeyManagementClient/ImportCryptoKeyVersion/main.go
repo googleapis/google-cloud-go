@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.ImportCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ImportCryptoKeyVersionRequest.
 	}
 	resp, err := c.ImportCryptoKeyVersion(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#DeleteIndexRequest.
 	}
 	op, err := c.DeleteIndex(ctx, req)
 	if err != nil {

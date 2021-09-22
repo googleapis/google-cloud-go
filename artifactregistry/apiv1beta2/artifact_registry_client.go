@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -72,6 +72,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("artifactregistry.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://artifactregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -594,11 +595,13 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
-		var resp *artifactregistrypb.ListRepositoriesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListRepositoriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -621,9 +624,11 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -722,11 +727,13 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 	it := &PackageIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
-		var resp *artifactregistrypb.ListPackagesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,9 +756,11 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -806,11 +815,13 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
-		var resp *artifactregistrypb.ListVersionsResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -833,9 +844,11 @@ func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -890,11 +903,13 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 	it := &FileIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
-		var resp *artifactregistrypb.ListFilesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -917,9 +932,11 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -951,11 +968,13 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 	it := &TagIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
-		var resp *artifactregistrypb.ListTagsResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -978,9 +997,11 @@ func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListT
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

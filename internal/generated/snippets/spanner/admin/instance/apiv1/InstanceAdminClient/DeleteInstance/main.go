@@ -35,6 +35,7 @@ func main() {
 
 	req := &instancepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#DeleteInstanceRequest.
 	}
 	err = c.DeleteInstance(ctx, req)
 	if err != nil {

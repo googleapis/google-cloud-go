@@ -35,6 +35,7 @@ func main() {
 
 	req := &secretmanagerpb.DisableSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1#DisableSecretVersionRequest.
 	}
 	resp, err := c.DisableSecretVersion(ctx, req)
 	if err != nil {

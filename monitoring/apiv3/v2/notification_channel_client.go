@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newNotificationChannelClientHook clientHook
@@ -57,6 +57,7 @@ func defaultNotificationChannelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -68,7 +69,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		ListNotificationChannelDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,7 +80,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannelDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -92,7 +91,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		ListNotificationChannels: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -104,7 +102,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -118,7 +115,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		DeleteNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -131,7 +127,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannelVerificationCode: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -143,7 +138,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		VerifyNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -376,11 +370,13 @@ func (c *notificationChannelGRPCClient) ListNotificationChannelDescriptors(ctx c
 	it := &NotificationChannelDescriptorIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListNotificationChannelDescriptorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.NotificationChannelDescriptor, string, error) {
-		var resp *monitoringpb.ListNotificationChannelDescriptorsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListNotificationChannelDescriptorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,9 +399,11 @@ func (c *notificationChannelGRPCClient) ListNotificationChannelDescriptors(ctx c
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -437,11 +435,13 @@ func (c *notificationChannelGRPCClient) ListNotificationChannels(ctx context.Con
 	it := &NotificationChannelIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListNotificationChannelsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.NotificationChannel, string, error) {
-		var resp *monitoringpb.ListNotificationChannelsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListNotificationChannelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -464,9 +464,11 @@ func (c *notificationChannelGRPCClient) ListNotificationChannels(ctx context.Con
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

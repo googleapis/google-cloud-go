@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMetricDescriptorRequest.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {

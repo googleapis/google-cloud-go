@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.CreateAlertPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateAlertPolicyRequest.
 	}
 	resp, err := c.CreateAlertPolicy(ctx, req)
 	if err != nil {

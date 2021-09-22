@@ -36,6 +36,7 @@ func main() {
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#ListDatasetsRequest.
 	}
 	it := c.ListDatasets(ctx, req)
 	for {

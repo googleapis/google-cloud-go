@@ -36,9 +36,13 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestV2HeaderSanitization(t *testing.T) {
@@ -646,34 +650,6 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() error {
-				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{GenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationNotMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationNotMatch=1234",
-		},
-		{
-			func() error {
 				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).Attrs(ctx)
 				return err
 			},
@@ -725,6 +701,59 @@ func TestCondition(t *testing.T) {
 			got := r.Method + " " + r.RequestURI
 			if got != tt.want {
 				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("%d. timeout", i)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	readerTests := []struct {
+		fn   func() error
+		want string
+	}{
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: ",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: , x-goog-if-metageneration-match: 5",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234, MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: 5",
+		},
+	}
+
+	for i, tt := range readerTests {
+		if err := tt.fn(); err != nil && err != io.EOF {
+			t.Error(err)
+			continue
+		}
+
+		select {
+		case r := <-gotReq:
+			generationConds := r.Header.Get("x-goog-if-generation-match")
+			metagenerationConds := r.Header.Get("x-goog-if-metageneration-match")
+			got := fmt.Sprintf(
+				"x-goog-if-generation-match: %s, x-goog-if-metageneration-match: %s",
+				generationConds,
+				metagenerationConds,
+			)
+			if got != tt.want {
+				t.Errorf("%d. RequestHeaders = %q; want %q", i, got, tt.want)
 			}
 		case <-time.After(5 * time.Second):
 			t.Fatalf("%d. timeout", i)
@@ -1191,6 +1220,156 @@ func TestObjectAttrsToRawObject(t *testing.T) {
 	}
 }
 
+func TestProtoObjectToObjectAttrs(t *testing.T) {
+	t.Parallel()
+	now := time.Now()
+	tests := []struct {
+		in   *storagepb.Object
+		want *ObjectAttrs
+	}{
+		{in: nil, want: nil},
+		{
+			in: &storagepb.Object{
+				Bucket:              "Test",
+				ContentLanguage:     "en-us",
+				ContentType:         "video/mpeg",
+				CustomTime:          timestamppb.New(now),
+				EventBasedHold:      proto.Bool(false),
+				Generation:          7,
+				Checksums:           &storagepb.ObjectChecksums{Md5Hash: []byte("14683cba444dbcc6db297645e683f5c1")},
+				Name:                "foo.mp4",
+				RetentionExpireTime: timestamppb.New(now),
+				Size:                1 << 20,
+				CreateTime:          timestamppb.New(now),
+				DeleteTime:          timestamppb.New(now),
+				TemporaryHold:       true,
+			},
+			want: &ObjectAttrs{
+				Bucket:                  "Test",
+				Created:                 now,
+				ContentLanguage:         "en-us",
+				ContentType:             "video/mpeg",
+				CustomTime:              now,
+				Deleted:                 now,
+				EventBasedHold:          false,
+				Generation:              7,
+				MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+				Name:                    "foo.mp4",
+				RetentionExpirationTime: now,
+				Size:                    1 << 20,
+				TemporaryHold:           true,
+			},
+		},
+	}
+
+	for i, tt := range tests {
+		got := newObjectFromProto(tt.in)
+		if diff := testutil.Diff(got, tt.want); diff != "" {
+			t.Errorf("#%d: newObject mismatches:\ngot=-, want=+:\n%s", i, diff)
+		}
+	}
+}
+
+func TestObjectAttrsToProtoObject(t *testing.T) {
+	t.Parallel()
+	now := time.Now()
+
+	b := "bucket"
+	want := &storagepb.Object{
+		Bucket:              "projects/_/buckets/" + b,
+		ContentLanguage:     "en-us",
+		ContentType:         "video/mpeg",
+		CustomTime:          timestamppb.New(now),
+		EventBasedHold:      proto.Bool(false),
+		Generation:          7,
+		Checksums:           &storagepb.ObjectChecksums{Md5Hash: []byte("14683cba444dbcc6db297645e683f5c1")},
+		Name:                "foo.mp4",
+		RetentionExpireTime: timestamppb.New(now),
+		Size:                1 << 20,
+		CreateTime:          timestamppb.New(now),
+		DeleteTime:          timestamppb.New(now),
+		TemporaryHold:       true,
+	}
+	in := &ObjectAttrs{
+		Created:                 now,
+		ContentLanguage:         "en-us",
+		ContentType:             "video/mpeg",
+		CustomTime:              now,
+		Deleted:                 now,
+		EventBasedHold:          false,
+		Generation:              7,
+		MD5:                     []byte("14683cba444dbcc6db297645e683f5c1"),
+		Name:                    "foo.mp4",
+		RetentionExpirationTime: now,
+		Size:                    1 << 20,
+		TemporaryHold:           true,
+	}
+
+	got := in.toProtoObject(b)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("toProtoObject mismatches:\ngot=-, want=+:\n%s", diff)
+	}
+}
+
+func TestApplyCondsProto(t *testing.T) {
+	for _, tst := range []struct {
+		name     string
+		in, want proto.Message
+		err      error
+		gen      int64
+		conds    *Conditions
+	}{
+		{
+			name: "generation",
+			gen:  123,
+			in:   &storagepb.ReadObjectRequest{},
+			want: &storagepb.ReadObjectRequest{Generation: 123},
+		},
+		{
+			name: "invalid_no_generation",
+			gen:  123,
+			in:   &storagepb.WriteObjectRequest{},
+			err:  fmt.Errorf("generation not supported"),
+		},
+		{
+			name:  "if_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(123), IfMetagenerationMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationMatch: 123, MetagenerationMatch: 123},
+		},
+		{
+			name:  "if_dne",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationMatch: proto.Int64(0)},
+			conds: &Conditions{DoesNotExist: true},
+		},
+		{
+			name:  "if_not_match",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			want:  &storagepb.ReadObjectRequest{IfGenerationNotMatch: proto.Int64(123), IfMetagenerationNotMatch: proto.Int64(123)},
+			conds: &Conditions{GenerationNotMatch: 123, MetagenerationNotMatch: 123},
+		},
+		{
+			name:  "invalid_multiple_conditions",
+			gen:   -1,
+			in:    &storagepb.ReadObjectRequest{},
+			conds: &Conditions{MetagenerationMatch: 123, MetagenerationNotMatch: 123},
+			err:   fmt.Errorf("multiple conditions"),
+		},
+	} {
+		if err := applyCondsProto(tst.name, tst.gen, tst.conds, tst.in); tst.err == nil && err != nil {
+			t.Errorf("%s: error got %v, want nil", tst.name, err)
+		} else if tst.err != nil && (err == nil || !strings.Contains(err.Error(), tst.err.Error())) {
+			t.Errorf("%s: error got %v, want %v", tst.name, err, tst.err)
+		} else if diff := cmp.Diff(tst.in, tst.want, cmp.Comparer(proto.Equal)); tst.err == nil && diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", tst.name, diff)
+		}
+	}
+}
+
 func TestAttrToFieldMapCoverage(t *testing.T) {
 	t.Parallel()
 
@@ -1227,6 +1406,7 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 func TestWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
 	testCases := []struct {
+		desc                string
 		CustomEndpoint      string
 		StorageEmulatorHost string
 		WantRawBasePath     string
@@ -1234,6 +1414,7 @@ func TestWithEndpoint(t *testing.T) {
 		WantScheme          string
 	}{
 		{
+			desc:                "No endpoint or emulator host specified",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://storage.googleapis.com/storage/v1/",
@@ -1241,6 +1422,7 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "https",
 		},
 		{
+			desc:                "With specified https endpoint, no specified emulator host",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
@@ -1248,17 +1430,67 @@ func TestWithEndpoint(t *testing.T) {
 			WantScheme:          "https",
 		},
 		{
+			desc:                "With specified http endpoint, no specified emulator host",
+			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Emulator host specified, no specified endpoint",
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
-			WantRawBasePath:     "http://emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1/",
 			WantReadHost:        "emu.com",
 			WantScheme:          "http",
 		},
 		{
+			desc:                "Emulator host specified without scheme",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1/",
+			WantReadHost:        "emu.com",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Emulator host specified as host:port",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "localhost:9000",
+			WantRawBasePath:     "http://localhost:9000/storage/v1/",
+			WantReadHost:        "localhost:9000",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when both are specified - https",
 			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
 			StorageEmulatorHost: "http://emu.com",
 			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
 			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "https",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when both are specified - http",
+			CustomEndpoint:      "http://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "https://emu.com",
+			WantRawBasePath:     "http://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when host is specified as scheme://host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "https://localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
+			WantScheme:          "http",
+		},
+		{
+			desc:                "Endpoint overrides emulator host when host is specified as host:port",
+			CustomEndpoint:      "http://localhost:8080/storage/v1",
+			StorageEmulatorHost: "localhost:9000",
+			WantRawBasePath:     "http://localhost:8080/storage/v1",
+			WantReadHost:        "localhost:8080",
 			WantScheme:          "http",
 		},
 	}
@@ -1269,19 +1501,206 @@ func TestWithEndpoint(t *testing.T) {
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}
-		if err != nil {
-			t.Fatalf("error creating client: %v", err)
-		}
 
 		if c.raw.BasePath != tc.WantRawBasePath {
-			t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, tc.WantRawBasePath)
+			t.Errorf("%s: raw.BasePath not set correctly\n\tgot %v, want %v", tc.desc, c.raw.BasePath, tc.WantRawBasePath)
 		}
 		if c.readHost != tc.WantReadHost {
-			t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, tc.WantReadHost)
+			t.Errorf("%s: readHost not set correctly\n\tgot %v, want %v", tc.desc, c.readHost, tc.WantReadHost)
 		}
 		if c.scheme != tc.WantScheme {
-			t.Errorf("scheme not set correctly: got %v, want %v", c.scheme, tc.WantScheme)
+			t.Errorf("%s: scheme not set correctly\n\tgot %v, want %v", tc.desc, c.scheme, tc.WantScheme)
 		}
 	}
 	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+}
+
+// Create a client using a combination of custom endpoint and STORAGE_EMULATOR_HOST
+// env variable and verify that the client hits the correct endpoint for several
+// different operations performe in sequence.
+// Verifies also that raw.BasePath, readHost and scheme are not changed
+// after running the operations.
+func TestOperationsWithEndpoint(t *testing.T) {
+	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+
+	gotURL := make(chan string, 1)
+	gotHost := make(chan string, 1)
+	gotMethod := make(chan string, 1)
+
+	timedOut := make(chan bool, 1)
+
+	hClient, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		done := make(chan bool, 1)
+		io.Copy(ioutil.Discard, r.Body)
+		fmt.Fprintf(w, "{}")
+		go func() {
+			gotHost <- r.Host
+			gotURL <- r.RequestURI
+			gotMethod <- r.Method
+			done <- true
+		}()
+
+		select {
+		case <-timedOut:
+		case <-done:
+		}
+
+	})
+	defer closeServer()
+
+	testCases := []struct {
+		desc                string
+		CustomEndpoint      string
+		StorageEmulatorHost string
+		wantScheme          string
+		wantHost            string
+	}{
+		{
+			desc:                "No endpoint or emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "storage.googleapis.com",
+		},
+		{
+			desc:                "emulator host specified",
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "https://" + "addr",
+			wantScheme:          "https",
+			wantHost:            "addr",
+		},
+		{
+			desc:                "endpoint specified",
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
+			StorageEmulatorHost: "",
+			wantScheme:          "https",
+			wantHost:            "end",
+		},
+		{
+			desc:                "both emulator and endpoint specified",
+			CustomEndpoint:      "https://" + "end" + "/storage/v1/",
+			StorageEmulatorHost: "http://host",
+			wantScheme:          "https",
+			wantHost:            "end",
+		},
+	}
+
+	for _, tc := range testCases {
+		ctx := context.Background()
+		t.Run(tc.desc, func(t *testing.T) {
+			timeout := time.After(time.Second)
+			done := make(chan bool, 1)
+			go func() {
+				os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+
+				c, err := NewClient(ctx, option.WithHTTPClient(hClient), option.WithEndpoint(tc.CustomEndpoint))
+				if err != nil {
+					t.Errorf("error creating client: %v", err)
+					return
+				}
+				originalRawBasePath := c.raw.BasePath
+				originalReadHost := c.readHost
+				originalScheme := c.scheme
+
+				operations := []struct {
+					desc       string
+					runOp      func() error
+					wantURL    string
+					wantMethod string
+				}{
+					{
+						desc: "Create a bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Create(ctx, "pid", nil)
+						},
+						wantURL:    "/storage/v1/b?alt=json&prettyPrint=false&project=pid",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Upload an object",
+						runOp: func() error {
+							w := c.Bucket("test-bucket").Object("file").NewWriter(ctx)
+							_, err = io.Copy(w, strings.NewReader("copyng into bucket"))
+							if err != nil {
+								return err
+							}
+							return w.Close()
+						},
+						wantURL:    "/upload/storage/v1/b/test-bucket/o?alt=json&name=file&prettyPrint=false&projection=full&uploadType=multipart",
+						wantMethod: "POST",
+					},
+					{
+						desc: "Download an object",
+						runOp: func() error {
+							rc, err := c.Bucket("test-bucket").Object("file").NewReader(ctx)
+							if err != nil {
+								return err
+							}
+
+							_, err = io.Copy(ioutil.Discard, rc)
+							if err != nil {
+								return err
+							}
+							return rc.Close()
+						},
+						wantURL:    "/test-bucket/file",
+						wantMethod: "GET",
+					},
+					{
+						desc: "Delete bucket",
+						runOp: func() error {
+							return c.Bucket("test-bucket").Delete(ctx)
+						},
+						wantURL:    "/storage/v1/b/test-bucket?alt=json&prettyPrint=false",
+						wantMethod: "DELETE",
+					},
+				}
+
+				// Check that the calls made to the server are as expected
+				// given the operations performed
+				for _, op := range operations {
+					if err := op.runOp(); err != nil {
+						t.Errorf("%s: %v", op.desc, err)
+					}
+					u, method := <-gotURL, <-gotMethod
+					if u != op.wantURL {
+						t.Errorf("%s: unexpected request URL\ngot  %q\nwant %q",
+							op.desc, u, op.wantURL)
+					}
+					if method != op.wantMethod {
+						t.Errorf("%s: unexpected request method\ngot  %q\nwant %q",
+							op.desc, method, op.wantMethod)
+					}
+
+					if got := <-gotHost; got != tc.wantHost {
+						t.Errorf("%s: unexpected request host\ngot  %q\nwant %q",
+							op.desc, got, tc.wantHost)
+					}
+				}
+
+				// Check that the client fields have not changed
+				if c.raw.BasePath != originalRawBasePath {
+					t.Errorf("raw.BasePath changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.raw.BasePath, originalRawBasePath)
+				}
+				if c.readHost != originalReadHost {
+					t.Errorf("readHost changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.readHost, originalReadHost)
+				}
+				if c.scheme != originalScheme {
+					t.Errorf("scheme changed\n\tgot:\t\t%v\n\toriginal:\t%v",
+						c.scheme, originalScheme)
+				}
+				done <- true
+			}()
+			select {
+			case <-timeout:
+				t.Errorf("test timeout")
+				timedOut <- true
+			case <-done:
+			}
+		})
+
+	}
 }

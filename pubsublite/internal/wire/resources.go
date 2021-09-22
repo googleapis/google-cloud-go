@@ -19,17 +19,6 @@ import (
 	"strings"
 )
 
-// ValidateZone verifies that the `input` string has the format of a valid
-// Google Cloud zone. An example zone is "europe-west1-b".
-// See https://cloud.google.com/compute/docs/regions-zones for more information.
-func ValidateZone(input string) error {
-	parts := strings.Split(input, "-")
-	if len(parts) != 3 {
-		return fmt.Errorf("pubsublite: invalid zone %q", input)
-	}
-	return nil
-}
-
 // ValidateRegion verifies that the `input` string has the format of a valid
 // Google Cloud region. An example region is "europe-west1".
 // See https://cloud.google.com/compute/docs/regions-zones for more information.
@@ -41,26 +30,30 @@ func ValidateRegion(input string) error {
 	return nil
 }
 
-// ZoneToRegion returns the region that the given zone is in.
-func ZoneToRegion(zone string) (string, error) {
-	if err := ValidateZone(zone); err != nil {
-		return "", err
+// LocationToRegion returns the region that the given location is in.
+func LocationToRegion(location string) (string, error) {
+	parts := strings.Split(location, "-")
+	if len(parts) == 3 {
+		return strings.Join(parts[0:len(parts)-1], "-"), nil
 	}
-	return zone[0:strings.LastIndex(zone, "-")], nil
+	if len(parts) == 2 {
+		return location, nil
+	}
+	return "", fmt.Errorf("pubsublite: location %q is not a valid zone or region", location)
 }
 
-// LocationPath stores a path consisting of a project and zone.
+// LocationPath stores a path consisting of a project and zone/region.
 type LocationPath struct {
 	// A Google Cloud project. The project ID (e.g. "my-project") or the project
 	// number (e.g. "987654321") can be provided.
 	Project string
 
-	// A Google Cloud zone, for example "us-central1-a".
-	Zone string
+	// A Google Cloud zone (e.g. "us-central1-a") or region (e.g. "us-central1").
+	Location string
 }
 
 func (l LocationPath) String() string {
-	return fmt.Sprintf("projects/%s/locations/%s", l.Project, l.Zone)
+	return fmt.Sprintf("projects/%s/locations/%s", l.Project, l.Location)
 }
 
 var locPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)$`)
@@ -72,7 +65,7 @@ func ParseLocationPath(input string) (LocationPath, error) {
 		return LocationPath{}, fmt.Errorf("pubsublite: invalid location path %q. valid format is %q",
 			input, "projects/PROJECT_ID/locations/ZONE")
 	}
-	return LocationPath{Project: parts[1], Zone: parts[2]}, nil
+	return LocationPath{Project: parts[1], Location: parts[2]}, nil
 }
 
 // TopicPath stores the full path of a Pub/Sub Lite topic.
@@ -81,20 +74,20 @@ type TopicPath struct {
 	// number (e.g. "987654321") can be provided.
 	Project string
 
-	// A Google Cloud zone, for example "us-central1-a".
-	Zone string
+	// A Google Cloud zone (e.g. "us-central1-a") or region (e.g. "us-central1").
+	Location string
 
 	// The ID of the Pub/Sub Lite topic, for example "my-topic-name".
 	TopicID string
 }
 
 func (t TopicPath) String() string {
-	return fmt.Sprintf("projects/%s/locations/%s/topics/%s", t.Project, t.Zone, t.TopicID)
+	return fmt.Sprintf("projects/%s/locations/%s/topics/%s", t.Project, t.Location, t.TopicID)
 }
 
-// Location returns the topic's location path.
-func (t TopicPath) Location() LocationPath {
-	return LocationPath{Project: t.Project, Zone: t.Zone}
+// LocationPath returns the topic's location path.
+func (t TopicPath) LocationPath() LocationPath {
+	return LocationPath{Project: t.Project, Location: t.Location}
 }
 
 var topicPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)/topics/([^/]+)$`)
@@ -104,9 +97,9 @@ func ParseTopicPath(input string) (TopicPath, error) {
 	parts := topicPathRE.FindStringSubmatch(input)
 	if len(parts) < 4 {
 		return TopicPath{}, fmt.Errorf("pubsublite: invalid topic path %q. valid format is %q",
-			input, "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID")
+			input, "projects/PROJECT_ID/locations/ZONE_OR_REGION/topics/TOPIC_ID")
 	}
-	return TopicPath{Project: parts[1], Zone: parts[2], TopicID: parts[3]}, nil
+	return TopicPath{Project: parts[1], Location: parts[2], TopicID: parts[3]}, nil
 }
 
 // SubscriptionPath stores the full path of a Pub/Sub Lite subscription.
@@ -115,8 +108,8 @@ type SubscriptionPath struct {
 	// number (e.g. "987654321") can be provided.
 	Project string
 
-	// A Google Cloud zone. An example zone is "us-central1-a".
-	Zone string
+	// A Google Cloud zone (e.g. "us-central1-a") or region (e.g. "us-central1").
+	Location string
 
 	// The ID of the Pub/Sub Lite subscription, for example
 	// "my-subscription-name".
@@ -124,12 +117,12 @@ type SubscriptionPath struct {
 }
 
 func (s SubscriptionPath) String() string {
-	return fmt.Sprintf("projects/%s/locations/%s/subscriptions/%s", s.Project, s.Zone, s.SubscriptionID)
+	return fmt.Sprintf("projects/%s/locations/%s/subscriptions/%s", s.Project, s.Location, s.SubscriptionID)
 }
 
-// Location returns the subscription's location path.
-func (s SubscriptionPath) Location() LocationPath {
-	return LocationPath{Project: s.Project, Zone: s.Zone}
+// LocationPath returns the subscription's location path.
+func (s SubscriptionPath) LocationPath() LocationPath {
+	return LocationPath{Project: s.Project, Location: s.Location}
 }
 
 var subsPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)/subscriptions/([^/]+)$`)
@@ -139,9 +132,43 @@ func ParseSubscriptionPath(input string) (SubscriptionPath, error) {
 	parts := subsPathRE.FindStringSubmatch(input)
 	if len(parts) < 4 {
 		return SubscriptionPath{}, fmt.Errorf("pubsublite: invalid subscription path %q. valid format is %q",
-			input, "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID")
+			input, "projects/PROJECT_ID/locations/ZONE_OR_REGION/subscriptions/SUBSCRIPTION_ID")
 	}
-	return SubscriptionPath{Project: parts[1], Zone: parts[2], SubscriptionID: parts[3]}, nil
+	return SubscriptionPath{Project: parts[1], Location: parts[2], SubscriptionID: parts[3]}, nil
+}
+
+// ReservationPath stores the full path of a Pub/Sub Lite reservation.
+type ReservationPath struct {
+	// A Google Cloud project. The project ID (e.g. "my-project") or the project
+	// number (e.g. "987654321") can be provided.
+	Project string
+
+	// A Google Cloud region. An example region is "us-central1".
+	Region string
+
+	// The ID of the Pub/Sub Lite reservation, for example "my-reservation-name".
+	ReservationID string
+}
+
+func (r ReservationPath) String() string {
+	return fmt.Sprintf("projects/%s/locations/%s/reservations/%s", r.Project, r.Region, r.ReservationID)
+}
+
+// Location returns the reservation's location path.
+func (r ReservationPath) Location() LocationPath {
+	return LocationPath{Project: r.Project, Location: r.Region}
+}
+
+var reservationPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)/reservations/([^/]+)$`)
+
+// ParseReservationPath parses the full path of a Pub/Sub Lite reservation.
+func ParseReservationPath(input string) (ReservationPath, error) {
+	parts := reservationPathRE.FindStringSubmatch(input)
+	if len(parts) < 4 {
+		return ReservationPath{}, fmt.Errorf("pubsublite: invalid reservation path %q. valid format is %q",
+			input, "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID")
+	}
+	return ReservationPath{Project: parts[1], Region: parts[2], ReservationID: parts[3]}, nil
 }
 
 type topicPartition struct {

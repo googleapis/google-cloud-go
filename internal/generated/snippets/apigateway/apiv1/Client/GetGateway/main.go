@@ -35,6 +35,7 @@ func main() {
 
 	req := &apigatewaypb.GetGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetGatewayRequest.
 	}
 	resp, err := c.GetGateway(ctx, req)
 	if err != nil {

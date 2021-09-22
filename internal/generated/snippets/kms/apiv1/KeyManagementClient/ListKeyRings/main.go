@@ -36,6 +36,7 @@ func main() {
 
 	req := &kmspb.ListKeyRingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListKeyRingsRequest.
 	}
 	it := c.ListKeyRings(ctx, req)
 	for {

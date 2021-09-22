@@ -35,6 +35,7 @@ func main() {
 
 	req := &firestorepb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CreateDocumentRequest.
 	}
 	resp, err := c.CreateDocument(ctx, req)
 	if err != nil {

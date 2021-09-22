@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDeviceManagerClientHook clientHook
@@ -67,6 +67,7 @@ func defaultDeviceManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("cloudiot.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -554,11 +555,13 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 	it := &DeviceRegistryIterator{}
 	req = proto.Clone(req).(*iotpb.ListDeviceRegistriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.DeviceRegistry, string, error) {
-		var resp *iotpb.ListDeviceRegistriesResponse
-		req.PageToken = pageToken
+		resp := &iotpb.ListDeviceRegistriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -581,9 +584,11 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -674,11 +679,13 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 	it := &DeviceIterator{}
 	req = proto.Clone(req).(*iotpb.ListDevicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*iotpb.Device, string, error) {
-		var resp *iotpb.ListDevicesResponse
-		req.PageToken = pageToken
+		resp := &iotpb.ListDevicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -701,9 +708,11 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

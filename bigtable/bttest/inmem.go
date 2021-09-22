@@ -612,7 +612,10 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 				offset -= len(cs)
 			}
 		}
-		return true, nil
+		// If we get here, we have to have consumed all of the cells,
+		// otherwise, we would have returned above.  We're not generating
+		// a row, so false.
+		return false, nil
 	case *btpb.RowFilter_RowSampleFilter:
 		// The row sample filter "matches all cells from a row with probability
 		// p, and matches no cells from the row with probability 1-p."
@@ -806,6 +809,12 @@ func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
 }
 
 func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {
+	if len(req.Mutations) == 0 {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			"No mutations provided",
+		)
+	}
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
@@ -823,6 +832,16 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 }
 
 func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_MutateRowsServer) error {
+	nMutations := 0
+	for _, entry := range req.Entries {
+		nMutations += len(entry.Mutations)
+	}
+	if nMutations == 0 {
+		return status.Errorf(
+			codes.InvalidArgument,
+			"No mutations provided",
+		)
+	}
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
@@ -1124,6 +1143,8 @@ func (s *server) SampleRowKeys(req *btpb.SampleRowKeysRequest, stream btpb.Bigta
 	i := 0
 	tbl.rows.Ascend(func(it btree.Item) bool {
 		row := it.(*row)
+		row.mu.Lock()
+		defer row.mu.Unlock()
 		if i == tbl.rows.Len()-1 || rand.Int31n(100) == 0 {
 			resp := &btpb.SampleRowKeysResponse{
 				RowKey:      []byte(row.key),

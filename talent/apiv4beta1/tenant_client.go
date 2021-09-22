@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTenantClientHook clientHook
@@ -52,6 +52,7 @@ func defaultTenantGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -339,11 +340,13 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 	it := &TenantIterator{}
 	req = proto.Clone(req).(*talentpb.ListTenantsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Tenant, string, error) {
-		var resp *talentpb.ListTenantsResponse
-		req.PageToken = pageToken
+		resp := &talentpb.ListTenantsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -366,9 +369,11 @@ func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTe
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newConnectionClientHook clientHook
@@ -48,6 +48,7 @@ func defaultConnectionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("apigeeconnect.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://apigeeconnect.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -206,11 +207,13 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*apigeeconnectpb.ListConnectionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigeeconnectpb.Connection, string, error) {
-		var resp *apigeeconnectpb.ListConnectionsResponse
-		req.PageToken = pageToken
+		resp := &apigeeconnectpb.ListConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -233,9 +236,11 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

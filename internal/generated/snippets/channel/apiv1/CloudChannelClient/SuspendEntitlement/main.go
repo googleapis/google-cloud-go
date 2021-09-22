@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.SuspendEntitlementRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#SuspendEntitlementRequest.
 	}
 	op, err := c.SuspendEntitlement(ctx, req)
 	if err != nil {

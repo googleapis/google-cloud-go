@@ -35,6 +35,7 @@ func main() {
 
 	req := &managedidentitiespb.AttachTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#AttachTrustRequest.
 	}
 	op, err := c.AttachTrust(ctx, req)
 	if err != nil {

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newRegistrationClientHook clientHook
@@ -66,6 +66,7 @@ func defaultRegistrationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("servicedirectory.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -366,7 +367,7 @@ func (c *RegistrationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateNamespace creates a namespace, and returns the new Namespace.
+// CreateNamespace creates a namespace, and returns the new namespace.
 func (c *RegistrationClient) CreateNamespace(ctx context.Context, req *servicedirectorypb.CreateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
 	return c.internalClient.CreateNamespace(ctx, req, opts...)
 }
@@ -392,7 +393,7 @@ func (c *RegistrationClient) DeleteNamespace(ctx context.Context, req *servicedi
 	return c.internalClient.DeleteNamespace(ctx, req, opts...)
 }
 
-// CreateService creates a service, and returns the new Service.
+// CreateService creates a service, and returns the new service.
 func (c *RegistrationClient) CreateService(ctx context.Context, req *servicedirectorypb.CreateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
 	return c.internalClient.CreateService(ctx, req, opts...)
 }
@@ -418,7 +419,7 @@ func (c *RegistrationClient) DeleteService(ctx context.Context, req *servicedire
 	return c.internalClient.DeleteService(ctx, req, opts...)
 }
 
-// CreateEndpoint creates a endpoint, and returns the new Endpoint.
+// CreateEndpoint creates an endpoint, and returns the new endpoint.
 func (c *RegistrationClient) CreateEndpoint(ctx context.Context, req *servicedirectorypb.CreateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.CreateEndpoint(ctx, req, opts...)
 }
@@ -428,17 +429,17 @@ func (c *RegistrationClient) ListEndpoints(ctx context.Context, req *servicedire
 	return c.internalClient.ListEndpoints(ctx, req, opts...)
 }
 
-// GetEndpoint gets a endpoint.
+// GetEndpoint gets an endpoint.
 func (c *RegistrationClient) GetEndpoint(ctx context.Context, req *servicedirectorypb.GetEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.GetEndpoint(ctx, req, opts...)
 }
 
-// UpdateEndpoint updates a endpoint.
+// UpdateEndpoint updates an endpoint.
 func (c *RegistrationClient) UpdateEndpoint(ctx context.Context, req *servicedirectorypb.UpdateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.UpdateEndpoint(ctx, req, opts...)
 }
 
-// DeleteEndpoint deletes a endpoint.
+// DeleteEndpoint deletes an endpoint.
 func (c *RegistrationClient) DeleteEndpoint(ctx context.Context, req *servicedirectorypb.DeleteEndpointRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEndpoint(ctx, req, opts...)
 }
@@ -580,11 +581,13 @@ func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servic
 	it := &NamespaceIterator{}
 	req = proto.Clone(req).(*servicedirectorypb.ListNamespacesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Namespace, string, error) {
-		var resp *servicedirectorypb.ListNamespacesResponse
-		req.PageToken = pageToken
+		resp := &servicedirectorypb.ListNamespacesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -607,9 +610,11 @@ func (c *registrationGRPCClient) ListNamespaces(ctx context.Context, req *servic
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -700,11 +705,13 @@ func (c *registrationGRPCClient) ListServices(ctx context.Context, req *serviced
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*servicedirectorypb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Service, string, error) {
-		var resp *servicedirectorypb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &servicedirectorypb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -727,9 +734,11 @@ func (c *registrationGRPCClient) ListServices(ctx context.Context, req *serviced
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -820,11 +829,13 @@ func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *service
 	it := &EndpointIterator{}
 	req = proto.Clone(req).(*servicedirectorypb.ListEndpointsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicedirectorypb.Endpoint, string, error) {
-		var resp *servicedirectorypb.ListEndpointsResponse
-		req.PageToken = pageToken
+		resp := &servicedirectorypb.ListEndpointsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -847,9 +858,11 @@ func (c *registrationGRPCClient) ListEndpoints(ctx context.Context, req *service
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

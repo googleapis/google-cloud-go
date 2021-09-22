@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#DeleteModelRequest.
 	}
 	op, err := c.DeleteModel(ctx, req)
 	if err != nil {

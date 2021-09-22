@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#WriteUserEventRequest.
 	}
 	resp, err := c.WriteUserEvent(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &visionpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vision/v1#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {

@@ -46,6 +46,7 @@ func ExampleAgentsClient_GetAgent() {
 
 	req := &dialogflowpb.GetAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetAgentRequest.
 	}
 	resp, err := c.GetAgent(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleAgentsClient_SetAgent() {
 
 	req := &dialogflowpb.SetAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SetAgentRequest.
 	}
 	resp, err := c.SetAgent(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleAgentsClient_DeleteAgent() {
 
 	req := &dialogflowpb.DeleteAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteAgentRequest.
 	}
 	err = c.DeleteAgent(ctx, req)
 	if err != nil {
@@ -101,6 +104,7 @@ func ExampleAgentsClient_SearchAgents() {
 
 	req := &dialogflowpb.SearchAgentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SearchAgentsRequest.
 	}
 	it := c.SearchAgents(ctx, req)
 	for {
@@ -126,6 +130,7 @@ func ExampleAgentsClient_TrainAgent() {
 
 	req := &dialogflowpb.TrainAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#TrainAgentRequest.
 	}
 	op, err := c.TrainAgent(ctx, req)
 	if err != nil {
@@ -148,6 +153,7 @@ func ExampleAgentsClient_ExportAgent() {
 
 	req := &dialogflowpb.ExportAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ExportAgentRequest.
 	}
 	op, err := c.ExportAgent(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleAgentsClient_ImportAgent() {
 
 	req := &dialogflowpb.ImportAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ImportAgentRequest.
 	}
 	op, err := c.ImportAgent(ctx, req)
 	if err != nil {
@@ -194,6 +201,7 @@ func ExampleAgentsClient_RestoreAgent() {
 
 	req := &dialogflowpb.RestoreAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#RestoreAgentRequest.
 	}
 	op, err := c.RestoreAgent(ctx, req)
 	if err != nil {
@@ -216,6 +224,7 @@ func ExampleAgentsClient_GetValidationResult() {
 
 	req := &dialogflowpb.GetValidationResultRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetValidationResultRequest.
 	}
 	resp, err := c.GetValidationResult(ctx, req)
 	if err != nil {

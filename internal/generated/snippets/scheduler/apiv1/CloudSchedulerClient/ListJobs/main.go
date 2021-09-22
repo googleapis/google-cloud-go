@@ -36,6 +36,7 @@ func main() {
 
 	req := &schedulerpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {

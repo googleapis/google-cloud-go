@@ -36,6 +36,7 @@ func main() {
 
 	req := &securitycenterpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {

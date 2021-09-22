@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -65,6 +65,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("apigateway.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://apigateway.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -492,11 +493,13 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 	it := &GatewayIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListGatewaysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Gateway, string, error) {
-		var resp *apigatewaypb.ListGatewaysResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListGatewaysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -519,9 +522,11 @@ func (c *gRPCClient) ListGateways(ctx context.Context, req *apigatewaypb.ListGat
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -617,11 +622,13 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 	it := &ApiIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApisRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.Api, string, error) {
-		var resp *apigatewaypb.ListApisResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApisResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,9 +651,11 @@ func (c *gRPCClient) ListApis(ctx context.Context, req *apigatewaypb.ListApisReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -742,11 +751,13 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 	it := &ApiConfigIterator{}
 	req = proto.Clone(req).(*apigatewaypb.ListApiConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*apigatewaypb.ApiConfig, string, error) {
-		var resp *apigatewaypb.ListApiConfigsResponse
-		req.PageToken = pageToken
+		resp := &apigatewaypb.ListApiConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -769,9 +780,11 @@ func (c *gRPCClient) ListApiConfigs(ctx context.Context, req *apigatewaypb.ListA
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

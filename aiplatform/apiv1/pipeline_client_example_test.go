@@ -46,6 +46,7 @@ func ExamplePipelineClient_CreateTrainingPipeline() {
 
 	req := &aiplatformpb.CreateTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateTrainingPipelineRequest.
 	}
 	resp, err := c.CreateTrainingPipeline(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExamplePipelineClient_GetTrainingPipeline() {
 
 	req := &aiplatformpb.GetTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetTrainingPipelineRequest.
 	}
 	resp, err := c.GetTrainingPipeline(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExamplePipelineClient_ListTrainingPipelines() {
 
 	req := &aiplatformpb.ListTrainingPipelinesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListTrainingPipelinesRequest.
 	}
 	it := c.ListTrainingPipelines(ctx, req)
 	for {
@@ -109,6 +112,7 @@ func ExamplePipelineClient_DeleteTrainingPipeline() {
 
 	req := &aiplatformpb.DeleteTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteTrainingPipelineRequest.
 	}
 	op, err := c.DeleteTrainingPipeline(ctx, req)
 	if err != nil {
@@ -131,8 +135,116 @@ func ExamplePipelineClient_CancelTrainingPipeline() {
 
 	req := &aiplatformpb.CancelTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelTrainingPipelineRequest.
 	}
 	err = c.CancelTrainingPipeline(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExamplePipelineClient_CreatePipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CreatePipelineJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreatePipelineJobRequest.
+	}
+	resp, err := c.CreatePipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePipelineClient_GetPipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.GetPipelineJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetPipelineJobRequest.
+	}
+	resp, err := c.GetPipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePipelineClient_ListPipelineJobs() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListPipelineJobsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListPipelineJobsRequest.
+	}
+	it := c.ListPipelineJobs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExamplePipelineClient_DeletePipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeletePipelineJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeletePipelineJobRequest.
+	}
+	op, err := c.DeletePipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExamplePipelineClient_CancelPipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CancelPipelineJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelPipelineJobRequest.
+	}
+	err = c.CancelPipelineJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

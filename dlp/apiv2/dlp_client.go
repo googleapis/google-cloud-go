@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -81,6 +81,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dlp.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -956,11 +957,13 @@ func (c *gRPCClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 	it := &InspectTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.InspectTemplate, string, error) {
-		var resp *dlppb.ListInspectTemplatesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListInspectTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -983,9 +986,11 @@ func (c *gRPCClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1076,11 +1081,13 @@ func (c *gRPCClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 	it := &DeidentifyTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DeidentifyTemplate, string, error) {
-		var resp *dlppb.ListDeidentifyTemplatesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListDeidentifyTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1103,9 +1110,11 @@ func (c *gRPCClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1217,11 +1226,13 @@ func (c *gRPCClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 	it := &JobTriggerIterator{}
 	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.JobTrigger, string, error) {
-		var resp *dlppb.ListJobTriggersResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListJobTriggersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1244,9 +1255,11 @@ func (c *gRPCClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1316,11 +1329,13 @@ func (c *gRPCClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 	it := &DlpJobIterator{}
 	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.DlpJob, string, error) {
-		var resp *dlppb.ListDlpJobsResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListDlpJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1343,9 +1358,11 @@ func (c *gRPCClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1474,11 +1491,13 @@ func (c *gRPCClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 	it := &StoredInfoTypeIterator{}
 	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.StoredInfoType, string, error) {
-		var resp *dlppb.ListStoredInfoTypesResponse
-		req.PageToken = pageToken
+		resp := &dlppb.ListStoredInfoTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1501,9 +1520,11 @@ func (c *gRPCClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

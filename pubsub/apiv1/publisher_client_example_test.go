@@ -47,6 +47,7 @@ func ExamplePublisherClient_CreateTopic() {
 
 	req := &pubsubpb.Topic{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#Topic.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExamplePublisherClient_UpdateTopic() {
 
 	req := &pubsubpb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#UpdateTopicRequest.
 	}
 	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {
@@ -85,6 +87,7 @@ func ExamplePublisherClient_Publish() {
 
 	req := &pubsubpb.PublishRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#PublishRequest.
 	}
 	resp, err := c.Publish(ctx, req)
 	if err != nil {
@@ -104,6 +107,7 @@ func ExamplePublisherClient_GetTopic() {
 
 	req := &pubsubpb.GetTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetTopicRequest.
 	}
 	resp, err := c.GetTopic(ctx, req)
 	if err != nil {
@@ -123,6 +127,7 @@ func ExamplePublisherClient_ListTopics() {
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
@@ -148,6 +153,7 @@ func ExamplePublisherClient_ListTopicSubscriptions() {
 
 	req := &pubsubpb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicSubscriptionsRequest.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
 	for {
@@ -173,6 +179,7 @@ func ExamplePublisherClient_ListTopicSnapshots() {
 
 	req := &pubsubpb.ListTopicSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicSnapshotsRequest.
 	}
 	it := c.ListTopicSnapshots(ctx, req)
 	for {
@@ -198,6 +205,7 @@ func ExamplePublisherClient_DeleteTopic() {
 
 	req := &pubsubpb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteTopicRequest.
 	}
 	err = c.DeleteTopic(ctx, req)
 	if err != nil {
@@ -215,6 +223,7 @@ func ExamplePublisherClient_DetachSubscription() {
 
 	req := &pubsubpb.DetachSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DetachSubscriptionRequest.
 	}
 	resp, err := c.DetachSubscription(ctx, req)
 	if err != nil {
@@ -234,6 +243,7 @@ func ExamplePublisherClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -253,6 +263,7 @@ func ExamplePublisherClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -272,6 +283,7 @@ func ExamplePublisherClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

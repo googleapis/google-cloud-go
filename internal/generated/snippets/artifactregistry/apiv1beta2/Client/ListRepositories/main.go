@@ -36,6 +36,7 @@ func main() {
 
 	req := &artifactregistrypb.ListRepositoriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListRepositoriesRequest.
 	}
 	it := c.ListRepositories(ctx, req)
 	for {

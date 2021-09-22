@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.UpdateWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateWebDataStreamRequest.
 	}
 	resp, err := c.UpdateWebDataStream(ctx, req)
 	if err != nil {

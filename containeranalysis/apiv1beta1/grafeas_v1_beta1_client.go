@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGrafeasV1Beta1ClientHook clientHook
@@ -62,6 +62,7 @@ func defaultGrafeasV1Beta1GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -457,11 +458,13 @@ func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *gra
 	it := &OccurrenceIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListOccurrencesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
-		var resp *grafeaspb.ListOccurrencesResponse
-		req.PageToken = pageToken
+		resp := &grafeaspb.ListOccurrencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -484,9 +487,11 @@ func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *gra
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -619,11 +624,13 @@ func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb
 	it := &NoteIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListNotesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Note, string, error) {
-		var resp *grafeaspb.ListNotesResponse
-		req.PageToken = pageToken
+		resp := &grafeaspb.ListNotesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -646,9 +653,11 @@ func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -739,11 +748,13 @@ func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req 
 	it := &OccurrenceIterator{}
 	req = proto.Clone(req).(*grafeaspb.ListNoteOccurrencesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*grafeaspb.Occurrence, string, error) {
-		var resp *grafeaspb.ListNoteOccurrencesResponse
-		req.PageToken = pageToken
+		resp := &grafeaspb.ListNoteOccurrencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -766,9 +777,11 @@ func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

@@ -36,6 +36,7 @@ func main() {
 
 	req := &dataprocpb.ListWorkflowTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListWorkflowTemplatesRequest.
 	}
 	it := c.ListWorkflowTemplates(ctx, req)
 	for {

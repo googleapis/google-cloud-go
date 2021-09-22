@@ -36,6 +36,7 @@ func main() {
 
 	req := &metastorepb.ListMetadataImportsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1alpha#ListMetadataImportsRequest.
 	}
 	it := c.ListMetadataImports(ctx, req)
 	for {

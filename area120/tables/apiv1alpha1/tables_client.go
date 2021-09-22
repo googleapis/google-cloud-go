@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -32,6 +31,7 @@ import (
 	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -58,6 +58,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("area120tables.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://area120tables.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -323,11 +324,13 @@ func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 	it := &TableIterator{}
 	req = proto.Clone(req).(*tablespb.ListTablesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Table, string, error) {
-		var resp *tablespb.ListTablesResponse
-		req.PageToken = pageToken
+		resp := &tablespb.ListTablesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -350,9 +353,11 @@ func (c *gRPCClient) ListTables(ctx context.Context, req *tablespb.ListTablesReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -383,11 +388,13 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 	it := &WorkspaceIterator{}
 	req = proto.Clone(req).(*tablespb.ListWorkspacesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Workspace, string, error) {
-		var resp *tablespb.ListWorkspacesResponse
-		req.PageToken = pageToken
+		resp := &tablespb.ListWorkspacesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -410,9 +417,11 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *tablespb.ListWorks
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -444,11 +453,13 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 	it := &RowIterator{}
 	req = proto.Clone(req).(*tablespb.ListRowsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Row, string, error) {
-		var resp *tablespb.ListRowsResponse
-		req.PageToken = pageToken
+		resp := &tablespb.ListRowsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -471,9 +482,11 @@ func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

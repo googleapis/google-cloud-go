@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetLegacyAbacRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetLegacyAbacRequest.
 	}
 	resp, err := c.SetLegacyAbac(ctx, req)
 	if err != nil {

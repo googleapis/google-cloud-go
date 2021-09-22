@@ -35,6 +35,7 @@ func main() {
 
 	req := &managedidentitiespb.DeleteDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DeleteDomainRequest.
 	}
 	op, err := c.DeleteDomain(ctx, req)
 	if err != nil {

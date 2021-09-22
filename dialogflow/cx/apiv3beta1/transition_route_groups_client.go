@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTransitionRouteGroupsClientHook clientHook
@@ -52,6 +52,7 @@ func defaultTransitionRouteGroupsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -175,16 +176,28 @@ func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Contex
 }
 
 // CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
 }
 
 // UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
 }
 
 // DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTransitionRouteGroup(ctx, req, opts...)
 }
@@ -276,11 +289,13 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 	it := &TransitionRouteGroupIterator{}
 	req = proto.Clone(req).(*cxpb.ListTransitionRouteGroupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TransitionRouteGroup, string, error) {
-		var resp *cxpb.ListTransitionRouteGroupsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTransitionRouteGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -303,9 +318,11 @@ func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

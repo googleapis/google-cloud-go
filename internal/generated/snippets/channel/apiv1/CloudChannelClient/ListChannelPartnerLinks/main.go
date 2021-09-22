@@ -36,6 +36,7 @@ func main() {
 
 	req := &channelpb.ListChannelPartnerLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListChannelPartnerLinksRequest.
 	}
 	it := c.ListChannelPartnerLinks(ctx, req)
 	for {

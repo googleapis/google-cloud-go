@@ -44,6 +44,7 @@ func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),

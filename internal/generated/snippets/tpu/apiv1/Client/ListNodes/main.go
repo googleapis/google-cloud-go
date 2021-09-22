@@ -36,6 +36,7 @@ func main() {
 
 	req := &tpupb.ListNodesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tpu/v1#ListNodesRequest.
 	}
 	it := c.ListNodes(ctx, req)
 	for {

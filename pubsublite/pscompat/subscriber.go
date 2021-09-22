@@ -72,7 +72,7 @@ func (ah *pslAckHandler) OnNack() {
 // wireSubscriberFactory is a factory for creating wire subscribers, which can
 // be overridden with a mock in unit tests.
 type wireSubscriberFactory interface {
-	New(wire.MessageReceiverFunc) (wire.Subscriber, error)
+	New(context.Context, wire.MessageReceiverFunc) (wire.Subscriber, error)
 }
 
 type wireSubscriberFactoryImpl struct {
@@ -82,8 +82,8 @@ type wireSubscriberFactoryImpl struct {
 	options      []option.ClientOption
 }
 
-func (f *wireSubscriberFactoryImpl) New(receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
-	return wire.NewSubscriber(context.Background(), f.settings, receiver, f.region, f.subscription.String(), f.options...)
+func (f *wireSubscriberFactoryImpl) New(ctx context.Context, receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
+	return wire.NewSubscriber(ctx, f.settings, receiver, f.region, f.subscription.String(), f.options...)
 }
 
 type messageReceiverFunc = func(context.Context, *pubsub.Message)
@@ -103,8 +103,8 @@ type subscriberInstance struct {
 	err error
 }
 
-func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver messageReceiverFunc) (*subscriberInstance, error) {
-	recvCtx, recvCancel := context.WithCancel(ctx)
+func newSubscriberInstance(recvCtx, clientCtx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver messageReceiverFunc) (*subscriberInstance, error) {
+	recvCtx, recvCancel := context.WithCancel(recvCtx)
 	subInstance := &subscriberInstance{
 		settings:   settings,
 		recvCtx:    recvCtx,
@@ -112,10 +112,11 @@ func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, s
 		receiver:   receiver,
 	}
 
-	// Note: ctx is not used to create the wire subscriber, because if it is
-	// cancelled, the subscriber will not be able to perform graceful shutdown
-	// (e.g. process acks and commit the final cursor offset).
-	wireSub, err := factory.New(subInstance.onMessage)
+	// Note: The context from Receive (recvCtx) should not be used, as when it is
+	// cancelled, the gRPC streams will be disconnected and the subscriber will
+	// not be able to process acks and commit the final cursor offset. Use the
+	// context from NewSubscriberClient (clientCtx) instead.
+	wireSub, err := factory.New(clientCtx, subInstance.onMessage)
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +230,7 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 // See https://cloud.google.com/pubsub/lite/docs/subscribing for more
 // information about receiving messages.
 type SubscriberClient struct {
+	clientCtx      context.Context
 	settings       ReceiveSettings
 	wireSubFactory wireSubscriberFactory
 
@@ -254,7 +256,7 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(subscriptionPath.Zone)
+	region, err := wire.LocationToRegion(subscriptionPath.Location)
 	if err != nil {
 		return nil, err
 	}
@@ -265,6 +267,7 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 		options:      opts,
 	}
 	subClient := &SubscriberClient{
+		clientCtx:      ctx,
 		settings:       settings,
 		wireSubFactory: factory,
 	}
@@ -303,7 +306,7 @@ func (s *SubscriberClient) Receive(ctx context.Context, f func(context.Context, 
 	defer s.setReceiveActive(false)
 
 	// Initialize a subscriber instance.
-	subInstance, err := newSubscriberInstance(ctx, s.wireSubFactory, s.settings, f)
+	subInstance, err := newSubscriberInstance(ctx, s.clientCtx, s.wireSubFactory, s.settings, f)
 	if err != nil {
 		return err
 	}

@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetNotificationChannelDescriptorRequest.
 	}
 	resp, err := c.GetNotificationChannelDescriptor(ctx, req)
 	if err != nil {

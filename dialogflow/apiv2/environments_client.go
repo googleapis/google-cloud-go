@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newEnvironmentsClientHook clientHook
@@ -53,6 +53,7 @@ func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -177,7 +178,7 @@ func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListEnvironments returns the list of all non-draft environments of the specified agent.
+// ListEnvironments returns the list of all non-default environments of the specified agent.
 func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogflowpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.ListEnvironments(ctx, req, opts...)
 }
@@ -197,13 +198,13 @@ func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *dialogf
 // This method allows you to deploy new agent versions into the environment.
 // When an environment is pointed to a new agent version by setting
 // environment.agent_version, the environment is temporarily set to the
-// LOADING state. During that time, the environment keeps on serving the
+// LOADING state. During that time, the environment continues serving the
 // previous version of the agent. After the new agent version is done loading,
 // the environment is set back to the RUNNING state.
-// You can use “-” as Environment ID in environment name to update version
-// in “draft” environment. WARNING: this will negate all recent changes to
-// draft and can’t be undone. You may want to save the draft to a version
-// before calling this function.
+// You can use “-” as Environment ID in environment name to update an agent
+// version in the default environment. WARNING: this will negate all recent
+// changes to the draft agent and can’t be undone. You may want to save the
+// draft agent to a version before calling this method.
 func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *dialogflowpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
 	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
 }
@@ -305,11 +306,13 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *dial
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Environment, string, error) {
-		var resp *dialogflowpb.ListEnvironmentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -332,9 +335,11 @@ func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *dial
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -425,11 +430,13 @@ func (c *environmentsGRPCClient) GetEnvironmentHistory(ctx context.Context, req 
 	it := &EnvironmentHistory_EntryIterator{}
 	req = proto.Clone(req).(*dialogflowpb.GetEnvironmentHistoryRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EnvironmentHistory_Entry, string, error) {
-		var resp *dialogflowpb.EnvironmentHistory
-		req.PageToken = pageToken
+		resp := &dialogflowpb.EnvironmentHistory{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -452,9 +459,11 @@ func (c *environmentsGRPCClient) GetEnvironmentHistory(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

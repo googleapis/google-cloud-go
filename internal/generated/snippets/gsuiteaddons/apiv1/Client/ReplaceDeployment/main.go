@@ -35,6 +35,7 @@ func main() {
 
 	req := &gsuiteaddonspb.ReplaceDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#ReplaceDeploymentRequest.
 	}
 	resp, err := c.ReplaceDeployment(ctx, req)
 	if err != nil {

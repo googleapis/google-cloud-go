@@ -36,6 +36,7 @@ func main() {
 
 	req := &channelpb.ListCustomersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ListCustomersRequest.
 	}
 	it := c.ListCustomers(ctx, req)
 	for {

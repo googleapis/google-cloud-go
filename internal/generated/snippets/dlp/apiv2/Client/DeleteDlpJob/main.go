@@ -35,6 +35,7 @@ func main() {
 
 	req := &dlppb.DeleteDlpJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#DeleteDlpJobRequest.
 	}
 	err = c.DeleteDlpJob(ctx, req)
 	if err != nil {

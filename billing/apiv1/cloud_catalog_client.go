@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -31,6 +30,7 @@ import (
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCloudCatalogClientHook clientHook
@@ -47,6 +47,7 @@ func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -203,11 +204,13 @@ func (c *cloudCatalogGRPCClient) ListServices(ctx context.Context, req *billingp
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*billingpb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Service, string, error) {
-		var resp *billingpb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &billingpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,9 +233,11 @@ func (c *cloudCatalogGRPCClient) ListServices(ctx context.Context, req *billingp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -243,11 +248,13 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 	it := &SkuIterator{}
 	req = proto.Clone(req).(*billingpb.ListSkusRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Sku, string, error) {
-		var resp *billingpb.ListSkusResponse
-		req.PageToken = pageToken
+		resp := &billingpb.ListSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -270,9 +277,11 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

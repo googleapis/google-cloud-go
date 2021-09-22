@@ -35,6 +35,7 @@ func main() {
 
 	req := &apigatewaypb.UpdateApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateApiConfigRequest.
 	}
 	op, err := c.UpdateApiConfig(ctx, req)
 	if err != nil {

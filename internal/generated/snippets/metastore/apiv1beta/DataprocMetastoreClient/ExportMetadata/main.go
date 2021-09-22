@@ -35,6 +35,7 @@ func main() {
 
 	req := &metastorepb.ExportMetadataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/metastore/v1beta#ExportMetadataRequest.
 	}
 	op, err := c.ExportMetadata(ctx, req)
 	if err != nil {

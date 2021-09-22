@@ -35,6 +35,7 @@ func main() {
 
 	req := &privatecapb.FetchCaCertsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/security/privateca/v1#FetchCaCertsRequest.
 	}
 	resp, err := c.FetchCaCerts(ctx, req)
 	if err != nil {

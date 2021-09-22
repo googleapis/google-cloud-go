@@ -46,6 +46,7 @@ func ExampleRealmsClient_ListRealms() {
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListRealmsRequest.
 	}
 	it := c.ListRealms(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleRealmsClient_GetRealm() {
 
 	req := &gamingpb.GetRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetRealmRequest.
 	}
 	resp, err := c.GetRealm(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleRealmsClient_CreateRealm() {
 
 	req := &gamingpb.CreateRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateRealmRequest.
 	}
 	op, err := c.CreateRealm(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleRealmsClient_DeleteRealm() {
 
 	req := &gamingpb.DeleteRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteRealmRequest.
 	}
 	op, err := c.DeleteRealm(ctx, req)
 	if err != nil {
@@ -136,6 +140,7 @@ func ExampleRealmsClient_UpdateRealm() {
 
 	req := &gamingpb.UpdateRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateRealmRequest.
 	}
 	op, err := c.UpdateRealm(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleRealmsClient_PreviewRealmUpdate() {
 
 	req := &gamingpb.PreviewRealmUpdateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewRealmUpdateRequest.
 	}
 	resp, err := c.PreviewRealmUpdate(ctx, req)
 	if err != nil {

@@ -45,6 +45,7 @@ func defaultAutoSuggestionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dataqna.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dataqna.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),

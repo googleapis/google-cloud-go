@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.IsInstanceUpgradeableRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#IsInstanceUpgradeableRequest.
 	}
 	resp, err := c.IsInstanceUpgradeable(ctx, req)
 	if err != nil {

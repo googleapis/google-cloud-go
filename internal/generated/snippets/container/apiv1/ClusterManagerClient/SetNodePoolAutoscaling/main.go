@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetNodePoolAutoscalingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetNodePoolAutoscalingRequest.
 	}
 	resp, err := c.SetNodePoolAutoscaling(ctx, req)
 	if err != nil {

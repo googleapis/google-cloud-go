@@ -35,6 +35,7 @@ func main() {
 
 	req := &recommenderpb.GetRecommendationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#GetRecommendationRequest.
 	}
 	resp, err := c.GetRecommendation(ctx, req)
 	if err != nil {

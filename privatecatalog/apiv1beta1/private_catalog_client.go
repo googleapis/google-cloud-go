@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -31,6 +30,7 @@ import (
 	privatecatalogpb "google.golang.org/genproto/googleapis/cloud/privatecatalog/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -48,6 +48,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("cloudprivatecatalog.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudprivatecatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -251,11 +252,13 @@ func (c *gRPCClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 	it := &CatalogIterator{}
 	req = proto.Clone(req).(*privatecatalogpb.SearchCatalogsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Catalog, string, error) {
-		var resp *privatecatalogpb.SearchCatalogsResponse
-		req.PageToken = pageToken
+		resp := &privatecatalogpb.SearchCatalogsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -278,9 +281,11 @@ func (c *gRPCClient) SearchCatalogs(ctx context.Context, req *privatecatalogpb.S
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -291,11 +296,13 @@ func (c *gRPCClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*privatecatalogpb.SearchProductsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Product, string, error) {
-		var resp *privatecatalogpb.SearchProductsResponse
-		req.PageToken = pageToken
+		resp := &privatecatalogpb.SearchProductsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -318,9 +325,11 @@ func (c *gRPCClient) SearchProducts(ctx context.Context, req *privatecatalogpb.S
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -331,11 +340,13 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*privatecatalogpb.SearchVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecatalogpb.Version, string, error) {
-		var resp *privatecatalogpb.SearchVersionsResponse
-		req.PageToken = pageToken
+		resp := &privatecatalogpb.SearchVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -358,9 +369,11 @@ func (c *gRPCClient) SearchVersions(ctx context.Context, req *privatecatalogpb.S
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

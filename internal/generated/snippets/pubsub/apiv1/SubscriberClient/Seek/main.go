@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.SeekRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#SeekRequest.
 	}
 	resp, err := c.Seek(ctx, req)
 	if err != nil {

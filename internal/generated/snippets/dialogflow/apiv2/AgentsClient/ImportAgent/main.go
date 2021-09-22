@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.ImportAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ImportAgentRequest.
 	}
 	op, err := c.ImportAgent(ctx, req)
 	if err != nil {

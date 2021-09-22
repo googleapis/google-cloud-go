@@ -35,6 +35,7 @@ func main() {
 
 	req := &redispb.ImportInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ImportInstanceRequest.
 	}
 	op, err := c.ImportInstance(ctx, req)
 	if err != nil {

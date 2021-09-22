@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,14 +32,17 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCatalogClientHook clientHook
 
 // CatalogCallOptions contains the retry settings for each method of CatalogClient.
 type CatalogCallOptions struct {
-	ListCatalogs  []gax.CallOption
-	UpdateCatalog []gax.CallOption
+	ListCatalogs     []gax.CallOption
+	UpdateCatalog    []gax.CallOption
+	SetDefaultBranch []gax.CallOption
+	GetDefaultBranch []gax.CallOption
 }
 
 func defaultCatalogGRPCClientOptions() []option.ClientOption {
@@ -49,6 +51,7 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -64,7 +67,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -76,7 +79,31 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SetDefaultBranch: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDefaultBranch: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -91,6 +118,8 @@ type internalCatalogClient interface {
 	Connection() *grpc.ClientConn
 	ListCatalogs(context.Context, *retailpb.ListCatalogsRequest, ...gax.CallOption) *CatalogIterator
 	UpdateCatalog(context.Context, *retailpb.UpdateCatalogRequest, ...gax.CallOption) (*retailpb.Catalog, error)
+	SetDefaultBranch(context.Context, *retailpb.SetDefaultBranchRequest, ...gax.CallOption) error
+	GetDefaultBranch(context.Context, *retailpb.GetDefaultBranchRequest, ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error)
 }
 
 // CatalogClient is a client for interacting with Retail API.
@@ -136,6 +165,60 @@ func (c *CatalogClient) ListCatalogs(ctx context.Context, req *retailpb.ListCata
 // UpdateCatalog updates the Catalogs.
 func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
 	return c.internalClient.UpdateCatalog(ctx, req, opts...)
+}
+
+// SetDefaultBranch set a specified branch id as default branch. API methods such as
+// SearchService.Search,
+// ProductService.GetProduct,
+// ProductService.ListProducts
+// will treat requests using “default_branch” to the actual branch id set as
+// default.
+//
+// For example, if projects/*/locations/*/catalogs/*/branches/1 is set as
+// default, setting
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/default_branch is equivalent
+// to setting
+// SearchRequest.branch to
+// projects/*/locations/*/catalogs/*/branches/1.
+//
+// Using multiple branches can be useful when developers would like
+// to have a staging branch to test and verify for future usage. When it
+// becomes ready, developers switch on the staging branch using this API while
+// keeping using projects/*/locations/*/catalogs/*/branches/default_branch
+// as SearchRequest.branch to
+// route the traffic to this staging branch.
+//
+// CAUTION: If you have live predict/search traffic, switching the default
+// branch could potentially cause outages if the ID space of the new branch is
+// very different from the old one.
+//
+// More specifically:
+//
+//   PredictionService will only return product IDs from branch {newBranch}.
+//
+//   SearchService will only return product IDs from branch {newBranch}
+//   (if branch is not explicitly set).
+//
+//   UserEventService will only join events with products from branch
+//   {newBranch}.
+//
+// This feature is only available for users who have Retail Search enabled.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
+func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
+	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
+}
+
+// GetDefaultBranch get which branch is currently default branch set by
+// CatalogService.SetDefaultBranch
+// method under a specified parent catalog.
+//
+// This feature is only available for users who have Retail Search enabled.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
+func (c *CatalogClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
+	return c.internalClient.GetDefaultBranch(ctx, req, opts...)
 }
 
 // catalogGRPCClient is a client for interacting with Retail API over gRPC transport.
@@ -225,11 +308,13 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 	it := &CatalogIterator{}
 	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Catalog, string, error) {
-		var resp *retailpb.ListCatalogsResponse
-		req.PageToken = pageToken
+		resp := &retailpb.ListCatalogsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -252,15 +337,17 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
 func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -271,6 +358,44 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.catalogClient.UpdateCatalog(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.catalogClient.SetDefaultBranch(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
+	var resp *retailpb.GetDefaultBranchResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.GetDefaultBranch(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

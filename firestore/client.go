@@ -60,6 +60,9 @@ type Client struct {
 
 // NewClient creates a new Firestore client that uses the given project.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
+	if projectID == "" {
+		return nil, errors.New("firestore: projectID was empty")
+	}
 	var o []option.ClientOption
 	// If this environment variable is defined, configure the client to talk to the emulator.
 	if addr := os.Getenv("FIRESTORE_EMULATOR_HOST"); addr != "" {

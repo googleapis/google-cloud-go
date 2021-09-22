@@ -36,6 +36,7 @@ func main() {
 
 	req := &translatepb.ListGlossariesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#ListGlossariesRequest.
 	}
 	it := c.ListGlossaries(ctx, req)
 	for {

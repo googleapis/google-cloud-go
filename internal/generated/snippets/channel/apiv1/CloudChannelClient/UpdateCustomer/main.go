@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.UpdateCustomerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#UpdateCustomerRequest.
 	}
 	resp, err := c.UpdateCustomer(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#UpdateActiveBreakpointRequest.
 	}
 	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {

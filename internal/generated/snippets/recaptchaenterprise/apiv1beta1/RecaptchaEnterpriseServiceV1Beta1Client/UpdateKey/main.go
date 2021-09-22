@@ -35,6 +35,7 @@ func main() {
 
 	req := &recaptchaenterprisepb.UpdateKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1#UpdateKeyRequest.
 	}
 	resp, err := c.UpdateKey(ctx, req)
 	if err != nil {

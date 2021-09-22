@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.PauseEvaluationJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#PauseEvaluationJobRequest.
 	}
 	err = c.PauseEvaluationJob(ctx, req)
 	if err != nil {

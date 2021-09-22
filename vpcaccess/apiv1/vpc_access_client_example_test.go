@@ -46,6 +46,7 @@ func ExampleClient_CreateConnector() {
 
 	req := &vpcaccesspb.CreateConnectorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#CreateConnectorRequest.
 	}
 	op, err := c.CreateConnector(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleClient_GetConnector() {
 
 	req := &vpcaccesspb.GetConnectorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#GetConnectorRequest.
 	}
 	resp, err := c.GetConnector(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleClient_ListConnectors() {
 
 	req := &vpcaccesspb.ListConnectorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#ListConnectorsRequest.
 	}
 	it := c.ListConnectors(ctx, req)
 	for {
@@ -114,6 +117,7 @@ func ExampleClient_DeleteConnector() {
 
 	req := &vpcaccesspb.DeleteConnectorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/vpcaccess/v1#DeleteConnectorRequest.
 	}
 	op, err := c.DeleteConnector(ctx, req)
 	if err != nil {

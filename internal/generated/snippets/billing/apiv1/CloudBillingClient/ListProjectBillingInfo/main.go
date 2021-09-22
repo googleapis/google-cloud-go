@@ -36,6 +36,7 @@ func main() {
 
 	req := &billingpb.ListProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListProjectBillingInfoRequest.
 	}
 	it := c.ListProjectBillingInfo(ctx, req)
 	for {

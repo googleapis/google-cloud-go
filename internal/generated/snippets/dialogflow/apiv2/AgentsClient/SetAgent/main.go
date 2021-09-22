@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.SetAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SetAgentRequest.
 	}
 	resp, err := c.SetAgent(ctx, req)
 	if err != nil {

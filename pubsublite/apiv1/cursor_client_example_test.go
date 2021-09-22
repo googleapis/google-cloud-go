@@ -82,6 +82,7 @@ func ExampleCursorClient_CommitCursor() {
 
 	req := &pubsublitepb.CommitCursorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CommitCursorRequest.
 	}
 	resp, err := c.CommitCursor(ctx, req)
 	if err != nil {
@@ -101,6 +102,7 @@ func ExampleCursorClient_ListPartitionCursors() {
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListPartitionCursorsRequest.
 	}
 	it := c.ListPartitionCursors(ctx, req)
 	for {

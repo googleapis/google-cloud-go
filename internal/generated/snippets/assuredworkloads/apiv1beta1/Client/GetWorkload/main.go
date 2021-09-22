@@ -35,6 +35,7 @@ func main() {
 
 	req := &assuredworkloadspb.GetWorkloadRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1#GetWorkloadRequest.
 	}
 	resp, err := c.GetWorkload(ctx, req)
 	if err != nil {

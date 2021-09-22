@@ -35,6 +35,7 @@ func main() {
 
 	req := &websecurityscannerpb.ListFindingTypeStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1#ListFindingTypeStatsRequest.
 	}
 	resp, err := c.ListFindingTypeStats(ctx, req)
 	if err != nil {

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -61,6 +61,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("bigquerydatatransfer.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -288,7 +289,8 @@ func (c *Client) GetTransferConfig(ctx context.Context, req *datatransferpb.GetT
 	return c.internalClient.GetTransferConfig(ctx, req, opts...)
 }
 
-// ListTransferConfigs returns information about all data transfers in the project.
+// ListTransferConfigs returns information about all transfer configs owned by a project in the
+// specified location.
 func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.ListTransferConfigsRequest, opts ...gax.CallOption) *TransferConfigIterator {
 	return c.internalClient.ListTransferConfigs(ctx, req, opts...)
 }
@@ -453,11 +455,13 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 	it := &DataSourceIterator{}
 	req = proto.Clone(req).(*datatransferpb.ListDataSourcesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.DataSource, string, error) {
-		var resp *datatransferpb.ListDataSourcesResponse
-		req.PageToken = pageToken
+		resp := &datatransferpb.ListDataSourcesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -480,9 +484,11 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -573,11 +579,13 @@ func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 	it := &TransferConfigIterator{}
 	req = proto.Clone(req).(*datatransferpb.ListTransferConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferConfig, string, error) {
-		var resp *datatransferpb.ListTransferConfigsResponse
-		req.PageToken = pageToken
+		resp := &datatransferpb.ListTransferConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -600,9 +608,11 @@ func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -688,11 +698,13 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 	it := &TransferRunIterator{}
 	req = proto.Clone(req).(*datatransferpb.ListTransferRunsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferRun, string, error) {
-		var resp *datatransferpb.ListTransferRunsResponse
-		req.PageToken = pageToken
+		resp := &datatransferpb.ListTransferRunsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,9 +727,11 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -728,11 +742,13 @@ func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 	it := &TransferMessageIterator{}
 	req = proto.Clone(req).(*datatransferpb.ListTransferLogsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datatransferpb.TransferMessage, string, error) {
-		var resp *datatransferpb.ListTransferLogsResponse
-		req.PageToken = pageToken
+		resp := &datatransferpb.ListTransferLogsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -755,9 +771,11 @@ func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

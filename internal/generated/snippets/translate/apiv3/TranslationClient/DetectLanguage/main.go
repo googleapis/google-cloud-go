@@ -35,6 +35,7 @@ func main() {
 
 	req := &translatepb.DetectLanguageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#DetectLanguageRequest.
 	}
 	resp, err := c.DetectLanguage(ctx, req)
 	if err != nil {

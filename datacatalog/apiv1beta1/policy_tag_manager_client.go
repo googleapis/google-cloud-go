@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -32,6 +31,7 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newPolicyTagManagerClientHook clientHook
@@ -59,6 +59,7 @@ func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -338,11 +339,13 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 	it := &TaxonomyIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListTaxonomiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.Taxonomy, string, error) {
-		var resp *datacatalogpb.ListTaxonomiesResponse
-		req.PageToken = pageToken
+		resp := &datacatalogpb.ListTaxonomiesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -365,9 +368,11 @@ func (c *policyTagManagerGRPCClient) ListTaxonomies(ctx context.Context, req *da
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -438,11 +443,13 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 	it := &PolicyTagIterator{}
 	req = proto.Clone(req).(*datacatalogpb.ListPolicyTagsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datacatalogpb.PolicyTag, string, error) {
-		var resp *datacatalogpb.ListPolicyTagsResponse
-		req.PageToken = pageToken
+		resp := &datacatalogpb.ListPolicyTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -465,9 +472,11 @@ func (c *policyTagManagerGRPCClient) ListPolicyTags(ctx context.Context, req *da
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

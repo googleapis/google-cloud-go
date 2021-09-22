@@ -127,10 +127,11 @@ field name. A "-" tag name means that the datastore will ignore that field.
 
 The only valid options are "omitempty", "noindex" and "flatten".
 
-If the options include "omitempty" and the value of the field is a zero value,
-then the field will be omitted on Save. Zero values are best defined in the
-golang spec (https://golang.org/ref/spec#The_zero_value). Struct field values
-will never be empty, except for nil pointers.
+If the options include "omitempty" and the value of the field is an empty
+value, then the field will be omitted on Save. Empty values are defined as
+false, 0, a nil pointer, a nil interface value, the zero time.Time, and any
+empty slice or string. (Empty slices are never saved, even without
+"omitempty".) Other structs, including GeoPoint, are never considered empty.
 
 If options include "noindex" then the field will not be indexed. All fields
 are indexed by default. Strings or byte slices longer than 1500 bytes cannot

@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -60,6 +60,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("websecurityscanner.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://websecurityscanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -453,11 +454,13 @@ func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 	it := &ScanConfigIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanConfig, string, error) {
-		var resp *websecurityscannerpb.ListScanConfigsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListScanConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -480,9 +483,11 @@ func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscanne
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -556,11 +561,13 @@ func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 	it := &ScanRunIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanRunsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanRun, string, error) {
-		var resp *websecurityscannerpb.ListScanRunsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListScanRunsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -583,9 +590,11 @@ func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -617,11 +626,13 @@ func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 	it := &CrawledUrlIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListCrawledUrlsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.CrawledUrl, string, error) {
-		var resp *websecurityscannerpb.ListCrawledUrlsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListCrawledUrlsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,9 +655,11 @@ func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscanne
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -678,11 +691,13 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 	it := &FindingIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListFindingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.Finding, string, error) {
-		var resp *websecurityscannerpb.ListFindingsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -705,9 +720,11 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

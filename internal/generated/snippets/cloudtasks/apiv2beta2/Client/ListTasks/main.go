@@ -36,6 +36,7 @@ func main() {
 
 	req := &taskspb.ListTasksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#ListTasksRequest.
 	}
 	it := c.ListTasks(ctx, req)
 	for {

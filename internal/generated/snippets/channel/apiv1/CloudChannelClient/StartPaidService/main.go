@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.StartPaidServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#StartPaidServiceRequest.
 	}
 	op, err := c.StartPaidService(ctx, req)
 	if err != nil {

@@ -28,6 +28,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // evalContext represents the context for evaluating an expression.
@@ -72,7 +74,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 	case spansql.BoolLiteral:
 		b := bool(be)
 		return &b, nil
-	case spansql.ID, spansql.Param, spansql.Paren, spansql.InOp: // InOp is a bit weird.
+	case spansql.ID, spansql.Param, spansql.Paren, spansql.Func, spansql.InOp: // InOp is a bit weird.
 		e, err := ec.evalExpr(be)
 		if err != nil {
 			return nil, err
@@ -235,11 +237,15 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 }
 
 func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
+	// TODO: Better NULL handling
 	switch e.Op {
 	case spansql.Neg:
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case float64:
@@ -252,6 +258,9 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case int64:
@@ -283,9 +292,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -320,9 +335,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -361,6 +382,21 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 	}
 	// TODO: Concat, BitShl, BitShr
 	return nil, fmt.Errorf("TODO: evalArithOp(%s %v)", e.SQL(), e.Op)
+}
+
+func (ec evalContext) evalFunc(e spansql.Func) (interface{}, spansql.Type, error) {
+	if f, ok := functions[e.Name]; ok {
+		args := make([]interface{}, len(e.Args))
+		for i, arg := range e.Args {
+			val, err := ec.evalExpr(arg)
+			if err != nil {
+				return nil, spansql.Type{}, err
+			}
+			args[i] = val
+		}
+		return f.Eval(args)
+	}
+	return nil, spansql.Type{}, status.Errorf(codes.Unimplemented, "function %q is not implemented", e.Name)
 }
 
 // evalFloat64 evaluates an expression and returns its FLOAT64 value.
@@ -428,6 +464,12 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return bool(e), nil
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
+	case spansql.Func:
+		v, _, err := ec.evalFunc(e)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
 	case spansql.Array:
 		var arr []interface{}
 		for _, elt := range e {
@@ -785,6 +827,12 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: qp.Type}, nil
 	case spansql.Paren:
 		return ec.colInfo(e.Expr)
+	case spansql.Func:
+		_, t, err := ec.evalFunc(e)
+		if err != nil {
+			return colInfo{}, err
+		}
+		return colInfo{Type: t}, nil
 	case spansql.Array:
 		// Assume all element of an array literal have the same type.
 		if len(e) == 0 {
@@ -873,6 +921,12 @@ func evalLike(str, pat string) bool {
 
 	// Lean on regexp for simplicity.
 	pat = regexp.QuoteMeta(pat)
+	if !strings.HasPrefix(pat, "%") {
+		pat = "^" + pat
+	}
+	if !strings.HasSuffix(pat, "%") {
+		pat = pat + "$"
+	}
 	pat = strings.Replace(pat, "%", ".*", -1)
 	pat = strings.Replace(pat, "_", ".", -1)
 	match, err := regexp.MatchString(pat, str)

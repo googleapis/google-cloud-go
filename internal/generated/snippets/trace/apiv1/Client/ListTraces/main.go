@@ -36,6 +36,7 @@ func main() {
 
 	req := &cloudtracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
 	}
 	it := c.ListTraces(ctx, req)
 	for {

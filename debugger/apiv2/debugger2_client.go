@@ -50,6 +50,7 @@ func defaultDebugger2GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("clouddebugger.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),

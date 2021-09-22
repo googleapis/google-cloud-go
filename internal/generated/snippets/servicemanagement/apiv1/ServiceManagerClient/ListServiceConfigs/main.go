@@ -36,6 +36,7 @@ func main() {
 
 	req := &servicemanagementpb.ListServiceConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#ListServiceConfigsRequest.
 	}
 	it := c.ListServiceConfigs(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &datapb.GetMetadataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#GetMetadataRequest.
 	}
 	resp, err := c.GetMetadata(ctx, req)
 	if err != nil {

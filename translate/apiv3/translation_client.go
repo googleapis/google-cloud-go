@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,20 +35,23 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTranslationClientHook clientHook
 
 // TranslationCallOptions contains the retry settings for each method of TranslationClient.
 type TranslationCallOptions struct {
-	TranslateText         []gax.CallOption
-	DetectLanguage        []gax.CallOption
-	GetSupportedLanguages []gax.CallOption
-	BatchTranslateText    []gax.CallOption
-	CreateGlossary        []gax.CallOption
-	ListGlossaries        []gax.CallOption
-	GetGlossary           []gax.CallOption
-	DeleteGlossary        []gax.CallOption
+	TranslateText          []gax.CallOption
+	DetectLanguage         []gax.CallOption
+	GetSupportedLanguages  []gax.CallOption
+	TranslateDocument      []gax.CallOption
+	BatchTranslateText     []gax.CallOption
+	BatchTranslateDocument []gax.CallOption
+	CreateGlossary         []gax.CallOption
+	ListGlossaries         []gax.CallOption
+	GetGlossary            []gax.CallOption
+	DeleteGlossary         []gax.CallOption
 }
 
 func defaultTranslationGRPCClientOptions() []option.ClientOption {
@@ -58,6 +60,7 @@ func defaultTranslationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("translate.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -80,8 +83,10 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 				})
 			}),
 		},
-		BatchTranslateText: []gax.CallOption{},
-		CreateGlossary:     []gax.CallOption{},
+		TranslateDocument:      []gax.CallOption{},
+		BatchTranslateText:     []gax.CallOption{},
+		BatchTranslateDocument: []gax.CallOption{},
+		CreateGlossary:         []gax.CallOption{},
 		ListGlossaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -129,8 +134,11 @@ type internalTranslationClient interface {
 	TranslateText(context.Context, *translatepb.TranslateTextRequest, ...gax.CallOption) (*translatepb.TranslateTextResponse, error)
 	DetectLanguage(context.Context, *translatepb.DetectLanguageRequest, ...gax.CallOption) (*translatepb.DetectLanguageResponse, error)
 	GetSupportedLanguages(context.Context, *translatepb.GetSupportedLanguagesRequest, ...gax.CallOption) (*translatepb.SupportedLanguages, error)
+	TranslateDocument(context.Context, *translatepb.TranslateDocumentRequest, ...gax.CallOption) (*translatepb.TranslateDocumentResponse, error)
 	BatchTranslateText(context.Context, *translatepb.BatchTranslateTextRequest, ...gax.CallOption) (*BatchTranslateTextOperation, error)
 	BatchTranslateTextOperation(name string) *BatchTranslateTextOperation
+	BatchTranslateDocument(context.Context, *translatepb.BatchTranslateDocumentRequest, ...gax.CallOption) (*BatchTranslateDocumentOperation, error)
+	BatchTranslateDocumentOperation(name string) *BatchTranslateDocumentOperation
 	CreateGlossary(context.Context, *translatepb.CreateGlossaryRequest, ...gax.CallOption) (*CreateGlossaryOperation, error)
 	CreateGlossaryOperation(name string) *CreateGlossaryOperation
 	ListGlossaries(context.Context, *translatepb.ListGlossariesRequest, ...gax.CallOption) *GlossaryIterator
@@ -193,6 +201,11 @@ func (c *TranslationClient) GetSupportedLanguages(ctx context.Context, req *tran
 	return c.internalClient.GetSupportedLanguages(ctx, req, opts...)
 }
 
+// TranslateDocument translates documents in synchronous mode.
+func (c *TranslationClient) TranslateDocument(ctx context.Context, req *translatepb.TranslateDocumentRequest, opts ...gax.CallOption) (*translatepb.TranslateDocumentResponse, error) {
+	return c.internalClient.TranslateDocument(ctx, req, opts...)
+}
+
 // BatchTranslateText translates a large volume of text in asynchronous batch mode.
 // This function provides real-time output as the inputs are being processed.
 // If caller cancels a request, the partial results (for an input file, it’s
@@ -208,6 +221,23 @@ func (c *TranslationClient) BatchTranslateText(ctx context.Context, req *transla
 // The name must be that of a previously created BatchTranslateTextOperation, possibly from a different process.
 func (c *TranslationClient) BatchTranslateTextOperation(name string) *BatchTranslateTextOperation {
 	return c.internalClient.BatchTranslateTextOperation(name)
+}
+
+// BatchTranslateDocument translates a large volume of document in asynchronous batch mode.
+// This function provides real-time output as the inputs are being processed.
+// If caller cancels a request, the partial results (for an input file, it’s
+// all or nothing) may still be available on the specified output location.
+//
+// This call returns immediately and you can use
+// google.longrunning.Operation.name (at http://google.longrunning.Operation.name) to poll the status of the call.
+func (c *TranslationClient) BatchTranslateDocument(ctx context.Context, req *translatepb.BatchTranslateDocumentRequest, opts ...gax.CallOption) (*BatchTranslateDocumentOperation, error) {
+	return c.internalClient.BatchTranslateDocument(ctx, req, opts...)
+}
+
+// BatchTranslateDocumentOperation returns a new BatchTranslateDocumentOperation from a given name.
+// The name must be that of a previously created BatchTranslateDocumentOperation, possibly from a different process.
+func (c *TranslationClient) BatchTranslateDocumentOperation(name string) *BatchTranslateDocumentOperation {
+	return c.internalClient.BatchTranslateDocumentOperation(name)
 }
 
 // CreateGlossary creates a glossary and returns the long-running operation. Returns
@@ -406,6 +436,27 @@ func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *
 	return resp, nil
 }
 
+func (c *translationGRPCClient) TranslateDocument(ctx context.Context, req *translatepb.TranslateDocumentRequest, opts ...gax.CallOption) (*translatepb.TranslateDocumentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TranslateDocument[0:len((*c.CallOptions).TranslateDocument):len((*c.CallOptions).TranslateDocument)], opts...)
+	var resp *translatepb.TranslateDocumentResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.TranslateDocument(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *translatepb.BatchTranslateTextRequest, opts ...gax.CallOption) (*BatchTranslateTextOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -425,6 +476,29 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 		return nil, err
 	}
 	return &BatchTranslateTextOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req *translatepb.BatchTranslateDocumentRequest, opts ...gax.CallOption) (*BatchTranslateDocumentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BatchTranslateDocument[0:len((*c.CallOptions).BatchTranslateDocument):len((*c.CallOptions).BatchTranslateDocument)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.BatchTranslateDocument(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchTranslateDocumentOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -459,11 +533,13 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 	it := &GlossaryIterator{}
 	req = proto.Clone(req).(*translatepb.ListGlossariesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.Glossary, string, error) {
-		var resp *translatepb.ListGlossariesResponse
-		req.PageToken = pageToken
+		resp := &translatepb.ListGlossariesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -486,9 +562,11 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -534,6 +612,75 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 	return &DeleteGlossaryOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+// BatchTranslateDocumentOperation manages a long-running operation from BatchTranslateDocument.
+type BatchTranslateDocumentOperation struct {
+	lro *longrunning.Operation
+}
+
+// BatchTranslateDocumentOperation returns a new BatchTranslateDocumentOperation from a given name.
+// The name must be that of a previously created BatchTranslateDocumentOperation, possibly from a different process.
+func (c *translationGRPCClient) BatchTranslateDocumentOperation(name string) *BatchTranslateDocumentOperation {
+	return &BatchTranslateDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BatchTranslateDocumentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*translatepb.BatchTranslateDocumentResponse, error) {
+	var resp translatepb.BatchTranslateDocumentResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BatchTranslateDocumentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*translatepb.BatchTranslateDocumentResponse, error) {
+	var resp translatepb.BatchTranslateDocumentResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BatchTranslateDocumentOperation) Metadata() (*translatepb.BatchTranslateDocumentMetadata, error) {
+	var meta translatepb.BatchTranslateDocumentMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BatchTranslateDocumentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BatchTranslateDocumentOperation) Name() string {
+	return op.lro.Name()
 }
 
 // BatchTranslateTextOperation manages a long-running operation from BatchTranslateText.

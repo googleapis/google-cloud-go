@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newMetricClientHook clientHook
@@ -57,6 +57,7 @@ func defaultMetricGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -68,7 +69,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListMonitoredResourceDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -80,7 +80,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		GetMonitoredResourceDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -92,7 +91,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListMetricDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -104,7 +102,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		GetMetricDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -117,7 +114,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		DeleteMetricDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -129,7 +125,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListTimeSeries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -327,11 +322,13 @@ func (c *metricGRPCClient) ListMonitoredResourceDescriptors(ctx context.Context,
 	it := &MonitoredResourceDescriptorIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListMonitoredResourceDescriptorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoredrespb.MonitoredResourceDescriptor, string, error) {
-		var resp *monitoringpb.ListMonitoredResourceDescriptorsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListMonitoredResourceDescriptorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -354,9 +351,11 @@ func (c *metricGRPCClient) ListMonitoredResourceDescriptors(ctx context.Context,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -388,11 +387,13 @@ func (c *metricGRPCClient) ListMetricDescriptors(ctx context.Context, req *monit
 	it := &MetricDescriptorIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListMetricDescriptorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metricpb.MetricDescriptor, string, error) {
-		var resp *monitoringpb.ListMetricDescriptorsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListMetricDescriptorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -415,9 +416,11 @@ func (c *metricGRPCClient) ListMetricDescriptors(ctx context.Context, req *monit
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -487,11 +490,13 @@ func (c *metricGRPCClient) ListTimeSeries(ctx context.Context, req *monitoringpb
 	it := &TimeSeriesIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListTimeSeriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.TimeSeries, string, error) {
-		var resp *monitoringpb.ListTimeSeriesResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListTimeSeriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,9 +519,11 @@ func (c *metricGRPCClient) ListTimeSeries(ctx context.Context, req *monitoringpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

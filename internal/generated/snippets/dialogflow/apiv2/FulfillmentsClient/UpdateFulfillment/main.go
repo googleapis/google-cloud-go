@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.UpdateFulfillmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateFulfillmentRequest.
 	}
 	resp, err := c.UpdateFulfillment(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &shellpb.AddPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/shell/v1#AddPublicKeyRequest.
 	}
 	op, err := c.AddPublicKey(ctx, req)
 	if err != nil {

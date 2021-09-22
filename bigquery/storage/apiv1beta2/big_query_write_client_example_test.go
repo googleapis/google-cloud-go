@@ -46,6 +46,7 @@ func ExampleBigQueryWriteClient_CreateWriteStream() {
 
 	req := &storagepb.CreateWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#CreateWriteStreamRequest.
 	}
 	resp, err := c.CreateWriteStream(ctx, req)
 	if err != nil {
@@ -100,6 +101,7 @@ func ExampleBigQueryWriteClient_GetWriteStream() {
 
 	req := &storagepb.GetWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#GetWriteStreamRequest.
 	}
 	resp, err := c.GetWriteStream(ctx, req)
 	if err != nil {
@@ -119,6 +121,7 @@ func ExampleBigQueryWriteClient_FinalizeWriteStream() {
 
 	req := &storagepb.FinalizeWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#FinalizeWriteStreamRequest.
 	}
 	resp, err := c.FinalizeWriteStream(ctx, req)
 	if err != nil {
@@ -138,6 +141,7 @@ func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#BatchCommitWriteStreamsRequest.
 	}
 	resp, err := c.BatchCommitWriteStreams(ctx, req)
 	if err != nil {
@@ -157,6 +161,7 @@ func ExampleBigQueryWriteClient_FlushRows() {
 
 	req := &storagepb.FlushRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#FlushRowsRequest.
 	}
 	resp, err := c.FlushRows(ctx, req)
 	if err != nil {

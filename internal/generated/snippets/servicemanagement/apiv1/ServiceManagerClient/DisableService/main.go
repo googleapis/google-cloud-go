@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicemanagementpb.DisableServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#DisableServiceRequest.
 	}
 	op, err := c.DisableService(ctx, req)
 	if err != nil {

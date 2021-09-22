@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetLoggingServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetLoggingServiceRequest.
 	}
 	resp, err := c.SetLoggingService(ctx, req)
 	if err != nil {

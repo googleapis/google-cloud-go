@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMetricDescriptorsRequest.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {

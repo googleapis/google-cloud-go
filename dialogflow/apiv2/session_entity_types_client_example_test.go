@@ -46,6 +46,7 @@ func ExampleSessionEntityTypesClient_ListSessionEntityTypes() {
 
 	req := &dialogflowpb.ListSessionEntityTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListSessionEntityTypesRequest.
 	}
 	it := c.ListSessionEntityTypes(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleSessionEntityTypesClient_GetSessionEntityType() {
 
 	req := &dialogflowpb.GetSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetSessionEntityTypeRequest.
 	}
 	resp, err := c.GetSessionEntityType(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleSessionEntityTypesClient_CreateSessionEntityType() {
 
 	req := &dialogflowpb.CreateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateSessionEntityTypeRequest.
 	}
 	resp, err := c.CreateSessionEntityType(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleSessionEntityTypesClient_UpdateSessionEntityType() {
 
 	req := &dialogflowpb.UpdateSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateSessionEntityTypeRequest.
 	}
 	resp, err := c.UpdateSessionEntityType(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleSessionEntityTypesClient_DeleteSessionEntityType() {
 
 	req := &dialogflowpb.DeleteSessionEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteSessionEntityTypeRequest.
 	}
 	err = c.DeleteSessionEntityType(ctx, req)
 	if err != nil {

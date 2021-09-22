@@ -35,6 +35,7 @@ func main() {
 
 	req := &instancepb.GetInstanceConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/instance/v1#GetInstanceConfigRequest.
 	}
 	resp, err := c.GetInstanceConfig(ctx, req)
 	if err != nil {

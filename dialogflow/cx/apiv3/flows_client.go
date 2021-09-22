@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newFlowsClientHook clientHook
@@ -61,6 +61,7 @@ func defaultFlowsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -242,6 +243,10 @@ func (c *FlowsClient) Connection() *grpc.ClientConn {
 }
 
 // CreateFlow creates a flow in the specified agent.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
 	return c.internalClient.CreateFlow(ctx, req, opts...)
 }
@@ -262,12 +267,20 @@ func (c *FlowsClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest, opt
 }
 
 // UpdateFlow updates the specified flow.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
 	return c.internalClient.UpdateFlow(ctx, req, opts...)
 }
 
 // TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment
 // is trained.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequest, opts ...gax.CallOption) (*TrainFlowOperation, error) {
 	return c.internalClient.TrainFlow(ctx, req, opts...)
 }
@@ -292,6 +305,10 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 }
 
 // ImportFlow imports the specified flow to the specified agent from a binary file.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRequest, opts ...gax.CallOption) (*ImportFlowOperation, error) {
 	return c.internalClient.ImportFlow(ctx, req, opts...)
 }
@@ -457,11 +474,13 @@ func (c *flowsGRPCClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 	it := &FlowIterator{}
 	req = proto.Clone(req).(*cxpb.ListFlowsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Flow, string, error) {
-		var resp *cxpb.ListFlowsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListFlowsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -484,9 +503,11 @@ func (c *flowsGRPCClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequ
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

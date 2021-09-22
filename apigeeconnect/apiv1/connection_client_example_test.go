@@ -46,6 +46,7 @@ func ExampleConnectionClient_ListConnections() {
 
 	req := &apigeeconnectpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1#ListConnectionsRequest.
 	}
 	it := c.ListConnections(ctx, req)
 	for {

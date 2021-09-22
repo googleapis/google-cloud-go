@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetLocationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetLocationsRequest.
 	}
 	resp, err := c.SetLocations(ctx, req)
 	if err != nil {

@@ -16,6 +16,7 @@ package wire
 import (
 	"context"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
@@ -54,7 +55,7 @@ func newTestPartitionCountWatcher(t *testing.T, topicPath string, settings Publi
 	tw := &testPartitionCountWatcher{
 		t: t,
 	}
-	tw.watcher = newPartitionCountWatcher(ctx, adminClient, testPublishSettings(), topicPath, tw.onCountChanged)
+	tw.watcher = newPartitionCountWatcher(ctx, adminClient, settings, topicPath, tw.onCountChanged)
 	tw.initAndStart(t, tw.watcher, "PartitionCountWatcher", adminClient)
 	return tw
 }
@@ -93,6 +94,59 @@ func TestPartitionCountWatcherZeroPartitionCountFails(t *testing.T) {
 		t.Errorf("Start() got err: (%v), want msg: (%q)", gotErr, wantMsg)
 	}
 	watcher.VerifyCounts(nil)
+}
+
+func TestPartitionCountWatcherInitialRequestTimesOut(t *testing.T) {
+	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
+
+	verifiers := test.NewVerifiers(t)
+	barrier := verifiers.GlobalVerifier.PushWithBarrier(topicPartitionsReq(topic), topicPartitionsResp(1), nil)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	settings := testPublishSettings()
+	settings.Timeout = 20 * time.Millisecond // Set low timeout for initial request
+	watcher := newTestPartitionCountWatcher(t, topic, settings)
+
+	if gotErr, wantErr := watcher.StartError(), ErrBackendUnavailable; !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Start() got err: (%v), want err: (%v)", gotErr, wantErr)
+	}
+	barrier.Release()
+	watcher.VerifyCounts(nil)
+}
+
+func TestPartitionCountWatcherUpdateLongerTimeouts(t *testing.T) {
+	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
+	wantPartitionCount1 := 1
+	wantPartitionCount2 := 2
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(wantPartitionCount1), nil)
+	// Barrier used to delay response.
+	barrier := verifiers.GlobalVerifier.PushWithBarrier(topicPartitionsReq(topic), topicPartitionsResp(wantPartitionCount2), nil)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	watcher := newTestPartitionCountWatcher(t, topic, testPublishSettings())
+	if gotErr := watcher.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+	watcher.VerifyCounts([]int{wantPartitionCount1})
+
+	// Override the initial timeout after the first request to verify that it
+	// isn't used. If set at creation, the first request will fail.
+	const timeout = time.Millisecond
+	watcher.watcher.initialTimeout = timeout
+	go func() {
+		barrier.ReleaseAfter(func() {
+			time.Sleep(5 * timeout)
+		})
+	}()
+	watcher.UpdatePartitionCount()
+	watcher.VerifyCounts([]int{wantPartitionCount1, wantPartitionCount2})
+	watcher.StopVerifyNoError()
 }
 
 func TestPartitionCountWatcherPartitionCountUnchanged(t *testing.T) {

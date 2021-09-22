@@ -35,6 +35,7 @@ func main() {
 
 	req := &gsuiteaddonspb.GetInstallStatusRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#GetInstallStatusRequest.
 	}
 	resp, err := c.GetInstallStatus(ctx, req)
 	if err != nil {

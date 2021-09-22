@@ -47,6 +47,7 @@ func ExampleKeyManagementClient_ListKeyRings() {
 
 	req := &kmspb.ListKeyRingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListKeyRingsRequest.
 	}
 	it := c.ListKeyRings(ctx, req)
 	for {
@@ -72,6 +73,7 @@ func ExampleKeyManagementClient_ListCryptoKeys() {
 
 	req := &kmspb.ListCryptoKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListCryptoKeysRequest.
 	}
 	it := c.ListCryptoKeys(ctx, req)
 	for {
@@ -97,6 +99,7 @@ func ExampleKeyManagementClient_ListCryptoKeyVersions() {
 
 	req := &kmspb.ListCryptoKeyVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListCryptoKeyVersionsRequest.
 	}
 	it := c.ListCryptoKeyVersions(ctx, req)
 	for {
@@ -122,6 +125,7 @@ func ExampleKeyManagementClient_ListImportJobs() {
 
 	req := &kmspb.ListImportJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListImportJobsRequest.
 	}
 	it := c.ListImportJobs(ctx, req)
 	for {
@@ -147,6 +151,7 @@ func ExampleKeyManagementClient_GetKeyRing() {
 
 	req := &kmspb.GetKeyRingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetKeyRingRequest.
 	}
 	resp, err := c.GetKeyRing(ctx, req)
 	if err != nil {
@@ -166,6 +171,7 @@ func ExampleKeyManagementClient_GetCryptoKey() {
 
 	req := &kmspb.GetCryptoKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetCryptoKeyRequest.
 	}
 	resp, err := c.GetCryptoKey(ctx, req)
 	if err != nil {
@@ -185,6 +191,7 @@ func ExampleKeyManagementClient_GetCryptoKeyVersion() {
 
 	req := &kmspb.GetCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetCryptoKeyVersionRequest.
 	}
 	resp, err := c.GetCryptoKeyVersion(ctx, req)
 	if err != nil {
@@ -204,6 +211,7 @@ func ExampleKeyManagementClient_GetPublicKey() {
 
 	req := &kmspb.GetPublicKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetPublicKeyRequest.
 	}
 	resp, err := c.GetPublicKey(ctx, req)
 	if err != nil {
@@ -223,6 +231,7 @@ func ExampleKeyManagementClient_GetImportJob() {
 
 	req := &kmspb.GetImportJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetImportJobRequest.
 	}
 	resp, err := c.GetImportJob(ctx, req)
 	if err != nil {
@@ -242,6 +251,7 @@ func ExampleKeyManagementClient_CreateKeyRing() {
 
 	req := &kmspb.CreateKeyRingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateKeyRingRequest.
 	}
 	resp, err := c.CreateKeyRing(ctx, req)
 	if err != nil {
@@ -261,6 +271,7 @@ func ExampleKeyManagementClient_CreateCryptoKey() {
 
 	req := &kmspb.CreateCryptoKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateCryptoKeyRequest.
 	}
 	resp, err := c.CreateCryptoKey(ctx, req)
 	if err != nil {
@@ -280,6 +291,7 @@ func ExampleKeyManagementClient_CreateCryptoKeyVersion() {
 
 	req := &kmspb.CreateCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateCryptoKeyVersionRequest.
 	}
 	resp, err := c.CreateCryptoKeyVersion(ctx, req)
 	if err != nil {
@@ -299,6 +311,7 @@ func ExampleKeyManagementClient_ImportCryptoKeyVersion() {
 
 	req := &kmspb.ImportCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ImportCryptoKeyVersionRequest.
 	}
 	resp, err := c.ImportCryptoKeyVersion(ctx, req)
 	if err != nil {
@@ -318,6 +331,7 @@ func ExampleKeyManagementClient_CreateImportJob() {
 
 	req := &kmspb.CreateImportJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#CreateImportJobRequest.
 	}
 	resp, err := c.CreateImportJob(ctx, req)
 	if err != nil {
@@ -337,6 +351,7 @@ func ExampleKeyManagementClient_UpdateCryptoKey() {
 
 	req := &kmspb.UpdateCryptoKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateCryptoKeyRequest.
 	}
 	resp, err := c.UpdateCryptoKey(ctx, req)
 	if err != nil {
@@ -356,84 +371,9 @@ func ExampleKeyManagementClient_UpdateCryptoKeyVersion() {
 
 	req := &kmspb.UpdateCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateCryptoKeyVersionRequest.
 	}
 	resp, err := c.UpdateCryptoKeyVersion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_Encrypt() {
-	ctx := context.Background()
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.EncryptRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.Encrypt(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_Decrypt() {
-	ctx := context.Background()
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.DecryptRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.Decrypt(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_AsymmetricSign() {
-	ctx := context.Background()
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.AsymmetricSignRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.AsymmetricSign(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleKeyManagementClient_AsymmetricDecrypt() {
-	ctx := context.Background()
-	c, err := kms.NewKeyManagementClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &kmspb.AsymmetricDecryptRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.AsymmetricDecrypt(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -451,6 +391,7 @@ func ExampleKeyManagementClient_UpdateCryptoKeyPrimaryVersion() {
 
 	req := &kmspb.UpdateCryptoKeyPrimaryVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#UpdateCryptoKeyPrimaryVersionRequest.
 	}
 	resp, err := c.UpdateCryptoKeyPrimaryVersion(ctx, req)
 	if err != nil {
@@ -470,6 +411,7 @@ func ExampleKeyManagementClient_DestroyCryptoKeyVersion() {
 
 	req := &kmspb.DestroyCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#DestroyCryptoKeyVersionRequest.
 	}
 	resp, err := c.DestroyCryptoKeyVersion(ctx, req)
 	if err != nil {
@@ -489,8 +431,149 @@ func ExampleKeyManagementClient_RestoreCryptoKeyVersion() {
 
 	req := &kmspb.RestoreCryptoKeyVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#RestoreCryptoKeyVersionRequest.
 	}
 	resp, err := c.RestoreCryptoKeyVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_Encrypt() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.EncryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#EncryptRequest.
+	}
+	resp, err := c.Encrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_Decrypt() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.DecryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#DecryptRequest.
+	}
+	resp, err := c.Decrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_AsymmetricSign() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.AsymmetricSignRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#AsymmetricSignRequest.
+	}
+	resp, err := c.AsymmetricSign(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_AsymmetricDecrypt() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.AsymmetricDecryptRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#AsymmetricDecryptRequest.
+	}
+	resp, err := c.AsymmetricDecrypt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_MacSign() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.MacSignRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#MacSignRequest.
+	}
+	resp, err := c.MacSign(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_MacVerify() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.MacVerifyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#MacVerifyRequest.
+	}
+	resp, err := c.MacVerify(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleKeyManagementClient_GenerateRandomBytes() {
+	ctx := context.Background()
+	c, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &kmspb.GenerateRandomBytesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GenerateRandomBytesRequest.
+	}
+	resp, err := c.GenerateRandomBytes(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -508,6 +591,7 @@ func ExampleKeyManagementClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -527,6 +611,7 @@ func ExampleKeyManagementClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -546,6 +631,7 @@ func ExampleKeyManagementClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
