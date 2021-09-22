@@ -479,7 +479,7 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 		FROM
 		UNNEST(GENERATE_ARRAY(0,999))
 `, qualified)
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
 
@@ -872,7 +872,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	sql := fmt.Sprintf(`
 			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -1288,7 +1288,7 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		END`,
 		routine.FullyQualifiedName())
 
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -2014,7 +2014,7 @@ func TestIntegration_DML(t *testing.T) {
 							   ('b', [1], STRUCT<BOOL>(FALSE)),
 							   ('c', [2], STRUCT<BOOL>(TRUE))`,
 		table.DatasetID, table.TableID)
-	stats, err := runQueryJob(ctx, sql)
+	_, stats, err := runQuerySQL(ctx, sql)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -2036,12 +2036,18 @@ func TestIntegration_DML(t *testing.T) {
 	}
 }
 
+// runQuerySQL runs arbitrary SQL text.
+func runQuerySQL(ctx context.Context, sql string) (*JobStatistics, *QueryStatistics, error) {
+	return runQueryJob(ctx, client.Query(sql))
+}
+
 // runQueryJob is useful for running queries where no row data is returned (DDL/DML).
-func runQueryJob(ctx context.Context, sql string) (*QueryStatistics, error) {
-	var stats *QueryStatistics
+func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistics, error) {
+	var jobStats *JobStatistics
+	var queryStats *QueryStatistics
 	var err error
 	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		job, err := client.Query(sql).Run(ctx)
+		job, err := q.Run(ctx)
 		if err != nil {
 			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
 				return true, err // fail on 4xx
@@ -2057,13 +2063,14 @@ func runQueryJob(ctx context.Context, sql string) (*QueryStatistics, error) {
 		}
 		status := job.LastStatus()
 		if status.Statistics != nil {
+			jobStats = status.Statistics
 			if qStats, ok := status.Statistics.Details.(*QueryStatistics); ok {
-				stats = qStats
+				queryStats = qStats
 			}
 		}
 		return true, nil
 	})
-	return stats, err
+	return jobStats, queryStats, err
 }
 
 func TestIntegration_TimeTypes(t *testing.T) {
@@ -2103,7 +2110,7 @@ func TestIntegration_TimeTypes(t *testing.T) {
 		"VALUES ('%s', '%s', '%s', '%s')",
 		table.DatasetID, table.TableID,
 		d, CivilTimeString(tm), CivilDateTimeString(dtm), ts.Format("2006-01-02 15:04:05"))
-	if _, err := runQueryJob(ctx, query); err != nil {
+	if _, _, err := runQuerySQL(ctx, query); err != nil {
 		t.Fatal(err)
 	}
 	wantRows = append(wantRows, wantRows[0])
@@ -2273,6 +2280,44 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 		t.Fatalf("Error querying: %v", err)
 	}
 	checkReadAndTotalRows(t, "HiveQuery", it, [][]Value{{int64(50)}})
+}
+
+func TestIntegration_QuerySessionSupport(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("CREATE TEMPORARY TABLE temptable AS SELECT 17 as foo")
+	q.CreateSession = true
+	jobStats, _, err := runQueryJob(ctx, q)
+	if err != nil {
+		t.Fatalf("error running CREATE TEMPORARY TABLE: %v", err)
+	}
+	if jobStats.SessionInfo == nil {
+		t.Fatalf("expected session info, was nil")
+	}
+	sessionID := jobStats.SessionInfo.SessionID
+	if len(sessionID) == 0 {
+		t.Errorf("expected non-empty sessionID")
+	}
+
+	q2 := client.Query("SELECT * FROM temptable")
+	q2.ConnectionProperties = []*ConnectionProperty{
+		{Key: "session_id", Value: sessionID},
+	}
+	jobStats, _, err = runQueryJob(ctx, q2)
+	if err != nil {
+		t.Errorf("error running SELECT: %v", err)
+	}
+	if jobStats.SessionInfo == nil {
+		t.Fatalf("expected sessionInfo in second query, was nil")
+	}
+	got := jobStats.SessionInfo.SessionID
+	if got != sessionID {
+		t.Errorf("second query mismatched session ID, got %s want %s", got, sessionID)
+	}
+
 }
 
 func TestIntegration_QueryParameters(t *testing.T) {
@@ -2560,7 +2605,7 @@ func TestIntegration_ExtractExternal(t *testing.T) {
 	sql := fmt.Sprintf(`INSERT %s.%s (name, num)
 		                VALUES ('a', 1), ('b', 2), ('c', 3)`,
 		table.DatasetID, table.TableID)
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	// Extract to a GCS object as CSV.
@@ -2986,7 +3031,7 @@ func TestIntegration_MaterializedViewLifecycle(t *testing.T) {
 	FROM
 	  UNNEST(GENERATE_ARRAY(0,999))
 	`, qualified)
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
 
@@ -3114,7 +3159,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
 		)`, modelRef)
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer model.Delete(ctx)
@@ -3297,7 +3342,7 @@ func TestIntegration_RoutineComplexTypes(t *testing.T) {
 			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
 		  )`,
 		routine.FullyQualifiedName())
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
@@ -3357,7 +3402,7 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 	sql := fmt.Sprintf(`
 		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
 		routine.FullyQualifiedName())
-	if _, err := runQueryJob(ctx, sql); err != nil {
+	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
 	defer routine.Delete(ctx)
