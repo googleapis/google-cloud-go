@@ -47,6 +47,7 @@ func ExampleTagValuesClient_ListTagValues() {
 
 	req := &resourcemanagerpb.ListTagValuesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListTagValuesRequest.
 	}
 	it := c.ListTagValues(ctx, req)
 	for {
@@ -72,6 +73,7 @@ func ExampleTagValuesClient_GetTagValue() {
 
 	req := &resourcemanagerpb.GetTagValueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetTagValueRequest.
 	}
 	resp, err := c.GetTagValue(ctx, req)
 	if err != nil {
@@ -91,6 +93,7 @@ func ExampleTagValuesClient_CreateTagValue() {
 
 	req := &resourcemanagerpb.CreateTagValueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateTagValueRequest.
 	}
 	op, err := c.CreateTagValue(ctx, req)
 	if err != nil {
@@ -115,6 +118,7 @@ func ExampleTagValuesClient_UpdateTagValue() {
 
 	req := &resourcemanagerpb.UpdateTagValueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateTagValueRequest.
 	}
 	op, err := c.UpdateTagValue(ctx, req)
 	if err != nil {
@@ -139,6 +143,7 @@ func ExampleTagValuesClient_DeleteTagValue() {
 
 	req := &resourcemanagerpb.DeleteTagValueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteTagValueRequest.
 	}
 	op, err := c.DeleteTagValue(ctx, req)
 	if err != nil {
@@ -163,6 +168,7 @@ func ExampleTagValuesClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -182,6 +188,7 @@ func ExampleTagValuesClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -201,6 +208,7 @@ func ExampleTagValuesClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

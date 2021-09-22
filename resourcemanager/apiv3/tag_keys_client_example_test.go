@@ -47,6 +47,7 @@ func ExampleTagKeysClient_ListTagKeys() {
 
 	req := &resourcemanagerpb.ListTagKeysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListTagKeysRequest.
 	}
 	it := c.ListTagKeys(ctx, req)
 	for {
@@ -72,6 +73,7 @@ func ExampleTagKeysClient_GetTagKey() {
 
 	req := &resourcemanagerpb.GetTagKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetTagKeyRequest.
 	}
 	resp, err := c.GetTagKey(ctx, req)
 	if err != nil {
@@ -91,6 +93,7 @@ func ExampleTagKeysClient_CreateTagKey() {
 
 	req := &resourcemanagerpb.CreateTagKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateTagKeyRequest.
 	}
 	op, err := c.CreateTagKey(ctx, req)
 	if err != nil {
@@ -115,6 +118,7 @@ func ExampleTagKeysClient_UpdateTagKey() {
 
 	req := &resourcemanagerpb.UpdateTagKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateTagKeyRequest.
 	}
 	op, err := c.UpdateTagKey(ctx, req)
 	if err != nil {
@@ -139,6 +143,7 @@ func ExampleTagKeysClient_DeleteTagKey() {
 
 	req := &resourcemanagerpb.DeleteTagKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteTagKeyRequest.
 	}
 	op, err := c.DeleteTagKey(ctx, req)
 	if err != nil {
@@ -163,6 +168,7 @@ func ExampleTagKeysClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -182,6 +188,7 @@ func ExampleTagKeysClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -201,6 +208,7 @@ func ExampleTagKeysClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
