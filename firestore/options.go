@@ -54,9 +54,13 @@ func (e exists) String() string {
 }
 
 // LastUpdateTime returns a Precondition that checks that a resource must exist and
-// must have last been updated at the given time. If the check fails, the write
-// does not occur.
-func LastUpdateTime(t time.Time) Precondition { return lastUpdateTime(t) }
+// must have last been updated at the given time, rounded to microsecond precision.
+// If the check fails, the write does not occur.
+func LastUpdateTime(t time.Time) Precondition {
+	// UpdateTime preconditions have microsecond precision.
+	t = t.Round(time.Microsecond)
+	return lastUpdateTime(t)
+}
 
 type lastUpdateTime time.Time
 
