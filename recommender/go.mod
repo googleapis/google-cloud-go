@@ -3,7 +3,6 @@ module cloud.google.com/go/recommender
 go 1.16
 
 require (
-	cloud.google.com/go v0.94.1
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.1.0
 	google.golang.org/api v0.57.0

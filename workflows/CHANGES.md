@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surface.
+
 ## v0.1.0
 
 This is the first tag to carve out workflows as its own module. See
