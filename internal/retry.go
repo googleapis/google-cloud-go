@@ -46,11 +46,11 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 			lastErr = err
 		}
 		p := bo.Pause()
-		if cerr := sleep(ctx, p); cerr != nil {
+		if ctxErr := sleep(ctx, p); ctxErr != nil {
 			if lastErr != nil {
-				return wrappedCallErr{cerr: cerr, wrappedErr: lastErr}
+				return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
 			}
-			return cerr
+			return ctxErr
 		}
 	}
 }
@@ -58,12 +58,12 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 // Use this error type to return an error which allows introspection of both
 // the context error and the error from the service.
 type wrappedCallErr struct {
-	cerr       error
+	ctxErr     error
 	wrappedErr error
 }
 
 func (e wrappedCallErr) Error() string {
-	return fmt.Sprintf("retry failed with %v; last error: %v", e.cerr, e.wrappedErr)
+	return fmt.Sprintf("retry failed with %v; last error: %v", e.ctxErr, e.wrappedErr)
 }
 
 func (e wrappedCallErr) Unwrap() error {
@@ -73,7 +73,7 @@ func (e wrappedCallErr) Unwrap() error {
 // Is allows errors.Is to match the error from the call as well as context
 // sentinel errors.
 func (e wrappedCallErr) Is(err error) bool {
-	return e.cerr == err || e.wrappedErr == err
+	return e.ctxErr == err || e.wrappedErr == err
 }
 
 // GRPCStatus allows the wrapped error to be used with status.FromError.
