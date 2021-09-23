@@ -17,7 +17,6 @@ package internal
 import (
 	"context"
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 
@@ -82,7 +81,7 @@ func TestRetryPreserveError(t *testing.T) {
 	if g, w := got.Code(), codes.NotFound; g != w {
 		t.Errorf("got code %v, want %v", g, w)
 	}
-	wantMessage := fmt.Sprintf("retry failed with %v; last error: not found", context.DeadlineExceeded)
+	wantMessage := "not found"
 	if g, w := got.Message(), wantMessage; g != w {
 		t.Errorf("got message %q, want %q", g, w)
 	}

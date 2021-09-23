@@ -20,6 +20,7 @@ import (
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/grpc/status"
 )
 
 // Retry calls the supplied function f repeatedly according to the provided
@@ -75,4 +76,9 @@ func (e wrappedCallErr) Is(err error) bool {
 	return e.cerr == err || e.wrappedErr == err
 }
 
+// GRPCStatus allows the wrapped error to be used with status.FromError.
+func (e wrappedCallErr) GRPCStatus() *status.Status {
+	s, _ := status.FromError(e.wrappedErr)
+	return s
+}
 
