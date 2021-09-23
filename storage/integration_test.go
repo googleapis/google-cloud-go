@@ -1499,16 +1499,17 @@ func TestIntegration_Objects(t *testing.T) {
 	// Since a 429 or 5xx is hard to cause, we trigger a 416.
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
-	if err, ok := err.(*googleapi.Error); !ok {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
-		if err.Code != 416 {
-			t.Errorf("Code = %d; want %d", err.Code, 416)
+		if e.Code != 416 {
+			t.Errorf("Code = %d; want %d", e.Code, 416)
 		}
-		if len(err.Header) == 0 {
+		if len(e.Header) == 0 {
 			t.Error("Missing googleapi.Error.Header")
 		}
-		if len(err.Body) == 0 {
+		if len(e.Body) == 0 {
 			t.Error("Missing googleapi.Error.Body")
 		}
 	}
@@ -2773,8 +2774,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		if err == nil {
 			return 0
 		}
-		if err, ok := err.(*googleapi.Error); ok {
-			return err.Code
+		var e *googleapi.Error
+		if ok := xerrors.As(err, e); ok {
+			return e.Code
 		}
 		return -1
 	}
@@ -3023,7 +3025,8 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	}
 
 	errCode := func(err error) int {
-		err2, ok := err.(*googleapi.Error)
+		var err2 *googleapi.Error
+		ok := xerrors.As(err, err2)
 		if !ok {
 			return -1
 		}

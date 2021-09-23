@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/xerrors"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/googleapi"
@@ -160,7 +161,8 @@ func TestIndefiniteRetries(t *testing.T) {
 	case <-time.After(maxWait):
 		t.Fatalf("Test took longer than %s to return", maxWait)
 	case err := <-closeDone:
-		ge, ok := err.(*googleapi.Error)
+		var ge *googleapi.Error
+		ok := xerrors.As(err, &ge)
 		if !ok {
 			t.Fatalf("Got error (%v) of type %T, expected *googleapi.Error", err, err)
 		}
