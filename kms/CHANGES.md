@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stabilize GA surfaces.
+Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/kms/v0.1.0...kms/v0.2.0) (2021-08-30)
 

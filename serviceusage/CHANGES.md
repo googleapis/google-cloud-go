@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stabilize GA surfaces.
+Stabilize GA surface.
 
 ## v0.1.0
 

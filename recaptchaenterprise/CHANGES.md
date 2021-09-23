@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stabilize GA surfaces.
+Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v0.1.0...recaptchaenterprise/v0.2.0) (2021-09-18)
 

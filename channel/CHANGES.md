@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stabilize GA surfaces.
+Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/channel/v0.1.0...channel/v0.2.0) (2021-09-09)
 

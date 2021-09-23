@@ -2,7 +2,7 @@
 
 ## 1.0.0
 
-Stabilize GA surfaces.
+Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/cloudbuild/v0.1.0...cloudbuild/v0.2.0) (2021-08-30)
 

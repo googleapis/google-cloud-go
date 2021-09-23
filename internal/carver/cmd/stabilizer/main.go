@@ -68,7 +68,7 @@ func stabilize(parentPath, child string) error {
 		// Insert content after header
 		if i == 2 {
 			fmt.Fprint(f, "## 1.0.0\n\n")
-			fmt.Fprint(f, "Stabilize GA surfaces.\n\n")
+			fmt.Fprint(f, "Stabilize GA surface.\n\n")
 		}
 		fmt.Fprintf(f, "%s\n", line)
 	}
