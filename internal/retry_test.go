@@ -74,6 +74,13 @@ func TestRetryPreserveError(t *testing.T) {
 		func(context.Context, time.Duration) error {
 			return context.DeadlineExceeded
 		})
+	if err == nil {
+		t.Fatalf("unexpectedly got nil error")
+	}
+	wantError := "retry failed with context deadline exceeded; last error: rpc error: code = NotFound desc = not found"
+	if g, w := err.Error(), wantError; g != w {
+		t.Errorf("got error %q, want %q", g, w)
+	}
 	got, ok := status.FromError(err)
 	if !ok {
 		t.Fatalf("got %T, wanted a status", got)

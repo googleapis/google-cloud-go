@@ -78,7 +78,9 @@ func (e wrappedCallErr) Is(err error) bool {
 
 // GRPCStatus allows the wrapped error to be used with status.FromError.
 func (e wrappedCallErr) GRPCStatus() *status.Status {
-	s, _ := status.FromError(e.wrappedErr)
-	return s
+	if s, ok := status.FromError(e.wrappedErr); ok {
+		return s
+	}
+	return nil
 }
 
