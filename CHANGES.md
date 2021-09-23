@@ -1,5 +1,12 @@
 # Changes
 
+### [0.95.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.95.0...v0.95.1) (2021-09-23)
+
+
+### Bug Fixes
+
+* **internal/gapicgen:** restore fmting proto files ([#4789](https://www.github.com/googleapis/google-cloud-go/issues/4789)) ([5606b54](https://www.github.com/googleapis/google-cloud-go/commit/5606b54b97bb675487c6c138a4081c827218f933))
+
 ## [0.95.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.94.1...v0.95.0) (2021-09-21)
 
 ### Bug Fixes
