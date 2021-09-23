@@ -218,7 +218,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		// Preserve existing functionality that when context is canceled, Write will return
 		// context.Canceled instead of "io: read/write on closed pipe". This hides the
 		// pipe implementation detail from users and makes Write seem as though it's an RPC.
-		if xerrors.Is(werr, context.Canceled) || xerrors.Is(werr, context.DeadlineExceeded){
+		if xerrors.Is(werr, context.Canceled) || xerrors.Is(werr, context.DeadlineExceeded) {
 			return n, werr
 		}
 	}
