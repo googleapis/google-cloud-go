@@ -58,7 +58,7 @@ func retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error),
 // Use this error type to return an error which allows introspection of both
 // the context error and the error from the service.
 type wrappedCallErr struct {
-	cerr error
+	cerr       error
 	wrappedErr error
 }
 
@@ -83,4 +83,3 @@ func (e wrappedCallErr) GRPCStatus() *status.Status {
 	}
 	return nil
 }
-
