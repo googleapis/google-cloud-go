@@ -1,5 +1,12 @@
 # Changes
 
+### [1.23.1](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.23.0...bigquery/v1.23.1) (2021-09-23)
+
+
+### Bug Fixes
+
+* **bigquery/storage:** add missing read api retry setting on SplitReadStream ([797a9bd](https://www.github.com/googleapis/google-cloud-go/commit/797a9bdcb68c0c3ff7eef04cd3a3a0747937975b))
+
 ## [1.23.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.22.0...bigquery/v1.23.0) (2021-09-23)
 
 
