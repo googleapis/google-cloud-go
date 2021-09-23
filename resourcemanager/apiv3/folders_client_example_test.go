@@ -47,6 +47,7 @@ func ExampleFoldersClient_GetFolder() {
 
 	req := &resourcemanagerpb.GetFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#GetFolderRequest.
 	}
 	resp, err := c.GetFolder(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExampleFoldersClient_ListFolders() {
 
 	req := &resourcemanagerpb.ListFoldersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListFoldersRequest.
 	}
 	it := c.ListFolders(ctx, req)
 	for {
@@ -91,6 +93,7 @@ func ExampleFoldersClient_SearchFolders() {
 
 	req := &resourcemanagerpb.SearchFoldersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#SearchFoldersRequest.
 	}
 	it := c.SearchFolders(ctx, req)
 	for {
@@ -116,6 +119,7 @@ func ExampleFoldersClient_CreateFolder() {
 
 	req := &resourcemanagerpb.CreateFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateFolderRequest.
 	}
 	op, err := c.CreateFolder(ctx, req)
 	if err != nil {
@@ -140,6 +144,7 @@ func ExampleFoldersClient_UpdateFolder() {
 
 	req := &resourcemanagerpb.UpdateFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UpdateFolderRequest.
 	}
 	op, err := c.UpdateFolder(ctx, req)
 	if err != nil {
@@ -164,6 +169,7 @@ func ExampleFoldersClient_MoveFolder() {
 
 	req := &resourcemanagerpb.MoveFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#MoveFolderRequest.
 	}
 	op, err := c.MoveFolder(ctx, req)
 	if err != nil {
@@ -188,6 +194,7 @@ func ExampleFoldersClient_DeleteFolder() {
 
 	req := &resourcemanagerpb.DeleteFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteFolderRequest.
 	}
 	op, err := c.DeleteFolder(ctx, req)
 	if err != nil {
@@ -212,6 +219,7 @@ func ExampleFoldersClient_UndeleteFolder() {
 
 	req := &resourcemanagerpb.UndeleteFolderRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#UndeleteFolderRequest.
 	}
 	op, err := c.UndeleteFolder(ctx, req)
 	if err != nil {
@@ -236,6 +244,7 @@ func ExampleFoldersClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -255,6 +264,7 @@ func ExampleFoldersClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -274,6 +284,7 @@ func ExampleFoldersClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
