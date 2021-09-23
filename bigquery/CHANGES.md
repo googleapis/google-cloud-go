@@ -1,5 +1,14 @@
 # Changes
 
+## [1.23.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.22.0...bigquery/v1.23.0) (2021-09-23)
+
+
+### Features
+
+* **bigquery/reservation:** Deprecated SearchAssignments in favor of SearchAllAssignments feat: Reservation objects now contain a creation time and an update time feat: Added commitment_start_time to capacity commitments feat: Force deleting capacity commitments is allowed while reservations with active assignments exist feat: ML_EXTERNAL job type is supported feat: Optional id can be passed into CreateCapacityCommitment and CreateAssignment docs: Clarified docs for None assignments fix!: Fixed pattern for BiReservation object BREAKING_CHANGE: Changed from `bireservation` to `biReservation` ([d9ce9d0](https://www.github.com/googleapis/google-cloud-go/commit/d9ce9d0ee64f59c4e07ce4752bfd721051a95ac7))
+* **bigquery/storage:** add BigQuery Storage Write API v1 ([e52c204](https://www.github.com/googleapis/google-cloud-go/commit/e52c2042a2b7cdd7dd799a561421f32fecc5d1d2))
+* **bigquery:** add session and connection support ([#4754](https://www.github.com/googleapis/google-cloud-go/issues/4754)) ([e846dfd](https://www.github.com/googleapis/google-cloud-go/commit/e846dfdefbba88320088667525e5fdd966c80c4b))
+
 ## [1.22.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.21.0...bigquery/v1.22.0) (2021-08-30)
 
 
