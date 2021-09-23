@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/talent/v0.2.0...talent/v0.3.0) (2021-09-15)
+
+
+### Features
+
+* **talent:** Added a new `KeywordMatchMode` field to support more keyword matching options feat: Added more `DiversificationLevel` configuration options ([8ffed36](https://www.github.com/googleapis/google-cloud-go/commit/8ffed36c9db818a24073cf865f626d29afd01716))
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/talent/v0.1.0...talent/v0.2.0) (2021-08-30)
 
 
