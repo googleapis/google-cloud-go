@@ -515,7 +515,7 @@ func (as *assigningSubscriber) doHandleAssignment(nextPartitions PartitionSet) (
 	defer as.mu.Unlock()
 
 	var previousPartitions []int
-	for partition, _ := range as.subscribers {
+	for partition := range as.subscribers {
 		previousPartitions = append(previousPartitions, partition)
 	}
 

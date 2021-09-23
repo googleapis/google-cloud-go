@@ -49,6 +49,7 @@ func newPartitionSet(assignmentpb *pb.PartitionAssignment) PartitionSet {
 	return NewPartitionSet(partitions)
 }
 
+// Ints returns the partitions contained in this set as an unsorted slice.
 func (ps PartitionSet) Ints() (partitions []int) {
 	for p := range ps {
 		partitions = append(partitions, p)
@@ -56,12 +57,14 @@ func (ps PartitionSet) Ints() (partitions []int) {
 	return
 }
 
+// SortedInts returns the partitions contained in this set as a sorted slice.
 func (ps PartitionSet) SortedInts() (partitions []int) {
 	partitions = ps.Ints()
 	sort.Ints(partitions)
 	return
 }
 
+// Contains returns true if this set contains the specified partition.
 func (ps PartitionSet) Contains(partition int) bool {
 	_, exists := ps[partition]
 	return exists
