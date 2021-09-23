@@ -5,15 +5,15 @@
 
 ### Features
 
-* **bigquery/reservation:**  
+* **bigquery/reservation:**
   * Deprecated SearchAssignments in favor of SearchAllAssignments
-  * feat: Reservation objects now contain a creation time and an update time 
-  * feat: Added commitment_start_time to capacity commitments 
-  * feat: Force deleting capacity commitments is allowed while reservations with active assignments exist 
+  * feat: Reservation objects now contain a creation time and an update time
+  * feat: Added commitment_start_time to capacity commitments
+  * feat: Force deleting capacity commitments is allowed while reservations with active assignments exist
   * feat: ML_EXTERNAL job type is supported
   * feat: Optional id can be passed into CreateCapacityCommitment and CreateAssignment
-  * docs: Clarified docs for None assignments 
-  * fix!: Fixed pattern for BiReservation object BREAKING_CHANGE: Changed from `bireservation` to `biReservation` 
+  * docs: Clarified docs for None assignments
+  * fix!: Fixed pattern for BiReservation object BREAKING_CHANGE: Changed from `bireservation` to `biReservation`
   * ([d9ce9d0](https://www.github.com/googleapis/google-cloud-go/commit/d9ce9d0ee64f59c4e07ce4752bfd721051a95ac7))
 * **bigquery/storage/managedwriter:** BREAKING CHANGE: changeAppendRows behavior ([#4729](https://github.com/googleapis/google-cloud-go/pull/4729))
 * **bigquery/storage:** add BigQuery Storage Write API v1 ([e52c204](https://www.github.com/googleapis/google-cloud-go/commit/e52c2042a2b7cdd7dd799a561421f32fecc5d1d2))
