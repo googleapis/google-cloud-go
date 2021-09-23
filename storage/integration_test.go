@@ -3206,14 +3206,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
-	// check for context cancellation instead.
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3865,7 +3863,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if readErr == context.Canceled {
+			if xerrors.Is(readErr, context.Canceled) {
 				return
 			}
 			break
