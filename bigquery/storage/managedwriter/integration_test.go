@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -415,7 +416,12 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	}
 
 	// Commit stream and validate.
-	resp, err := mwClient.BatchCommit(ctx, TableParentFromStreamName(ms.StreamName()), []string{ms.StreamName()})
+	req := &storagepb.BatchCommitWriteStreamsRequest{
+		Parent:       TableParentFromStreamName(ms.StreamName()),
+		WriteStreams: []string{ms.StreamName()},
+	}
+
+	resp, err := mwClient.BatchCommitWriteStreams(ctx, req)
 	if err != nil {
 		t.Errorf("client.BatchCommit: %v", err)
 	}
