@@ -7,6 +7,7 @@ on:
 name: release-please
 jobs:
   release-please-pr:
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     steps:
       - id: release-pr # Open the release PR from a fork.
@@ -34,6 +35,7 @@ jobs:
               });
               console.log(`Tagged ${{steps.release-pr.outputs.pr}}`)
   release-please-release: # Actually tag the release.
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
