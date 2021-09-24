@@ -23,7 +23,7 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.94.1
+	cloud.google.com/go v0.95.0
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/accesscontextmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v0.1.0
@@ -122,7 +122,7 @@ require (
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
 	google.golang.org/api v0.57.0
-	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
+	google.golang.org/genproto v0.0.0-20210924002016-3dee208752a0
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
