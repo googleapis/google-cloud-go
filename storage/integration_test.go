@@ -2775,7 +2775,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			return 0
 		}
 		var e *googleapi.Error
-		if ok := xerrors.As(err, e); ok {
+		if ok := xerrors.As(err, &e); ok {
 			return e.Code
 		}
 		return -1
@@ -3026,7 +3026,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	errCode := func(err error) int {
 		var err2 *googleapi.Error
-		ok := xerrors.As(err, err2)
+		ok := xerrors.As(err, &err2)
 		if !ok {
 			return -1
 		}
