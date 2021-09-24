@@ -3026,8 +3026,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	errCode := func(err error) int {
 		var err2 *googleapi.Error
-		ok := xerrors.As(err, &err2)
-		if !ok {
+		if ok := xerrors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
