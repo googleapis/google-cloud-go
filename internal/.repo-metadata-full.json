@@ -179,6 +179,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/bigquery/migration/apiv2alpha": {
+    "distribution_name": "cloud.google.com/go/bigquery/migration/apiv2alpha",
+    "description": "BigQuery Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/migration/apiv2alpha",
+    "release_level": "alpha",
+    "library_type": ""
+  },
   "cloud.google.com/go/bigquery/reservation/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/reservation/apiv1",
     "description": "BigQuery Reservation API",
