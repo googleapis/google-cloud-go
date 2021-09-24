@@ -14,6 +14,7 @@ jobs:
   # logic for other libraries as well, and would like to pull this logic
   # into its own action.
   changeFinder:
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     outputs:
       submodules: ${{ steps.interrogate.outputs.submodules }}
@@ -26,6 +27,7 @@ jobs:
       - id: interrogate
         run: go run internal/actions/cmd/changefinder/main.go
   release-pr: # Create the release PR based on commit history:
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     needs: changeFinder
     strategy:
@@ -59,6 +61,7 @@ jobs:
               });
               console.log(`Tagged ${{steps.release-please.outputs.pr}}`)
   release-please-release: # Actually create a release tag.
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     needs: changeFinder
     strategy:
