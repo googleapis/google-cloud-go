@@ -9,7 +9,7 @@ set -eo pipefail
 set -x
 
 # cd to project dir on Kokoro instance
-cd git/gocloud
+cd git/gocloudasdasdsad
 
 go version
 
