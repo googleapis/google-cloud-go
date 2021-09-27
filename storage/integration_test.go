@@ -640,6 +640,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
 	}
 	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4890")
+
 	// Update PAP setting to unspecified should work and not affect UBLA setting.
 	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
 	if err != nil {
