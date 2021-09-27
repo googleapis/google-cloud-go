@@ -2001,7 +2001,8 @@ func TestIntegration_SignedURL(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Method = "GET"
 		opts.Expires = time.Now().Add(time.Hour)
-		u, err := SignedURL(bucketName, obj, &opts)
+
+		u, err := bkt.SignedURL(obj, &opts)
 		if err != nil {
 			t.Errorf("%s: SignedURL: %v", test.desc, err)
 			continue
@@ -2032,6 +2033,8 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+
+	bkt := client.Bucket(bucketName)
 
 	// TODO(deklerk): document how these were generated and their significance
 	encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
@@ -2073,7 +2076,6 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	}
 	defer func() {
 		// Delete encrypted object.
-		bkt := client.Bucket(bucketName)
 		err := bkt.Object("csek.json").Delete(ctx)
 		if err != nil {
 			log.Printf("failed to deleted encrypted file: %v", err)
@@ -2086,7 +2088,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Expires = time.Now().Add(time.Hour)
 
-		u, err := SignedURL(bucketName, "csek.json", test.opts)
+		u, err := bkt.SignedURL("csek.json", test.opts)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
@@ -2136,7 +2138,8 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 		Expires:        time.Now().Add(time.Hour),
 	}
 
-	u, err := SignedURL(bucketName, "", opts)
+	bkt := client.Bucket(bucketName)
+	u, err := bkt.SignedURL("", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
