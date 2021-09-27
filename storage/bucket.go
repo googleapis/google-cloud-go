@@ -289,12 +289,12 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		err := json.Unmarshal(b.c.creds.JSON, &sa)
 		if err == nil && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
-		} else {
-			returnErr = errors.New("storage: empty client email in credentials")
-			if err != nil {
-				returnErr = err
-			}
 		}
+		returnErr = errors.New("storage: empty client email in credentials")
+		if err != nil {
+			returnErr = err
+		}
+
 	}
 
 	// Don't error out if we can't unmarshal, fallback to GCE check.
@@ -302,12 +302,12 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		email, err := metadata.Email("default")
 		if err == nil && email != "" {
 			return email, nil
-		} else {
-			returnErr = errors.New("got empty email from GCE metadata service")
-			if err != nil {
-				returnErr = err
-			}
 		}
+		returnErr = errors.New("got empty email from GCE metadata service")
+		if err != nil {
+			returnErr = err
+		}
+
 	}
 	return "", fmt.Errorf("storage: unable to detect default GoogleAccessID: %v", returnErr)
 }
