@@ -265,6 +265,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
 	}
+	if attrs.ProjectNumber == nil ||  attrs.ProjectNumber == "" {
+		t.Errorf("got an empty ProjectNumber")
+	}
 	h.mustDeleteBucket(b)
 
 	// Test Create and Delete with attributes.

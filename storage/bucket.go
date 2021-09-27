@@ -339,6 +339,7 @@ type BucketAttrs struct {
 	LocationType string
 
 	// The project number of the project the bucket belongs to.
+	// This field is read-only.
 	ProjectNumber uint64
 }
 
