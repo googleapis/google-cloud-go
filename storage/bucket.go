@@ -238,9 +238,10 @@ func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPa
 // SignedURLOptions opts to be non-nil. If not provided, it attempts to fill the
 // GoogleAccessID and PrivateKey from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
 // If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
-// This requires the IAM credentials API to be enabled and iam.serviceAccounts.signBlob
-// permissions on the service account.
-// If you do not want these fields set for you, you may use
+// This requires the IAM Service Account Credentials API to be enabled
+// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
+// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+// If you do not want these fields set for you, you may pass them in through opts or use
 // SignedURL(bucket, name string, opts *SignedURLOptions) instead.
 func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string, error) {
 	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
@@ -289,10 +290,10 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		err := json.Unmarshal(b.c.creds.JSON, &sa)
 		if err == nil && sa.ClientEmail != "" {
 			return sa.ClientEmail, nil
-		}
-		returnErr = errors.New("storage: empty client email in credentials")
-		if err != nil {
+		} else if err != nil {
 			returnErr = err
+		} else {
+			returnErr = errors.New("storage: empty client email in credentials")
 		}
 
 	}
