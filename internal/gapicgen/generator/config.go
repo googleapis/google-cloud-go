@@ -1297,6 +1297,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/10/11
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/orchestration/airflow/service/v1",
+		pkg:                   "service",
+		importPath:            "cloud.google.com/go/orchestration/airflow/service/apiv1",
+		gRPCServiceConfigPath: "composer_grpc_service_config.json",
+		apiServiceConfigPath:  "composer_v1.yaml",
+		// GA after 2021/10/27
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

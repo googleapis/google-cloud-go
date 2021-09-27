@@ -87,8 +87,9 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 			(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.importPath)) {
 			continue
 		}
-		modPath := filepath.Dir(filepath.Join(g.googleCloudDir, c.importPath))
-		modImportPath := filepath.Dir(c.importPath)
+
+		modImportPath := filepath.Join("cloud.google.com/go", strings.Split(strings.TrimPrefix(c.importPath, "cloud.google.com/go/"), "/")[0])
+		modPath := filepath.Join(g.googleCloudDir, modImportPath)
 		if g.genModule {
 			if err := generateModule(modPath, modImportPath); err != nil {
 				return err

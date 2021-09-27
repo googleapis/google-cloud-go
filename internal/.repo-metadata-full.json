@@ -899,6 +899,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/orchestration/airflow/service/apiv1": {
+    "distribution_name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+    "description": "Cloud Composer API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/orchestration/latest/airflow/service/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/orgpolicy/apiv2": {
     "distribution_name": "cloud.google.com/go/orgpolicy/apiv2",
     "description": "Organization Policy API",
