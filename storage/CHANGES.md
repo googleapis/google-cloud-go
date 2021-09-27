@@ -1,5 +1,12 @@
 # Changes
 
+### [1.16.2](https://www.github.com/googleapis/google-cloud-go/compare/storage/v1.16.1...storage/v1.16.2) (2021-09-27)
+
+
+### Bug Fixes
+
+* **storage:** align retry idempotency (part 1) ([#4715](https://www.github.com/googleapis/google-cloud-go/issues/4715)) ([ffa903e](https://www.github.com/googleapis/google-cloud-go/commit/ffa903eeec61aa3869e5220e2f09371127b5c393))
+
 ### [1.16.1](https://www.github.com/googleapis/google-cloud-go/compare/storage/v1.16.0...storage/v1.16.1) (2021-08-30)
 
 
