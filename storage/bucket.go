@@ -303,10 +303,10 @@ func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 		email, err := metadata.Email("default")
 		if err == nil && email != "" {
 			return email, nil
-		}
-		returnErr = errors.New("got empty email from GCE metadata service")
-		if err != nil {
+		} else if err != nil {
 			returnErr = err
+		} else {
+			returnErr = errors.New("got empty email from GCE metadata service")
 		}
 
 	}
