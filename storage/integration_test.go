@@ -1105,7 +1105,6 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_CancelWriteGRPC(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4772")
 	ctx := context.Background()
 
 	// Create an HTTP client to verify test and a gRPC client to test writing.
@@ -1123,9 +1122,12 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	}()
 
 	cctx, cancel := context.WithCancel(ctx)
-	content := []byte("Hello, world this is a grpc request")
 
 	w := gobj.NewWriter(cctx)
+	// Set a chunk size and send that amount of data to provoke a network call
+	// on the next Write that would fail due to context cancelation.
+	w.ChunkSize = googleapi.MinUploadChunkSize
+	content := make([]byte, w.ChunkSize)
 	_, err := w.Write(content)
 	if err != nil {
 		t.Fatal(err)
