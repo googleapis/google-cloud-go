@@ -95,7 +95,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 				return err
 			}
 			newMods = append(newMods, modInfo{
-				path:              filepath.Dir(filepath.Join(g.googleCloudDir, strings.TrimPrefix(c.importPath, "cloud.google.com/go"))),
+				path:              filepath.Join(g.googleCloudDir, strings.TrimPrefix(modImportPath, "cloud.google.com/go")),
 				importPath:        modImportPath,
 				serviceImportPath: c.importPath,
 			})
