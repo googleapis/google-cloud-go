@@ -46,6 +46,7 @@ func ExampleTagBindingsClient_ListTagBindings() {
 
 	req := &resourcemanagerpb.ListTagBindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#ListTagBindingsRequest.
 	}
 	it := c.ListTagBindings(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleTagBindingsClient_CreateTagBinding() {
 
 	req := &resourcemanagerpb.CreateTagBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#CreateTagBindingRequest.
 	}
 	op, err := c.CreateTagBinding(ctx, req)
 	if err != nil {
@@ -95,6 +97,7 @@ func ExampleTagBindingsClient_DeleteTagBinding() {
 
 	req := &resourcemanagerpb.DeleteTagBindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v3#DeleteTagBindingRequest.
 	}
 	op, err := c.DeleteTagBinding(ctx, req)
 	if err != nil {

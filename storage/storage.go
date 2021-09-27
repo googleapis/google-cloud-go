@@ -50,6 +50,7 @@ import (
 	htransport "google.golang.org/api/transport/http"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1420,9 +1421,8 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	}
 }
 
-func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
-	o := r.GetResource()
-	if r == nil || o == nil {
+func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
+	if o == nil {
 		return nil
 	}
 	return &ObjectAttrs{
@@ -1824,4 +1824,64 @@ func bucketResourceName(p, b string) string {
 // bucket ID, which is the simple Bucket name typical of the v1 API.
 func parseBucketName(b string) string {
 	return strings.TrimPrefix(b, "projects/_/buckets/")
+}
+
+// setConditionProtoField uses protobuf reflection to set named condition field
+// to the given condition value if supported on the protobuf message.
+//
+// This is an experimental API and not intended for public use.
+func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
+	fields := m.Descriptor().Fields()
+	if rf := fields.ByName(protoreflect.Name(f)); rf != nil {
+		m.Set(rf, protoreflect.ValueOfInt64(v))
+		return true
+	}
+
+	return false
+}
+
+// applyCondsProto validates and attempts to set the conditions on a protobuf
+// message using protobuf reflection.
+//
+// This is an experimental API and not intended for public use.
+func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Message) error {
+	rmsg := msg.ProtoReflect()
+
+	if gen >= 0 {
+		if !setConditionProtoField(rmsg, "generation", gen) {
+			return fmt.Errorf("storage: %s: generation not supported", method)
+		}
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+
+	switch {
+	case conds.GenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_match", conds.GenerationMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
+		}
+	case conds.GenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_not_match", conds.GenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
+		}
+	case conds.DoesNotExist:
+		if !setConditionProtoField(rmsg, "if_generation_match", int64(0)) {
+			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
+		}
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_match", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_not_match", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
+		}
+	}
+	return nil
 }
