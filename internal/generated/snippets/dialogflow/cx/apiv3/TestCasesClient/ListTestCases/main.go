@@ -36,6 +36,7 @@ func main() {
 
 	req := &cxpb.ListTestCasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListTestCasesRequest.
 	}
 	it := c.ListTestCases(ctx, req)
 	for {

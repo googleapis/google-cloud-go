@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataprocpb.DiagnoseClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DiagnoseClusterRequest.
 	}
 	op, err := c.DiagnoseCluster(ctx, req)
 	if err != nil {

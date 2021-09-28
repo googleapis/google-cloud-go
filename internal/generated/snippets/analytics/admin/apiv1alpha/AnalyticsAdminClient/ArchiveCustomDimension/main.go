@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.ArchiveCustomDimensionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ArchiveCustomDimensionRequest.
 	}
 	err = c.ArchiveCustomDimension(ctx, req)
 	if err != nil {

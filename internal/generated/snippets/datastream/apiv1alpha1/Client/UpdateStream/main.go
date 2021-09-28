@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.UpdateStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#UpdateStreamRequest.
 	}
 	op, err := c.UpdateStream(ctx, req)
 	if err != nil {

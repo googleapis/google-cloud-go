@@ -46,6 +46,7 @@ func ExampleInterconnectAttachmentsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInterconnectAttachmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInterconnectAttachmentsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleInterconnectAttachmentsClient_Delete() {
 
 	req := &computepb.DeleteInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInterconnectAttachmentRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleInterconnectAttachmentsClient_Get() {
 
 	req := &computepb.GetInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInterconnectAttachmentRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleInterconnectAttachmentsClient_Insert() {
 
 	req := &computepb.InsertInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInterconnectAttachmentRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleInterconnectAttachmentsClient_List() {
 
 	req := &computepb.ListInterconnectAttachmentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectAttachmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -153,6 +158,7 @@ func ExampleInterconnectAttachmentsClient_Patch() {
 
 	req := &computepb.PatchInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchInterconnectAttachmentRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &dlppb.ListInspectTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/privacy/dlp/v2#ListInspectTemplatesRequest.
 	}
 	it := c.ListInspectTemplates(ctx, req)
 	for {

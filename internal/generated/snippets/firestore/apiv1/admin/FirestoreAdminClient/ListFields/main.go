@@ -36,6 +36,7 @@ func main() {
 
 	req := &adminpb.ListFieldsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ListFieldsRequest.
 	}
 	it := c.ListFields(ctx, req)
 	for {

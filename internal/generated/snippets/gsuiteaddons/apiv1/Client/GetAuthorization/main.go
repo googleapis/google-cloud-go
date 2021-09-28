@@ -35,6 +35,7 @@ func main() {
 
 	req := &gsuiteaddonspb.GetAuthorizationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1#GetAuthorizationRequest.
 	}
 	resp, err := c.GetAuthorization(ctx, req)
 	if err != nil {

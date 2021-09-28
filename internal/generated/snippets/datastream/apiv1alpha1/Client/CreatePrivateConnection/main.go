@@ -35,6 +35,7 @@ func main() {
 
 	req := &datastreampb.CreatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#CreatePrivateConnectionRequest.
 	}
 	op, err := c.CreatePrivateConnection(ctx, req)
 	if err != nil {

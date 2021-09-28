@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.PreviewGameServerDeploymentRolloutRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewGameServerDeploymentRolloutRequest.
 	}
 	resp, err := c.PreviewGameServerDeploymentRollout(ctx, req)
 	if err != nil {

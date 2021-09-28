@@ -35,6 +35,7 @@ func main() {
 
 	req := &loggingpb.DeleteViewRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteViewRequest.
 	}
 	err = c.DeleteView(ctx, req)
 	if err != nil {

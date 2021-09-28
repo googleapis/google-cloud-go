@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataflowpb.GetJobMetricsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobMetricsRequest.
 	}
 	resp, err := c.GetJobMetrics(ctx, req)
 	if err != nil {

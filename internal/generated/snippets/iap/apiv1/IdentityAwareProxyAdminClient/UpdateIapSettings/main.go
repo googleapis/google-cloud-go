@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.UpdateIapSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateIapSettingsRequest.
 	}
 	resp, err := c.UpdateIapSettings(ctx, req)
 	if err != nil {

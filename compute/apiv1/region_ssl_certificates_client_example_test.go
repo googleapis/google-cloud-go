@@ -46,6 +46,7 @@ func ExampleRegionSslCertificatesClient_Delete() {
 
 	req := &computepb.DeleteRegionSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionSslCertificateRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionSslCertificatesClient_Get() {
 
 	req := &computepb.GetRegionSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionSslCertificateRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionSslCertificatesClient_Insert() {
 
 	req := &computepb.InsertRegionSslCertificateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionSslCertificateRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionSslCertificatesClient_List() {
 
 	req := &computepb.ListRegionSslCertificatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionSslCertificatesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

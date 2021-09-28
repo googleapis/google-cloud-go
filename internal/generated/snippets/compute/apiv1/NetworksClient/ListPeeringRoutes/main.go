@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListPeeringRoutesNetworksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPeeringRoutesNetworksRequest.
 	}
 	it := c.ListPeeringRoutes(ctx, req)
 	for {

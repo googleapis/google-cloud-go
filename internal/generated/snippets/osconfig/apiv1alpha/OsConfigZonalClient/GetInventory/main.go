@@ -35,6 +35,7 @@ func main() {
 
 	req := &osconfigpb.GetInventoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha#GetInventoryRequest.
 	}
 	resp, err := c.GetInventory(ctx, req)
 	if err != nil {

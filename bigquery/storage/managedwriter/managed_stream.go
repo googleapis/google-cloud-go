@@ -21,7 +21,9 @@ import (
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"go.opencensus.io/tag"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -269,7 +271,14 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			err = (*arc).Send(req)
 		}
 		recordStat(ms.ctx, AppendRequests, 1)
+		recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordStat(ms.ctx, AppendRequestRows, int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows())))
 		if err != nil {
+			status := grpcstatus.Convert(err)
+			if status != nil {
+				ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
+				recordStat(ctx, AppendRequestErrors, 1)
+			}
 			bo, shouldRetry := r.Retry(err)
 			if shouldRetry {
 				if err := gax.Sleep(ms.ctx, bo); err != nil {
@@ -314,10 +323,12 @@ func (ms *ManagedStream) Close() error {
 	return err
 }
 
-// AppendRows sends the append requests to the service, and returns one AppendResult per row.
+// AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
+// the set of data.
+//
 // The format of the row data is binary serialized protocol buffer bytes, and and the message
 // must adhere to the format of the schema Descriptor passed in when creating the managed stream.
-func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) ([]*AppendResult, error) {
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) (*AppendResult, error) {
 	pw := newPendingWrite(data, offset)
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
@@ -330,7 +341,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset i
 		pw.markDone(NoStreamOffset, err, ms.fc)
 		return nil, err
 	}
-	return pw.results, nil
+	return pw.result, nil
 }
 
 // recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
@@ -366,6 +377,11 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			recordStat(ctx, AppendResponses, 1)
 
 			if status := resp.GetError(); status != nil {
+				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
+				if err != nil {
+					tagCtx = ctx
+				}
+				recordStat(tagCtx, AppendResponseErrors, 1)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
 				continue
 			}

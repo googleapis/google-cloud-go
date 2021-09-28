@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetDiagnosticsInterconnectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiagnosticsInterconnectRequest.
 	}
 	resp, err := c.GetDiagnostics(ctx, req)
 	if err != nil {

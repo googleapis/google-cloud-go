@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteRegionHealthCheckServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionHealthCheckServiceRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {

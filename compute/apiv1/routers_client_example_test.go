@@ -46,6 +46,7 @@ func ExampleRoutersClient_AggregatedList() {
 
 	req := &computepb.AggregatedListRoutersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListRoutersRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleRoutersClient_Delete() {
 
 	req := &computepb.DeleteRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRouterRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleRoutersClient_Get() {
 
 	req := &computepb.GetRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRouterRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleRoutersClient_GetNatMappingInfo() {
 
 	req := &computepb.GetNatMappingInfoRoutersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNatMappingInfoRoutersRequest.
 	}
 	it := c.GetNatMappingInfo(ctx, req)
 	for {
@@ -134,6 +138,7 @@ func ExampleRoutersClient_GetRouterStatus() {
 
 	req := &computepb.GetRouterStatusRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRouterStatusRouterRequest.
 	}
 	resp, err := c.GetRouterStatus(ctx, req)
 	if err != nil {
@@ -153,6 +158,7 @@ func ExampleRoutersClient_Insert() {
 
 	req := &computepb.InsertRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRouterRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -172,6 +178,7 @@ func ExampleRoutersClient_List() {
 
 	req := &computepb.ListRoutersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRoutersRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -197,6 +204,7 @@ func ExampleRoutersClient_Patch() {
 
 	req := &computepb.PatchRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRouterRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -216,6 +224,7 @@ func ExampleRoutersClient_Preview() {
 
 	req := &computepb.PreviewRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PreviewRouterRequest.
 	}
 	resp, err := c.Preview(ctx, req)
 	if err != nil {
@@ -235,6 +244,7 @@ func ExampleRoutersClient_Update() {
 
 	req := &computepb.UpdateRouterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRouterRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#ExecuteQuestionRequest.
 	}
 	resp, err := c.ExecuteQuestion(ctx, req)
 	if err != nil {

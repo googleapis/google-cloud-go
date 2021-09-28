@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.SetAddonsConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#SetAddonsConfigRequest.
 	}
 	resp, err := c.SetAddonsConfig(ctx, req)
 	if err != nil {

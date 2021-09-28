@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.PullRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#PullRequest.
 	}
 	resp, err := c.Pull(ctx, req)
 	if err != nil {

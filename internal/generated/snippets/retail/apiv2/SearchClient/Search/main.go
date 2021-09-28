@@ -36,6 +36,7 @@ func main() {
 
 	req := &retailpb.SearchRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SearchRequest.
 	}
 	it := c.Search(ctx, req)
 	for {

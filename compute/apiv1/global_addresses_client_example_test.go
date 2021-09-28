@@ -46,6 +46,7 @@ func ExampleGlobalAddressesClient_Delete() {
 
 	req := &computepb.DeleteGlobalAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalAddressRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleGlobalAddressesClient_Get() {
 
 	req := &computepb.GetGlobalAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalAddressRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleGlobalAddressesClient_Insert() {
 
 	req := &computepb.InsertGlobalAddressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertGlobalAddressRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleGlobalAddressesClient_List() {
 
 	req := &computepb.ListGlobalAddressesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListGlobalAddressesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

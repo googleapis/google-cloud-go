@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.FlushRowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#FlushRowsRequest.
 	}
 	resp, err := c.FlushRows(ctx, req)
 	if err != nil {

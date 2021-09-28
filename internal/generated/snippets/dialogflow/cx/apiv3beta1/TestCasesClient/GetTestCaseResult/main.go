@@ -35,6 +35,7 @@ func main() {
 
 	req := &cxpb.GetTestCaseResultRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetTestCaseResultRequest.
 	}
 	resp, err := c.GetTestCaseResult(ctx, req)
 	if err != nil {

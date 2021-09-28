@@ -36,6 +36,7 @@ func main() {
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApisRequest.
 	}
 	it := c.ListApis(ctx, req)
 	for {

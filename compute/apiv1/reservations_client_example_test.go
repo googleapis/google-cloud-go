@@ -46,6 +46,7 @@ func ExampleReservationsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListReservationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListReservationsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleReservationsClient_Delete() {
 
 	req := &computepb.DeleteReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteReservationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleReservationsClient_Get() {
 
 	req := &computepb.GetReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetReservationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleReservationsClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyReservationRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleReservationsClient_Insert() {
 
 	req := &computepb.InsertReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertReservationRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleReservationsClient_List() {
 
 	req := &computepb.ListReservationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListReservationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -172,6 +178,7 @@ func ExampleReservationsClient_Resize() {
 
 	req := &computepb.ResizeReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeReservationRequest.
 	}
 	resp, err := c.Resize(ctx, req)
 	if err != nil {
@@ -191,6 +198,7 @@ func ExampleReservationsClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyReservationRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -210,6 +218,7 @@ func ExampleReservationsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsReservationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsReservationRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

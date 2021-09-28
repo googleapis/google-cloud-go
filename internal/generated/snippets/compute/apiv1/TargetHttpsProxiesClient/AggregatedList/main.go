@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListTargetHttpsProxiesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

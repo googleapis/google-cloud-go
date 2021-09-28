@@ -46,6 +46,7 @@ func ExampleTargetTcpProxiesClient_Delete() {
 
 	req := &computepb.DeleteTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteTargetTcpProxyRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleTargetTcpProxiesClient_Get() {
 
 	req := &computepb.GetTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetTargetTcpProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleTargetTcpProxiesClient_Insert() {
 
 	req := &computepb.InsertTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertTargetTcpProxyRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleTargetTcpProxiesClient_List() {
 
 	req := &computepb.ListTargetTcpProxiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListTargetTcpProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleTargetTcpProxiesClient_SetBackendService() {
 
 	req := &computepb.SetBackendServiceTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetBackendServiceTargetTcpProxyRequest.
 	}
 	resp, err := c.SetBackendService(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleTargetTcpProxiesClient_SetProxyHeader() {
 
 	req := &computepb.SetProxyHeaderTargetTcpProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetProxyHeaderTargetTcpProxyRequest.
 	}
 	resp, err := c.SetProxyHeader(ctx, req)
 	if err != nil {

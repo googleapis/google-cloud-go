@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteNetworkEndpointGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkEndpointGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {

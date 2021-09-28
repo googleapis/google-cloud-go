@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.GetTrainingPipelineRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetTrainingPipelineRequest.
 	}
 	resp, err := c.GetTrainingPipeline(ctx, req)
 	if err != nil {

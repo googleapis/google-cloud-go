@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.PatchRegionBackendServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionBackendServiceRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {

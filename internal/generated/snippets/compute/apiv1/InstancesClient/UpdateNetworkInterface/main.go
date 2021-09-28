@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.UpdateNetworkInterfaceInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateNetworkInterfaceInstanceRequest.
 	}
 	resp, err := c.UpdateNetworkInterface(ctx, req)
 	if err != nil {

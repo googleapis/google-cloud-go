@@ -46,6 +46,7 @@ func ExampleFirewallsClient_Delete() {
 
 	req := &computepb.DeleteFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteFirewallRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleFirewallsClient_Get() {
 
 	req := &computepb.GetFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetFirewallRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleFirewallsClient_Insert() {
 
 	req := &computepb.InsertFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertFirewallRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleFirewallsClient_List() {
 
 	req := &computepb.ListFirewallsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListFirewallsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleFirewallsClient_Patch() {
 
 	req := &computepb.PatchFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchFirewallRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleFirewallsClient_Update() {
 
 	req := &computepb.UpdateFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateFirewallRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {

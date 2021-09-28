@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.CreateSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#CreateSnapshotRequest.
 	}
 	resp, err := c.CreateSnapshot(ctx, req)
 	if err != nil {

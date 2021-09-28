@@ -36,6 +36,7 @@ func main() {
 
 	req := &loggingpb.ListExclusionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListExclusionsRequest.
 	}
 	it := c.ListExclusions(ctx, req)
 	for {

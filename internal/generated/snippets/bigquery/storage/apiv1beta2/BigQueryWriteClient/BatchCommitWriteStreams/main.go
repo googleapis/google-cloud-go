@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#BatchCommitWriteStreamsRequest.
 	}
 	resp, err := c.BatchCommitWriteStreams(ctx, req)
 	if err != nil {

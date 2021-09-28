@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetMachineTypeInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineTypeInstanceRequest.
 	}
 	resp, err := c.SetMachineType(ctx, req)
 	if err != nil {

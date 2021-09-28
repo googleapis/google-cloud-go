@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.GetKeyRingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#GetKeyRingRequest.
 	}
 	resp, err := c.GetKeyRing(ctx, req)
 	if err != nil {

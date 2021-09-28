@@ -36,6 +36,7 @@ func main() {
 
 	req := &settingspb.ListDetectorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#ListDetectorsRequest.
 	}
 	it := c.ListDetectors(ctx, req)
 	for {

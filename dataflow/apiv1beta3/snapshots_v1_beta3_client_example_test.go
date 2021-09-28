@@ -45,6 +45,7 @@ func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
 
 	req := &dataflowpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetSnapshotRequest.
 	}
 	resp, err := c.GetSnapshot(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 
 	req := &dataflowpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#DeleteSnapshotRequest.
 	}
 	resp, err := c.DeleteSnapshot(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleSnapshotsV1Beta3Client_ListSnapshots() {
 
 	req := &dataflowpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListSnapshotsRequest.
 	}
 	resp, err := c.ListSnapshots(ctx, req)
 	if err != nil {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListXpnHostsProjectsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListXpnHostsProjectsRequest.
 	}
 	it := c.ListXpnHosts(ctx, req)
 	for {

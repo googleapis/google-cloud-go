@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsubpb.DeleteSchemaRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteSchemaRequest.
 	}
 	err = c.DeleteSchema(ctx, req)
 	if err != nil {

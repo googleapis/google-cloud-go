@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListPerInstanceConfigsInstanceGroupManagersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPerInstanceConfigsInstanceGroupManagersRequest.
 	}
 	it := c.ListPerInstanceConfigs(ctx, req)
 	for {

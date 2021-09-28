@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#ResetAuthorizationCodeRequest.
 	}
 	resp, err := c.ResetAuthorizationCode(ctx, req)
 	if err != nil {

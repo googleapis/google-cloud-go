@@ -35,6 +35,7 @@ func main() {
 
 	req := &pubsublitepb.SeekSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#SeekSubscriptionRequest.
 	}
 	op, err := c.SeekSubscription(ctx, req)
 	if err != nil {

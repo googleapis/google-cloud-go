@@ -36,6 +36,7 @@ func main() {
 
 	req := &cxpb.LookupEnvironmentHistoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#LookupEnvironmentHistoryRequest.
 	}
 	it := c.LookupEnvironmentHistory(ctx, req)
 	for {

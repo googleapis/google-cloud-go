@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetQuicOverrideTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetQuicOverrideTargetHttpsProxyRequest.
 	}
 	resp, err := c.SetQuicOverride(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetLabelsSnapshotRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsSnapshotRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {

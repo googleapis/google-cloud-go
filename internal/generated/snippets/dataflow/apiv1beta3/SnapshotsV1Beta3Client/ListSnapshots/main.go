@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataflowpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListSnapshotsRequest.
 	}
 	resp, err := c.ListSnapshots(ctx, req)
 	if err != nil {

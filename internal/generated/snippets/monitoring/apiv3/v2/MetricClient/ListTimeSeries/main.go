@@ -36,6 +36,7 @@ func main() {
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListTimeSeriesRequest.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {

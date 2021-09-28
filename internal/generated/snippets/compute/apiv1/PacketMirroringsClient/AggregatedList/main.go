@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListPacketMirroringsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListPacketMirroringsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &networkmanagementpb.DeleteConnectivityTestRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/networkmanagement/v1#DeleteConnectivityTestRequest.
 	}
 	op, err := c.DeleteConnectivityTest(ctx, req)
 	if err != nil {

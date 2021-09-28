@@ -35,6 +35,7 @@ func main() {
 
 	req := &osloginpb.DeletePosixAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/oslogin/v1#DeletePosixAccountRequest.
 	}
 	err = c.DeletePosixAccount(ctx, req)
 	if err != nil {

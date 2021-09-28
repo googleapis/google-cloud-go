@@ -45,6 +45,7 @@ func ExampleTemplatesClient_CreateJobFromTemplate() {
 
 	req := &dataflowpb.CreateJobFromTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#CreateJobFromTemplateRequest.
 	}
 	resp, err := c.CreateJobFromTemplate(ctx, req)
 	if err != nil {
@@ -64,6 +65,7 @@ func ExampleTemplatesClient_LaunchTemplate() {
 
 	req := &dataflowpb.LaunchTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#LaunchTemplateRequest.
 	}
 	resp, err := c.LaunchTemplate(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExampleTemplatesClient_GetTemplate() {
 
 	req := &dataflowpb.GetTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetTemplateRequest.
 	}
 	resp, err := c.GetTemplate(ctx, req)
 	if err != nil {

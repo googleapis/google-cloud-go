@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteEnvironmentRequest.
 	}
 	err = c.DeleteEnvironment(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddRuleFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleFirewallPolicyRequest.
 	}
 	resp, err := c.AddRule(ctx, req)
 	if err != nil {

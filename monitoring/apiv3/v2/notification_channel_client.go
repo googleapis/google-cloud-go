@@ -69,7 +69,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		ListNotificationChannelDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -81,7 +80,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannelDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -93,7 +91,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		ListNotificationChannels: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -105,7 +102,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -119,7 +115,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		DeleteNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -132,7 +127,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		GetNotificationChannelVerificationCode: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -144,7 +138,6 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 		VerifyNotificationChannel: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,

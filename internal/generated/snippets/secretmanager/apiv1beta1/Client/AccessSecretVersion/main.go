@@ -35,6 +35,7 @@ func main() {
 
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1#AccessSecretVersionRequest.
 	}
 	resp, err := c.AccessSecretVersion(ctx, req)
 	if err != nil {

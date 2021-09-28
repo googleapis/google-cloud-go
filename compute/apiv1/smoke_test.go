@@ -20,6 +20,12 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/internal"
+	"github.com/googleapis/gax-go/v2"
+
+	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -31,7 +37,7 @@ import (
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
 
-func TestCreateGetListInstance(t *testing.T) {
+func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
@@ -101,10 +107,65 @@ func TestCreateGetListInstance(t *testing.T) {
 		t.Error(err)
 	}
 	if get.GetName() != name {
-		t.Fatal(fmt.Sprintf("expected instance name: %s, got: %s", name, get.GetName()))
+		t.Fatalf("expected instance name: %s, got: %s", name, get.GetName())
 	}
 	if get.GetDescription() != "тест" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "тест", get.GetDescription()))
+		t.Fatalf("expected instance description: %s, got: %s", "тест", get.GetDescription())
+	}
+	if secureBootEnabled := get.GetShieldedInstanceConfig().GetEnableSecureBoot(); secureBootEnabled {
+		t.Fatalf("expected instance secure boot: %t, got: %t", false, get.GetShieldedInstanceConfig().GetEnableSecureBoot())
+	}
+
+	get.Description = proto.String("updated")
+	updateRequest := &computepb.UpdateInstanceRequest{
+		Instance:         name,
+		InstanceResource: get,
+		Project:          projectId,
+		Zone:             defaultZone,
+	}
+	updateOp, err := c.Update(ctx, updateRequest)
+	if err != nil {
+		t.Error(err)
+	}
+	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
+		Project:   projectId,
+		Zone:      defaultZone,
+		Operation: updateOp.Proto().GetName(),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	patchReq := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
+		Instance: name,
+		Project:  projectId,
+		Zone:     defaultZone,
+		ShieldedInstanceConfigResource: &computepb.ShieldedInstanceConfig{
+			EnableSecureBoot: proto.Bool(true),
+		},
+	}
+	patchOp, err := c.UpdateShieldedInstanceConfig(ctx, patchReq)
+	if err != nil {
+		return
+	}
+	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
+		Project:   projectId,
+		Zone:      defaultZone,
+		Operation: patchOp.Proto().GetName(),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	fetched, err := c.Get(ctx, getRequest)
+	if err != nil {
+		t.Error(err)
+	}
+	if fetched.GetDescription() != "updated" {
+		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
+	}
+	if secureBootEnabled := fetched.GetShieldedInstanceConfig().GetEnableSecureBoot(); !secureBootEnabled {
+		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, secureBootEnabled))
 	}
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
@@ -394,5 +455,141 @@ func TestPaginationMapResponseMaxRes(t *testing.T) {
 	}
 	if !found {
 		t.Error("Couldn't find the accelerator in the response")
+	}
+}
+
+func TestTypeInt64(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewImagesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	space := uid.NewSpace("gogapic", nil)
+	name := space.New()
+
+	codes := []int64{
+		5543610867827062957,
+	}
+	req := &computepb.InsertImageRequest{
+		Project: projectId,
+		ImageResource: &computepb.Image{
+			Name:         &name,
+			LicenseCodes: codes,
+			SourceImage:  proto.String("projects/debian-cloud/global/images/debian-10-buster-v20210721"),
+		},
+	}
+	globalClient, err := NewGlobalOperationsRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	insert, err := c.Insert(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = globalClient.Wait(ctx,
+		&computepb.WaitGlobalOperationRequest{
+			Project:   projectId,
+			Operation: insert.Proto().GetName(),
+		})
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		_, err := c.Delete(ctx,
+			&computepb.DeleteImageRequest{
+				Project: projectId,
+				Image:   name,
+			})
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	fetched, err := c.Get(ctx,
+		&computepb.GetImageRequest{
+			Project: projectId,
+			Image:   name,
+		})
+	if err != nil {
+		t.Error(err)
+	}
+	if diff := cmp.Diff(fetched.GetLicenseCodes(), codes, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Fatalf("got(-),want(+):\n%s", diff)
+	}
+}
+
+func TestCapitalLetter(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	c, err := NewFirewallsRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	space := uid.NewSpace("gogapic", nil)
+	name := space.New()
+	allowed := []*computepb.Allowed{
+		{
+			IPProtocol: proto.String("tcp"),
+			Ports: []string{
+				"80",
+			},
+		},
+	}
+	res := &computepb.Firewall{
+		SourceRanges: []string{
+			"0.0.0.0/0",
+		},
+		Name:    proto.String(name),
+		Allowed: allowed,
+	}
+	req := &computepb.InsertFirewallRequest{
+		Project:          projectId,
+		FirewallResource: res,
+	}
+	insert, err := c.Insert(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	globalClient, err := NewGlobalOperationsRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = globalClient.Wait(ctx,
+		&computepb.WaitGlobalOperationRequest{
+			Project:   projectId,
+			Operation: insert.Proto().GetName(),
+		})
+	if err != nil {
+		t.Error(err)
+	}
+	defer func() {
+		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			_, err = c.Delete(timeoutCtx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			return err == nil, err
+		})
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
+		Project:  projectId,
+		Firewall: name,
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
 }

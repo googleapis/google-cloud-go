@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.GetDataLabelingJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetDataLabelingJobRequest.
 	}
 	resp, err := c.GetDataLabelingJob(ctx, req)
 	if err != nil {

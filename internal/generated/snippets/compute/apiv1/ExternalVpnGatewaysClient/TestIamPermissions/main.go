@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.TestIamPermissionsExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsExternalVpnGatewayRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

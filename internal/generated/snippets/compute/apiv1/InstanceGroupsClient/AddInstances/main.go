@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstancesInstanceGroupRequest.
 	}
 	resp, err := c.AddInstances(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddSignedUrlKeyBackendBucketRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddSignedUrlKeyBackendBucketRequest.
 	}
 	resp, err := c.AddSignedUrlKey(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteUptimeCheckConfigRequest.
 	}
 	err = c.DeleteUptimeCheckConfig(ctx, req)
 	if err != nil {

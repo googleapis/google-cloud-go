@@ -46,6 +46,7 @@ func ExampleNodeTypesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListNodeTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNodeTypesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleNodeTypesClient_Get() {
 
 	req := &computepb.GetNodeTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNodeTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleNodeTypesClient_List() {
 
 	req := &computepb.ListNodeTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNodeTypesRequest.
 	}
 	it := c.List(ctx, req)
 	for {

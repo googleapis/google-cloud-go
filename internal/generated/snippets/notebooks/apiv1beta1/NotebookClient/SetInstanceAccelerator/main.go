@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.SetInstanceAcceleratorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#SetInstanceAcceleratorRequest.
 	}
 	op, err := c.SetInstanceAccelerator(ctx, req)
 	if err != nil {

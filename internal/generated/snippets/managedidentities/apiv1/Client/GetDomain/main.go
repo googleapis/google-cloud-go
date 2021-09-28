@@ -35,6 +35,7 @@ func main() {
 
 	req := &managedidentitiespb.GetDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#GetDomainRequest.
 	}
 	resp, err := c.GetDomain(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &dataflowpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {

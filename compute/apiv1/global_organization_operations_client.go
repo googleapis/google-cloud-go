@@ -25,6 +25,7 @@ import (
 	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -51,7 +52,7 @@ type internalGlobalOrganizationOperationsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Delete(context.Context, *computepb.DeleteGlobalOrganizationOperationRequest, ...gax.CallOption) (*computepb.DeleteGlobalOrganizationOperationResponse, error)
-	Get(context.Context, *computepb.GetGlobalOrganizationOperationRequest, ...gax.CallOption) (*Operation, error)
+	Get(context.Context, *computepb.GetGlobalOrganizationOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 	List(context.Context, *computepb.ListGlobalOrganizationOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
@@ -95,7 +96,7 @@ func (c *GlobalOrganizationOperationsClient) Delete(ctx context.Context, req *co
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *GlobalOrganizationOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *GlobalOrganizationOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
@@ -197,8 +198,8 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -209,11 +210,14 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	rsp := &computepb.DeleteGlobalOrganizationOperationResponse{}
 
-	return rsp, unm.Unmarshal(buf, rsp)
+	if err := unm.Unmarshal(buf, rsp); err != nil {
+		return nil, maybeUnknownEnum(err)
+	}
+	return rsp, nil
 }
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
-func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*Operation, error) {
+func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
@@ -241,8 +245,8 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	}
 	defer httpRsp.Body.Close()
 
-	if httpRsp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf(httpRsp.Status)
+	if err = googleapi.CheckResponse(httpRsp); err != nil {
+		return nil, err
 	}
 
 	buf, err := ioutil.ReadAll(httpRsp.Body)
@@ -254,10 +258,9 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	rsp := &computepb.Operation{}
 
 	if err := unm.Unmarshal(buf, rsp); err != nil {
-		return nil, err
+		return nil, maybeUnknownEnum(err)
 	}
-	op := &Operation{proto: rsp}
-	return op, err
+	return rsp, nil
 }
 
 // List retrieves a list of Operation resources contained within the specified organization.
@@ -317,8 +320,8 @@ func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *
 		}
 		defer httpRsp.Body.Close()
 
-		if httpRsp.StatusCode != http.StatusOK {
-			return nil, "", fmt.Errorf(httpRsp.Status)
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return nil, "", err
 		}
 
 		buf, err := ioutil.ReadAll(httpRsp.Body)

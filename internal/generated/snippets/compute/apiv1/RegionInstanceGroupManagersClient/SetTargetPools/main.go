@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetTargetPoolsRegionInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTargetPoolsRegionInstanceGroupManagerRequest.
 	}
 	resp, err := c.SetTargetPools(ctx, req)
 	if err != nil {

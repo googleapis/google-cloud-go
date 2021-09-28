@@ -46,6 +46,7 @@ func ExampleCatalogClient_ListCatalogs() {
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListCatalogsRequest.
 	}
 	it := c.ListCatalogs(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleCatalogClient_UpdateCatalog() {
 
 	req := &retailpb.UpdateCatalogRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCatalogRequest.
 	}
 	resp, err := c.UpdateCatalog(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleCatalogClient_SetDefaultBranch() {
 
 	req := &retailpb.SetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetDefaultBranchRequest.
 	}
 	err = c.SetDefaultBranch(ctx, req)
 	if err != nil {
@@ -107,6 +110,7 @@ func ExampleCatalogClient_GetDefaultBranch() {
 
 	req := &retailpb.GetDefaultBranchRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetDefaultBranchRequest.
 	}
 	resp, err := c.GetDefaultBranch(ctx, req)
 	if err != nil {

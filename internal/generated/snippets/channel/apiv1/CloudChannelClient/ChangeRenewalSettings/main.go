@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.ChangeRenewalSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ChangeRenewalSettingsRequest.
 	}
 	op, err := c.ChangeRenewalSettings(ctx, req)
 	if err != nil {

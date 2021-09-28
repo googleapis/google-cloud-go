@@ -35,6 +35,7 @@ func main() {
 
 	req := &gamingpb.UpdateGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateGameServerDeploymentRequest.
 	}
 	op, err := c.UpdateGameServerDeployment(ctx, req)
 	if err != nil {

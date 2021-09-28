@@ -35,6 +35,7 @@ func main() {
 
 	req := &gkehubpb.GenerateConnectManifestRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1#GenerateConnectManifestRequest.
 	}
 	resp, err := c.GenerateConnectManifest(ctx, req)
 	if err != nil {

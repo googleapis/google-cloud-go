@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetEnhancedMeasurementSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetEnhancedMeasurementSettingsRequest.
 	}
 	resp, err := c.GetEnhancedMeasurementSettings(ctx, req)
 	if err != nil {

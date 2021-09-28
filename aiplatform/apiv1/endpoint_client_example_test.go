@@ -46,6 +46,7 @@ func ExampleEndpointClient_CreateEndpoint() {
 
 	req := &aiplatformpb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateEndpointRequest.
 	}
 	op, err := c.CreateEndpoint(ctx, req)
 	if err != nil {
@@ -70,6 +71,7 @@ func ExampleEndpointClient_GetEndpoint() {
 
 	req := &aiplatformpb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetEndpointRequest.
 	}
 	resp, err := c.GetEndpoint(ctx, req)
 	if err != nil {
@@ -89,6 +91,7 @@ func ExampleEndpointClient_ListEndpoints() {
 
 	req := &aiplatformpb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListEndpointsRequest.
 	}
 	it := c.ListEndpoints(ctx, req)
 	for {
@@ -114,6 +117,7 @@ func ExampleEndpointClient_UpdateEndpoint() {
 
 	req := &aiplatformpb.UpdateEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateEndpointRequest.
 	}
 	resp, err := c.UpdateEndpoint(ctx, req)
 	if err != nil {
@@ -133,6 +137,7 @@ func ExampleEndpointClient_DeleteEndpoint() {
 
 	req := &aiplatformpb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteEndpointRequest.
 	}
 	op, err := c.DeleteEndpoint(ctx, req)
 	if err != nil {
@@ -155,6 +160,7 @@ func ExampleEndpointClient_DeployModel() {
 
 	req := &aiplatformpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeployModelRequest.
 	}
 	op, err := c.DeployModel(ctx, req)
 	if err != nil {
@@ -179,6 +185,7 @@ func ExampleEndpointClient_UndeployModel() {
 
 	req := &aiplatformpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UndeployModelRequest.
 	}
 	op, err := c.UndeployModel(ctx, req)
 	if err != nil {

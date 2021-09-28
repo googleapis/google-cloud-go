@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteInstancesRegionInstanceGroupManagerRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstancesRegionInstanceGroupManagerRequest.
 	}
 	resp, err := c.DeleteInstances(ctx, req)
 	if err != nil {

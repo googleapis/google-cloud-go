@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.BatchDeleteEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#BatchDeleteEntitiesRequest.
 	}
 	op, err := c.BatchDeleteEntities(ctx, req)
 	if err != nil {

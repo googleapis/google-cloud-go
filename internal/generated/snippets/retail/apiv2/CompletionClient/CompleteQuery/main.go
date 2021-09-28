@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.CompleteQueryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CompleteQueryRequest.
 	}
 	resp, err := c.CompleteQuery(ctx, req)
 	if err != nil {

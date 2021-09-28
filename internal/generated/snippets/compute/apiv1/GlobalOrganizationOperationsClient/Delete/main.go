@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.DeleteGlobalOrganizationOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalOrganizationOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {

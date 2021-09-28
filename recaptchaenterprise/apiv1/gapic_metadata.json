@@ -35,9 +35,19 @@
                 "GetKey"
               ]
             },
+            "GetMetrics": {
+              "methods": [
+                "GetMetrics"
+              ]
+            },
             "ListKeys": {
               "methods": [
                 "ListKeys"
+              ]
+            },
+            "MigrateKey": {
+              "methods": [
+                "MigrateKey"
               ]
             },
             "UpdateKey": {

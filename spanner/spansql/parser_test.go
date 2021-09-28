@@ -112,6 +112,15 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT * FROM Foo WHERE STARTS_WITH(Bar, 'B')`,
+			Query{
+				Select: Select{
+					List:  []Expr{Star},
+					From:  []SelectFrom{SelectFromTable{Table: "Foo"}},
+					Where: Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}},
+				},
+			},
+		},
 		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
@@ -313,6 +322,9 @@ func TestParseExpr(t *testing.T) {
 		{`X BETWEEN Y AND Z`, ComparisonOp{LHS: ID("X"), Op: Between, RHS: ID("Y"), RHS2: ID("Z")}},
 		{`@needle IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), RHS: []Expr{Param("haystack")}, Unnest: true}},
 		{`@needle NOT IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), Neg: true, RHS: []Expr{Param("haystack")}, Unnest: true}},
+
+		// Functions
+		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
 
 		// String literal:
 		// Accept double quote and single quote.

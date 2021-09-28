@@ -46,6 +46,7 @@ func ExampleClient_GetGoogleServiceAccount() {
 
 	req := &storagetransferpb.GetGoogleServiceAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetGoogleServiceAccountRequest.
 	}
 	resp, err := c.GetGoogleServiceAccount(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleClient_CreateTransferJob() {
 
 	req := &storagetransferpb.CreateTransferJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#CreateTransferJobRequest.
 	}
 	resp, err := c.CreateTransferJob(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleClient_UpdateTransferJob() {
 
 	req := &storagetransferpb.UpdateTransferJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#UpdateTransferJobRequest.
 	}
 	resp, err := c.UpdateTransferJob(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleClient_GetTransferJob() {
 
 	req := &storagetransferpb.GetTransferJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#GetTransferJobRequest.
 	}
 	resp, err := c.GetTransferJob(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleClient_ListTransferJobs() {
 
 	req := &storagetransferpb.ListTransferJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ListTransferJobsRequest.
 	}
 	it := c.ListTransferJobs(ctx, req)
 	for {
@@ -147,6 +152,7 @@ func ExampleClient_PauseTransferOperation() {
 
 	req := &storagetransferpb.PauseTransferOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#PauseTransferOperationRequest.
 	}
 	err = c.PauseTransferOperation(ctx, req)
 	if err != nil {
@@ -164,6 +170,7 @@ func ExampleClient_ResumeTransferOperation() {
 
 	req := &storagetransferpb.ResumeTransferOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#ResumeTransferOperationRequest.
 	}
 	err = c.ResumeTransferOperation(ctx, req)
 	if err != nil {
@@ -181,6 +188,7 @@ func ExampleClient_RunTransferJob() {
 
 	req := &storagetransferpb.RunTransferJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storagetransfer/v1#RunTransferJobRequest.
 	}
 	op, err := c.RunTransferJob(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetMachineResourcesInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineResourcesInstanceRequest.
 	}
 	resp, err := c.SetMachineResources(ctx, req)
 	if err != nil {

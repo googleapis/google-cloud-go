@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.ReportInstanceInfoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#ReportInstanceInfoRequest.
 	}
 	op, err := c.ReportInstanceInfo(ctx, req)
 	if err != nil {

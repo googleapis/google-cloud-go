@@ -130,7 +130,8 @@ func (b *BucketHandle) DefaultObjectACL() *ACLHandle {
 }
 
 // Object returns an ObjectHandle, which provides operations on the named object.
-// This call does not perform any network operations.
+// This call does not perform any network operations such as fetching the object or verifying its existence.
+// Use methods on ObjectHandle to perform network operations.
 //
 // name must consist entirely of valid UTF-8-encoded runes. The full specification
 // for valid object names can be found at:

@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.EnableProcessorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#EnableProcessorRequest.
 	}
 	op, err := c.EnableProcessor(ctx, req)
 	if err != nil {

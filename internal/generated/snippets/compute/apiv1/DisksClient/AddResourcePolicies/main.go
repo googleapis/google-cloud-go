@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddResourcePoliciesDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesDiskRequest.
 	}
 	resp, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {

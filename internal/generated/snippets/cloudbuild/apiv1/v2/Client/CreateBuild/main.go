@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudbuildpb.CreateBuildRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildRequest.
 	}
 	op, err := c.CreateBuild(ctx, req)
 	if err != nil {

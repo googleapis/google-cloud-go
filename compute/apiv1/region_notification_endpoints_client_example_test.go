@@ -46,6 +46,7 @@ func ExampleRegionNotificationEndpointsClient_Delete() {
 
 	req := &computepb.DeleteRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionNotificationEndpointRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionNotificationEndpointsClient_Get() {
 
 	req := &computepb.GetRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionNotificationEndpointRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionNotificationEndpointsClient_Insert() {
 
 	req := &computepb.InsertRegionNotificationEndpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionNotificationEndpointRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionNotificationEndpointsClient_List() {
 
 	req := &computepb.ListRegionNotificationEndpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionNotificationEndpointsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

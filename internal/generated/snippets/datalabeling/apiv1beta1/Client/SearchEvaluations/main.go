@@ -36,6 +36,7 @@ func main() {
 
 	req := &datalabelingpb.SearchEvaluationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#SearchEvaluationsRequest.
 	}
 	it := c.SearchEvaluations(ctx, req)
 	for {

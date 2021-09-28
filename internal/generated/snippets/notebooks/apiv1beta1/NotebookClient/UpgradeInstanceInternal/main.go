@@ -35,6 +35,7 @@ func main() {
 
 	req := &notebookspb.UpgradeInstanceInternalRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1#UpgradeInstanceInternalRequest.
 	}
 	op, err := c.UpgradeInstanceInternal(ctx, req)
 	if err != nil {

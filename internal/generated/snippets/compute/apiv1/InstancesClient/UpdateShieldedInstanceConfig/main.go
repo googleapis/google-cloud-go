@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateShieldedInstanceConfigInstanceRequest.
 	}
 	resp, err := c.UpdateShieldedInstanceConfig(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.ReviewDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1#ReviewDocumentRequest.
 	}
 	op, err := c.ReviewDocument(ctx, req)
 	if err != nil {

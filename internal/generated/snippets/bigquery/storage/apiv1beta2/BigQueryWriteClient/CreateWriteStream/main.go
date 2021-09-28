@@ -35,6 +35,7 @@ func main() {
 
 	req := &storagepb.CreateWriteStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#CreateWriteStreamRequest.
 	}
 	resp, err := c.CreateWriteStream(ctx, req)
 	if err != nil {

@@ -47,6 +47,7 @@ func ExamplePolicyTagManagerClient_CreateTaxonomy() {
 
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#CreateTaxonomyRequest.
 	}
 	resp, err := c.CreateTaxonomy(ctx, req)
 	if err != nil {
@@ -66,6 +67,7 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#DeleteTaxonomyRequest.
 	}
 	err = c.DeleteTaxonomy(ctx, req)
 	if err != nil {
@@ -83,6 +85,7 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#UpdateTaxonomyRequest.
 	}
 	resp, err := c.UpdateTaxonomy(ctx, req)
 	if err != nil {
@@ -102,6 +105,7 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ListTaxonomiesRequest.
 	}
 	it := c.ListTaxonomies(ctx, req)
 	for {
@@ -127,6 +131,7 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 
 	req := &datacatalogpb.GetTaxonomyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetTaxonomyRequest.
 	}
 	resp, err := c.GetTaxonomy(ctx, req)
 	if err != nil {
@@ -146,6 +151,7 @@ func ExamplePolicyTagManagerClient_CreatePolicyTag() {
 
 	req := &datacatalogpb.CreatePolicyTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#CreatePolicyTagRequest.
 	}
 	resp, err := c.CreatePolicyTag(ctx, req)
 	if err != nil {
@@ -165,6 +171,7 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 
 	req := &datacatalogpb.DeletePolicyTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#DeletePolicyTagRequest.
 	}
 	err = c.DeletePolicyTag(ctx, req)
 	if err != nil {
@@ -182,6 +189,7 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 
 	req := &datacatalogpb.UpdatePolicyTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#UpdatePolicyTagRequest.
 	}
 	resp, err := c.UpdatePolicyTag(ctx, req)
 	if err != nil {
@@ -201,6 +209,7 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#ListPolicyTagsRequest.
 	}
 	it := c.ListPolicyTags(ctx, req)
 	for {
@@ -226,6 +235,7 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1#GetPolicyTagRequest.
 	}
 	resp, err := c.GetPolicyTag(ctx, req)
 	if err != nil {
@@ -245,6 +255,7 @@ func ExamplePolicyTagManagerClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -264,6 +275,7 @@ func ExamplePolicyTagManagerClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -283,6 +295,7 @@ func ExamplePolicyTagManagerClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.DeleteMeasurementProtocolSecretRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteMeasurementProtocolSecretRequest.
 	}
 	err = c.DeleteMeasurementProtocolSecret(ctx, req)
 	if err != nil {

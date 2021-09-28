@@ -35,6 +35,7 @@ func main() {
 
 	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ResetAdminPasswordRequest.
 	}
 	resp, err := c.ResetAdminPassword(ctx, req)
 	if err != nil {

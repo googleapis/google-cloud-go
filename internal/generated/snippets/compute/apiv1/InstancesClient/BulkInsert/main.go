@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.BulkInsertInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#BulkInsertInstanceRequest.
 	}
 	resp, err := c.BulkInsert(ctx, req)
 	if err != nil {

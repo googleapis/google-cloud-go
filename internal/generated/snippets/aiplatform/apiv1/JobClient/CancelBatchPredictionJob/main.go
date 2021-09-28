@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.CancelBatchPredictionJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelBatchPredictionJobRequest.
 	}
 	err = c.CancelBatchPredictionJob(ctx, req)
 	if err != nil {

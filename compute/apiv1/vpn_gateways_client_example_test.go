@@ -46,6 +46,7 @@ func ExampleVpnGatewaysClient_AggregatedList() {
 
 	req := &computepb.AggregatedListVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListVpnGatewaysRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleVpnGatewaysClient_Delete() {
 
 	req := &computepb.DeleteVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteVpnGatewayRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleVpnGatewaysClient_Get() {
 
 	req := &computepb.GetVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetVpnGatewayRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleVpnGatewaysClient_GetStatus() {
 
 	req := &computepb.GetStatusVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetStatusVpnGatewayRequest.
 	}
 	resp, err := c.GetStatus(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleVpnGatewaysClient_Insert() {
 
 	req := &computepb.InsertVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertVpnGatewayRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleVpnGatewaysClient_List() {
 
 	req := &computepb.ListVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListVpnGatewaysRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -172,6 +178,7 @@ func ExampleVpnGatewaysClient_SetLabels() {
 
 	req := &computepb.SetLabelsVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsVpnGatewayRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -191,6 +198,7 @@ func ExampleVpnGatewaysClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsVpnGatewayRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

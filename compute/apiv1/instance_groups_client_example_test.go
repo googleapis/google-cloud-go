@@ -46,6 +46,7 @@ func ExampleInstanceGroupsClient_AddInstances() {
 
 	req := &computepb.AddInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstancesInstanceGroupRequest.
 	}
 	resp, err := c.AddInstances(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleInstanceGroupsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInstanceGroupsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -90,6 +92,7 @@ func ExampleInstanceGroupsClient_Delete() {
 
 	req := &computepb.DeleteInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceGroupRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleInstanceGroupsClient_Get() {
 
 	req := &computepb.GetInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleInstanceGroupsClient_Insert() {
 
 	req := &computepb.InsertInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceGroupRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleInstanceGroupsClient_List() {
 
 	req := &computepb.ListInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstanceGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -172,6 +178,7 @@ func ExampleInstanceGroupsClient_ListInstances() {
 
 	req := &computepb.ListInstancesInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesInstanceGroupsRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -197,6 +204,7 @@ func ExampleInstanceGroupsClient_RemoveInstances() {
 
 	req := &computepb.RemoveInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstancesInstanceGroupRequest.
 	}
 	resp, err := c.RemoveInstances(ctx, req)
 	if err != nil {
@@ -216,6 +224,7 @@ func ExampleInstanceGroupsClient_SetNamedPorts() {
 
 	req := &computepb.SetNamedPortsInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsInstanceGroupRequest.
 	}
 	resp, err := c.SetNamedPorts(ctx, req)
 	if err != nil {

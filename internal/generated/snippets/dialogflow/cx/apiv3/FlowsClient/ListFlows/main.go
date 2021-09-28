@@ -36,6 +36,7 @@ func main() {
 
 	req := &cxpb.ListFlowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListFlowsRequest.
 	}
 	it := c.ListFlows(ctx, req)
 	for {

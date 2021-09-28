@@ -70,7 +70,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		GetService: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -82,7 +81,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		ListServices: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -95,7 +93,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		DeleteService: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -108,7 +105,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		GetServiceLevelObjective: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -120,7 +116,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		ListServiceLevelObjectives: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -133,7 +128,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		DeleteServiceLevelObjective: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,

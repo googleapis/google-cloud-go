@@ -46,6 +46,7 @@ func ExampleRegionUrlMapsClient_Delete() {
 
 	req := &computepb.DeleteRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionUrlMapRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionUrlMapsClient_Get() {
 
 	req := &computepb.GetRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionUrlMapRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionUrlMapsClient_Insert() {
 
 	req := &computepb.InsertRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionUrlMapRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionUrlMapsClient_List() {
 
 	req := &computepb.ListRegionUrlMapsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionUrlMapsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleRegionUrlMapsClient_Patch() {
 
 	req := &computepb.PatchRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionUrlMapRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleRegionUrlMapsClient_Update() {
 
 	req := &computepb.UpdateRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionUrlMapRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {
@@ -166,6 +172,7 @@ func ExampleRegionUrlMapsClient_Validate() {
 
 	req := &computepb.ValidateRegionUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ValidateRegionUrlMapRequest.
 	}
 	resp, err := c.Validate(ctx, req)
 	if err != nil {

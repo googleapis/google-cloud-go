@@ -35,6 +35,7 @@ func main() {
 
 	req := &iappb.DeleteIdentityAwareProxyClientRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#DeleteIdentityAwareProxyClientRequest.
 	}
 	err = c.DeleteIdentityAwareProxyClient(ctx, req)
 	if err != nil {

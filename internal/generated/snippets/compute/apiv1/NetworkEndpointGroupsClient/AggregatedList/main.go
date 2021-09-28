@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListNetworkEndpointGroupsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListNetworkEndpointGroupsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

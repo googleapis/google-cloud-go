@@ -35,6 +35,7 @@ func main() {
 
 	req := &recaptchaenterprisepb.DeleteKeyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#DeleteKeyRequest.
 	}
 	err = c.DeleteKey(ctx, req)
 	if err != nil {

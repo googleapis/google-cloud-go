@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemoveInstancesInstanceGroupRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveInstancesInstanceGroupRequest.
 	}
 	resp, err := c.RemoveInstances(ctx, req)
 	if err != nil {

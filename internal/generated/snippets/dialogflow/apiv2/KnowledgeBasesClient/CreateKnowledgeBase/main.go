@@ -35,6 +35,7 @@ func main() {
 
 	req := &dialogflowpb.CreateKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateKnowledgeBaseRequest.
 	}
 	resp, err := c.CreateKnowledgeBase(ctx, req)
 	if err != nil {

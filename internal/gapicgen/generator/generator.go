@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 // Package generator provides tools for generating clients.
@@ -39,6 +40,7 @@ type Config struct {
 	LocalMode          bool
 	RegenOnly          bool
 	ForceAll           bool
+	GenModule          bool
 }
 
 // Generate generates genproto and gapics.

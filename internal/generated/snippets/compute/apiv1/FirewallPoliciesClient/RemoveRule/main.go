@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemoveRuleFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveRuleFirewallPolicyRequest.
 	}
 	resp, err := c.RemoveRule(ctx, req)
 	if err != nil {

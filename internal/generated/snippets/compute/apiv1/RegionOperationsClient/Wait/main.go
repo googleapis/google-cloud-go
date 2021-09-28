@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.WaitRegionOperationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitRegionOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

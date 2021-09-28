@@ -36,6 +36,7 @@ func main() {
 
 	req := &aiplatformpb.ListBatchPredictionJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListBatchPredictionJobsRequest.
 	}
 	it := c.ListBatchPredictionJobs(ctx, req)
 	for {

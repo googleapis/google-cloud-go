@@ -46,6 +46,7 @@ func ExampleExternalVpnGatewaysClient_Delete() {
 
 	req := &computepb.DeleteExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteExternalVpnGatewayRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleExternalVpnGatewaysClient_Get() {
 
 	req := &computepb.GetExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetExternalVpnGatewayRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleExternalVpnGatewaysClient_Insert() {
 
 	req := &computepb.InsertExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertExternalVpnGatewayRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleExternalVpnGatewaysClient_List() {
 
 	req := &computepb.ListExternalVpnGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListExternalVpnGatewaysRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleExternalVpnGatewaysClient_SetLabels() {
 
 	req := &computepb.SetLabelsExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsExternalVpnGatewayRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleExternalVpnGatewaysClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsExternalVpnGatewayRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

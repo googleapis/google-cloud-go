@@ -35,6 +35,7 @@ func main() {
 
 	req := &datafusionpb.RestartInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datafusion/v1#RestartInstanceRequest.
 	}
 	op, err := c.RestartInstance(ctx, req)
 	if err != nil {

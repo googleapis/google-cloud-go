@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.UpdateNodePoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#UpdateNodePoolRequest.
 	}
 	resp, err := c.UpdateNodePool(ctx, req)
 	if err != nil {

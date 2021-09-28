@@ -35,6 +35,7 @@ func main() {
 
 	req := &servicemanagementpb.SubmitConfigSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#SubmitConfigSourceRequest.
 	}
 	op, err := c.SubmitConfigSource(ctx, req)
 	if err != nil {

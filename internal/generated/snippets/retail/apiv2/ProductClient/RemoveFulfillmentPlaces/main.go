@@ -35,6 +35,7 @@ func main() {
 
 	req := &retailpb.RemoveFulfillmentPlacesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveFulfillmentPlacesRequest.
 	}
 	op, err := c.RemoveFulfillmentPlaces(ctx, req)
 	if err != nil {

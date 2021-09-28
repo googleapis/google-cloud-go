@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.UpdateFirewallRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateFirewallRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {

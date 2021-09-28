@@ -35,6 +35,7 @@ func main() {
 
 	req := &domainspb.SearchDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#SearchDomainsRequest.
 	}
 	resp, err := c.SearchDomains(ctx, req)
 	if err != nil {

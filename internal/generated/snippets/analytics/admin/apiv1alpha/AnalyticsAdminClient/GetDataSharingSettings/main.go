@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.GetDataSharingSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataSharingSettingsRequest.
 	}
 	resp, err := c.GetDataSharingSettings(ctx, req)
 	if err != nil {

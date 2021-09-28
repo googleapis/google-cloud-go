@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.SetSchedulingInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSchedulingInstanceRequest.
 	}
 	resp, err := c.SetScheduling(ctx, req)
 	if err != nil {

@@ -46,6 +46,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 
 	req := &monitoringpb.ListUptimeCheckConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListUptimeCheckConfigsRequest.
 	}
 	it := c.ListUptimeCheckConfigs(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
 
 	req := &monitoringpb.GetUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetUptimeCheckConfigRequest.
 	}
 	resp, err := c.GetUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 
 	req := &monitoringpb.CreateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateUptimeCheckConfigRequest.
 	}
 	resp, err := c.CreateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -109,6 +112,7 @@ func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
 
 	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateUptimeCheckConfigRequest.
 	}
 	resp, err := c.UpdateUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -128,6 +132,7 @@ func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteUptimeCheckConfigRequest.
 	}
 	err = c.DeleteUptimeCheckConfig(ctx, req)
 	if err != nil {
@@ -145,6 +150,7 @@ func ExampleUptimeCheckClient_ListUptimeCheckIps() {
 
 	req := &monitoringpb.ListUptimeCheckIpsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListUptimeCheckIpsRequest.
 	}
 	it := c.ListUptimeCheckIps(ctx, req)
 	for {

@@ -36,6 +36,7 @@ func main() {
 
 	req := &tablespb.ListTablesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/area120/tables/v1alpha1#ListTablesRequest.
 	}
 	it := c.ListTables(ctx, req)
 	for {

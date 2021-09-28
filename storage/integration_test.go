@@ -28,6 +28,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/rand"
 	"mime/multipart"
 	"net/http"
@@ -48,6 +49,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -61,13 +63,16 @@ const (
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	grpcTestPrefix         = "golang-grpc-test-"
 )
 
 var (
 	record = flag.Bool("record", false, "record RPCs")
 
-	uidSpace   *uid.Space
-	bucketName string
+	uidSpace       *uid.Space
+	uidSpaceGRPC   *uid.Space
+	bucketName     string
+	grpcBucketName string
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -175,6 +180,9 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
+		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
+			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
+		}
 		return cleanup
 	}
 }
@@ -182,6 +190,8 @@ func initIntegrationTest() func() error {
 func initUIDsAndRand(t time.Time) {
 	uidSpace = uid.NewSpace(testPrefix, &uid.Options{Time: t})
 	bucketName = uidSpace.New()
+	uidSpaceGRPC = uid.NewSpace(grpcTestPrefix, &uid.Options{Time: t})
+	grpcBucketName = uidSpaceGRPC.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -201,6 +211,21 @@ func testConfig(ctx context.Context, t *testing.T) *Client {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 	return client
+}
+
+// testConfigGPRC returns a gRPC-based client to access GCS. testConfigGRPC
+// skips the curent test when being run in Short mode.
+func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	gc, err := newHybridClient(ctx, nil)
+	if err != nil {
+		t.Fatalf("newHybridClient: %v", err)
+	}
+
+	return
 }
 
 // config is like testConfig, but it doesn't need a *testing.T.
@@ -614,6 +639,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
 		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
 	}
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4890")
 
 	// Update PAP setting to unspecified should work and not affect UBLA setting.
 	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
@@ -741,6 +767,511 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				t.Fatalf("Body length mismatch, got %d want %d", got, want)
 			}
 		})
+	}
+}
+
+func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	content := []byte("Hello, world this is a grpc request")
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucketName).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	obj := gc.Bucket(grpcBucketName).Object(name)
+
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(len(content)) {
+		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
+	}
+
+	b := new(bytes.Buffer)
+	b.Grow(len(content))
+
+	n, err := io.Copy(b, r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Fatal("Expected to have read more than 0 bytes")
+	}
+
+	got := b.String()
+	want := string(content)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
+	}
+}
+
+func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	// Use a larger blob to test chunking logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucketName).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	obj := gc.Bucket(grpcBucketName).Object(name)
+
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(len(content)) {
+		t.Errorf("got %v bytes remaining, want %v", rem, len(content))
+	}
+
+	bufSize := len(content)
+	buf := make([]byte, bufSize)
+
+	// Read in smaller chunks, offset to provoke reading across a Recv boundary.
+	chunk := 4<<10 + 1234
+	offset := 0
+	for {
+		end := math.Min(float64(offset+chunk), float64(bufSize))
+		n, err := r.Read(buf[offset:int(end)])
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		offset += n
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
+	}
+
+	// TODO: Verify content with the checksums.
+}
+
+func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	content := []byte("Hello, world this is a grpc request")
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucketName).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	obj := gc.Bucket(grpcBucketName).Object(name)
+
+	offset := 7
+	// Using a negative offset to start reading relative to the end of the
+	// object, and length to indicate reading to the end.
+	r, err := obj.NewRangeReader(ctx, int64(offset*-1), -1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+
+	if size := r.Size(); size != int64(len(content)) {
+		t.Errorf("got size = %v, want %v", size, len(content))
+	}
+	if rem := r.Remain(); rem != int64(offset) {
+		t.Errorf("got %v bytes remaining, want %v", rem, offset)
+	}
+
+	b := new(bytes.Buffer)
+	b.Grow(offset)
+
+	n, err := io.Copy(b, r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Fatal("Expected to have read more than 0 bytes")
+	}
+
+	got := b.String()
+	want := string(content[len(content)-offset:])
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+
+	if rem := r.Remain(); rem != 0 {
+		t.Errorf("got %v bytes remaining, want 0", rem)
+	}
+}
+
+func TestIntegration_ObjectReadPartialContentGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	content := []byte("Hello, world this is a grpc request")
+
+	// Upload test data.
+	name := uidSpace.New()
+	ho := hc.Bucket(grpcBucketName).Object(name)
+	if err := writeObject(ctx, ho, "text/plain", content); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := ho.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	obj := gc.Bucket(grpcBucketName).Object(name)
+
+	offset := 5
+	length := 5
+	// Using a negative offset to start reading relative to the end of the
+	// object, and length to indicate reading to the end.
+	r, err := obj.NewRangeReader(ctx, int64(offset), int64(length))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer r.Close()
+
+	b := new(bytes.Buffer)
+	b.Grow(offset)
+
+	n, err := io.Copy(b, r)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if n == 0 {
+		t.Fatal("Expected to have read more than 0 bytes")
+	}
+
+	got := b.String()
+	want := string(content[offset : offset+length])
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+}
+
+func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to upload test data and a gRPC client to test with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+	h := testHelper{t}
+
+	o := hc.Bucket(grpcBucketName).Object("condread")
+	defer o.Delete(ctx)
+
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("foo"))
+
+	gen := wc.Attrs().Generation
+	metaGen := wc.Attrs().Metageneration
+
+	obj := gc.Bucket(grpcBucketName).Object(o.ObjectName())
+
+	if _, err := obj.Generation(gen + 1).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with nonexistent Generation")
+	}
+	if _, err := obj.If(Conditions{MetagenerationMatch: metaGen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfMetaGenerationMatch")
+	}
+	if _, err := obj.If(Conditions{GenerationMatch: gen + 1}).NewReader(ctx); err == nil {
+		t.Fatalf("Unexpected successful download with failed preconditions IfGenerationMatch")
+	}
+	if _, err := obj.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
+		t.Fatalf("Download failed: %v", err)
+	}
+}
+
+func TestIntegration_SimpleWriteGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	content := []byte("Hello, world this is a grpc request")
+	crc32c := crc32.Checksum(content, crc32cTable)
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+}
+
+func TestIntegration_CancelWriteGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4772")
+	ctx := context.Background()
+
+	// Create an HTTP client to verify test and a gRPC client to test writing.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		// As insurance attempt to delete the object, ignore the error if it
+		// doesn't exist, because it wasn't made.
+		gobj.Delete(ctx)
+	}()
+
+	cctx, cancel := context.WithCancel(ctx)
+	content := []byte("Hello, world this is a grpc request")
+
+	w := gobj.NewWriter(cctx)
+	_, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Cancel the Writer context before flushing.
+	// TODO: Add a test that writes at least a chunk before canceling part way through.
+	cancel()
+
+	// The next Write should return context.Canceled.
+	_, err = w.Write(content)
+	if !xerrors.Is(err, context.Canceled) {
+		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
+	}
+	// The Close should too.
+	err = w.Close()
+	if !xerrors.Is(err, context.Canceled) {
+		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
+	}
+
+	// Use HTTP client to ensure the object wasn't written.
+	if attrs, err := hc.Bucket(grpcBucketName).Object(name).Attrs(ctx); err == nil {
+		t.Fatalf("Expected Object to not be written, but got attrs: %+v", attrs)
+	}
+}
+
+func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+
+	crc32c := crc32.Checksum(content, crc32cTable)
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+}
+
+func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
+	// t.Skip()
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+	crc32c := crc32.Checksum(content, crc32cTable)
+
+	w := gobj.NewWriter(ctx)
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	// Use a 1 MB chunk size.
+	w.ChunkSize = 1 << 20
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hobj := hc.Bucket(grpcBucketName).Object(name)
+	hr, err := hobj.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
 	}
 }
 
@@ -2172,6 +2703,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
 	// This test needs a second project and user (token source) to test
 	// all possibilities. Since we need these things for Firestore already,
 	// we use them here.
@@ -3823,14 +4355,24 @@ func cleanupBuckets() error {
 	if err := killBucket(ctx, client, bucketName); err != nil {
 		return err
 	}
+	if err := killBucket(ctx, client, grpcBucketName); err != nil {
+		return err
+	}
 
 	// Delete buckets whose name begins with our test prefix, and which were
 	// created a while ago. (Unfortunately GCS doesn't provide last-modified
 	// time, which would be a better way to check for staleness.)
+	if err := deleteExpiredBuckets(ctx, client, testPrefix); err != nil {
+		return err
+	}
+	return deleteExpiredBuckets(ctx, client, grpcTestPrefix)
+}
+
+func deleteExpiredBuckets(ctx context.Context, client *Client, prefix string) error {
 	const expireAge = 24 * time.Hour
 	projectID := testutil.ProjID()
 	it := client.Buckets(ctx, projectID)
-	it.Prefix = testPrefix
+	it.Prefix = prefix
 	for {
 		bktAttrs, err := it.Next()
 		if err == iterator.Done {

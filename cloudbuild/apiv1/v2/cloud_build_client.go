@@ -47,6 +47,7 @@ type CallOptions struct {
 	ListBuilds            []gax.CallOption
 	CancelBuild           []gax.CallOption
 	RetryBuild            []gax.CallOption
+	ApproveBuild          []gax.CallOption
 	CreateBuildTrigger    []gax.CallOption
 	GetBuildTrigger       []gax.CallOption
 	ListBuildTriggers     []gax.CallOption
@@ -103,6 +104,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		CancelBuild:        []gax.CallOption{},
 		RetryBuild:         []gax.CallOption{},
+		ApproveBuild:       []gax.CallOption{},
 		CreateBuildTrigger: []gax.CallOption{},
 		GetBuildTrigger: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -185,6 +187,8 @@ type internalClient interface {
 	CancelBuild(context.Context, *cloudbuildpb.CancelBuildRequest, ...gax.CallOption) (*cloudbuildpb.Build, error)
 	RetryBuild(context.Context, *cloudbuildpb.RetryBuildRequest, ...gax.CallOption) (*RetryBuildOperation, error)
 	RetryBuildOperation(name string) *RetryBuildOperation
+	ApproveBuild(context.Context, *cloudbuildpb.ApproveBuildRequest, ...gax.CallOption) (*ApproveBuildOperation, error)
+	ApproveBuildOperation(name string) *ApproveBuildOperation
 	CreateBuildTrigger(context.Context, *cloudbuildpb.CreateBuildTriggerRequest, ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error)
 	GetBuildTrigger(context.Context, *cloudbuildpb.GetBuildTriggerRequest, ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error)
 	ListBuildTriggers(context.Context, *cloudbuildpb.ListBuildTriggersRequest, ...gax.CallOption) *BuildTriggerIterator
@@ -322,6 +326,22 @@ func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildReq
 // The name must be that of a previously created RetryBuildOperation, possibly from a different process.
 func (c *Client) RetryBuildOperation(name string) *RetryBuildOperation {
 	return c.internalClient.RetryBuildOperation(name)
+}
+
+// ApproveBuild approves or rejects a pending build.
+//
+// If approved, the returned LRO will be analogous to the LRO returned from
+// a CreateBuild call.
+//
+// If rejected, the returned LRO will be immediately done.
+func (c *Client) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
+	return c.internalClient.ApproveBuild(ctx, req, opts...)
+}
+
+// ApproveBuildOperation returns a new ApproveBuildOperation from a given name.
+// The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
+func (c *Client) ApproveBuildOperation(name string) *ApproveBuildOperation {
+	return c.internalClient.ApproveBuildOperation(name)
 }
 
 // CreateBuildTrigger creates a new BuildTrigger.
@@ -654,6 +674,24 @@ func (c *gRPCClient) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuil
 	}, nil
 }
 
+func (c *gRPCClient) ApproveBuild(ctx context.Context, req *cloudbuildpb.ApproveBuildRequest, opts ...gax.CallOption) (*ApproveBuildOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ApproveBuild[0:len((*c.CallOptions).ApproveBuild):len((*c.CallOptions).ApproveBuild)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ApproveBuild(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ApproveBuildOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.CreateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -949,6 +987,75 @@ func (c *gRPCClient) ListWorkerPools(ctx context.Context, req *cloudbuildpb.List
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ApproveBuildOperation manages a long-running operation from ApproveBuild.
+type ApproveBuildOperation struct {
+	lro *longrunning.Operation
+}
+
+// ApproveBuildOperation returns a new ApproveBuildOperation from a given name.
+// The name must be that of a previously created ApproveBuildOperation, possibly from a different process.
+func (c *gRPCClient) ApproveBuildOperation(name string) *ApproveBuildOperation {
+	return &ApproveBuildOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ApproveBuildOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
+	var resp cloudbuildpb.Build
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ApproveBuildOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
+	var resp cloudbuildpb.Build
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ApproveBuildOperation) Metadata() (*cloudbuildpb.BuildOperationMetadata, error) {
+	var meta cloudbuildpb.BuildOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ApproveBuildOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ApproveBuildOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateBuildOperation manages a long-running operation from CreateBuild.

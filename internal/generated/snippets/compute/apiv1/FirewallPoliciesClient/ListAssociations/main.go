@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.ListAssociationsFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAssociationsFirewallPolicyRequest.
 	}
 	resp, err := c.ListAssociations(ctx, req)
 	if err != nil {

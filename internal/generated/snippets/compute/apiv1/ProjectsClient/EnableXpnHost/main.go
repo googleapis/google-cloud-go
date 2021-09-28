@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.EnableXpnHostProjectRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#EnableXpnHostProjectRequest.
 	}
 	resp, err := c.EnableXpnHost(ctx, req)
 	if err != nil {

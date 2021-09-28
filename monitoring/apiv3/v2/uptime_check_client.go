@@ -65,7 +65,6 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 		ListUptimeCheckConfigs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -77,7 +76,6 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 		GetUptimeCheckConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -91,7 +89,6 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 		DeleteUptimeCheckConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -103,7 +100,6 @@ func defaultUptimeCheckCallOptions() *UptimeCheckCallOptions {
 		ListUptimeCheckIps: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,

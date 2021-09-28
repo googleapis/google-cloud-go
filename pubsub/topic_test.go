@@ -18,13 +18,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsub/pstest"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -88,6 +91,7 @@ func TestCreateTopicWithConfig(t *testing.T) {
 			Schema:   "projects/P/schemas/S",
 			Encoding: EncodingJSON,
 		},
+		RetentionDuration: 5 * time.Hour,
 	}
 
 	topic := mustCreateTopicWithConfig(t, c, id, &want)
@@ -102,17 +106,36 @@ func TestCreateTopicWithConfig(t *testing.T) {
 }
 
 func TestListTopics(t *testing.T) {
+	ctx := context.Background()
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
 
 	var ids []string
-	for i := 1; i <= 4; i++ {
+	numTopics := 4
+	for i := 1; i <= numTopics; i++ {
 		id := fmt.Sprintf("t%d", i)
 		ids = append(ids, id)
 		mustCreateTopic(t, c, id)
 	}
 	checkTopicListing(t, c, ids)
+
+	var tt []*TopicConfig
+	it := c.Topics(ctx)
+	for {
+		topic, err := it.NextConfig()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("TopicIterator.NextConfig() got err: %v", err)
+		} else {
+			tt = append(tt, topic)
+		}
+	}
+	if got := len(tt); got != numTopics {
+		t.Errorf("c.Topics(ctx) returned %d topics, expected %d", got, numTopics)
+	}
 }
 
 func TestListCompletelyEmptyTopics(t *testing.T) {
@@ -384,4 +407,188 @@ func TestFlushStopTopic(t *testing.T) {
 	if _, err := r5.Get(ctx); err != errTopicStopped {
 		t.Errorf("got %v, want errTopicStopped", err)
 	}
+}
+
+func TestPublishFlowControl_SignalError(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "some-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fc := FlowControlSettings{
+		MaxOutstandingMessages: 1,
+		MaxOutstandingBytes:    10,
+		LimitExceededBehavior:  FlowControlSignalError,
+	}
+	topic.PublishSettings.FlowControlSettings = fc
+
+	srv.SetAutoPublishResponse(false)
+
+	// Sending a message that is too large results in an error in SignalError mode.
+	r1 := publishSingleMessage(ctx, topic, "AAAAAAAAAAA")
+	if _, err := r1.Get(ctx); err != ErrFlowControllerMaxOutstandingBytes {
+		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingBytes)
+	}
+
+	// Sending a second message succeeds.
+	r2 := publishSingleMessage(ctx, topic, "AAAA")
+
+	// Sending a third message fails because of the outstanding message.
+	r3 := publishSingleMessage(ctx, topic, "AA")
+	if _, err := r3.Get(ctx); err != ErrFlowControllerMaxOutstandingMessages {
+		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingMessages)
+	}
+
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"1"},
+	}, nil)
+	got, err := r2.Get(ctx)
+	if err != nil {
+		t.Fatalf("publishResult.Get(): got %v", err)
+	}
+	if want := "1"; got != want {
+		t.Fatalf("publishResult.Get() got: %s, want %s", got, want)
+	}
+
+	// Sending another messages succeeds.
+	r4 := publishSingleMessage(ctx, topic, "AAAA")
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"2"},
+	}, nil)
+	got, err = r4.Get(ctx)
+	if err != nil {
+		t.Fatalf("publishResult.Get(): got %v", err)
+	}
+	if want := "2"; got != want {
+		t.Fatalf("publishResult.Get() got: %s, want %s", got, want)
+	}
+
+}
+
+func TestPublishFlowControl_SignalErrorOrderingKey(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "some-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fc := FlowControlSettings{
+		MaxOutstandingMessages: 1,
+		MaxOutstandingBytes:    10,
+		LimitExceededBehavior:  FlowControlSignalError,
+	}
+	topic.PublishSettings.FlowControlSettings = fc
+	topic.PublishSettings.DelayThreshold = 5 * time.Second
+	topic.PublishSettings.CountThreshold = 1
+	topic.EnableMessageOrdering = true
+
+	// Sending a message that is too large reuslts in an error.
+	r1 := publishSingleMessageWithKey(ctx, topic, "AAAAAAAAAAA", "a")
+	if _, err := r1.Get(ctx); err != ErrFlowControllerMaxOutstandingBytes {
+		t.Fatalf("r1.Get() got: %v, want %v", err, ErrFlowControllerMaxOutstandingBytes)
+	}
+
+	// Sending a second message for the same ordering key fails because the first one failed.
+	r2 := publishSingleMessageWithKey(ctx, topic, "AAAA", "a")
+	if _, err := r2.Get(ctx); err == nil {
+		t.Fatal("r2.Get() got nil instead of error before calling topic.ResumePublish(key)")
+	}
+}
+
+func TestPublishFlowControl_Block(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "some-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fc := FlowControlSettings{
+		MaxOutstandingMessages: 2,
+		MaxOutstandingBytes:    10,
+		LimitExceededBehavior:  FlowControlBlock,
+	}
+	topic.PublishSettings.FlowControlSettings = fc
+	topic.PublishSettings.DelayThreshold = 5 * time.Second
+	topic.PublishSettings.CountThreshold = 1
+
+	srv.SetAutoPublishResponse(false)
+
+	var sendResponse1, response1Sent, sendResponse2 sync.WaitGroup
+	sendResponse1.Add(1)
+	response1Sent.Add(1)
+	sendResponse2.Add(1)
+
+	go func() {
+		sendResponse1.Wait()
+		addSingleResponse(srv, "1")
+		response1Sent.Done()
+		sendResponse2.Wait()
+		addSingleResponse(srv, "2")
+	}()
+
+	// Sending two messages succeeds.
+	publishSingleMessage(ctx, topic, "AA")
+	publishSingleMessage(ctx, topic, "AA")
+
+	// Sendinga third message blocks because the messages are outstanding
+	var publish3Completed, response3Sent sync.WaitGroup
+	publish3Completed.Add(1)
+	response3Sent.Add(1)
+	go func() {
+		publishSingleMessage(ctx, topic, "AAAAAA")
+		publish3Completed.Done()
+	}()
+
+	go func() {
+		sendResponse1.Done()
+		response1Sent.Wait()
+		sendResponse2.Done()
+	}()
+
+	var publish4Completed sync.WaitGroup
+	publish4Completed.Add(1)
+
+	go func() {
+		publish3Completed.Wait()
+		publishSingleMessage(ctx, topic, "A")
+		publish4Completed.Done()
+	}()
+
+	publish3Completed.Wait()
+	addSingleResponse(srv, "3")
+	response3Sent.Done()
+
+	publish4Completed.Wait()
+}
+
+// publishSingleMessage publishes a single message to a topic.
+func publishSingleMessage(ctx context.Context, t *Topic, data string) *PublishResult {
+	return t.Publish(ctx, &Message{
+		Data: []byte(data),
+	})
+}
+
+// publishSingleMessageWithKey publishes a single message to a topic with an ordering key.
+func publishSingleMessageWithKey(ctx context.Context, t *Topic, data, key string) *PublishResult {
+	return t.Publish(ctx, &Message{
+		Data:        []byte(data),
+		OrderingKey: key,
+	})
+}
+
+// addSingleResponse adds a publish response to the provided fake.
+func addSingleResponse(srv *pstest.Server, id string) {
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{id},
+	}, nil)
 }

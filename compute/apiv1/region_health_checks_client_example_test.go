@@ -46,6 +46,7 @@ func ExampleRegionHealthChecksClient_Delete() {
 
 	req := &computepb.DeleteRegionHealthCheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionHealthCheckRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionHealthChecksClient_Get() {
 
 	req := &computepb.GetRegionHealthCheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionHealthCheckRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionHealthChecksClient_Insert() {
 
 	req := &computepb.InsertRegionHealthCheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionHealthCheckRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionHealthChecksClient_List() {
 
 	req := &computepb.ListRegionHealthChecksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionHealthChecksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -128,6 +132,7 @@ func ExampleRegionHealthChecksClient_Patch() {
 
 	req := &computepb.PatchRegionHealthCheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionHealthCheckRequest.
 	}
 	resp, err := c.Patch(ctx, req)
 	if err != nil {
@@ -147,6 +152,7 @@ func ExampleRegionHealthChecksClient_Update() {
 
 	req := &computepb.UpdateRegionHealthCheckRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateRegionHealthCheckRequest.
 	}
 	resp, err := c.Update(ctx, req)
 	if err != nil {

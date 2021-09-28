@@ -35,6 +35,7 @@ func main() {
 
 	req := &datalabelingpb.CreateInstructionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1#CreateInstructionRequest.
 	}
 	op, err := c.CreateInstruction(ctx, req)
 	if err != nil {

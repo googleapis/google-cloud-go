@@ -46,6 +46,7 @@ func ExampleAuthorizedDomainsClient_ListAuthorizedDomains() {
 
 	req := &appenginepb.ListAuthorizedDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListAuthorizedDomainsRequest.
 	}
 	it := c.ListAuthorizedDomains(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &credentialspb.GenerateIdTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateIdTokenRequest.
 	}
 	resp, err := c.GenerateIdToken(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.AddInstanceTargetPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddInstanceTargetPoolRequest.
 	}
 	resp, err := c.AddInstance(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetSerialPortOutputInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSerialPortOutputInstanceRequest.
 	}
 	resp, err := c.GetSerialPortOutput(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.RemoveAssociationFirewallPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveAssociationFirewallPolicyRequest.
 	}
 	resp, err := c.RemoveAssociation(ctx, req)
 	if err != nil {

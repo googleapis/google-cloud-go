@@ -64,7 +64,6 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 		ListAlertPolicies: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -76,7 +75,6 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 		GetAlertPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -89,7 +87,6 @@ func defaultAlertPolicyCallOptions() *AlertPolicyCallOptions {
 		DeleteAlertPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,

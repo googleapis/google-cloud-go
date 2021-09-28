@@ -35,6 +35,7 @@ func main() {
 
 	req := &containerpb.DeleteNodePoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/container/v1#DeleteNodePoolRequest.
 	}
 	resp, err := c.DeleteNodePool(ctx, req)
 	if err != nil {

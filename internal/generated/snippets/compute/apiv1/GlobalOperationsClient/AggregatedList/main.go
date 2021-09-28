@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.AggregatedListGlobalOperationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListGlobalOperationsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetExternalVpnGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetExternalVpnGatewayRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {

@@ -435,6 +435,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	msg := &Message{
 		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
 	}
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlSignalError
 	r := topic.Publish(ctx, msg)
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("Failed to publish max length message: %v", err)
@@ -1977,5 +1978,64 @@ func TestIntegration_ValidateMessage(t *testing.T) {
 				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
 			}
 		})
+	}
+}
+
+func TestIntegration_TopicRetention(t *testing.T) {
+	ctx := context.Background()
+	c := integrationTestClient(ctx, t)
+	defer c.Close()
+
+	tc := TopicConfig{
+		RetentionDuration: 50 * time.Minute,
+	}
+	topic, err := c.CreateTopicWithConfig(ctx, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cfg, err := topic.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !testutil.Equal(cfg, tc) {
+		t.Fatalf("got: %v, want %v", cfg, tc)
+	}
+
+	newDur := 11 * time.Minute
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: newDur,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != newDur {
+		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Create a subscription on the topic and read TopicMessageRetentionDuration.
+	s, err := c.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sCfg, err := s.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Clear retention duration by setting to a negative value.
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: -1 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != nil {
+		t.Fatalf("expected cleared retention duration, got: %v", got)
 	}
 }

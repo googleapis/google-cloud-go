@@ -35,6 +35,7 @@ func main() {
 
 	req := &channelpb.GetEntitlementRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#GetEntitlementRequest.
 	}
 	resp, err := c.GetEntitlement(ctx, req)
 	if err != nil {

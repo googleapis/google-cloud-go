@@ -46,6 +46,7 @@ func ExampleClient_ListGateways() {
 
 	req := &apigatewaypb.ListGatewaysRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListGatewaysRequest.
 	}
 	it := c.ListGateways(ctx, req)
 	for {
@@ -71,6 +72,7 @@ func ExampleClient_GetGateway() {
 
 	req := &apigatewaypb.GetGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetGatewayRequest.
 	}
 	resp, err := c.GetGateway(ctx, req)
 	if err != nil {
@@ -90,6 +92,7 @@ func ExampleClient_CreateGateway() {
 
 	req := &apigatewaypb.CreateGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateGatewayRequest.
 	}
 	op, err := c.CreateGateway(ctx, req)
 	if err != nil {
@@ -114,6 +117,7 @@ func ExampleClient_UpdateGateway() {
 
 	req := &apigatewaypb.UpdateGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateGatewayRequest.
 	}
 	op, err := c.UpdateGateway(ctx, req)
 	if err != nil {
@@ -138,6 +142,7 @@ func ExampleClient_DeleteGateway() {
 
 	req := &apigatewaypb.DeleteGatewayRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteGatewayRequest.
 	}
 	op, err := c.DeleteGateway(ctx, req)
 	if err != nil {
@@ -160,6 +165,7 @@ func ExampleClient_ListApis() {
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApisRequest.
 	}
 	it := c.ListApis(ctx, req)
 	for {
@@ -185,6 +191,7 @@ func ExampleClient_GetApi() {
 
 	req := &apigatewaypb.GetApiRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetApiRequest.
 	}
 	resp, err := c.GetApi(ctx, req)
 	if err != nil {
@@ -204,6 +211,7 @@ func ExampleClient_CreateApi() {
 
 	req := &apigatewaypb.CreateApiRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateApiRequest.
 	}
 	op, err := c.CreateApi(ctx, req)
 	if err != nil {
@@ -228,6 +236,7 @@ func ExampleClient_UpdateApi() {
 
 	req := &apigatewaypb.UpdateApiRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateApiRequest.
 	}
 	op, err := c.UpdateApi(ctx, req)
 	if err != nil {
@@ -252,6 +261,7 @@ func ExampleClient_DeleteApi() {
 
 	req := &apigatewaypb.DeleteApiRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiRequest.
 	}
 	op, err := c.DeleteApi(ctx, req)
 	if err != nil {
@@ -274,6 +284,7 @@ func ExampleClient_ListApiConfigs() {
 
 	req := &apigatewaypb.ListApiConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#ListApiConfigsRequest.
 	}
 	it := c.ListApiConfigs(ctx, req)
 	for {
@@ -299,6 +310,7 @@ func ExampleClient_GetApiConfig() {
 
 	req := &apigatewaypb.GetApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#GetApiConfigRequest.
 	}
 	resp, err := c.GetApiConfig(ctx, req)
 	if err != nil {
@@ -318,6 +330,7 @@ func ExampleClient_CreateApiConfig() {
 
 	req := &apigatewaypb.CreateApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#CreateApiConfigRequest.
 	}
 	op, err := c.CreateApiConfig(ctx, req)
 	if err != nil {
@@ -342,6 +355,7 @@ func ExampleClient_UpdateApiConfig() {
 
 	req := &apigatewaypb.UpdateApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#UpdateApiConfigRequest.
 	}
 	op, err := c.UpdateApiConfig(ctx, req)
 	if err != nil {
@@ -366,6 +380,7 @@ func ExampleClient_DeleteApiConfig() {
 
 	req := &apigatewaypb.DeleteApiConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigateway/v1#DeleteApiConfigRequest.
 	}
 	op, err := c.DeleteApiConfig(ctx, req)
 	if err != nil {

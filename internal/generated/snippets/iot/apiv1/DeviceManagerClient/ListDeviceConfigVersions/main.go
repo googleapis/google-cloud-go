@@ -35,6 +35,7 @@ func main() {
 
 	req := &iotpb.ListDeviceConfigVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iot/v1#ListDeviceConfigVersionsRequest.
 	}
 	resp, err := c.ListDeviceConfigVersions(ctx, req)
 	if err != nil {

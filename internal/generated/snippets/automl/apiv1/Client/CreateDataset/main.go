@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1#CreateDatasetRequest.
 	}
 	op, err := c.CreateDataset(ctx, req)
 	if err != nil {

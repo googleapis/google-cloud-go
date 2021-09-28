@@ -36,6 +36,7 @@ func main() {
 
 	req := &computepb.ListRegionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionsRequest.
 	}
 	it := c.List(ctx, req)
 	for {

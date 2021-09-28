@@ -35,6 +35,7 @@ func main() {
 
 	req := &adminpb.UpdateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateGoogleAdsLinkRequest.
 	}
 	resp, err := c.UpdateGoogleAdsLink(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &aiplatformpb.CreateSpecialistPoolRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateSpecialistPoolRequest.
 	}
 	op, err := c.CreateSpecialistPool(ctx, req)
 	if err != nil {

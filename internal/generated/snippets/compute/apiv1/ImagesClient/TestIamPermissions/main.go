@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.TestIamPermissionsImageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsImageRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

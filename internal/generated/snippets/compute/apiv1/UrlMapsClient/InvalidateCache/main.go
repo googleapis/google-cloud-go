@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.InvalidateCacheUrlMapRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InvalidateCacheUrlMapRequest.
 	}
 	resp, err := c.InvalidateCache(ctx, req)
 	if err != nil {

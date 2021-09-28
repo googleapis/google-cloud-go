@@ -505,11 +505,12 @@ func (c *KeyManagementClient) CreateCryptoKeyVersion(ctx context.Context, req *k
 	return c.internalClient.CreateCryptoKeyVersion(ctx, req, opts...)
 }
 
-// ImportCryptoKeyVersion imports a new CryptoKeyVersion into an existing CryptoKey using the
-// wrapped key material provided in the request.
+// ImportCryptoKeyVersion import wrapped key material into a CryptoKeyVersion.
 //
-// The version ID will be assigned the next sequential id within the
-// CryptoKey.
+// All requests must specify a CryptoKey. If a CryptoKeyVersion is
+// additionally specified in the request, key material will be reimported into
+// that version. Otherwise, a new version will be created, and will be
+// assigned the next sequential id within the CryptoKey.
 func (c *KeyManagementClient) ImportCryptoKeyVersion(ctx context.Context, req *kmspb.ImportCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.ImportCryptoKeyVersion(ctx, req, opts...)
 }
@@ -548,10 +549,11 @@ func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context,
 // DestroyCryptoKeyVersion schedule a CryptoKeyVersion for destruction.
 //
 // Upon calling this method, CryptoKeyVersion.state will be set to
-// DESTROY_SCHEDULED
-// and destroy_time will be set to a time 24
-// hours in the future, at which point the state
-// will be changed to
+// DESTROY_SCHEDULED,
+// and destroy_time will be set to the time
+// destroy_scheduled_duration in the
+// future. At that time, the state will
+// automatically change to
 // DESTROYED, and the key
 // material will be irrevocably destroyed.
 //

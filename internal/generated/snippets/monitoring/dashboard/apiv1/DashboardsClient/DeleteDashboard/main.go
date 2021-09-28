@@ -35,6 +35,7 @@ func main() {
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/dashboard/v1#DeleteDashboardRequest.
 	}
 	err = c.DeleteDashboard(ctx, req)
 	if err != nil {

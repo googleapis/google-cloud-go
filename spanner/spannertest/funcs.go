@@ -19,11 +19,54 @@ package spannertest
 import (
 	"fmt"
 	"math"
+	"strings"
 
 	"cloud.google.com/go/spanner/spansql"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // This file contains implementations of query functions.
+
+type function struct {
+	// Eval evaluates the result of the function using the given input.
+	Eval func(values []interface{}) (interface{}, spansql.Type, error)
+}
+
+var functions = map[string]function{
+	"STARTS_WITH": {
+		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+			// TODO: Refine error messages to exactly match Spanner.
+			// Check input values first.
+			if len(values) != 2 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function STARTS_WITH for the given argument types")
+			}
+			for _, v := range values {
+				// TODO: STARTS_WITH also supports BYTES as input parameters.
+				if _, ok := v.(string); !ok {
+					return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function STARTS_WITH for the given argument types")
+				}
+			}
+			s := values[0].(string)
+			prefix := values[1].(string)
+			return strings.HasPrefix(s, prefix), spansql.Type{Base: spansql.Bool}, nil
+		},
+	},
+	"LOWER": {
+		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+			if len(values) != 1 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function LOWER for the given argument types")
+			}
+			if values[0] == nil {
+				return nil, spansql.Type{Base: spansql.String}, nil
+			}
+			if _, ok := values[0].(string); !ok {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function LOWER for the given argument types")
+			}
+			return strings.ToLower(values[0].(string)), spansql.Type{Base: spansql.String}, nil
+		},
+	},
+}
 
 type aggregateFunc struct {
 	// Whether the function can take a * arg (only COUNT).

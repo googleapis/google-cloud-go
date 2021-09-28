@@ -66,7 +66,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -78,7 +78,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -102,8 +102,8 @@ type internalCompletionClient interface {
 // Auto-completion service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 type CompletionClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCompletionClient
@@ -142,8 +142,8 @@ func (c *CompletionClient) Connection() *grpc.ClientConn {
 // CompleteQuery completes the specified prefix with keyword suggestions.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *retailpb.CompleteQueryRequest, opts ...gax.CallOption) (*retailpb.CompleteQueryResponse, error) {
 	return c.internalClient.CompleteQuery(ctx, req, opts...)
 }
@@ -153,8 +153,8 @@ func (c *CompletionClient) CompleteQuery(ctx context.Context, req *retailpb.Comp
 // Request processing may be synchronous. Partial updating is not supported.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func (c *CompletionClient) ImportCompletionData(ctx context.Context, req *retailpb.ImportCompletionDataRequest, opts ...gax.CallOption) (*ImportCompletionDataOperation, error) {
 	return c.internalClient.ImportCompletionData(ctx, req, opts...)
 }
@@ -196,8 +196,8 @@ type completionGRPCClient struct {
 // Auto-completion service for retail.
 //
 // This feature is only available for users who have Retail Search enabled.
-// Contact Retail Support (retail-search-support@google.com (at http://google.com)) if you are
-// interested in using Retail Search.
+// Please submit a form here (at https://cloud.google.com/contact) to contact
+// cloud sales if you are interested in using Retail Search.
 func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*CompletionClient, error) {
 	clientOpts := defaultCompletionGRPCClientOptions()
 	if newCompletionClientHook != nil {
@@ -267,7 +267,7 @@ func (c *completionGRPCClient) Close() error {
 
 func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.CompleteQueryRequest, opts ...gax.CallOption) (*retailpb.CompleteQueryResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -288,7 +288,7 @@ func (c *completionGRPCClient) CompleteQuery(ctx context.Context, req *retailpb.
 
 func (c *completionGRPCClient) ImportCompletionData(ctx context.Context, req *retailpb.ImportCompletionDataRequest, opts ...gax.CallOption) (*ImportCompletionDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

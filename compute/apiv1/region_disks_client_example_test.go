@@ -46,6 +46,7 @@ func ExampleRegionDisksClient_AddResourcePolicies() {
 
 	req := &computepb.AddResourcePoliciesRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesRegionDiskRequest.
 	}
 	resp, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
@@ -65,6 +66,7 @@ func ExampleRegionDisksClient_CreateSnapshot() {
 
 	req := &computepb.CreateSnapshotRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateSnapshotRegionDiskRequest.
 	}
 	resp, err := c.CreateSnapshot(ctx, req)
 	if err != nil {
@@ -84,6 +86,7 @@ func ExampleRegionDisksClient_Delete() {
 
 	req := &computepb.DeleteRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionDiskRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -103,6 +106,7 @@ func ExampleRegionDisksClient_Get() {
 
 	req := &computepb.GetRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionDiskRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -122,6 +126,7 @@ func ExampleRegionDisksClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyRegionDiskRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -141,6 +146,7 @@ func ExampleRegionDisksClient_Insert() {
 
 	req := &computepb.InsertRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionDiskRequest.
 	}
 	resp, err := c.Insert(ctx, req)
 	if err != nil {
@@ -160,6 +166,7 @@ func ExampleRegionDisksClient_List() {
 
 	req := &computepb.ListRegionDisksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionDisksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -185,6 +192,7 @@ func ExampleRegionDisksClient_RemoveResourcePolicies() {
 
 	req := &computepb.RemoveResourcePoliciesRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesRegionDiskRequest.
 	}
 	resp, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
@@ -204,6 +212,7 @@ func ExampleRegionDisksClient_Resize() {
 
 	req := &computepb.ResizeRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeRegionDiskRequest.
 	}
 	resp, err := c.Resize(ctx, req)
 	if err != nil {
@@ -223,6 +232,7 @@ func ExampleRegionDisksClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyRegionDiskRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -242,6 +252,7 @@ func ExampleRegionDisksClient_SetLabels() {
 
 	req := &computepb.SetLabelsRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsRegionDiskRequest.
 	}
 	resp, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -261,6 +272,7 @@ func ExampleRegionDisksClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsRegionDiskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsRegionDiskRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

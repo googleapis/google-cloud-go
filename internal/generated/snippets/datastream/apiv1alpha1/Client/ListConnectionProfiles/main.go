@@ -36,6 +36,7 @@ func main() {
 
 	req := &datastreampb.ListConnectionProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datastream/v1alpha1#ListConnectionProfilesRequest.
 	}
 	it := c.ListConnectionProfiles(ctx, req)
 	for {

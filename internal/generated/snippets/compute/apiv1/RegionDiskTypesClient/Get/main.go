@@ -35,6 +35,7 @@ func main() {
 
 	req := &computepb.GetRegionDiskTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionDiskTypeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {

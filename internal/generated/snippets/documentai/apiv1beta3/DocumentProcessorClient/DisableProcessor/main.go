@@ -35,6 +35,7 @@ func main() {
 
 	req := &documentaipb.DisableProcessorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/documentai/v1beta3#DisableProcessorRequest.
 	}
 	op, err := c.DisableProcessor(ctx, req)
 	if err != nil {

@@ -35,6 +35,7 @@ func main() {
 
 	req := &cloudtracepb.PatchTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#PatchTracesRequest.
 	}
 	err = c.PatchTraces(ctx, req)
 	if err != nil {

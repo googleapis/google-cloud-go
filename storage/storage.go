@@ -40,11 +40,16 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Methods which can be used in signed URLs.
@@ -92,6 +97,11 @@ type Client struct {
 	scheme string
 	// ReadHost is the default host used on the reader.
 	readHost string
+
+	// gc is an optional gRPC-based, GAPIC client.
+	//
+	// This is an experimental field and not intended for public use.
+	gc *gapic.Client
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -164,6 +174,34 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
+// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
+type hybridClientOptions struct {
+	HTTPOpts []option.ClientOption
+	GRPCOpts []option.ClientOption
+}
+
+// newHybridClient creates a new Storage client that initializes a gRPC-based client
+// for media upload and download operations.
+//
+// This is an experimental API and not intended for public use.
+func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
+	if opts == nil {
+		opts = &hybridClientOptions{}
+	}
+	c, err := NewClient(ctx, opts.HTTPOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.gc = g
+
+	return c, nil
+}
+
 // Close closes the Client.
 //
 // Close need not be called at program exit.
@@ -171,6 +209,9 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	if c.gc != nil {
+		return c.gc.Close()
+	}
 	return nil
 }
 
@@ -1095,6 +1136,42 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	}
 }
 
+// toProtoObject copies the editable attributes from o to the proto library's Object type.
+func (o *ObjectAttrs) toProtoObject(b string) *storagepb.Object {
+	checksums := &storagepb.ObjectChecksums{Md5Hash: o.MD5}
+	if o.CRC32C > 0 {
+		checksums.Crc32C = proto.Uint32(o.CRC32C)
+	}
+
+	// For now, there are only globally unique buckets, and "_" is the alias
+	// project ID for such buckets.
+	b = bucketResourceName("_", b)
+
+	return &storagepb.Object{
+		Bucket:              b,
+		Name:                o.Name,
+		EventBasedHold:      proto.Bool(o.EventBasedHold),
+		TemporaryHold:       o.TemporaryHold,
+		ContentType:         o.ContentType,
+		ContentEncoding:     o.ContentEncoding,
+		ContentLanguage:     o.ContentLanguage,
+		CacheControl:        o.CacheControl,
+		ContentDisposition:  o.ContentDisposition,
+		StorageClass:        o.StorageClass,
+		Acl:                 toProtoObjectACL(o.ACL),
+		Metadata:            o.Metadata,
+		CreateTime:          toProtoTimestamp(o.Created),
+		CustomTime:          toProtoTimestamp(o.CustomTime),
+		DeleteTime:          toProtoTimestamp(o.Deleted),
+		RetentionExpireTime: toProtoTimestamp(o.RetentionExpirationTime),
+		UpdateTime:          toProtoTimestamp(o.Updated),
+		KmsKey:              o.KMSKeyName,
+		Generation:          o.Generation,
+		Size:                o.Size,
+		Checksums:           checksums,
+	}
+}
+
 // ObjectAttrs represents the metadata for a Google Cloud Storage (GCS) object.
 type ObjectAttrs struct {
 	// Bucket is the name of the bucket containing this GCS object.
@@ -1251,6 +1328,22 @@ func convertTime(t string) time.Time {
 	return r
 }
 
+func convertProtoTime(t *timestamppb.Timestamp) time.Time {
+	var r time.Time
+	if t != nil {
+		r = t.AsTime()
+	}
+	return r
+}
+
+func toProtoTimestamp(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+
+	return timestamppb.New(t)
+}
+
 func newObject(o *raw.Object) *ObjectAttrs {
 	if o == nil {
 		return nil
@@ -1293,6 +1386,39 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
 		CustomTime:              convertTime(o.CustomTime),
+	}
+}
+
+func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
+	if o == nil {
+		return nil
+	}
+	return &ObjectAttrs{
+		Bucket:                  parseBucketName(o.Bucket),
+		Name:                    o.Name,
+		ContentType:             o.ContentType,
+		ContentLanguage:         o.ContentLanguage,
+		CacheControl:            o.CacheControl,
+		EventBasedHold:          o.GetEventBasedHold(),
+		TemporaryHold:           o.TemporaryHold,
+		RetentionExpirationTime: convertProtoTime(o.GetRetentionExpireTime()),
+		ACL:                     fromProtoToObjectACLRules(o.GetAcl()),
+		Owner:                   o.GetOwner().GetEntity(),
+		ContentEncoding:         o.ContentEncoding,
+		ContentDisposition:      o.ContentDisposition,
+		Size:                    int64(o.Size),
+		MD5:                     o.GetChecksums().GetMd5Hash(),
+		CRC32C:                  o.GetChecksums().GetCrc32C(),
+		Metadata:                o.Metadata,
+		Generation:              o.Generation,
+		Metageneration:          o.Metageneration,
+		StorageClass:            o.StorageClass,
+		CustomerKeySHA256:       o.GetCustomerEncryption().GetKeySha256(),
+		KMSKeyName:              o.GetKmsKey(),
+		Created:                 convertProtoTime(o.GetCreateTime()),
+		Deleted:                 convertProtoTime(o.GetDeleteTime()),
+		Updated:                 convertProtoTime(o.GetUpdateTime()),
+		CustomTime:              convertProtoTime(o.GetCustomTime()),
 	}
 }
 
@@ -1643,9 +1769,87 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	r := c.raw.Projects.ServiceAccount.Get(projectID)
-	res, err := r.Context(ctx).Do()
+	var res *raw.ServiceAccount
+	var err error
+	err = runWithRetry(ctx, func() error {
+		res, err = r.Context(ctx).Do()
+		return err
+	})
 	if err != nil {
 		return "", err
 	}
 	return res.EmailAddress, nil
+}
+
+// bucketResourceName formats the given project ID and bucketResourceName ID
+// into a Bucket resource name. This is the format necessary for the gRPC API as
+// it conforms to the Resource-oriented design practices in https://google.aip.dev/121.
+func bucketResourceName(p, b string) string {
+	return fmt.Sprintf("projects/%s/buckets/%s", p, b)
+}
+
+// parseBucketName strips the leading resource path segment and returns the
+// bucket ID, which is the simple Bucket name typical of the v1 API.
+func parseBucketName(b string) string {
+	return strings.TrimPrefix(b, "projects/_/buckets/")
+}
+
+// setConditionProtoField uses protobuf reflection to set named condition field
+// to the given condition value if supported on the protobuf message.
+//
+// This is an experimental API and not intended for public use.
+func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
+	fields := m.Descriptor().Fields()
+	if rf := fields.ByName(protoreflect.Name(f)); rf != nil {
+		m.Set(rf, protoreflect.ValueOfInt64(v))
+		return true
+	}
+
+	return false
+}
+
+// applyCondsProto validates and attempts to set the conditions on a protobuf
+// message using protobuf reflection.
+//
+// This is an experimental API and not intended for public use.
+func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Message) error {
+	rmsg := msg.ProtoReflect()
+
+	if gen >= 0 {
+		if !setConditionProtoField(rmsg, "generation", gen) {
+			return fmt.Errorf("storage: %s: generation not supported", method)
+		}
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+
+	switch {
+	case conds.GenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_match", conds.GenerationMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
+		}
+	case conds.GenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_not_match", conds.GenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
+		}
+	case conds.DoesNotExist:
+		if !setConditionProtoField(rmsg, "if_generation_match", int64(0)) {
+			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
+		}
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_match", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_not_match", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
+		}
+	}
+	return nil
 }

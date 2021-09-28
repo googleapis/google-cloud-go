@@ -35,6 +35,7 @@ func main() {
 
 	req := &automlpb.UpdateTableSpecRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#UpdateTableSpecRequest.
 	}
 	resp, err := c.UpdateTableSpec(ctx, req)
 	if err != nil {

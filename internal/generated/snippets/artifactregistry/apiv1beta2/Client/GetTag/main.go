@@ -35,6 +35,7 @@ func main() {
 
 	req := &artifactregistrypb.GetTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#GetTagRequest.
 	}
 	resp, err := c.GetTag(ctx, req)
 	if err != nil {

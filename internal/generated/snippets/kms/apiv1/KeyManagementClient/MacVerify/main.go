@@ -35,6 +35,7 @@ func main() {
 
 	req := &kmspb.MacVerifyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#MacVerifyRequest.
 	}
 	resp, err := c.MacVerify(ctx, req)
 	if err != nil {
