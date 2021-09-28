@@ -2214,18 +2214,24 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		RoutingPolicy: SingleClusterRouting,
 	}
 
-	createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
-	if err != nil {
-		t.Fatalf("Creating app profile: %v", err)
-	}
+	testutil.Retry(t, 5, time.Second*5, func(r *testutil.R) {
+		createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
+		if err != nil {
+			t.Fatalf("Creating app profile: %v", err)
+		}
+		gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
+		if err != nil {
+			t.Fatalf("Get app profile: %v", err)
+		}
+
+		if !proto.Equal(createdProfile, gotProfile) {
+			t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
+		}
+	})
 
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
-	}
-
-	if !proto.Equal(createdProfile, gotProfile) {
-		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
 	}
 
 	list := func(instanceID string) ([]*btapb.AppProfile, error) {
