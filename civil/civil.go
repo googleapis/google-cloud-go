@@ -107,7 +107,7 @@ func (d1 Date) After(d2 Date) bool {
 	return d2.Before(d1)
 }
 
-// IsZero reports whether date fields are empty.
+// IsZero reports whether date fields are set to their default value.
 func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
 }
@@ -180,7 +180,7 @@ func (t Time) IsValid() bool {
 	return TimeOf(tm) == t
 }
 
-// IsZero reports whether time fields are empty.
+// IsZero reports whether time fields are set to their default value.
 func (t Time) IsZero() bool {
 	return (t.Hour == 0) && (t.Minute == 0) && (t.Second == 0) && (t.Nanosecond == 0)
 }
@@ -272,7 +272,7 @@ func (dt1 DateTime) After(dt2 DateTime) bool {
 	return dt2.Before(dt1)
 }
 
-// IsZero reports whether datetime fields are empty.
+// IsZero reports whether datetime fields are set to their default value.
 func (dt DateTime) IsZero() bool {
 	return dt.Date.IsZero() && dt.Time.IsZero()
 }
