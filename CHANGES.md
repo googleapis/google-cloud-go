@@ -12,9 +12,6 @@
 
 ### Bug Fixes
 
-* **accessapproval:** testing formatting change ([#4811](https://www.github.com/googleapis/google-cloud-go/issues/4811)) ([9423095](https://www.github.com/googleapis/google-cloud-go/commit/942309522c7d12463bfe9d30fddbea5c8dcf0aec))
-* **accessapproval:** testing formatting change ([#4819](https://www.github.com/googleapis/google-cloud-go/issues/4819)) ([5c1df89](https://www.github.com/googleapis/google-cloud-go/commit/5c1df8940048dbee7cac2d238892818993776bfe))
-* **asset:** depend on the existing access_context_manager and os_config clients rather than copying their classes into the asset client ([bddab08](https://www.github.com/googleapis/google-cloud-go/commit/bddab08dfd0b9a0a79b113a46a0dd84dba1f3d3b))
 * **internal/gapicgen:** restore fmting proto files ([#4789](https://www.github.com/googleapis/google-cloud-go/issues/4789)) ([5606b54](https://www.github.com/googleapis/google-cloud-go/commit/5606b54b97bb675487c6c138a4081c827218f933))
 * **internal/trace:** use xerrors.As for trace ([#4813](https://www.github.com/googleapis/google-cloud-go/issues/4813)) ([05fe61c](https://www.github.com/googleapis/google-cloud-go/commit/05fe61c5aa4860bdebbbe3e91a9afaba16aa6184))
 
