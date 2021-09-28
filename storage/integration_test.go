@@ -2709,7 +2709,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
+	//t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
 	// This test needs a second project and user (token source) to test
 	// all possibilities. Since we need these things for Firestore already,
 	// we use them here.
@@ -2738,40 +2738,42 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	const wantErrorCode = 400
 
 	ctx := context.Background()
-	client := testConfig(ctx, t)
-	defer client.Close()
 	h := testHelper{t}
 
-	bucketName2 := uidSpace.New()
-	b1 := client.Bucket(bucketName2)
+	// Set project IDs
+	const noPermissionsProjID = "veener-jba" // a third project, one on which the user does NOT have Editor permission
+
 	projID := testutil.ProjID()
+
 	// Use Firestore project as a project that does not contain the bucket.
 	otherProjID := os.Getenv(envFirestoreProjID)
 	if otherProjID == "" {
 		t.Fatalf("need a second project (env var %s)", envFirestoreProjID)
 	}
+
 	ts := testutil.TokenSourceEnv(ctx, envFirestorePrivateKey, ScopeFullControl)
 	if ts == nil {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
+
+	// Start clients
+	client := testConfig(ctx, t)
+	defer client.Close()
 	otherClient, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer otherClient.Close()
-	b2 := otherClient.Bucket(bucketName2)
-	user, err := keyFileEmail(os.Getenv("GCLOUD_TESTS_GOLANG_KEY"))
+
+	// Get user emails from credentials
+	jwt, err := testutil.JWTConfig()
 	if err != nil {
 		t.Fatal(err)
 	}
+	user := jwt.Email
+
 	otherUser, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
 	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Create a requester-pays bucket. The bucket is contained in the project projID.
-	h.mustCreate(b1, projID, &BucketAttrs{RequesterPays: true})
-	if err := b1.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
 		t.Fatal(err)
 	}
 
@@ -2784,6 +2786,31 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			return err.Code
 		}
 		return -1
+	}
+
+	obj1 := "acl-go-test" + uidSpace.New()
+	obj2 := "acl-go-test" + uidSpace.New()
+
+	bucketName := uidSpace.New()
+	bucketName2 := uidSpace.New()
+	b1 := client.Bucket(bucketName)
+	b2 := otherClient.Bucket(bucketName)
+
+	// These are buckets with the same functionality as b1 and b2
+	// We create these to avoid rate limit for bucket operations
+	b1a := client.Bucket(bucketName2)
+	b2a := otherClient.Bucket(bucketName2)
+
+	// Create a requester-pays bucket. The bucket is contained in the project projID.
+	h.mustCreate(b1, projID, &BucketAttrs{RequesterPays: true})
+	if err := b1.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
+		t.Fatal(err)
+	}
+
+	// Repeat for b1a
+	h.mustCreate(b1a, projID, &BucketAttrs{RequesterPays: true})
+	if err := b1a.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
+		t.Fatal(err)
 	}
 
 	// Call f under various conditions.
@@ -2803,13 +2830,13 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: an Owner on the containing project
 		// userProject: containing project
 		// result: success, by the same rule as above; userProject is unnecessary but allowed.
-		if err := f(b1.UserProject(projID)); err != nil {
+		if err := f(b1a.UserProject(projID)); err != nil {
 			t.Errorf("%s: got %v, want nil", msg, err)
 		}
 		// user: not an Owner on the containing project
 		// userProject: absent
 		// result: failure, by the standard requester-pays rule
-		err := f(b2)
+		err := f(b2a)
 		if got, want := errCode(err), wantErrorCode; got != want {
 			t.Errorf("%s: got error %v with code %d, want code %d\n"+
 				"confirm that %s is NOT an Owner on %s",
@@ -2818,7 +2845,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: not an Owner on the containing project
 		// userProject: not the containing one, but user has Editor role on it
 		// result: success, by the standard requester-pays rule
-		if err := f(b2.UserProject(otherProjID)); err != nil {
+		if err := f(b2a.UserProject(otherProjID)); err != nil {
 			t.Errorf("%s: got %v, want nil\n"+
 				"confirm that %s is an Editor on %s and that that project has billing enabled",
 				msg, err, otherUser, otherProjID)
@@ -2826,11 +2853,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// user: not an Owner on the containing project
 		// userProject: the containing one, on which the user does NOT have Editor permission.
 		// result: failure
-		err = f(b2.UserProject("veener-jba"))
+		err = f(b2.UserProject(noPermissionsProjID))
 		if got, want := errCode(err), 403; got != want {
 			t.Errorf("%s: got error %v, want code %d\n"+
 				"confirm that %s is NOT an Editor on %s",
-				msg, err, want, otherUser, "veener-jba")
+				msg, err, want, otherUser, noPermissionsProjID)
 		}
 	}
 
@@ -2849,10 +2876,10 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		}
 	}
 	// Object operations.
-	obj1 := "acl-go-test" + uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
 		return writeObject(ctx, b.Object(obj1), "text/plain", []byte("hello"))
 	})
+
 	call("read object", func(b *BucketHandle) error {
 		_, err := readObject(ctx, b.Object(obj1))
 		return err
@@ -2868,7 +2895,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 	// ACL operations.
 	// Create another object for these to avoid object rate limits.
-	obj2 := "acl-go-test" + uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
 		return writeObject(ctx, b.Object(obj2), "text/plain", []byte("hello"))
 	})
@@ -2932,7 +2958,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// The storage service may perform validation in any order (perhaps in parallel),
 		// so if we delete an object that doesn't exist and for which we lack permission,
 		// we could see either of those two errors. (See Google-internal bug 78341001.)
-		h.mustWrite(b1.Object(obj1).NewWriter(ctx), []byte("hello")) // note: b1, not b.
+		h.mustWrite(b1.Object(obj1).NewWriter(ctx), []byte("hello"))  // note: b1, not b.
+		h.mustWrite(b1a.Object(obj1).NewWriter(ctx), []byte("hello")) // b1a as well
 		return b.Object(obj1).Delete(ctx)
 	})
 	b1.Object(obj1).Delete(ctx) // Clean up created objects.
