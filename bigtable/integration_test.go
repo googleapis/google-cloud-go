@@ -2458,8 +2458,6 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Create backup
-	uniqueID := make([]byte, 8)
-	_, err = rand.Read(uniqueID)
 	if err != nil {
 		t.Fatalf("Failed to generate a unique ID: %v", err)
 	}
