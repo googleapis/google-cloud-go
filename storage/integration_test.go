@@ -265,6 +265,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
 	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
+	}
 	h.mustDeleteBucket(b)
 
 	// Test Create and Delete with attributes.
@@ -330,6 +333,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	}
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
+	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
 	}
 	h.mustDeleteBucket(b)
 }
