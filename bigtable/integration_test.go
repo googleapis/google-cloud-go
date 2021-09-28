@@ -2422,7 +2422,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	diffInstance := testEnv.Config().Instance + "-d"
+	uniqueID := make([]byte, 8)
+	_, err = rand.Read(uniqueID)
+	diffInstance := testEnv.Config().Instance + "-d" + string(uniqueID)
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
