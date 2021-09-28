@@ -2218,6 +2218,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating app profile: %v", err)
 	}
+
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
