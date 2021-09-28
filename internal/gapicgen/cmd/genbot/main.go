@@ -53,6 +53,7 @@ func main() {
 	gapicToGenerate := flag.String("gapic", os.Getenv("GAPIC_TO_GENERATE"), `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
 	onlyGapics := flag.Bool("only-gapics", strToBool(os.Getenv("ONLY_GAPICS")), "Enabling stops regenerating genproto.")
 	regenOnly := flag.Bool("regen-only", strToBool(os.Getenv("REGEN_ONLY")), "Enabling means no vetting, manifest updates, or compilation.")
+	genModule := flag.Bool("generate-module", strToBool(os.Getenv("GENERATE_MODULE")), "Enabling means a new module will be generated for API being generated.")
 
 	flag.Parse()
 
@@ -67,6 +68,7 @@ func main() {
 			onlyGapics:         *onlyGapics,
 			regenOnly:          *regenOnly,
 			forceAll:           *forceAll,
+			genModule:          *genModule,
 		}); err != nil {
 			log.Fatal(err)
 		}
