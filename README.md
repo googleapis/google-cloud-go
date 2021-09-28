@@ -70,7 +70,7 @@ make backwards-incompatible changes.
 | [Translate][cloud-translate]                    | stable | [`cloud.google.com/go/translate`](https://pkg.go.dev/cloud.google.com/go/translate)                                           |
 | [Video Intelligence][cloud-video]               | beta   | [`cloud.google.com/go/videointelligence/apiv1beta2`](https://pkg.go.dev/cloud.google.com/go/videointelligence/apiv1beta2)     |
 | [Vision][cloud-vision]                          | stable | [`cloud.google.com/go/vision/apiv1`](https://pkg.go.dev/cloud.google.com/go/vision/apiv1)                                     |
-| [Webrisk][cloud-webrisk]                        | alpha  | [`cloud.google.com/go/webrisk/apiv1beta1`](https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1)                         |
+| [Webrisk][cloud-webrisk]                        | alpha  | [`cloud.google.com/go/webrisk/apiv1`](https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1)                         |
 
 > **Alpha status**: the API is still being actively developed. As a
 > result, it might change in backward-incompatible ways and is not recommended
