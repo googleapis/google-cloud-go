@@ -1182,8 +1182,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 			if got, want := r, fmt.Sprintf("item-%d", i); got != want {
 				t.Fatalf("%d: got %s, want %s", i, got, want)
 			}
-		case <-time.After(5 * time.Second):
-			t.Fatalf("timed out after 5s waiting for item %d", i)
+		case <-time.After(30 * time.Second):
+			t.Fatalf("timed out after 30s waiting for item %d", i)
 		}
 	}
 }
