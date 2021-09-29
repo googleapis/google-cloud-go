@@ -529,6 +529,90 @@
           }
         }
       }
+    },
+    "VizierService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VizierClient",
+          "rpcs": {
+            "AddTrialMeasurement": {
+              "methods": [
+                "AddTrialMeasurement"
+              ]
+            },
+            "CheckTrialEarlyStoppingState": {
+              "methods": [
+                "CheckTrialEarlyStoppingState"
+              ]
+            },
+            "CompleteTrial": {
+              "methods": [
+                "CompleteTrial"
+              ]
+            },
+            "CreateStudy": {
+              "methods": [
+                "CreateStudy"
+              ]
+            },
+            "CreateTrial": {
+              "methods": [
+                "CreateTrial"
+              ]
+            },
+            "DeleteStudy": {
+              "methods": [
+                "DeleteStudy"
+              ]
+            },
+            "DeleteTrial": {
+              "methods": [
+                "DeleteTrial"
+              ]
+            },
+            "GetStudy": {
+              "methods": [
+                "GetStudy"
+              ]
+            },
+            "GetTrial": {
+              "methods": [
+                "GetTrial"
+              ]
+            },
+            "ListOptimalTrials": {
+              "methods": [
+                "ListOptimalTrials"
+              ]
+            },
+            "ListStudies": {
+              "methods": [
+                "ListStudies"
+              ]
+            },
+            "ListTrials": {
+              "methods": [
+                "ListTrials"
+              ]
+            },
+            "LookupStudy": {
+              "methods": [
+                "LookupStudy"
+              ]
+            },
+            "StopTrial": {
+              "methods": [
+                "StopTrial"
+              ]
+            },
+            "SuggestTrials": {
+              "methods": [
+                "SuggestTrials"
+              ]
+            }
+          }
+        }
+      }
     }
   }
 }
