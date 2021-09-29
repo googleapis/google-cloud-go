@@ -2709,7 +2709,6 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
-	//t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
 	// This test needs a second project and user (token source) to test
 	// all possibilities. Since we need these things for Firestore already,
 	// we use them here.
@@ -2964,13 +2963,21 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	})
 	b1.Object(obj1).Delete(ctx) // Clean up created objects.
 	b1.Object(obj2).Delete(ctx)
+	b1a.Object(obj1).Delete(ctx)
+	b1a.Object(obj2).Delete(ctx)
 	for _, obj := range []string{"copy", "compose"} {
 		if err := b1.UserProject(projID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)
 		}
 	}
+	for _, obj := range []string{"copy", "compose"} {
+		if err := b1a.UserProject(projID).Object(obj).Delete(ctx); err != nil {
+			t.Fatalf("could not delete %q: %v", obj, err)
+		}
+	}
 
 	h.mustDeleteBucket(b1)
+	h.mustDeleteBucket(b1a)
 }
 
 func TestIntegration_Notifications(t *testing.T) {
