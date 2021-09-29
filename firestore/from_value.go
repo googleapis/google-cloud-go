@@ -310,7 +310,27 @@ func populateStruct(vs reflect.Value, pm map[string]*pb.Value, c *Client) error 
 	if err != nil {
 		return err
 	}
+
+	// Find best field matches
+	matched := make(map[string]*pb.Value)
 	for k, vproto := range pm {
+		f := fields.Match(k)
+		if f == nil {
+			continue
+		}
+		if _, ok := matched[f.Name]; ok {
+			// If multiple case insensitive fields match, the exact match
+			// should win.
+			if f.Name == k {
+				matched[k] = vproto
+			}
+		} else {
+			matched[f.Name] = vproto
+		}
+	}
+
+	// Reflect values
+	for k, vproto := range matched {
 		f := fields.Match(k)
 		if f == nil {
 			continue
