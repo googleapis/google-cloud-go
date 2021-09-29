@@ -376,10 +376,6 @@ const (
 	// not set in a call to GCS.
 	PublicAccessPreventionUnknown PublicAccessPrevention = iota
 
-	// PublicAccessPreventionInherited corresponds to a value of "inherited"
-	// and is the default for buckets.
-	PublicAccessPreventionInherited
-
 	// PublicAccessPreventionUnspecified corresponds to a value of "inherited".
 	// Deprecated: use PublicAccessPreventionInherited
 	PublicAccessPreventionUnspecified
@@ -387,6 +383,10 @@ const (
 	// PublicAccessPreventionEnforced corresponds to a value of "enforced". This
 	// enforces Public Access Prevention on the bucket.
 	PublicAccessPreventionEnforced
+
+	// PublicAccessPreventionInherited corresponds to a value of "inherited"
+	// and is the default for buckets.
+	PublicAccessPreventionInherited
 
 	publicAccessPreventionUnknown     string = ""
 	publicAccessPreventionInherited          = "inherited"
