@@ -1,5 +1,12 @@
 # Changes
 
+## [0.97.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.96.0...v0.97.0) (2021-09-29)
+
+
+### Features
+
+* **internal** add Retry func to testutil from samples repository [#4902](https://github.com/googleapis/google-cloud-go/pull/4902)
+
 ## [0.96.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.95.0...v0.96.0) (2021-09-28)
 
 
