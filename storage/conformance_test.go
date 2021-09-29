@@ -40,11 +40,13 @@ import (
 )
 
 var (
+	// Resource vars for retry tests
 	bucketIDs           = uid.NewSpace("bucket", nil)
 	objectIDs           = uid.NewSpace("object", nil)
 	notificationIDs     = uid.NewSpace("notification", nil)
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
+	randomBytesToWrite  = []byte("abcdef")
 )
 
 // Holds the resources for a particular test case. Only the necessary fields will
@@ -72,7 +74,7 @@ func (fs *resources) populate(ctx context.Context, c *Client, resource storage_v
 		// Assumes bucket has been populated first.
 		obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
 		w := obj.NewWriter(ctx)
-		if _, err := w.Write([]byte("abcdef")); err != nil {
+		if _, err := w.Write(randomBytesToWrite); err != nil {
 			return fmt.Errorf("writing object: %v", err)
 		}
 		if err := w.Close(); err != nil {
@@ -123,6 +125,8 @@ var methods = map[string][]retryFunc{
 func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
+		// This test is currently skipped in CI as the env variable is not set
+		// TODO: Add test to CI
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
 
