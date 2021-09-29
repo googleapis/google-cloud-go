@@ -153,12 +153,9 @@ func TestRetryConformance(t *testing.T) {
 
 							// Create the retry subtest
 							subtest := &retrySubtest{T: t, name: testName}
-							err := subtest.create(host, map[string][]string{
+							subtest.create(host, map[string][]string{
 								method.Name: instructions.Instructions,
 							})
-							if err != nil {
-								t.Fatalf("setting up retry test: %v", err)
-							}
 
 							// Create necessary test resources in the emulator
 							fs := &resources{}
@@ -179,14 +176,10 @@ func TestRetryConformance(t *testing.T) {
 
 							// Verify that all instructions were used up during the test
 							// (indicates that the client sent the correct requests).
-							if err := subtest.check(); err != nil {
-								t.Errorf("checking instructions: %v", err)
-							}
+							subtest.check()
 
 							// Close out test in emulator.
-							if err := subtest.delete(); err != nil {
-								t.Errorf("deleting retry test: %v", err)
-							}
+							subtest.delete()
 						})
 					}
 
@@ -205,11 +198,11 @@ type retrySubtest struct {
 	wrappedClient *Client
 }
 
-// Create a retry test resource in the emulator
-func (rt *retrySubtest) create(host string, instructions map[string][]string) error {
+// create creates a retry test resource in the emulator
+func (rt *retrySubtest) create(host string, instructions map[string][]string) {
 	endpoint, err := parseURL(host)
 	if err != nil {
-		return err
+		rt.Fatalf("setting up retry test: %v", err)
 	}
 	rt.host = endpoint
 
@@ -222,13 +215,13 @@ func (rt *retrySubtest) create(host string, instructions map[string][]string) er
 
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
-		return fmt.Errorf("encoding request: %v", err)
+		rt.Fatalf("encoding request: %v", err)
 	}
 
 	rt.host.Path = "retry_test"
 	resp, err := c.Post(rt.host.String(), "application/json", buf)
 	if err != nil || resp.StatusCode != 200 {
-		return fmt.Errorf("creating retry test: err: %v, resp: %+v", err, resp)
+		rt.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
@@ -240,7 +233,7 @@ func (rt *retrySubtest) create(host string, instructions map[string][]string) er
 		TestID string `json:"id"`
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
-		return fmt.Errorf("decoding test ID: %v", err)
+		rt.Fatalf("decoding test ID: %v", err)
 	}
 
 	rt.id = testRes.TestID
@@ -249,20 +242,18 @@ func (rt *retrySubtest) create(host string, instructions map[string][]string) er
 	rt.host.Path = ""
 	client, err := wrappedClient(rt.T, rt.host.String(), rt.id)
 	if err != nil {
-		return fmt.Errorf("creating wrapped client: %v", err)
+		rt.Fatalf("creating wrapped client: %v", err)
 	}
 	rt.wrappedClient = client
-
-	return nil
 }
 
 // Verify that all instructions for a given retry testID have been used up.
-func (rt *retrySubtest) check() error {
+func (rt *retrySubtest) check() {
 	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
 	c := http.DefaultClient
 	resp, err := c.Get(rt.host.String())
 	if err != nil || resp.StatusCode != 200 {
-		return fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+		rt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
@@ -275,27 +266,25 @@ func (rt *retrySubtest) check() error {
 		Completed    bool
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
-		return fmt.Errorf("decoding response: %v", err)
+		rt.Errorf("decoding response: %v", err)
 	}
 	if !testRes.Completed {
-		return fmt.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
+		rt.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
 	}
-	return nil
 }
 
 // Delete a retry test resource.
-func (rt *retrySubtest) delete() error {
+func (rt *retrySubtest) delete() {
 	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
 	c := http.DefaultClient
 	req, err := http.NewRequest("DELETE", rt.host.String(), nil)
 	if err != nil {
-		return fmt.Errorf("creating request: %v", err)
+		rt.Errorf("creating request: %v", err)
 	}
 	resp, err := c.Do(req)
 	if err != nil || resp.StatusCode != 200 {
-		return fmt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
+		rt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
-	return nil
 }
 
 type testRoundTripper struct {
