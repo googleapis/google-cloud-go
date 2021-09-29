@@ -388,10 +388,11 @@ const (
 	// and is the default for buckets.
 	PublicAccessPreventionInherited
 
-	publicAccessPreventionUnknown     string = ""
-	publicAccessPreventionInherited          = "inherited"
-	publicAccessPreventionUnspecified        = "unspecified"
-	publicAccessPreventionEnforced           = "enforced"
+	publicAccessPreventionUnknown string = ""
+	// TODO: remove unspecified when change is fully completed
+	publicAccessPreventionUnspecified = "unspecified"
+	publicAccessPreventionEnforced    = "enforced"
+	publicAccessPreventionInherited   = "inherited"
 )
 
 func (p PublicAccessPrevention) String() string {
