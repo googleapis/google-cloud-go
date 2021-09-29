@@ -129,6 +129,10 @@ func TestRetryConformance(t *testing.T) {
 		// TODO: Add test to CI
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
+	endpoint, err := url.Parse(host)
+	if err != nil {
+		t.Fatalf("error parsing emulator host (make sure it includes the scheme such as http://host): %v", err)
+	}
 
 	ctx := context.Background()
 
@@ -152,8 +156,8 @@ func TestRetryConformance(t *testing.T) {
 						t.Run(testName, func(t *testing.T) {
 
 							// Create the retry subtest
-							subtest := &retrySubtest{T: t, name: testName}
-							subtest.create(host, map[string][]string{
+							subtest := &retrySubtest{T: t, name: testName, host: endpoint}
+							subtest.create(map[string][]string{
 								method.Name: instructions.Instructions,
 							})
 
@@ -199,13 +203,7 @@ type retrySubtest struct {
 }
 
 // create creates a retry test resource in the emulator
-func (rt *retrySubtest) create(host string, instructions map[string][]string) {
-	endpoint, err := parseURL(host)
-	if err != nil {
-		rt.Fatalf("setting up retry test: %v", err)
-	}
-	rt.host = endpoint
-
+func (rt *retrySubtest) create(instructions map[string][]string) {
 	c := http.DefaultClient
 	data := struct {
 		Instructions map[string][]string `json:"instructions"`
@@ -247,7 +245,7 @@ func (rt *retrySubtest) create(host string, instructions map[string][]string) {
 	rt.wrappedClient = client
 }
 
-// Verify that all instructions for a given retry testID have been used up.
+// check verifies that all instructions for a given retry testID have been used up
 func (rt *retrySubtest) check() {
 	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
 	c := http.DefaultClient
@@ -287,13 +285,14 @@ func (rt *retrySubtest) delete() {
 	}
 }
 
-type testRoundTripper struct {
+// retryTestRoundTripper sends the retry test ID to the emulator with each request
+type retryTestRoundTripper struct {
 	*testing.T
 	rt     http.RoundTripper
 	testID string
 }
 
-func (wt *testRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("x-retry-test-id", wt.testID)
 
 	requestDump, err := httputil.DumpRequest(r, false)
@@ -308,7 +307,7 @@ func (wt *testRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, err
 }
 
-// Create custom client that sends instruction
+// Create custom client that sends instructions to the storage testbench Retry Test API
 func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
@@ -320,7 +319,7 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client
-	wrappedTrans := &testRoundTripper{rt: c.Transport, testID: testID, T: t}
+	wrappedTrans := &retryTestRoundTripper{rt: c.Transport, testID: testID, T: t}
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
