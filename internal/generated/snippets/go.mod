@@ -23,8 +23,9 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.93.3
+	cloud.google.com/go v0.95.0
 	cloud.google.com/go/accessapproval v0.1.0
+	cloud.google.com/go/accesscontextmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v0.1.0
 	cloud.google.com/go/analytics v0.1.0
 	cloud.google.com/go/apigateway v0.1.0
@@ -42,6 +43,7 @@ require (
 	cloud.google.com/go/cloudbuild v0.1.0
 	cloud.google.com/go/clouddms v0.1.0
 	cloud.google.com/go/cloudtasks v0.1.0
+	cloud.google.com/go/contactcenterinsights v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/container v0.1.0
 	cloud.google.com/go/containeranalysis v0.1.0
 	cloud.google.com/go/datacatalog v0.1.0
@@ -78,7 +80,9 @@ require (
 	cloud.google.com/go/monitoring v0.1.0
 	cloud.google.com/go/networkconnectivity v0.1.0
 	cloud.google.com/go/networkmanagement v0.1.0
+	cloud.google.com/go/networksecurity v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/notebooks v0.1.0
+	cloud.google.com/go/orchestration v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/orgpolicy v0.1.0
 	cloud.google.com/go/osconfig v0.1.0
 	cloud.google.com/go/oslogin v0.1.0
@@ -118,8 +122,8 @@ require (
 	cloud.google.com/go/webrisk v0.1.0
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
-	google.golang.org/api v0.56.0
-	google.golang.org/genproto v0.0.0-20210909211513-a8c4777a87af
+	google.golang.org/api v0.58.0
+	google.golang.org/genproto v0.0.0-20210930144712-2e2e1008e8a3
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -299,3 +303,11 @@ replace cloud.google.com/go/gkeconnect => ../../../gkeconnect
 replace cloud.google.com/go/area120 => ../../../area120
 
 replace cloud.google.com/go/analytics => ../../../analytics
+
+replace cloud.google.com/go/accesscontextmanager => ../../../accesscontextmanager
+
+replace cloud.google.com/go/contactcenterinsights => ../../../contactcenterinsights
+
+replace cloud.google.com/go/networksecurity => ../../../networksecurity
+
+replace cloud.google.com/go/orchestration => ../../../orchestration
