@@ -606,12 +606,12 @@ func TestHeaders(t *testing.T) {
 	ctx := context.Background()
 
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		content_type := r.Header.Get("Content-Type")
-		x_goog := r.Header.Get("X-Goog-Api-Client")
-		if content_type != "application/json" {
-			t.Fatalf("Content-Type header was %s, expected `application/json`.", content_type)
+		contentType := r.Header.Get("Content-Type")
+		xGoog := r.Header.Get("X-Goog-Api-Client")
+		if contentType != "application/json" {
+			t.Fatalf("Content-Type header was %s, expected `application/json`.", contentType)
 		}
-		if !strings.Contains(x_goog, "rest/") {
+		if !strings.Contains(xGoog, "rest/") {
 			t.Fatal("X-Goog-Api-Client header doesn't contain `rest/`")
 		}
 	}))
