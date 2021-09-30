@@ -39,12 +39,13 @@ type ReportErrorsCallOptions struct {
 	ReportErrorEvent []gax.CallOption
 }
 
-func defaultReportErrorsClientOptions() []option.ClientOption {
+func defaultReportErrorsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -57,81 +58,46 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
+// internalReportErrorsClient is an interface that defines the methods availaible from Error Reporting API.
+type internalReportErrorsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ReportErrorEvent(context.Context, *clouderrorreportingpb.ReportErrorEventRequest, ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error)
+}
+
 // ReportErrorsClient is a client for interacting with Error Reporting API.
-//
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// An API for reporting error events.
 type ReportErrorsClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
+	// The internal transport-dependent client.
+	internalClient internalReportErrorsClient
 
 	// The call options for this service.
 	CallOptions *ReportErrorsCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
 }
 
-// NewReportErrorsClient creates a new report errors service client.
-//
-// An API for reporting error events.
-func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
-	clientOpts := defaultReportErrorsClientOptions()
-
-	if newReportErrorsClientHook != nil {
-		hookOpts, err := newReportErrorsClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &ReportErrorsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultReportErrorsCallOptions(),
-
-		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	return c, nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ReportErrorsClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ReportErrorsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // ReportErrorEvent report an individual error event and record the event to a log.
@@ -151,6 +117,90 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 // Using Error Reporting with regionalized
 // logs (at /error-reporting/docs/regionalization).
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+	return c.internalClient.ReportErrorEvent(ctx, req, opts...)
+}
+
+// reportErrorsGRPCClient is a client for interacting with Error Reporting API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type reportErrorsGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing ReportErrorsClient
+	CallOptions **ReportErrorsCallOptions
+
+	// The gRPC API client.
+	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewReportErrorsClient creates a new report errors service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// An API for reporting error events.
+func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*ReportErrorsClient, error) {
+	clientOpts := defaultReportErrorsGRPCClientOptions()
+	if newReportErrorsClientHook != nil {
+		hookOpts, err := newReportErrorsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := ReportErrorsClient{CallOptions: defaultReportErrorsCallOptions()}
+
+	c := &reportErrorsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
+		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
+		CallOptions:        &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *reportErrorsGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *reportErrorsGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *reportErrorsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -158,7 +208,7 @@ func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReportErrorEvent[0:len(c.CallOptions.ReportErrorEvent):len(c.CallOptions.ReportErrorEvent)], opts...)
+	opts = append((*c.CallOptions).ReportErrorEvent[0:len((*c.CallOptions).ReportErrorEvent):len((*c.CallOptions).ReportErrorEvent)], opts...)
 	var resp *clouderrorreportingpb.ReportErrorEventResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

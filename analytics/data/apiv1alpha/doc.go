@@ -19,6 +19,44 @@
 //
 // Accesses report data in Google Analytics.
 //
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//
+// Example usage
+//
+// To get started with this package, create a client.
+//  ctx := context.Background()
+//  c, err := data.NewAlphaAnalyticsDataClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+// The client will use your default application credentials. Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
+// The returned client must be Closed when it is done being used.
+//
+// Using the Client
+//
+// The following is an example of making an API call with the newly created client.
+//
+//  ctx := context.Background()
+//  c, err := data.NewAlphaAnalyticsDataClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+//  req := &datapb.RunReportRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunReportRequest.
+//  }
+//  resp, err := c.RunReport(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  // TODO: Use resp.
+//  _ = resp
+//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -28,7 +66,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package data // import "cloud.google.com/go/analytics/data/apiv1alpha"
 
 import (
@@ -48,7 +86,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210424"
+const versionClient = "20210921"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -145,8 +145,8 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -165,4 +165,16 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
 		})
 	}
+}
+
+func TestPartitionedUpdate_Tagging(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	_, err := client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{RequestTag: "pdml-tag"})
+	if err != nil {
+		t.Fatalf("expect no errors, but got %v", err)
+	}
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
 }

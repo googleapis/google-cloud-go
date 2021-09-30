@@ -284,6 +284,7 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	// Set a very low timeout to ensure no retries.
 	timeout := time.Millisecond
 	pub := newTestStreamHandler(t, timeout)
+	pub.Stream.initTimeout = defaultInitTimeout
 	wantErr := status.Error(codes.DeadlineExceeded, "timeout")
 
 	verifiers := test.NewVerifiers(t)
@@ -311,6 +312,46 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	}
 	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
 		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
+	}
+}
+
+func TestRetryableStreamInitTimeout(t *testing.T) {
+	const streamInitTimeout = 50 * time.Millisecond
+	const streamResponseDelay = 75 * time.Millisecond
+
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+	pub.Stream.initTimeout = streamInitTimeout
+
+	verifiers := test.NewVerifiers(t)
+
+	// First stream will have a delayed response.
+	stream1 := test.NewRPCVerifier(t)
+	barrier := stream1.PushWithBarrier(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	// Second stream should succeed.
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	barrier.ReleaseAfter(func() {
+		time.Sleep(streamResponseDelay)
+	})
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 }
 
@@ -348,6 +389,87 @@ func TestRetryableStreamSendReceive(t *testing.T) {
 	}
 	if gotResp := pub.NextResponse(); !testutil.Equal(gotResp, wantResp) {
 		t.Errorf("Stream response: got %v, want %v", gotResp, wantResp)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if gotErr := pub.Stream.Error(); gotErr != nil {
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
+	}
+}
+
+func TestRetryableStreamConnectReceivesResetSignal(t *testing.T) {
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+
+	verifiers := test.NewVerifiers(t)
+
+	stream1 := test.NewRPCVerifier(t)
+	// Reset signal received during stream initialization.
+	stream1.Push(pub.InitialReq, nil, makeStreamResetSignal())
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamResetState; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if gotErr := pub.Stream.Error(); gotErr != nil {
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
+	}
+}
+
+func TestRetryableStreamDisconnectedWithResetSignal(t *testing.T) {
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+
+	verifiers := test.NewVerifiers(t)
+
+	stream1 := test.NewRPCVerifier(t)
+	stream1.Push(pub.InitialReq, initPubResp(), nil)
+	// Reset signal received after stream is connected.
+	stream1.Push(nil, nil, makeStreamResetSignal())
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamResetState; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 
 	pub.Stream.Stop()

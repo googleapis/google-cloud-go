@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -48,12 +48,13 @@ type CallOptions struct {
 	DeleteAccessApprovalSettings []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("accessapproval.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("accessapproval.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://accessapproval.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -102,27 +103,164 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Access Approval API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListApprovalRequests(context.Context, *accessapprovalpb.ListApprovalRequestsMessage, ...gax.CallOption) *ApprovalRequestIterator
+	GetApprovalRequest(context.Context, *accessapprovalpb.GetApprovalRequestMessage, ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error)
+	ApproveApprovalRequest(context.Context, *accessapprovalpb.ApproveApprovalRequestMessage, ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error)
+	DismissApprovalRequest(context.Context, *accessapprovalpb.DismissApprovalRequestMessage, ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error)
+	GetAccessApprovalSettings(context.Context, *accessapprovalpb.GetAccessApprovalSettingsMessage, ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error)
+	UpdateAccessApprovalSettings(context.Context, *accessapprovalpb.UpdateAccessApprovalSettingsMessage, ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error)
+	DeleteAccessApprovalSettings(context.Context, *accessapprovalpb.DeleteAccessApprovalSettingsMessage, ...gax.CallOption) error
+}
+
 // Client is a client for interacting with Access Approval API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// This API allows a customer to manage accesses to cloud resources by
+// Google personnel. It defines the following resource model:
+//
+//   The API has a collection of
+//   ApprovalRequest
+//   resources, named approvalRequests/{approval_request_id}
+//
+//   The API has top-level settings per Project/Folder/Organization, named
+//   accessApprovalSettings
+//
+// The service also periodically emails a list of recipients, defined at the
+// Project/Folder/Organization level in the accessApprovalSettings, when there
+// is a pending ApprovalRequest for them to act on. The ApprovalRequests can
+// also optionally be published to a Cloud Pub/Sub topic owned by the customer
+// (for Beta, the Pub/Sub setup is managed manually).
+//
+// ApprovalRequests can be approved or dismissed. Google personel can only
+// access the indicated resource or resources if the request is approved
+// (subject to some exclusions:
+// https://cloud.google.com/access-approval/docs/overview#exclusions (at https://cloud.google.com/access-approval/docs/overview#exclusions)).
+//
+// Note: Using Access Approval functionality will mean that Google may not be
+// able to meet the SLAs for your chosen products, as any support response times
+// may be dramatically increased. As such the SLAs do not apply to any service
+// disruption to the extent impacted by Customer’s use of Access Approval. Do
+// not enable Access Approval for projects where you may require high service
+// availability and rapid response by Google Cloud Support.
+//
+// After a request is approved or dismissed, no further action may be taken on
+// it. Requests with the requested_expiration in the past or with no activity
+// for 14 days are considered dismissed. When an approval expires, the request
+// is considered dismissed.
+//
+// If a request is not approved or dismissed, we call it pending.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListApprovalRequests lists approval requests associated with a project, folder, or organization.
+// Approval requests can be filtered by state (pending, active, dismissed).
+// The order is reverse chronological.
+func (c *Client) ListApprovalRequests(ctx context.Context, req *accessapprovalpb.ListApprovalRequestsMessage, opts ...gax.CallOption) *ApprovalRequestIterator {
+	return c.internalClient.ListApprovalRequests(ctx, req, opts...)
+}
+
+// GetApprovalRequest gets an approval request. Returns NOT_FOUND if the request does not exist.
+func (c *Client) GetApprovalRequest(ctx context.Context, req *accessapprovalpb.GetApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+	return c.internalClient.GetApprovalRequest(ctx, req, opts...)
+}
+
+// ApproveApprovalRequest approves a request and returns the updated ApprovalRequest.
+//
+// Returns NOT_FOUND if the request does not exist. Returns
+// FAILED_PRECONDITION if the request exists but is not in a pending state.
+func (c *Client) ApproveApprovalRequest(ctx context.Context, req *accessapprovalpb.ApproveApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+	return c.internalClient.ApproveApprovalRequest(ctx, req, opts...)
+}
+
+// DismissApprovalRequest dismisses a request. Returns the updated ApprovalRequest.
+//
+// NOTE: This does not deny access to the resource if another request has been
+// made and approved. It is equivalent in effect to ignoring the request
+// altogether.
+//
+// Returns NOT_FOUND if the request does not exist.
+//
+// Returns FAILED_PRECONDITION if the request exists but is not in a pending
+// state.
+func (c *Client) DismissApprovalRequest(ctx context.Context, req *accessapprovalpb.DismissApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+	return c.internalClient.DismissApprovalRequest(ctx, req, opts...)
+}
+
+// GetAccessApprovalSettings gets the settings associated with a project, folder, or organization.
+func (c *Client) GetAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.GetAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
+	return c.internalClient.GetAccessApprovalSettings(ctx, req, opts...)
+}
+
+// UpdateAccessApprovalSettings updates the settings associated with a project, folder, or organization.
+// Settings to update are determined by the value of field_mask.
+func (c *Client) UpdateAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.UpdateAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
+	return c.internalClient.UpdateAccessApprovalSettings(ctx, req, opts...)
+}
+
+// DeleteAccessApprovalSettings deletes the settings associated with a project, folder, or organization.
+// This will have the effect of disabling Access Approval for the project,
+// folder, or organization, but only if all ancestors also have Access
+// Approval disabled. If Access Approval is enabled at a higher level of the
+// hierarchy, then Access Approval will still be enabled at this level as
+// the settings are inherited.
+func (c *Client) DeleteAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.DeleteAccessApprovalSettingsMessage, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAccessApprovalSettings(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Access Approval API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client accessapprovalpb.AccessApprovalClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new access approval client.
+// NewClient creates a new access approval client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // This API allows a customer to manage accesses to cloud resources by
 // Google personnel. It defines the following resource model:
@@ -159,8 +297,7 @@ type Client struct {
 //
 // If a request is not approved or dismissed, we call it pending.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -178,55 +315,57 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: accessapprovalpb.NewAccessApprovalClient(connPool),
+		client:           accessapprovalpb.NewAccessApprovalClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListApprovalRequests lists approval requests associated with a project, folder, or organization.
-// Approval requests can be filtered by state (pending, active, dismissed).
-// The order is reverse chronological.
-func (c *Client) ListApprovalRequests(ctx context.Context, req *accessapprovalpb.ListApprovalRequestsMessage, opts ...gax.CallOption) *ApprovalRequestIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListApprovalRequests(ctx context.Context, req *accessapprovalpb.ListApprovalRequestsMessage, opts ...gax.CallOption) *ApprovalRequestIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListApprovalRequests[0:len(c.CallOptions.ListApprovalRequests):len(c.CallOptions.ListApprovalRequests)], opts...)
+	opts = append((*c.CallOptions).ListApprovalRequests[0:len((*c.CallOptions).ListApprovalRequests):len((*c.CallOptions).ListApprovalRequests)], opts...)
 	it := &ApprovalRequestIterator{}
 	req = proto.Clone(req).(*accessapprovalpb.ListApprovalRequestsMessage)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*accessapprovalpb.ApprovalRequest, string, error) {
-		var resp *accessapprovalpb.ListApprovalRequestsResponse
-		req.PageToken = pageToken
+		resp := &accessapprovalpb.ListApprovalRequestsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -249,14 +388,15 @@ func (c *Client) ListApprovalRequests(ctx context.Context, req *accessapprovalpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetApprovalRequest gets an approval request. Returns NOT_FOUND if the request does not exist.
-func (c *Client) GetApprovalRequest(ctx context.Context, req *accessapprovalpb.GetApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+func (c *gRPCClient) GetApprovalRequest(ctx context.Context, req *accessapprovalpb.GetApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -264,7 +404,7 @@ func (c *Client) GetApprovalRequest(ctx context.Context, req *accessapprovalpb.G
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetApprovalRequest[0:len(c.CallOptions.GetApprovalRequest):len(c.CallOptions.GetApprovalRequest)], opts...)
+	opts = append((*c.CallOptions).GetApprovalRequest[0:len((*c.CallOptions).GetApprovalRequest):len((*c.CallOptions).GetApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -277,11 +417,7 @@ func (c *Client) GetApprovalRequest(ctx context.Context, req *accessapprovalpb.G
 	return resp, nil
 }
 
-// ApproveApprovalRequest approves a request and returns the updated ApprovalRequest.
-//
-// Returns NOT_FOUND if the request does not exist. Returns
-// FAILED_PRECONDITION if the request exists but is not in a pending state.
-func (c *Client) ApproveApprovalRequest(ctx context.Context, req *accessapprovalpb.ApproveApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+func (c *gRPCClient) ApproveApprovalRequest(ctx context.Context, req *accessapprovalpb.ApproveApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -289,7 +425,7 @@ func (c *Client) ApproveApprovalRequest(ctx context.Context, req *accessapproval
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ApproveApprovalRequest[0:len(c.CallOptions.ApproveApprovalRequest):len(c.CallOptions.ApproveApprovalRequest)], opts...)
+	opts = append((*c.CallOptions).ApproveApprovalRequest[0:len((*c.CallOptions).ApproveApprovalRequest):len((*c.CallOptions).ApproveApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -302,17 +438,7 @@ func (c *Client) ApproveApprovalRequest(ctx context.Context, req *accessapproval
 	return resp, nil
 }
 
-// DismissApprovalRequest dismisses a request. Returns the updated ApprovalRequest.
-//
-// NOTE: This does not deny access to the resource if another request has been
-// made and approved. It is equivalent in effect to ignoring the request
-// altogether.
-//
-// Returns NOT_FOUND if the request does not exist.
-//
-// Returns FAILED_PRECONDITION if the request exists but is not in a pending
-// state.
-func (c *Client) DismissApprovalRequest(ctx context.Context, req *accessapprovalpb.DismissApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
+func (c *gRPCClient) DismissApprovalRequest(ctx context.Context, req *accessapprovalpb.DismissApprovalRequestMessage, opts ...gax.CallOption) (*accessapprovalpb.ApprovalRequest, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -320,7 +446,7 @@ func (c *Client) DismissApprovalRequest(ctx context.Context, req *accessapproval
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DismissApprovalRequest[0:len(c.CallOptions.DismissApprovalRequest):len(c.CallOptions.DismissApprovalRequest)], opts...)
+	opts = append((*c.CallOptions).DismissApprovalRequest[0:len((*c.CallOptions).DismissApprovalRequest):len((*c.CallOptions).DismissApprovalRequest)], opts...)
 	var resp *accessapprovalpb.ApprovalRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -333,8 +459,7 @@ func (c *Client) DismissApprovalRequest(ctx context.Context, req *accessapproval
 	return resp, nil
 }
 
-// GetAccessApprovalSettings gets the settings associated with a project, folder, or organization.
-func (c *Client) GetAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.GetAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
+func (c *gRPCClient) GetAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.GetAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -342,7 +467,7 @@ func (c *Client) GetAccessApprovalSettings(ctx context.Context, req *accessappro
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAccessApprovalSettings[0:len(c.CallOptions.GetAccessApprovalSettings):len(c.CallOptions.GetAccessApprovalSettings)], opts...)
+	opts = append((*c.CallOptions).GetAccessApprovalSettings[0:len((*c.CallOptions).GetAccessApprovalSettings):len((*c.CallOptions).GetAccessApprovalSettings)], opts...)
 	var resp *accessapprovalpb.AccessApprovalSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -355,9 +480,7 @@ func (c *Client) GetAccessApprovalSettings(ctx context.Context, req *accessappro
 	return resp, nil
 }
 
-// UpdateAccessApprovalSettings updates the settings associated with a project, folder, or organization.
-// Settings to update are determined by the value of field_mask.
-func (c *Client) UpdateAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.UpdateAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
+func (c *gRPCClient) UpdateAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.UpdateAccessApprovalSettingsMessage, opts ...gax.CallOption) (*accessapprovalpb.AccessApprovalSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -365,7 +488,7 @@ func (c *Client) UpdateAccessApprovalSettings(ctx context.Context, req *accessap
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateAccessApprovalSettings[0:len(c.CallOptions.UpdateAccessApprovalSettings):len(c.CallOptions.UpdateAccessApprovalSettings)], opts...)
+	opts = append((*c.CallOptions).UpdateAccessApprovalSettings[0:len((*c.CallOptions).UpdateAccessApprovalSettings):len((*c.CallOptions).UpdateAccessApprovalSettings)], opts...)
 	var resp *accessapprovalpb.AccessApprovalSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -378,13 +501,7 @@ func (c *Client) UpdateAccessApprovalSettings(ctx context.Context, req *accessap
 	return resp, nil
 }
 
-// DeleteAccessApprovalSettings deletes the settings associated with a project, folder, or organization.
-// This will have the effect of disabling Access Approval for the project,
-// folder, or organization, but only if all ancestors also have Access
-// Approval disabled. If Access Approval is enabled at a higher level of the
-// hierarchy, then Access Approval will still be enabled at this level as
-// the settings are inherited.
-func (c *Client) DeleteAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.DeleteAccessApprovalSettingsMessage, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteAccessApprovalSettings(ctx context.Context, req *accessapprovalpb.DeleteAccessApprovalSettingsMessage, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -392,7 +509,7 @@ func (c *Client) DeleteAccessApprovalSettings(ctx context.Context, req *accessap
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAccessApprovalSettings[0:len(c.CallOptions.DeleteAccessApprovalSettings):len(c.CallOptions.DeleteAccessApprovalSettings)], opts...)
+	opts = append((*c.CallOptions).DeleteAccessApprovalSettings[0:len((*c.CallOptions).DeleteAccessApprovalSettings):len((*c.CallOptions).DeleteAccessApprovalSettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteAccessApprovalSettings(ctx, req, settings.GRPC...)

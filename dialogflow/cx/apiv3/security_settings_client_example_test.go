@@ -30,21 +30,23 @@ func ExampleNewSecuritySettingsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSecuritySettingsClient_CreateSecuritySettings() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#CreateSecuritySettingsRequest.
 	}
 	resp, err := c.CreateSecuritySettings(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleSecuritySettingsClient_CreateSecuritySettings() {
 }
 
 func ExampleSecuritySettingsClient_GetSecuritySettings() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#GetSecuritySettingsRequest.
 	}
 	resp, err := c.GetSecuritySettings(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleSecuritySettingsClient_GetSecuritySettings() {
 }
 
 func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#UpdateSecuritySettingsRequest.
 	}
 	resp, err := c.UpdateSecuritySettings(ctx, req)
 	if err != nil {
@@ -95,17 +97,16 @@ func ExampleSecuritySettingsClient_UpdateSecuritySettings() {
 }
 
 func ExampleSecuritySettingsClient_ListSecuritySettings() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewSecuritySettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#ListSecuritySettingsRequest.
 	}
 	it := c.ListSecuritySettings(ctx, req)
 	for {
@@ -127,9 +128,11 @@ func ExampleSecuritySettingsClient_DeleteSecuritySettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteSecuritySettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeleteSecuritySettingsRequest.
 	}
 	err = c.DeleteSecuritySettings(ctx, req)
 	if err != nil {

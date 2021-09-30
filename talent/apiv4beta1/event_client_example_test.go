@@ -29,21 +29,23 @@ func ExampleNewEventClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEventClient_CreateClientEvent() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateClientEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateClientEventRequest.
 	}
 	resp, err := c.CreateClientEvent(ctx, req)
 	if err != nil {

@@ -25,6 +25,11 @@
                 "DetachSubscription"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetTopic": {
               "methods": [
                 "GetTopic"
@@ -48,6 +53,16 @@
             "Publish": {
               "methods": [
                 "Publish"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateTopic": {
@@ -74,6 +89,11 @@
                 "DeleteSchema"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetSchema": {
               "methods": [
                 "GetSchema"
@@ -82,6 +102,16 @@
             "ListSchemas": {
               "methods": [
                 "ListSchemas"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "ValidateMessage": {
@@ -128,6 +158,11 @@
                 "DeleteSubscription"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetSnapshot": {
               "methods": [
                 "GetSnapshot"
@@ -168,9 +203,19 @@
                 "Seek"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
             "StreamingPull": {
               "methods": [
                 "StreamingPull"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateSnapshot": {

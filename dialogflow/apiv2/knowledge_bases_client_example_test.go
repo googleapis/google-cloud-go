@@ -30,22 +30,23 @@ func ExampleNewKnowledgeBasesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleKnowledgeBasesClient_ListKnowledgeBases() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListKnowledgeBasesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListKnowledgeBasesRequest.
 	}
 	it := c.ListKnowledgeBases(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleKnowledgeBasesClient_ListKnowledgeBases() {
 }
 
 func ExampleKnowledgeBasesClient_GetKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetKnowledgeBaseRequest.
 	}
 	resp, err := c.GetKnowledgeBase(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleKnowledgeBasesClient_GetKnowledgeBase() {
 }
 
 func ExampleKnowledgeBasesClient_CreateKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateKnowledgeBaseRequest.
 	}
 	resp, err := c.CreateKnowledgeBase(ctx, req)
 	if err != nil {
@@ -107,9 +108,11 @@ func ExampleKnowledgeBasesClient_DeleteKnowledgeBase() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteKnowledgeBaseRequest.
 	}
 	err = c.DeleteKnowledgeBase(ctx, req)
 	if err != nil {
@@ -118,16 +121,16 @@ func ExampleKnowledgeBasesClient_DeleteKnowledgeBase() {
 }
 
 func ExampleKnowledgeBasesClient_UpdateKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateKnowledgeBaseRequest.
 	}
 	resp, err := c.UpdateKnowledgeBase(ctx, req)
 	if err != nil {

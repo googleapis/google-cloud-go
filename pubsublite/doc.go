@@ -29,14 +29,27 @@ https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
 More information about Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
 
-Note: This library is in BETA. Backwards-incompatible changes may be made before
-stable v1.0.0 is released.
+See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
+connection pooling and similar aspects of this package.
 
 
 Introduction
 
-See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
-connection pooling and similar aspects of this package.
+Examples can be found at
+https://pkg.go.dev/cloud.google.com/go/pubsublite#pkg-examples
+and
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#pkg-examples.
+
+Complete sample programs can be found at
+https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsublite.
+
+The cloud.google.com/go/pubsublite/pscompat subpackage contains clients for
+publishing and receiving messages, which have similar interfaces to their
+pubsub.Topic and pubsub.Subscription counterparts in cloud.google.com/go/pubsub.
+The following examples demonstrate how to declare common interfaces:
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewPublisherClient-Interface
+and
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewSubscriberClient-Interface.
 
 The following imports are required for code snippets below:
 
@@ -45,11 +58,6 @@ The following imports are required for code snippets below:
     "cloud.google.com/go/pubsublite"
     "cloud.google.com/go/pubsublite/pscompat"
   )
-
-More complete examples can be found at
-https://pkg.go.dev/cloud.google.com/go/pubsublite#pkg-examples
-and
-https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#pkg-examples.
 
 
 Creating Topics
@@ -83,11 +91,6 @@ where Pub/Sub Lite is available.
 
 Publishing
 
-The pubsublite/pscompat subpackage contains clients for publishing and receiving
-messages, which have similar interfaces to their pubsub.Topic and
-pubsub.Subscription counterparts in the Cloud Pub/Sub library:
-https://pkg.go.dev/cloud.google.com/go/pubsub.
-
 Pub/Sub Lite uses gRPC streams extensively for high throughput. For more
 differences, see https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat.
 
@@ -118,7 +121,7 @@ service:
 
 Once you've finishing publishing all messages, call Stop to flush all messages
 to the service and close gRPC streams. The PublisherClient can no longer be used
-after it has been stopped or has terminated due to a permanent service error.
+after it has been stopped or has terminated due to a permanent error.
 
   publisher.Stop()
 
@@ -167,8 +170,8 @@ subscriber client is connected to).
     // TODO: Handle error.
   }
 
-Receive blocks until either the context is canceled or a fatal service error
-occurs. To terminate a call to Receive, cancel its context:
+Receive blocks until either the context is canceled or a permanent error occurs.
+To terminate a call to Receive, cancel its context:
 
   cancel()
 

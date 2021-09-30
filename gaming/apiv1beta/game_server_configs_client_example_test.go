@@ -30,22 +30,23 @@ func ExampleNewGameServerConfigsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGameServerConfigsClient_ListGameServerConfigs() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListGameServerConfigsRequest.
 	}
 	it := c.ListGameServerConfigs(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleGameServerConfigsClient_ListGameServerConfigs() {
 }
 
 func ExampleGameServerConfigsClient_GetGameServerConfig() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetGameServerConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#GetGameServerConfigRequest.
 	}
 	resp, err := c.GetGameServerConfig(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleGameServerConfigsClient_GetGameServerConfig() {
 }
 
 func ExampleGameServerConfigsClient_CreateGameServerConfig() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateGameServerConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#CreateGameServerConfigRequest.
 	}
 	op, err := c.CreateGameServerConfig(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleGameServerConfigsClient_CreateGameServerConfig() {
 }
 
 func ExampleGameServerConfigsClient_DeleteGameServerConfig() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#DeleteGameServerConfigRequest.
 	}
 	op, err := c.DeleteGameServerConfig(ctx, req)
 	if err != nil {

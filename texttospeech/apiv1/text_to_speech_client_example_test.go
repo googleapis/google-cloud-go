@@ -29,21 +29,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListVoices() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#ListVoicesRequest.
 	}
 	resp, err := c.ListVoices(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleClient_ListVoices() {
 }
 
 func ExampleClient_SynthesizeSpeech() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.SynthesizeSpeechRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/texttospeech/v1#SynthesizeSpeechRequest.
 	}
 	resp, err := c.SynthesizeSpeech(ctx, req)
 	if err != nil {

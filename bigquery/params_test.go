@@ -30,27 +30,94 @@ import (
 )
 
 var scalarTests = []struct {
-	val      interface{}            // The Go value
-	wantVal  string                 // paramValue's desired output
+	val      interface{}            // input value sent as query param
+	wantNil  bool                   // whether the value returned in a query field should be nil.
+	wantVal  string                 // the string form of the scalar value in QueryParameterValue.
 	wantType *bq.QueryParameterType // paramType's desired output
+	wantStat interface{}            // val when roundtripped and represented as part of job statistics.
 }{
-	{int64(0), "0", int64ParamType},
-	{3.14, "3.14", float64ParamType},
-	{3.14159e-87, "3.14159e-87", float64ParamType},
-	{true, "true", boolParamType},
-	{"string", "string", stringParamType},
-	{"\u65e5\u672c\u8a9e\n", "\u65e5\u672c\u8a9e\n", stringParamType},
-	{math.NaN(), "NaN", float64ParamType},
-	{[]byte("foo"), "Zm9v", bytesParamType}, // base64 encoding of "foo"
+	{int64(0), false, "0", int64ParamType, int64(0)},
+	{NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
+	{NullInt64{Valid: false}, true, "", int64ParamType, NullInt64{Valid: false}},
+	{3.14, false, "3.14", float64ParamType, 3.14},
+	{3.14159e-87, false, "3.14159e-87", float64ParamType, 3.14159e-87},
+	{NullFloat64{Float64: 3.14, Valid: true}, false, "3.14", float64ParamType, 3.14},
+	{NullFloat64{Valid: false}, true, "", float64ParamType, NullFloat64{Valid: false}},
+	{math.NaN(), false, "NaN", float64ParamType, math.NaN()},
+	{true, false, "true", boolParamType, true},
+	{NullBool{Bool: true, Valid: true}, false, "true", boolParamType, true},
+	{NullBool{Valid: false}, true, "", boolParamType, NullBool{Valid: false}},
+	{"string", false, "string", stringParamType, "string"},
+	{"\u65e5\u672c\u8a9e\n", false, "\u65e5\u672c\u8a9e\n", stringParamType, "\u65e5\u672c\u8a9e\n"},
+	{NullString{StringVal: "string2", Valid: true}, false, "string2", stringParamType, "string2"},
+	{NullString{Valid: false}, true, "", stringParamType, NullString{Valid: false}},
+	{[]byte("foo"), false, "Zm9v", bytesParamType, []byte("foo")}, // base64 encoding of "foo"
 	{time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
+		false,
 		"2016-03-20 04:22:09.000005-01:02",
-		timestampParamType},
-	{civil.Date{Year: 2016, Month: 3, Day: 20}, "2016-03-20", dateParamType},
-	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}, "04:05:06.789000", timeParamType},
+		timestampParamType,
+		time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))},
+	{NullTimestamp{Timestamp: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)), Valid: true},
+		false,
+		"2016-03-22 04:22:09.000005-01:02",
+		timestampParamType,
+		time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))},
+	{NullTimestamp{Valid: false},
+		true,
+		"",
+		timestampParamType,
+		NullTimestamp{Valid: false}},
+	{civil.Date{Year: 2016, Month: 3, Day: 20},
+		false,
+		"2016-03-20",
+		dateParamType,
+		civil.Date{Year: 2016, Month: 3, Day: 20}},
+	{NullDate{
+		Date: civil.Date{Year: 2016, Month: 3, Day: 24}, Valid: true},
+		false,
+		"2016-03-24",
+		dateParamType,
+		civil.Date{Year: 2016, Month: 3, Day: 24}},
+	{NullDate{Valid: false},
+		true,
+		"",
+		dateParamType,
+		NullDate{Valid: false}},
+	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000},
+		false,
+		"04:05:06.789000",
+		timeParamType,
+		civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}},
+	{NullTime{
+		Time: civil.Time{Hour: 6, Minute: 7, Second: 8, Nanosecond: 789000000}, Valid: true},
+		false,
+		"06:07:08.789000",
+		timeParamType,
+		civil.Time{Hour: 6, Minute: 7, Second: 8, Nanosecond: 789000000}},
+	{NullTime{Valid: false},
+		true,
+		"",
+		timeParamType,
+		NullTime{Valid: false}},
 	{civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}},
+		false,
 		"2016-03-20 04:05:06.789000",
-		dateTimeParamType},
-	{big.NewRat(12345, 1000), "12.345000000", numericParamType},
+		dateTimeParamType,
+		civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}},
+	{NullDateTime{
+		DateTime: civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 21}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}, Valid: true},
+		false,
+		"2016-03-21 04:05:06.789000",
+		dateTimeParamType,
+		civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 21}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}},
+	{NullDateTime{Valid: false},
+		true,
+		"",
+		dateTimeParamType,
+		NullDateTime{Valid: false}},
+	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
+	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
+	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
 }
 
 type (
@@ -109,31 +176,41 @@ func sval(s string) bq.QueryParameterValue {
 }
 
 func TestParamValueScalar(t *testing.T) {
+
+	nilValue := &bq.QueryParameterValue{
+		NullFields: []string{"Value"},
+	}
+
 	for _, test := range scalarTests {
 		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
-			t.Errorf("%v: got %v, want nil", test.val, err)
-			continue
+			t.Errorf("%v: got err %v", test.val, err)
 		}
-		want := sval(test.wantVal)
-		if !testutil.Equal(got, want) {
-			t.Errorf("%v:\ngot  %+v\nwant %+v", test.val, got, want)
+		if test.wantNil {
+			if !testutil.Equal(got, nilValue) {
+				t.Errorf("%#v: wanted empty QueryParameterValue, got %v", test.val, got)
+			}
+		} else {
+			want := sval(test.wantVal)
+			if !testutil.Equal(got, &want) {
+				t.Errorf("%#v:\ngot  %+v\nwant %+v", test.val, got, want)
+			}
 		}
 	}
 }
 
 func TestParamValueArray(t *testing.T) {
-	qpv := bq.QueryParameterValue{ArrayValues: []*bq.QueryParameterValue{
+	qpv := &bq.QueryParameterValue{ArrayValues: []*bq.QueryParameterValue{
 		{Value: "1"},
 		{Value: "2"},
 	},
 	}
 	for _, test := range []struct {
 		val  interface{}
-		want bq.QueryParameterValue
+		want *bq.QueryParameterValue
 	}{
-		{[]int(nil), bq.QueryParameterValue{}},
-		{[]int{}, bq.QueryParameterValue{}},
+		{[]int(nil), &bq.QueryParameterValue{}},
+		{[]int{}, &bq.QueryParameterValue{}},
 		{[]int{1, 2}, qpv},
 		{[2]int{1, 2}, qpv},
 	} {
@@ -152,8 +229,8 @@ func TestParamValueStruct(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(got, s1ParamValue) {
-		t.Errorf("got  %+v\nwant %+v", got, s1ParamValue)
+	if !testutil.Equal(got, &s1ParamValue) {
+		t.Errorf("got  %+v\nwant %+v", got, &s1ParamValue)
 	}
 }
 
@@ -220,13 +297,14 @@ func TestConvertParamValue(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		got, err := convertParamValue(&pval, ptype)
+		got, err := convertParamValue(pval, ptype)
 		if err != nil {
 			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, ptype, err)
 		}
-		if !testutil.Equal(got, test.val) {
-			t.Errorf("%#v: got %#v", test.val, got)
+		if !testutil.Equal(got, test.wantStat) {
+			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
 		}
+
 	}
 	// Arrays.
 	for _, test := range []struct {
@@ -270,13 +348,21 @@ func TestIntegration_ScalarParam(t *testing.T) {
 	for _, test := range scalarTests {
 		gotData, gotParam, err := paramRoundTrip(c, test.val)
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("input %#v errored: %v", test.val, err)
 		}
-		if !testutil.Equal(gotData, test.val, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
+		// first, check the returned query value
+		if test.wantNil {
+			if gotData != nil {
+				t.Errorf("data value %#v expected nil, got %#v", test.val, gotData)
+			}
+		} else {
+			if !testutil.Equal(gotData, test.wantStat, roundToMicros) {
+				t.Errorf("\ngot data value %#v (%T)\nwant %#v (%T)", gotData, gotData, test.wantStat, test.wantStat)
+			}
 		}
-		if !testutil.Equal(gotParam, test.val, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.val, test.val)
+		// then, check the stat value
+		if !testutil.Equal(gotParam, test.wantStat, roundToMicros) {
+			t.Errorf("\ngot param stat %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.wantStat, test.wantStat)
 		}
 	}
 }

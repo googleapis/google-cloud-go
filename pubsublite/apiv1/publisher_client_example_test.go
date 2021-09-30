@@ -30,18 +30,19 @@ func ExampleNewPublisherClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePublisherClient_Publish() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		// TODO: Handle error.

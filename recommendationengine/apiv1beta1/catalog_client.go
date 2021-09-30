@@ -50,7 +50,7 @@ type CatalogCallOptions struct {
 	ImportCatalogItems []gax.CallOption
 }
 
-func defaultCatalogClientOptions() []option.ClientOption {
+func defaultCatalogGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommendationengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
@@ -139,37 +139,132 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 	}
 }
 
+// internalCatalogClient is an interface that defines the methods availaible from Recommendations AI.
+type internalCatalogClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateCatalogItem(context.Context, *recommendationenginepb.CreateCatalogItemRequest, ...gax.CallOption) (*recommendationenginepb.CatalogItem, error)
+	GetCatalogItem(context.Context, *recommendationenginepb.GetCatalogItemRequest, ...gax.CallOption) (*recommendationenginepb.CatalogItem, error)
+	ListCatalogItems(context.Context, *recommendationenginepb.ListCatalogItemsRequest, ...gax.CallOption) *CatalogItemIterator
+	UpdateCatalogItem(context.Context, *recommendationenginepb.UpdateCatalogItemRequest, ...gax.CallOption) (*recommendationenginepb.CatalogItem, error)
+	DeleteCatalogItem(context.Context, *recommendationenginepb.DeleteCatalogItemRequest, ...gax.CallOption) error
+	ImportCatalogItems(context.Context, *recommendationenginepb.ImportCatalogItemsRequest, ...gax.CallOption) (*ImportCatalogItemsOperation, error)
+	ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation
+}
+
 // CatalogClient is a client for interacting with Recommendations AI.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for ingesting catalog information of the customer’s website.
+type CatalogClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCatalogClient
+
+	// The call options for this service.
+	CallOptions *CatalogCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CatalogClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CatalogClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateCatalogItem creates a catalog item.
+func (c *CatalogClient) CreateCatalogItem(ctx context.Context, req *recommendationenginepb.CreateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+	return c.internalClient.CreateCatalogItem(ctx, req, opts...)
+}
+
+// GetCatalogItem gets a specific catalog item.
+func (c *CatalogClient) GetCatalogItem(ctx context.Context, req *recommendationenginepb.GetCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+	return c.internalClient.GetCatalogItem(ctx, req, opts...)
+}
+
+// ListCatalogItems gets a list of catalog items.
+func (c *CatalogClient) ListCatalogItems(ctx context.Context, req *recommendationenginepb.ListCatalogItemsRequest, opts ...gax.CallOption) *CatalogItemIterator {
+	return c.internalClient.ListCatalogItems(ctx, req, opts...)
+}
+
+// UpdateCatalogItem updates a catalog item. Partial updating is supported. Non-existing
+// items will be created.
+func (c *CatalogClient) UpdateCatalogItem(ctx context.Context, req *recommendationenginepb.UpdateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+	return c.internalClient.UpdateCatalogItem(ctx, req, opts...)
+}
+
+// DeleteCatalogItem deletes a catalog item.
+func (c *CatalogClient) DeleteCatalogItem(ctx context.Context, req *recommendationenginepb.DeleteCatalogItemRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCatalogItem(ctx, req, opts...)
+}
+
+// ImportCatalogItems bulk import of multiple catalog items. Request processing may be
+// synchronous. No partial updating supported. Non-existing items will be
+// created.
+//
+// Operation.response is of type ImportResponse. Note that it is
+// possible for a subset of the items to be successfully updated.
+func (c *CatalogClient) ImportCatalogItems(ctx context.Context, req *recommendationenginepb.ImportCatalogItemsRequest, opts ...gax.CallOption) (*ImportCatalogItemsOperation, error) {
+	return c.internalClient.ImportCatalogItems(ctx, req, opts...)
+}
+
+// ImportCatalogItemsOperation returns a new ImportCatalogItemsOperation from a given name.
+// The name must be that of a previously created ImportCatalogItemsOperation, possibly from a different process.
+func (c *CatalogClient) ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation {
+	return c.internalClient.ImportCatalogItemsOperation(name)
+}
+
+// catalogGRPCClient is a client for interacting with Recommendations AI over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CatalogClient struct {
+type catalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CatalogClient
+	CallOptions **CatalogCallOptions
+
 	// The gRPC API client.
 	catalogClient recommendationenginepb.CatalogServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CatalogCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCatalogClient creates a new catalog service client.
+// NewCatalogClient creates a new catalog service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for ingesting catalog information of the customer’s website.
 func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
-	clientOpts := defaultCatalogClientOptions()
-
+	clientOpts := defaultCatalogGRPCClientOptions()
 	if newCatalogClientHook != nil {
 		hookOpts, err := newCatalogClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -187,16 +282,19 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 	if err != nil {
 		return nil, err
 	}
-	c := &CatalogClient{
+	client := CatalogClient{CallOptions: defaultCatalogCallOptions()}
+
+	c := &catalogGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCatalogCallOptions(),
-
-		catalogClient: recommendationenginepb.NewCatalogServiceClient(connPool),
+		catalogClient:    recommendationenginepb.NewCatalogServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -206,33 +304,33 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CatalogClient) Connection() *grpc.ClientConn {
+func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CatalogClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
+func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateCatalogItem creates a catalog item.
-func (c *CatalogClient) CreateCatalogItem(ctx context.Context, req *recommendationenginepb.CreateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *catalogGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *catalogGRPCClient) CreateCatalogItem(ctx context.Context, req *recommendationenginepb.CreateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -240,7 +338,7 @@ func (c *CatalogClient) CreateCatalogItem(ctx context.Context, req *recommendati
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCatalogItem[0:len(c.CallOptions.CreateCatalogItem):len(c.CallOptions.CreateCatalogItem)], opts...)
+	opts = append((*c.CallOptions).CreateCatalogItem[0:len((*c.CallOptions).CreateCatalogItem):len((*c.CallOptions).CreateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -253,8 +351,7 @@ func (c *CatalogClient) CreateCatalogItem(ctx context.Context, req *recommendati
 	return resp, nil
 }
 
-// GetCatalogItem gets a specific catalog item.
-func (c *CatalogClient) GetCatalogItem(ctx context.Context, req *recommendationenginepb.GetCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+func (c *catalogGRPCClient) GetCatalogItem(ctx context.Context, req *recommendationenginepb.GetCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -262,7 +359,7 @@ func (c *CatalogClient) GetCatalogItem(ctx context.Context, req *recommendatione
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCatalogItem[0:len(c.CallOptions.GetCatalogItem):len(c.CallOptions.GetCatalogItem)], opts...)
+	opts = append((*c.CallOptions).GetCatalogItem[0:len((*c.CallOptions).GetCatalogItem):len((*c.CallOptions).GetCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -275,11 +372,10 @@ func (c *CatalogClient) GetCatalogItem(ctx context.Context, req *recommendatione
 	return resp, nil
 }
 
-// ListCatalogItems gets a list of catalog items.
-func (c *CatalogClient) ListCatalogItems(ctx context.Context, req *recommendationenginepb.ListCatalogItemsRequest, opts ...gax.CallOption) *CatalogItemIterator {
+func (c *catalogGRPCClient) ListCatalogItems(ctx context.Context, req *recommendationenginepb.ListCatalogItemsRequest, opts ...gax.CallOption) *CatalogItemIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCatalogItems[0:len(c.CallOptions.ListCatalogItems):len(c.CallOptions.ListCatalogItems)], opts...)
+	opts = append((*c.CallOptions).ListCatalogItems[0:len((*c.CallOptions).ListCatalogItems):len((*c.CallOptions).ListCatalogItems)], opts...)
 	it := &CatalogItemIterator{}
 	req = proto.Clone(req).(*recommendationenginepb.ListCatalogItemsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.CatalogItem, string, error) {
@@ -316,9 +412,7 @@ func (c *CatalogClient) ListCatalogItems(ctx context.Context, req *recommendatio
 	return it
 }
 
-// UpdateCatalogItem updates a catalog item. Partial updating is supported. Non-existing
-// items will be created.
-func (c *CatalogClient) UpdateCatalogItem(ctx context.Context, req *recommendationenginepb.UpdateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
+func (c *catalogGRPCClient) UpdateCatalogItem(ctx context.Context, req *recommendationenginepb.UpdateCatalogItemRequest, opts ...gax.CallOption) (*recommendationenginepb.CatalogItem, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -326,7 +420,7 @@ func (c *CatalogClient) UpdateCatalogItem(ctx context.Context, req *recommendati
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCatalogItem[0:len(c.CallOptions.UpdateCatalogItem):len(c.CallOptions.UpdateCatalogItem)], opts...)
+	opts = append((*c.CallOptions).UpdateCatalogItem[0:len((*c.CallOptions).UpdateCatalogItem):len((*c.CallOptions).UpdateCatalogItem)], opts...)
 	var resp *recommendationenginepb.CatalogItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -339,8 +433,7 @@ func (c *CatalogClient) UpdateCatalogItem(ctx context.Context, req *recommendati
 	return resp, nil
 }
 
-// DeleteCatalogItem deletes a catalog item.
-func (c *CatalogClient) DeleteCatalogItem(ctx context.Context, req *recommendationenginepb.DeleteCatalogItemRequest, opts ...gax.CallOption) error {
+func (c *catalogGRPCClient) DeleteCatalogItem(ctx context.Context, req *recommendationenginepb.DeleteCatalogItemRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -348,7 +441,7 @@ func (c *CatalogClient) DeleteCatalogItem(ctx context.Context, req *recommendati
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCatalogItem[0:len(c.CallOptions.DeleteCatalogItem):len(c.CallOptions.DeleteCatalogItem)], opts...)
+	opts = append((*c.CallOptions).DeleteCatalogItem[0:len((*c.CallOptions).DeleteCatalogItem):len((*c.CallOptions).DeleteCatalogItem)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.catalogClient.DeleteCatalogItem(ctx, req, settings.GRPC...)
@@ -357,13 +450,7 @@ func (c *CatalogClient) DeleteCatalogItem(ctx context.Context, req *recommendati
 	return err
 }
 
-// ImportCatalogItems bulk import of multiple catalog items. Request processing may be
-// synchronous. No partial updating supported. Non-existing items will be
-// created.
-//
-// Operation.response is of type ImportResponse. Note that it is
-// possible for a subset of the items to be successfully updated.
-func (c *CatalogClient) ImportCatalogItems(ctx context.Context, req *recommendationenginepb.ImportCatalogItemsRequest, opts ...gax.CallOption) (*ImportCatalogItemsOperation, error) {
+func (c *catalogGRPCClient) ImportCatalogItems(ctx context.Context, req *recommendationenginepb.ImportCatalogItemsRequest, opts ...gax.CallOption) (*ImportCatalogItemsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -371,7 +458,7 @@ func (c *CatalogClient) ImportCatalogItems(ctx context.Context, req *recommendat
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportCatalogItems[0:len(c.CallOptions.ImportCatalogItems):len(c.CallOptions.ImportCatalogItems)], opts...)
+	opts = append((*c.CallOptions).ImportCatalogItems[0:len((*c.CallOptions).ImportCatalogItems):len((*c.CallOptions).ImportCatalogItems)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -382,7 +469,7 @@ func (c *CatalogClient) ImportCatalogItems(ctx context.Context, req *recommendat
 		return nil, err
 	}
 	return &ImportCatalogItemsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -393,9 +480,9 @@ type ImportCatalogItemsOperation struct {
 
 // ImportCatalogItemsOperation returns a new ImportCatalogItemsOperation from a given name.
 // The name must be that of a previously created ImportCatalogItemsOperation, possibly from a different process.
-func (c *CatalogClient) ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation {
+func (c *catalogGRPCClient) ImportCatalogItemsOperation(name string) *ImportCatalogItemsOperation {
 	return &ImportCatalogItemsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

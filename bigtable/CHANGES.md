@@ -1,5 +1,19 @@
 # Changes
 
+### [1.10.1](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.10.0...bigtable/v1.10.1) (2021-06-02)
+
+
+### Bug Fixes
+
+* **bigtable:** Guard for nil EncryptionConfig in Clusters, GetCluster ([#4113](https://www.github.com/googleapis/google-cloud-go/issues/4113)) ([a17ff67](https://www.github.com/googleapis/google-cloud-go/commit/a17ff67164645328d301ee1884c7ba42f35ef7ba))
+
+## [1.10.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.9.0...bigtable/v1.10.0) (2021-05-03)
+
+
+### Features
+
+* **bigtable:** allow restore backup to different instance ([#3489](https://www.github.com/googleapis/google-cloud-go/issues/3489)) ([#4014](https://www.github.com/googleapis/google-cloud-go/issues/4014)) ([b08b265](https://www.github.com/googleapis/google-cloud-go/commit/b08b2651bca6920ef4c25d11d0b808e40a979835))
+
 ## [1.9.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.8.0...bigtable/v1.9.0) (2021-04-30)
 
 

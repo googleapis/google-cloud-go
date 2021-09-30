@@ -30,21 +30,23 @@ func ExampleNewConversationsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleConversationsClient_CreateConversation() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateConversationRequest.
 	}
 	resp, err := c.CreateConversation(ctx, req)
 	if err != nil {
@@ -55,17 +57,16 @@ func ExampleConversationsClient_CreateConversation() {
 }
 
 func ExampleConversationsClient_ListConversations() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListConversationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListConversationsRequest.
 	}
 	it := c.ListConversations(ctx, req)
 	for {
@@ -82,16 +83,16 @@ func ExampleConversationsClient_ListConversations() {
 }
 
 func ExampleConversationsClient_GetConversation() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetConversationRequest.
 	}
 	resp, err := c.GetConversation(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleConversationsClient_GetConversation() {
 }
 
 func ExampleConversationsClient_CompleteConversation() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CompleteConversationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CompleteConversationRequest.
 	}
 	resp, err := c.CompleteConversation(ctx, req)
 	if err != nil {
@@ -122,17 +123,16 @@ func ExampleConversationsClient_CompleteConversation() {
 }
 
 func ExampleConversationsClient_ListMessages() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListMessagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListMessagesRequest.
 	}
 	it := c.ListMessages(ctx, req)
 	for {

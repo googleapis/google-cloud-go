@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -53,12 +53,13 @@ type CallOptions struct {
 	ValidateTrust           []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("managedidentities.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("managedidentities.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://managedidentities.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -80,32 +81,227 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Managed Service for Microsoft Active Directory API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateMicrosoftAdDomain(context.Context, *managedidentitiespb.CreateMicrosoftAdDomainRequest, ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error)
+	CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation
+	ResetAdminPassword(context.Context, *managedidentitiespb.ResetAdminPasswordRequest, ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error)
+	ListDomains(context.Context, *managedidentitiespb.ListDomainsRequest, ...gax.CallOption) *DomainIterator
+	GetDomain(context.Context, *managedidentitiespb.GetDomainRequest, ...gax.CallOption) (*managedidentitiespb.Domain, error)
+	UpdateDomain(context.Context, *managedidentitiespb.UpdateDomainRequest, ...gax.CallOption) (*UpdateDomainOperation, error)
+	UpdateDomainOperation(name string) *UpdateDomainOperation
+	DeleteDomain(context.Context, *managedidentitiespb.DeleteDomainRequest, ...gax.CallOption) (*DeleteDomainOperation, error)
+	DeleteDomainOperation(name string) *DeleteDomainOperation
+	AttachTrust(context.Context, *managedidentitiespb.AttachTrustRequest, ...gax.CallOption) (*AttachTrustOperation, error)
+	AttachTrustOperation(name string) *AttachTrustOperation
+	ReconfigureTrust(context.Context, *managedidentitiespb.ReconfigureTrustRequest, ...gax.CallOption) (*ReconfigureTrustOperation, error)
+	ReconfigureTrustOperation(name string) *ReconfigureTrustOperation
+	DetachTrust(context.Context, *managedidentitiespb.DetachTrustRequest, ...gax.CallOption) (*DetachTrustOperation, error)
+	DetachTrustOperation(name string) *DetachTrustOperation
+	ValidateTrust(context.Context, *managedidentitiespb.ValidateTrustRequest, ...gax.CallOption) (*ValidateTrustOperation, error)
+	ValidateTrustOperation(name string) *ValidateTrustOperation
+}
+
 // Client is a client for interacting with Managed Service for Microsoft Active Directory API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// API Overview
+//
+// The managedidentites.googleapis.com service implements the Google Cloud
+// Managed Identites API for identity services
+// (e.g. Microsoft Active Directory).
+//
+// The Managed Identities service provides methods to manage
+// (create/read/update/delete) domains, reset managed identities admin password,
+// add/remove domain controllers in GCP regions and add/remove VPC peering.
+//
+// Data Model
+//
+// The Managed Identities service exposes the following resources:
+//
+//   Locations as global, named as follows:
+//   projects/{project_id}/locations/global.
+//
+//   Domains, named as follows:
+//   /projects/{project_id}/locations/global/domain/{domain_name}.
+//
+// The {domain_name} refers to fully qualified domain name in the customer
+// project e.g. mydomain.myorganization.com (at http://mydomain.myorganization.com), with the following restrictions:
+//
+//   Must contain only lowercase letters, numbers, periods and hyphens.
+//
+//   Must start with a letter.
+//
+//   Must contain between 2-64 characters.
+//
+//   Must end with a number or a letter.
+//
+//   Must not start with period.
+//
+//   First segement length (mydomain form example above) shouldn’t exceed
+//   15 chars.
+//
+//   The last segment cannot be fully numeric.
+//
+//   Must be unique within the customer project.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateMicrosoftAdDomain creates a Microsoft AD domain.
+func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidentitiespb.CreateMicrosoftAdDomainRequest, opts ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error) {
+	return c.internalClient.CreateMicrosoftAdDomain(ctx, req, opts...)
+}
+
+// CreateMicrosoftAdDomainOperation returns a new CreateMicrosoftAdDomainOperation from a given name.
+// The name must be that of a previously created CreateMicrosoftAdDomainOperation, possibly from a different process.
+func (c *Client) CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation {
+	return c.internalClient.CreateMicrosoftAdDomainOperation(name)
+}
+
+// ResetAdminPassword resets a domain’s administrator password.
+func (c *Client) ResetAdminPassword(ctx context.Context, req *managedidentitiespb.ResetAdminPasswordRequest, opts ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error) {
+	return c.internalClient.ResetAdminPassword(ctx, req, opts...)
+}
+
+// ListDomains lists domains in a project.
+func (c *Client) ListDomains(ctx context.Context, req *managedidentitiespb.ListDomainsRequest, opts ...gax.CallOption) *DomainIterator {
+	return c.internalClient.ListDomains(ctx, req, opts...)
+}
+
+// GetDomain gets information about a domain.
+func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDomainRequest, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
+	return c.internalClient.GetDomain(ctx, req, opts...)
+}
+
+// UpdateDomain updates the metadata and configuration of a domain.
+func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.UpdateDomainRequest, opts ...gax.CallOption) (*UpdateDomainOperation, error) {
+	return c.internalClient.UpdateDomain(ctx, req, opts...)
+}
+
+// UpdateDomainOperation returns a new UpdateDomainOperation from a given name.
+// The name must be that of a previously created UpdateDomainOperation, possibly from a different process.
+func (c *Client) UpdateDomainOperation(name string) *UpdateDomainOperation {
+	return c.internalClient.UpdateDomainOperation(name)
+}
+
+// DeleteDomain deletes a domain.
+func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.DeleteDomainRequest, opts ...gax.CallOption) (*DeleteDomainOperation, error) {
+	return c.internalClient.DeleteDomain(ctx, req, opts...)
+}
+
+// DeleteDomainOperation returns a new DeleteDomainOperation from a given name.
+// The name must be that of a previously created DeleteDomainOperation, possibly from a different process.
+func (c *Client) DeleteDomainOperation(name string) *DeleteDomainOperation {
+	return c.internalClient.DeleteDomainOperation(name)
+}
+
+// AttachTrust adds an AD trust to a domain.
+func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.AttachTrustRequest, opts ...gax.CallOption) (*AttachTrustOperation, error) {
+	return c.internalClient.AttachTrust(ctx, req, opts...)
+}
+
+// AttachTrustOperation returns a new AttachTrustOperation from a given name.
+// The name must be that of a previously created AttachTrustOperation, possibly from a different process.
+func (c *Client) AttachTrustOperation(name string) *AttachTrustOperation {
+	return c.internalClient.AttachTrustOperation(name)
+}
+
+// ReconfigureTrust updates the DNS conditional forwarder.
+func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.ReconfigureTrustRequest, opts ...gax.CallOption) (*ReconfigureTrustOperation, error) {
+	return c.internalClient.ReconfigureTrust(ctx, req, opts...)
+}
+
+// ReconfigureTrustOperation returns a new ReconfigureTrustOperation from a given name.
+// The name must be that of a previously created ReconfigureTrustOperation, possibly from a different process.
+func (c *Client) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
+	return c.internalClient.ReconfigureTrustOperation(name)
+}
+
+// DetachTrust removes an AD trust.
+func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.DetachTrustRequest, opts ...gax.CallOption) (*DetachTrustOperation, error) {
+	return c.internalClient.DetachTrust(ctx, req, opts...)
+}
+
+// DetachTrustOperation returns a new DetachTrustOperation from a given name.
+// The name must be that of a previously created DetachTrustOperation, possibly from a different process.
+func (c *Client) DetachTrustOperation(name string) *DetachTrustOperation {
+	return c.internalClient.DetachTrustOperation(name)
+}
+
+// ValidateTrust validates a trust state, that the target domain is reachable, and that the
+// target domain is able to accept incoming trust requests.
+func (c *Client) ValidateTrust(ctx context.Context, req *managedidentitiespb.ValidateTrustRequest, opts ...gax.CallOption) (*ValidateTrustOperation, error) {
+	return c.internalClient.ValidateTrust(ctx, req, opts...)
+}
+
+// ValidateTrustOperation returns a new ValidateTrustOperation from a given name.
+// The name must be that of a previously created ValidateTrustOperation, possibly from a different process.
+func (c *Client) ValidateTrustOperation(name string) *ValidateTrustOperation {
+	return c.internalClient.ValidateTrustOperation(name)
+}
+
+// gRPCClient is a client for interacting with Managed Service for Microsoft Active Directory API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client managedidentitiespb.ManagedIdentitiesServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new managed identities service client.
+// NewClient creates a new managed identities service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // API Overview
 //
@@ -147,8 +343,7 @@ type Client struct {
 //
 //   Must be unique within the customer project.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -166,16 +361,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
+		client:           managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -185,33 +383,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateMicrosoftAdDomain creates a Microsoft AD domain.
-func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidentitiespb.CreateMicrosoftAdDomainRequest, opts ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedidentitiespb.CreateMicrosoftAdDomainRequest, opts ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -219,7 +417,7 @@ func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidenti
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateMicrosoftAdDomain[0:len(c.CallOptions.CreateMicrosoftAdDomain):len(c.CallOptions.CreateMicrosoftAdDomain)], opts...)
+	opts = append((*c.CallOptions).CreateMicrosoftAdDomain[0:len((*c.CallOptions).CreateMicrosoftAdDomain):len((*c.CallOptions).CreateMicrosoftAdDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -230,12 +428,11 @@ func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidenti
 		return nil, err
 	}
 	return &CreateMicrosoftAdDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ResetAdminPassword resets a domain’s administrator password.
-func (c *Client) ResetAdminPassword(ctx context.Context, req *managedidentitiespb.ResetAdminPasswordRequest, opts ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error) {
+func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentitiespb.ResetAdminPasswordRequest, opts ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -243,7 +440,7 @@ func (c *Client) ResetAdminPassword(ctx context.Context, req *managedidentitiesp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ResetAdminPassword[0:len(c.CallOptions.ResetAdminPassword):len(c.CallOptions.ResetAdminPassword)], opts...)
+	opts = append((*c.CallOptions).ResetAdminPassword[0:len((*c.CallOptions).ResetAdminPassword):len((*c.CallOptions).ResetAdminPassword)], opts...)
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -256,19 +453,20 @@ func (c *Client) ResetAdminPassword(ctx context.Context, req *managedidentitiesp
 	return resp, nil
 }
 
-// ListDomains lists domains in a project.
-func (c *Client) ListDomains(ctx context.Context, req *managedidentitiespb.ListDomainsRequest, opts ...gax.CallOption) *DomainIterator {
+func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.ListDomainsRequest, opts ...gax.CallOption) *DomainIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDomains[0:len(c.CallOptions.ListDomains):len(c.CallOptions.ListDomains)], opts...)
+	opts = append((*c.CallOptions).ListDomains[0:len((*c.CallOptions).ListDomains):len((*c.CallOptions).ListDomains)], opts...)
 	it := &DomainIterator{}
 	req = proto.Clone(req).(*managedidentitiespb.ListDomainsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*managedidentitiespb.Domain, string, error) {
-		var resp *managedidentitiespb.ListDomainsResponse
-		req.PageToken = pageToken
+		resp := &managedidentitiespb.ListDomainsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -291,14 +489,15 @@ func (c *Client) ListDomains(ctx context.Context, req *managedidentitiespb.ListD
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetDomain gets information about a domain.
-func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDomainRequest, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
+func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.GetDomainRequest, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -306,7 +505,7 @@ func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDoma
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDomain[0:len(c.CallOptions.GetDomain):len(c.CallOptions.GetDomain)], opts...)
+	opts = append((*c.CallOptions).GetDomain[0:len((*c.CallOptions).GetDomain):len((*c.CallOptions).GetDomain)], opts...)
 	var resp *managedidentitiespb.Domain
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -319,8 +518,7 @@ func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDoma
 	return resp, nil
 }
 
-// UpdateDomain updates the metadata and configuration of a domain.
-func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.UpdateDomainRequest, opts ...gax.CallOption) (*UpdateDomainOperation, error) {
+func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.UpdateDomainRequest, opts ...gax.CallOption) (*UpdateDomainOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -328,7 +526,7 @@ func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.Upda
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "domain.name", url.QueryEscape(req.GetDomain().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDomain[0:len(c.CallOptions.UpdateDomain):len(c.CallOptions.UpdateDomain)], opts...)
+	opts = append((*c.CallOptions).UpdateDomain[0:len((*c.CallOptions).UpdateDomain):len((*c.CallOptions).UpdateDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -339,12 +537,11 @@ func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.Upda
 		return nil, err
 	}
 	return &UpdateDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteDomain deletes a domain.
-func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.DeleteDomainRequest, opts ...gax.CallOption) (*DeleteDomainOperation, error) {
+func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.DeleteDomainRequest, opts ...gax.CallOption) (*DeleteDomainOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -352,7 +549,7 @@ func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.Dele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDomain[0:len(c.CallOptions.DeleteDomain):len(c.CallOptions.DeleteDomain)], opts...)
+	opts = append((*c.CallOptions).DeleteDomain[0:len((*c.CallOptions).DeleteDomain):len((*c.CallOptions).DeleteDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -363,12 +560,11 @@ func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.Dele
 		return nil, err
 	}
 	return &DeleteDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// AttachTrust adds an AD trust to a domain.
-func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.AttachTrustRequest, opts ...gax.CallOption) (*AttachTrustOperation, error) {
+func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.AttachTrustRequest, opts ...gax.CallOption) (*AttachTrustOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -376,7 +572,7 @@ func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.Attac
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AttachTrust[0:len(c.CallOptions.AttachTrust):len(c.CallOptions.AttachTrust)], opts...)
+	opts = append((*c.CallOptions).AttachTrust[0:len((*c.CallOptions).AttachTrust):len((*c.CallOptions).AttachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -387,12 +583,11 @@ func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.Attac
 		return nil, err
 	}
 	return &AttachTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ReconfigureTrust updates the DNS conditional forwarder.
-func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.ReconfigureTrustRequest, opts ...gax.CallOption) (*ReconfigureTrustOperation, error) {
+func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.ReconfigureTrustRequest, opts ...gax.CallOption) (*ReconfigureTrustOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -400,7 +595,7 @@ func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReconfigureTrust[0:len(c.CallOptions.ReconfigureTrust):len(c.CallOptions.ReconfigureTrust)], opts...)
+	opts = append((*c.CallOptions).ReconfigureTrust[0:len((*c.CallOptions).ReconfigureTrust):len((*c.CallOptions).ReconfigureTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -411,12 +606,11 @@ func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.
 		return nil, err
 	}
 	return &ReconfigureTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DetachTrust removes an AD trust.
-func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.DetachTrustRequest, opts ...gax.CallOption) (*DetachTrustOperation, error) {
+func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.DetachTrustRequest, opts ...gax.CallOption) (*DetachTrustOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -424,7 +618,7 @@ func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.Detac
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DetachTrust[0:len(c.CallOptions.DetachTrust):len(c.CallOptions.DetachTrust)], opts...)
+	opts = append((*c.CallOptions).DetachTrust[0:len((*c.CallOptions).DetachTrust):len((*c.CallOptions).DetachTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -435,13 +629,11 @@ func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.Detac
 		return nil, err
 	}
 	return &DetachTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ValidateTrust validates a trust state, that the target domain is reachable, and that the
-// target domain is able to accept incoming trust requests.
-func (c *Client) ValidateTrust(ctx context.Context, req *managedidentitiespb.ValidateTrustRequest, opts ...gax.CallOption) (*ValidateTrustOperation, error) {
+func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb.ValidateTrustRequest, opts ...gax.CallOption) (*ValidateTrustOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -449,7 +641,7 @@ func (c *Client) ValidateTrust(ctx context.Context, req *managedidentitiespb.Val
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ValidateTrust[0:len(c.CallOptions.ValidateTrust):len(c.CallOptions.ValidateTrust)], opts...)
+	opts = append((*c.CallOptions).ValidateTrust[0:len((*c.CallOptions).ValidateTrust):len((*c.CallOptions).ValidateTrust)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -460,7 +652,7 @@ func (c *Client) ValidateTrust(ctx context.Context, req *managedidentitiespb.Val
 		return nil, err
 	}
 	return &ValidateTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -471,9 +663,9 @@ type AttachTrustOperation struct {
 
 // AttachTrustOperation returns a new AttachTrustOperation from a given name.
 // The name must be that of a previously created AttachTrustOperation, possibly from a different process.
-func (c *Client) AttachTrustOperation(name string) *AttachTrustOperation {
+func (c *gRPCClient) AttachTrustOperation(name string) *AttachTrustOperation {
 	return &AttachTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -540,9 +732,9 @@ type CreateMicrosoftAdDomainOperation struct {
 
 // CreateMicrosoftAdDomainOperation returns a new CreateMicrosoftAdDomainOperation from a given name.
 // The name must be that of a previously created CreateMicrosoftAdDomainOperation, possibly from a different process.
-func (c *Client) CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation {
+func (c *gRPCClient) CreateMicrosoftAdDomainOperation(name string) *CreateMicrosoftAdDomainOperation {
 	return &CreateMicrosoftAdDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -609,9 +801,9 @@ type DeleteDomainOperation struct {
 
 // DeleteDomainOperation returns a new DeleteDomainOperation from a given name.
 // The name must be that of a previously created DeleteDomainOperation, possibly from a different process.
-func (c *Client) DeleteDomainOperation(name string) *DeleteDomainOperation {
+func (c *gRPCClient) DeleteDomainOperation(name string) *DeleteDomainOperation {
 	return &DeleteDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -667,9 +859,9 @@ type DetachTrustOperation struct {
 
 // DetachTrustOperation returns a new DetachTrustOperation from a given name.
 // The name must be that of a previously created DetachTrustOperation, possibly from a different process.
-func (c *Client) DetachTrustOperation(name string) *DetachTrustOperation {
+func (c *gRPCClient) DetachTrustOperation(name string) *DetachTrustOperation {
 	return &DetachTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -736,9 +928,9 @@ type ReconfigureTrustOperation struct {
 
 // ReconfigureTrustOperation returns a new ReconfigureTrustOperation from a given name.
 // The name must be that of a previously created ReconfigureTrustOperation, possibly from a different process.
-func (c *Client) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
+func (c *gRPCClient) ReconfigureTrustOperation(name string) *ReconfigureTrustOperation {
 	return &ReconfigureTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -805,9 +997,9 @@ type UpdateDomainOperation struct {
 
 // UpdateDomainOperation returns a new UpdateDomainOperation from a given name.
 // The name must be that of a previously created UpdateDomainOperation, possibly from a different process.
-func (c *Client) UpdateDomainOperation(name string) *UpdateDomainOperation {
+func (c *gRPCClient) UpdateDomainOperation(name string) *UpdateDomainOperation {
 	return &UpdateDomainOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -874,9 +1066,9 @@ type ValidateTrustOperation struct {
 
 // ValidateTrustOperation returns a new ValidateTrustOperation from a given name.
 // The name must be that of a previously created ValidateTrustOperation, possibly from a different process.
-func (c *Client) ValidateTrustOperation(name string) *ValidateTrustOperation {
+func (c *gRPCClient) ValidateTrustOperation(name string) *ValidateTrustOperation {
 	return &ValidateTrustOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

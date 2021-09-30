@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.eventarc.v1",
+  "libraryPackage": "cloud.google.com/go/eventarc/apiv1",
+  "services": {
+    "Eventarc": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateTrigger": {
+              "methods": [
+                "CreateTrigger"
+              ]
+            },
+            "DeleteTrigger": {
+              "methods": [
+                "DeleteTrigger"
+              ]
+            },
+            "GetTrigger": {
+              "methods": [
+                "GetTrigger"
+              ]
+            },
+            "ListTriggers": {
+              "methods": [
+                "ListTriggers"
+              ]
+            },
+            "UpdateTrigger": {
+              "methods": [
+                "UpdateTrigger"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

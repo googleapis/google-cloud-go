@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -50,12 +50,13 @@ type CallOptions struct {
 	DeletePatchDeployment       []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("osconfig.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("osconfig.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -166,35 +167,135 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from OS Config API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ExecutePatchJob(context.Context, *osconfigpb.ExecutePatchJobRequest, ...gax.CallOption) (*osconfigpb.PatchJob, error)
+	GetPatchJob(context.Context, *osconfigpb.GetPatchJobRequest, ...gax.CallOption) (*osconfigpb.PatchJob, error)
+	CancelPatchJob(context.Context, *osconfigpb.CancelPatchJobRequest, ...gax.CallOption) (*osconfigpb.PatchJob, error)
+	ListPatchJobs(context.Context, *osconfigpb.ListPatchJobsRequest, ...gax.CallOption) *PatchJobIterator
+	ListPatchJobInstanceDetails(context.Context, *osconfigpb.ListPatchJobInstanceDetailsRequest, ...gax.CallOption) *PatchJobInstanceDetailsIterator
+	CreatePatchDeployment(context.Context, *osconfigpb.CreatePatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
+	GetPatchDeployment(context.Context, *osconfigpb.GetPatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
+	ListPatchDeployments(context.Context, *osconfigpb.ListPatchDeploymentsRequest, ...gax.CallOption) *PatchDeploymentIterator
+	DeletePatchDeployment(context.Context, *osconfigpb.DeletePatchDeploymentRequest, ...gax.CallOption) error
+}
+
 // Client is a client for interacting with OS Config API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// OS Config API
+//
+// The OS Config service is a server-side component that you can use to
+// manage package installations and patch jobs for virtual machine instances.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ExecutePatchJob patch VM instances by creating and running a patch job.
+func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	return c.internalClient.ExecutePatchJob(ctx, req, opts...)
+}
+
+// GetPatchJob get the patch job. This can be used to track the progress of an
+// ongoing patch job or review the details of completed jobs.
+func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	return c.internalClient.GetPatchJob(ctx, req, opts...)
+}
+
+// CancelPatchJob cancel a patch job. The patch job must be active. Canceled patch jobs
+// cannot be restarted.
+func (c *Client) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	return c.internalClient.CancelPatchJob(ctx, req, opts...)
+}
+
+// ListPatchJobs get a list of patch jobs.
+func (c *Client) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJobsRequest, opts ...gax.CallOption) *PatchJobIterator {
+	return c.internalClient.ListPatchJobs(ctx, req, opts...)
+}
+
+// ListPatchJobInstanceDetails get a list of instance details for a given patch job.
+func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigpb.ListPatchJobInstanceDetailsRequest, opts ...gax.CallOption) *PatchJobInstanceDetailsIterator {
+	return c.internalClient.ListPatchJobInstanceDetails(ctx, req, opts...)
+}
+
+// CreatePatchDeployment create an OS Config patch deployment.
+func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.CreatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	return c.internalClient.CreatePatchDeployment(ctx, req, opts...)
+}
+
+// GetPatchDeployment get an OS Config patch deployment.
+func (c *Client) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	return c.internalClient.GetPatchDeployment(ctx, req, opts...)
+}
+
+// ListPatchDeployments get a page of OS Config patch deployments.
+func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListPatchDeploymentsRequest, opts ...gax.CallOption) *PatchDeploymentIterator {
+	return c.internalClient.ListPatchDeployments(ctx, req, opts...)
+}
+
+// DeletePatchDeployment delete an OS Config patch deployment.
+func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.DeletePatchDeploymentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeletePatchDeployment(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with OS Config API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client osconfigpb.OsConfigServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new os config service client.
+// NewClient creates a new os config service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // OS Config API
 //
 // The OS Config service is a server-side component that you can use to
 // manage package installations and patch jobs for virtual machine instances.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -212,42 +313,44 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: osconfigpb.NewOsConfigServiceClient(connPool),
+		client:           osconfigpb.NewOsConfigServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ExecutePatchJob patch VM instances by creating and running a patch job.
-func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -255,7 +358,7 @@ func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePat
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExecutePatchJob[0:len(c.CallOptions.ExecutePatchJob):len(c.CallOptions.ExecutePatchJob)], opts...)
+	opts = append((*c.CallOptions).ExecutePatchJob[0:len((*c.CallOptions).ExecutePatchJob):len((*c.CallOptions).ExecutePatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -268,9 +371,7 @@ func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePat
 	return resp, nil
 }
 
-// GetPatchJob get the patch job. This can be used to track the progress of an
-// ongoing patch job or review the details of completed jobs.
-func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -278,7 +379,7 @@ func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobReq
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetPatchJob[0:len(c.CallOptions.GetPatchJob):len(c.CallOptions.GetPatchJob)], opts...)
+	opts = append((*c.CallOptions).GetPatchJob[0:len((*c.CallOptions).GetPatchJob):len((*c.CallOptions).GetPatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -291,9 +392,7 @@ func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobReq
 	return resp, nil
 }
 
-// CancelPatchJob cancel a patch job. The patch job must be active. Canceled patch jobs
-// cannot be restarted.
-func (c *Client) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -301,7 +400,7 @@ func (c *Client) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatch
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CancelPatchJob[0:len(c.CallOptions.CancelPatchJob):len(c.CallOptions.CancelPatchJob)], opts...)
+	opts = append((*c.CallOptions).CancelPatchJob[0:len((*c.CallOptions).CancelPatchJob):len((*c.CallOptions).CancelPatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -314,19 +413,20 @@ func (c *Client) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatch
 	return resp, nil
 }
 
-// ListPatchJobs get a list of patch jobs.
-func (c *Client) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJobsRequest, opts ...gax.CallOption) *PatchJobIterator {
+func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJobsRequest, opts ...gax.CallOption) *PatchJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPatchJobs[0:len(c.CallOptions.ListPatchJobs):len(c.CallOptions.ListPatchJobs)], opts...)
+	opts = append((*c.CallOptions).ListPatchJobs[0:len((*c.CallOptions).ListPatchJobs):len((*c.CallOptions).ListPatchJobs)], opts...)
 	it := &PatchJobIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJob, string, error) {
-		var resp *osconfigpb.ListPatchJobsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,25 +449,28 @@ func (c *Client) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJob
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// ListPatchJobInstanceDetails get a list of instance details for a given patch job.
-func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigpb.ListPatchJobInstanceDetailsRequest, opts ...gax.CallOption) *PatchJobInstanceDetailsIterator {
+func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigpb.ListPatchJobInstanceDetailsRequest, opts ...gax.CallOption) *PatchJobInstanceDetailsIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPatchJobInstanceDetails[0:len(c.CallOptions.ListPatchJobInstanceDetails):len(c.CallOptions.ListPatchJobInstanceDetails)], opts...)
+	opts = append((*c.CallOptions).ListPatchJobInstanceDetails[0:len((*c.CallOptions).ListPatchJobInstanceDetails):len((*c.CallOptions).ListPatchJobInstanceDetails)], opts...)
 	it := &PatchJobInstanceDetailsIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchJobInstanceDetailsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchJobInstanceDetails, string, error) {
-		var resp *osconfigpb.ListPatchJobInstanceDetailsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchJobInstanceDetailsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -390,14 +493,15 @@ func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// CreatePatchDeployment create an OS Config patch deployment.
-func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.CreatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.CreatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -405,7 +509,7 @@ func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.Crea
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreatePatchDeployment[0:len(c.CallOptions.CreatePatchDeployment):len(c.CallOptions.CreatePatchDeployment)], opts...)
+	opts = append((*c.CallOptions).CreatePatchDeployment[0:len((*c.CallOptions).CreatePatchDeployment):len((*c.CallOptions).CreatePatchDeployment)], opts...)
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -418,8 +522,7 @@ func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.Crea
 	return resp, nil
 }
 
-// GetPatchDeployment get an OS Config patch deployment.
-func (c *Client) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -427,7 +530,7 @@ func (c *Client) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatc
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetPatchDeployment[0:len(c.CallOptions.GetPatchDeployment):len(c.CallOptions.GetPatchDeployment)], opts...)
+	opts = append((*c.CallOptions).GetPatchDeployment[0:len((*c.CallOptions).GetPatchDeployment):len((*c.CallOptions).GetPatchDeployment)], opts...)
 	var resp *osconfigpb.PatchDeployment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -440,19 +543,20 @@ func (c *Client) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatc
 	return resp, nil
 }
 
-// ListPatchDeployments get a page of OS Config patch deployments.
-func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListPatchDeploymentsRequest, opts ...gax.CallOption) *PatchDeploymentIterator {
+func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListPatchDeploymentsRequest, opts ...gax.CallOption) *PatchDeploymentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPatchDeployments[0:len(c.CallOptions.ListPatchDeployments):len(c.CallOptions.ListPatchDeployments)], opts...)
+	opts = append((*c.CallOptions).ListPatchDeployments[0:len((*c.CallOptions).ListPatchDeployments):len((*c.CallOptions).ListPatchDeployments)], opts...)
 	it := &PatchDeploymentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListPatchDeploymentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.PatchDeployment, string, error) {
-		var resp *osconfigpb.ListPatchDeploymentsResponse
-		req.PageToken = pageToken
+		resp := &osconfigpb.ListPatchDeploymentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -475,14 +579,15 @@ func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListP
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeletePatchDeployment delete an OS Config patch deployment.
-func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.DeletePatchDeploymentRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.DeletePatchDeploymentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -490,7 +595,7 @@ func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.Dele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeletePatchDeployment[0:len(c.CallOptions.DeletePatchDeployment):len(c.CallOptions.DeletePatchDeployment)], opts...)
+	opts = append((*c.CallOptions).DeletePatchDeployment[0:len((*c.CallOptions).DeletePatchDeployment):len((*c.CallOptions).DeletePatchDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeletePatchDeployment(ctx, req, settings.GRPC...)

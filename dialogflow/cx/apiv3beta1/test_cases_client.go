@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTestCasesClientHook clientHook
@@ -56,12 +56,13 @@ type TestCasesCallOptions struct {
 	GetTestCaseResult    []gax.CallOption
 }
 
-func defaultTestCasesClientOptions() []option.ClientOption {
+func defaultTestCasesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -205,38 +206,195 @@ func defaultTestCasesCallOptions() *TestCasesCallOptions {
 	}
 }
 
+// internalTestCasesClient is an interface that defines the methods availaible from Dialogflow API.
+type internalTestCasesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListTestCases(context.Context, *cxpb.ListTestCasesRequest, ...gax.CallOption) *TestCaseIterator
+	BatchDeleteTestCases(context.Context, *cxpb.BatchDeleteTestCasesRequest, ...gax.CallOption) error
+	GetTestCase(context.Context, *cxpb.GetTestCaseRequest, ...gax.CallOption) (*cxpb.TestCase, error)
+	CreateTestCase(context.Context, *cxpb.CreateTestCaseRequest, ...gax.CallOption) (*cxpb.TestCase, error)
+	UpdateTestCase(context.Context, *cxpb.UpdateTestCaseRequest, ...gax.CallOption) (*cxpb.TestCase, error)
+	RunTestCase(context.Context, *cxpb.RunTestCaseRequest, ...gax.CallOption) (*RunTestCaseOperation, error)
+	RunTestCaseOperation(name string) *RunTestCaseOperation
+	BatchRunTestCases(context.Context, *cxpb.BatchRunTestCasesRequest, ...gax.CallOption) (*BatchRunTestCasesOperation, error)
+	BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation
+	CalculateCoverage(context.Context, *cxpb.CalculateCoverageRequest, ...gax.CallOption) (*cxpb.CalculateCoverageResponse, error)
+	ImportTestCases(context.Context, *cxpb.ImportTestCasesRequest, ...gax.CallOption) (*ImportTestCasesOperation, error)
+	ImportTestCasesOperation(name string) *ImportTestCasesOperation
+	ExportTestCases(context.Context, *cxpb.ExportTestCasesRequest, ...gax.CallOption) (*ExportTestCasesOperation, error)
+	ExportTestCasesOperation(name string) *ExportTestCasesOperation
+	ListTestCaseResults(context.Context, *cxpb.ListTestCaseResultsRequest, ...gax.CallOption) *TestCaseResultIterator
+	GetTestCaseResult(context.Context, *cxpb.GetTestCaseResultRequest, ...gax.CallOption) (*cxpb.TestCaseResult, error)
+}
+
 // TestCasesClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing [Test Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and
+// [Test Case Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
+type TestCasesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalTestCasesClient
+
+	// The call options for this service.
+	CallOptions *TestCasesCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *TestCasesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *TestCasesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *TestCasesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListTestCases fetches a list of test cases for a given agent.
+func (c *TestCasesClient) ListTestCases(ctx context.Context, req *cxpb.ListTestCasesRequest, opts ...gax.CallOption) *TestCaseIterator {
+	return c.internalClient.ListTestCases(ctx, req, opts...)
+}
+
+// BatchDeleteTestCases batch deletes test cases.
+func (c *TestCasesClient) BatchDeleteTestCases(ctx context.Context, req *cxpb.BatchDeleteTestCasesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.BatchDeleteTestCases(ctx, req, opts...)
+}
+
+// GetTestCase gets a test case.
+func (c *TestCasesClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+	return c.internalClient.GetTestCase(ctx, req, opts...)
+}
+
+// CreateTestCase creates a test case for the given agent.
+func (c *TestCasesClient) CreateTestCase(ctx context.Context, req *cxpb.CreateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+	return c.internalClient.CreateTestCase(ctx, req, opts...)
+}
+
+// UpdateTestCase updates the specified test case.
+func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+	return c.internalClient.UpdateTestCase(ctx, req, opts...)
+}
+
+// RunTestCase kicks off a test case run.
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: RunTestCaseMetadata
+//
+//   response: RunTestCaseResponse
+func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
+	return c.internalClient.RunTestCase(ctx, req, opts...)
+}
+
+// RunTestCaseOperation returns a new RunTestCaseOperation from a given name.
+// The name must be that of a previously created RunTestCaseOperation, possibly from a different process.
+func (c *TestCasesClient) RunTestCaseOperation(name string) *RunTestCaseOperation {
+	return c.internalClient.RunTestCaseOperation(name)
+}
+
+// BatchRunTestCases kicks off a batch run of test cases.
+func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
+	return c.internalClient.BatchRunTestCases(ctx, req, opts...)
+}
+
+// BatchRunTestCasesOperation returns a new BatchRunTestCasesOperation from a given name.
+// The name must be that of a previously created BatchRunTestCasesOperation, possibly from a different process.
+func (c *TestCasesClient) BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation {
+	return c.internalClient.BatchRunTestCasesOperation(name)
+}
+
+// CalculateCoverage calculates the test coverage for an agent.
+func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.CalculateCoverageRequest, opts ...gax.CallOption) (*cxpb.CalculateCoverageResponse, error) {
+	return c.internalClient.CalculateCoverage(ctx, req, opts...)
+}
+
+// ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It
+// always creates new test cases and won’t overwite any existing ones. The
+// provided ID in the imported test case is neglected.
+func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
+	return c.internalClient.ImportTestCases(ctx, req, opts...)
+}
+
+// ImportTestCasesOperation returns a new ImportTestCasesOperation from a given name.
+// The name must be that of a previously created ImportTestCasesOperation, possibly from a different process.
+func (c *TestCasesClient) ImportTestCasesOperation(name string) *ImportTestCasesOperation {
+	return c.internalClient.ImportTestCasesOperation(name)
+}
+
+// ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local
+// file. Filter can be applied to export a subset of test cases.
+func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
+	return c.internalClient.ExportTestCases(ctx, req, opts...)
+}
+
+// ExportTestCasesOperation returns a new ExportTestCasesOperation from a given name.
+// The name must be that of a previously created ExportTestCasesOperation, possibly from a different process.
+func (c *TestCasesClient) ExportTestCasesOperation(name string) *ExportTestCasesOperation {
+	return c.internalClient.ExportTestCasesOperation(name)
+}
+
+// ListTestCaseResults fetches a list of results for a given test case.
+func (c *TestCasesClient) ListTestCaseResults(ctx context.Context, req *cxpb.ListTestCaseResultsRequest, opts ...gax.CallOption) *TestCaseResultIterator {
+	return c.internalClient.ListTestCaseResults(ctx, req, opts...)
+}
+
+// GetTestCaseResult gets a test case result.
+func (c *TestCasesClient) GetTestCaseResult(ctx context.Context, req *cxpb.GetTestCaseResultRequest, opts ...gax.CallOption) (*cxpb.TestCaseResult, error) {
+	return c.internalClient.GetTestCaseResult(ctx, req, opts...)
+}
+
+// testCasesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type TestCasesClient struct {
+type testCasesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing TestCasesClient
+	CallOptions **TestCasesCallOptions
+
 	// The gRPC API client.
 	testCasesClient cxpb.TestCasesClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *TestCasesCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewTestCasesClient creates a new test cases client.
+// NewTestCasesClient creates a new test cases client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing [Test Cases][google.cloud.dialogflow.cx.v3beta1.TestCase] and
 // [Test Case Results][google.cloud.dialogflow.cx.v3beta1.TestCaseResult].
 func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*TestCasesClient, error) {
-	clientOpts := defaultTestCasesClientOptions()
-
+	clientOpts := defaultTestCasesGRPCClientOptions()
 	if newTestCasesClientHook != nil {
 		hookOpts, err := newTestCasesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -254,16 +412,19 @@ func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*Test
 	if err != nil {
 		return nil, err
 	}
-	c := &TestCasesClient{
+	client := TestCasesClient{CallOptions: defaultTestCasesCallOptions()}
+
+	c := &testCasesGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultTestCasesCallOptions(),
-
-		testCasesClient: cxpb.NewTestCasesClient(connPool),
+		testCasesClient:  cxpb.NewTestCasesClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -273,44 +434,46 @@ func NewTestCasesClient(ctx context.Context, opts ...option.ClientOption) (*Test
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *TestCasesClient) Connection() *grpc.ClientConn {
+func (c *testCasesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *TestCasesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *TestCasesClient) setGoogleClientInfo(keyval ...string) {
+func (c *testCasesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListTestCases fetches a list of test cases for a given agent.
-func (c *TestCasesClient) ListTestCases(ctx context.Context, req *cxpb.ListTestCasesRequest, opts ...gax.CallOption) *TestCaseIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *testCasesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *testCasesGRPCClient) ListTestCases(ctx context.Context, req *cxpb.ListTestCasesRequest, opts ...gax.CallOption) *TestCaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTestCases[0:len(c.CallOptions.ListTestCases):len(c.CallOptions.ListTestCases)], opts...)
+	opts = append((*c.CallOptions).ListTestCases[0:len((*c.CallOptions).ListTestCases):len((*c.CallOptions).ListTestCases)], opts...)
 	it := &TestCaseIterator{}
 	req = proto.Clone(req).(*cxpb.ListTestCasesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TestCase, string, error) {
-		var resp *cxpb.ListTestCasesResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTestCasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -333,14 +496,15 @@ func (c *TestCasesClient) ListTestCases(ctx context.Context, req *cxpb.ListTestC
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// BatchDeleteTestCases batch deletes test cases.
-func (c *TestCasesClient) BatchDeleteTestCases(ctx context.Context, req *cxpb.BatchDeleteTestCasesRequest, opts ...gax.CallOption) error {
+func (c *testCasesGRPCClient) BatchDeleteTestCases(ctx context.Context, req *cxpb.BatchDeleteTestCasesRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -348,7 +512,7 @@ func (c *TestCasesClient) BatchDeleteTestCases(ctx context.Context, req *cxpb.Ba
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchDeleteTestCases[0:len(c.CallOptions.BatchDeleteTestCases):len(c.CallOptions.BatchDeleteTestCases)], opts...)
+	opts = append((*c.CallOptions).BatchDeleteTestCases[0:len((*c.CallOptions).BatchDeleteTestCases):len((*c.CallOptions).BatchDeleteTestCases)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.testCasesClient.BatchDeleteTestCases(ctx, req, settings.GRPC...)
@@ -357,8 +521,7 @@ func (c *TestCasesClient) BatchDeleteTestCases(ctx context.Context, req *cxpb.Ba
 	return err
 }
 
-// GetTestCase gets a test case.
-func (c *TestCasesClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+func (c *testCasesGRPCClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -366,7 +529,7 @@ func (c *TestCasesClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCase
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTestCase[0:len(c.CallOptions.GetTestCase):len(c.CallOptions.GetTestCase)], opts...)
+	opts = append((*c.CallOptions).GetTestCase[0:len((*c.CallOptions).GetTestCase):len((*c.CallOptions).GetTestCase)], opts...)
 	var resp *cxpb.TestCase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -379,8 +542,7 @@ func (c *TestCasesClient) GetTestCase(ctx context.Context, req *cxpb.GetTestCase
 	return resp, nil
 }
 
-// CreateTestCase creates a test case for the given agent.
-func (c *TestCasesClient) CreateTestCase(ctx context.Context, req *cxpb.CreateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+func (c *testCasesGRPCClient) CreateTestCase(ctx context.Context, req *cxpb.CreateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -388,7 +550,7 @@ func (c *TestCasesClient) CreateTestCase(ctx context.Context, req *cxpb.CreateTe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTestCase[0:len(c.CallOptions.CreateTestCase):len(c.CallOptions.CreateTestCase)], opts...)
+	opts = append((*c.CallOptions).CreateTestCase[0:len((*c.CallOptions).CreateTestCase):len((*c.CallOptions).CreateTestCase)], opts...)
 	var resp *cxpb.TestCase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -401,8 +563,7 @@ func (c *TestCasesClient) CreateTestCase(ctx context.Context, req *cxpb.CreateTe
 	return resp, nil
 }
 
-// UpdateTestCase updates the specified test case.
-func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
+func (c *testCasesGRPCClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTestCaseRequest, opts ...gax.CallOption) (*cxpb.TestCase, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -410,7 +571,7 @@ func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "test_case.name", url.QueryEscape(req.GetTestCase().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTestCase[0:len(c.CallOptions.UpdateTestCase):len(c.CallOptions.UpdateTestCase)], opts...)
+	opts = append((*c.CallOptions).UpdateTestCase[0:len((*c.CallOptions).UpdateTestCase):len((*c.CallOptions).UpdateTestCase)], opts...)
 	var resp *cxpb.TestCase
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -423,8 +584,7 @@ func (c *TestCasesClient) UpdateTestCase(ctx context.Context, req *cxpb.UpdateTe
 	return resp, nil
 }
 
-// RunTestCase kicks off a test case run.
-func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
+func (c *testCasesGRPCClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCaseRequest, opts ...gax.CallOption) (*RunTestCaseOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -432,7 +592,7 @@ func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCase
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RunTestCase[0:len(c.CallOptions.RunTestCase):len(c.CallOptions.RunTestCase)], opts...)
+	opts = append((*c.CallOptions).RunTestCase[0:len((*c.CallOptions).RunTestCase):len((*c.CallOptions).RunTestCase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -443,12 +603,11 @@ func (c *TestCasesClient) RunTestCase(ctx context.Context, req *cxpb.RunTestCase
 		return nil, err
 	}
 	return &RunTestCaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchRunTestCases kicks off a batch run of test cases.
-func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
+func (c *testCasesGRPCClient) BatchRunTestCases(ctx context.Context, req *cxpb.BatchRunTestCasesRequest, opts ...gax.CallOption) (*BatchRunTestCasesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -456,7 +615,7 @@ func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.Batch
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchRunTestCases[0:len(c.CallOptions.BatchRunTestCases):len(c.CallOptions.BatchRunTestCases)], opts...)
+	opts = append((*c.CallOptions).BatchRunTestCases[0:len((*c.CallOptions).BatchRunTestCases):len((*c.CallOptions).BatchRunTestCases)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -467,12 +626,11 @@ func (c *TestCasesClient) BatchRunTestCases(ctx context.Context, req *cxpb.Batch
 		return nil, err
 	}
 	return &BatchRunTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// CalculateCoverage calculates the test coverage for an agent.
-func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.CalculateCoverageRequest, opts ...gax.CallOption) (*cxpb.CalculateCoverageResponse, error) {
+func (c *testCasesGRPCClient) CalculateCoverage(ctx context.Context, req *cxpb.CalculateCoverageRequest, opts ...gax.CallOption) (*cxpb.CalculateCoverageResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -480,7 +638,7 @@ func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.Calcu
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent", url.QueryEscape(req.GetAgent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CalculateCoverage[0:len(c.CallOptions.CalculateCoverage):len(c.CallOptions.CalculateCoverage)], opts...)
+	opts = append((*c.CallOptions).CalculateCoverage[0:len((*c.CallOptions).CalculateCoverage):len((*c.CallOptions).CalculateCoverage)], opts...)
 	var resp *cxpb.CalculateCoverageResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -493,10 +651,7 @@ func (c *TestCasesClient) CalculateCoverage(ctx context.Context, req *cxpb.Calcu
 	return resp, nil
 }
 
-// ImportTestCases imports the test cases from a Cloud Storage bucket or a local file. It
-// always creates new test cases and won’t overwite any existing ones. The
-// provided ID in the imported test case is neglected.
-func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
+func (c *testCasesGRPCClient) ImportTestCases(ctx context.Context, req *cxpb.ImportTestCasesRequest, opts ...gax.CallOption) (*ImportTestCasesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -504,7 +659,7 @@ func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportTestCases[0:len(c.CallOptions.ImportTestCases):len(c.CallOptions.ImportTestCases)], opts...)
+	opts = append((*c.CallOptions).ImportTestCases[0:len((*c.CallOptions).ImportTestCases):len((*c.CallOptions).ImportTestCases)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -515,13 +670,11 @@ func (c *TestCasesClient) ImportTestCases(ctx context.Context, req *cxpb.ImportT
 		return nil, err
 	}
 	return &ImportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportTestCases exports the test cases under the agent to a Cloud Storage bucket or a local
-// file. Filter can be applied to export a subset of test cases.
-func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
+func (c *testCasesGRPCClient) ExportTestCases(ctx context.Context, req *cxpb.ExportTestCasesRequest, opts ...gax.CallOption) (*ExportTestCasesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -529,7 +682,7 @@ func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportTestCases[0:len(c.CallOptions.ExportTestCases):len(c.CallOptions.ExportTestCases)], opts...)
+	opts = append((*c.CallOptions).ExportTestCases[0:len((*c.CallOptions).ExportTestCases):len((*c.CallOptions).ExportTestCases)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -540,23 +693,24 @@ func (c *TestCasesClient) ExportTestCases(ctx context.Context, req *cxpb.ExportT
 		return nil, err
 	}
 	return &ExportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListTestCaseResults fetches a list of results for a given test case.
-func (c *TestCasesClient) ListTestCaseResults(ctx context.Context, req *cxpb.ListTestCaseResultsRequest, opts ...gax.CallOption) *TestCaseResultIterator {
+func (c *testCasesGRPCClient) ListTestCaseResults(ctx context.Context, req *cxpb.ListTestCaseResultsRequest, opts ...gax.CallOption) *TestCaseResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTestCaseResults[0:len(c.CallOptions.ListTestCaseResults):len(c.CallOptions.ListTestCaseResults)], opts...)
+	opts = append((*c.CallOptions).ListTestCaseResults[0:len((*c.CallOptions).ListTestCaseResults):len((*c.CallOptions).ListTestCaseResults)], opts...)
 	it := &TestCaseResultIterator{}
 	req = proto.Clone(req).(*cxpb.ListTestCaseResultsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TestCaseResult, string, error) {
-		var resp *cxpb.ListTestCaseResultsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTestCaseResultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -579,14 +733,15 @@ func (c *TestCasesClient) ListTestCaseResults(ctx context.Context, req *cxpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetTestCaseResult gets a test case result.
-func (c *TestCasesClient) GetTestCaseResult(ctx context.Context, req *cxpb.GetTestCaseResultRequest, opts ...gax.CallOption) (*cxpb.TestCaseResult, error) {
+func (c *testCasesGRPCClient) GetTestCaseResult(ctx context.Context, req *cxpb.GetTestCaseResultRequest, opts ...gax.CallOption) (*cxpb.TestCaseResult, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -594,7 +749,7 @@ func (c *TestCasesClient) GetTestCaseResult(ctx context.Context, req *cxpb.GetTe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTestCaseResult[0:len(c.CallOptions.GetTestCaseResult):len(c.CallOptions.GetTestCaseResult)], opts...)
+	opts = append((*c.CallOptions).GetTestCaseResult[0:len((*c.CallOptions).GetTestCaseResult):len((*c.CallOptions).GetTestCaseResult)], opts...)
 	var resp *cxpb.TestCaseResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -614,9 +769,9 @@ type BatchRunTestCasesOperation struct {
 
 // BatchRunTestCasesOperation returns a new BatchRunTestCasesOperation from a given name.
 // The name must be that of a previously created BatchRunTestCasesOperation, possibly from a different process.
-func (c *TestCasesClient) BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation {
+func (c *testCasesGRPCClient) BatchRunTestCasesOperation(name string) *BatchRunTestCasesOperation {
 	return &BatchRunTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -683,9 +838,9 @@ type ExportTestCasesOperation struct {
 
 // ExportTestCasesOperation returns a new ExportTestCasesOperation from a given name.
 // The name must be that of a previously created ExportTestCasesOperation, possibly from a different process.
-func (c *TestCasesClient) ExportTestCasesOperation(name string) *ExportTestCasesOperation {
+func (c *testCasesGRPCClient) ExportTestCasesOperation(name string) *ExportTestCasesOperation {
 	return &ExportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -752,9 +907,9 @@ type ImportTestCasesOperation struct {
 
 // ImportTestCasesOperation returns a new ImportTestCasesOperation from a given name.
 // The name must be that of a previously created ImportTestCasesOperation, possibly from a different process.
-func (c *TestCasesClient) ImportTestCasesOperation(name string) *ImportTestCasesOperation {
+func (c *testCasesGRPCClient) ImportTestCasesOperation(name string) *ImportTestCasesOperation {
 	return &ImportTestCasesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -821,9 +976,9 @@ type RunTestCaseOperation struct {
 
 // RunTestCaseOperation returns a new RunTestCaseOperation from a given name.
 // The name must be that of a previously created RunTestCaseOperation, possibly from a different process.
-func (c *TestCasesClient) RunTestCaseOperation(name string) *RunTestCaseOperation {
+func (c *testCasesGRPCClient) RunTestCaseOperation(name string) *RunTestCaseOperation {
 	return &RunTestCaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

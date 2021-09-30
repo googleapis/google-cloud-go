@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCursorClientHook clientHook
@@ -44,12 +44,13 @@ type CursorCallOptions struct {
 	ListPartitionCursors  []gax.CallOption
 }
 
-func defaultCursorClientOptions() []option.ClientOption {
+func defaultCursorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -92,34 +93,95 @@ func defaultCursorCallOptions() *CursorCallOptions {
 	}
 }
 
+// internalCursorClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+type internalCursorClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	StreamingCommitCursor(context.Context, ...gax.CallOption) (pubsublitepb.CursorService_StreamingCommitCursorClient, error)
+	CommitCursor(context.Context, *pubsublitepb.CommitCursorRequest, ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error)
+	ListPartitionCursors(context.Context, *pubsublitepb.ListPartitionCursorsRequest, ...gax.CallOption) *PartitionCursorIterator
+}
+
 // CursorClient is a client for interacting with Pub/Sub Lite API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The service that a subscriber client application uses to manage committed
+// cursors while receiving messsages. A cursor represents a subscriber’s
+// progress within a topic partition for a given subscription.
+type CursorClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCursorClient
+
+	// The call options for this service.
+	CallOptions *CursorCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CursorClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CursorClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CursorClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// StreamingCommitCursor establishes a stream with the server for managing committed cursors.
+func (c *CursorClient) StreamingCommitCursor(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.CursorService_StreamingCommitCursorClient, error) {
+	return c.internalClient.StreamingCommitCursor(ctx, opts...)
+}
+
+// CommitCursor updates the committed cursor.
+func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
+	return c.internalClient.CommitCursor(ctx, req, opts...)
+}
+
+// ListPartitionCursors returns all committed cursor information for a subscription.
+func (c *CursorClient) ListPartitionCursors(ctx context.Context, req *pubsublitepb.ListPartitionCursorsRequest, opts ...gax.CallOption) *PartitionCursorIterator {
+	return c.internalClient.ListPartitionCursors(ctx, req, opts...)
+}
+
+// cursorGRPCClient is a client for interacting with Pub/Sub Lite API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CursorClient struct {
+type cursorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CursorClient
+	CallOptions **CursorCallOptions
+
 	// The gRPC API client.
 	cursorClient pubsublitepb.CursorServiceClient
-
-	// The call options for this service.
-	CallOptions *CursorCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCursorClient creates a new cursor service client.
+// NewCursorClient creates a new cursor service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The service that a subscriber client application uses to manage committed
 // cursors while receiving messsages. A cursor represents a subscriber’s
 // progress within a topic partition for a given subscription.
 func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorClient, error) {
-	clientOpts := defaultCursorClientOptions()
-
+	clientOpts := defaultCursorGRPCClientOptions()
 	if newCursorClientHook != nil {
 		hookOpts, err := newCursorClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -137,45 +199,47 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 	if err != nil {
 		return nil, err
 	}
-	c := &CursorClient{
+	client := CursorClient{CallOptions: defaultCursorCallOptions()}
+
+	c := &cursorGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCursorCallOptions(),
-
-		cursorClient: pubsublitepb.NewCursorServiceClient(connPool),
+		cursorClient:     pubsublitepb.NewCursorServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CursorClient) Connection() *grpc.ClientConn {
+func (c *cursorGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CursorClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CursorClient) setGoogleClientInfo(keyval ...string) {
+func (c *cursorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// StreamingCommitCursor establishes a stream with the server for managing committed cursors.
-func (c *CursorClient) StreamingCommitCursor(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.CursorService_StreamingCommitCursorClient, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *cursorGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *cursorGRPCClient) StreamingCommitCursor(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.CursorService_StreamingCommitCursorClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.StreamingCommitCursor[0:len(c.CallOptions.StreamingCommitCursor):len(c.CallOptions.StreamingCommitCursor)], opts...)
 	var resp pubsublitepb.CursorService_StreamingCommitCursorClient
+	opts = append((*c.CallOptions).StreamingCommitCursor[0:len((*c.CallOptions).StreamingCommitCursor):len((*c.CallOptions).StreamingCommitCursor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cursorClient.StreamingCommitCursor(ctx, settings.GRPC...)
@@ -187,15 +251,15 @@ func (c *CursorClient) StreamingCommitCursor(ctx context.Context, opts ...gax.Ca
 	return resp, nil
 }
 
-// CommitCursor updates the committed cursor.
-func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
+func (c *cursorGRPCClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CommitCursor[0:len(c.CallOptions.CommitCursor):len(c.CallOptions.CommitCursor)], opts...)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CommitCursor[0:len((*c.CallOptions).CommitCursor):len((*c.CallOptions).CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -208,19 +272,20 @@ func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.Commi
 	return resp, nil
 }
 
-// ListPartitionCursors returns all committed cursor information for a subscription.
-func (c *CursorClient) ListPartitionCursors(ctx context.Context, req *pubsublitepb.ListPartitionCursorsRequest, opts ...gax.CallOption) *PartitionCursorIterator {
+func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsublitepb.ListPartitionCursorsRequest, opts ...gax.CallOption) *PartitionCursorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPartitionCursors[0:len(c.CallOptions.ListPartitionCursors):len(c.CallOptions.ListPartitionCursors)], opts...)
+	opts = append((*c.CallOptions).ListPartitionCursors[0:len((*c.CallOptions).ListPartitionCursors):len((*c.CallOptions).ListPartitionCursors)], opts...)
 	it := &PartitionCursorIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListPartitionCursorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.PartitionCursor, string, error) {
-		var resp *pubsublitepb.ListPartitionCursorsResponse
-		req.PageToken = pageToken
+		resp := &pubsublitepb.ListPartitionCursorsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -243,9 +308,11 @@ func (c *CursorClient) ListPartitionCursors(ctx context.Context, req *pubsublite
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

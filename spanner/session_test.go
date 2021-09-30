@@ -31,6 +31,7 @@ import (
 	"time"
 
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -41,7 +42,8 @@ import (
 func newSessionNotFoundError(name string) error {
 	s := status.Newf(codes.NotFound, "Session not found: Session with id %s not found", name)
 	s, _ = s.WithDetails(&errdetails.ResourceInfo{ResourceType: sessionResourceType, ResourceName: name})
-	return s.Err()
+	err, _ := apierror.FromError(s.Err())
+	return err
 }
 
 // TestSessionPoolConfigValidation tests session pool config validation.
@@ -1978,7 +1980,8 @@ func getSessionsPerChannel(sp *sessionPool) map[string]int {
 		// Get the pointer to the actual underlying gRPC ClientConn and use
 		// that as the key in the map.
 		val := reflect.ValueOf(s.client).Elem()
-		connPool := val.FieldByName("connPool").Elem().Elem()
+		internalClient := val.FieldByName("internalClient").Elem().Elem()
+		connPool := internalClient.FieldByName("connPool").Elem().Elem()
 		conn := connPool.Field(0).Pointer()
 		key := fmt.Sprintf("%v", conn)
 		sessionsPerChannel[key] = sessionsPerChannel[key] + 1

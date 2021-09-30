@@ -63,6 +63,11 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return bqToJob(bqjob, c)
 }
 
+// ProjectID returns the job's associated project.
+func (j *Job) ProjectID() string {
+	return j.projectID
+}
+
 // ID returns the job's ID.
 func (j *Job) ID() string {
 	return j.jobID
@@ -233,6 +238,23 @@ func (j *Job) Cancel(ctx context.Context) error {
 	})
 }
 
+// Delete deletes the job.
+func (j *Job) Delete(ctx context.Context) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Delete")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	call := j.c.bqs.Jobs.Delete(j.projectID, j.jobID).Context(ctx)
+	if j.location != "" {
+		call = call.Location(j.location)
+	}
+	setClientHeader(call.Header())
+
+	return runWithRetry(ctx, func() (err error) {
+		err = call.Do()
+		return err
+	})
+}
+
 // Wait blocks until the job or the context is done. It returns the final status
 // of the job.
 // If an error occurs while retrieving the status, Wait returns that error. But
@@ -350,6 +372,12 @@ type JobStatistics struct {
 
 	// ReservationUsage attributes slot consumption to reservations.
 	ReservationUsage []*ReservationUsage
+
+	// TransactionInfo indicates the transaction ID associated with the job, if any.
+	TransactionInfo *TransactionInfo
+
+	// SessionInfo contains information about the session if this job is part of one.
+	SessionInfo *SessionInfo
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -413,6 +441,10 @@ type QueryStatistics struct {
 	// The number of rows affected by a DML statement. Present only for DML
 	// statements INSERT, UPDATE or DELETE.
 	NumDMLAffectedRows int64
+
+	// DMLStats provides statistics about the row mutations performed by
+	// DML statements.
+	DMLStats *DMLStatistics
 
 	// Describes a timeline of job execution.
 	Timeline []*QueryTimelineSample
@@ -643,6 +675,27 @@ func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
 	}
 }
 
+// DMLStatistics contains counts of row mutations triggered by a DML query statement.
+type DMLStatistics struct {
+	// Rows added by the statement.
+	InsertedRowCount int64
+	// Rows removed by the statement.
+	DeletedRowCount int64
+	// Rows changed by the statement.
+	UpdatedRowCount int64
+}
+
+func bqToDMLStatistics(q *bq.DmlStatistics) *DMLStatistics {
+	if q == nil {
+		return nil
+	}
+	return &DMLStatistics{
+		InsertedRowCount: q.InsertedRowCount,
+		DeletedRowCount:  q.DeletedRowCount,
+		UpdatedRowCount:  q.UpdatedRowCount,
+	}
+}
+
 func (*ExtractStatistics) implementsStatistics() {}
 func (*LoadStatistics) implementsStatistics()    {}
 func (*QueryStatistics) implementsStatistics()   {}
@@ -833,6 +886,8 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
 		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
+		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
+		SessionInfo:         bqToSessionInfo(s.SessionInfo),
 	}
 	switch {
 	case s.Extract != nil:
@@ -866,6 +921,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
 			TotalBytesProcessedAccuracy:   s.Query.TotalBytesProcessedAccuracy,
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
+			DMLStats:                      bqToDMLStatistics(s.Query.DmlStats),
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,
@@ -934,4 +990,42 @@ func timelineFromProto(timeline []*bq.QueryTimelineSample) []*QueryTimelineSampl
 		})
 	}
 	return res
+}
+
+// TransactionInfo contains information about a multi-statement transaction that may have associated with a job.
+type TransactionInfo struct {
+	// TransactionID is the system-generated identifier for the transaction.
+	TransactionID string
+}
+
+func bqToTransactionInfo(in *bq.TransactionInfo) *TransactionInfo {
+	if in == nil {
+		return nil
+	}
+	return &TransactionInfo{
+		TransactionID: in.TransactionId,
+	}
+}
+
+// SessionInfo contains information about a session associated with a job.
+type SessionInfo struct {
+	SessionID string
+}
+
+func (s *SessionInfo) toBQ() *bq.SessionInfo {
+	if s == nil {
+		return nil
+	}
+	return &bq.SessionInfo{
+		SessionId: s.SessionID,
+	}
+}
+
+func bqToSessionInfo(in *bq.SessionInfo) *SessionInfo {
+	if in == nil {
+		return nil
+	}
+	return &SessionInfo{
+		SessionID: in.SessionId,
+	}
 }

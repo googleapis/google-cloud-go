@@ -1,5 +1,20 @@
 # Changes
 
+### [1.4.2](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.1...logging/v1.4.2) (2021-05-20)
+
+
+### Bug Fixes
+
+* **logging:** correctly detect GKE resource ([#4092](https://www.github.com/googleapis/google-cloud-go/issues/4092)) ([a2538e1](https://www.github.com/googleapis/google-cloud-go/commit/a2538e16123c21da62036b56df8c104360f1c2d6))
+
+### [1.4.1](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.0...logging/v1.4.1) (2021-05-03)
+
+
+### Bug Fixes
+
+* **logging:** allow nil or custom zones in resource detection ([#3997](https://www.github.com/googleapis/google-cloud-go/issues/3997)) ([aded90b](https://www.github.com/googleapis/google-cloud-go/commit/aded90b92de3fa3bed079af1aa4879d00572e8ae))
+* **logging:** appengine zone label ([#3998](https://www.github.com/googleapis/google-cloud-go/issues/3998)) ([394a586](https://www.github.com/googleapis/google-cloud-go/commit/394a586bac04953e92a6496a7ca3b61bd64155ab))
+
 ## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.2.0...logging/v1.4.0) (2021-04-15)
 
 

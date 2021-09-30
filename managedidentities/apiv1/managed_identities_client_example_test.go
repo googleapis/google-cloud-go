@@ -30,21 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateMicrosoftAdDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#CreateMicrosoftAdDomainRequest.
 	}
 	op, err := c.CreateMicrosoftAdDomain(ctx, req)
 	if err != nil {
@@ -60,16 +62,16 @@ func ExampleClient_CreateMicrosoftAdDomain() {
 }
 
 func ExampleClient_ResetAdminPassword() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ResetAdminPasswordRequest.
 	}
 	resp, err := c.ResetAdminPassword(ctx, req)
 	if err != nil {
@@ -80,17 +82,16 @@ func ExampleClient_ResetAdminPassword() {
 }
 
 func ExampleClient_ListDomains() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ListDomainsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ListDomainsRequest.
 	}
 	it := c.ListDomains(ctx, req)
 	for {
@@ -107,16 +108,16 @@ func ExampleClient_ListDomains() {
 }
 
 func ExampleClient_GetDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.GetDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#GetDomainRequest.
 	}
 	resp, err := c.GetDomain(ctx, req)
 	if err != nil {
@@ -127,16 +128,16 @@ func ExampleClient_GetDomain() {
 }
 
 func ExampleClient_UpdateDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.UpdateDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#UpdateDomainRequest.
 	}
 	op, err := c.UpdateDomain(ctx, req)
 	if err != nil {
@@ -152,16 +153,16 @@ func ExampleClient_UpdateDomain() {
 }
 
 func ExampleClient_DeleteDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.DeleteDomainRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DeleteDomainRequest.
 	}
 	op, err := c.DeleteDomain(ctx, req)
 	if err != nil {
@@ -175,16 +176,16 @@ func ExampleClient_DeleteDomain() {
 }
 
 func ExampleClient_AttachTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.AttachTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#AttachTrustRequest.
 	}
 	op, err := c.AttachTrust(ctx, req)
 	if err != nil {
@@ -200,16 +201,16 @@ func ExampleClient_AttachTrust() {
 }
 
 func ExampleClient_ReconfigureTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ReconfigureTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ReconfigureTrustRequest.
 	}
 	op, err := c.ReconfigureTrust(ctx, req)
 	if err != nil {
@@ -225,16 +226,16 @@ func ExampleClient_ReconfigureTrust() {
 }
 
 func ExampleClient_DetachTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.DetachTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#DetachTrustRequest.
 	}
 	op, err := c.DetachTrust(ctx, req)
 	if err != nil {
@@ -250,16 +251,16 @@ func ExampleClient_DetachTrust() {
 }
 
 func ExampleClient_ValidateTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ValidateTrustRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/managedidentities/v1#ValidateTrustRequest.
 	}
 	op, err := c.ValidateTrust(ctx, req)
 	if err != nil {

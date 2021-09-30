@@ -113,7 +113,7 @@ func TestBQToTableMetadata(t *testing.T) {
 			},
 		},
 	} {
-		got, err := bqToTableMetadata(test.in)
+		got, err := bqToTableMetadata(test.in, &Client{})
 		if err != nil {
 			t.Fatal(err)
 		}

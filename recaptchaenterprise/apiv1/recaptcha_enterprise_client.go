@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -32,6 +31,7 @@ import (
 	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -45,14 +45,17 @@ type CallOptions struct {
 	GetKey             []gax.CallOption
 	UpdateKey          []gax.CallOption
 	DeleteKey          []gax.CallOption
+	MigrateKey         []gax.CallOption
+	GetMetrics         []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recaptchaenterprise.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("recaptchaenterprise.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -68,35 +71,139 @@ func defaultCallOptions() *CallOptions {
 		GetKey:             []gax.CallOption{},
 		UpdateKey:          []gax.CallOption{},
 		DeleteKey:          []gax.CallOption{},
+		MigrateKey:         []gax.CallOption{},
+		GetMetrics:         []gax.CallOption{},
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from reCAPTCHA Enterprise API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateAssessment(context.Context, *recaptchaenterprisepb.CreateAssessmentRequest, ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error)
+	AnnotateAssessment(context.Context, *recaptchaenterprisepb.AnnotateAssessmentRequest, ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error)
+	CreateKey(context.Context, *recaptchaenterprisepb.CreateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	ListKeys(context.Context, *recaptchaenterprisepb.ListKeysRequest, ...gax.CallOption) *KeyIterator
+	GetKey(context.Context, *recaptchaenterprisepb.GetKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	UpdateKey(context.Context, *recaptchaenterprisepb.UpdateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	DeleteKey(context.Context, *recaptchaenterprisepb.DeleteKeyRequest, ...gax.CallOption) error
+	MigrateKey(context.Context, *recaptchaenterprisepb.MigrateKeyRequest, ...gax.CallOption) (*recaptchaenterprisepb.Key, error)
+	GetMetrics(context.Context, *recaptchaenterprisepb.GetMetricsRequest, ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error)
+}
+
 // Client is a client for interacting with reCAPTCHA Enterprise API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service to determine the likelihood an event is legitimate.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateAssessment creates an Assessment of the likelihood an event is legitimate.
+func (c *Client) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
+	return c.internalClient.CreateAssessment(ctx, req, opts...)
+}
+
+// AnnotateAssessment annotates a previously created Assessment to provide additional information
+// on whether the event turned out to be authentic or fraudulent.
+func (c *Client) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
+	return c.internalClient.AnnotateAssessment(ctx, req, opts...)
+}
+
+// CreateKey creates a new reCAPTCHA Enterprise key.
+func (c *Client) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	return c.internalClient.CreateKey(ctx, req, opts...)
+}
+
+// ListKeys returns the list of all keys that belong to a project.
+func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
+	return c.internalClient.ListKeys(ctx, req, opts...)
+}
+
+// GetKey returns the specified key.
+func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	return c.internalClient.GetKey(ctx, req, opts...)
+}
+
+// UpdateKey updates the specified key.
+func (c *Client) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	return c.internalClient.UpdateKey(ctx, req, opts...)
+}
+
+// DeleteKey deletes the specified key.
+func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteKey(ctx, req, opts...)
+}
+
+// MigrateKey migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise.
+// Once a key is migrated, it can be used from either product. SiteVerify
+// requests are billed as CreateAssessment calls. You must be
+// authenticated as one of the current owners of the reCAPTCHA Site Key, and
+// your user must have the reCAPTCHA Enterprise Admin IAM role in the
+// destination project.
+func (c *Client) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	return c.internalClient.MigrateKey(ctx, req, opts...)
+}
+
+// GetMetrics get some aggregated metrics for a Key. This data can be used to build
+// dashboards.
+func (c *Client) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
+	return c.internalClient.GetMetrics(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with reCAPTCHA Enterprise API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client recaptchaenterprisepb.RecaptchaEnterpriseServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new recaptcha enterprise service client.
+// NewClient creates a new recaptcha enterprise service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service to determine the likelihood an event is legitimate.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -114,42 +221,44 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: recaptchaenterprisepb.NewRecaptchaEnterpriseServiceClient(connPool),
+		client:           recaptchaenterprisepb.NewRecaptchaEnterpriseServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateAssessment creates an Assessment of the likelihood an event is legitimate.
-func (c *Client) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateAssessment(ctx context.Context, req *recaptchaenterprisepb.CreateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Assessment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -157,7 +266,7 @@ func (c *Client) CreateAssessment(ctx context.Context, req *recaptchaenterprisep
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateAssessment[0:len(c.CallOptions.CreateAssessment):len(c.CallOptions.CreateAssessment)], opts...)
+	opts = append((*c.CallOptions).CreateAssessment[0:len((*c.CallOptions).CreateAssessment):len((*c.CallOptions).CreateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.Assessment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -170,9 +279,7 @@ func (c *Client) CreateAssessment(ctx context.Context, req *recaptchaenterprisep
 	return resp, nil
 }
 
-// AnnotateAssessment annotates a previously created Assessment to provide additional information
-// on whether the event turned out to be authentic or fradulent.
-func (c *Client) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
+func (c *gRPCClient) AnnotateAssessment(ctx context.Context, req *recaptchaenterprisepb.AnnotateAssessmentRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.AnnotateAssessmentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -180,7 +287,7 @@ func (c *Client) AnnotateAssessment(ctx context.Context, req *recaptchaenterpris
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AnnotateAssessment[0:len(c.CallOptions.AnnotateAssessment):len(c.CallOptions.AnnotateAssessment)], opts...)
+	opts = append((*c.CallOptions).AnnotateAssessment[0:len((*c.CallOptions).AnnotateAssessment):len((*c.CallOptions).AnnotateAssessment)], opts...)
 	var resp *recaptchaenterprisepb.AnnotateAssessmentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -193,8 +300,7 @@ func (c *Client) AnnotateAssessment(ctx context.Context, req *recaptchaenterpris
 	return resp, nil
 }
 
-// CreateKey creates a new reCAPTCHA Enterprise key.
-func (c *Client) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+func (c *gRPCClient) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -202,7 +308,7 @@ func (c *Client) CreateKey(ctx context.Context, req *recaptchaenterprisepb.Creat
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateKey[0:len(c.CallOptions.CreateKey):len(c.CallOptions.CreateKey)], opts...)
+	opts = append((*c.CallOptions).CreateKey[0:len((*c.CallOptions).CreateKey):len((*c.CallOptions).CreateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -215,19 +321,20 @@ func (c *Client) CreateKey(ctx context.Context, req *recaptchaenterprisepb.Creat
 	return resp, nil
 }
 
-// ListKeys returns the list of all keys that belong to a project.
-func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
+func (c *gRPCClient) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest, opts ...gax.CallOption) *KeyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListKeys[0:len(c.CallOptions.ListKeys):len(c.CallOptions.ListKeys)], opts...)
+	opts = append((*c.CallOptions).ListKeys[0:len((*c.CallOptions).ListKeys):len((*c.CallOptions).ListKeys)], opts...)
 	it := &KeyIterator{}
 	req = proto.Clone(req).(*recaptchaenterprisepb.ListKeysRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recaptchaenterprisepb.Key, string, error) {
-		var resp *recaptchaenterprisepb.ListKeysResponse
-		req.PageToken = pageToken
+		resp := &recaptchaenterprisepb.ListKeysResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -250,14 +357,15 @@ func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKe
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetKey returns the specified key.
-func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+func (c *gRPCClient) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -265,7 +373,7 @@ func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetKey[0:len(c.CallOptions.GetKey):len(c.CallOptions.GetKey)], opts...)
+	opts = append((*c.CallOptions).GetKey[0:len((*c.CallOptions).GetKey):len((*c.CallOptions).GetKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -278,8 +386,7 @@ func (c *Client) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRe
 	return resp, nil
 }
 
-// UpdateKey updates the specified key.
-func (c *Client) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+func (c *gRPCClient) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -287,7 +394,7 @@ func (c *Client) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.Updat
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "key.name", url.QueryEscape(req.GetKey().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateKey[0:len(c.CallOptions.UpdateKey):len(c.CallOptions.UpdateKey)], opts...)
+	opts = append((*c.CallOptions).UpdateKey[0:len((*c.CallOptions).UpdateKey):len((*c.CallOptions).UpdateKey)], opts...)
 	var resp *recaptchaenterprisepb.Key
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -300,8 +407,7 @@ func (c *Client) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.Updat
 	return resp, nil
 }
 
-// DeleteKey deletes the specified key.
-func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -309,13 +415,45 @@ func (c *Client) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.Delet
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteKey[0:len(c.CallOptions.DeleteKey):len(c.CallOptions.DeleteKey)], opts...)
+	opts = append((*c.CallOptions).DeleteKey[0:len((*c.CallOptions).DeleteKey):len((*c.CallOptions).DeleteKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteKey(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) MigrateKey(ctx context.Context, req *recaptchaenterprisepb.MigrateKeyRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Key, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MigrateKey[0:len((*c.CallOptions).MigrateKey):len((*c.CallOptions).MigrateKey)], opts...)
+	var resp *recaptchaenterprisepb.Key
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.MigrateKey(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetMetrics(ctx context.Context, req *recaptchaenterprisepb.GetMetricsRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.Metrics, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetMetrics[0:len((*c.CallOptions).GetMetrics):len((*c.CallOptions).GetMetrics)], opts...)
+	var resp *recaptchaenterprisepb.Metrics
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetMetrics(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // KeyIterator manages a stream of *recaptchaenterprisepb.Key.

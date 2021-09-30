@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -78,12 +78,13 @@ type CallOptions struct {
 	ListEvaluationJobs       []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datalabeling.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("datalabeling.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://datalabeling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -360,37 +361,349 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Data Labeling API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateDataset(context.Context, *datalabelingpb.CreateDatasetRequest, ...gax.CallOption) (*datalabelingpb.Dataset, error)
+	GetDataset(context.Context, *datalabelingpb.GetDatasetRequest, ...gax.CallOption) (*datalabelingpb.Dataset, error)
+	ListDatasets(context.Context, *datalabelingpb.ListDatasetsRequest, ...gax.CallOption) *DatasetIterator
+	DeleteDataset(context.Context, *datalabelingpb.DeleteDatasetRequest, ...gax.CallOption) error
+	ImportData(context.Context, *datalabelingpb.ImportDataRequest, ...gax.CallOption) (*ImportDataOperation, error)
+	ImportDataOperation(name string) *ImportDataOperation
+	ExportData(context.Context, *datalabelingpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
+	ExportDataOperation(name string) *ExportDataOperation
+	GetDataItem(context.Context, *datalabelingpb.GetDataItemRequest, ...gax.CallOption) (*datalabelingpb.DataItem, error)
+	ListDataItems(context.Context, *datalabelingpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
+	GetAnnotatedDataset(context.Context, *datalabelingpb.GetAnnotatedDatasetRequest, ...gax.CallOption) (*datalabelingpb.AnnotatedDataset, error)
+	ListAnnotatedDatasets(context.Context, *datalabelingpb.ListAnnotatedDatasetsRequest, ...gax.CallOption) *AnnotatedDatasetIterator
+	DeleteAnnotatedDataset(context.Context, *datalabelingpb.DeleteAnnotatedDatasetRequest, ...gax.CallOption) error
+	LabelImage(context.Context, *datalabelingpb.LabelImageRequest, ...gax.CallOption) (*LabelImageOperation, error)
+	LabelImageOperation(name string) *LabelImageOperation
+	LabelVideo(context.Context, *datalabelingpb.LabelVideoRequest, ...gax.CallOption) (*LabelVideoOperation, error)
+	LabelVideoOperation(name string) *LabelVideoOperation
+	LabelText(context.Context, *datalabelingpb.LabelTextRequest, ...gax.CallOption) (*LabelTextOperation, error)
+	LabelTextOperation(name string) *LabelTextOperation
+	GetExample(context.Context, *datalabelingpb.GetExampleRequest, ...gax.CallOption) (*datalabelingpb.Example, error)
+	ListExamples(context.Context, *datalabelingpb.ListExamplesRequest, ...gax.CallOption) *ExampleIterator
+	CreateAnnotationSpecSet(context.Context, *datalabelingpb.CreateAnnotationSpecSetRequest, ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error)
+	GetAnnotationSpecSet(context.Context, *datalabelingpb.GetAnnotationSpecSetRequest, ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error)
+	ListAnnotationSpecSets(context.Context, *datalabelingpb.ListAnnotationSpecSetsRequest, ...gax.CallOption) *AnnotationSpecSetIterator
+	DeleteAnnotationSpecSet(context.Context, *datalabelingpb.DeleteAnnotationSpecSetRequest, ...gax.CallOption) error
+	CreateInstruction(context.Context, *datalabelingpb.CreateInstructionRequest, ...gax.CallOption) (*CreateInstructionOperation, error)
+	CreateInstructionOperation(name string) *CreateInstructionOperation
+	GetInstruction(context.Context, *datalabelingpb.GetInstructionRequest, ...gax.CallOption) (*datalabelingpb.Instruction, error)
+	ListInstructions(context.Context, *datalabelingpb.ListInstructionsRequest, ...gax.CallOption) *InstructionIterator
+	DeleteInstruction(context.Context, *datalabelingpb.DeleteInstructionRequest, ...gax.CallOption) error
+	GetEvaluation(context.Context, *datalabelingpb.GetEvaluationRequest, ...gax.CallOption) (*datalabelingpb.Evaluation, error)
+	SearchEvaluations(context.Context, *datalabelingpb.SearchEvaluationsRequest, ...gax.CallOption) *EvaluationIterator
+	SearchExampleComparisons(context.Context, *datalabelingpb.SearchExampleComparisonsRequest, ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator
+	CreateEvaluationJob(context.Context, *datalabelingpb.CreateEvaluationJobRequest, ...gax.CallOption) (*datalabelingpb.EvaluationJob, error)
+	UpdateEvaluationJob(context.Context, *datalabelingpb.UpdateEvaluationJobRequest, ...gax.CallOption) (*datalabelingpb.EvaluationJob, error)
+	GetEvaluationJob(context.Context, *datalabelingpb.GetEvaluationJobRequest, ...gax.CallOption) (*datalabelingpb.EvaluationJob, error)
+	PauseEvaluationJob(context.Context, *datalabelingpb.PauseEvaluationJobRequest, ...gax.CallOption) error
+	ResumeEvaluationJob(context.Context, *datalabelingpb.ResumeEvaluationJobRequest, ...gax.CallOption) error
+	DeleteEvaluationJob(context.Context, *datalabelingpb.DeleteEvaluationJobRequest, ...gax.CallOption) error
+	ListEvaluationJobs(context.Context, *datalabelingpb.ListEvaluationJobsRequest, ...gax.CallOption) *EvaluationJobIterator
+}
+
 // Client is a client for interacting with Data Labeling API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for the AI Platform Data Labeling API.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateDataset creates dataset. If success return a Dataset resource.
+func (c *Client) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
+	return c.internalClient.CreateDataset(ctx, req, opts...)
+}
+
+// GetDataset gets dataset by resource name.
+func (c *Client) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
+	return c.internalClient.GetDataset(ctx, req, opts...)
+}
+
+// ListDatasets lists datasets under a project. Pagination is supported.
+func (c *Client) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
+	return c.internalClient.ListDatasets(ctx, req, opts...)
+}
+
+// DeleteDataset deletes a dataset by resource name.
+func (c *Client) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDatasetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDataset(ctx, req, opts...)
+}
+
+// ImportData imports data into dataset based on source locations defined in request.
+// It can be called multiple times for the same dataset. Each dataset can
+// only have one long running operation running on it. For example, no
+// labeling task (also long running operation) can be started while
+// importing is still ongoing. Vice versa.
+func (c *Client) ImportData(ctx context.Context, req *datalabelingpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
+	return c.internalClient.ImportData(ctx, req, opts...)
+}
+
+// ImportDataOperation returns a new ImportDataOperation from a given name.
+// The name must be that of a previously created ImportDataOperation, possibly from a different process.
+func (c *Client) ImportDataOperation(name string) *ImportDataOperation {
+	return c.internalClient.ImportDataOperation(name)
+}
+
+// ExportData exports data and annotations from dataset.
+func (c *Client) ExportData(ctx context.Context, req *datalabelingpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
+	return c.internalClient.ExportData(ctx, req, opts...)
+}
+
+// ExportDataOperation returns a new ExportDataOperation from a given name.
+// The name must be that of a previously created ExportDataOperation, possibly from a different process.
+func (c *Client) ExportDataOperation(name string) *ExportDataOperation {
+	return c.internalClient.ExportDataOperation(name)
+}
+
+// GetDataItem gets a data item in a dataset by resource name. This API can be
+// called after data are imported into dataset.
+func (c *Client) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataItemRequest, opts ...gax.CallOption) (*datalabelingpb.DataItem, error) {
+	return c.internalClient.GetDataItem(ctx, req, opts...)
+}
+
+// ListDataItems lists data items in a dataset. This API can be called after data
+// are imported into dataset. Pagination is supported.
+func (c *Client) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
+	return c.internalClient.ListDataItems(ctx, req, opts...)
+}
+
+// GetAnnotatedDataset gets an annotated dataset by resource name.
+func (c *Client) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.GetAnnotatedDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotatedDataset, error) {
+	return c.internalClient.GetAnnotatedDataset(ctx, req, opts...)
+}
+
+// ListAnnotatedDatasets lists annotated datasets for a dataset. Pagination is supported.
+func (c *Client) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
+	return c.internalClient.ListAnnotatedDatasets(ctx, req, opts...)
+}
+
+// DeleteAnnotatedDataset deletes an annotated dataset by resource name.
+func (c *Client) DeleteAnnotatedDataset(ctx context.Context, req *datalabelingpb.DeleteAnnotatedDatasetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAnnotatedDataset(ctx, req, opts...)
+}
+
+// LabelImage starts a labeling task for image. The type of image labeling task is
+// configured by feature in the request.
+func (c *Client) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageRequest, opts ...gax.CallOption) (*LabelImageOperation, error) {
+	return c.internalClient.LabelImage(ctx, req, opts...)
+}
+
+// LabelImageOperation returns a new LabelImageOperation from a given name.
+// The name must be that of a previously created LabelImageOperation, possibly from a different process.
+func (c *Client) LabelImageOperation(name string) *LabelImageOperation {
+	return c.internalClient.LabelImageOperation(name)
+}
+
+// LabelVideo starts a labeling task for video. The type of video labeling task is
+// configured by feature in the request.
+func (c *Client) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoRequest, opts ...gax.CallOption) (*LabelVideoOperation, error) {
+	return c.internalClient.LabelVideo(ctx, req, opts...)
+}
+
+// LabelVideoOperation returns a new LabelVideoOperation from a given name.
+// The name must be that of a previously created LabelVideoOperation, possibly from a different process.
+func (c *Client) LabelVideoOperation(name string) *LabelVideoOperation {
+	return c.internalClient.LabelVideoOperation(name)
+}
+
+// LabelText starts a labeling task for text. The type of text labeling task is
+// configured by feature in the request.
+func (c *Client) LabelText(ctx context.Context, req *datalabelingpb.LabelTextRequest, opts ...gax.CallOption) (*LabelTextOperation, error) {
+	return c.internalClient.LabelText(ctx, req, opts...)
+}
+
+// LabelTextOperation returns a new LabelTextOperation from a given name.
+// The name must be that of a previously created LabelTextOperation, possibly from a different process.
+func (c *Client) LabelTextOperation(name string) *LabelTextOperation {
+	return c.internalClient.LabelTextOperation(name)
+}
+
+// GetExample gets an example by resource name, including both data and annotation.
+func (c *Client) GetExample(ctx context.Context, req *datalabelingpb.GetExampleRequest, opts ...gax.CallOption) (*datalabelingpb.Example, error) {
+	return c.internalClient.GetExample(ctx, req, opts...)
+}
+
+// ListExamples lists examples in an annotated dataset. Pagination is supported.
+func (c *Client) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
+	return c.internalClient.ListExamples(ctx, req, opts...)
+}
+
+// CreateAnnotationSpecSet creates an annotation spec set by providing a set of labels.
+func (c *Client) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingpb.CreateAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
+	return c.internalClient.CreateAnnotationSpecSet(ctx, req, opts...)
+}
+
+// GetAnnotationSpecSet gets an annotation spec set by resource name.
+func (c *Client) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.GetAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
+	return c.internalClient.GetAnnotationSpecSet(ctx, req, opts...)
+}
+
+// ListAnnotationSpecSets lists annotation spec sets for a project. Pagination is supported.
+func (c *Client) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
+	return c.internalClient.ListAnnotationSpecSets(ctx, req, opts...)
+}
+
+// DeleteAnnotationSpecSet deletes an annotation spec set by resource name.
+func (c *Client) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingpb.DeleteAnnotationSpecSetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAnnotationSpecSet(ctx, req, opts...)
+}
+
+// CreateInstruction creates an instruction for how data should be labeled.
+func (c *Client) CreateInstruction(ctx context.Context, req *datalabelingpb.CreateInstructionRequest, opts ...gax.CallOption) (*CreateInstructionOperation, error) {
+	return c.internalClient.CreateInstruction(ctx, req, opts...)
+}
+
+// CreateInstructionOperation returns a new CreateInstructionOperation from a given name.
+// The name must be that of a previously created CreateInstructionOperation, possibly from a different process.
+func (c *Client) CreateInstructionOperation(name string) *CreateInstructionOperation {
+	return c.internalClient.CreateInstructionOperation(name)
+}
+
+// GetInstruction gets an instruction by resource name.
+func (c *Client) GetInstruction(ctx context.Context, req *datalabelingpb.GetInstructionRequest, opts ...gax.CallOption) (*datalabelingpb.Instruction, error) {
+	return c.internalClient.GetInstruction(ctx, req, opts...)
+}
+
+// ListInstructions lists instructions for a project. Pagination is supported.
+func (c *Client) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
+	return c.internalClient.ListInstructions(ctx, req, opts...)
+}
+
+// DeleteInstruction deletes an instruction object by resource name.
+func (c *Client) DeleteInstruction(ctx context.Context, req *datalabelingpb.DeleteInstructionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteInstruction(ctx, req, opts...)
+}
+
+// GetEvaluation gets an evaluation by resource name (to search, use
+// projects.evaluations.search).
+func (c *Client) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvaluationRequest, opts ...gax.CallOption) (*datalabelingpb.Evaluation, error) {
+	return c.internalClient.GetEvaluation(ctx, req, opts...)
+}
+
+// SearchEvaluations searches evaluations within a project.
+func (c *Client) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
+	return c.internalClient.SearchEvaluations(ctx, req, opts...)
+}
+
+// SearchExampleComparisons searches example comparisons from an evaluation. The return format is a
+// list of example comparisons that show ground truth and prediction(s) for
+// a single input. Search by providing an evaluation ID.
+func (c *Client) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
+	return c.internalClient.SearchExampleComparisons(ctx, req, opts...)
+}
+
+// CreateEvaluationJob creates an evaluation job.
+func (c *Client) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.CreateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+	return c.internalClient.CreateEvaluationJob(ctx, req, opts...)
+}
+
+// UpdateEvaluationJob updates an evaluation job. You can only update certain fields of the job’s
+// EvaluationJobConfig: humanAnnotationConfig.instruction,
+// exampleCount, and exampleSamplePercentage.
+//
+// If you want to change any other aspect of the evaluation job, you must
+// delete the job and create a new one.
+func (c *Client) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.UpdateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+	return c.internalClient.UpdateEvaluationJob(ctx, req, opts...)
+}
+
+// GetEvaluationJob gets an evaluation job by resource name.
+func (c *Client) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+	return c.internalClient.GetEvaluationJob(ctx, req, opts...)
+}
+
+// PauseEvaluationJob pauses an evaluation job. Pausing an evaluation job that is already in a
+// PAUSED state is a no-op.
+func (c *Client) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.PauseEvaluationJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.PauseEvaluationJob(ctx, req, opts...)
+}
+
+// ResumeEvaluationJob resumes a paused evaluation job. A deleted evaluation job can’t be resumed.
+// Resuming a running or scheduled evaluation job is a no-op.
+func (c *Client) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.ResumeEvaluationJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ResumeEvaluationJob(ctx, req, opts...)
+}
+
+// DeleteEvaluationJob stops and deletes an evaluation job.
+func (c *Client) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.DeleteEvaluationJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEvaluationJob(ctx, req, opts...)
+}
+
+// ListEvaluationJobs lists all evaluation jobs within a project with possible filters.
+// Pagination is supported.
+func (c *Client) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
+	return c.internalClient.ListEvaluationJobs(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Data Labeling API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client datalabelingpb.DataLabelingServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new data labeling service client.
+// NewClient creates a new data labeling service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for the AI Platform Data Labeling API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -408,16 +721,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: datalabelingpb.NewDataLabelingServiceClient(connPool),
+		client:           datalabelingpb.NewDataLabelingServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -427,33 +743,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateDataset creates dataset. If success return a Dataset resource.
-func (c *Client) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -461,7 +777,7 @@ func (c *Client) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDa
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDataset[0:len(c.CallOptions.CreateDataset):len(c.CallOptions.CreateDataset)], opts...)
+	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -474,8 +790,7 @@ func (c *Client) CreateDataset(ctx context.Context, req *datalabelingpb.CreateDa
 	return resp, nil
 }
 
-// GetDataset gets dataset by resource name.
-func (c *Client) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
+func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.Dataset, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -483,7 +798,7 @@ func (c *Client) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDataset[0:len(c.CallOptions.GetDataset):len(c.CallOptions.GetDataset)], opts...)
+	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *datalabelingpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -496,19 +811,20 @@ func (c *Client) GetDataset(ctx context.Context, req *datalabelingpb.GetDatasetR
 	return resp, nil
 }
 
-// ListDatasets lists datasets under a project. Pagination is supported.
-func (c *Client) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
+func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDatasets[0:len(c.CallOptions.ListDatasets):len(c.CallOptions.ListDatasets)], opts...)
+	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Dataset, string, error) {
-		var resp *datalabelingpb.ListDatasetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -531,14 +847,15 @@ func (c *Client) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatas
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteDataset deletes a dataset by resource name.
-func (c *Client) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDatasetRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -546,7 +863,7 @@ func (c *Client) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDa
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDataset[0:len(c.CallOptions.DeleteDataset):len(c.CallOptions.DeleteDataset)], opts...)
+	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteDataset(ctx, req, settings.GRPC...)
@@ -555,12 +872,7 @@ func (c *Client) DeleteDataset(ctx context.Context, req *datalabelingpb.DeleteDa
 	return err
 }
 
-// ImportData imports data into dataset based on source locations defined in request.
-// It can be called multiple times for the same dataset. Each dataset can
-// only have one long running operation running on it. For example, no
-// labeling task (also long running operation) can be started while
-// importing is still ongoing. Vice versa.
-func (c *Client) ImportData(ctx context.Context, req *datalabelingpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
+func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -568,7 +880,7 @@ func (c *Client) ImportData(ctx context.Context, req *datalabelingpb.ImportDataR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportData[0:len(c.CallOptions.ImportData):len(c.CallOptions.ImportData)], opts...)
+	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -579,12 +891,11 @@ func (c *Client) ImportData(ctx context.Context, req *datalabelingpb.ImportDataR
 		return nil, err
 	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportData exports data and annotations from dataset.
-func (c *Client) ExportData(ctx context.Context, req *datalabelingpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
+func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -592,7 +903,7 @@ func (c *Client) ExportData(ctx context.Context, req *datalabelingpb.ExportDataR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportData[0:len(c.CallOptions.ExportData):len(c.CallOptions.ExportData)], opts...)
+	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -603,13 +914,11 @@ func (c *Client) ExportData(ctx context.Context, req *datalabelingpb.ExportDataR
 		return nil, err
 	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetDataItem gets a data item in a dataset by resource name. This API can be
-// called after data are imported into dataset.
-func (c *Client) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataItemRequest, opts ...gax.CallOption) (*datalabelingpb.DataItem, error) {
+func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataItemRequest, opts ...gax.CallOption) (*datalabelingpb.DataItem, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -617,7 +926,7 @@ func (c *Client) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataIte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDataItem[0:len(c.CallOptions.GetDataItem):len(c.CallOptions.GetDataItem)], opts...)
+	opts = append((*c.CallOptions).GetDataItem[0:len((*c.CallOptions).GetDataItem):len((*c.CallOptions).GetDataItem)], opts...)
 	var resp *datalabelingpb.DataItem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -630,20 +939,20 @@ func (c *Client) GetDataItem(ctx context.Context, req *datalabelingpb.GetDataIte
 	return resp, nil
 }
 
-// ListDataItems lists data items in a dataset. This API can be called after data
-// are imported into dataset. Pagination is supported.
-func (c *Client) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
+func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDataItems[0:len(c.CallOptions.ListDataItems):len(c.CallOptions.ListDataItems)], opts...)
+	opts = append((*c.CallOptions).ListDataItems[0:len((*c.CallOptions).ListDataItems):len((*c.CallOptions).ListDataItems)], opts...)
 	it := &DataItemIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListDataItemsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.DataItem, string, error) {
-		var resp *datalabelingpb.ListDataItemsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -666,14 +975,15 @@ func (c *Client) ListDataItems(ctx context.Context, req *datalabelingpb.ListData
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetAnnotatedDataset gets an annotated dataset by resource name.
-func (c *Client) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.GetAnnotatedDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotatedDataset, error) {
+func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.GetAnnotatedDatasetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotatedDataset, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -681,7 +991,7 @@ func (c *Client) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.Ge
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAnnotatedDataset[0:len(c.CallOptions.GetAnnotatedDataset):len(c.CallOptions.GetAnnotatedDataset)], opts...)
+	opts = append((*c.CallOptions).GetAnnotatedDataset[0:len((*c.CallOptions).GetAnnotatedDataset):len((*c.CallOptions).GetAnnotatedDataset)], opts...)
 	var resp *datalabelingpb.AnnotatedDataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -694,19 +1004,20 @@ func (c *Client) GetAnnotatedDataset(ctx context.Context, req *datalabelingpb.Ge
 	return resp, nil
 }
 
-// ListAnnotatedDatasets lists annotated datasets for a dataset. Pagination is supported.
-func (c *Client) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
+func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAnnotatedDatasets[0:len(c.CallOptions.ListAnnotatedDatasets):len(c.CallOptions.ListAnnotatedDatasets)], opts...)
+	opts = append((*c.CallOptions).ListAnnotatedDatasets[0:len((*c.CallOptions).ListAnnotatedDatasets):len((*c.CallOptions).ListAnnotatedDatasets)], opts...)
 	it := &AnnotatedDatasetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListAnnotatedDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotatedDataset, string, error) {
-		var resp *datalabelingpb.ListAnnotatedDatasetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListAnnotatedDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -729,17 +1040,18 @@ func (c *Client) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteAnnotatedDataset deletes an annotated dataset by resource name.
-func (c *Client) DeleteAnnotatedDataset(ctx context.Context, req *datalabelingpb.DeleteAnnotatedDatasetRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabelingpb.DeleteAnnotatedDatasetRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAnnotatedDataset[0:len(c.CallOptions.DeleteAnnotatedDataset):len(c.CallOptions.DeleteAnnotatedDataset)], opts...)
+	opts = append((*c.CallOptions).DeleteAnnotatedDataset[0:len((*c.CallOptions).DeleteAnnotatedDataset):len((*c.CallOptions).DeleteAnnotatedDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteAnnotatedDataset(ctx, req, settings.GRPC...)
@@ -748,9 +1060,7 @@ func (c *Client) DeleteAnnotatedDataset(ctx context.Context, req *datalabelingpb
 	return err
 }
 
-// LabelImage starts a labeling task for image. The type of image labeling task is
-// configured by feature in the request.
-func (c *Client) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageRequest, opts ...gax.CallOption) (*LabelImageOperation, error) {
+func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageRequest, opts ...gax.CallOption) (*LabelImageOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -758,7 +1068,7 @@ func (c *Client) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LabelImage[0:len(c.CallOptions.LabelImage):len(c.CallOptions.LabelImage)], opts...)
+	opts = append((*c.CallOptions).LabelImage[0:len((*c.CallOptions).LabelImage):len((*c.CallOptions).LabelImage)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -769,13 +1079,11 @@ func (c *Client) LabelImage(ctx context.Context, req *datalabelingpb.LabelImageR
 		return nil, err
 	}
 	return &LabelImageOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// LabelVideo starts a labeling task for video. The type of video labeling task is
-// configured by feature in the request.
-func (c *Client) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoRequest, opts ...gax.CallOption) (*LabelVideoOperation, error) {
+func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoRequest, opts ...gax.CallOption) (*LabelVideoOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -783,7 +1091,7 @@ func (c *Client) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LabelVideo[0:len(c.CallOptions.LabelVideo):len(c.CallOptions.LabelVideo)], opts...)
+	opts = append((*c.CallOptions).LabelVideo[0:len((*c.CallOptions).LabelVideo):len((*c.CallOptions).LabelVideo)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -794,13 +1102,11 @@ func (c *Client) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVideoR
 		return nil, err
 	}
 	return &LabelVideoOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// LabelText starts a labeling task for text. The type of text labeling task is
-// configured by feature in the request.
-func (c *Client) LabelText(ctx context.Context, req *datalabelingpb.LabelTextRequest, opts ...gax.CallOption) (*LabelTextOperation, error) {
+func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTextRequest, opts ...gax.CallOption) (*LabelTextOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -808,7 +1114,7 @@ func (c *Client) LabelText(ctx context.Context, req *datalabelingpb.LabelTextReq
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LabelText[0:len(c.CallOptions.LabelText):len(c.CallOptions.LabelText)], opts...)
+	opts = append((*c.CallOptions).LabelText[0:len((*c.CallOptions).LabelText):len((*c.CallOptions).LabelText)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -819,12 +1125,11 @@ func (c *Client) LabelText(ctx context.Context, req *datalabelingpb.LabelTextReq
 		return nil, err
 	}
 	return &LabelTextOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetExample gets an example by resource name, including both data and annotation.
-func (c *Client) GetExample(ctx context.Context, req *datalabelingpb.GetExampleRequest, opts ...gax.CallOption) (*datalabelingpb.Example, error) {
+func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExampleRequest, opts ...gax.CallOption) (*datalabelingpb.Example, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -832,7 +1137,7 @@ func (c *Client) GetExample(ctx context.Context, req *datalabelingpb.GetExampleR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetExample[0:len(c.CallOptions.GetExample):len(c.CallOptions.GetExample)], opts...)
+	opts = append((*c.CallOptions).GetExample[0:len((*c.CallOptions).GetExample):len((*c.CallOptions).GetExample)], opts...)
 	var resp *datalabelingpb.Example
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -845,19 +1150,20 @@ func (c *Client) GetExample(ctx context.Context, req *datalabelingpb.GetExampleR
 	return resp, nil
 }
 
-// ListExamples lists examples in an annotated dataset. Pagination is supported.
-func (c *Client) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
+func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListExamples[0:len(c.CallOptions.ListExamples):len(c.CallOptions.ListExamples)], opts...)
+	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListExamplesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Example, string, error) {
-		var resp *datalabelingpb.ListExamplesResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListExamplesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -880,14 +1186,15 @@ func (c *Client) ListExamples(ctx context.Context, req *datalabelingpb.ListExamp
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// CreateAnnotationSpecSet creates an annotation spec set by providing a set of labels.
-func (c *Client) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingpb.CreateAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
+func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingpb.CreateAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -895,7 +1202,7 @@ func (c *Client) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateAnnotationSpecSet[0:len(c.CallOptions.CreateAnnotationSpecSet):len(c.CallOptions.CreateAnnotationSpecSet)], opts...)
+	opts = append((*c.CallOptions).CreateAnnotationSpecSet[0:len((*c.CallOptions).CreateAnnotationSpecSet):len((*c.CallOptions).CreateAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -908,8 +1215,7 @@ func (c *Client) CreateAnnotationSpecSet(ctx context.Context, req *datalabelingp
 	return resp, nil
 }
 
-// GetAnnotationSpecSet gets an annotation spec set by resource name.
-func (c *Client) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.GetAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
+func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.GetAnnotationSpecSetRequest, opts ...gax.CallOption) (*datalabelingpb.AnnotationSpecSet, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -917,7 +1223,7 @@ func (c *Client) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.G
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAnnotationSpecSet[0:len(c.CallOptions.GetAnnotationSpecSet):len(c.CallOptions.GetAnnotationSpecSet)], opts...)
+	opts = append((*c.CallOptions).GetAnnotationSpecSet[0:len((*c.CallOptions).GetAnnotationSpecSet):len((*c.CallOptions).GetAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -930,19 +1236,20 @@ func (c *Client) GetAnnotationSpecSet(ctx context.Context, req *datalabelingpb.G
 	return resp, nil
 }
 
-// ListAnnotationSpecSets lists annotation spec sets for a project. Pagination is supported.
-func (c *Client) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
+func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAnnotationSpecSets[0:len(c.CallOptions.ListAnnotationSpecSets):len(c.CallOptions.ListAnnotationSpecSets)], opts...)
+	opts = append((*c.CallOptions).ListAnnotationSpecSets[0:len((*c.CallOptions).ListAnnotationSpecSets):len((*c.CallOptions).ListAnnotationSpecSets)], opts...)
 	it := &AnnotationSpecSetIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListAnnotationSpecSetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.AnnotationSpecSet, string, error) {
-		var resp *datalabelingpb.ListAnnotationSpecSetsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListAnnotationSpecSetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -965,14 +1272,15 @@ func (c *Client) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteAnnotationSpecSet deletes an annotation spec set by resource name.
-func (c *Client) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingpb.DeleteAnnotationSpecSetRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingpb.DeleteAnnotationSpecSetRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -980,7 +1288,7 @@ func (c *Client) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAnnotationSpecSet[0:len(c.CallOptions.DeleteAnnotationSpecSet):len(c.CallOptions.DeleteAnnotationSpecSet)], opts...)
+	opts = append((*c.CallOptions).DeleteAnnotationSpecSet[0:len((*c.CallOptions).DeleteAnnotationSpecSet):len((*c.CallOptions).DeleteAnnotationSpecSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteAnnotationSpecSet(ctx, req, settings.GRPC...)
@@ -989,8 +1297,7 @@ func (c *Client) DeleteAnnotationSpecSet(ctx context.Context, req *datalabelingp
 	return err
 }
 
-// CreateInstruction creates an instruction for how data should be labeled.
-func (c *Client) CreateInstruction(ctx context.Context, req *datalabelingpb.CreateInstructionRequest, opts ...gax.CallOption) (*CreateInstructionOperation, error) {
+func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.CreateInstructionRequest, opts ...gax.CallOption) (*CreateInstructionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -998,7 +1305,7 @@ func (c *Client) CreateInstruction(ctx context.Context, req *datalabelingpb.Crea
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateInstruction[0:len(c.CallOptions.CreateInstruction):len(c.CallOptions.CreateInstruction)], opts...)
+	opts = append((*c.CallOptions).CreateInstruction[0:len((*c.CallOptions).CreateInstruction):len((*c.CallOptions).CreateInstruction)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1009,12 +1316,11 @@ func (c *Client) CreateInstruction(ctx context.Context, req *datalabelingpb.Crea
 		return nil, err
 	}
 	return &CreateInstructionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetInstruction gets an instruction by resource name.
-func (c *Client) GetInstruction(ctx context.Context, req *datalabelingpb.GetInstructionRequest, opts ...gax.CallOption) (*datalabelingpb.Instruction, error) {
+func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.GetInstructionRequest, opts ...gax.CallOption) (*datalabelingpb.Instruction, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1022,7 +1328,7 @@ func (c *Client) GetInstruction(ctx context.Context, req *datalabelingpb.GetInst
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInstruction[0:len(c.CallOptions.GetInstruction):len(c.CallOptions.GetInstruction)], opts...)
+	opts = append((*c.CallOptions).GetInstruction[0:len((*c.CallOptions).GetInstruction):len((*c.CallOptions).GetInstruction)], opts...)
 	var resp *datalabelingpb.Instruction
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1035,19 +1341,20 @@ func (c *Client) GetInstruction(ctx context.Context, req *datalabelingpb.GetInst
 	return resp, nil
 }
 
-// ListInstructions lists instructions for a project. Pagination is supported.
-func (c *Client) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
+func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInstructions[0:len(c.CallOptions.ListInstructions):len(c.CallOptions.ListInstructions)], opts...)
+	opts = append((*c.CallOptions).ListInstructions[0:len((*c.CallOptions).ListInstructions):len((*c.CallOptions).ListInstructions)], opts...)
 	it := &InstructionIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListInstructionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Instruction, string, error) {
-		var resp *datalabelingpb.ListInstructionsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListInstructionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1070,14 +1377,15 @@ func (c *Client) ListInstructions(ctx context.Context, req *datalabelingpb.ListI
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteInstruction deletes an instruction object by resource name.
-func (c *Client) DeleteInstruction(ctx context.Context, req *datalabelingpb.DeleteInstructionRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.DeleteInstructionRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1085,7 +1393,7 @@ func (c *Client) DeleteInstruction(ctx context.Context, req *datalabelingpb.Dele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteInstruction[0:len(c.CallOptions.DeleteInstruction):len(c.CallOptions.DeleteInstruction)], opts...)
+	opts = append((*c.CallOptions).DeleteInstruction[0:len((*c.CallOptions).DeleteInstruction):len((*c.CallOptions).DeleteInstruction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteInstruction(ctx, req, settings.GRPC...)
@@ -1094,9 +1402,7 @@ func (c *Client) DeleteInstruction(ctx context.Context, req *datalabelingpb.Dele
 	return err
 }
 
-// GetEvaluation gets an evaluation by resource name (to search, use
-// projects.evaluations.search).
-func (c *Client) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvaluationRequest, opts ...gax.CallOption) (*datalabelingpb.Evaluation, error) {
+func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvaluationRequest, opts ...gax.CallOption) (*datalabelingpb.Evaluation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1104,7 +1410,7 @@ func (c *Client) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvalu
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEvaluation[0:len(c.CallOptions.GetEvaluation):len(c.CallOptions.GetEvaluation)], opts...)
+	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *datalabelingpb.Evaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1117,19 +1423,20 @@ func (c *Client) GetEvaluation(ctx context.Context, req *datalabelingpb.GetEvalu
 	return resp, nil
 }
 
-// SearchEvaluations searches evaluations within a project.
-func (c *Client) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
+func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchEvaluations[0:len(c.CallOptions.SearchEvaluations):len(c.CallOptions.SearchEvaluations)], opts...)
+	opts = append((*c.CallOptions).SearchEvaluations[0:len((*c.CallOptions).SearchEvaluations):len((*c.CallOptions).SearchEvaluations)], opts...)
 	it := &EvaluationIterator{}
 	req = proto.Clone(req).(*datalabelingpb.SearchEvaluationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.Evaluation, string, error) {
-		var resp *datalabelingpb.SearchEvaluationsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.SearchEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1152,27 +1459,28 @@ func (c *Client) SearchEvaluations(ctx context.Context, req *datalabelingpb.Sear
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// SearchExampleComparisons searches example comparisons from an evaluation. The return format is a
-// list of example comparisons that show ground truth and prediction(s) for
-// a single input. Search by providing an evaluation ID.
-func (c *Client) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
+func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchExampleComparisons[0:len(c.CallOptions.SearchExampleComparisons):len(c.CallOptions.SearchExampleComparisons)], opts...)
+	opts = append((*c.CallOptions).SearchExampleComparisons[0:len((*c.CallOptions).SearchExampleComparisons):len((*c.CallOptions).SearchExampleComparisons)], opts...)
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
 	req = proto.Clone(req).(*datalabelingpb.SearchExampleComparisonsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, string, error) {
-		var resp *datalabelingpb.SearchExampleComparisonsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.SearchExampleComparisonsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1195,14 +1503,15 @@ func (c *Client) SearchExampleComparisons(ctx context.Context, req *datalabeling
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// CreateEvaluationJob creates an evaluation job.
-func (c *Client) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.CreateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.CreateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1210,7 +1519,7 @@ func (c *Client) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.Cr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateEvaluationJob[0:len(c.CallOptions.CreateEvaluationJob):len(c.CallOptions.CreateEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).CreateEvaluationJob[0:len((*c.CallOptions).CreateEvaluationJob):len((*c.CallOptions).CreateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1223,13 +1532,7 @@ func (c *Client) CreateEvaluationJob(ctx context.Context, req *datalabelingpb.Cr
 	return resp, nil
 }
 
-// UpdateEvaluationJob updates an evaluation job. You can only update certain fields of the job’s
-// EvaluationJobConfig: humanAnnotationConfig.instruction,
-// exampleCount, and exampleSamplePercentage.
-//
-// If you want to change any other aspect of the evaluation job, you must
-// delete the job and create a new one.
-func (c *Client) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.UpdateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.UpdateEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1237,7 +1540,7 @@ func (c *Client) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.Up
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "evaluation_job.name", url.QueryEscape(req.GetEvaluationJob().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateEvaluationJob[0:len(c.CallOptions.UpdateEvaluationJob):len(c.CallOptions.UpdateEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).UpdateEvaluationJob[0:len((*c.CallOptions).UpdateEvaluationJob):len((*c.CallOptions).UpdateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1250,8 +1553,7 @@ func (c *Client) UpdateEvaluationJob(ctx context.Context, req *datalabelingpb.Up
 	return resp, nil
 }
 
-// GetEvaluationJob gets an evaluation job by resource name.
-func (c *Client) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
+func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEvaluationJobRequest, opts ...gax.CallOption) (*datalabelingpb.EvaluationJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1259,7 +1561,7 @@ func (c *Client) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEv
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEvaluationJob[0:len(c.CallOptions.GetEvaluationJob):len(c.CallOptions.GetEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).GetEvaluationJob[0:len((*c.CallOptions).GetEvaluationJob):len((*c.CallOptions).GetEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1272,9 +1574,7 @@ func (c *Client) GetEvaluationJob(ctx context.Context, req *datalabelingpb.GetEv
 	return resp, nil
 }
 
-// PauseEvaluationJob pauses an evaluation job. Pausing an evaluation job that is already in a
-// PAUSED state is a no-op.
-func (c *Client) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.PauseEvaluationJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.PauseEvaluationJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1282,7 +1582,7 @@ func (c *Client) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.Pau
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PauseEvaluationJob[0:len(c.CallOptions.PauseEvaluationJob):len(c.CallOptions.PauseEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).PauseEvaluationJob[0:len((*c.CallOptions).PauseEvaluationJob):len((*c.CallOptions).PauseEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.PauseEvaluationJob(ctx, req, settings.GRPC...)
@@ -1291,9 +1591,7 @@ func (c *Client) PauseEvaluationJob(ctx context.Context, req *datalabelingpb.Pau
 	return err
 }
 
-// ResumeEvaluationJob resumes a paused evaluation job. A deleted evaluation job can’t be resumed.
-// Resuming a running or scheduled evaluation job is a no-op.
-func (c *Client) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.ResumeEvaluationJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.ResumeEvaluationJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1301,7 +1599,7 @@ func (c *Client) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.Re
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ResumeEvaluationJob[0:len(c.CallOptions.ResumeEvaluationJob):len(c.CallOptions.ResumeEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).ResumeEvaluationJob[0:len((*c.CallOptions).ResumeEvaluationJob):len((*c.CallOptions).ResumeEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.ResumeEvaluationJob(ctx, req, settings.GRPC...)
@@ -1310,8 +1608,7 @@ func (c *Client) ResumeEvaluationJob(ctx context.Context, req *datalabelingpb.Re
 	return err
 }
 
-// DeleteEvaluationJob stops and deletes an evaluation job.
-func (c *Client) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.DeleteEvaluationJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.DeleteEvaluationJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -1319,7 +1616,7 @@ func (c *Client) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.De
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteEvaluationJob[0:len(c.CallOptions.DeleteEvaluationJob):len(c.CallOptions.DeleteEvaluationJob)], opts...)
+	opts = append((*c.CallOptions).DeleteEvaluationJob[0:len((*c.CallOptions).DeleteEvaluationJob):len((*c.CallOptions).DeleteEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteEvaluationJob(ctx, req, settings.GRPC...)
@@ -1328,20 +1625,20 @@ func (c *Client) DeleteEvaluationJob(ctx context.Context, req *datalabelingpb.De
 	return err
 }
 
-// ListEvaluationJobs lists all evaluation jobs within a project with possible filters.
-// Pagination is supported.
-func (c *Client) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
+func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEvaluationJobs[0:len(c.CallOptions.ListEvaluationJobs):len(c.CallOptions.ListEvaluationJobs)], opts...)
+	opts = append((*c.CallOptions).ListEvaluationJobs[0:len((*c.CallOptions).ListEvaluationJobs):len((*c.CallOptions).ListEvaluationJobs)], opts...)
 	it := &EvaluationJobIterator{}
 	req = proto.Clone(req).(*datalabelingpb.ListEvaluationJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*datalabelingpb.EvaluationJob, string, error) {
-		var resp *datalabelingpb.ListEvaluationJobsResponse
-		req.PageToken = pageToken
+		resp := &datalabelingpb.ListEvaluationJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1364,9 +1661,11 @@ func (c *Client) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -1377,9 +1676,9 @@ type CreateInstructionOperation struct {
 
 // CreateInstructionOperation returns a new CreateInstructionOperation from a given name.
 // The name must be that of a previously created CreateInstructionOperation, possibly from a different process.
-func (c *Client) CreateInstructionOperation(name string) *CreateInstructionOperation {
+func (c *gRPCClient) CreateInstructionOperation(name string) *CreateInstructionOperation {
 	return &CreateInstructionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1446,9 +1745,9 @@ type ExportDataOperation struct {
 
 // ExportDataOperation returns a new ExportDataOperation from a given name.
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
-func (c *Client) ExportDataOperation(name string) *ExportDataOperation {
+func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1515,9 +1814,9 @@ type ImportDataOperation struct {
 
 // ImportDataOperation returns a new ImportDataOperation from a given name.
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
-func (c *Client) ImportDataOperation(name string) *ImportDataOperation {
+func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1584,9 +1883,9 @@ type LabelImageOperation struct {
 
 // LabelImageOperation returns a new LabelImageOperation from a given name.
 // The name must be that of a previously created LabelImageOperation, possibly from a different process.
-func (c *Client) LabelImageOperation(name string) *LabelImageOperation {
+func (c *gRPCClient) LabelImageOperation(name string) *LabelImageOperation {
 	return &LabelImageOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1653,9 +1952,9 @@ type LabelTextOperation struct {
 
 // LabelTextOperation returns a new LabelTextOperation from a given name.
 // The name must be that of a previously created LabelTextOperation, possibly from a different process.
-func (c *Client) LabelTextOperation(name string) *LabelTextOperation {
+func (c *gRPCClient) LabelTextOperation(name string) *LabelTextOperation {
 	return &LabelTextOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1722,9 +2021,9 @@ type LabelVideoOperation struct {
 
 // LabelVideoOperation returns a new LabelVideoOperation from a given name.
 // The name must be that of a previously created LabelVideoOperation, possibly from a different process.
-func (c *Client) LabelVideoOperation(name string) *LabelVideoOperation {
+func (c *gRPCClient) LabelVideoOperation(name string) *LabelVideoOperation {
 	return &LabelVideoOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

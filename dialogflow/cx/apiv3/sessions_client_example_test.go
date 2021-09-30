@@ -30,21 +30,23 @@ func ExampleNewSessionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSessionsClient_DetectIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DetectIntentRequest.
 	}
 	resp, err := c.DetectIntent(ctx, req)
 	if err != nil {
@@ -55,13 +57,12 @@ func ExampleSessionsClient_DetectIntent() {
 }
 
 func ExampleSessionsClient_StreamingDetectIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingDetectIntent(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,16 +92,16 @@ func ExampleSessionsClient_StreamingDetectIntent() {
 }
 
 func ExampleSessionsClient_MatchIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.MatchIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#MatchIntentRequest.
 	}
 	resp, err := c.MatchIntent(ctx, req)
 	if err != nil {
@@ -111,16 +112,16 @@ func ExampleSessionsClient_MatchIntent() {
 }
 
 func ExampleSessionsClient_FulfillIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.FulfillIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#FulfillIntentRequest.
 	}
 	resp, err := c.FulfillIntent(ctx, req)
 	if err != nil {

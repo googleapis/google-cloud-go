@@ -20,6 +20,19 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// TableCopyOperationType is used to indicate the type of operation performed by a BigQuery
+// copy job.
+type TableCopyOperationType string
+
+var (
+	// CopyOperation indicates normal table to table copying.
+	CopyOperation TableCopyOperationType = "COPY"
+	// SnapshotOperation indicates creating a snapshot from a regular table.
+	SnapshotOperation TableCopyOperationType = "SNAPSHOT"
+	// RestoreOperation indicates creating/restoring a table from a snapshot.
+	RestoreOperation TableCopyOperationType = "RESTORE"
+)
+
 // CopyConfig holds the configuration for a copy job.
 type CopyConfig struct {
 	// Srcs are the tables from which data will be copied.
@@ -41,6 +54,10 @@ type CopyConfig struct {
 
 	// Custom encryption configuration (e.g., Cloud KMS keys).
 	DestinationEncryptionConfig *EncryptionConfig
+
+	// One of the supported operation types when executing a Table Copy jobs.  By default this
+	// copies tables, but can also be set to perform snapshot or restore operations.
+	OperationType TableCopyOperationType
 }
 
 func (c *CopyConfig) toBQ() *bq.JobConfiguration {
@@ -56,6 +73,7 @@ func (c *CopyConfig) toBQ() *bq.JobConfiguration {
 			DestinationTable:                   c.Dst.toBQ(),
 			DestinationEncryptionConfiguration: c.DestinationEncryptionConfig.toBQ(),
 			SourceTables:                       ts,
+			OperationType:                      string(c.OperationType),
 		},
 	}
 }
@@ -67,6 +85,7 @@ func bqToCopyConfig(q *bq.JobConfiguration, c *Client) *CopyConfig {
 		WriteDisposition:            TableWriteDisposition(q.Copy.WriteDisposition),
 		Dst:                         bqToTable(q.Copy.DestinationTable, c),
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Copy.DestinationEncryptionConfiguration),
+		OperationType:               TableCopyOperationType(q.Copy.OperationType),
 	}
 	for _, t := range q.Copy.SourceTables {
 		cc.Srcs = append(cc.Srcs, bqToTable(t, c))

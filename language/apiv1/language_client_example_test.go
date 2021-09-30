@@ -29,21 +29,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_AnalyzeSentiment() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeSentimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#AnalyzeSentimentRequest.
 	}
 	resp, err := c.AnalyzeSentiment(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleClient_AnalyzeSentiment() {
 }
 
 func ExampleClient_AnalyzeEntities() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#AnalyzeEntitiesRequest.
 	}
 	resp, err := c.AnalyzeEntities(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleClient_AnalyzeEntities() {
 }
 
 func ExampleClient_AnalyzeEntitySentiment() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeEntitySentimentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#AnalyzeEntitySentimentRequest.
 	}
 	resp, err := c.AnalyzeEntitySentiment(ctx, req)
 	if err != nil {
@@ -94,16 +96,16 @@ func ExampleClient_AnalyzeEntitySentiment() {
 }
 
 func ExampleClient_AnalyzeSyntax() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnalyzeSyntaxRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#AnalyzeSyntaxRequest.
 	}
 	resp, err := c.AnalyzeSyntax(ctx, req)
 	if err != nil {
@@ -114,16 +116,16 @@ func ExampleClient_AnalyzeSyntax() {
 }
 
 func ExampleClient_ClassifyText() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.ClassifyTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#ClassifyTextRequest.
 	}
 	resp, err := c.ClassifyText(ctx, req)
 	if err != nil {
@@ -134,16 +136,16 @@ func ExampleClient_ClassifyText() {
 }
 
 func ExampleClient_AnnotateText() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/language/v1#AnnotateTextRequest.
 	}
 	resp, err := c.AnnotateText(ctx, req)
 	if err != nil {

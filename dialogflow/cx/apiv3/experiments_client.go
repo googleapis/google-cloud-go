@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newExperimentsClientHook clientHook
@@ -48,12 +48,13 @@ type ExperimentsCallOptions struct {
 	StopExperiment   []gax.CallOption
 }
 
-func defaultExperimentsClientOptions() []option.ClientOption {
+func defaultExperimentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -142,32 +143,117 @@ func defaultExperimentsCallOptions() *ExperimentsCallOptions {
 	}
 }
 
+// internalExperimentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalExperimentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListExperiments(context.Context, *cxpb.ListExperimentsRequest, ...gax.CallOption) *ExperimentIterator
+	GetExperiment(context.Context, *cxpb.GetExperimentRequest, ...gax.CallOption) (*cxpb.Experiment, error)
+	CreateExperiment(context.Context, *cxpb.CreateExperimentRequest, ...gax.CallOption) (*cxpb.Experiment, error)
+	UpdateExperiment(context.Context, *cxpb.UpdateExperimentRequest, ...gax.CallOption) (*cxpb.Experiment, error)
+	DeleteExperiment(context.Context, *cxpb.DeleteExperimentRequest, ...gax.CallOption) error
+	StartExperiment(context.Context, *cxpb.StartExperimentRequest, ...gax.CallOption) (*cxpb.Experiment, error)
+	StopExperiment(context.Context, *cxpb.StopExperimentRequest, ...gax.CallOption) (*cxpb.Experiment, error)
+}
+
 // ExperimentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Experiments.
+type ExperimentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalExperimentsClient
+
+	// The call options for this service.
+	CallOptions *ExperimentsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ExperimentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ExperimentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ExperimentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListExperiments returns the list of all experiments in the specified Environment.
+func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
+	return c.internalClient.ListExperiments(ctx, req, opts...)
+}
+
+// GetExperiment retrieves the specified Experiment.
+func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+	return c.internalClient.GetExperiment(ctx, req, opts...)
+}
+
+// CreateExperiment creates an Experiment in the specified Environment.
+func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+	return c.internalClient.CreateExperiment(ctx, req, opts...)
+}
+
+// UpdateExperiment updates the specified Experiment.
+func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+	return c.internalClient.UpdateExperiment(ctx, req, opts...)
+}
+
+// DeleteExperiment deletes the specified Experiment.
+func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteExperiment(ctx, req, opts...)
+}
+
+// StartExperiment starts the specified Experiment. This rpc only changes the state of
+// experiment from PENDING to RUNNING.
+func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+	return c.internalClient.StartExperiment(ctx, req, opts...)
+}
+
+// StopExperiment stops the specified Experiment. This rpc only changes the state of
+// experiment from RUNNING to DONE.
+func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+	return c.internalClient.StopExperiment(ctx, req, opts...)
+}
+
+// experimentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ExperimentsClient struct {
+type experimentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ExperimentsClient
+	CallOptions **ExperimentsCallOptions
+
 	// The gRPC API client.
 	experimentsClient cxpb.ExperimentsClient
-
-	// The call options for this service.
-	CallOptions *ExperimentsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewExperimentsClient creates a new experiments client.
+// NewExperimentsClient creates a new experiments client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Experiments.
 func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
-	clientOpts := defaultExperimentsClientOptions()
-
+	clientOpts := defaultExperimentsGRPCClientOptions()
 	if newExperimentsClientHook != nil {
 		hookOpts, err := newExperimentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -185,53 +271,57 @@ func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*Ex
 	if err != nil {
 		return nil, err
 	}
-	c := &ExperimentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultExperimentsCallOptions(),
+	client := ExperimentsClient{CallOptions: defaultExperimentsCallOptions()}
 
+	c := &experimentsGRPCClient{
+		connPool:          connPool,
+		disableDeadlines:  disableDeadlines,
 		experimentsClient: cxpb.NewExperimentsClient(connPool),
+		CallOptions:       &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ExperimentsClient) Connection() *grpc.ClientConn {
+func (c *experimentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ExperimentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ExperimentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *experimentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListExperiments returns the list of all experiments in the specified Environment.
-func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *experimentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *experimentsGRPCClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListExperiments[0:len(c.CallOptions.ListExperiments):len(c.CallOptions.ListExperiments)], opts...)
+	opts = append((*c.CallOptions).ListExperiments[0:len((*c.CallOptions).ListExperiments):len((*c.CallOptions).ListExperiments)], opts...)
 	it := &ExperimentIterator{}
 	req = proto.Clone(req).(*cxpb.ListExperimentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Experiment, string, error) {
-		var resp *cxpb.ListExperimentsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListExperimentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -254,14 +344,15 @@ func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListE
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetExperiment retrieves the specified Experiment.
-func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -269,7 +360,7 @@ func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExpe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetExperiment[0:len(c.CallOptions.GetExperiment):len(c.CallOptions.GetExperiment)], opts...)
+	opts = append((*c.CallOptions).GetExperiment[0:len((*c.CallOptions).GetExperiment):len((*c.CallOptions).GetExperiment)], opts...)
 	var resp *cxpb.Experiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -282,8 +373,7 @@ func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExpe
 	return resp, nil
 }
 
-// CreateExperiment creates an Experiment in the specified Environment.
-func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -291,7 +381,7 @@ func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.Crea
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateExperiment[0:len(c.CallOptions.CreateExperiment):len(c.CallOptions.CreateExperiment)], opts...)
+	opts = append((*c.CallOptions).CreateExperiment[0:len((*c.CallOptions).CreateExperiment):len((*c.CallOptions).CreateExperiment)], opts...)
 	var resp *cxpb.Experiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -304,8 +394,7 @@ func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.Crea
 	return resp, nil
 }
 
-// UpdateExperiment updates the specified Experiment.
-func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -313,7 +402,7 @@ func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.Upda
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "experiment.name", url.QueryEscape(req.GetExperiment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateExperiment[0:len(c.CallOptions.UpdateExperiment):len(c.CallOptions.UpdateExperiment)], opts...)
+	opts = append((*c.CallOptions).UpdateExperiment[0:len((*c.CallOptions).UpdateExperiment):len((*c.CallOptions).UpdateExperiment)], opts...)
 	var resp *cxpb.Experiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -326,8 +415,7 @@ func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.Upda
 	return resp, nil
 }
 
-// DeleteExperiment deletes the specified Experiment.
-func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
+func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -335,7 +423,7 @@ func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.Dele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteExperiment[0:len(c.CallOptions.DeleteExperiment):len(c.CallOptions.DeleteExperiment)], opts...)
+	opts = append((*c.CallOptions).DeleteExperiment[0:len((*c.CallOptions).DeleteExperiment):len((*c.CallOptions).DeleteExperiment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.experimentsClient.DeleteExperiment(ctx, req, settings.GRPC...)
@@ -344,9 +432,7 @@ func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.Dele
 	return err
 }
 
-// StartExperiment starts the specified Experiment. This rpc only changes the state of
-// experiment from PENDING to RUNNING.
-func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -354,7 +440,7 @@ func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.Start
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StartExperiment[0:len(c.CallOptions.StartExperiment):len(c.CallOptions.StartExperiment)], opts...)
+	opts = append((*c.CallOptions).StartExperiment[0:len((*c.CallOptions).StartExperiment):len((*c.CallOptions).StartExperiment)], opts...)
 	var resp *cxpb.Experiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -367,9 +453,7 @@ func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.Start
 	return resp, nil
 }
 
-// StopExperiment stops the specified Experiment. This rpc only changes the state of
-// experiment from RUNNING to DONE.
-func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
+func (c *experimentsGRPCClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -377,7 +461,7 @@ func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopEx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StopExperiment[0:len(c.CallOptions.StopExperiment):len(c.CallOptions.StopExperiment)], opts...)
+	opts = append((*c.CallOptions).StopExperiment[0:len((*c.CallOptions).StopExperiment):len((*c.CallOptions).StopExperiment)], opts...)
 	var resp *cxpb.Experiment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

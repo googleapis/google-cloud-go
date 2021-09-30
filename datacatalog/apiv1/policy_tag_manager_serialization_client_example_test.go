@@ -29,21 +29,43 @@ func ExampleNewPolicyTagManagerSerializationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
-func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
+func ExamplePolicyTagManagerSerializationClient_ReplaceTaxonomy() {
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &datacatalogpb.ReplaceTaxonomyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ReplaceTaxonomyRequest.
+	}
+	resp, err := c.ReplaceTaxonomy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
+	ctx := context.Background()
+	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &datacatalogpb.ImportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ImportTaxonomiesRequest.
 	}
 	resp, err := c.ImportTaxonomies(ctx, req)
 	if err != nil {
@@ -54,16 +76,16 @@ func ExamplePolicyTagManagerSerializationClient_ImportTaxonomies() {
 }
 
 func ExamplePolicyTagManagerSerializationClient_ExportTaxonomies() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ExportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ExportTaxonomiesRequest.
 	}
 	resp, err := c.ExportTaxonomies(ctx, req)
 	if err != nil {

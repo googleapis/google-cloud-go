@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDataprocMetastoreClientHook clientHook
@@ -59,12 +59,13 @@ type DataprocMetastoreCallOptions struct {
 	DeleteBackup         []gax.CallOption
 }
 
-func defaultDataprocMetastoreClientOptions() []option.ClientOption {
+func defaultDataprocMetastoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("metastore.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("metastore.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://metastore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -151,32 +152,252 @@ func defaultDataprocMetastoreCallOptions() *DataprocMetastoreCallOptions {
 	}
 }
 
+// internalDataprocMetastoreClient is an interface that defines the methods availaible from Dataproc Metastore API.
+type internalDataprocMetastoreClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListServices(context.Context, *metastorepb.ListServicesRequest, ...gax.CallOption) *ServiceIterator
+	GetService(context.Context, *metastorepb.GetServiceRequest, ...gax.CallOption) (*metastorepb.Service, error)
+	CreateService(context.Context, *metastorepb.CreateServiceRequest, ...gax.CallOption) (*CreateServiceOperation, error)
+	CreateServiceOperation(name string) *CreateServiceOperation
+	UpdateService(context.Context, *metastorepb.UpdateServiceRequest, ...gax.CallOption) (*UpdateServiceOperation, error)
+	UpdateServiceOperation(name string) *UpdateServiceOperation
+	DeleteService(context.Context, *metastorepb.DeleteServiceRequest, ...gax.CallOption) (*DeleteServiceOperation, error)
+	DeleteServiceOperation(name string) *DeleteServiceOperation
+	ListMetadataImports(context.Context, *metastorepb.ListMetadataImportsRequest, ...gax.CallOption) *MetadataImportIterator
+	GetMetadataImport(context.Context, *metastorepb.GetMetadataImportRequest, ...gax.CallOption) (*metastorepb.MetadataImport, error)
+	CreateMetadataImport(context.Context, *metastorepb.CreateMetadataImportRequest, ...gax.CallOption) (*CreateMetadataImportOperation, error)
+	CreateMetadataImportOperation(name string) *CreateMetadataImportOperation
+	UpdateMetadataImport(context.Context, *metastorepb.UpdateMetadataImportRequest, ...gax.CallOption) (*UpdateMetadataImportOperation, error)
+	UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation
+	ExportMetadata(context.Context, *metastorepb.ExportMetadataRequest, ...gax.CallOption) (*ExportMetadataOperation, error)
+	ExportMetadataOperation(name string) *ExportMetadataOperation
+	RestoreService(context.Context, *metastorepb.RestoreServiceRequest, ...gax.CallOption) (*RestoreServiceOperation, error)
+	RestoreServiceOperation(name string) *RestoreServiceOperation
+	ListBackups(context.Context, *metastorepb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	GetBackup(context.Context, *metastorepb.GetBackupRequest, ...gax.CallOption) (*metastorepb.Backup, error)
+	CreateBackup(context.Context, *metastorepb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
+	CreateBackupOperation(name string) *CreateBackupOperation
+	DeleteBackup(context.Context, *metastorepb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
+	DeleteBackupOperation(name string) *DeleteBackupOperation
+}
+
 // DataprocMetastoreClient is a client for interacting with Dataproc Metastore API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Configures and manages metastore services.
+// Metastore services are fully managed, highly available, auto-scaled,
+// auto-healing, OSS-native deployments of technical metadata management
+// software. Each metastore service exposes a network endpoint through which
+// metadata queries are served. Metadata queries can originate from a variety
+// of sources, including Apache Hive, Apache Presto, and Apache Spark.
+//
+// The Dataproc Metastore API defines the following resource model:
+//
+//   The service works with a collection of Google Cloud projects, named:
+//   /projects/*
+//
+//   Each project has a collection of available locations, named: /locations/*
+//   (a location must refer to a Google Cloud region)
+//
+//   Each location has a collection of services, named: /services/*
+//
+//   Dataproc Metastore services are resources with names of the form:
+//
+// /projects/{project_number}/locations/{location_id}/services/{service_id}.
+type DataprocMetastoreClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDataprocMetastoreClient
+
+	// The call options for this service.
+	CallOptions *DataprocMetastoreCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DataprocMetastoreClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DataprocMetastoreClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DataprocMetastoreClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListServices lists services in a project and location.
+func (c *DataprocMetastoreClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+	return c.internalClient.ListServices(ctx, req, opts...)
+}
+
+// GetService gets the details of a single service.
+func (c *DataprocMetastoreClient) GetService(ctx context.Context, req *metastorepb.GetServiceRequest, opts ...gax.CallOption) (*metastorepb.Service, error) {
+	return c.internalClient.GetService(ctx, req, opts...)
+}
+
+// CreateService creates a metastore service in a project and location.
+func (c *DataprocMetastoreClient) CreateService(ctx context.Context, req *metastorepb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
+	return c.internalClient.CreateService(ctx, req, opts...)
+}
+
+// CreateServiceOperation returns a new CreateServiceOperation from a given name.
+// The name must be that of a previously created CreateServiceOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) CreateServiceOperation(name string) *CreateServiceOperation {
+	return c.internalClient.CreateServiceOperation(name)
+}
+
+// UpdateService updates the parameters of a single service.
+func (c *DataprocMetastoreClient) UpdateService(ctx context.Context, req *metastorepb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
+	return c.internalClient.UpdateService(ctx, req, opts...)
+}
+
+// UpdateServiceOperation returns a new UpdateServiceOperation from a given name.
+// The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
+	return c.internalClient.UpdateServiceOperation(name)
+}
+
+// DeleteService deletes a single service.
+func (c *DataprocMetastoreClient) DeleteService(ctx context.Context, req *metastorepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+	return c.internalClient.DeleteService(ctx, req, opts...)
+}
+
+// DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
+// The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
+	return c.internalClient.DeleteServiceOperation(name)
+}
+
+// ListMetadataImports lists imports in a service.
+func (c *DataprocMetastoreClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
+	return c.internalClient.ListMetadataImports(ctx, req, opts...)
+}
+
+// GetMetadataImport gets details of a single import.
+func (c *DataprocMetastoreClient) GetMetadataImport(ctx context.Context, req *metastorepb.GetMetadataImportRequest, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
+	return c.internalClient.GetMetadataImport(ctx, req, opts...)
+}
+
+// CreateMetadataImport creates a new MetadataImport in a given project and location.
+func (c *DataprocMetastoreClient) CreateMetadataImport(ctx context.Context, req *metastorepb.CreateMetadataImportRequest, opts ...gax.CallOption) (*CreateMetadataImportOperation, error) {
+	return c.internalClient.CreateMetadataImport(ctx, req, opts...)
+}
+
+// CreateMetadataImportOperation returns a new CreateMetadataImportOperation from a given name.
+// The name must be that of a previously created CreateMetadataImportOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
+	return c.internalClient.CreateMetadataImportOperation(name)
+}
+
+// UpdateMetadataImport updates a single import.
+// Only the description field of MetadataImport is supported to be updated.
+func (c *DataprocMetastoreClient) UpdateMetadataImport(ctx context.Context, req *metastorepb.UpdateMetadataImportRequest, opts ...gax.CallOption) (*UpdateMetadataImportOperation, error) {
+	return c.internalClient.UpdateMetadataImport(ctx, req, opts...)
+}
+
+// UpdateMetadataImportOperation returns a new UpdateMetadataImportOperation from a given name.
+// The name must be that of a previously created UpdateMetadataImportOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
+	return c.internalClient.UpdateMetadataImportOperation(name)
+}
+
+// ExportMetadata exports metadata from a service.
+func (c *DataprocMetastoreClient) ExportMetadata(ctx context.Context, req *metastorepb.ExportMetadataRequest, opts ...gax.CallOption) (*ExportMetadataOperation, error) {
+	return c.internalClient.ExportMetadata(ctx, req, opts...)
+}
+
+// ExportMetadataOperation returns a new ExportMetadataOperation from a given name.
+// The name must be that of a previously created ExportMetadataOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
+	return c.internalClient.ExportMetadataOperation(name)
+}
+
+// RestoreService restores a service from a backup.
+func (c *DataprocMetastoreClient) RestoreService(ctx context.Context, req *metastorepb.RestoreServiceRequest, opts ...gax.CallOption) (*RestoreServiceOperation, error) {
+	return c.internalClient.RestoreService(ctx, req, opts...)
+}
+
+// RestoreServiceOperation returns a new RestoreServiceOperation from a given name.
+// The name must be that of a previously created RestoreServiceOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
+	return c.internalClient.RestoreServiceOperation(name)
+}
+
+// ListBackups lists backups in a service.
+func (c *DataprocMetastoreClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// GetBackup gets details of a single backup.
+func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorepb.GetBackupRequest, opts ...gax.CallOption) (*metastorepb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// CreateBackup creates a new Backup in a given project and location.
+func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	return c.internalClient.CreateBackup(ctx, req, opts...)
+}
+
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	return c.internalClient.CreateBackupOperation(name)
+}
+
+// DeleteBackup deletes a single backup.
+func (c *DataprocMetastoreClient) DeleteBackup(ctx context.Context, req *metastorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *DataprocMetastoreClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return c.internalClient.DeleteBackupOperation(name)
+}
+
+// dataprocMetastoreGRPCClient is a client for interacting with Dataproc Metastore API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DataprocMetastoreClient struct {
+type dataprocMetastoreGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DataprocMetastoreClient
+	CallOptions **DataprocMetastoreCallOptions
+
 	// The gRPC API client.
 	dataprocMetastoreClient metastorepb.DataprocMetastoreClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DataprocMetastoreCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDataprocMetastoreClient creates a new dataproc metastore client.
+// NewDataprocMetastoreClient creates a new dataproc metastore client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Configures and manages metastore services.
 // Metastore services are fully managed, highly available, auto-scaled,
@@ -199,8 +420,7 @@ type DataprocMetastoreClient struct {
 //
 // /projects/{project_number}/locations/{location_id}/services/{service_id}.
 func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption) (*DataprocMetastoreClient, error) {
-	clientOpts := defaultDataprocMetastoreClientOptions()
-
+	clientOpts := defaultDataprocMetastoreGRPCClientOptions()
 	if newDataprocMetastoreClientHook != nil {
 		hookOpts, err := newDataprocMetastoreClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -218,16 +438,19 @@ func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &DataprocMetastoreClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDataprocMetastoreCallOptions(),
+	client := DataprocMetastoreClient{CallOptions: defaultDataprocMetastoreCallOptions()}
 
+	c := &dataprocMetastoreGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		dataprocMetastoreClient: metastorepb.NewDataprocMetastoreClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -237,44 +460,46 @@ func NewDataprocMetastoreClient(ctx context.Context, opts ...option.ClientOption
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DataprocMetastoreClient) Connection() *grpc.ClientConn {
+func (c *dataprocMetastoreGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DataprocMetastoreClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DataprocMetastoreClient) setGoogleClientInfo(keyval ...string) {
+func (c *dataprocMetastoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListServices lists services in a project and location.
-func (c *DataprocMetastoreClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *dataprocMetastoreGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *dataprocMetastoreGRPCClient) ListServices(ctx context.Context, req *metastorepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServices[0:len(c.CallOptions.ListServices):len(c.CallOptions.ListServices)], opts...)
+	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*metastorepb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Service, string, error) {
-		var resp *metastorepb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -297,14 +522,15 @@ func (c *DataprocMetastoreClient) ListServices(ctx context.Context, req *metasto
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetService gets the details of a single service.
-func (c *DataprocMetastoreClient) GetService(ctx context.Context, req *metastorepb.GetServiceRequest, opts ...gax.CallOption) (*metastorepb.Service, error) {
+func (c *dataprocMetastoreGRPCClient) GetService(ctx context.Context, req *metastorepb.GetServiceRequest, opts ...gax.CallOption) (*metastorepb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -312,7 +538,7 @@ func (c *DataprocMetastoreClient) GetService(ctx context.Context, req *metastore
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetService[0:len(c.CallOptions.GetService):len(c.CallOptions.GetService)], opts...)
+	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *metastorepb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -325,8 +551,7 @@ func (c *DataprocMetastoreClient) GetService(ctx context.Context, req *metastore
 	return resp, nil
 }
 
-// CreateService creates a metastore service in a project and location.
-func (c *DataprocMetastoreClient) CreateService(ctx context.Context, req *metastorepb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
+func (c *dataprocMetastoreGRPCClient) CreateService(ctx context.Context, req *metastorepb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -334,7 +559,7 @@ func (c *DataprocMetastoreClient) CreateService(ctx context.Context, req *metast
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateService[0:len(c.CallOptions.CreateService):len(c.CallOptions.CreateService)], opts...)
+	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -345,12 +570,11 @@ func (c *DataprocMetastoreClient) CreateService(ctx context.Context, req *metast
 		return nil, err
 	}
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateService updates the parameters of a single service.
-func (c *DataprocMetastoreClient) UpdateService(ctx context.Context, req *metastorepb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
+func (c *dataprocMetastoreGRPCClient) UpdateService(ctx context.Context, req *metastorepb.UpdateServiceRequest, opts ...gax.CallOption) (*UpdateServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -358,7 +582,7 @@ func (c *DataprocMetastoreClient) UpdateService(ctx context.Context, req *metast
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateService[0:len(c.CallOptions.UpdateService):len(c.CallOptions.UpdateService)], opts...)
+	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -369,12 +593,11 @@ func (c *DataprocMetastoreClient) UpdateService(ctx context.Context, req *metast
 		return nil, err
 	}
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteService deletes a single service.
-func (c *DataprocMetastoreClient) DeleteService(ctx context.Context, req *metastorepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
+func (c *dataprocMetastoreGRPCClient) DeleteService(ctx context.Context, req *metastorepb.DeleteServiceRequest, opts ...gax.CallOption) (*DeleteServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -382,7 +605,7 @@ func (c *DataprocMetastoreClient) DeleteService(ctx context.Context, req *metast
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteService[0:len(c.CallOptions.DeleteService):len(c.CallOptions.DeleteService)], opts...)
+	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -393,23 +616,24 @@ func (c *DataprocMetastoreClient) DeleteService(ctx context.Context, req *metast
 		return nil, err
 	}
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListMetadataImports lists imports in a service.
-func (c *DataprocMetastoreClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
+func (c *dataprocMetastoreGRPCClient) ListMetadataImports(ctx context.Context, req *metastorepb.ListMetadataImportsRequest, opts ...gax.CallOption) *MetadataImportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListMetadataImports[0:len(c.CallOptions.ListMetadataImports):len(c.CallOptions.ListMetadataImports)], opts...)
+	opts = append((*c.CallOptions).ListMetadataImports[0:len((*c.CallOptions).ListMetadataImports):len((*c.CallOptions).ListMetadataImports)], opts...)
 	it := &MetadataImportIterator{}
 	req = proto.Clone(req).(*metastorepb.ListMetadataImportsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.MetadataImport, string, error) {
-		var resp *metastorepb.ListMetadataImportsResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListMetadataImportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -432,14 +656,15 @@ func (c *DataprocMetastoreClient) ListMetadataImports(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetMetadataImport gets details of a single import.
-func (c *DataprocMetastoreClient) GetMetadataImport(ctx context.Context, req *metastorepb.GetMetadataImportRequest, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
+func (c *dataprocMetastoreGRPCClient) GetMetadataImport(ctx context.Context, req *metastorepb.GetMetadataImportRequest, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -447,7 +672,7 @@ func (c *DataprocMetastoreClient) GetMetadataImport(ctx context.Context, req *me
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetMetadataImport[0:len(c.CallOptions.GetMetadataImport):len(c.CallOptions.GetMetadataImport)], opts...)
+	opts = append((*c.CallOptions).GetMetadataImport[0:len((*c.CallOptions).GetMetadataImport):len((*c.CallOptions).GetMetadataImport)], opts...)
 	var resp *metastorepb.MetadataImport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -460,8 +685,7 @@ func (c *DataprocMetastoreClient) GetMetadataImport(ctx context.Context, req *me
 	return resp, nil
 }
 
-// CreateMetadataImport creates a new MetadataImport in a given project and location.
-func (c *DataprocMetastoreClient) CreateMetadataImport(ctx context.Context, req *metastorepb.CreateMetadataImportRequest, opts ...gax.CallOption) (*CreateMetadataImportOperation, error) {
+func (c *dataprocMetastoreGRPCClient) CreateMetadataImport(ctx context.Context, req *metastorepb.CreateMetadataImportRequest, opts ...gax.CallOption) (*CreateMetadataImportOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -469,7 +693,7 @@ func (c *DataprocMetastoreClient) CreateMetadataImport(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateMetadataImport[0:len(c.CallOptions.CreateMetadataImport):len(c.CallOptions.CreateMetadataImport)], opts...)
+	opts = append((*c.CallOptions).CreateMetadataImport[0:len((*c.CallOptions).CreateMetadataImport):len((*c.CallOptions).CreateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -480,13 +704,11 @@ func (c *DataprocMetastoreClient) CreateMetadataImport(ctx context.Context, req 
 		return nil, err
 	}
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateMetadataImport updates a single import.
-// Only the description field of MetadataImport is supported to be updated.
-func (c *DataprocMetastoreClient) UpdateMetadataImport(ctx context.Context, req *metastorepb.UpdateMetadataImportRequest, opts ...gax.CallOption) (*UpdateMetadataImportOperation, error) {
+func (c *dataprocMetastoreGRPCClient) UpdateMetadataImport(ctx context.Context, req *metastorepb.UpdateMetadataImportRequest, opts ...gax.CallOption) (*UpdateMetadataImportOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -494,7 +716,7 @@ func (c *DataprocMetastoreClient) UpdateMetadataImport(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metadata_import.name", url.QueryEscape(req.GetMetadataImport().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateMetadataImport[0:len(c.CallOptions.UpdateMetadataImport):len(c.CallOptions.UpdateMetadataImport)], opts...)
+	opts = append((*c.CallOptions).UpdateMetadataImport[0:len((*c.CallOptions).UpdateMetadataImport):len((*c.CallOptions).UpdateMetadataImport)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -505,12 +727,11 @@ func (c *DataprocMetastoreClient) UpdateMetadataImport(ctx context.Context, req 
 		return nil, err
 	}
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportMetadata exports metadata from a service.
-func (c *DataprocMetastoreClient) ExportMetadata(ctx context.Context, req *metastorepb.ExportMetadataRequest, opts ...gax.CallOption) (*ExportMetadataOperation, error) {
+func (c *dataprocMetastoreGRPCClient) ExportMetadata(ctx context.Context, req *metastorepb.ExportMetadataRequest, opts ...gax.CallOption) (*ExportMetadataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -518,7 +739,7 @@ func (c *DataprocMetastoreClient) ExportMetadata(ctx context.Context, req *metas
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportMetadata[0:len(c.CallOptions.ExportMetadata):len(c.CallOptions.ExportMetadata)], opts...)
+	opts = append((*c.CallOptions).ExportMetadata[0:len((*c.CallOptions).ExportMetadata):len((*c.CallOptions).ExportMetadata)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -529,12 +750,11 @@ func (c *DataprocMetastoreClient) ExportMetadata(ctx context.Context, req *metas
 		return nil, err
 	}
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// RestoreService restores a service from a backup.
-func (c *DataprocMetastoreClient) RestoreService(ctx context.Context, req *metastorepb.RestoreServiceRequest, opts ...gax.CallOption) (*RestoreServiceOperation, error) {
+func (c *dataprocMetastoreGRPCClient) RestoreService(ctx context.Context, req *metastorepb.RestoreServiceRequest, opts ...gax.CallOption) (*RestoreServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -542,7 +762,7 @@ func (c *DataprocMetastoreClient) RestoreService(ctx context.Context, req *metas
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service", url.QueryEscape(req.GetService())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RestoreService[0:len(c.CallOptions.RestoreService):len(c.CallOptions.RestoreService)], opts...)
+	opts = append((*c.CallOptions).RestoreService[0:len((*c.CallOptions).RestoreService):len((*c.CallOptions).RestoreService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -553,23 +773,24 @@ func (c *DataprocMetastoreClient) RestoreService(ctx context.Context, req *metas
 		return nil, err
 	}
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListBackups lists backups in a service.
-func (c *DataprocMetastoreClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+func (c *dataprocMetastoreGRPCClient) ListBackups(ctx context.Context, req *metastorepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListBackups[0:len(c.CallOptions.ListBackups):len(c.CallOptions.ListBackups)], opts...)
+	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
 	req = proto.Clone(req).(*metastorepb.ListBackupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*metastorepb.Backup, string, error) {
-		var resp *metastorepb.ListBackupsResponse
-		req.PageToken = pageToken
+		resp := &metastorepb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -592,14 +813,15 @@ func (c *DataprocMetastoreClient) ListBackups(ctx context.Context, req *metastor
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetBackup gets details of a single backup.
-func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorepb.GetBackupRequest, opts ...gax.CallOption) (*metastorepb.Backup, error) {
+func (c *dataprocMetastoreGRPCClient) GetBackup(ctx context.Context, req *metastorepb.GetBackupRequest, opts ...gax.CallOption) (*metastorepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -607,7 +829,7 @@ func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorep
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetBackup[0:len(c.CallOptions.GetBackup):len(c.CallOptions.GetBackup)], opts...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *metastorepb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -620,8 +842,7 @@ func (c *DataprocMetastoreClient) GetBackup(ctx context.Context, req *metastorep
 	return resp, nil
 }
 
-// CreateBackup creates a new Backup in a given project and location.
-func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+func (c *dataprocMetastoreGRPCClient) CreateBackup(ctx context.Context, req *metastorepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -629,7 +850,7 @@ func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metasto
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateBackup[0:len(c.CallOptions.CreateBackup):len(c.CallOptions.CreateBackup)], opts...)
+	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -640,12 +861,11 @@ func (c *DataprocMetastoreClient) CreateBackup(ctx context.Context, req *metasto
 		return nil, err
 	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteBackup deletes a single backup.
-func (c *DataprocMetastoreClient) DeleteBackup(ctx context.Context, req *metastorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+func (c *dataprocMetastoreGRPCClient) DeleteBackup(ctx context.Context, req *metastorepb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -653,7 +873,7 @@ func (c *DataprocMetastoreClient) DeleteBackup(ctx context.Context, req *metasto
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteBackup[0:len(c.CallOptions.DeleteBackup):len(c.CallOptions.DeleteBackup)], opts...)
+	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -664,7 +884,7 @@ func (c *DataprocMetastoreClient) DeleteBackup(ctx context.Context, req *metasto
 		return nil, err
 	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -675,9 +895,9 @@ type CreateBackupOperation struct {
 
 // CreateBackupOperation returns a new CreateBackupOperation from a given name.
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) CreateBackupOperation(name string) *CreateBackupOperation {
+func (c *dataprocMetastoreGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -744,9 +964,9 @@ type CreateMetadataImportOperation struct {
 
 // CreateMetadataImportOperation returns a new CreateMetadataImportOperation from a given name.
 // The name must be that of a previously created CreateMetadataImportOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
+func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
 	return &CreateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -813,9 +1033,9 @@ type CreateServiceOperation struct {
 
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) CreateServiceOperation(name string) *CreateServiceOperation {
+func (c *dataprocMetastoreGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
 	return &CreateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -882,9 +1102,9 @@ type DeleteBackupOperation struct {
 
 // DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -940,9 +1160,9 @@ type DeleteServiceOperation struct {
 
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
+func (c *dataprocMetastoreGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
 	return &DeleteServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -998,9 +1218,9 @@ type ExportMetadataOperation struct {
 
 // ExportMetadataOperation returns a new ExportMetadataOperation from a given name.
 // The name must be that of a previously created ExportMetadataOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
+func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
 	return &ExportMetadataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1067,9 +1287,9 @@ type RestoreServiceOperation struct {
 
 // RestoreServiceOperation returns a new RestoreServiceOperation from a given name.
 // The name must be that of a previously created RestoreServiceOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
+func (c *dataprocMetastoreGRPCClient) RestoreServiceOperation(name string) *RestoreServiceOperation {
 	return &RestoreServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1136,9 +1356,9 @@ type UpdateMetadataImportOperation struct {
 
 // UpdateMetadataImportOperation returns a new UpdateMetadataImportOperation from a given name.
 // The name must be that of a previously created UpdateMetadataImportOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
+func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
 	return &UpdateMetadataImportOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1205,9 +1425,9 @@ type UpdateServiceOperation struct {
 
 // UpdateServiceOperation returns a new UpdateServiceOperation from a given name.
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
-func (c *DataprocMetastoreClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
+func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
 	return &UpdateServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

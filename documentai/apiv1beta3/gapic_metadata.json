@@ -15,6 +15,36 @@
                 "BatchProcessDocuments"
               ]
             },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DisableProcessor": {
+              "methods": [
+                "DisableProcessor"
+              ]
+            },
+            "EnableProcessor": {
+              "methods": [
+                "EnableProcessor"
+              ]
+            },
+            "FetchProcessorTypes": {
+              "methods": [
+                "FetchProcessorTypes"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
             "ProcessDocument": {
               "methods": [
                 "ProcessDocument"

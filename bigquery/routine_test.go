@@ -84,6 +84,11 @@ func TestRoutineTypeConversions(t *testing.T) {
 				RoutineType:      "type",
 				Language:         "lang",
 				ReturnType:       &bq.StandardSqlDataType{TypeKind: "INT64"},
+				ReturnTableType: &bq.StandardSqlTableType{
+					Columns: []*bq.StandardSqlField{
+						{Name: "field", Type: &bq.StandardSqlDataType{TypeKind: "FLOAT64"}},
+					},
+				},
 			},
 			&RoutineMetadata{
 				CreationTime:     aTime,
@@ -95,6 +100,11 @@ func TestRoutineTypeConversions(t *testing.T) {
 				Type:             "type",
 				Language:         "lang",
 				ReturnType:       &StandardSQLDataType{TypeKind: "INT64"},
+				ReturnTableType: &StandardSQLTableType{
+					Columns: []*StandardSQLField{
+						{Name: "field", Type: &StandardSQLDataType{TypeKind: "FLOAT64"}},
+					},
+				},
 			}},
 		{"body_and_libs", "FromRoutineMetadataToUpdate",
 			&RoutineMetadataToUpdate{

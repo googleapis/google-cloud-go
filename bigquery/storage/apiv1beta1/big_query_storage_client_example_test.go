@@ -29,21 +29,23 @@ func ExampleNewBigQueryStorageClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBigQueryStorageClient_CreateReadSession() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#CreateReadSessionRequest.
 	}
 	resp, err := c.CreateReadSession(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleBigQueryStorageClient_CreateReadSession() {
 }
 
 func ExampleBigQueryStorageClient_BatchCreateReadSessionStreams() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.BatchCreateReadSessionStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#BatchCreateReadSessionStreamsRequest.
 	}
 	resp, err := c.BatchCreateReadSessionStreams(ctx, req)
 	if err != nil {
@@ -79,9 +81,11 @@ func ExampleBigQueryStorageClient_FinalizeStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.FinalizeStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#FinalizeStreamRequest.
 	}
 	err = c.FinalizeStream(ctx, req)
 	if err != nil {
@@ -90,16 +94,16 @@ func ExampleBigQueryStorageClient_FinalizeStream() {
 }
 
 func ExampleBigQueryStorageClient_SplitReadStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1#SplitReadStreamRequest.
 	}
 	resp, err := c.SplitReadStream(ctx, req)
 	if err != nil {

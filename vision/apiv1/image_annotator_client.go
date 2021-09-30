@@ -46,12 +46,13 @@ type ImageAnnotatorCallOptions struct {
 	AsyncBatchAnnotateFiles  []gax.CallOption
 }
 
-func defaultImageAnnotatorClientOptions() []option.ClientOption {
+func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -111,39 +112,144 @@ func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 	}
 }
 
+// internalImageAnnotatorClient is an interface that defines the methods availaible from Cloud Vision API.
+type internalImageAnnotatorClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	BatchAnnotateImages(context.Context, *visionpb.BatchAnnotateImagesRequest, ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error)
+	BatchAnnotateFiles(context.Context, *visionpb.BatchAnnotateFilesRequest, ...gax.CallOption) (*visionpb.BatchAnnotateFilesResponse, error)
+	AsyncBatchAnnotateImages(context.Context, *visionpb.AsyncBatchAnnotateImagesRequest, ...gax.CallOption) (*AsyncBatchAnnotateImagesOperation, error)
+	AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation
+	AsyncBatchAnnotateFiles(context.Context, *visionpb.AsyncBatchAnnotateFilesRequest, ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error)
+	AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation
+}
+
 // ImageAnnotatorClient is a client for interacting with Cloud Vision API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service that performs Google Cloud Vision API detection tasks over client
+// images, such as face, landmark, logo, label, and text detection. The
+// ImageAnnotator service returns detected entities from the images.
+type ImageAnnotatorClient struct {
+	// The internal transport-dependent client.
+	internalClient internalImageAnnotatorClient
+
+	// The call options for this service.
+	CallOptions *ImageAnnotatorCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ImageAnnotatorClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ImageAnnotatorClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ImageAnnotatorClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// BatchAnnotateImages run image detection and annotation for a batch of images.
+func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+	return c.internalClient.BatchAnnotateImages(ctx, req, opts...)
+}
+
+// BatchAnnotateFiles service that performs image detection and annotation for a batch of files.
+// Now only “application/pdf”, “image/tiff” and “image/gif” are supported.
+//
+// This service will extract at most 5 (customers can specify which 5 in
+// AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
+// file provided and perform detection and annotation for each image
+// extracted.
+func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visionpb.BatchAnnotateFilesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateFilesResponse, error) {
+	return c.internalClient.BatchAnnotateFiles(ctx, req, opts...)
+}
+
+// AsyncBatchAnnotateImages run asynchronous image detection and annotation for a list of images.
+//
+// Progress and results can be retrieved through the
+// google.longrunning.Operations interface.
+// Operation.metadata contains OperationMetadata (metadata).
+// Operation.response contains AsyncBatchAnnotateImagesResponse (results).
+//
+// This service will write image annotation outputs to json files in customer
+// GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
+func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req *visionpb.AsyncBatchAnnotateImagesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateImagesOperation, error) {
+	return c.internalClient.AsyncBatchAnnotateImages(ctx, req, opts...)
+}
+
+// AsyncBatchAnnotateImagesOperation returns a new AsyncBatchAnnotateImagesOperation from a given name.
+// The name must be that of a previously created AsyncBatchAnnotateImagesOperation, possibly from a different process.
+func (c *ImageAnnotatorClient) AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation {
+	return c.internalClient.AsyncBatchAnnotateImagesOperation(name)
+}
+
+// AsyncBatchAnnotateFiles run asynchronous image detection and annotation for a list of generic
+// files, such as PDF files, which may contain multiple pages and multiple
+// images per page. Progress and results can be retrieved through the
+// google.longrunning.Operations interface.
+// Operation.metadata contains OperationMetadata (metadata).
+// Operation.response contains AsyncBatchAnnotateFilesResponse (results).
+func (c *ImageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error) {
+	return c.internalClient.AsyncBatchAnnotateFiles(ctx, req, opts...)
+}
+
+// AsyncBatchAnnotateFilesOperation returns a new AsyncBatchAnnotateFilesOperation from a given name.
+// The name must be that of a previously created AsyncBatchAnnotateFilesOperation, possibly from a different process.
+func (c *ImageAnnotatorClient) AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation {
+	return c.internalClient.AsyncBatchAnnotateFilesOperation(name)
+}
+
+// imageAnnotatorGRPCClient is a client for interacting with Cloud Vision API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ImageAnnotatorClient struct {
+type imageAnnotatorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ImageAnnotatorClient
+	CallOptions **ImageAnnotatorCallOptions
+
 	// The gRPC API client.
 	imageAnnotatorClient visionpb.ImageAnnotatorClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *ImageAnnotatorCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewImageAnnotatorClient creates a new image annotator client.
+// NewImageAnnotatorClient creates a new image annotator client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service that performs Google Cloud Vision API detection tasks over client
 // images, such as face, landmark, logo, label, and text detection. The
 // ImageAnnotator service returns detected entities from the images.
 func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
-	clientOpts := defaultImageAnnotatorClientOptions()
-
+	clientOpts := defaultImageAnnotatorGRPCClientOptions()
 	if newImageAnnotatorClientHook != nil {
 		hookOpts, err := newImageAnnotatorClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,16 +267,19 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &ImageAnnotatorClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultImageAnnotatorCallOptions(),
+	client := ImageAnnotatorClient{CallOptions: defaultImageAnnotatorCallOptions()}
 
+	c := &imageAnnotatorGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -180,33 +289,33 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ImageAnnotatorClient) Connection() *grpc.ClientConn {
+func (c *imageAnnotatorGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ImageAnnotatorClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ImageAnnotatorClient) setGoogleClientInfo(keyval ...string) {
+func (c *imageAnnotatorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// BatchAnnotateImages run image detection and annotation for a batch of images.
-func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *imageAnnotatorGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -214,7 +323,7 @@ func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *vis
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchAnnotateImages[0:len(c.CallOptions.BatchAnnotateImages):len(c.CallOptions.BatchAnnotateImages)], opts...)
+	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
 	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -227,14 +336,7 @@ func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *vis
 	return resp, nil
 }
 
-// BatchAnnotateFiles service that performs image detection and annotation for a batch of files.
-// Now only “application/pdf”, “image/tiff” and “image/gif” are supported.
-//
-// This service will extract at most 5 (customers can specify which 5 in
-// AnnotateFileRequest.pages) frames (gif) or pages (pdf or tiff) from each
-// file provided and perform detection and annotation for each image
-// extracted.
-func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visionpb.BatchAnnotateFilesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateFilesResponse, error) {
+func (c *imageAnnotatorGRPCClient) BatchAnnotateFiles(ctx context.Context, req *visionpb.BatchAnnotateFilesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateFilesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -242,7 +344,7 @@ func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchAnnotateFiles[0:len(c.CallOptions.BatchAnnotateFiles):len(c.CallOptions.BatchAnnotateFiles)], opts...)
+	opts = append((*c.CallOptions).BatchAnnotateFiles[0:len((*c.CallOptions).BatchAnnotateFiles):len((*c.CallOptions).BatchAnnotateFiles)], opts...)
 	var resp *visionpb.BatchAnnotateFilesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -255,16 +357,7 @@ func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visi
 	return resp, nil
 }
 
-// AsyncBatchAnnotateImages run asynchronous image detection and annotation for a list of images.
-//
-// Progress and results can be retrieved through the
-// google.longrunning.Operations interface.
-// Operation.metadata contains OperationMetadata (metadata).
-// Operation.response contains AsyncBatchAnnotateImagesResponse (results).
-//
-// This service will write image annotation outputs to json files in customer
-// GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
-func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req *visionpb.AsyncBatchAnnotateImagesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateImagesOperation, error) {
+func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImages(ctx context.Context, req *visionpb.AsyncBatchAnnotateImagesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateImagesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -272,7 +365,7 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AsyncBatchAnnotateImages[0:len(c.CallOptions.AsyncBatchAnnotateImages):len(c.CallOptions.AsyncBatchAnnotateImages)], opts...)
+	opts = append((*c.CallOptions).AsyncBatchAnnotateImages[0:len((*c.CallOptions).AsyncBatchAnnotateImages):len((*c.CallOptions).AsyncBatchAnnotateImages)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -283,17 +376,11 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req
 		return nil, err
 	}
 	return &AsyncBatchAnnotateImagesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// AsyncBatchAnnotateFiles run asynchronous image detection and annotation for a list of generic
-// files, such as PDF files, which may contain multiple pages and multiple
-// images per page. Progress and results can be retrieved through the
-// google.longrunning.Operations interface.
-// Operation.metadata contains OperationMetadata (metadata).
-// Operation.response contains AsyncBatchAnnotateFilesResponse (results).
-func (c *ImageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error) {
+func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -301,7 +388,7 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AsyncBatchAnnotateFiles[0:len(c.CallOptions.AsyncBatchAnnotateFiles):len(c.CallOptions.AsyncBatchAnnotateFiles)], opts...)
+	opts = append((*c.CallOptions).AsyncBatchAnnotateFiles[0:len((*c.CallOptions).AsyncBatchAnnotateFiles):len((*c.CallOptions).AsyncBatchAnnotateFiles)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -312,7 +399,7 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, req 
 		return nil, err
 	}
 	return &AsyncBatchAnnotateFilesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -323,9 +410,9 @@ type AsyncBatchAnnotateFilesOperation struct {
 
 // AsyncBatchAnnotateFilesOperation returns a new AsyncBatchAnnotateFilesOperation from a given name.
 // The name must be that of a previously created AsyncBatchAnnotateFilesOperation, possibly from a different process.
-func (c *ImageAnnotatorClient) AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation {
+func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFilesOperation(name string) *AsyncBatchAnnotateFilesOperation {
 	return &AsyncBatchAnnotateFilesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -392,9 +479,9 @@ type AsyncBatchAnnotateImagesOperation struct {
 
 // AsyncBatchAnnotateImagesOperation returns a new AsyncBatchAnnotateImagesOperation from a given name.
 // The name must be that of a previously created AsyncBatchAnnotateImagesOperation, possibly from a different process.
-func (c *ImageAnnotatorClient) AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation {
+func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImagesOperation(name string) *AsyncBatchAnnotateImagesOperation {
 	return &AsyncBatchAnnotateImagesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

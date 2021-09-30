@@ -175,3 +175,40 @@ func standardSQLStructFieldsToBQ(fields []*StandardSQLField) ([]*bq.StandardSqlF
 	}
 	return bqFields, nil
 }
+
+// StandardSQLTableType models a table-like resource, which has a set of columns.
+type StandardSQLTableType struct {
+
+	// The columns of the table.
+	Columns []*StandardSQLField
+}
+
+func (sstt *StandardSQLTableType) toBQ() (*bq.StandardSqlTableType, error) {
+	if sstt == nil {
+		return nil, nil
+	}
+	out := &bq.StandardSqlTableType{}
+	for k, v := range sstt.Columns {
+		bq, err := v.toBQ()
+		if err != nil {
+			return nil, fmt.Errorf("error converting column %d: %v", k, err)
+		}
+		out.Columns = append(out.Columns, bq)
+	}
+	return out, nil
+}
+
+func bqToStandardSQLTableType(in *bq.StandardSqlTableType) (*StandardSQLTableType, error) {
+	if in == nil {
+		return nil, nil
+	}
+	out := &StandardSQLTableType{}
+	for k, v := range in.Columns {
+		f, err := bqToStandardSQLField(v)
+		if err != nil {
+			return nil, fmt.Errorf("error converting column %d: %v", k, err)
+		}
+		out.Columns = append(out.Columns, f)
+	}
+	return out, nil
+}

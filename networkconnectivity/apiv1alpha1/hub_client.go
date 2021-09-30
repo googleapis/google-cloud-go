@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newHubClientHook clientHook
@@ -54,12 +54,13 @@ type HubCallOptions struct {
 	DeleteSpoke []gax.CallOption
 }
 
-func defaultHubClientOptions() []option.ClientOption {
+func defaultHubGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("networkconnectivity.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("networkconnectivity.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://networkconnectivity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -121,40 +122,191 @@ func defaultHubCallOptions() *HubCallOptions {
 	}
 }
 
+// internalHubClient is an interface that defines the methods availaible from Network Connectivity API.
+type internalHubClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListHubs(context.Context, *networkconnectivitypb.ListHubsRequest, ...gax.CallOption) *HubIterator
+	GetHub(context.Context, *networkconnectivitypb.GetHubRequest, ...gax.CallOption) (*networkconnectivitypb.Hub, error)
+	CreateHub(context.Context, *networkconnectivitypb.CreateHubRequest, ...gax.CallOption) (*CreateHubOperation, error)
+	CreateHubOperation(name string) *CreateHubOperation
+	UpdateHub(context.Context, *networkconnectivitypb.UpdateHubRequest, ...gax.CallOption) (*UpdateHubOperation, error)
+	UpdateHubOperation(name string) *UpdateHubOperation
+	DeleteHub(context.Context, *networkconnectivitypb.DeleteHubRequest, ...gax.CallOption) (*DeleteHubOperation, error)
+	DeleteHubOperation(name string) *DeleteHubOperation
+	ListSpokes(context.Context, *networkconnectivitypb.ListSpokesRequest, ...gax.CallOption) *SpokeIterator
+	GetSpoke(context.Context, *networkconnectivitypb.GetSpokeRequest, ...gax.CallOption) (*networkconnectivitypb.Spoke, error)
+	CreateSpoke(context.Context, *networkconnectivitypb.CreateSpokeRequest, ...gax.CallOption) (*CreateSpokeOperation, error)
+	CreateSpokeOperation(name string) *CreateSpokeOperation
+	UpdateSpoke(context.Context, *networkconnectivitypb.UpdateSpokeRequest, ...gax.CallOption) (*UpdateSpokeOperation, error)
+	UpdateSpokeOperation(name string) *UpdateSpokeOperation
+	DeleteSpoke(context.Context, *networkconnectivitypb.DeleteSpokeRequest, ...gax.CallOption) (*DeleteSpokeOperation, error)
+	DeleteSpokeOperation(name string) *DeleteSpokeOperation
+}
+
 // HubClient is a client for interacting with Network Connectivity API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Network Connectivity Center is a hub-and-spoke abstraction for
+// network connectivity management in Google Cloud. It reduces
+// operational complexity through a simple, centralized connectivity management
+// model.
+type HubClient struct {
+	// The internal transport-dependent client.
+	internalClient internalHubClient
+
+	// The call options for this service.
+	CallOptions *HubCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *HubClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *HubClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *HubClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListHubs lists Hubs in a given project and location.
+func (c *HubClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
+	return c.internalClient.ListHubs(ctx, req, opts...)
+}
+
+// GetHub gets details of a single Hub.
+func (c *HubClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHubRequest, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
+	return c.internalClient.GetHub(ctx, req, opts...)
+}
+
+// CreateHub creates a new Hub in a given project and location.
+func (c *HubClient) CreateHub(ctx context.Context, req *networkconnectivitypb.CreateHubRequest, opts ...gax.CallOption) (*CreateHubOperation, error) {
+	return c.internalClient.CreateHub(ctx, req, opts...)
+}
+
+// CreateHubOperation returns a new CreateHubOperation from a given name.
+// The name must be that of a previously created CreateHubOperation, possibly from a different process.
+func (c *HubClient) CreateHubOperation(name string) *CreateHubOperation {
+	return c.internalClient.CreateHubOperation(name)
+}
+
+// UpdateHub updates the parameters of a single Hub.
+func (c *HubClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.UpdateHubRequest, opts ...gax.CallOption) (*UpdateHubOperation, error) {
+	return c.internalClient.UpdateHub(ctx, req, opts...)
+}
+
+// UpdateHubOperation returns a new UpdateHubOperation from a given name.
+// The name must be that of a previously created UpdateHubOperation, possibly from a different process.
+func (c *HubClient) UpdateHubOperation(name string) *UpdateHubOperation {
+	return c.internalClient.UpdateHubOperation(name)
+}
+
+// DeleteHub deletes a single Hub.
+func (c *HubClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.DeleteHubRequest, opts ...gax.CallOption) (*DeleteHubOperation, error) {
+	return c.internalClient.DeleteHub(ctx, req, opts...)
+}
+
+// DeleteHubOperation returns a new DeleteHubOperation from a given name.
+// The name must be that of a previously created DeleteHubOperation, possibly from a different process.
+func (c *HubClient) DeleteHubOperation(name string) *DeleteHubOperation {
+	return c.internalClient.DeleteHubOperation(name)
+}
+
+// ListSpokes lists Spokes in a given project and location.
+func (c *HubClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
+	return c.internalClient.ListSpokes(ctx, req, opts...)
+}
+
+// GetSpoke gets details of a single Spoke.
+func (c *HubClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.GetSpokeRequest, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
+	return c.internalClient.GetSpoke(ctx, req, opts...)
+}
+
+// CreateSpoke creates a new Spoke in a given project and location.
+func (c *HubClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.CreateSpokeRequest, opts ...gax.CallOption) (*CreateSpokeOperation, error) {
+	return c.internalClient.CreateSpoke(ctx, req, opts...)
+}
+
+// CreateSpokeOperation returns a new CreateSpokeOperation from a given name.
+// The name must be that of a previously created CreateSpokeOperation, possibly from a different process.
+func (c *HubClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
+	return c.internalClient.CreateSpokeOperation(name)
+}
+
+// UpdateSpoke updates the parameters of a single Spoke.
+func (c *HubClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.UpdateSpokeRequest, opts ...gax.CallOption) (*UpdateSpokeOperation, error) {
+	return c.internalClient.UpdateSpoke(ctx, req, opts...)
+}
+
+// UpdateSpokeOperation returns a new UpdateSpokeOperation from a given name.
+// The name must be that of a previously created UpdateSpokeOperation, possibly from a different process.
+func (c *HubClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
+	return c.internalClient.UpdateSpokeOperation(name)
+}
+
+// DeleteSpoke deletes a single Spoke.
+func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
+	return c.internalClient.DeleteSpoke(ctx, req, opts...)
+}
+
+// DeleteSpokeOperation returns a new DeleteSpokeOperation from a given name.
+// The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
+func (c *HubClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
+	return c.internalClient.DeleteSpokeOperation(name)
+}
+
+// hubGRPCClient is a client for interacting with Network Connectivity API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type HubClient struct {
+type hubGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing HubClient
+	CallOptions **HubCallOptions
+
 	// The gRPC API client.
 	hubClient networkconnectivitypb.HubServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *HubCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewHubClient creates a new hub service client.
+// NewHubClient creates a new hub service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Network Connectivity Center is a hub-and-spoke abstraction for
 // network connectivity management in Google Cloud. It reduces
 // operational complexity through a simple, centralized connectivity management
 // model.
 func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient, error) {
-	clientOpts := defaultHubClientOptions()
-
+	clientOpts := defaultHubGRPCClientOptions()
 	if newHubClientHook != nil {
 		hookOpts, err := newHubClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -172,16 +324,19 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 	if err != nil {
 		return nil, err
 	}
-	c := &HubClient{
+	client := HubClient{CallOptions: defaultHubCallOptions()}
+
+	c := &hubGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultHubCallOptions(),
-
-		hubClient: networkconnectivitypb.NewHubServiceClient(connPool),
+		hubClient:        networkconnectivitypb.NewHubServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -191,44 +346,46 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *HubClient) Connection() *grpc.ClientConn {
+func (c *hubGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *HubClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *HubClient) setGoogleClientInfo(keyval ...string) {
+func (c *hubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListHubs lists Hubs in a given project and location.
-func (c *HubClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *hubGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListHubs[0:len(c.CallOptions.ListHubs):len(c.CallOptions.ListHubs)], opts...)
+	opts = append((*c.CallOptions).ListHubs[0:len((*c.CallOptions).ListHubs):len((*c.CallOptions).ListHubs)], opts...)
 	it := &HubIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListHubsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Hub, string, error) {
-		var resp *networkconnectivitypb.ListHubsResponse
-		req.PageToken = pageToken
+		resp := &networkconnectivitypb.ListHubsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -251,14 +408,15 @@ func (c *HubClient) ListHubs(ctx context.Context, req *networkconnectivitypb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetHub gets details of a single Hub.
-func (c *HubClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHubRequest, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
+func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHubRequest, opts ...gax.CallOption) (*networkconnectivitypb.Hub, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -266,7 +424,7 @@ func (c *HubClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHu
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetHub[0:len(c.CallOptions.GetHub):len(c.CallOptions.GetHub)], opts...)
+	opts = append((*c.CallOptions).GetHub[0:len((*c.CallOptions).GetHub):len((*c.CallOptions).GetHub)], opts...)
 	var resp *networkconnectivitypb.Hub
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -279,8 +437,7 @@ func (c *HubClient) GetHub(ctx context.Context, req *networkconnectivitypb.GetHu
 	return resp, nil
 }
 
-// CreateHub creates a new Hub in a given project and location.
-func (c *HubClient) CreateHub(ctx context.Context, req *networkconnectivitypb.CreateHubRequest, opts ...gax.CallOption) (*CreateHubOperation, error) {
+func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivitypb.CreateHubRequest, opts ...gax.CallOption) (*CreateHubOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -288,7 +445,7 @@ func (c *HubClient) CreateHub(ctx context.Context, req *networkconnectivitypb.Cr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateHub[0:len(c.CallOptions.CreateHub):len(c.CallOptions.CreateHub)], opts...)
+	opts = append((*c.CallOptions).CreateHub[0:len((*c.CallOptions).CreateHub):len((*c.CallOptions).CreateHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -299,12 +456,11 @@ func (c *HubClient) CreateHub(ctx context.Context, req *networkconnectivitypb.Cr
 		return nil, err
 	}
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateHub updates the parameters of a single Hub.
-func (c *HubClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.UpdateHubRequest, opts ...gax.CallOption) (*UpdateHubOperation, error) {
+func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.UpdateHubRequest, opts ...gax.CallOption) (*UpdateHubOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -312,7 +468,7 @@ func (c *HubClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.Up
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "hub.name", url.QueryEscape(req.GetHub().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateHub[0:len(c.CallOptions.UpdateHub):len(c.CallOptions.UpdateHub)], opts...)
+	opts = append((*c.CallOptions).UpdateHub[0:len((*c.CallOptions).UpdateHub):len((*c.CallOptions).UpdateHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -323,12 +479,11 @@ func (c *HubClient) UpdateHub(ctx context.Context, req *networkconnectivitypb.Up
 		return nil, err
 	}
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteHub deletes a single Hub.
-func (c *HubClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.DeleteHubRequest, opts ...gax.CallOption) (*DeleteHubOperation, error) {
+func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.DeleteHubRequest, opts ...gax.CallOption) (*DeleteHubOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -336,7 +491,7 @@ func (c *HubClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.De
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteHub[0:len(c.CallOptions.DeleteHub):len(c.CallOptions.DeleteHub)], opts...)
+	opts = append((*c.CallOptions).DeleteHub[0:len((*c.CallOptions).DeleteHub):len((*c.CallOptions).DeleteHub)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -347,23 +502,24 @@ func (c *HubClient) DeleteHub(ctx context.Context, req *networkconnectivitypb.De
 		return nil, err
 	}
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListSpokes lists Spokes in a given project and location.
-func (c *HubClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
+func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSpokes[0:len(c.CallOptions.ListSpokes):len(c.CallOptions.ListSpokes)], opts...)
+	opts = append((*c.CallOptions).ListSpokes[0:len((*c.CallOptions).ListSpokes):len((*c.CallOptions).ListSpokes)], opts...)
 	it := &SpokeIterator{}
 	req = proto.Clone(req).(*networkconnectivitypb.ListSpokesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*networkconnectivitypb.Spoke, string, error) {
-		var resp *networkconnectivitypb.ListSpokesResponse
-		req.PageToken = pageToken
+		resp := &networkconnectivitypb.ListSpokesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -386,14 +542,15 @@ func (c *HubClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetSpoke gets details of a single Spoke.
-func (c *HubClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.GetSpokeRequest, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
+func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.GetSpokeRequest, opts ...gax.CallOption) (*networkconnectivitypb.Spoke, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -401,7 +558,7 @@ func (c *HubClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.Get
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetSpoke[0:len(c.CallOptions.GetSpoke):len(c.CallOptions.GetSpoke)], opts...)
+	opts = append((*c.CallOptions).GetSpoke[0:len((*c.CallOptions).GetSpoke):len((*c.CallOptions).GetSpoke)], opts...)
 	var resp *networkconnectivitypb.Spoke
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -414,8 +571,7 @@ func (c *HubClient) GetSpoke(ctx context.Context, req *networkconnectivitypb.Get
 	return resp, nil
 }
 
-// CreateSpoke creates a new Spoke in a given project and location.
-func (c *HubClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.CreateSpokeRequest, opts ...gax.CallOption) (*CreateSpokeOperation, error) {
+func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.CreateSpokeRequest, opts ...gax.CallOption) (*CreateSpokeOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -423,7 +579,7 @@ func (c *HubClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateSpoke[0:len(c.CallOptions.CreateSpoke):len(c.CallOptions.CreateSpoke)], opts...)
+	opts = append((*c.CallOptions).CreateSpoke[0:len((*c.CallOptions).CreateSpoke):len((*c.CallOptions).CreateSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -434,12 +590,11 @@ func (c *HubClient) CreateSpoke(ctx context.Context, req *networkconnectivitypb.
 		return nil, err
 	}
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateSpoke updates the parameters of a single Spoke.
-func (c *HubClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.UpdateSpokeRequest, opts ...gax.CallOption) (*UpdateSpokeOperation, error) {
+func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.UpdateSpokeRequest, opts ...gax.CallOption) (*UpdateSpokeOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -447,7 +602,7 @@ func (c *HubClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "spoke.name", url.QueryEscape(req.GetSpoke().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSpoke[0:len(c.CallOptions.UpdateSpoke):len(c.CallOptions.UpdateSpoke)], opts...)
+	opts = append((*c.CallOptions).UpdateSpoke[0:len((*c.CallOptions).UpdateSpoke):len((*c.CallOptions).UpdateSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -458,12 +613,11 @@ func (c *HubClient) UpdateSpoke(ctx context.Context, req *networkconnectivitypb.
 		return nil, err
 	}
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteSpoke deletes a single Spoke.
-func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
+func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.DeleteSpokeRequest, opts ...gax.CallOption) (*DeleteSpokeOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -471,7 +625,7 @@ func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteSpoke[0:len(c.CallOptions.DeleteSpoke):len(c.CallOptions.DeleteSpoke)], opts...)
+	opts = append((*c.CallOptions).DeleteSpoke[0:len((*c.CallOptions).DeleteSpoke):len((*c.CallOptions).DeleteSpoke)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -482,7 +636,7 @@ func (c *HubClient) DeleteSpoke(ctx context.Context, req *networkconnectivitypb.
 		return nil, err
 	}
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -493,9 +647,9 @@ type CreateHubOperation struct {
 
 // CreateHubOperation returns a new CreateHubOperation from a given name.
 // The name must be that of a previously created CreateHubOperation, possibly from a different process.
-func (c *HubClient) CreateHubOperation(name string) *CreateHubOperation {
+func (c *hubGRPCClient) CreateHubOperation(name string) *CreateHubOperation {
 	return &CreateHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -562,9 +716,9 @@ type CreateSpokeOperation struct {
 
 // CreateSpokeOperation returns a new CreateSpokeOperation from a given name.
 // The name must be that of a previously created CreateSpokeOperation, possibly from a different process.
-func (c *HubClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
+func (c *hubGRPCClient) CreateSpokeOperation(name string) *CreateSpokeOperation {
 	return &CreateSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -631,9 +785,9 @@ type DeleteHubOperation struct {
 
 // DeleteHubOperation returns a new DeleteHubOperation from a given name.
 // The name must be that of a previously created DeleteHubOperation, possibly from a different process.
-func (c *HubClient) DeleteHubOperation(name string) *DeleteHubOperation {
+func (c *hubGRPCClient) DeleteHubOperation(name string) *DeleteHubOperation {
 	return &DeleteHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -689,9 +843,9 @@ type DeleteSpokeOperation struct {
 
 // DeleteSpokeOperation returns a new DeleteSpokeOperation from a given name.
 // The name must be that of a previously created DeleteSpokeOperation, possibly from a different process.
-func (c *HubClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
+func (c *hubGRPCClient) DeleteSpokeOperation(name string) *DeleteSpokeOperation {
 	return &DeleteSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -747,9 +901,9 @@ type UpdateHubOperation struct {
 
 // UpdateHubOperation returns a new UpdateHubOperation from a given name.
 // The name must be that of a previously created UpdateHubOperation, possibly from a different process.
-func (c *HubClient) UpdateHubOperation(name string) *UpdateHubOperation {
+func (c *hubGRPCClient) UpdateHubOperation(name string) *UpdateHubOperation {
 	return &UpdateHubOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -816,9 +970,9 @@ type UpdateSpokeOperation struct {
 
 // UpdateSpokeOperation returns a new UpdateSpokeOperation from a given name.
 // The name must be that of a previously created UpdateSpokeOperation, possibly from a different process.
-func (c *HubClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
+func (c *hubGRPCClient) UpdateSpokeOperation(name string) *UpdateSpokeOperation {
 	return &UpdateSpokeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

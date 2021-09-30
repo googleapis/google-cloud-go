@@ -25,13 +25,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
+	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
@@ -39,6 +39,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 const (
@@ -70,10 +71,10 @@ type Topic struct {
 	stopped   bool
 	scheduler *scheduler.PublishScheduler
 
+	flowController
+
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
-
-	tracer trace.Tracer
 }
 
 // PublishSettings control the bundling of published messages.
@@ -100,10 +101,15 @@ type PublishSettings struct {
 	Timeout time.Duration
 
 	// The maximum number of bytes that the Bundler will keep in memory before
-	// returning ErrOverflow.
+	// returning ErrOverflow. This is now superseded by FlowControlSettings.MaxOutstandingBytes.
+	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
+	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
+
+	// FlowControlSettings defines publisher flow control settings.
+	FlowControlSettings FlowControlSettings
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -116,6 +122,11 @@ var DefaultPublishSettings = PublishSettings{
 	// chosen as a reasonable amount of messages in the worst case whilst still
 	// capping the number to a low enough value to not OOM users.
 	BufferedByteLimit: 10 * MaxPublishRequestBytes,
+	FlowControlSettings: FlowControlSettings{
+		MaxOutstandingMessages: 1000,
+		MaxOutstandingBytes:    -1,
+		LimitExceededBehavior:  FlowControlIgnore,
+	},
 }
 
 // CreateTopic creates a new topic.
@@ -147,12 +158,9 @@ func (c *Client) CreateTopic(ctx context.Context, topicID string) (*Topic, error
 // If the topic already exists, an error will be returned.
 func (c *Client) CreateTopicWithConfig(ctx context.Context, topicID string, tc *TopicConfig) (*Topic, error) {
 	t := c.Topic(topicID)
-	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{
-		Name:                 t.name,
-		Labels:               tc.Labels,
-		MessageStoragePolicy: messageStoragePolicyToProto(&tc.MessageStoragePolicy),
-		KmsKeyName:           tc.KMSKeyName,
-	})
+	topic := tc.toProto()
+	topic.Name = t.name
+	_, err := c.pubc.CreateTopic(ctx, topic)
 	if err != nil {
 		return nil, err
 	}
@@ -184,7 +192,6 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
-		tracer:          otel.Tracer("instrumentation/package/name"),
 	}
 }
 
@@ -200,6 +207,37 @@ type TopicConfig struct {
 	// published to this topic, in the format
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
+
+	// Schema defines the schema settings upon topic creation. This cannot
+	// be modified after a topic has been created.
+	SchemaSettings *SchemaSettings
+
+	// RetentionDuration configures the minimum duration to retain a message
+	// after it is published to the topic. If this field is set, messages published
+	// to the topic in the last `RetentionDuration` are always available to subscribers.
+	// For instance, it allows any attached subscription to [seek to a
+	// timestamp](https://cloud.google.com/pubsub/docs/replay-overview#seek_to_a_time)
+	// that is up to `RetentionDuration` in the past. If this field is
+	// not set, message retention is controlled by settings on individual
+	// subscriptions. Cannot be more than 7 days or less than 10 minutes.
+	//
+	// For more information, see https://cloud.google.com/pubsub/docs/replay-overview#topic_message_retention.
+	RetentionDuration optional.Duration
+}
+
+func (tc *TopicConfig) toProto() *pb.Topic {
+	var retDur *durationpb.Duration
+	if tc.RetentionDuration != nil {
+		retDur = durationpb.New(optional.ToDuration(tc.RetentionDuration))
+	}
+	pbt := &pb.Topic{
+		Labels:                   tc.Labels,
+		MessageStoragePolicy:     messageStoragePolicyToProto(&tc.MessageStoragePolicy),
+		KmsKeyName:               tc.KMSKeyName,
+		SchemaSettings:           schemaSettingsToProto(tc.SchemaSettings),
+		MessageRetentionDuration: retDur,
+	}
+	return pbt
 }
 
 // TopicConfigToUpdate describes how to update a topic.
@@ -219,14 +257,24 @@ type TopicConfigToUpdate struct {
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
+
+	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
+	// If set to a negative value, this clears RetentionDuration from the topic.
+	// If nil, the retention duration remains unchanged.
+	RetentionDuration optional.Duration
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
-	return TopicConfig{
+	tc := TopicConfig{
 		Labels:               pbt.Labels,
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
+		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
 	}
+	if pbt.GetMessageRetentionDuration() != nil {
+		tc.RetentionDuration = pbt.GetMessageRetentionDuration().AsDuration()
+	}
+	return tc
 }
 
 // DetachSubscriptionResult is the response for the DetachSubscription method.
@@ -315,6 +363,15 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 		pt.MessageStoragePolicy = messageStoragePolicyToProto(cfg.MessageStoragePolicy)
 		paths = append(paths, "message_storage_policy")
 	}
+	if cfg.RetentionDuration != nil {
+		r := optional.ToDuration(cfg.RetentionDuration)
+		pt.MessageRetentionDuration = durationpb.New(r)
+		if r < 0 {
+			// Clear MessageRetentionDuration if sentinel value is read.
+			pt.MessageRetentionDuration = nil
+		}
+		paths = append(paths, "message_retention_duration")
+	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
 		UpdateMask: &fmpb.FieldMask{Paths: paths},
@@ -325,7 +382,8 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 func (c *Client) Topics(ctx context.Context) *TopicIterator {
 	it := c.pubc.ListTopics(ctx, &pb.ListTopicsRequest{Project: c.fullyQualifiedProjectName()})
 	return &TopicIterator{
-		c: c,
+		c:  c,
+		it: it,
 		next: func() (string, error) {
 			topic, err := it.Next()
 			if err != nil {
@@ -339,6 +397,7 @@ func (c *Client) Topics(ctx context.Context) *TopicIterator {
 // TopicIterator is an iterator that returns a series of topics.
 type TopicIterator struct {
 	c    *Client
+	it   *vkit.TopicIterator
 	next func() (string, error)
 }
 
@@ -349,6 +408,19 @@ func (tps *TopicIterator) Next() (*Topic, error) {
 		return nil, err
 	}
 	return newTopic(tps.c, topicName), nil
+}
+
+// NextConfig returns the next topic config. If there are no more topics,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `TopicIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
+func (t *TopicIterator) NextConfig() (*TopicConfig, error) {
+	tpb, err := t.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	cfg := protoToTopicConfig(tpb)
+	return &cfg, nil
 }
 
 // ID returns the unique identifier of the topic within its project.
@@ -426,29 +498,20 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	var span trace.Span
-	_, span = t.tracer.Start(ctx, "publish")
-	defer span.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
 		return r
 	}
 
-	// Use a PublishRequest with only the Messages field to calculate the size
-	// of an individual message. This accurately calculates the size of the
-	// encoded proto message by accounting for the length of an individual
-	// PubSubMessage and Data/Attributes field.
-	// TODO(hongalex): if this turns out to take significant time, try to approximate it.
-	msgSize := proto.Size(&pb.PublishRequest{
-		Messages: []*pb.PubsubMessage{
-			{
-				Data:        msg.Data,
-				Attributes:  msg.Attributes,
-				OrderingKey: msg.OrderingKey,
-			},
-		},
+	// Calculate the size of the encoded proto message by accounting
+	// for the length of an individual PubSubMessage and Data/Attributes field.
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
 	})
+
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -458,9 +521,12 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	// TODO(jba) [from bcmills] consider using a shared channel per bundle
-	// (requires Bundler API changes; would reduce allocations)
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{ctx, msg, r}, msgSize)
+	if err := t.flowController.acquire(ctx, msgSize); err != nil {
+		t.scheduler.Pause(msg.OrderingKey)
+		ipubsub.SetPublishResult(r, "", err)
+		return r
+	}
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -482,10 +548,18 @@ func (t *Topic) Stop() {
 	t.scheduler.FlushAndStop()
 }
 
+// Flush blocks until all remaining messages are sent.
+func (t *Topic) Flush() {
+	if t.stopped || t.scheduler == nil {
+		return
+	}
+	t.scheduler.Flush()
+}
+
 type bundledMessage struct {
-	ctx context.Context
-	msg *Message
-	res *PublishResult
+	msg  *Message
+	res  *PublishResult
+	size int
 }
 
 func (t *Topic) initBundler() {
@@ -529,13 +603,31 @@ func (t *Topic) initBundler() {
 	}
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
+	fcs := DefaultPublishSettings.FlowControlSettings
+	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
+		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
+	}
+	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
+		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
+		fcs.MaxOutstandingBytes = b
+		// If MaxOutstandingBytes is set, override BufferedByteLimit.
+		t.PublishSettings.BufferedByteLimit = b
+	}
+	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
+		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
+	}
+
+	t.flowController = newFlowController(fcs)
+
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
 		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
 	}
 	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
-	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
+	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
+	// needed to be reserved for encoding the PubsubMessage repeated field.
+	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
@@ -553,9 +645,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
-		var span trace.Span
-		ctx, span = t.tracer.Start(bm.ctx, "publish message bundle")
-		defer span.End()
 	}
 	var res *pb.PublishResponse
 	start := time.Now()
@@ -579,6 +668,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
+		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {

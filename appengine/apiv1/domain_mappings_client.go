@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDomainMappingsClientHook clientHook
@@ -48,12 +48,13 @@ type DomainMappingsCallOptions struct {
 	DeleteDomainMapping []gax.CallOption
 }
 
-func defaultDomainMappingsClientOptions() []option.ClientOption {
+func defaultDomainMappingsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -70,37 +71,141 @@ func defaultDomainMappingsCallOptions() *DomainMappingsCallOptions {
 	}
 }
 
+// internalDomainMappingsClient is an interface that defines the methods availaible from App Engine Admin API.
+type internalDomainMappingsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListDomainMappings(context.Context, *appenginepb.ListDomainMappingsRequest, ...gax.CallOption) *DomainMappingIterator
+	GetDomainMapping(context.Context, *appenginepb.GetDomainMappingRequest, ...gax.CallOption) (*appenginepb.DomainMapping, error)
+	CreateDomainMapping(context.Context, *appenginepb.CreateDomainMappingRequest, ...gax.CallOption) (*CreateDomainMappingOperation, error)
+	CreateDomainMappingOperation(name string) *CreateDomainMappingOperation
+	UpdateDomainMapping(context.Context, *appenginepb.UpdateDomainMappingRequest, ...gax.CallOption) (*UpdateDomainMappingOperation, error)
+	UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation
+	DeleteDomainMapping(context.Context, *appenginepb.DeleteDomainMappingRequest, ...gax.CallOption) (*DeleteDomainMappingOperation, error)
+	DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation
+}
+
 // DomainMappingsClient is a client for interacting with App Engine Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages domains serving an application.
+type DomainMappingsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDomainMappingsClient
+
+	// The call options for this service.
+	CallOptions *DomainMappingsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DomainMappingsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DomainMappingsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DomainMappingsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListDomainMappings lists the domain mappings on an application.
+func (c *DomainMappingsClient) ListDomainMappings(ctx context.Context, req *appenginepb.ListDomainMappingsRequest, opts ...gax.CallOption) *DomainMappingIterator {
+	return c.internalClient.ListDomainMappings(ctx, req, opts...)
+}
+
+// GetDomainMapping gets the specified domain mapping.
+func (c *DomainMappingsClient) GetDomainMapping(ctx context.Context, req *appenginepb.GetDomainMappingRequest, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
+	return c.internalClient.GetDomainMapping(ctx, req, opts...)
+}
+
+// CreateDomainMapping maps a domain to an application. A user must be authorized to administer a
+// domain in order to map it to an application. For a list of available
+// authorized domains, see AuthorizedDomains.ListAuthorizedDomains (at ).
+func (c *DomainMappingsClient) CreateDomainMapping(ctx context.Context, req *appenginepb.CreateDomainMappingRequest, opts ...gax.CallOption) (*CreateDomainMappingOperation, error) {
+	return c.internalClient.CreateDomainMapping(ctx, req, opts...)
+}
+
+// CreateDomainMappingOperation returns a new CreateDomainMappingOperation from a given name.
+// The name must be that of a previously created CreateDomainMappingOperation, possibly from a different process.
+func (c *DomainMappingsClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
+	return c.internalClient.CreateDomainMappingOperation(name)
+}
+
+// UpdateDomainMapping updates the specified domain mapping. To map an SSL certificate to a
+// domain mapping, update certificate_id to point to an AuthorizedCertificate
+// resource. A user must be authorized to administer the associated domain
+// in order to update a DomainMapping resource.
+func (c *DomainMappingsClient) UpdateDomainMapping(ctx context.Context, req *appenginepb.UpdateDomainMappingRequest, opts ...gax.CallOption) (*UpdateDomainMappingOperation, error) {
+	return c.internalClient.UpdateDomainMapping(ctx, req, opts...)
+}
+
+// UpdateDomainMappingOperation returns a new UpdateDomainMappingOperation from a given name.
+// The name must be that of a previously created UpdateDomainMappingOperation, possibly from a different process.
+func (c *DomainMappingsClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
+	return c.internalClient.UpdateDomainMappingOperation(name)
+}
+
+// DeleteDomainMapping deletes the specified domain mapping. A user must be authorized to
+// administer the associated domain in order to delete a DomainMapping
+// resource.
+func (c *DomainMappingsClient) DeleteDomainMapping(ctx context.Context, req *appenginepb.DeleteDomainMappingRequest, opts ...gax.CallOption) (*DeleteDomainMappingOperation, error) {
+	return c.internalClient.DeleteDomainMapping(ctx, req, opts...)
+}
+
+// DeleteDomainMappingOperation returns a new DeleteDomainMappingOperation from a given name.
+// The name must be that of a previously created DeleteDomainMappingOperation, possibly from a different process.
+func (c *DomainMappingsClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
+	return c.internalClient.DeleteDomainMappingOperation(name)
+}
+
+// domainMappingsGRPCClient is a client for interacting with App Engine Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DomainMappingsClient struct {
+type domainMappingsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DomainMappingsClient
+	CallOptions **DomainMappingsCallOptions
+
 	// The gRPC API client.
 	domainMappingsClient appenginepb.DomainMappingsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DomainMappingsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDomainMappingsClient creates a new domain mappings client.
+// NewDomainMappingsClient creates a new domain mappings client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages domains serving an application.
 func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (*DomainMappingsClient, error) {
-	clientOpts := defaultDomainMappingsClientOptions()
-
+	clientOpts := defaultDomainMappingsGRPCClientOptions()
 	if newDomainMappingsClientHook != nil {
 		hookOpts, err := newDomainMappingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -118,16 +223,19 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &DomainMappingsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDomainMappingsCallOptions(),
+	client := DomainMappingsClient{CallOptions: defaultDomainMappingsCallOptions()}
 
+	c := &domainMappingsGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		domainMappingsClient: appenginepb.NewDomainMappingsClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -137,44 +245,46 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DomainMappingsClient) Connection() *grpc.ClientConn {
+func (c *domainMappingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DomainMappingsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DomainMappingsClient) setGoogleClientInfo(keyval ...string) {
+func (c *domainMappingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListDomainMappings lists the domain mappings on an application.
-func (c *DomainMappingsClient) ListDomainMappings(ctx context.Context, req *appenginepb.ListDomainMappingsRequest, opts ...gax.CallOption) *DomainMappingIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *domainMappingsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *domainMappingsGRPCClient) ListDomainMappings(ctx context.Context, req *appenginepb.ListDomainMappingsRequest, opts ...gax.CallOption) *DomainMappingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDomainMappings[0:len(c.CallOptions.ListDomainMappings):len(c.CallOptions.ListDomainMappings)], opts...)
+	opts = append((*c.CallOptions).ListDomainMappings[0:len((*c.CallOptions).ListDomainMappings):len((*c.CallOptions).ListDomainMappings)], opts...)
 	it := &DomainMappingIterator{}
 	req = proto.Clone(req).(*appenginepb.ListDomainMappingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.DomainMapping, string, error) {
-		var resp *appenginepb.ListDomainMappingsResponse
-		req.PageToken = pageToken
+		resp := &appenginepb.ListDomainMappingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -197,17 +307,18 @@ func (c *DomainMappingsClient) ListDomainMappings(ctx context.Context, req *appe
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetDomainMapping gets the specified domain mapping.
-func (c *DomainMappingsClient) GetDomainMapping(ctx context.Context, req *appenginepb.GetDomainMappingRequest, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
+func (c *domainMappingsGRPCClient) GetDomainMapping(ctx context.Context, req *appenginepb.GetDomainMappingRequest, opts ...gax.CallOption) (*appenginepb.DomainMapping, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDomainMapping[0:len(c.CallOptions.GetDomainMapping):len(c.CallOptions.GetDomainMapping)], opts...)
+	opts = append((*c.CallOptions).GetDomainMapping[0:len((*c.CallOptions).GetDomainMapping):len((*c.CallOptions).GetDomainMapping)], opts...)
 	var resp *appenginepb.DomainMapping
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -220,13 +331,10 @@ func (c *DomainMappingsClient) GetDomainMapping(ctx context.Context, req *appeng
 	return resp, nil
 }
 
-// CreateDomainMapping maps a domain to an application. A user must be authorized to administer a
-// domain in order to map it to an application. For a list of available
-// authorized domains, see AuthorizedDomains.ListAuthorizedDomains (at ).
-func (c *DomainMappingsClient) CreateDomainMapping(ctx context.Context, req *appenginepb.CreateDomainMappingRequest, opts ...gax.CallOption) (*CreateDomainMappingOperation, error) {
+func (c *domainMappingsGRPCClient) CreateDomainMapping(ctx context.Context, req *appenginepb.CreateDomainMappingRequest, opts ...gax.CallOption) (*CreateDomainMappingOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDomainMapping[0:len(c.CallOptions.CreateDomainMapping):len(c.CallOptions.CreateDomainMapping)], opts...)
+	opts = append((*c.CallOptions).CreateDomainMapping[0:len((*c.CallOptions).CreateDomainMapping):len((*c.CallOptions).CreateDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -237,18 +345,14 @@ func (c *DomainMappingsClient) CreateDomainMapping(ctx context.Context, req *app
 		return nil, err
 	}
 	return &CreateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateDomainMapping updates the specified domain mapping. To map an SSL certificate to a
-// domain mapping, update certificate_id to point to an AuthorizedCertificate
-// resource. A user must be authorized to administer the associated domain
-// in order to update a DomainMapping resource.
-func (c *DomainMappingsClient) UpdateDomainMapping(ctx context.Context, req *appenginepb.UpdateDomainMappingRequest, opts ...gax.CallOption) (*UpdateDomainMappingOperation, error) {
+func (c *domainMappingsGRPCClient) UpdateDomainMapping(ctx context.Context, req *appenginepb.UpdateDomainMappingRequest, opts ...gax.CallOption) (*UpdateDomainMappingOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDomainMapping[0:len(c.CallOptions.UpdateDomainMapping):len(c.CallOptions.UpdateDomainMapping)], opts...)
+	opts = append((*c.CallOptions).UpdateDomainMapping[0:len((*c.CallOptions).UpdateDomainMapping):len((*c.CallOptions).UpdateDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -259,17 +363,14 @@ func (c *DomainMappingsClient) UpdateDomainMapping(ctx context.Context, req *app
 		return nil, err
 	}
 	return &UpdateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteDomainMapping deletes the specified domain mapping. A user must be authorized to
-// administer the associated domain in order to delete a DomainMapping
-// resource.
-func (c *DomainMappingsClient) DeleteDomainMapping(ctx context.Context, req *appenginepb.DeleteDomainMappingRequest, opts ...gax.CallOption) (*DeleteDomainMappingOperation, error) {
+func (c *domainMappingsGRPCClient) DeleteDomainMapping(ctx context.Context, req *appenginepb.DeleteDomainMappingRequest, opts ...gax.CallOption) (*DeleteDomainMappingOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDomainMapping[0:len(c.CallOptions.DeleteDomainMapping):len(c.CallOptions.DeleteDomainMapping)], opts...)
+	opts = append((*c.CallOptions).DeleteDomainMapping[0:len((*c.CallOptions).DeleteDomainMapping):len((*c.CallOptions).DeleteDomainMapping)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,7 +381,7 @@ func (c *DomainMappingsClient) DeleteDomainMapping(ctx context.Context, req *app
 		return nil, err
 	}
 	return &DeleteDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -291,9 +392,9 @@ type CreateDomainMappingOperation struct {
 
 // CreateDomainMappingOperation returns a new CreateDomainMappingOperation from a given name.
 // The name must be that of a previously created CreateDomainMappingOperation, possibly from a different process.
-func (c *DomainMappingsClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
+func (c *domainMappingsGRPCClient) CreateDomainMappingOperation(name string) *CreateDomainMappingOperation {
 	return &CreateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -360,9 +461,9 @@ type DeleteDomainMappingOperation struct {
 
 // DeleteDomainMappingOperation returns a new DeleteDomainMappingOperation from a given name.
 // The name must be that of a previously created DeleteDomainMappingOperation, possibly from a different process.
-func (c *DomainMappingsClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
+func (c *domainMappingsGRPCClient) DeleteDomainMappingOperation(name string) *DeleteDomainMappingOperation {
 	return &DeleteDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -418,9 +519,9 @@ type UpdateDomainMappingOperation struct {
 
 // UpdateDomainMappingOperation returns a new UpdateDomainMappingOperation from a given name.
 // The name must be that of a previously created UpdateDomainMappingOperation, possibly from a different process.
-func (c *DomainMappingsClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
+func (c *domainMappingsGRPCClient) UpdateDomainMappingOperation(name string) *UpdateDomainMappingOperation {
 	return &UpdateDomainMappingOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

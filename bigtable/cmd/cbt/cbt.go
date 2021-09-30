@@ -49,6 +49,7 @@ var (
 
 	config              *cbtconfig.Config
 	client              *bigtable.Client
+	table               tableLike
 	adminClient         *bigtable.AdminClient
 	instanceAdminClient *bigtable.InstanceAdminClient
 
@@ -57,6 +58,10 @@ var (
 	revisionDate = "<unknown revision date>"
 	cliUserAgent = "cbt-cli-go/unknown"
 )
+
+type tableLike interface {
+	ReadRows(ctx context.Context, arg bigtable.RowSet, f func(bigtable.Row) bool, opts ...bigtable.ReadOption) (err error)
+}
 
 func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {
 	if ts := config.TokenSource; ts != nil {
@@ -83,6 +88,14 @@ func getClient(clientConf bigtable.ClientConfig) *bigtable.Client {
 		}
 	}
 	return client
+}
+
+func getTable(clientConf bigtable.ClientConfig, tableName string) tableLike {
+	if table != nil {
+		return table
+	}
+	table = getClient(clientConf).Open(tableName)
+	return table
 }
 
 func getAdminClient() *bigtable.AdminClient {
@@ -146,25 +159,37 @@ func main() {
 		os.Stdout = f
 	}
 
+	doMain(config, flag.Args())
+}
+
+func doMain(config *cbtconfig.Config, args []string) {
 	if config.UserAgent != "" {
 		cliUserAgent = config.UserAgent
 	}
 
-	ctx := context.Background()
+	var ctx context.Context
+	if config.Timeout > 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(context.Background(), config.Timeout)
+		defer cancel()
+	} else {
+		ctx = context.Background()
+	}
+
 	if config.AuthToken != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-iam-authorization-token", config.AuthToken)
 	}
 
 	for _, cmd := range commands {
-		if cmd.Name == flag.Arg(0) {
+		if cmd.Name == args[0] {
 			if err := config.CheckFlags(cmd.Required); err != nil {
 				log.Fatal(err)
 			}
-			cmd.do(ctx, flag.Args()[1:]...)
+			cmd.do(ctx, args[1:]...)
 			return
 		}
 	}
-	log.Fatalf("Unknown command %q", flag.Arg(0))
+	log.Fatalf("Unknown command %q", args[0])
 }
 
 func usage(w io.Writer) {
@@ -212,6 +237,7 @@ options to your ~/.cbtrc file in the following format:
     admin-endpoint = hostname:port
     data-endpoint = hostname:port
     auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
+    timeout = 30s
 
 All values are optional and can be overridden at the command prompt.
 `
@@ -581,7 +607,7 @@ func doCount(ctx context.Context, args ...string) {
 	if len(args) != 1 {
 		log.Fatal("usage: cbt count <table>")
 	}
-	tbl := getClient(bigtable.ClientConfig{}).Open(args[0])
+	tbl := getTable(bigtable.ClientConfig{}, args[0])
 
 	n := 0
 	err := tbl.ReadRows(ctx, bigtable.InfiniteRange(""), func(_ bigtable.Row) bool {
@@ -841,7 +867,7 @@ func doMDDoc(ctx context.Context, args ...string) { doMDDocFn(ctx, args...) }
 func docFlags() []*flag.Flag {
 	// Only include specific flags, in a specific order.
 	var flags []*flag.Flag
-	for _, name := range []string{"project", "instance", "creds"} {
+	for _, name := range []string{"project", "instance", "creds", "timeout"} {
 		f := flag.Lookup(name)
 		if f == nil {
 			log.Fatalf("Flag not linked: -%s", name)

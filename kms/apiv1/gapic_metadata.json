@@ -55,6 +55,11 @@
                 "Encrypt"
               ]
             },
+            "GenerateRandomBytes": {
+              "methods": [
+                "GenerateRandomBytes"
+              ]
+            },
             "GetCryptoKey": {
               "methods": [
                 "GetCryptoKey"
@@ -63,6 +68,11 @@
             "GetCryptoKeyVersion": {
               "methods": [
                 "GetCryptoKeyVersion"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
               ]
             },
             "GetImportJob": {
@@ -105,9 +115,29 @@
                 "ListKeyRings"
               ]
             },
+            "MacSign": {
+              "methods": [
+                "MacSign"
+              ]
+            },
+            "MacVerify": {
+              "methods": [
+                "MacVerify"
+              ]
+            },
             "RestoreCryptoKeyVersion": {
               "methods": [
                 "RestoreCryptoKeyVersion"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateCryptoKey": {

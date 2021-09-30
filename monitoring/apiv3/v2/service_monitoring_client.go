@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newServiceMonitoringClientHook clientHook
@@ -51,12 +51,13 @@ type ServiceMonitoringCallOptions struct {
 	DeleteServiceLevelObjective []gax.CallOption
 }
 
-func defaultServiceMonitoringClientOptions() []option.ClientOption {
+func defaultServiceMonitoringGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -69,7 +70,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		GetService: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -81,7 +81,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		ListServices: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -94,7 +93,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		DeleteService: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -107,7 +105,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		GetServiceLevelObjective: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -119,7 +116,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		ListServiceLevelObjectives: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -132,7 +128,6 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 		DeleteServiceLevelObjective: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -144,35 +139,139 @@ func defaultServiceMonitoringCallOptions() *ServiceMonitoringCallOptions {
 	}
 }
 
+// internalServiceMonitoringClient is an interface that defines the methods availaible from Cloud Monitoring API.
+type internalServiceMonitoringClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateService(context.Context, *monitoringpb.CreateServiceRequest, ...gax.CallOption) (*monitoringpb.Service, error)
+	GetService(context.Context, *monitoringpb.GetServiceRequest, ...gax.CallOption) (*monitoringpb.Service, error)
+	ListServices(context.Context, *monitoringpb.ListServicesRequest, ...gax.CallOption) *ServiceIterator
+	UpdateService(context.Context, *monitoringpb.UpdateServiceRequest, ...gax.CallOption) (*monitoringpb.Service, error)
+	DeleteService(context.Context, *monitoringpb.DeleteServiceRequest, ...gax.CallOption) error
+	CreateServiceLevelObjective(context.Context, *monitoringpb.CreateServiceLevelObjectiveRequest, ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error)
+	GetServiceLevelObjective(context.Context, *monitoringpb.GetServiceLevelObjectiveRequest, ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error)
+	ListServiceLevelObjectives(context.Context, *monitoringpb.ListServiceLevelObjectivesRequest, ...gax.CallOption) *ServiceLevelObjectiveIterator
+	UpdateServiceLevelObjective(context.Context, *monitoringpb.UpdateServiceLevelObjectiveRequest, ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error)
+	DeleteServiceLevelObjective(context.Context, *monitoringpb.DeleteServiceLevelObjectiveRequest, ...gax.CallOption) error
+}
+
 // ServiceMonitoringClient is a client for interacting with Cloud Monitoring API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Cloud Monitoring Service-Oriented Monitoring API has endpoints for
+// managing and querying aspects of a workspace’s services. These include the
+// Service's monitored resources, its Service-Level Objectives, and a taxonomy
+// of categorized Health Metrics.
+type ServiceMonitoringClient struct {
+	// The internal transport-dependent client.
+	internalClient internalServiceMonitoringClient
+
+	// The call options for this service.
+	CallOptions *ServiceMonitoringCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ServiceMonitoringClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ServiceMonitoringClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ServiceMonitoringClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateService create a Service.
+func (c *ServiceMonitoringClient) CreateService(ctx context.Context, req *monitoringpb.CreateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+	return c.internalClient.CreateService(ctx, req, opts...)
+}
+
+// GetService get the named Service.
+func (c *ServiceMonitoringClient) GetService(ctx context.Context, req *monitoringpb.GetServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+	return c.internalClient.GetService(ctx, req, opts...)
+}
+
+// ListServices list Services for this workspace.
+func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitoringpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+	return c.internalClient.ListServices(ctx, req, opts...)
+}
+
+// UpdateService update this Service.
+func (c *ServiceMonitoringClient) UpdateService(ctx context.Context, req *monitoringpb.UpdateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+	return c.internalClient.UpdateService(ctx, req, opts...)
+}
+
+// DeleteService soft delete this Service.
+func (c *ServiceMonitoringClient) DeleteService(ctx context.Context, req *monitoringpb.DeleteServiceRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteService(ctx, req, opts...)
+}
+
+// CreateServiceLevelObjective create a ServiceLevelObjective for the given Service.
+func (c *ServiceMonitoringClient) CreateServiceLevelObjective(ctx context.Context, req *monitoringpb.CreateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+	return c.internalClient.CreateServiceLevelObjective(ctx, req, opts...)
+}
+
+// GetServiceLevelObjective get a ServiceLevelObjective by name.
+func (c *ServiceMonitoringClient) GetServiceLevelObjective(ctx context.Context, req *monitoringpb.GetServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+	return c.internalClient.GetServiceLevelObjective(ctx, req, opts...)
+}
+
+// ListServiceLevelObjectives list the ServiceLevelObjectives for the given Service.
+func (c *ServiceMonitoringClient) ListServiceLevelObjectives(ctx context.Context, req *monitoringpb.ListServiceLevelObjectivesRequest, opts ...gax.CallOption) *ServiceLevelObjectiveIterator {
+	return c.internalClient.ListServiceLevelObjectives(ctx, req, opts...)
+}
+
+// UpdateServiceLevelObjective update the given ServiceLevelObjective.
+func (c *ServiceMonitoringClient) UpdateServiceLevelObjective(ctx context.Context, req *monitoringpb.UpdateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+	return c.internalClient.UpdateServiceLevelObjective(ctx, req, opts...)
+}
+
+// DeleteServiceLevelObjective delete the given ServiceLevelObjective.
+func (c *ServiceMonitoringClient) DeleteServiceLevelObjective(ctx context.Context, req *monitoringpb.DeleteServiceLevelObjectiveRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteServiceLevelObjective(ctx, req, opts...)
+}
+
+// serviceMonitoringGRPCClient is a client for interacting with Cloud Monitoring API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ServiceMonitoringClient struct {
+type serviceMonitoringGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ServiceMonitoringClient
+	CallOptions **ServiceMonitoringCallOptions
+
 	// The gRPC API client.
 	serviceMonitoringClient monitoringpb.ServiceMonitoringServiceClient
-
-	// The call options for this service.
-	CallOptions *ServiceMonitoringCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewServiceMonitoringClient creates a new service monitoring service client.
+// NewServiceMonitoringClient creates a new service monitoring service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Cloud Monitoring Service-Oriented Monitoring API has endpoints for
 // managing and querying aspects of a workspace’s services. These include the
 // Service's monitored resources, its Service-Level Objectives, and a taxonomy
 // of categorized Health Metrics.
 func NewServiceMonitoringClient(ctx context.Context, opts ...option.ClientOption) (*ServiceMonitoringClient, error) {
-	clientOpts := defaultServiceMonitoringClientOptions()
-
+	clientOpts := defaultServiceMonitoringGRPCClientOptions()
 	if newServiceMonitoringClientHook != nil {
 		hookOpts, err := newServiceMonitoringClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -190,42 +289,44 @@ func NewServiceMonitoringClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &ServiceMonitoringClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultServiceMonitoringCallOptions(),
+	client := ServiceMonitoringClient{CallOptions: defaultServiceMonitoringCallOptions()}
 
+	c := &serviceMonitoringGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		serviceMonitoringClient: monitoringpb.NewServiceMonitoringServiceClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ServiceMonitoringClient) Connection() *grpc.ClientConn {
+func (c *serviceMonitoringGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ServiceMonitoringClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ServiceMonitoringClient) setGoogleClientInfo(keyval ...string) {
+func (c *serviceMonitoringGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateService create a Service.
-func (c *ServiceMonitoringClient) CreateService(ctx context.Context, req *monitoringpb.CreateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *serviceMonitoringGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *serviceMonitoringGRPCClient) CreateService(ctx context.Context, req *monitoringpb.CreateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -233,7 +334,7 @@ func (c *ServiceMonitoringClient) CreateService(ctx context.Context, req *monito
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateService[0:len(c.CallOptions.CreateService):len(c.CallOptions.CreateService)], opts...)
+	opts = append((*c.CallOptions).CreateService[0:len((*c.CallOptions).CreateService):len((*c.CallOptions).CreateService)], opts...)
 	var resp *monitoringpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -246,8 +347,7 @@ func (c *ServiceMonitoringClient) CreateService(ctx context.Context, req *monito
 	return resp, nil
 }
 
-// GetService get the named Service.
-func (c *ServiceMonitoringClient) GetService(ctx context.Context, req *monitoringpb.GetServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+func (c *serviceMonitoringGRPCClient) GetService(ctx context.Context, req *monitoringpb.GetServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -255,7 +355,7 @@ func (c *ServiceMonitoringClient) GetService(ctx context.Context, req *monitorin
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetService[0:len(c.CallOptions.GetService):len(c.CallOptions.GetService)], opts...)
+	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *monitoringpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -268,19 +368,20 @@ func (c *ServiceMonitoringClient) GetService(ctx context.Context, req *monitorin
 	return resp, nil
 }
 
-// ListServices list Services for this workspace.
-func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitoringpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+func (c *serviceMonitoringGRPCClient) ListServices(ctx context.Context, req *monitoringpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServices[0:len(c.CallOptions.ListServices):len(c.CallOptions.ListServices)], opts...)
+	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.Service, string, error) {
-		var resp *monitoringpb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -303,14 +404,15 @@ func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitor
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// UpdateService update this Service.
-func (c *ServiceMonitoringClient) UpdateService(ctx context.Context, req *monitoringpb.UpdateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
+func (c *serviceMonitoringGRPCClient) UpdateService(ctx context.Context, req *monitoringpb.UpdateServiceRequest, opts ...gax.CallOption) (*monitoringpb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -318,7 +420,7 @@ func (c *ServiceMonitoringClient) UpdateService(ctx context.Context, req *monito
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateService[0:len(c.CallOptions.UpdateService):len(c.CallOptions.UpdateService)], opts...)
+	opts = append((*c.CallOptions).UpdateService[0:len((*c.CallOptions).UpdateService):len((*c.CallOptions).UpdateService)], opts...)
 	var resp *monitoringpb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -331,8 +433,7 @@ func (c *ServiceMonitoringClient) UpdateService(ctx context.Context, req *monito
 	return resp, nil
 }
 
-// DeleteService soft delete this Service.
-func (c *ServiceMonitoringClient) DeleteService(ctx context.Context, req *monitoringpb.DeleteServiceRequest, opts ...gax.CallOption) error {
+func (c *serviceMonitoringGRPCClient) DeleteService(ctx context.Context, req *monitoringpb.DeleteServiceRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -340,7 +441,7 @@ func (c *ServiceMonitoringClient) DeleteService(ctx context.Context, req *monito
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteService[0:len(c.CallOptions.DeleteService):len(c.CallOptions.DeleteService)], opts...)
+	opts = append((*c.CallOptions).DeleteService[0:len((*c.CallOptions).DeleteService):len((*c.CallOptions).DeleteService)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.serviceMonitoringClient.DeleteService(ctx, req, settings.GRPC...)
@@ -349,8 +450,7 @@ func (c *ServiceMonitoringClient) DeleteService(ctx context.Context, req *monito
 	return err
 }
 
-// CreateServiceLevelObjective create a ServiceLevelObjective for the given Service.
-func (c *ServiceMonitoringClient) CreateServiceLevelObjective(ctx context.Context, req *monitoringpb.CreateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+func (c *serviceMonitoringGRPCClient) CreateServiceLevelObjective(ctx context.Context, req *monitoringpb.CreateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -358,7 +458,7 @@ func (c *ServiceMonitoringClient) CreateServiceLevelObjective(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateServiceLevelObjective[0:len(c.CallOptions.CreateServiceLevelObjective):len(c.CallOptions.CreateServiceLevelObjective)], opts...)
+	opts = append((*c.CallOptions).CreateServiceLevelObjective[0:len((*c.CallOptions).CreateServiceLevelObjective):len((*c.CallOptions).CreateServiceLevelObjective)], opts...)
 	var resp *monitoringpb.ServiceLevelObjective
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -371,8 +471,7 @@ func (c *ServiceMonitoringClient) CreateServiceLevelObjective(ctx context.Contex
 	return resp, nil
 }
 
-// GetServiceLevelObjective get a ServiceLevelObjective by name.
-func (c *ServiceMonitoringClient) GetServiceLevelObjective(ctx context.Context, req *monitoringpb.GetServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+func (c *serviceMonitoringGRPCClient) GetServiceLevelObjective(ctx context.Context, req *monitoringpb.GetServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -380,7 +479,7 @@ func (c *ServiceMonitoringClient) GetServiceLevelObjective(ctx context.Context, 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetServiceLevelObjective[0:len(c.CallOptions.GetServiceLevelObjective):len(c.CallOptions.GetServiceLevelObjective)], opts...)
+	opts = append((*c.CallOptions).GetServiceLevelObjective[0:len((*c.CallOptions).GetServiceLevelObjective):len((*c.CallOptions).GetServiceLevelObjective)], opts...)
 	var resp *monitoringpb.ServiceLevelObjective
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -393,19 +492,20 @@ func (c *ServiceMonitoringClient) GetServiceLevelObjective(ctx context.Context, 
 	return resp, nil
 }
 
-// ListServiceLevelObjectives list the ServiceLevelObjectives for the given Service.
-func (c *ServiceMonitoringClient) ListServiceLevelObjectives(ctx context.Context, req *monitoringpb.ListServiceLevelObjectivesRequest, opts ...gax.CallOption) *ServiceLevelObjectiveIterator {
+func (c *serviceMonitoringGRPCClient) ListServiceLevelObjectives(ctx context.Context, req *monitoringpb.ListServiceLevelObjectivesRequest, opts ...gax.CallOption) *ServiceLevelObjectiveIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServiceLevelObjectives[0:len(c.CallOptions.ListServiceLevelObjectives):len(c.CallOptions.ListServiceLevelObjectives)], opts...)
+	opts = append((*c.CallOptions).ListServiceLevelObjectives[0:len((*c.CallOptions).ListServiceLevelObjectives):len((*c.CallOptions).ListServiceLevelObjectives)], opts...)
 	it := &ServiceLevelObjectiveIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListServiceLevelObjectivesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.ServiceLevelObjective, string, error) {
-		var resp *monitoringpb.ListServiceLevelObjectivesResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListServiceLevelObjectivesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -428,14 +528,15 @@ func (c *ServiceMonitoringClient) ListServiceLevelObjectives(ctx context.Context
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// UpdateServiceLevelObjective update the given ServiceLevelObjective.
-func (c *ServiceMonitoringClient) UpdateServiceLevelObjective(ctx context.Context, req *monitoringpb.UpdateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
+func (c *serviceMonitoringGRPCClient) UpdateServiceLevelObjective(ctx context.Context, req *monitoringpb.UpdateServiceLevelObjectiveRequest, opts ...gax.CallOption) (*monitoringpb.ServiceLevelObjective, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -443,7 +544,7 @@ func (c *ServiceMonitoringClient) UpdateServiceLevelObjective(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_level_objective.name", url.QueryEscape(req.GetServiceLevelObjective().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateServiceLevelObjective[0:len(c.CallOptions.UpdateServiceLevelObjective):len(c.CallOptions.UpdateServiceLevelObjective)], opts...)
+	opts = append((*c.CallOptions).UpdateServiceLevelObjective[0:len((*c.CallOptions).UpdateServiceLevelObjective):len((*c.CallOptions).UpdateServiceLevelObjective)], opts...)
 	var resp *monitoringpb.ServiceLevelObjective
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -456,8 +557,7 @@ func (c *ServiceMonitoringClient) UpdateServiceLevelObjective(ctx context.Contex
 	return resp, nil
 }
 
-// DeleteServiceLevelObjective delete the given ServiceLevelObjective.
-func (c *ServiceMonitoringClient) DeleteServiceLevelObjective(ctx context.Context, req *monitoringpb.DeleteServiceLevelObjectiveRequest, opts ...gax.CallOption) error {
+func (c *serviceMonitoringGRPCClient) DeleteServiceLevelObjective(ctx context.Context, req *monitoringpb.DeleteServiceLevelObjectiveRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -465,7 +565,7 @@ func (c *ServiceMonitoringClient) DeleteServiceLevelObjective(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteServiceLevelObjective[0:len(c.CallOptions.DeleteServiceLevelObjective):len(c.CallOptions.DeleteServiceLevelObjective)], opts...)
+	opts = append((*c.CallOptions).DeleteServiceLevelObjective[0:len((*c.CallOptions).DeleteServiceLevelObjective):len((*c.CallOptions).DeleteServiceLevelObjective)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.serviceMonitoringClient.DeleteServiceLevelObjective(ctx, req, settings.GRPC...)

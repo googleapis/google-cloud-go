@@ -36,12 +36,13 @@ type SpeechTranslationCallOptions struct {
 	StreamingTranslateSpeech []gax.CallOption
 }
 
-func defaultSpeechTranslationClientOptions() []option.ClientOption {
+func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mediatranslation.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("mediatranslation.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -54,32 +55,80 @@ func defaultSpeechTranslationCallOptions() *SpeechTranslationCallOptions {
 	}
 }
 
+// internalSpeechTranslationClient is an interface that defines the methods availaible from Media Translation API.
+type internalSpeechTranslationClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	StreamingTranslateSpeech(context.Context, ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error)
+}
+
 // SpeechTranslationClient is a client for interacting with Media Translation API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Provides translation from/to media types.
+type SpeechTranslationClient struct {
+	// The internal transport-dependent client.
+	internalClient internalSpeechTranslationClient
+
+	// The call options for this service.
+	CallOptions *SpeechTranslationCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *SpeechTranslationClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *SpeechTranslationClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *SpeechTranslationClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// StreamingTranslateSpeech performs bidirectional streaming speech translation: receive results while
+// sending audio. This method is only available via the gRPC API (not REST).
+func (c *SpeechTranslationClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
+	return c.internalClient.StreamingTranslateSpeech(ctx, opts...)
+}
+
+// speechTranslationGRPCClient is a client for interacting with Media Translation API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type SpeechTranslationClient struct {
+type speechTranslationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing SpeechTranslationClient
+	CallOptions **SpeechTranslationCallOptions
+
 	// The gRPC API client.
 	speechTranslationClient mediatranslationpb.SpeechTranslationServiceClient
-
-	// The call options for this service.
-	CallOptions *SpeechTranslationCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewSpeechTranslationClient creates a new speech translation service client.
+// NewSpeechTranslationClient creates a new speech translation service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Provides translation from/to media types.
 func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption) (*SpeechTranslationClient, error) {
-	clientOpts := defaultSpeechTranslationClientOptions()
-
+	clientOpts := defaultSpeechTranslationGRPCClientOptions()
 	if newSpeechTranslationClientHook != nil {
 		hookOpts, err := newSpeechTranslationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -97,46 +146,47 @@ func NewSpeechTranslationClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &SpeechTranslationClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultSpeechTranslationCallOptions(),
+	client := SpeechTranslationClient{CallOptions: defaultSpeechTranslationCallOptions()}
 
+	c := &speechTranslationGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		speechTranslationClient: mediatranslationpb.NewSpeechTranslationServiceClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *SpeechTranslationClient) Connection() *grpc.ClientConn {
+func (c *speechTranslationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *SpeechTranslationClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *SpeechTranslationClient) setGoogleClientInfo(keyval ...string) {
+func (c *speechTranslationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// StreamingTranslateSpeech performs bidirectional streaming speech translation: receive results while
-// sending audio. This method is only available via the gRPC API (not REST).
-func (c *SpeechTranslationClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *speechTranslationGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *speechTranslationGRPCClient) StreamingTranslateSpeech(ctx context.Context, opts ...gax.CallOption) (mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.StreamingTranslateSpeech[0:len(c.CallOptions.StreamingTranslateSpeech):len(c.CallOptions.StreamingTranslateSpeech)], opts...)
 	var resp mediatranslationpb.SpeechTranslationService_StreamingTranslateSpeechClient
+	opts = append((*c.CallOptions).StreamingTranslateSpeech[0:len((*c.CallOptions).StreamingTranslateSpeech):len((*c.CallOptions).StreamingTranslateSpeech)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.speechTranslationClient.StreamingTranslateSpeech(ctx, settings.GRPC...)

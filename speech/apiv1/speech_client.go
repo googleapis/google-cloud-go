@@ -43,12 +43,13 @@ type CallOptions struct {
 	StreamingRecognize   []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("speech.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("speech.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://speech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -85,37 +86,115 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Cloud Speech-to-Text API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	Recognize(context.Context, *speechpb.RecognizeRequest, ...gax.CallOption) (*speechpb.RecognizeResponse, error)
+	LongRunningRecognize(context.Context, *speechpb.LongRunningRecognizeRequest, ...gax.CallOption) (*LongRunningRecognizeOperation, error)
+	LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation
+	StreamingRecognize(context.Context, ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error)
+}
+
 // Client is a client for interacting with Cloud Speech-to-Text API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service that implements Google Cloud Speech API.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// Recognize performs synchronous speech recognition: receive results after all audio
+// has been sent and processed.
+func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
+	return c.internalClient.Recognize(ctx, req, opts...)
+}
+
+// LongRunningRecognize performs asynchronous speech recognition: receive results via the
+// google.longrunning.Operations interface. Returns either an
+// Operation.error or an Operation.response which contains
+// a LongRunningRecognizeResponse message.
+// For more information on asynchronous speech recognition, see the
+// how-to (at https://cloud.google.com/speech-to-text/docs/async-recognize).
+func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
+	return c.internalClient.LongRunningRecognize(ctx, req, opts...)
+}
+
+// LongRunningRecognizeOperation returns a new LongRunningRecognizeOperation from a given name.
+// The name must be that of a previously created LongRunningRecognizeOperation, possibly from a different process.
+func (c *Client) LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation {
+	return c.internalClient.LongRunningRecognizeOperation(name)
+}
+
+// StreamingRecognize performs bidirectional streaming speech recognition: receive results while
+// sending audio. This method is only available via the gRPC API (not REST).
+func (c *Client) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
+	return c.internalClient.StreamingRecognize(ctx, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud Speech-to-Text API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client speechpb.SpeechClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new speech client.
+// NewClient creates a new speech client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service that implements Google Cloud Speech API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -133,16 +212,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: speechpb.NewSpeechClient(connPool),
+		client:           speechpb.NewSpeechClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -152,41 +234,40 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// Recognize performs synchronous speech recognition: receive results after all audio
-// has been sent and processed.
-func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.Recognize[0:len(c.CallOptions.Recognize):len(c.CallOptions.Recognize)], opts...)
+	opts = append((*c.CallOptions).Recognize[0:len((*c.CallOptions).Recognize):len((*c.CallOptions).Recognize)], opts...)
 	var resp *speechpb.RecognizeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -199,20 +280,14 @@ func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, 
 	return resp, nil
 }
 
-// LongRunningRecognize performs asynchronous speech recognition: receive results via the
-// google.longrunning.Operations interface. Returns either an
-// Operation.error or an Operation.response which contains
-// a LongRunningRecognizeResponse message.
-// For more information on asynchronous speech recognition, see the
-// how-to (at https://cloud.google.com/speech-to-text/docs/async-recognize).
-func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
+func (c *gRPCClient) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.LongRunningRecognize[0:len(c.CallOptions.LongRunningRecognize):len(c.CallOptions.LongRunningRecognize)], opts...)
+	opts = append((*c.CallOptions).LongRunningRecognize[0:len((*c.CallOptions).LongRunningRecognize):len((*c.CallOptions).LongRunningRecognize)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -223,16 +298,14 @@ func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRun
 		return nil, err
 	}
 	return &LongRunningRecognizeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// StreamingRecognize performs bidirectional streaming speech recognition: receive results while
-// sending audio. This method is only available via the gRPC API (not REST).
-func (c *Client) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
+func (c *gRPCClient) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.StreamingRecognize[0:len(c.CallOptions.StreamingRecognize):len(c.CallOptions.StreamingRecognize)], opts...)
 	var resp speechpb.Speech_StreamingRecognizeClient
+	opts = append((*c.CallOptions).StreamingRecognize[0:len((*c.CallOptions).StreamingRecognize):len((*c.CallOptions).StreamingRecognize)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.StreamingRecognize(ctx, settings.GRPC...)
@@ -251,9 +324,9 @@ type LongRunningRecognizeOperation struct {
 
 // LongRunningRecognizeOperation returns a new LongRunningRecognizeOperation from a given name.
 // The name must be that of a previously created LongRunningRecognizeOperation, possibly from a different process.
-func (c *Client) LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation {
+func (c *gRPCClient) LongRunningRecognizeOperation(name string) *LongRunningRecognizeOperation {
 	return &LongRunningRecognizeOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

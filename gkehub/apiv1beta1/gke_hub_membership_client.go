@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGkeHubMembershipClientHook clientHook
@@ -52,12 +52,13 @@ type GkeHubMembershipCallOptions struct {
 	GenerateExclusivityManifest []gax.CallOption
 }
 
-func defaultGkeHubMembershipClientOptions() []option.ClientOption {
+func defaultGkeHubMembershipGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkehub.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkehub.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gkehub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -157,38 +158,189 @@ func defaultGkeHubMembershipCallOptions() *GkeHubMembershipCallOptions {
 	}
 }
 
-// GkeHubMembershipClient is a client for interacting with GKE Hub.
+// internalGkeHubMembershipClient is an interface that defines the methods availaible from GKE Hub API.
+type internalGkeHubMembershipClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListMemberships(context.Context, *gkehubpb.ListMembershipsRequest, ...gax.CallOption) *MembershipIterator
+	GetMembership(context.Context, *gkehubpb.GetMembershipRequest, ...gax.CallOption) (*gkehubpb.Membership, error)
+	CreateMembership(context.Context, *gkehubpb.CreateMembershipRequest, ...gax.CallOption) (*CreateMembershipOperation, error)
+	CreateMembershipOperation(name string) *CreateMembershipOperation
+	DeleteMembership(context.Context, *gkehubpb.DeleteMembershipRequest, ...gax.CallOption) (*DeleteMembershipOperation, error)
+	DeleteMembershipOperation(name string) *DeleteMembershipOperation
+	UpdateMembership(context.Context, *gkehubpb.UpdateMembershipRequest, ...gax.CallOption) (*UpdateMembershipOperation, error)
+	UpdateMembershipOperation(name string) *UpdateMembershipOperation
+	GenerateConnectManifest(context.Context, *gkehubpb.GenerateConnectManifestRequest, ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error)
+	ValidateExclusivity(context.Context, *gkehubpb.ValidateExclusivityRequest, ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error)
+	GenerateExclusivityManifest(context.Context, *gkehubpb.GenerateExclusivityManifestRequest, ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error)
+}
+
+// GkeHubMembershipClient is a client for interacting with GKE Hub API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The GKE Hub MembershipService handles the registration of many Kubernetes
+// clusters to Google Cloud, represented with the Membership resource.
+//
+// GKE Hub is currently only available in the global region.
+//
+// Membership management may be non-trivial: it is recommended to use one
+// of the Google-provided client libraries or tools where possible when working
+// with Membership resources.
+type GkeHubMembershipClient struct {
+	// The internal transport-dependent client.
+	internalClient internalGkeHubMembershipClient
+
+	// The call options for this service.
+	CallOptions *GkeHubMembershipCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *GkeHubMembershipClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *GkeHubMembershipClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *GkeHubMembershipClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListMemberships lists Memberships in a given project and location.
+func (c *GkeHubMembershipClient) ListMemberships(ctx context.Context, req *gkehubpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
+	return c.internalClient.ListMemberships(ctx, req, opts...)
+}
+
+// GetMembership gets the details of a Membership.
+func (c *GkeHubMembershipClient) GetMembership(ctx context.Context, req *gkehubpb.GetMembershipRequest, opts ...gax.CallOption) (*gkehubpb.Membership, error) {
+	return c.internalClient.GetMembership(ctx, req, opts...)
+}
+
+// CreateMembership creates a new Membership.
+//
+// This is currently only supported for GKE clusters on Google Cloud.
+// To register other clusters, follow the instructions at
+// https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster (at https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster).
+func (c *GkeHubMembershipClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
+	return c.internalClient.CreateMembership(ctx, req, opts...)
+}
+
+// CreateMembershipOperation returns a new CreateMembershipOperation from a given name.
+// The name must be that of a previously created CreateMembershipOperation, possibly from a different process.
+func (c *GkeHubMembershipClient) CreateMembershipOperation(name string) *CreateMembershipOperation {
+	return c.internalClient.CreateMembershipOperation(name)
+}
+
+// DeleteMembership removes a Membership.
+//
+// This is currently only supported for GKE clusters on Google Cloud.
+// To unregister other clusters, follow the instructions at
+// https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster (at https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster).
+func (c *GkeHubMembershipClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
+	return c.internalClient.DeleteMembership(ctx, req, opts...)
+}
+
+// DeleteMembershipOperation returns a new DeleteMembershipOperation from a given name.
+// The name must be that of a previously created DeleteMembershipOperation, possibly from a different process.
+func (c *GkeHubMembershipClient) DeleteMembershipOperation(name string) *DeleteMembershipOperation {
+	return c.internalClient.DeleteMembershipOperation(name)
+}
+
+// UpdateMembership updates an existing Membership.
+func (c *GkeHubMembershipClient) UpdateMembership(ctx context.Context, req *gkehubpb.UpdateMembershipRequest, opts ...gax.CallOption) (*UpdateMembershipOperation, error) {
+	return c.internalClient.UpdateMembership(ctx, req, opts...)
+}
+
+// UpdateMembershipOperation returns a new UpdateMembershipOperation from a given name.
+// The name must be that of a previously created UpdateMembershipOperation, possibly from a different process.
+func (c *GkeHubMembershipClient) UpdateMembershipOperation(name string) *UpdateMembershipOperation {
+	return c.internalClient.UpdateMembershipOperation(name)
+}
+
+// GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.
+//
+// This method is used internally by Google-provided libraries.
+// Most clients should not need to call this method directly.
+func (c *GkeHubMembershipClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
+	return c.internalClient.GenerateConnectManifest(ctx, req, opts...)
+}
+
+// ValidateExclusivity validateExclusivity validates the state of exclusivity in the cluster.
+// The validation does not depend on an existing Hub membership resource.
+func (c *GkeHubMembershipClient) ValidateExclusivity(ctx context.Context, req *gkehubpb.ValidateExclusivityRequest, opts ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error) {
+	return c.internalClient.ValidateExclusivity(ctx, req, opts...)
+}
+
+// GenerateExclusivityManifest generateExclusivityManifest generates the manifests to update the
+// exclusivity artifacts in the cluster if needed.
+//
+// Exclusivity artifacts include the Membership custom resource definition
+// (CRD) and the singleton Membership custom resource (CR). Combined with
+// ValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes
+// cluster is only registered to a single GKE Hub.
+//
+// The Membership CRD is versioned, and may require conversion when the GKE
+// Hub API server begins serving a newer version of the CRD and
+// corresponding CR. The response will be the converted CRD and CR if there
+// are any differences between the versions.
+func (c *GkeHubMembershipClient) GenerateExclusivityManifest(ctx context.Context, req *gkehubpb.GenerateExclusivityManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error) {
+	return c.internalClient.GenerateExclusivityManifest(ctx, req, opts...)
+}
+
+// gkeHubMembershipGRPCClient is a client for interacting with GKE Hub API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GkeHubMembershipClient struct {
+type gkeHubMembershipGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing GkeHubMembershipClient
+	CallOptions **GkeHubMembershipCallOptions
+
 	// The gRPC API client.
 	gkeHubMembershipClient gkehubpb.GkeHubMembershipServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *GkeHubMembershipCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewGkeHubMembershipClient creates a new gke hub membership service client.
+// NewGkeHubMembershipClient creates a new gke hub membership service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// GKE Hub CRUD API for the Membership resource.
-// The Membership service is currently only available in the global location.
+// The GKE Hub MembershipService handles the registration of many Kubernetes
+// clusters to Google Cloud, represented with the Membership resource.
+//
+// GKE Hub is currently only available in the global region.
+//
+// Membership management may be non-trivial: it is recommended to use one
+// of the Google-provided client libraries or tools where possible when working
+// with Membership resources.
 func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption) (*GkeHubMembershipClient, error) {
-	clientOpts := defaultGkeHubMembershipClientOptions()
-
+	clientOpts := defaultGkeHubMembershipGRPCClientOptions()
 	if newGkeHubMembershipClientHook != nil {
 		hookOpts, err := newGkeHubMembershipClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -206,16 +358,19 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 	if err != nil {
 		return nil, err
 	}
-	c := &GkeHubMembershipClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultGkeHubMembershipCallOptions(),
+	client := GkeHubMembershipClient{CallOptions: defaultGkeHubMembershipCallOptions()}
 
+	c := &gkeHubMembershipGRPCClient{
+		connPool:               connPool,
+		disableDeadlines:       disableDeadlines,
 		gkeHubMembershipClient: gkehubpb.NewGkeHubMembershipServiceClient(connPool),
+		CallOptions:            &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -225,44 +380,46 @@ func NewGkeHubMembershipClient(ctx context.Context, opts ...option.ClientOption)
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *GkeHubMembershipClient) Connection() *grpc.ClientConn {
+func (c *gkeHubMembershipGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GkeHubMembershipClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GkeHubMembershipClient) setGoogleClientInfo(keyval ...string) {
+func (c *gkeHubMembershipGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListMemberships lists Memberships in a given project and location.
-func (c *GkeHubMembershipClient) ListMemberships(ctx context.Context, req *gkehubpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gkeHubMembershipGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gkeHubMembershipGRPCClient) ListMemberships(ctx context.Context, req *gkehubpb.ListMembershipsRequest, opts ...gax.CallOption) *MembershipIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListMemberships[0:len(c.CallOptions.ListMemberships):len(c.CallOptions.ListMemberships)], opts...)
+	opts = append((*c.CallOptions).ListMemberships[0:len((*c.CallOptions).ListMemberships):len((*c.CallOptions).ListMemberships)], opts...)
 	it := &MembershipIterator{}
 	req = proto.Clone(req).(*gkehubpb.ListMembershipsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gkehubpb.Membership, string, error) {
-		var resp *gkehubpb.ListMembershipsResponse
-		req.PageToken = pageToken
+		resp := &gkehubpb.ListMembershipsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -285,14 +442,15 @@ func (c *GkeHubMembershipClient) ListMemberships(ctx context.Context, req *gkehu
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetMembership gets the details of a Membership.
-func (c *GkeHubMembershipClient) GetMembership(ctx context.Context, req *gkehubpb.GetMembershipRequest, opts ...gax.CallOption) (*gkehubpb.Membership, error) {
+func (c *gkeHubMembershipGRPCClient) GetMembership(ctx context.Context, req *gkehubpb.GetMembershipRequest, opts ...gax.CallOption) (*gkehubpb.Membership, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -300,7 +458,7 @@ func (c *GkeHubMembershipClient) GetMembership(ctx context.Context, req *gkehubp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetMembership[0:len(c.CallOptions.GetMembership):len(c.CallOptions.GetMembership)], opts...)
+	opts = append((*c.CallOptions).GetMembership[0:len((*c.CallOptions).GetMembership):len((*c.CallOptions).GetMembership)], opts...)
 	var resp *gkehubpb.Membership
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -313,8 +471,7 @@ func (c *GkeHubMembershipClient) GetMembership(ctx context.Context, req *gkehubp
 	return resp, nil
 }
 
-// CreateMembership adds a new Membership.
-func (c *GkeHubMembershipClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
+func (c *gkeHubMembershipGRPCClient) CreateMembership(ctx context.Context, req *gkehubpb.CreateMembershipRequest, opts ...gax.CallOption) (*CreateMembershipOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -322,7 +479,7 @@ func (c *GkeHubMembershipClient) CreateMembership(ctx context.Context, req *gkeh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateMembership[0:len(c.CallOptions.CreateMembership):len(c.CallOptions.CreateMembership)], opts...)
+	opts = append((*c.CallOptions).CreateMembership[0:len((*c.CallOptions).CreateMembership):len((*c.CallOptions).CreateMembership)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -333,12 +490,11 @@ func (c *GkeHubMembershipClient) CreateMembership(ctx context.Context, req *gkeh
 		return nil, err
 	}
 	return &CreateMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteMembership removes a Membership.
-func (c *GkeHubMembershipClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
+func (c *gkeHubMembershipGRPCClient) DeleteMembership(ctx context.Context, req *gkehubpb.DeleteMembershipRequest, opts ...gax.CallOption) (*DeleteMembershipOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -346,7 +502,7 @@ func (c *GkeHubMembershipClient) DeleteMembership(ctx context.Context, req *gkeh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteMembership[0:len(c.CallOptions.DeleteMembership):len(c.CallOptions.DeleteMembership)], opts...)
+	opts = append((*c.CallOptions).DeleteMembership[0:len((*c.CallOptions).DeleteMembership):len((*c.CallOptions).DeleteMembership)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -357,12 +513,11 @@ func (c *GkeHubMembershipClient) DeleteMembership(ctx context.Context, req *gkeh
 		return nil, err
 	}
 	return &DeleteMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateMembership updates an existing Membership.
-func (c *GkeHubMembershipClient) UpdateMembership(ctx context.Context, req *gkehubpb.UpdateMembershipRequest, opts ...gax.CallOption) (*UpdateMembershipOperation, error) {
+func (c *gkeHubMembershipGRPCClient) UpdateMembership(ctx context.Context, req *gkehubpb.UpdateMembershipRequest, opts ...gax.CallOption) (*UpdateMembershipOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -370,7 +525,7 @@ func (c *GkeHubMembershipClient) UpdateMembership(ctx context.Context, req *gkeh
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateMembership[0:len(c.CallOptions.UpdateMembership):len(c.CallOptions.UpdateMembership)], opts...)
+	opts = append((*c.CallOptions).UpdateMembership[0:len((*c.CallOptions).UpdateMembership):len((*c.CallOptions).UpdateMembership)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -381,12 +536,11 @@ func (c *GkeHubMembershipClient) UpdateMembership(ctx context.Context, req *gkeh
 		return nil, err
 	}
 	return &UpdateMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.
-func (c *GkeHubMembershipClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
+func (c *gkeHubMembershipGRPCClient) GenerateConnectManifest(ctx context.Context, req *gkehubpb.GenerateConnectManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateConnectManifestResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -394,7 +548,7 @@ func (c *GkeHubMembershipClient) GenerateConnectManifest(ctx context.Context, re
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GenerateConnectManifest[0:len(c.CallOptions.GenerateConnectManifest):len(c.CallOptions.GenerateConnectManifest)], opts...)
+	opts = append((*c.CallOptions).GenerateConnectManifest[0:len((*c.CallOptions).GenerateConnectManifest):len((*c.CallOptions).GenerateConnectManifest)], opts...)
 	var resp *gkehubpb.GenerateConnectManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -407,9 +561,7 @@ func (c *GkeHubMembershipClient) GenerateConnectManifest(ctx context.Context, re
 	return resp, nil
 }
 
-// ValidateExclusivity validateExclusivity validates the state of exclusivity in the cluster.
-// The validation does not depend on an existing Hub membership resource.
-func (c *GkeHubMembershipClient) ValidateExclusivity(ctx context.Context, req *gkehubpb.ValidateExclusivityRequest, opts ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error) {
+func (c *gkeHubMembershipGRPCClient) ValidateExclusivity(ctx context.Context, req *gkehubpb.ValidateExclusivityRequest, opts ...gax.CallOption) (*gkehubpb.ValidateExclusivityResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -417,7 +569,7 @@ func (c *GkeHubMembershipClient) ValidateExclusivity(ctx context.Context, req *g
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ValidateExclusivity[0:len(c.CallOptions.ValidateExclusivity):len(c.CallOptions.ValidateExclusivity)], opts...)
+	opts = append((*c.CallOptions).ValidateExclusivity[0:len((*c.CallOptions).ValidateExclusivity):len((*c.CallOptions).ValidateExclusivity)], opts...)
 	var resp *gkehubpb.ValidateExclusivityResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -430,19 +582,7 @@ func (c *GkeHubMembershipClient) ValidateExclusivity(ctx context.Context, req *g
 	return resp, nil
 }
 
-// GenerateExclusivityManifest generateExclusivityManifest generates the manifests to update the
-// exclusivity artifacts in the cluster if needed.
-//
-// Exclusivity artifacts include the Membership custom resource definition
-// (CRD) and the singleton Membership custom resource (CR). Combined with
-// ValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes
-// cluster is only registered to a single GKE Hub.
-//
-// The Membership CRD is versioned, and may require conversion when the GKE
-// Hub API server begins serving a newer version of the CRD and
-// corresponding CR. The response will be the converted CRD and CR if there
-// are any differences between the versions.
-func (c *GkeHubMembershipClient) GenerateExclusivityManifest(ctx context.Context, req *gkehubpb.GenerateExclusivityManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error) {
+func (c *gkeHubMembershipGRPCClient) GenerateExclusivityManifest(ctx context.Context, req *gkehubpb.GenerateExclusivityManifestRequest, opts ...gax.CallOption) (*gkehubpb.GenerateExclusivityManifestResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -450,7 +590,7 @@ func (c *GkeHubMembershipClient) GenerateExclusivityManifest(ctx context.Context
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GenerateExclusivityManifest[0:len(c.CallOptions.GenerateExclusivityManifest):len(c.CallOptions.GenerateExclusivityManifest)], opts...)
+	opts = append((*c.CallOptions).GenerateExclusivityManifest[0:len((*c.CallOptions).GenerateExclusivityManifest):len((*c.CallOptions).GenerateExclusivityManifest)], opts...)
 	var resp *gkehubpb.GenerateExclusivityManifestResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -470,9 +610,9 @@ type CreateMembershipOperation struct {
 
 // CreateMembershipOperation returns a new CreateMembershipOperation from a given name.
 // The name must be that of a previously created CreateMembershipOperation, possibly from a different process.
-func (c *GkeHubMembershipClient) CreateMembershipOperation(name string) *CreateMembershipOperation {
+func (c *gkeHubMembershipGRPCClient) CreateMembershipOperation(name string) *CreateMembershipOperation {
 	return &CreateMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -539,9 +679,9 @@ type DeleteMembershipOperation struct {
 
 // DeleteMembershipOperation returns a new DeleteMembershipOperation from a given name.
 // The name must be that of a previously created DeleteMembershipOperation, possibly from a different process.
-func (c *GkeHubMembershipClient) DeleteMembershipOperation(name string) *DeleteMembershipOperation {
+func (c *gkeHubMembershipGRPCClient) DeleteMembershipOperation(name string) *DeleteMembershipOperation {
 	return &DeleteMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -597,9 +737,9 @@ type UpdateMembershipOperation struct {
 
 // UpdateMembershipOperation returns a new UpdateMembershipOperation from a given name.
 // The name must be that of a previously created UpdateMembershipOperation, possibly from a different process.
-func (c *GkeHubMembershipClient) UpdateMembershipOperation(name string) *UpdateMembershipOperation {
+func (c *gkeHubMembershipGRPCClient) UpdateMembershipOperation(name string) *UpdateMembershipOperation {
 	return &UpdateMembershipOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

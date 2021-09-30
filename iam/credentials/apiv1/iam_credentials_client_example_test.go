@@ -29,21 +29,23 @@ func ExampleNewIamCredentialsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleIamCredentialsClient_GenerateAccessToken() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.GenerateAccessTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateAccessTokenRequest.
 	}
 	resp, err := c.GenerateAccessToken(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleIamCredentialsClient_GenerateAccessToken() {
 }
 
 func ExampleIamCredentialsClient_GenerateIdToken() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.GenerateIdTokenRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#GenerateIdTokenRequest.
 	}
 	resp, err := c.GenerateIdToken(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleIamCredentialsClient_GenerateIdToken() {
 }
 
 func ExampleIamCredentialsClient_SignBlob() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.SignBlobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignBlobRequest.
 	}
 	resp, err := c.SignBlob(ctx, req)
 	if err != nil {
@@ -94,16 +96,16 @@ func ExampleIamCredentialsClient_SignBlob() {
 }
 
 func ExampleIamCredentialsClient_SignJwt() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.SignJwtRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/credentials/v1#SignJwtRequest.
 	}
 	resp, err := c.SignJwt(ctx, req)
 	if err != nil {

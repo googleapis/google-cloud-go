@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGameServerClustersClientHook clientHook
@@ -52,12 +52,13 @@ type GameServerClustersCallOptions struct {
 	PreviewUpdateGameServerCluster []gax.CallOption
 }
 
-func defaultGameServerClustersClientOptions() []option.ClientOption {
+func defaultGameServerClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -127,38 +128,155 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 	}
 }
 
+// internalGameServerClustersClient is an interface that defines the methods availaible from Game Services API.
+type internalGameServerClustersClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListGameServerClusters(context.Context, *gamingpb.ListGameServerClustersRequest, ...gax.CallOption) *GameServerClusterIterator
+	GetGameServerCluster(context.Context, *gamingpb.GetGameServerClusterRequest, ...gax.CallOption) (*gamingpb.GameServerCluster, error)
+	CreateGameServerCluster(context.Context, *gamingpb.CreateGameServerClusterRequest, ...gax.CallOption) (*CreateGameServerClusterOperation, error)
+	CreateGameServerClusterOperation(name string) *CreateGameServerClusterOperation
+	PreviewCreateGameServerCluster(context.Context, *gamingpb.PreviewCreateGameServerClusterRequest, ...gax.CallOption) (*gamingpb.PreviewCreateGameServerClusterResponse, error)
+	DeleteGameServerCluster(context.Context, *gamingpb.DeleteGameServerClusterRequest, ...gax.CallOption) (*DeleteGameServerClusterOperation, error)
+	DeleteGameServerClusterOperation(name string) *DeleteGameServerClusterOperation
+	PreviewDeleteGameServerCluster(context.Context, *gamingpb.PreviewDeleteGameServerClusterRequest, ...gax.CallOption) (*gamingpb.PreviewDeleteGameServerClusterResponse, error)
+	UpdateGameServerCluster(context.Context, *gamingpb.UpdateGameServerClusterRequest, ...gax.CallOption) (*UpdateGameServerClusterOperation, error)
+	UpdateGameServerClusterOperation(name string) *UpdateGameServerClusterOperation
+	PreviewUpdateGameServerCluster(context.Context, *gamingpb.PreviewUpdateGameServerClusterRequest, ...gax.CallOption) (*gamingpb.PreviewUpdateGameServerClusterResponse, error)
+}
+
 // GameServerClustersClient is a client for interacting with Game Services API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The game server cluster maps to Kubernetes clusters running Agones and is
+// used to manage fleets within clusters.
+type GameServerClustersClient struct {
+	// The internal transport-dependent client.
+	internalClient internalGameServerClustersClient
+
+	// The call options for this service.
+	CallOptions *GameServerClustersCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *GameServerClustersClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *GameServerClustersClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *GameServerClustersClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListGameServerClusters lists game server clusters in a given project and location.
+func (c *GameServerClustersClient) ListGameServerClusters(ctx context.Context, req *gamingpb.ListGameServerClustersRequest, opts ...gax.CallOption) *GameServerClusterIterator {
+	return c.internalClient.ListGameServerClusters(ctx, req, opts...)
+}
+
+// GetGameServerCluster gets details of a single game server cluster.
+func (c *GameServerClustersClient) GetGameServerCluster(ctx context.Context, req *gamingpb.GetGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.GameServerCluster, error) {
+	return c.internalClient.GetGameServerCluster(ctx, req, opts...)
+}
+
+// CreateGameServerCluster creates a new game server cluster in a given project and location.
+func (c *GameServerClustersClient) CreateGameServerCluster(ctx context.Context, req *gamingpb.CreateGameServerClusterRequest, opts ...gax.CallOption) (*CreateGameServerClusterOperation, error) {
+	return c.internalClient.CreateGameServerCluster(ctx, req, opts...)
+}
+
+// CreateGameServerClusterOperation returns a new CreateGameServerClusterOperation from a given name.
+// The name must be that of a previously created CreateGameServerClusterOperation, possibly from a different process.
+func (c *GameServerClustersClient) CreateGameServerClusterOperation(name string) *CreateGameServerClusterOperation {
+	return c.internalClient.CreateGameServerClusterOperation(name)
+}
+
+// PreviewCreateGameServerCluster previews creation of a new game server cluster in a given project and
+// location.
+func (c *GameServerClustersClient) PreviewCreateGameServerCluster(ctx context.Context, req *gamingpb.PreviewCreateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewCreateGameServerClusterResponse, error) {
+	return c.internalClient.PreviewCreateGameServerCluster(ctx, req, opts...)
+}
+
+// DeleteGameServerCluster deletes a single game server cluster.
+func (c *GameServerClustersClient) DeleteGameServerCluster(ctx context.Context, req *gamingpb.DeleteGameServerClusterRequest, opts ...gax.CallOption) (*DeleteGameServerClusterOperation, error) {
+	return c.internalClient.DeleteGameServerCluster(ctx, req, opts...)
+}
+
+// DeleteGameServerClusterOperation returns a new DeleteGameServerClusterOperation from a given name.
+// The name must be that of a previously created DeleteGameServerClusterOperation, possibly from a different process.
+func (c *GameServerClustersClient) DeleteGameServerClusterOperation(name string) *DeleteGameServerClusterOperation {
+	return c.internalClient.DeleteGameServerClusterOperation(name)
+}
+
+// PreviewDeleteGameServerCluster previews deletion of a single game server cluster.
+func (c *GameServerClustersClient) PreviewDeleteGameServerCluster(ctx context.Context, req *gamingpb.PreviewDeleteGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewDeleteGameServerClusterResponse, error) {
+	return c.internalClient.PreviewDeleteGameServerCluster(ctx, req, opts...)
+}
+
+// UpdateGameServerCluster patches a single game server cluster.
+func (c *GameServerClustersClient) UpdateGameServerCluster(ctx context.Context, req *gamingpb.UpdateGameServerClusterRequest, opts ...gax.CallOption) (*UpdateGameServerClusterOperation, error) {
+	return c.internalClient.UpdateGameServerCluster(ctx, req, opts...)
+}
+
+// UpdateGameServerClusterOperation returns a new UpdateGameServerClusterOperation from a given name.
+// The name must be that of a previously created UpdateGameServerClusterOperation, possibly from a different process.
+func (c *GameServerClustersClient) UpdateGameServerClusterOperation(name string) *UpdateGameServerClusterOperation {
+	return c.internalClient.UpdateGameServerClusterOperation(name)
+}
+
+// PreviewUpdateGameServerCluster previews updating a GameServerCluster.
+func (c *GameServerClustersClient) PreviewUpdateGameServerCluster(ctx context.Context, req *gamingpb.PreviewUpdateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewUpdateGameServerClusterResponse, error) {
+	return c.internalClient.PreviewUpdateGameServerCluster(ctx, req, opts...)
+}
+
+// gameServerClustersGRPCClient is a client for interacting with Game Services API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GameServerClustersClient struct {
+type gameServerClustersGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing GameServerClustersClient
+	CallOptions **GameServerClustersCallOptions
+
 	// The gRPC API client.
 	gameServerClustersClient gamingpb.GameServerClustersServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *GameServerClustersCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewGameServerClustersClient creates a new game server clusters service client.
+// NewGameServerClustersClient creates a new game server clusters service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The game server cluster maps to Kubernetes clusters running Agones and is
 // used to manage fleets within clusters.
 func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOption) (*GameServerClustersClient, error) {
-	clientOpts := defaultGameServerClustersClientOptions()
-
+	clientOpts := defaultGameServerClustersGRPCClientOptions()
 	if newGameServerClustersClientHook != nil {
 		hookOpts, err := newGameServerClustersClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -176,16 +294,19 @@ func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOptio
 	if err != nil {
 		return nil, err
 	}
-	c := &GameServerClustersClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultGameServerClustersCallOptions(),
+	client := GameServerClustersClient{CallOptions: defaultGameServerClustersCallOptions()}
 
+	c := &gameServerClustersGRPCClient{
+		connPool:                 connPool,
+		disableDeadlines:         disableDeadlines,
 		gameServerClustersClient: gamingpb.NewGameServerClustersServiceClient(connPool),
+		CallOptions:              &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -195,44 +316,46 @@ func NewGameServerClustersClient(ctx context.Context, opts ...option.ClientOptio
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *GameServerClustersClient) Connection() *grpc.ClientConn {
+func (c *gameServerClustersGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GameServerClustersClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GameServerClustersClient) setGoogleClientInfo(keyval ...string) {
+func (c *gameServerClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListGameServerClusters lists game server clusters in a given project and location.
-func (c *GameServerClustersClient) ListGameServerClusters(ctx context.Context, req *gamingpb.ListGameServerClustersRequest, opts ...gax.CallOption) *GameServerClusterIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gameServerClustersGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gameServerClustersGRPCClient) ListGameServerClusters(ctx context.Context, req *gamingpb.ListGameServerClustersRequest, opts ...gax.CallOption) *GameServerClusterIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGameServerClusters[0:len(c.CallOptions.ListGameServerClusters):len(c.CallOptions.ListGameServerClusters)], opts...)
+	opts = append((*c.CallOptions).ListGameServerClusters[0:len((*c.CallOptions).ListGameServerClusters):len((*c.CallOptions).ListGameServerClusters)], opts...)
 	it := &GameServerClusterIterator{}
 	req = proto.Clone(req).(*gamingpb.ListGameServerClustersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.GameServerCluster, string, error) {
-		var resp *gamingpb.ListGameServerClustersResponse
-		req.PageToken = pageToken
+		resp := &gamingpb.ListGameServerClustersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -255,14 +378,15 @@ func (c *GameServerClustersClient) ListGameServerClusters(ctx context.Context, r
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetGameServerCluster gets details of a single game server cluster.
-func (c *GameServerClustersClient) GetGameServerCluster(ctx context.Context, req *gamingpb.GetGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.GameServerCluster, error) {
+func (c *gameServerClustersGRPCClient) GetGameServerCluster(ctx context.Context, req *gamingpb.GetGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.GameServerCluster, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -270,7 +394,7 @@ func (c *GameServerClustersClient) GetGameServerCluster(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGameServerCluster[0:len(c.CallOptions.GetGameServerCluster):len(c.CallOptions.GetGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).GetGameServerCluster[0:len((*c.CallOptions).GetGameServerCluster):len((*c.CallOptions).GetGameServerCluster)], opts...)
 	var resp *gamingpb.GameServerCluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -283,8 +407,7 @@ func (c *GameServerClustersClient) GetGameServerCluster(ctx context.Context, req
 	return resp, nil
 }
 
-// CreateGameServerCluster creates a new game server cluster in a given project and location.
-func (c *GameServerClustersClient) CreateGameServerCluster(ctx context.Context, req *gamingpb.CreateGameServerClusterRequest, opts ...gax.CallOption) (*CreateGameServerClusterOperation, error) {
+func (c *gameServerClustersGRPCClient) CreateGameServerCluster(ctx context.Context, req *gamingpb.CreateGameServerClusterRequest, opts ...gax.CallOption) (*CreateGameServerClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
 		defer cancel()
@@ -292,7 +415,7 @@ func (c *GameServerClustersClient) CreateGameServerCluster(ctx context.Context, 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGameServerCluster[0:len(c.CallOptions.CreateGameServerCluster):len(c.CallOptions.CreateGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).CreateGameServerCluster[0:len((*c.CallOptions).CreateGameServerCluster):len((*c.CallOptions).CreateGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -303,13 +426,11 @@ func (c *GameServerClustersClient) CreateGameServerCluster(ctx context.Context, 
 		return nil, err
 	}
 	return &CreateGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewCreateGameServerCluster previews creation of a new game server cluster in a given project and
-// location.
-func (c *GameServerClustersClient) PreviewCreateGameServerCluster(ctx context.Context, req *gamingpb.PreviewCreateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewCreateGameServerClusterResponse, error) {
+func (c *gameServerClustersGRPCClient) PreviewCreateGameServerCluster(ctx context.Context, req *gamingpb.PreviewCreateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewCreateGameServerClusterResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -317,7 +438,7 @@ func (c *GameServerClustersClient) PreviewCreateGameServerCluster(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewCreateGameServerCluster[0:len(c.CallOptions.PreviewCreateGameServerCluster):len(c.CallOptions.PreviewCreateGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).PreviewCreateGameServerCluster[0:len((*c.CallOptions).PreviewCreateGameServerCluster):len((*c.CallOptions).PreviewCreateGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewCreateGameServerClusterResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -330,8 +451,7 @@ func (c *GameServerClustersClient) PreviewCreateGameServerCluster(ctx context.Co
 	return resp, nil
 }
 
-// DeleteGameServerCluster deletes a single game server cluster.
-func (c *GameServerClustersClient) DeleteGameServerCluster(ctx context.Context, req *gamingpb.DeleteGameServerClusterRequest, opts ...gax.CallOption) (*DeleteGameServerClusterOperation, error) {
+func (c *gameServerClustersGRPCClient) DeleteGameServerCluster(ctx context.Context, req *gamingpb.DeleteGameServerClusterRequest, opts ...gax.CallOption) (*DeleteGameServerClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -339,7 +459,7 @@ func (c *GameServerClustersClient) DeleteGameServerCluster(ctx context.Context, 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGameServerCluster[0:len(c.CallOptions.DeleteGameServerCluster):len(c.CallOptions.DeleteGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).DeleteGameServerCluster[0:len((*c.CallOptions).DeleteGameServerCluster):len((*c.CallOptions).DeleteGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -350,12 +470,11 @@ func (c *GameServerClustersClient) DeleteGameServerCluster(ctx context.Context, 
 		return nil, err
 	}
 	return &DeleteGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewDeleteGameServerCluster previews deletion of a single game server cluster.
-func (c *GameServerClustersClient) PreviewDeleteGameServerCluster(ctx context.Context, req *gamingpb.PreviewDeleteGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewDeleteGameServerClusterResponse, error) {
+func (c *gameServerClustersGRPCClient) PreviewDeleteGameServerCluster(ctx context.Context, req *gamingpb.PreviewDeleteGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewDeleteGameServerClusterResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -363,7 +482,7 @@ func (c *GameServerClustersClient) PreviewDeleteGameServerCluster(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewDeleteGameServerCluster[0:len(c.CallOptions.PreviewDeleteGameServerCluster):len(c.CallOptions.PreviewDeleteGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).PreviewDeleteGameServerCluster[0:len((*c.CallOptions).PreviewDeleteGameServerCluster):len((*c.CallOptions).PreviewDeleteGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewDeleteGameServerClusterResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -376,8 +495,7 @@ func (c *GameServerClustersClient) PreviewDeleteGameServerCluster(ctx context.Co
 	return resp, nil
 }
 
-// UpdateGameServerCluster patches a single game server cluster.
-func (c *GameServerClustersClient) UpdateGameServerCluster(ctx context.Context, req *gamingpb.UpdateGameServerClusterRequest, opts ...gax.CallOption) (*UpdateGameServerClusterOperation, error) {
+func (c *gameServerClustersGRPCClient) UpdateGameServerCluster(ctx context.Context, req *gamingpb.UpdateGameServerClusterRequest, opts ...gax.CallOption) (*UpdateGameServerClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -385,7 +503,7 @@ func (c *GameServerClustersClient) UpdateGameServerCluster(ctx context.Context, 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGameServerCluster[0:len(c.CallOptions.UpdateGameServerCluster):len(c.CallOptions.UpdateGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).UpdateGameServerCluster[0:len((*c.CallOptions).UpdateGameServerCluster):len((*c.CallOptions).UpdateGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -396,12 +514,11 @@ func (c *GameServerClustersClient) UpdateGameServerCluster(ctx context.Context, 
 		return nil, err
 	}
 	return &UpdateGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewUpdateGameServerCluster previews updating a GameServerCluster.
-func (c *GameServerClustersClient) PreviewUpdateGameServerCluster(ctx context.Context, req *gamingpb.PreviewUpdateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewUpdateGameServerClusterResponse, error) {
+func (c *gameServerClustersGRPCClient) PreviewUpdateGameServerCluster(ctx context.Context, req *gamingpb.PreviewUpdateGameServerClusterRequest, opts ...gax.CallOption) (*gamingpb.PreviewUpdateGameServerClusterResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -409,7 +526,7 @@ func (c *GameServerClustersClient) PreviewUpdateGameServerCluster(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewUpdateGameServerCluster[0:len(c.CallOptions.PreviewUpdateGameServerCluster):len(c.CallOptions.PreviewUpdateGameServerCluster)], opts...)
+	opts = append((*c.CallOptions).PreviewUpdateGameServerCluster[0:len((*c.CallOptions).PreviewUpdateGameServerCluster):len((*c.CallOptions).PreviewUpdateGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewUpdateGameServerClusterResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -429,9 +546,9 @@ type CreateGameServerClusterOperation struct {
 
 // CreateGameServerClusterOperation returns a new CreateGameServerClusterOperation from a given name.
 // The name must be that of a previously created CreateGameServerClusterOperation, possibly from a different process.
-func (c *GameServerClustersClient) CreateGameServerClusterOperation(name string) *CreateGameServerClusterOperation {
+func (c *gameServerClustersGRPCClient) CreateGameServerClusterOperation(name string) *CreateGameServerClusterOperation {
 	return &CreateGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -498,9 +615,9 @@ type DeleteGameServerClusterOperation struct {
 
 // DeleteGameServerClusterOperation returns a new DeleteGameServerClusterOperation from a given name.
 // The name must be that of a previously created DeleteGameServerClusterOperation, possibly from a different process.
-func (c *GameServerClustersClient) DeleteGameServerClusterOperation(name string) *DeleteGameServerClusterOperation {
+func (c *gameServerClustersGRPCClient) DeleteGameServerClusterOperation(name string) *DeleteGameServerClusterOperation {
 	return &DeleteGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -556,9 +673,9 @@ type UpdateGameServerClusterOperation struct {
 
 // UpdateGameServerClusterOperation returns a new UpdateGameServerClusterOperation from a given name.
 // The name must be that of a previously created UpdateGameServerClusterOperation, possibly from a different process.
-func (c *GameServerClustersClient) UpdateGameServerClusterOperation(name string) *UpdateGameServerClusterOperation {
+func (c *gameServerClustersGRPCClient) UpdateGameServerClusterOperation(name string) *UpdateGameServerClusterOperation {
 	return &UpdateGameServerClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

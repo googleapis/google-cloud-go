@@ -21,12 +21,14 @@ by ascending esotericism:
 - NUMERIC
 - more aggregation functions
 - SELECT HAVING
-- case insensitivity
 - more literal types
-- generated columns
+- expressions that return null for generated columns
+- generated columns referencing other generated columns
+- checking dependencies on a generated column before deleting a column
 - expression type casting, coercion
 - multiple joins
 - subselects
+- case insensitivity of table and column names and query aliases
 - transaction simulation
 - FOREIGN KEY and CHECK constraints
 - INSERT DML statements

@@ -73,6 +73,10 @@ func numericType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_NUMERIC}
 }
 
+func jsonType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_JSON}
+}
+
 func bytesProto(b []byte) *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(b)}}
 }

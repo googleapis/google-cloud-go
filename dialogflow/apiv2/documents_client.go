@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDocumentsClientHook clientHook
@@ -50,12 +50,13 @@ type DocumentsCallOptions struct {
 	ReloadDocument []gax.CallOption
 }
 
-func defaultDocumentsClientOptions() []option.ClientOption {
+func defaultDocumentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -133,37 +134,186 @@ func defaultDocumentsCallOptions() *DocumentsCallOptions {
 	}
 }
 
+// internalDocumentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalDocumentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListDocuments(context.Context, *dialogflowpb.ListDocumentsRequest, ...gax.CallOption) *DocumentIterator
+	GetDocument(context.Context, *dialogflowpb.GetDocumentRequest, ...gax.CallOption) (*dialogflowpb.Document, error)
+	CreateDocument(context.Context, *dialogflowpb.CreateDocumentRequest, ...gax.CallOption) (*CreateDocumentOperation, error)
+	CreateDocumentOperation(name string) *CreateDocumentOperation
+	DeleteDocument(context.Context, *dialogflowpb.DeleteDocumentRequest, ...gax.CallOption) (*DeleteDocumentOperation, error)
+	DeleteDocumentOperation(name string) *DeleteDocumentOperation
+	UpdateDocument(context.Context, *dialogflowpb.UpdateDocumentRequest, ...gax.CallOption) (*UpdateDocumentOperation, error)
+	UpdateDocumentOperation(name string) *UpdateDocumentOperation
+	ReloadDocument(context.Context, *dialogflowpb.ReloadDocumentRequest, ...gax.CallOption) (*ReloadDocumentOperation, error)
+	ReloadDocumentOperation(name string) *ReloadDocumentOperation
+}
+
 // DocumentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing knowledge Documents.
+type DocumentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDocumentsClient
+
+	// The call options for this service.
+	CallOptions *DocumentsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DocumentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DocumentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListDocuments returns the list of all documents of the knowledge base.
+func (c *DocumentsClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
+	return c.internalClient.ListDocuments(ctx, req, opts...)
+}
+
+// GetDocument retrieves the specified document.
+func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+	return c.internalClient.GetDocument(ctx, req, opts...)
+}
+
+// CreateDocument creates a new document.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
+func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
+	return c.internalClient.CreateDocument(ctx, req, opts...)
+}
+
+// CreateDocumentOperation returns a new CreateDocumentOperation from a given name.
+// The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
+	return c.internalClient.CreateDocumentOperation(name)
+}
+
+// DeleteDocument deletes the specified document.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
+	return c.internalClient.DeleteDocument(ctx, req, opts...)
+}
+
+// DeleteDocumentOperation returns a new DeleteDocumentOperation from a given name.
+// The name must be that of a previously created DeleteDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
+	return c.internalClient.DeleteDocumentOperation(name)
+}
+
+// UpdateDocument updates the specified document.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
+func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
+	return c.internalClient.UpdateDocument(ctx, req, opts...)
+}
+
+// UpdateDocumentOperation returns a new UpdateDocumentOperation from a given name.
+// The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
+	return c.internalClient.UpdateDocumentOperation(name)
+}
+
+// ReloadDocument reloads the specified document from its specified source, content_uri or
+// content. The previously loaded content of the document will be deleted.
+// Note: Even when the content of the document has not changed, there still
+// may be side effects because of internal implementation changes.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: Document
+//
+// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
+// only use projects.knowledgeBases.documents.
+func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
+	return c.internalClient.ReloadDocument(ctx, req, opts...)
+}
+
+// ReloadDocumentOperation returns a new ReloadDocumentOperation from a given name.
+// The name must be that of a previously created ReloadDocumentOperation, possibly from a different process.
+func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
+	return c.internalClient.ReloadDocumentOperation(name)
+}
+
+// documentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DocumentsClient struct {
+type documentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DocumentsClient
+	CallOptions **DocumentsCallOptions
+
 	// The gRPC API client.
 	documentsClient dialogflowpb.DocumentsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DocumentsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDocumentsClient creates a new documents client.
+// NewDocumentsClient creates a new documents client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing knowledge Documents.
 func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*DocumentsClient, error) {
-	clientOpts := defaultDocumentsClientOptions()
-
+	clientOpts := defaultDocumentsGRPCClientOptions()
 	if newDocumentsClientHook != nil {
 		hookOpts, err := newDocumentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -181,16 +331,19 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 	if err != nil {
 		return nil, err
 	}
-	c := &DocumentsClient{
+	client := DocumentsClient{CallOptions: defaultDocumentsCallOptions()}
+
+	c := &documentsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDocumentsCallOptions(),
-
-		documentsClient: dialogflowpb.NewDocumentsClient(connPool),
+		documentsClient:  dialogflowpb.NewDocumentsClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -200,44 +353,46 @@ func NewDocumentsClient(ctx context.Context, opts ...option.ClientOption) (*Docu
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DocumentsClient) Connection() *grpc.ClientConn {
+func (c *documentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DocumentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DocumentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *documentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListDocuments returns the list of all documents of the knowledge base.
-func (c *DocumentsClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *documentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *documentsGRPCClient) ListDocuments(ctx context.Context, req *dialogflowpb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDocuments[0:len(c.CallOptions.ListDocuments):len(c.CallOptions.ListDocuments)], opts...)
+	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
 	it := &DocumentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListDocumentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Document, string, error) {
-		var resp *dialogflowpb.ListDocumentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -260,14 +415,15 @@ func (c *DocumentsClient) ListDocuments(ctx context.Context, req *dialogflowpb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetDocument retrieves the specified document.
-func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
+func (c *documentsGRPCClient) GetDocument(ctx context.Context, req *dialogflowpb.GetDocumentRequest, opts ...gax.CallOption) (*dialogflowpb.Document, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -275,7 +431,7 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDocument[0:len(c.CallOptions.GetDocument):len(c.CallOptions.GetDocument)], opts...)
+	opts = append((*c.CallOptions).GetDocument[0:len((*c.CallOptions).GetDocument):len((*c.CallOptions).GetDocument)], opts...)
 	var resp *dialogflowpb.Document
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -288,11 +444,7 @@ func (c *DocumentsClient) GetDocument(ctx context.Context, req *dialogflowpb.Get
 	return resp, nil
 }
 
-// CreateDocument creates a new document.
-//
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
-func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
+func (c *documentsGRPCClient) CreateDocument(ctx context.Context, req *dialogflowpb.CreateDocumentRequest, opts ...gax.CallOption) (*CreateDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -300,7 +452,7 @@ func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDocument[0:len(c.CallOptions.CreateDocument):len(c.CallOptions.CreateDocument)], opts...)
+	opts = append((*c.CallOptions).CreateDocument[0:len((*c.CallOptions).CreateDocument):len((*c.CallOptions).CreateDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -311,15 +463,11 @@ func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.
 		return nil, err
 	}
 	return &CreateDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteDocument deletes the specified document.
-//
-// Operation <response: google.protobuf.Empty,
-// metadata: KnowledgeOperationMetadata>
-func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
+func (c *documentsGRPCClient) DeleteDocument(ctx context.Context, req *dialogflowpb.DeleteDocumentRequest, opts ...gax.CallOption) (*DeleteDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -327,7 +475,7 @@ func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDocument[0:len(c.CallOptions.DeleteDocument):len(c.CallOptions.DeleteDocument)], opts...)
+	opts = append((*c.CallOptions).DeleteDocument[0:len((*c.CallOptions).DeleteDocument):len((*c.CallOptions).DeleteDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -338,15 +486,11 @@ func (c *DocumentsClient) DeleteDocument(ctx context.Context, req *dialogflowpb.
 		return nil, err
 	}
 	return &DeleteDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateDocument updates the specified document.
-//
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
-func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
+func (c *documentsGRPCClient) UpdateDocument(ctx context.Context, req *dialogflowpb.UpdateDocumentRequest, opts ...gax.CallOption) (*UpdateDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -354,7 +498,7 @@ func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "document.name", url.QueryEscape(req.GetDocument().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDocument[0:len(c.CallOptions.UpdateDocument):len(c.CallOptions.UpdateDocument)], opts...)
+	opts = append((*c.CallOptions).UpdateDocument[0:len((*c.CallOptions).UpdateDocument):len((*c.CallOptions).UpdateDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -365,21 +509,11 @@ func (c *DocumentsClient) UpdateDocument(ctx context.Context, req *dialogflowpb.
 		return nil, err
 	}
 	return &UpdateDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ReloadDocument reloads the specified document from its specified source, content_uri or
-// content. The previously loaded content of the document will be deleted.
-// Note: Even when the content of the document has not changed, there still
-// may be side effects because of internal implementation changes.
-//
-// Note: The projects.agent.knowledgeBases.documents resource is deprecated;
-// only use projects.knowledgeBases.documents.
-//
-// Operation <response: Document,
-// metadata: KnowledgeOperationMetadata>
-func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
+func (c *documentsGRPCClient) ReloadDocument(ctx context.Context, req *dialogflowpb.ReloadDocumentRequest, opts ...gax.CallOption) (*ReloadDocumentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -387,7 +521,7 @@ func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ReloadDocument[0:len(c.CallOptions.ReloadDocument):len(c.CallOptions.ReloadDocument)], opts...)
+	opts = append((*c.CallOptions).ReloadDocument[0:len((*c.CallOptions).ReloadDocument):len((*c.CallOptions).ReloadDocument)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -398,7 +532,7 @@ func (c *DocumentsClient) ReloadDocument(ctx context.Context, req *dialogflowpb.
 		return nil, err
 	}
 	return &ReloadDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -409,9 +543,9 @@ type CreateDocumentOperation struct {
 
 // CreateDocumentOperation returns a new CreateDocumentOperation from a given name.
 // The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
-func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
+func (c *documentsGRPCClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
 	return &CreateDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -478,9 +612,9 @@ type DeleteDocumentOperation struct {
 
 // DeleteDocumentOperation returns a new DeleteDocumentOperation from a given name.
 // The name must be that of a previously created DeleteDocumentOperation, possibly from a different process.
-func (c *DocumentsClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
+func (c *documentsGRPCClient) DeleteDocumentOperation(name string) *DeleteDocumentOperation {
 	return &DeleteDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -536,9 +670,9 @@ type ReloadDocumentOperation struct {
 
 // ReloadDocumentOperation returns a new ReloadDocumentOperation from a given name.
 // The name must be that of a previously created ReloadDocumentOperation, possibly from a different process.
-func (c *DocumentsClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
+func (c *documentsGRPCClient) ReloadDocumentOperation(name string) *ReloadDocumentOperation {
 	return &ReloadDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -605,9 +739,9 @@ type UpdateDocumentOperation struct {
 
 // UpdateDocumentOperation returns a new UpdateDocumentOperation from a given name.
 // The name must be that of a previously created UpdateDocumentOperation, possibly from a different process.
-func (c *DocumentsClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
+func (c *documentsGRPCClient) UpdateDocumentOperation(name string) *UpdateDocumentOperation {
 	return &UpdateDocumentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

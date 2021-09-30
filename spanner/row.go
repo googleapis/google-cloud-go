@@ -58,6 +58,8 @@ import (
 //	*[]bool, *[]NullBool - BOOL ARRAY
 //	*float64(not NULL), *NullFloat64 - FLOAT64
 //	*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
+//	*big.Rat(not NULL), *NullNumeric - NUMERIC
+//	*[]big.Rat, *[]NullNumeric - NUMERIC ARRAY
 //	*time.Time(not NULL), *NullTime - TIMESTAMP
 //	*[]time.Time, *[]NullTime - TIMESTAMP ARRAY
 //	*Date(not NULL), *NullDate - DATE
@@ -84,6 +86,11 @@ import (
 type Row struct {
 	fields []*sppb.StructType_Field
 	vals   []*proto3.Value // keep decoded for now
+}
+
+// String implements fmt.stringer.
+func (r *Row) String() string {
+	return fmt.Sprintf("{fields: %s, values: %s}", r.fields, r.vals)
 }
 
 // errNamesValuesMismatch returns error for when columnNames count is not equal

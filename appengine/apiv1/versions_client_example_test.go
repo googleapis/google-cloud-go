@@ -30,22 +30,23 @@ func ExampleNewVersionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleVersionsClient_ListVersions() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListVersionsRequest.
 	}
 	it := c.ListVersions(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleVersionsClient_ListVersions() {
 }
 
 func ExampleVersionsClient_GetVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetVersionRequest.
 	}
 	resp, err := c.GetVersion(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleVersionsClient_GetVersion() {
 }
 
 func ExampleVersionsClient_CreateVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#CreateVersionRequest.
 	}
 	op, err := c.CreateVersion(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleVersionsClient_CreateVersion() {
 }
 
 func ExampleVersionsClient_UpdateVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateVersionRequest.
 	}
 	op, err := c.UpdateVersion(ctx, req)
 	if err != nil {
@@ -132,16 +133,16 @@ func ExampleVersionsClient_UpdateVersion() {
 }
 
 func ExampleVersionsClient_DeleteVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteVersionRequest.
 	}
 	op, err := c.DeleteVersion(ctx, req)
 	if err != nil {

@@ -81,6 +81,21 @@ func TestListProjectSubscriptions(t *testing.T) {
 	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
 	}
+
+	// Call list again, but check the config this time.
+	it := c.Subscriptions(ctx)
+	for {
+		sub, err := it.NextConfig()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("SubscriptionIterator.NextConfig() got err: %v", err)
+		}
+		if got := sub.Topic.ID(); got != topic.ID() {
+			t.Errorf("subConfig.Topic mismatch, got: %v, want: %v", got, topic.ID())
+		}
+	}
 }
 
 func getSubIDs(subs []*Subscription) []string {

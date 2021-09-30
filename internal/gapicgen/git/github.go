@@ -16,17 +16,20 @@ package git
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"github.com/google/go-github/v34/github"
+	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
+	"github.com/google/go-github/v35/github"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
@@ -65,12 +68,6 @@ genbot to assign reviewers to the google-cloud-go PR.
 `
 )
 
-// githubReviewers is the list of github usernames that will be assigned to
-// review the PRs.
-//
-// TODO(ndietz): Can we use github teams?
-var githubReviewers = []string{"hongalex", "broady", "tritone", "codyoss", "tbpg"}
-
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
 	Author  string
@@ -105,7 +102,7 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 	return &GithubClient{cV3: github.NewClient(tc), cV4: githubv4.NewClient(tc), Username: username}, nil
 }
 
-// SetGitCreds sets credentials for gerrit.
+// setGitCreds configures credentials for GitHub.
 func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) error {
 	u, err := user.Current()
 	if err != nil {
@@ -217,20 +214,6 @@ git push origin $BRANCH_NAME
 		Base:  &base,
 	})
 	if err != nil {
-		return 0, err
-	}
-
-	// Can't assign the submitter of the PR as a reviewer.
-	var reviewers []string
-	for _, r := range githubReviewers {
-		if r != gc.Username {
-			reviewers = append(reviewers, r)
-		}
-	}
-
-	if _, _, err := gc.cV3.PullRequests.RequestReviewers(ctx, "googleapis", "go-genproto", pr.GetNumber(), github.ReviewersRequest{
-		Reviewers: reviewers,
-	}); err != nil {
 		return 0, err
 	}
 
@@ -352,13 +335,27 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 
 // UpdateGocloudGoMod updates the go.mod to include latest version of genproto
 // for the given gocloud ref.
-func (gc *GithubClient) UpdateGocloudGoMod(pr *PullRequest) error {
-	tmpDir, err := ioutil.TempDir("", "finalize-gerrit-cl")
+func (gc *GithubClient) UpdateGocloudGoMod() error {
+	tmpDir, err := ioutil.TempDir("", "finalize-github-pr")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(tmpDir)
 
+	if err := checkoutCode(tmpDir); err != nil {
+		return err
+	}
+	if err := updateDeps(tmpDir); err != nil {
+		return err
+	}
+	if err := addAndPushCode(tmpDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func checkoutCode(tmpDir string) error {
 	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
@@ -366,19 +363,67 @@ git init
 git remote add origin https://github.com/googleapis/google-cloud-go
 git fetch --all
 git checkout $BRANCH_NAME
+`)
+	c.Env = []string{
+		fmt.Sprintf("BRANCH_NAME=%s", gocloudBranchName),
+	}
+	c.Dir = tmpDir
+	return c.Run()
+}
 
-# tidyall
-go mod tidy
-for i in $(find . -name go.mod); do
-	pushd $(dirname $i);
-		# Update genproto and api to latest for every module (latest version is
-		# always correct version). tidy will remove the dependencies if they're not
-		# actually used by the client.
-		go get -d google.golang.org/api | true # We don't care that there's no files at root.
-		go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
-		go mod tidy;
-	popd;
-done
+func updateDeps(tmpDir string) error {
+	// Find directories that had code changes.
+	c := execv.Command("git", "diff", "--name-only", "HEAD", "HEAD~1")
+	c.Dir = tmpDir
+	out, err := c.Output()
+	if err != nil {
+		return err
+	}
+	files := strings.Split(string(out), "\n")
+	dirs := map[string]bool{}
+	for _, file := range files {
+		if strings.HasPrefix(file, "internal") {
+			continue
+		}
+		dir := filepath.Dir(file)
+		dirs[filepath.Join(tmpDir, dir)] = true
+	}
+
+	// Find which modules had code changes.
+	updatedModDirs := map[string]bool{}
+	for dir := range dirs {
+		modDir, err := gocmd.ListModDirName(dir)
+		if err != nil {
+			if errors.Is(err, gocmd.ErrBuildConstraint) {
+				continue
+			}
+			return err
+		}
+		updatedModDirs[modDir] = true
+	}
+
+	// Update required modules.
+	for modDir := range updatedModDirs {
+		log.Printf("Updating module dir %q", modDir)
+		c := execv.Command("/bin/bash", "-c", `
+set -ex
+
+go get -d google.golang.org/api | true # We don't care that there's no files at root.
+go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
+`)
+		c.Dir = modDir
+		if err := c.Run(); err != nil {
+			return err
+		}
+	}
+
+	// Tidy all modules
+	return gocmd.ModTidyAll(tmpDir)
+}
+
+func addAndPushCode(tmpDir string) error {
+	c := execv.Command("/bin/bash", "-c", `
+set -ex
 
 git add -A
 filesUpdated=$( git status --short | wc -l )
@@ -390,7 +435,7 @@ then
 fi
 `)
 	c.Env = []string{
-		fmt.Sprintf("BRANCH_NAME=%s", "regen_gocloud"),
+		fmt.Sprintf("BRANCH_NAME=%s", gocloudBranchName),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}

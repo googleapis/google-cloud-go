@@ -30,22 +30,23 @@ func ExampleNewCloudSchedulerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudSchedulerClient_ListJobs() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleCloudSchedulerClient_ListJobs() {
 }
 
 func ExampleCloudSchedulerClient_GetJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleCloudSchedulerClient_GetJob() {
 }
 
 func ExampleCloudSchedulerClient_CreateJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#CreateJobRequest.
 	}
 	resp, err := c.CreateJob(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleCloudSchedulerClient_CreateJob() {
 }
 
 func ExampleCloudSchedulerClient_UpdateJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleCloudSchedulerClient_DeleteJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {
@@ -138,16 +141,16 @@ func ExampleCloudSchedulerClient_DeleteJob() {
 }
 
 func ExampleCloudSchedulerClient_PauseJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.PauseJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#PauseJobRequest.
 	}
 	resp, err := c.PauseJob(ctx, req)
 	if err != nil {
@@ -158,16 +161,16 @@ func ExampleCloudSchedulerClient_PauseJob() {
 }
 
 func ExampleCloudSchedulerClient_ResumeJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.ResumeJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#ResumeJobRequest.
 	}
 	resp, err := c.ResumeJob(ctx, req)
 	if err != nil {
@@ -178,16 +181,16 @@ func ExampleCloudSchedulerClient_ResumeJob() {
 }
 
 func ExampleCloudSchedulerClient_RunJob() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.RunJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/scheduler/v1#RunJobRequest.
 	}
 	resp, err := c.RunJob(ctx, req)
 	if err != nil {

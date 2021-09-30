@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListSettings() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#ListSettingsRequest.
 	}
 	it := c.ListSettings(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleClient_ListSettings() {
 }
 
 func ExampleClient_GetSetting() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.GetSettingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#GetSettingRequest.
 	}
 	resp, err := c.GetSetting(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleClient_GetSetting() {
 }
 
 func ExampleClient_UpdateSetting() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.UpdateSettingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcesettings/v1#UpdateSettingRequest.
 	}
 	resp, err := c.UpdateSetting(ctx, req)
 	if err != nil {

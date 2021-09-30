@@ -30,21 +30,23 @@ func ExampleNewAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAdminClient_CreateTopic() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.CreateTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateTopicRequest.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleAdminClient_CreateTopic() {
 }
 
 func ExampleAdminClient_GetTopic() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.GetTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetTopicRequest.
 	}
 	resp, err := c.GetTopic(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleAdminClient_GetTopic() {
 }
 
 func ExampleAdminClient_GetTopicPartitions() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.GetTopicPartitionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetTopicPartitionsRequest.
 	}
 	resp, err := c.GetTopicPartitions(ctx, req)
 	if err != nil {
@@ -95,17 +97,16 @@ func ExampleAdminClient_GetTopicPartitions() {
 }
 
 func ExampleAdminClient_ListTopics() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
@@ -122,16 +123,16 @@ func ExampleAdminClient_ListTopics() {
 }
 
 func ExampleAdminClient_UpdateTopic() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateTopicRequest.
 	}
 	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {
@@ -147,9 +148,11 @@ func ExampleAdminClient_DeleteTopic() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteTopicRequest.
 	}
 	err = c.DeleteTopic(ctx, req)
 	if err != nil {
@@ -158,17 +161,16 @@ func ExampleAdminClient_DeleteTopic() {
 }
 
 func ExampleAdminClient_ListTopicSubscriptions() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListTopicSubscriptionsRequest.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
 	for {
@@ -185,16 +187,16 @@ func ExampleAdminClient_ListTopicSubscriptions() {
 }
 
 func ExampleAdminClient_CreateSubscription() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.CreateSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateSubscriptionRequest.
 	}
 	resp, err := c.CreateSubscription(ctx, req)
 	if err != nil {
@@ -205,16 +207,16 @@ func ExampleAdminClient_CreateSubscription() {
 }
 
 func ExampleAdminClient_GetSubscription() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.GetSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetSubscriptionRequest.
 	}
 	resp, err := c.GetSubscription(ctx, req)
 	if err != nil {
@@ -225,17 +227,16 @@ func ExampleAdminClient_GetSubscription() {
 }
 
 func ExampleAdminClient_ListSubscriptions() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListSubscriptionsRequest.
 	}
 	it := c.ListSubscriptions(ctx, req)
 	for {
@@ -252,16 +253,16 @@ func ExampleAdminClient_ListSubscriptions() {
 }
 
 func ExampleAdminClient_UpdateSubscription() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateSubscriptionRequest.
 	}
 	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
@@ -277,12 +278,169 @@ func ExampleAdminClient_DeleteSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.DeleteSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteSubscriptionRequest.
 	}
 	err = c.DeleteSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_SeekSubscription() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.SeekSubscriptionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#SeekSubscriptionRequest.
+	}
+	op, err := c.SeekSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_CreateReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.CreateReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CreateReservationRequest.
+	}
+	resp, err := c.CreateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_GetReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.GetReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#GetReservationRequest.
+	}
+	resp, err := c.GetReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_ListReservations() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ListReservationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationsRequest.
+	}
+	it := c.ListReservations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAdminClient_UpdateReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.UpdateReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#UpdateReservationRequest.
+	}
+	resp, err := c.UpdateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_DeleteReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.DeleteReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#DeleteReservationRequest.
+	}
+	err = c.DeleteReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_ListReservationTopics() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ListReservationTopicsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListReservationTopicsRequest.
+	}
+	it := c.ListReservationTopics(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }

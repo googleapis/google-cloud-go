@@ -22,6 +22,7 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
@@ -109,52 +110,92 @@ func isRetryableStreamError(err error, isEligible func(codes.Code) bool) bool {
 	return isEligible(s.Code())
 }
 
-// retryableReadOnlyCallOption returns a call option that retries with backoff
-// for ResourceExhausted in addition to other default retryable codes for
-// Pub/Sub. Suitable for read-only operations which are subject to only QPS
+// Wraps an ordered list of retryers. Earlier retryers take precedence.
+type compositeRetryer struct {
+	retryers []gax.Retryer
+}
+
+func (cr *compositeRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	for _, r := range cr.retryers {
+		pause, shouldRetry = r.Retry(err)
+		if shouldRetry {
+			return
+		}
+	}
+	return 0, false
+}
+
+// resourceExhaustedRetryer returns a call option that retries slowly with
+// backoff for ResourceExhausted in addition to other default retryable codes
+// for Pub/Sub. Suitable for read-only operations which are subject to only QPS
 // quota limits.
-func retryableReadOnlyCallOption() gax.CallOption {
+func resourceExhaustedRetryer() gax.CallOption {
 	return gax.WithRetry(func() gax.Retryer {
-		return gax.OnCodes([]codes.Code{
-			codes.Aborted,
-			codes.DeadlineExceeded,
-			codes.Internal,
-			codes.ResourceExhausted,
-			codes.Unavailable,
-			codes.Unknown,
-		}, gax.Backoff{
-			Initial:    100 * time.Millisecond,
-			Max:        60 * time.Second,
-			Multiplier: 1.3,
-		})
+		return &compositeRetryer{
+			retryers: []gax.Retryer{
+				gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+				}, gax.Backoff{
+					Initial:    time.Second,
+					Max:        60 * time.Second,
+					Multiplier: 3,
+				}),
+				gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60 * time.Second,
+					Multiplier: 1.3,
+				}),
+			},
+		}
 	})
 }
 
-const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+const (
+	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+	pubsubLiteErrorDomain     = "pubsublite.googleapis.com"
+	resetSignal               = "RESET"
+)
+
+// Pub/Sub Lite's RESET signal is a status containing error details that
+// instructs streams to reset their state.
+func isStreamResetSignal(err error) bool {
+	status, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	if !isRetryableRecvCode(status.Code()) {
+		return false
+	}
+	for _, details := range status.Details() {
+		if errInfo, ok := details.(*errdetails.ErrorInfo); ok && errInfo.Reason == resetSignal && errInfo.Domain == pubsubLiteErrorDomain {
+			return true
+		}
+	}
+	return false
+}
 
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
-		// Keep inactive connections alive.
+		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			Time: 5 * time.Minute,
+			Time:                1 * time.Minute,
+			Timeout:             1 * time.Minute,
+			PermitWithoutStream: true,
 		})),
 	}
 }
 
-type apiClient interface {
-	Close() error
-}
-
-type apiClients []apiClient
-
-func (ac apiClients) Close() (retErr error) {
-	for _, c := range ac {
-		if err := c.Close(); retErr == nil {
-			retErr = err
-		}
-	}
-	return
+func streamClientOptions(region string) []option.ClientOption {
+	// To ensure most users don't hit the limit of 100 streams per connection, if
+	// they have a high number of topic partitions.
+	return append(defaultClientOptions(region), option.WithGRPCConnectionPool(8))
 }
 
 // NewAdminClient creates a new gapic AdminClient for a region.
@@ -164,17 +205,17 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewPublisherClient(ctx, options...)
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewSubscriberClient(ctx, options...)
 }
 
 func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
-	options := append(defaultClientOptions(region), opts...)
+	options := append(streamClientOptions(region), opts...)
 	return vkit.NewCursorClient(ctx, options...)
 }
 

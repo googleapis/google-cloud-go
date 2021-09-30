@@ -30,21 +30,23 @@ func ExampleNewFirestoreAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleFirestoreAdminClient_CreateIndex() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#CreateIndexRequest.
 	}
 	op, err := c.CreateIndex(ctx, req)
 	if err != nil {
@@ -60,17 +62,16 @@ func ExampleFirestoreAdminClient_CreateIndex() {
 }
 
 func ExampleFirestoreAdminClient_ListIndexes() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ListIndexesRequest.
 	}
 	it := c.ListIndexes(ctx, req)
 	for {
@@ -87,16 +88,16 @@ func ExampleFirestoreAdminClient_ListIndexes() {
 }
 
 func ExampleFirestoreAdminClient_GetIndex() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#GetIndexRequest.
 	}
 	resp, err := c.GetIndex(ctx, req)
 	if err != nil {
@@ -112,9 +113,11 @@ func ExampleFirestoreAdminClient_DeleteIndex() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#DeleteIndexRequest.
 	}
 	err = c.DeleteIndex(ctx, req)
 	if err != nil {
@@ -123,16 +126,16 @@ func ExampleFirestoreAdminClient_DeleteIndex() {
 }
 
 func ExampleFirestoreAdminClient_GetField() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetFieldRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#GetFieldRequest.
 	}
 	resp, err := c.GetField(ctx, req)
 	if err != nil {
@@ -143,16 +146,16 @@ func ExampleFirestoreAdminClient_GetField() {
 }
 
 func ExampleFirestoreAdminClient_UpdateField() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateFieldRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#UpdateFieldRequest.
 	}
 	op, err := c.UpdateField(ctx, req)
 	if err != nil {
@@ -168,17 +171,16 @@ func ExampleFirestoreAdminClient_UpdateField() {
 }
 
 func ExampleFirestoreAdminClient_ListFields() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListFieldsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ListFieldsRequest.
 	}
 	it := c.ListFields(ctx, req)
 	for {
@@ -195,16 +197,16 @@ func ExampleFirestoreAdminClient_ListFields() {
 }
 
 func ExampleFirestoreAdminClient_ExportDocuments() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ExportDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ExportDocumentsRequest.
 	}
 	op, err := c.ExportDocuments(ctx, req)
 	if err != nil {
@@ -220,16 +222,16 @@ func ExampleFirestoreAdminClient_ExportDocuments() {
 }
 
 func ExampleFirestoreAdminClient_ImportDocuments() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ImportDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/admin/v1#ImportDocumentsRequest.
 	}
 	op, err := c.ImportDocuments(ctx, req)
 	if err != nil {

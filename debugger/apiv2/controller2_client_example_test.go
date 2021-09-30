@@ -29,21 +29,23 @@ func ExampleNewController2Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleController2Client_RegisterDebuggee() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.RegisterDebuggeeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#RegisterDebuggeeRequest.
 	}
 	resp, err := c.RegisterDebuggee(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleController2Client_RegisterDebuggee() {
 }
 
 func ExampleController2Client_ListActiveBreakpoints() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.ListActiveBreakpointsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListActiveBreakpointsRequest.
 	}
 	resp, err := c.ListActiveBreakpoints(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleController2Client_ListActiveBreakpoints() {
 }
 
 func ExampleController2Client_UpdateActiveBreakpoint() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#UpdateActiveBreakpointRequest.
 	}
 	resp, err := c.UpdateActiveBreakpoint(ctx, req)
 	if err != nil {

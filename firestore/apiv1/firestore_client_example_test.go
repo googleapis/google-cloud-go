@@ -31,21 +31,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#GetDocumentRequest.
 	}
 	resp, err := c.GetDocument(ctx, req)
 	if err != nil {
@@ -56,17 +58,16 @@ func ExampleClient_GetDocument() {
 }
 
 func ExampleClient_ListDocuments() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#ListDocumentsRequest.
 	}
 	it := c.ListDocuments(ctx, req)
 	for {
@@ -83,16 +84,16 @@ func ExampleClient_ListDocuments() {
 }
 
 func ExampleClient_UpdateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#UpdateDocumentRequest.
 	}
 	resp, err := c.UpdateDocument(ctx, req)
 	if err != nil {
@@ -108,9 +109,11 @@ func ExampleClient_DeleteDocument() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#DeleteDocumentRequest.
 	}
 	err = c.DeleteDocument(ctx, req)
 	if err != nil {
@@ -119,16 +122,16 @@ func ExampleClient_DeleteDocument() {
 }
 
 func ExampleClient_BeginTransaction() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#BeginTransactionRequest.
 	}
 	resp, err := c.BeginTransaction(ctx, req)
 	if err != nil {
@@ -139,16 +142,16 @@ func ExampleClient_BeginTransaction() {
 }
 
 func ExampleClient_Commit() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.CommitRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CommitRequest.
 	}
 	resp, err := c.Commit(ctx, req)
 	if err != nil {
@@ -164,9 +167,11 @@ func ExampleClient_Rollback() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.RollbackRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#RollbackRequest.
 	}
 	err = c.Rollback(ctx, req)
 	if err != nil {
@@ -175,17 +180,16 @@ func ExampleClient_Rollback() {
 }
 
 func ExampleClient_PartitionQuery() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#PartitionQueryRequest.
 	}
 	it := c.PartitionQuery(ctx, req)
 	for {
@@ -202,13 +206,12 @@ func ExampleClient_PartitionQuery() {
 }
 
 func ExampleClient_Write() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Write(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -238,13 +241,12 @@ func ExampleClient_Write() {
 }
 
 func ExampleClient_Listen() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Listen(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,17 +276,16 @@ func ExampleClient_Listen() {
 }
 
 func ExampleClient_ListCollectionIds() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.ListCollectionIdsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#ListCollectionIdsRequest.
 	}
 	it := c.ListCollectionIds(ctx, req)
 	for {
@@ -301,16 +302,16 @@ func ExampleClient_ListCollectionIds() {
 }
 
 func ExampleClient_BatchWrite() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.BatchWriteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#BatchWriteRequest.
 	}
 	resp, err := c.BatchWrite(ctx, req)
 	if err != nil {
@@ -321,16 +322,16 @@ func ExampleClient_BatchWrite() {
 }
 
 func ExampleClient_CreateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/firestore/v1#CreateDocumentRequest.
 	}
 	resp, err := c.CreateDocument(ctx, req)
 	if err != nil {

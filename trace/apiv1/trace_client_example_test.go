@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListTraces() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
 	}
 	it := c.ListTraces(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleClient_ListTraces() {
 }
 
 func ExampleClient_GetTrace() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.GetTraceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#GetTraceRequest.
 	}
 	resp, err := c.GetTrace(ctx, req)
 	if err != nil {
@@ -87,9 +88,11 @@ func ExampleClient_PatchTraces() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.PatchTracesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#PatchTracesRequest.
 	}
 	err = c.PatchTraces(ctx, req)
 	if err != nil {

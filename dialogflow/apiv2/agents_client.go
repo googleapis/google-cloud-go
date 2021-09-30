@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAgentsClientHook clientHook
@@ -54,12 +54,13 @@ type AgentsCallOptions struct {
 	GetValidationResult []gax.CallOption
 }
 
-func defaultAgentsClientOptions() []option.ClientOption {
+func defaultAgentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -170,37 +171,248 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 	}
 }
 
+// internalAgentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalAgentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	GetAgent(context.Context, *dialogflowpb.GetAgentRequest, ...gax.CallOption) (*dialogflowpb.Agent, error)
+	SetAgent(context.Context, *dialogflowpb.SetAgentRequest, ...gax.CallOption) (*dialogflowpb.Agent, error)
+	DeleteAgent(context.Context, *dialogflowpb.DeleteAgentRequest, ...gax.CallOption) error
+	SearchAgents(context.Context, *dialogflowpb.SearchAgentsRequest, ...gax.CallOption) *AgentIterator
+	TrainAgent(context.Context, *dialogflowpb.TrainAgentRequest, ...gax.CallOption) (*TrainAgentOperation, error)
+	TrainAgentOperation(name string) *TrainAgentOperation
+	ExportAgent(context.Context, *dialogflowpb.ExportAgentRequest, ...gax.CallOption) (*ExportAgentOperation, error)
+	ExportAgentOperation(name string) *ExportAgentOperation
+	ImportAgent(context.Context, *dialogflowpb.ImportAgentRequest, ...gax.CallOption) (*ImportAgentOperation, error)
+	ImportAgentOperation(name string) *ImportAgentOperation
+	RestoreAgent(context.Context, *dialogflowpb.RestoreAgentRequest, ...gax.CallOption) (*RestoreAgentOperation, error)
+	RestoreAgentOperation(name string) *RestoreAgentOperation
+	GetValidationResult(context.Context, *dialogflowpb.GetValidationResultRequest, ...gax.CallOption) (*dialogflowpb.ValidationResult, error)
+}
+
 // AgentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Agents.
+type AgentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAgentsClient
+
+	// The call options for this service.
+	CallOptions *AgentsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AgentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AgentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AgentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// GetAgent retrieves the specified agent.
+func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	return c.internalClient.GetAgent(ctx, req, opts...)
+}
+
+// SetAgent creates/updates the specified agent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	return c.internalClient.SetAgent(ctx, req, opts...)
+}
+
+// DeleteAgent deletes the specified agent.
+func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAgent(ctx, req, opts...)
+}
+
+// SearchAgents returns the list of agents.
+//
+// Since there is at most one conversational agent per project, this method is
+// useful primarily for listing all agents across projects the caller has
+// access to. One can achieve that with a wildcard project collection id “-”.
+// Refer to List
+// Sub-Collections (at https://cloud.google.com/apis/design/design_patterns#list_sub-collections).
+func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.SearchAgentsRequest, opts ...gax.CallOption) *AgentIterator {
+	return c.internalClient.SearchAgents(ctx, req, opts...)
+}
+
+// TrainAgent trains the specified agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
+	return c.internalClient.TrainAgent(ctx, req, opts...)
+}
+
+// TrainAgentOperation returns a new TrainAgentOperation from a given name.
+// The name must be that of a previously created TrainAgentOperation, possibly from a different process.
+func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
+	return c.internalClient.TrainAgentOperation(name)
+}
+
+// ExportAgent exports the specified agent to a ZIP file.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: ExportAgentResponse
+func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
+	return c.internalClient.ExportAgent(ctx, req, opts...)
+}
+
+// ExportAgentOperation returns a new ExportAgentOperation from a given name.
+// The name must be that of a previously created ExportAgentOperation, possibly from a different process.
+func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
+	return c.internalClient.ExportAgentOperation(name)
+}
+
+// ImportAgent imports the specified agent from a ZIP file.
+//
+// Uploads new intents and entity types without deleting the existing ones.
+// Intents and entity types with the same name are replaced with the new
+// versions from ImportAgentRequest. After the import, the imported draft
+// agent will be trained automatically (unless disabled in agent settings).
+// However, once the import is done, training may not be completed yet. Please
+// call TrainAgent and wait for the operation it returns in order to train
+// explicitly.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// The operation only tracks when importing is complete, not when it is done
+// training.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
+	return c.internalClient.ImportAgent(ctx, req, opts...)
+}
+
+// ImportAgentOperation returns a new ImportAgentOperation from a given name.
+// The name must be that of a previously created ImportAgentOperation, possibly from a different process.
+func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
+	return c.internalClient.ImportAgentOperation(name)
+}
+
+// RestoreAgent restores the specified agent from a ZIP file.
+//
+// Replaces the current agent version with a new one. All the intents and
+// entity types in the older version are deleted. After the restore, the
+// restored draft agent will be trained automatically (unless disabled in
+// agent settings). However, once the restore is done, training may not be
+// completed yet. Please call TrainAgent and wait for the operation it
+// returns in order to train explicitly.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// The operation only tracks when restoring is complete, not when it is done
+// training.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
+	return c.internalClient.RestoreAgent(ctx, req, opts...)
+}
+
+// RestoreAgentOperation returns a new RestoreAgentOperation from a given name.
+// The name must be that of a previously created RestoreAgentOperation, possibly from a different process.
+func (c *AgentsClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
+	return c.internalClient.RestoreAgentOperation(name)
+}
+
+// GetValidationResult gets agent validation result. Agent validation is performed during
+// training time and is updated automatically when training is completed.
+func (c *AgentsClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
+	return c.internalClient.GetValidationResult(ctx, req, opts...)
+}
+
+// agentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AgentsClient struct {
+type agentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AgentsClient
+	CallOptions **AgentsCallOptions
+
 	// The gRPC API client.
 	agentsClient dialogflowpb.AgentsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *AgentsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAgentsClient creates a new agents client.
+// NewAgentsClient creates a new agents client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Agents.
 func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsClient, error) {
-	clientOpts := defaultAgentsClientOptions()
-
+	clientOpts := defaultAgentsGRPCClientOptions()
 	if newAgentsClientHook != nil {
 		hookOpts, err := newAgentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -218,16 +430,19 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 	if err != nil {
 		return nil, err
 	}
-	c := &AgentsClient{
+	client := AgentsClient{CallOptions: defaultAgentsCallOptions()}
+
+	c := &agentsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAgentsCallOptions(),
-
-		agentsClient: dialogflowpb.NewAgentsClient(connPool),
+		agentsClient:     dialogflowpb.NewAgentsClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -237,33 +452,33 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AgentsClient) Connection() *grpc.ClientConn {
+func (c *agentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AgentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AgentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *agentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GetAgent retrieves the specified agent.
-func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *agentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *agentsGRPCClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -271,7 +486,7 @@ func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAgent[0:len(c.CallOptions.GetAgent):len(c.CallOptions.GetAgent)], opts...)
+	opts = append((*c.CallOptions).GetAgent[0:len((*c.CallOptions).GetAgent):len((*c.CallOptions).GetAgent)], opts...)
 	var resp *dialogflowpb.Agent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -284,8 +499,7 @@ func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentR
 	return resp, nil
 }
 
-// SetAgent creates/updates the specified agent.
-func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+func (c *agentsGRPCClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -293,7 +507,7 @@ func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", url.QueryEscape(req.GetAgent().GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetAgent[0:len(c.CallOptions.SetAgent):len(c.CallOptions.SetAgent)], opts...)
+	opts = append((*c.CallOptions).SetAgent[0:len((*c.CallOptions).SetAgent):len((*c.CallOptions).SetAgent)], opts...)
 	var resp *dialogflowpb.Agent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -306,8 +520,7 @@ func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentR
 	return resp, nil
 }
 
-// DeleteAgent deletes the specified agent.
-func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+func (c *agentsGRPCClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -315,7 +528,7 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.Delete
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
+	opts = append((*c.CallOptions).DeleteAgent[0:len((*c.CallOptions).DeleteAgent):len((*c.CallOptions).DeleteAgent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.agentsClient.DeleteAgent(ctx, req, settings.GRPC...)
@@ -324,25 +537,20 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.Delete
 	return err
 }
 
-// SearchAgents returns the list of agents.
-//
-// Since there is at most one conversational agent per project, this method is
-// useful primarily for listing all agents across projects the caller has
-// access to. One can achieve that with a wildcard project collection id “-”.
-// Refer to List
-// Sub-Collections (at https://cloud.google.com/apis/design/design_patterns#list_sub-collections).
-func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.SearchAgentsRequest, opts ...gax.CallOption) *AgentIterator {
+func (c *agentsGRPCClient) SearchAgents(ctx context.Context, req *dialogflowpb.SearchAgentsRequest, opts ...gax.CallOption) *AgentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchAgents[0:len(c.CallOptions.SearchAgents):len(c.CallOptions.SearchAgents)], opts...)
+	opts = append((*c.CallOptions).SearchAgents[0:len((*c.CallOptions).SearchAgents):len((*c.CallOptions).SearchAgents)], opts...)
 	it := &AgentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.SearchAgentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Agent, string, error) {
-		var resp *dialogflowpb.SearchAgentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.SearchAgentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -365,16 +573,15 @@ func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.Searc
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// TrainAgent trains the specified agent.
-//
-// Operation <response: google.protobuf.Empty>
-func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
+func (c *agentsGRPCClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -382,7 +589,7 @@ func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAg
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TrainAgent[0:len(c.CallOptions.TrainAgent):len(c.CallOptions.TrainAgent)], opts...)
+	opts = append((*c.CallOptions).TrainAgent[0:len((*c.CallOptions).TrainAgent):len((*c.CallOptions).TrainAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -393,14 +600,11 @@ func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAg
 		return nil, err
 	}
 	return &TrainAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportAgent exports the specified agent to a ZIP file.
-//
-// Operation <response: ExportAgentResponse>
-func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
+func (c *agentsGRPCClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -408,7 +612,7 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.Export
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportAgent[0:len(c.CallOptions.ExportAgent):len(c.CallOptions.ExportAgent)], opts...)
+	opts = append((*c.CallOptions).ExportAgent[0:len((*c.CallOptions).ExportAgent):len((*c.CallOptions).ExportAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -419,24 +623,11 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.Export
 		return nil, err
 	}
 	return &ExportAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ImportAgent imports the specified agent from a ZIP file.
-//
-// Uploads new intents and entity types without deleting the existing ones.
-// Intents and entity types with the same name are replaced with the new
-// versions from ImportAgentRequest. After the import, the imported draft
-// agent will be trained automatically (unless disabled in agent settings).
-// However, once the import is done, training may not be completed yet. Please
-// call TrainAgent and wait for the operation it returns in order to train
-// explicitly.
-//
-// Operation <response: google.protobuf.Empty>
-// An operation which tracks when importing is complete. It only tracks
-// when the draft agent is updated not when it is done training.
-func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
+func (c *agentsGRPCClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -444,7 +635,7 @@ func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.Import
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportAgent[0:len(c.CallOptions.ImportAgent):len(c.CallOptions.ImportAgent)], opts...)
+	opts = append((*c.CallOptions).ImportAgent[0:len((*c.CallOptions).ImportAgent):len((*c.CallOptions).ImportAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -455,23 +646,11 @@ func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.Import
 		return nil, err
 	}
 	return &ImportAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// RestoreAgent restores the specified agent from a ZIP file.
-//
-// Replaces the current agent version with a new one. All the intents and
-// entity types in the older version are deleted. After the restore, the
-// restored draft agent will be trained automatically (unless disabled in
-// agent settings). However, once the restore is done, training may not be
-// completed yet. Please call TrainAgent and wait for the operation it
-// returns in order to train explicitly.
-//
-// Operation <response: google.protobuf.Empty>
-// An operation which tracks when restoring is complete. It only tracks
-// when the draft agent is updated not when it is done training.
-func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
+func (c *agentsGRPCClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -479,7 +658,7 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RestoreAgent[0:len(c.CallOptions.RestoreAgent):len(c.CallOptions.RestoreAgent)], opts...)
+	opts = append((*c.CallOptions).RestoreAgent[0:len((*c.CallOptions).RestoreAgent):len((*c.CallOptions).RestoreAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -490,13 +669,11 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 		return nil, err
 	}
 	return &RestoreAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetValidationResult gets agent validation result. Agent validation is performed during
-// training time and is updated automatically when training is completed.
-func (c *AgentsClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
+func (c *agentsGRPCClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -504,7 +681,7 @@ func (c *AgentsClient) GetValidationResult(ctx context.Context, req *dialogflowp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetValidationResult[0:len(c.CallOptions.GetValidationResult):len(c.CallOptions.GetValidationResult)], opts...)
+	opts = append((*c.CallOptions).GetValidationResult[0:len((*c.CallOptions).GetValidationResult):len((*c.CallOptions).GetValidationResult)], opts...)
 	var resp *dialogflowpb.ValidationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -524,9 +701,9 @@ type ExportAgentOperation struct {
 
 // ExportAgentOperation returns a new ExportAgentOperation from a given name.
 // The name must be that of a previously created ExportAgentOperation, possibly from a different process.
-func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
+func (c *agentsGRPCClient) ExportAgentOperation(name string) *ExportAgentOperation {
 	return &ExportAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -593,9 +770,9 @@ type ImportAgentOperation struct {
 
 // ImportAgentOperation returns a new ImportAgentOperation from a given name.
 // The name must be that of a previously created ImportAgentOperation, possibly from a different process.
-func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
+func (c *agentsGRPCClient) ImportAgentOperation(name string) *ImportAgentOperation {
 	return &ImportAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -651,9 +828,9 @@ type RestoreAgentOperation struct {
 
 // RestoreAgentOperation returns a new RestoreAgentOperation from a given name.
 // The name must be that of a previously created RestoreAgentOperation, possibly from a different process.
-func (c *AgentsClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
+func (c *agentsGRPCClient) RestoreAgentOperation(name string) *RestoreAgentOperation {
 	return &RestoreAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -709,9 +886,9 @@ type TrainAgentOperation struct {
 
 // TrainAgentOperation returns a new TrainAgentOperation from a given name.
 // The name must be that of a previously created TrainAgentOperation, possibly from a different process.
-func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
+func (c *agentsGRPCClient) TrainAgentOperation(name string) *TrainAgentOperation {
 	return &TrainAgentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

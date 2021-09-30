@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "AdminClient",
           "rpcs": {
+            "CreateReservation": {
+              "methods": [
+                "CreateReservation"
+              ]
+            },
             "CreateSubscription": {
               "methods": [
                 "CreateSubscription"
@@ -20,6 +25,11 @@
                 "CreateTopic"
               ]
             },
+            "DeleteReservation": {
+              "methods": [
+                "DeleteReservation"
+              ]
+            },
             "DeleteSubscription": {
               "methods": [
                 "DeleteSubscription"
@@ -28,6 +38,11 @@
             "DeleteTopic": {
               "methods": [
                 "DeleteTopic"
+              ]
+            },
+            "GetReservation": {
+              "methods": [
+                "GetReservation"
               ]
             },
             "GetSubscription": {
@@ -45,6 +60,16 @@
                 "GetTopicPartitions"
               ]
             },
+            "ListReservationTopics": {
+              "methods": [
+                "ListReservationTopics"
+              ]
+            },
+            "ListReservations": {
+              "methods": [
+                "ListReservations"
+              ]
+            },
             "ListSubscriptions": {
               "methods": [
                 "ListSubscriptions"
@@ -58,6 +83,16 @@
             "ListTopics": {
               "methods": [
                 "ListTopics"
+              ]
+            },
+            "SeekSubscription": {
+              "methods": [
+                "SeekSubscription"
+              ]
+            },
+            "UpdateReservation": {
+              "methods": [
+                "UpdateReservation"
               ]
             },
             "UpdateSubscription": {
@@ -153,6 +188,11 @@
             "ComputeMessageStats": {
               "methods": [
                 "ComputeMessageStats"
+              ]
+            },
+            "ComputeTimeCursor": {
+              "methods": [
+                "ComputeTimeCursor"
               ]
             }
           }

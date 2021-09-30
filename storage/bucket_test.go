@@ -42,6 +42,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		},
 		BucketPolicyOnly:         BucketPolicyOnly{Enabled: true},
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+		PublicAccessPrevention:   PublicAccessPreventionEnforced,
 		VersioningEnabled:        false,
 		// should be ignored:
 		MetaGeneration: 39,
@@ -121,6 +122,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 				Enabled: true,
 			},
+			PublicAccessPrevention: "enforced",
 		},
 		Versioning: nil, // ignore VersioningEnabled if false
 		Labels:     map[string]string{"label": "value"},
@@ -205,6 +207,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
+		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -219,6 +222,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
+		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -234,6 +238,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
+		PublicAccessPrevention: "enforced",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -243,6 +248,42 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	// should be disabled in the proto.
 	attrs.BucketPolicyOnly = BucketPolicyOnly{}
 	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		PublicAccessPrevention: "enforced",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "unspecified" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		PublicAccessPrevention: "unspecified",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Re-enable UBLA and confirm that it does not affect the PAP setting.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: true}
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
+			Enabled: true,
+		},
+		PublicAccessPrevention: "unspecified",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
+	// to nil in the proto.
+	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: false}
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnknown
 	got = attrs.toRawBucket()
 	want.IamConfiguration = nil
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -601,10 +642,11 @@ func TestNewBucket(t *testing.T) {
 		Acl: []*raw.BucketAccessControl{
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
-		LocationType: "dual-region",
-		Encryption:   &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:      &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:      &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		LocationType:  "dual-region",
+		Encryption:    &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		ProjectNumber: 123231313,
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -654,6 +696,7 @@ func TestNewBucket(t *testing.T) {
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader, Email: "joe@example.com"}},
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
+		ProjectNumber:    123231313,
 	}
 	got, err := newBucket(rb)
 	if err != nil {

@@ -69,7 +69,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		Params:         params,
 		ParamTypes:     paramTypes,
 		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(&options),
+		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, ""),
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.

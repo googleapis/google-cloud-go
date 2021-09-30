@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newJobClientHook clientHook
@@ -54,12 +54,13 @@ type JobCallOptions struct {
 	SearchJobsForAlert []gax.CallOption
 }
 
-func defaultJobClientOptions() []option.ClientOption {
+func defaultJobGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -114,37 +115,187 @@ func defaultJobCallOptions() *JobCallOptions {
 	}
 }
 
+// internalJobClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+type internalJobClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateJob(context.Context, *talentpb.CreateJobRequest, ...gax.CallOption) (*talentpb.Job, error)
+	BatchCreateJobs(context.Context, *talentpb.BatchCreateJobsRequest, ...gax.CallOption) (*BatchCreateJobsOperation, error)
+	BatchCreateJobsOperation(name string) *BatchCreateJobsOperation
+	GetJob(context.Context, *talentpb.GetJobRequest, ...gax.CallOption) (*talentpb.Job, error)
+	UpdateJob(context.Context, *talentpb.UpdateJobRequest, ...gax.CallOption) (*talentpb.Job, error)
+	BatchUpdateJobs(context.Context, *talentpb.BatchUpdateJobsRequest, ...gax.CallOption) (*BatchUpdateJobsOperation, error)
+	BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation
+	DeleteJob(context.Context, *talentpb.DeleteJobRequest, ...gax.CallOption) error
+	BatchDeleteJobs(context.Context, *talentpb.BatchDeleteJobsRequest, ...gax.CallOption) (*BatchDeleteJobsOperation, error)
+	BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation
+	ListJobs(context.Context, *talentpb.ListJobsRequest, ...gax.CallOption) *JobIterator
+	SearchJobs(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) (*talentpb.SearchJobsResponse, error)
+	SearchJobsForAlert(context.Context, *talentpb.SearchJobsRequest, ...gax.CallOption) (*talentpb.SearchJobsResponse, error)
+}
+
 // JobClient is a client for interacting with Cloud Talent Solution API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service handles job management, including job CRUD, enumeration and search.
+type JobClient struct {
+	// The internal transport-dependent client.
+	internalClient internalJobClient
+
+	// The call options for this service.
+	CallOptions *JobCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *JobClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *JobClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *JobClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateJob creates a new job.
+//
+// Typically, the job becomes searchable within 10 seconds, but it may take
+// up to 5 minutes.
+func (c *JobClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+	return c.internalClient.CreateJob(ctx, req, opts...)
+}
+
+// BatchCreateJobs begins executing a batch create jobs operation.
+func (c *JobClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest, opts ...gax.CallOption) (*BatchCreateJobsOperation, error) {
+	return c.internalClient.BatchCreateJobs(ctx, req, opts...)
+}
+
+// BatchCreateJobsOperation returns a new BatchCreateJobsOperation from a given name.
+// The name must be that of a previously created BatchCreateJobsOperation, possibly from a different process.
+func (c *JobClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOperation {
+	return c.internalClient.BatchCreateJobsOperation(name)
+}
+
+// GetJob retrieves the specified job, whose status is OPEN or recently EXPIRED
+// within the last 90 days.
+func (c *JobClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+	return c.internalClient.GetJob(ctx, req, opts...)
+}
+
+// UpdateJob updates specified job.
+//
+// Typically, updated contents become visible in search results within 10
+// seconds, but it may take up to 5 minutes.
+func (c *JobClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+	return c.internalClient.UpdateJob(ctx, req, opts...)
+}
+
+// BatchUpdateJobs begins executing a batch update jobs operation.
+func (c *JobClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest, opts ...gax.CallOption) (*BatchUpdateJobsOperation, error) {
+	return c.internalClient.BatchUpdateJobs(ctx, req, opts...)
+}
+
+// BatchUpdateJobsOperation returns a new BatchUpdateJobsOperation from a given name.
+// The name must be that of a previously created BatchUpdateJobsOperation, possibly from a different process.
+func (c *JobClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation {
+	return c.internalClient.BatchUpdateJobsOperation(name)
+}
+
+// DeleteJob deletes the specified job.
+//
+// Typically, the job becomes unsearchable within 10 seconds, but it may take
+// up to 5 minutes.
+func (c *JobClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteJob(ctx, req, opts...)
+}
+
+// BatchDeleteJobs begins executing a batch delete jobs operation.
+func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest, opts ...gax.CallOption) (*BatchDeleteJobsOperation, error) {
+	return c.internalClient.BatchDeleteJobs(ctx, req, opts...)
+}
+
+// BatchDeleteJobsOperation returns a new BatchDeleteJobsOperation from a given name.
+// The name must be that of a previously created BatchDeleteJobsOperation, possibly from a different process.
+func (c *JobClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
+	return c.internalClient.BatchDeleteJobsOperation(name)
+}
+
+// ListJobs lists jobs by filter.
+func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
+	return c.internalClient.ListJobs(ctx, req, opts...)
+}
+
+// SearchJobs searches for jobs using the provided SearchJobsRequest.
+//
+// This call constrains the visibility of jobs
+// present in the database, and only returns jobs that the caller has
+// permission to search against.
+func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
+	return c.internalClient.SearchJobs(ctx, req, opts...)
+}
+
+// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
+//
+// This API call is intended for the use case of targeting passive job
+// seekers (for example, job seekers who have signed up to receive email
+// alerts about potential job opportunities), it has different algorithmic
+// adjustments that are designed to specifically target passive job seekers.
+//
+// This call constrains the visibility of jobs
+// present in the database, and only returns jobs the caller has
+// permission to search against.
+func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
+	return c.internalClient.SearchJobsForAlert(ctx, req, opts...)
+}
+
+// jobGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type JobClient struct {
+type jobGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing JobClient
+	CallOptions **JobCallOptions
+
 	// The gRPC API client.
 	jobClient talentpb.JobServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *JobCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewJobClient creates a new job service client.
+// NewJobClient creates a new job service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A service handles job management, including job CRUD, enumeration and search.
 func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient, error) {
-	clientOpts := defaultJobClientOptions()
-
+	clientOpts := defaultJobGRPCClientOptions()
 	if newJobClientHook != nil {
 		hookOpts, err := newJobClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -162,16 +313,19 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 	if err != nil {
 		return nil, err
 	}
-	c := &JobClient{
+	client := JobClient{CallOptions: defaultJobCallOptions()}
+
+	c := &jobGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultJobCallOptions(),
-
-		jobClient: talentpb.NewJobServiceClient(connPool),
+		jobClient:        talentpb.NewJobServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -181,36 +335,33 @@ func NewJobClient(ctx context.Context, opts ...option.ClientOption) (*JobClient,
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *JobClient) Connection() *grpc.ClientConn {
+func (c *jobGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *JobClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *JobClient) setGoogleClientInfo(keyval ...string) {
+func (c *jobGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateJob creates a new job.
-//
-// Typically, the job becomes searchable within 10 seconds, but it may take
-// up to 5 minutes.
-func (c *JobClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *jobGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *jobGRPCClient) CreateJob(ctx context.Context, req *talentpb.CreateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -218,7 +369,7 @@ func (c *JobClient) CreateJob(ctx context.Context, req *talentpb.CreateJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateJob[0:len(c.CallOptions.CreateJob):len(c.CallOptions.CreateJob)], opts...)
+	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -231,8 +382,7 @@ func (c *JobClient) CreateJob(ctx context.Context, req *talentpb.CreateJobReques
 	return resp, nil
 }
 
-// BatchCreateJobs begins executing a batch create jobs operation.
-func (c *JobClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest, opts ...gax.CallOption) (*BatchCreateJobsOperation, error) {
+func (c *jobGRPCClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCreateJobsRequest, opts ...gax.CallOption) (*BatchCreateJobsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -240,7 +390,7 @@ func (c *JobClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCrea
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchCreateJobs[0:len(c.CallOptions.BatchCreateJobs):len(c.CallOptions.BatchCreateJobs)], opts...)
+	opts = append((*c.CallOptions).BatchCreateJobs[0:len((*c.CallOptions).BatchCreateJobs):len((*c.CallOptions).BatchCreateJobs)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -251,13 +401,11 @@ func (c *JobClient) BatchCreateJobs(ctx context.Context, req *talentpb.BatchCrea
 		return nil, err
 	}
 	return &BatchCreateJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetJob retrieves the specified job, whose status is OPEN or recently EXPIRED
-// within the last 90 days.
-func (c *JobClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+func (c *jobGRPCClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -265,7 +413,7 @@ func (c *JobClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opt
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetJob[0:len(c.CallOptions.GetJob):len(c.CallOptions.GetJob)], opts...)
+	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -278,11 +426,7 @@ func (c *JobClient) GetJob(ctx context.Context, req *talentpb.GetJobRequest, opt
 	return resp, nil
 }
 
-// UpdateJob updates specified job.
-//
-// Typically, updated contents become visible in search results within 10
-// seconds, but it may take up to 5 minutes.
-func (c *JobClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
+func (c *jobGRPCClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobRequest, opts ...gax.CallOption) (*talentpb.Job, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -290,7 +434,7 @@ func (c *JobClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateJob[0:len(c.CallOptions.UpdateJob):len(c.CallOptions.UpdateJob)], opts...)
+	opts = append((*c.CallOptions).UpdateJob[0:len((*c.CallOptions).UpdateJob):len((*c.CallOptions).UpdateJob)], opts...)
 	var resp *talentpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -303,8 +447,7 @@ func (c *JobClient) UpdateJob(ctx context.Context, req *talentpb.UpdateJobReques
 	return resp, nil
 }
 
-// BatchUpdateJobs begins executing a batch update jobs operation.
-func (c *JobClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest, opts ...gax.CallOption) (*BatchUpdateJobsOperation, error) {
+func (c *jobGRPCClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpdateJobsRequest, opts ...gax.CallOption) (*BatchUpdateJobsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -312,7 +455,7 @@ func (c *JobClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpda
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchUpdateJobs[0:len(c.CallOptions.BatchUpdateJobs):len(c.CallOptions.BatchUpdateJobs)], opts...)
+	opts = append((*c.CallOptions).BatchUpdateJobs[0:len((*c.CallOptions).BatchUpdateJobs):len((*c.CallOptions).BatchUpdateJobs)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -323,15 +466,11 @@ func (c *JobClient) BatchUpdateJobs(ctx context.Context, req *talentpb.BatchUpda
 		return nil, err
 	}
 	return &BatchUpdateJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteJob deletes the specified job.
-//
-// Typically, the job becomes unsearchable within 10 seconds, but it may take
-// up to 5 minutes.
-func (c *JobClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRequest, opts ...gax.CallOption) error {
+func (c *jobGRPCClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -339,7 +478,7 @@ func (c *JobClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteJob[0:len(c.CallOptions.DeleteJob):len(c.CallOptions.DeleteJob)], opts...)
+	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.jobClient.DeleteJob(ctx, req, settings.GRPC...)
@@ -348,8 +487,7 @@ func (c *JobClient) DeleteJob(ctx context.Context, req *talentpb.DeleteJobReques
 	return err
 }
 
-// BatchDeleteJobs begins executing a batch delete jobs operation.
-func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest, opts ...gax.CallOption) (*BatchDeleteJobsOperation, error) {
+func (c *jobGRPCClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDeleteJobsRequest, opts ...gax.CallOption) (*BatchDeleteJobsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -357,7 +495,7 @@ func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchDeleteJobs[0:len(c.CallOptions.BatchDeleteJobs):len(c.CallOptions.BatchDeleteJobs)], opts...)
+	opts = append((*c.CallOptions).BatchDeleteJobs[0:len((*c.CallOptions).BatchDeleteJobs):len((*c.CallOptions).BatchDeleteJobs)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -368,23 +506,24 @@ func (c *JobClient) BatchDeleteJobs(ctx context.Context, req *talentpb.BatchDele
 		return nil, err
 	}
 	return &BatchDeleteJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListJobs lists jobs by filter.
-func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
+func (c *jobGRPCClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListJobs[0:len(c.CallOptions.ListJobs):len(c.CallOptions.ListJobs)], opts...)
+	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*talentpb.ListJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Job, string, error) {
-		var resp *talentpb.ListJobsResponse
-		req.PageToken = pageToken
+		resp := &talentpb.ListJobsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,18 +546,15 @@ func (c *JobClient) ListJobs(ctx context.Context, req *talentpb.ListJobsRequest,
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// SearchJobs searches for jobs using the provided SearchJobsRequest.
-//
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs that the caller has
-// permission to search against.
-func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
+func (c *jobGRPCClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -426,7 +562,7 @@ func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequ
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchJobs[0:len(c.CallOptions.SearchJobs):len(c.CallOptions.SearchJobs)], opts...)
+	opts = append((*c.CallOptions).SearchJobs[0:len((*c.CallOptions).SearchJobs):len((*c.CallOptions).SearchJobs)], opts...)
 	var resp *talentpb.SearchJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -439,17 +575,7 @@ func (c *JobClient) SearchJobs(ctx context.Context, req *talentpb.SearchJobsRequ
 	return resp, nil
 }
 
-// SearchJobsForAlert searches for jobs using the provided SearchJobsRequest.
-//
-// This API call is intended for the use case of targeting passive job
-// seekers (for example, job seekers who have signed up to receive email
-// alerts about potential job opportunities), it has different algorithmic
-// adjustments that are designed to specifically target passive job seekers.
-//
-// This call constrains the visibility of jobs
-// present in the database, and only returns jobs the caller has
-// permission to search against.
-func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
+func (c *jobGRPCClient) SearchJobsForAlert(ctx context.Context, req *talentpb.SearchJobsRequest, opts ...gax.CallOption) (*talentpb.SearchJobsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -457,7 +583,7 @@ func (c *JobClient) SearchJobsForAlert(ctx context.Context, req *talentpb.Search
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchJobsForAlert[0:len(c.CallOptions.SearchJobsForAlert):len(c.CallOptions.SearchJobsForAlert)], opts...)
+	opts = append((*c.CallOptions).SearchJobsForAlert[0:len((*c.CallOptions).SearchJobsForAlert):len((*c.CallOptions).SearchJobsForAlert)], opts...)
 	var resp *talentpb.SearchJobsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -477,9 +603,9 @@ type BatchCreateJobsOperation struct {
 
 // BatchCreateJobsOperation returns a new BatchCreateJobsOperation from a given name.
 // The name must be that of a previously created BatchCreateJobsOperation, possibly from a different process.
-func (c *JobClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOperation {
+func (c *jobGRPCClient) BatchCreateJobsOperation(name string) *BatchCreateJobsOperation {
 	return &BatchCreateJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -546,9 +672,9 @@ type BatchDeleteJobsOperation struct {
 
 // BatchDeleteJobsOperation returns a new BatchDeleteJobsOperation from a given name.
 // The name must be that of a previously created BatchDeleteJobsOperation, possibly from a different process.
-func (c *JobClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
+func (c *jobGRPCClient) BatchDeleteJobsOperation(name string) *BatchDeleteJobsOperation {
 	return &BatchDeleteJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -615,9 +741,9 @@ type BatchUpdateJobsOperation struct {
 
 // BatchUpdateJobsOperation returns a new BatchUpdateJobsOperation from a given name.
 // The name must be that of a previously created BatchUpdateJobsOperation, possibly from a different process.
-func (c *JobClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation {
+func (c *jobGRPCClient) BatchUpdateJobsOperation(name string) *BatchUpdateJobsOperation {
 	return &BatchUpdateJobsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

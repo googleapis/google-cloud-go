@@ -29,21 +29,23 @@ func ExampleNewPredictionClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePredictionClient_Predict() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#PredictRequest.
 	}
 	resp, err := c.Predict(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExamplePredictionClient_Predict() {
 }
 
 func ExamplePredictionClient_BatchPredict() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.BatchPredictRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/automl/v1beta1#BatchPredictRequest.
 	}
 	op, err := c.BatchPredict(ctx, req)
 	if err != nil {

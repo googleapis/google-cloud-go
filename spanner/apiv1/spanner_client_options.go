@@ -21,5 +21,5 @@ import "google.golang.org/api/option"
 // This function is only intended for use by the client library, and may be
 // removed at any time without any warning.
 func DefaultClientOptions() []option.ClientOption {
-	return defaultClientOptions()
+	return defaultGRPCClientOptions()
 }

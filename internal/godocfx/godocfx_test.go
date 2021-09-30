@@ -12,19 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.15
 // +build go1.15
 
 package main
 
 import (
+	"bytes"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
 	_ "cloud.google.com/go/storage"  // Implicitly required by test.
+	"github.com/google/go-cmp/cmp"
+	"golang.org/x/tools/go/packages"
 )
 
 var updateGoldens bool
@@ -195,6 +201,83 @@ func TestHasPrefix(t *testing.T) {
 	for _, test := range tests {
 		if got := hasPrefix(test.s, test.prefixes); got != test.want {
 			t.Errorf("hasPrefix(%q, %q) got %v, want %v", test.s, test.prefixes, got, test.want)
+		}
+	}
+}
+
+func TestWriteMetadata(t *testing.T) {
+	now := time.Now()
+
+	want := fmt.Sprintf(`update_time {
+	seconds: %d
+	nanos: %d
+}
+name: "cloud.google.com/go"
+version: "100.0.0"
+language: "go"
+`, now.Unix(), now.Nanosecond())
+
+	wantAppEngine := fmt.Sprintf(`update_time {
+	seconds: %d
+	nanos: %d
+}
+name: "google.golang.org/appengine/v2"
+version: "2.0.0"
+language: "go"
+stem: "/appengine/docs/standard/go/reference/services/bundled"
+`, now.Unix(), now.Nanosecond())
+
+	tests := []struct {
+		path    string
+		version string
+		want    string
+	}{
+		{
+			path:    "cloud.google.com/go",
+			version: "100.0.0",
+			want:    want,
+		},
+		{
+			path:    "google.golang.org/appengine/v2",
+			version: "2.0.0",
+			want:    wantAppEngine,
+		},
+	}
+	for _, test := range tests {
+		var buf bytes.Buffer
+		module := &packages.Module{
+			Path:    test.path,
+			Version: test.version,
+		}
+		writeMetadata(&buf, now, module)
+		if diff := cmp.Diff(test.want, buf.String()); diff != "" {
+			t.Errorf("writeMetadata(%q) got unexpected diff (-want +got):\n\n%s", test.path, diff)
+		}
+	}
+}
+
+func TestGetStatus(t *testing.T) {
+	tests := []struct {
+		doc  string
+		want string
+	}{
+		{
+			doc: `Size returns the size of the object in bytes.
+The returned value is always the same and is not affected by
+calls to Read or Close.
+
+Deprecated: use Reader.Attrs.Size.`,
+			want: "deprecated",
+		},
+		{
+			doc:  `This will never be deprecated!`,
+			want: "",
+		},
+	}
+
+	for _, test := range tests {
+		if got := getStatus(test.doc); got != test.want {
+			t.Errorf("getStatus(%v) got %q, want %q", test.doc, got, test.want)
 		}
 	}
 }

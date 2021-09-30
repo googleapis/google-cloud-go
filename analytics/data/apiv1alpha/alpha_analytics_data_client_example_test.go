@@ -29,21 +29,23 @@ func ExampleNewAlphaAnalyticsDataClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAlphaAnalyticsDataClient_RunReport() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.RunReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunReportRequest.
 	}
 	resp, err := c.RunReport(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleAlphaAnalyticsDataClient_RunReport() {
 }
 
 func ExampleAlphaAnalyticsDataClient_RunPivotReport() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.RunPivotReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunPivotReportRequest.
 	}
 	resp, err := c.RunPivotReport(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleAlphaAnalyticsDataClient_RunPivotReport() {
 }
 
 func ExampleAlphaAnalyticsDataClient_BatchRunReports() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.BatchRunReportsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#BatchRunReportsRequest.
 	}
 	resp, err := c.BatchRunReports(ctx, req)
 	if err != nil {
@@ -94,16 +96,16 @@ func ExampleAlphaAnalyticsDataClient_BatchRunReports() {
 }
 
 func ExampleAlphaAnalyticsDataClient_BatchRunPivotReports() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.BatchRunPivotReportsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#BatchRunPivotReportsRequest.
 	}
 	resp, err := c.BatchRunPivotReports(ctx, req)
 	if err != nil {
@@ -114,16 +116,16 @@ func ExampleAlphaAnalyticsDataClient_BatchRunPivotReports() {
 }
 
 func ExampleAlphaAnalyticsDataClient_GetMetadata() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.GetMetadataRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#GetMetadataRequest.
 	}
 	resp, err := c.GetMetadata(ctx, req)
 	if err != nil {
@@ -134,16 +136,16 @@ func ExampleAlphaAnalyticsDataClient_GetMetadata() {
 }
 
 func ExampleAlphaAnalyticsDataClient_RunRealtimeReport() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.RunRealtimeReportRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/data/v1alpha#RunRealtimeReportRequest.
 	}
 	resp, err := c.RunRealtimeReport(ctx, req)
 	if err != nil {

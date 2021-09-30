@@ -30,22 +30,23 @@ func ExampleNewCloudMemcacheClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudMemcacheClient_ListInstances() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#ListInstancesRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleCloudMemcacheClient_ListInstances() {
 }
 
 func ExampleCloudMemcacheClient_GetInstance() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleCloudMemcacheClient_GetInstance() {
 }
 
 func ExampleCloudMemcacheClient_CreateInstance() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleCloudMemcacheClient_CreateInstance() {
 }
 
 func ExampleCloudMemcacheClient_UpdateInstance() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#UpdateInstanceRequest.
 	}
 	op, err := c.UpdateInstance(ctx, req)
 	if err != nil {
@@ -132,16 +133,16 @@ func ExampleCloudMemcacheClient_UpdateInstance() {
 }
 
 func ExampleCloudMemcacheClient_UpdateParameters() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.UpdateParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#UpdateParametersRequest.
 	}
 	op, err := c.UpdateParameters(ctx, req)
 	if err != nil {
@@ -157,16 +158,16 @@ func ExampleCloudMemcacheClient_UpdateParameters() {
 }
 
 func ExampleCloudMemcacheClient_DeleteInstance() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#DeleteInstanceRequest.
 	}
 	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
@@ -180,16 +181,16 @@ func ExampleCloudMemcacheClient_DeleteInstance() {
 }
 
 func ExampleCloudMemcacheClient_ApplyParameters() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.ApplyParametersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/memcache/v1#ApplyParametersRequest.
 	}
 	op, err := c.ApplyParameters(ctx, req)
 	if err != nil {

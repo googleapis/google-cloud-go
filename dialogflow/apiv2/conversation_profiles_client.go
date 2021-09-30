@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newConversationProfilesClientHook clientHook
@@ -46,12 +46,13 @@ type ConversationProfilesCallOptions struct {
 	DeleteConversationProfile []gax.CallOption
 }
 
-func defaultConversationProfilesClientOptions() []option.ClientOption {
+func defaultConversationProfilesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -118,32 +119,111 @@ func defaultConversationProfilesCallOptions() *ConversationProfilesCallOptions {
 	}
 }
 
+// internalConversationProfilesClient is an interface that defines the methods availaible from Dialogflow API.
+type internalConversationProfilesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListConversationProfiles(context.Context, *dialogflowpb.ListConversationProfilesRequest, ...gax.CallOption) *ConversationProfileIterator
+	GetConversationProfile(context.Context, *dialogflowpb.GetConversationProfileRequest, ...gax.CallOption) (*dialogflowpb.ConversationProfile, error)
+	CreateConversationProfile(context.Context, *dialogflowpb.CreateConversationProfileRequest, ...gax.CallOption) (*dialogflowpb.ConversationProfile, error)
+	UpdateConversationProfile(context.Context, *dialogflowpb.UpdateConversationProfileRequest, ...gax.CallOption) (*dialogflowpb.ConversationProfile, error)
+	DeleteConversationProfile(context.Context, *dialogflowpb.DeleteConversationProfileRequest, ...gax.CallOption) error
+}
+
 // ConversationProfilesClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing ConversationProfiles.
+type ConversationProfilesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalConversationProfilesClient
+
+	// The call options for this service.
+	CallOptions *ConversationProfilesCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ConversationProfilesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ConversationProfilesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ConversationProfilesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListConversationProfiles returns the list of all conversation profiles in the specified project.
+func (c *ConversationProfilesClient) ListConversationProfiles(ctx context.Context, req *dialogflowpb.ListConversationProfilesRequest, opts ...gax.CallOption) *ConversationProfileIterator {
+	return c.internalClient.ListConversationProfiles(ctx, req, opts...)
+}
+
+// GetConversationProfile retrieves the specified conversation profile.
+func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context, req *dialogflowpb.GetConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	return c.internalClient.GetConversationProfile(ctx, req, opts...)
+}
+
+// CreateConversationProfile creates a conversation profile in the specified project.
+//
+// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// aren’t populated in the response. You can retrieve them via
+// GetConversationProfile API.
+func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	return c.internalClient.CreateConversationProfile(ctx, req, opts...)
+}
+
+// UpdateConversationProfile updates the specified conversation profile.
+//
+// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
+// aren’t populated in the response. You can retrieve them via
+// GetConversationProfile API.
+func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	return c.internalClient.UpdateConversationProfile(ctx, req, opts...)
+}
+
+// DeleteConversationProfile deletes the specified conversation profile.
+func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Context, req *dialogflowpb.DeleteConversationProfileRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteConversationProfile(ctx, req, opts...)
+}
+
+// conversationProfilesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ConversationProfilesClient struct {
+type conversationProfilesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ConversationProfilesClient
+	CallOptions **ConversationProfilesCallOptions
+
 	// The gRPC API client.
 	conversationProfilesClient dialogflowpb.ConversationProfilesClient
-
-	// The call options for this service.
-	CallOptions *ConversationProfilesCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewConversationProfilesClient creates a new conversation profiles client.
+// NewConversationProfilesClient creates a new conversation profiles client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing ConversationProfiles.
 func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOption) (*ConversationProfilesClient, error) {
-	clientOpts := defaultConversationProfilesClientOptions()
-
+	clientOpts := defaultConversationProfilesGRPCClientOptions()
 	if newConversationProfilesClientHook != nil {
 		hookOpts, err := newConversationProfilesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,53 +241,57 @@ func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOpt
 	if err != nil {
 		return nil, err
 	}
-	c := &ConversationProfilesClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultConversationProfilesCallOptions(),
+	client := ConversationProfilesClient{CallOptions: defaultConversationProfilesCallOptions()}
 
+	c := &conversationProfilesGRPCClient{
+		connPool:                   connPool,
+		disableDeadlines:           disableDeadlines,
 		conversationProfilesClient: dialogflowpb.NewConversationProfilesClient(connPool),
+		CallOptions:                &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ConversationProfilesClient) Connection() *grpc.ClientConn {
+func (c *conversationProfilesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ConversationProfilesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ConversationProfilesClient) setGoogleClientInfo(keyval ...string) {
+func (c *conversationProfilesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListConversationProfiles returns the list of all conversation profiles in the specified project.
-func (c *ConversationProfilesClient) ListConversationProfiles(ctx context.Context, req *dialogflowpb.ListConversationProfilesRequest, opts ...gax.CallOption) *ConversationProfileIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *conversationProfilesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *conversationProfilesGRPCClient) ListConversationProfiles(ctx context.Context, req *dialogflowpb.ListConversationProfilesRequest, opts ...gax.CallOption) *ConversationProfileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListConversationProfiles[0:len(c.CallOptions.ListConversationProfiles):len(c.CallOptions.ListConversationProfiles)], opts...)
+	opts = append((*c.CallOptions).ListConversationProfiles[0:len((*c.CallOptions).ListConversationProfiles):len((*c.CallOptions).ListConversationProfiles)], opts...)
 	it := &ConversationProfileIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListConversationProfilesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.ConversationProfile, string, error) {
-		var resp *dialogflowpb.ListConversationProfilesResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListConversationProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,14 +314,15 @@ func (c *ConversationProfilesClient) ListConversationProfiles(ctx context.Contex
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetConversationProfile retrieves the specified conversation profile.
-func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context, req *dialogflowpb.GetConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+func (c *conversationProfilesGRPCClient) GetConversationProfile(ctx context.Context, req *dialogflowpb.GetConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -245,7 +330,7 @@ func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetConversationProfile[0:len(c.CallOptions.GetConversationProfile):len(c.CallOptions.GetConversationProfile)], opts...)
+	opts = append((*c.CallOptions).GetConversationProfile[0:len((*c.CallOptions).GetConversationProfile):len((*c.CallOptions).GetConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -258,12 +343,7 @@ func (c *ConversationProfilesClient) GetConversationProfile(ctx context.Context,
 	return resp, nil
 }
 
-// CreateConversationProfile creates a conversation profile in the specified project.
-//
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
-// aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
-func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+func (c *conversationProfilesGRPCClient) CreateConversationProfile(ctx context.Context, req *dialogflowpb.CreateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -271,7 +351,7 @@ func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateConversationProfile[0:len(c.CallOptions.CreateConversationProfile):len(c.CallOptions.CreateConversationProfile)], opts...)
+	opts = append((*c.CallOptions).CreateConversationProfile[0:len((*c.CallOptions).CreateConversationProfile):len((*c.CallOptions).CreateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -284,12 +364,7 @@ func (c *ConversationProfilesClient) CreateConversationProfile(ctx context.Conte
 	return resp, nil
 }
 
-// UpdateConversationProfile updates the specified conversation profile.
-//
-// ConversationProfile.CreateTime and ConversationProfile.UpdateTime
-// aren’t populated in the response. You can retrieve them via
-// GetConversationProfile API.
-func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+func (c *conversationProfilesGRPCClient) UpdateConversationProfile(ctx context.Context, req *dialogflowpb.UpdateConversationProfileRequest, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -297,7 +372,7 @@ func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile.name", url.QueryEscape(req.GetConversationProfile().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateConversationProfile[0:len(c.CallOptions.UpdateConversationProfile):len(c.CallOptions.UpdateConversationProfile)], opts...)
+	opts = append((*c.CallOptions).UpdateConversationProfile[0:len((*c.CallOptions).UpdateConversationProfile):len((*c.CallOptions).UpdateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -310,8 +385,7 @@ func (c *ConversationProfilesClient) UpdateConversationProfile(ctx context.Conte
 	return resp, nil
 }
 
-// DeleteConversationProfile deletes the specified conversation profile.
-func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Context, req *dialogflowpb.DeleteConversationProfileRequest, opts ...gax.CallOption) error {
+func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.Context, req *dialogflowpb.DeleteConversationProfileRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -319,7 +393,7 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteConversationProfile[0:len(c.CallOptions.DeleteConversationProfile):len(c.CallOptions.DeleteConversationProfile)], opts...)
+	opts = append((*c.CallOptions).DeleteConversationProfile[0:len((*c.CallOptions).DeleteConversationProfile):len((*c.CallOptions).DeleteConversationProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.conversationProfilesClient.DeleteConversationProfile(ctx, req, settings.GRPC...)

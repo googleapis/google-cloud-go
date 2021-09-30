@@ -7,6 +7,7 @@ on:
 name: release-please
 jobs:
   release-please-pr:
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     steps:
       - id: release-pr # Open the release PR from a fork.
@@ -19,7 +20,7 @@ jobs:
           fork: true
           package-name: google-cloud-go
           command: release-pr
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: label # Add the magic "autorelease: pending" label.
         if: ${{ steps.release-pr.outputs.pr }}
         with:
@@ -34,6 +35,7 @@ jobs:
               });
               console.log(`Tagged ${{steps.release-pr.outputs.pr}}`)
   release-please-release: # Actually tag the release.
+    if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     steps:
       - uses: GoogleCloudPlatform/release-please-action@v2
@@ -46,7 +48,7 @@ jobs:
           changelog-path: CHANGES.md
       # Add the "autorelease: published" and remove tagged, this allows
       # monitoring to be enabled that detects failed releases:
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: untag-release
         if: ${{steps.tag-release.outputs.pr}}
         with:

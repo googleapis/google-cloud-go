@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -62,6 +63,11 @@ var (
 	// spannerHost specifies the spanner API host used for testing. It can be changed
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
 	spannerHost = getSpannerHost()
+
+	// instanceConfig specifies the instance config used to create an instance for testing.
+	// It can be changed by setting the environment variable
+	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
+	instanceConfig = getInstanceConfig()
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -108,6 +114,8 @@ var (
 				DateArray	ARRAY<DATE>,
 				Timestamp	TIMESTAMP,
 				TimestampArray	ARRAY<TIMESTAMP>,
+				Numeric		NUMERIC,
+				NumericArray	ARRAY<NUMERIC>
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -164,6 +172,8 @@ var (
 						DateArray	ARRAY<DATE>,
 						Timestamp	TIMESTAMP,
 						TimestampArray	ARRAY<TIMESTAMP>,
+						Numeric		NUMERIC,
+						NumericArray	ARRAY<NUMERIC>
 					) PRIMARY KEY (RowID)`,
 	}
 
@@ -202,6 +212,10 @@ func parseInstanceName(inst string) (project, instance string, err error) {
 
 func getSpannerHost() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+}
+
+func getInstanceConfig() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
 }
 
 const (
@@ -250,17 +264,23 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
-	// Get the list of supported instance configs for the project that is used
-	// for the integration tests. The supported instance configs can differ per
-	// project. The integration tests will use the first instance config that
-	// is returned by Cloud Spanner. This will normally be the regional config
-	// that is physically the closest to where the request is coming from.
-	configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
-		Parent: fmt.Sprintf("projects/%s", testProjectID),
-	})
-	config, err := configIterator.Next()
-	if err != nil {
-		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+	var configName string
+	if instanceConfig != "" {
+		configName = fmt.Sprintf("projects/%s/instanceConfigs/%s", testProjectID, instanceConfig)
+	} else {
+		// Get the list of supported instance configs for the project that is used
+		// for the integration tests. The supported instance configs can differ per
+		// project. The integration tests will use the first instance config that
+		// is returned by Cloud Spanner. This will normally be the regional config
+		// that is physically the closest to where the request is coming from.
+		configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
+			Parent: fmt.Sprintf("projects/%s", testProjectID),
+		})
+		config, err := configIterator.Next()
+		if err != nil {
+			log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+		}
+		configName = config.Name
 	}
 
 	// First clean up any old test instances before we start the actual testing
@@ -272,7 +292,7 @@ func initIntegrationTests() (cleanup func()) {
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
 		InstanceId: testInstanceID,
 		Instance: &instancepb.Instance{
-			Config:      config.Name,
+			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
 		},
@@ -620,7 +640,10 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "latest",
+	}}
 	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
 		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
 		map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
@@ -1575,7 +1598,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Timestamp	TIMESTAMP,
 					TimestampArray	ARRAY<TIMESTAMP>,
 					Numeric		NUMERIC,
-					NumericArray	ARRAY<NUMERIC>
+					NumericArray	ARRAY<NUMERIC>,
+					JSON		JSON,
+					JSONArray	ARRAY<JSON>
 				) PRIMARY KEY (RowID)`,
 		}
 	}
@@ -1596,6 +1621,16 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
 	n1 := *n1p
 	n2 := *n2p
+
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	msg := Message{"Alice", "Hello", 1294706395881547000}
+	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+	var unmarshalledJSONstruct interface{}
+	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
 
 	tests := []struct {
 		col  string
@@ -1685,34 +1720,92 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+		{col: "Numeric", val: n1},
+		{col: "Numeric", val: n2},
+		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: NullNumeric{n0, false}},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []NullNumeric(nil)},
+		{col: "NumericArray", val: []NullNumeric{}},
+		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		{col: "String", val: nil, want: NullString{}},
+		{col: "StringArray", val: nil, want: []NullString(nil)},
+		{col: "Bytes", val: nil, want: []byte(nil)},
+		{col: "BytesArray", val: nil, want: [][]byte(nil)},
+		{col: "Int64a", val: nil, want: NullInt64{}},
+		{col: "Int64Array", val: nil, want: []NullInt64(nil)},
+		{col: "Bool", val: nil, want: NullBool{}},
+		{col: "BoolArray", val: nil, want: []NullBool(nil)},
+		{col: "Float64", val: nil, want: NullFloat64{}},
+		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
+		{col: "Date", val: nil, want: NullDate{}},
+		{col: "DateArray", val: nil, want: []NullDate(nil)},
+		{col: "Timestamp", val: nil, want: NullTime{}},
+		{col: "TimestampArray", val: nil, want: []NullTime(nil)},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
+	}
+
+	// Write rows into table first using DML. Only do this on real Spanner
+	// as the emulator does not support untyped parameters.
+	// TODO: Remove when the emulator supports untyped parameters.
+	if !isEmulatorEnvSet() {
+		statements := make([]Statement, 0)
+		for i, test := range tests {
+			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+			// Note: We are not setting the parameter type here to ensure that it
+			// can be automatically recognized when it is actually needed.
+			stmt.Params["id"] = i
+			stmt.Params["value"] = test.val
+			statements = append(statements, stmt)
+		}
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			rowCounts, err := tx.BatchUpdate(ctx, statements)
+			if err != nil {
+				return err
+			}
+			if len(rowCounts) != len(tests) {
+				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			}
+			for i, c := range rowCounts {
+				if c != 1 {
+					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("failed to insert values using DML: %v", err)
+		}
+		// Delete all the rows so we can insert them using mutations as well.
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatalf("failed to delete all rows: %v", err)
+		}
 	}
 
 	if !isEmulatorEnvSet() {
-		for _, tc := range []struct {
+		tests = append(tests, []struct {
 			col  string
 			val  interface{}
 			want interface{}
 		}{
-			{col: "Numeric", val: n1},
-			{col: "Numeric", val: n2},
-			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: NullNumeric{n0, false}},
-			{col: "Numeric", val: nil, want: NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
-			{col: "NumericArray", val: []NullNumeric(nil)},
-			{col: "NumericArray", val: []NullNumeric{}},
-			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		} {
-			tests = append(tests, tc)
-		}
+			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
+			{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+			{col: "JSON", val: nil, want: NullJSON{}},
+			{col: "JSONArray", val: []NullJSON(nil)},
+			{col: "JSONArray", val: []NullJSON{}},
+			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
+		}...)
 	}
 
-	// Write rows into table first.
+	// Verify that we can insert the rows using mutations.
 	var muts []*Mutation
 	for i, test := range tests {
 		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))

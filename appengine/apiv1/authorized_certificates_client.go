@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -31,6 +30,7 @@ import (
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAuthorizedCertificatesClientHook clientHook
@@ -44,12 +44,13 @@ type AuthorizedCertificatesCallOptions struct {
 	DeleteAuthorizedCertificate []gax.CallOption
 }
 
-func defaultAuthorizedCertificatesClientOptions() []option.ClientOption {
+func defaultAuthorizedCertificatesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://appengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -66,33 +67,109 @@ func defaultAuthorizedCertificatesCallOptions() *AuthorizedCertificatesCallOptio
 	}
 }
 
+// internalAuthorizedCertificatesClient is an interface that defines the methods availaible from App Engine Admin API.
+type internalAuthorizedCertificatesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListAuthorizedCertificates(context.Context, *appenginepb.ListAuthorizedCertificatesRequest, ...gax.CallOption) *AuthorizedCertificateIterator
+	GetAuthorizedCertificate(context.Context, *appenginepb.GetAuthorizedCertificateRequest, ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error)
+	CreateAuthorizedCertificate(context.Context, *appenginepb.CreateAuthorizedCertificateRequest, ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error)
+	UpdateAuthorizedCertificate(context.Context, *appenginepb.UpdateAuthorizedCertificateRequest, ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error)
+	DeleteAuthorizedCertificate(context.Context, *appenginepb.DeleteAuthorizedCertificateRequest, ...gax.CallOption) error
+}
+
 // AuthorizedCertificatesClient is a client for interacting with App Engine Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages SSL certificates a user is authorized to administer. A user can
+// administer any SSL certificates applicable to their authorized domains.
+type AuthorizedCertificatesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAuthorizedCertificatesClient
+
+	// The call options for this service.
+	CallOptions *AuthorizedCertificatesCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AuthorizedCertificatesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AuthorizedCertificatesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AuthorizedCertificatesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListAuthorizedCertificates lists all SSL certificates the user is authorized to administer.
+func (c *AuthorizedCertificatesClient) ListAuthorizedCertificates(ctx context.Context, req *appenginepb.ListAuthorizedCertificatesRequest, opts ...gax.CallOption) *AuthorizedCertificateIterator {
+	return c.internalClient.ListAuthorizedCertificates(ctx, req, opts...)
+}
+
+// GetAuthorizedCertificate gets the specified SSL certificate.
+func (c *AuthorizedCertificatesClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	return c.internalClient.GetAuthorizedCertificate(ctx, req, opts...)
+}
+
+// CreateAuthorizedCertificate uploads the specified SSL certificate.
+func (c *AuthorizedCertificatesClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	return c.internalClient.CreateAuthorizedCertificate(ctx, req, opts...)
+}
+
+// UpdateAuthorizedCertificate updates the specified SSL certificate. To renew a certificate and maintain
+// its existing domain mappings, update certificate_data with a new
+// certificate. The new certificate must be applicable to the same domains as
+// the original certificate. The certificate display_name may also be
+// updated.
+func (c *AuthorizedCertificatesClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+	return c.internalClient.UpdateAuthorizedCertificate(ctx, req, opts...)
+}
+
+// DeleteAuthorizedCertificate deletes the specified SSL certificate.
+func (c *AuthorizedCertificatesClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAuthorizedCertificate(ctx, req, opts...)
+}
+
+// authorizedCertificatesGRPCClient is a client for interacting with App Engine Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AuthorizedCertificatesClient struct {
+type authorizedCertificatesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AuthorizedCertificatesClient
+	CallOptions **AuthorizedCertificatesCallOptions
+
 	// The gRPC API client.
 	authorizedCertificatesClient appenginepb.AuthorizedCertificatesClient
-
-	// The call options for this service.
-	CallOptions *AuthorizedCertificatesCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAuthorizedCertificatesClient creates a new authorized certificates client.
+// NewAuthorizedCertificatesClient creates a new authorized certificates client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages SSL certificates a user is authorized to administer. A user can
 // administer any SSL certificates applicable to their authorized domains.
 func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedCertificatesClient, error) {
-	clientOpts := defaultAuthorizedCertificatesClientOptions()
-
+	clientOpts := defaultAuthorizedCertificatesGRPCClientOptions()
 	if newAuthorizedCertificatesClientHook != nil {
 		hookOpts, err := newAuthorizedCertificatesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -110,53 +187,57 @@ func NewAuthorizedCertificatesClient(ctx context.Context, opts ...option.ClientO
 	if err != nil {
 		return nil, err
 	}
-	c := &AuthorizedCertificatesClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAuthorizedCertificatesCallOptions(),
+	client := AuthorizedCertificatesClient{CallOptions: defaultAuthorizedCertificatesCallOptions()}
 
+	c := &authorizedCertificatesGRPCClient{
+		connPool:                     connPool,
+		disableDeadlines:             disableDeadlines,
 		authorizedCertificatesClient: appenginepb.NewAuthorizedCertificatesClient(connPool),
+		CallOptions:                  &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AuthorizedCertificatesClient) Connection() *grpc.ClientConn {
+func (c *authorizedCertificatesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AuthorizedCertificatesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AuthorizedCertificatesClient) setGoogleClientInfo(keyval ...string) {
+func (c *authorizedCertificatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListAuthorizedCertificates lists all SSL certificates the user is authorized to administer.
-func (c *AuthorizedCertificatesClient) ListAuthorizedCertificates(ctx context.Context, req *appenginepb.ListAuthorizedCertificatesRequest, opts ...gax.CallOption) *AuthorizedCertificateIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *authorizedCertificatesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *authorizedCertificatesGRPCClient) ListAuthorizedCertificates(ctx context.Context, req *appenginepb.ListAuthorizedCertificatesRequest, opts ...gax.CallOption) *AuthorizedCertificateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAuthorizedCertificates[0:len(c.CallOptions.ListAuthorizedCertificates):len(c.CallOptions.ListAuthorizedCertificates)], opts...)
+	opts = append((*c.CallOptions).ListAuthorizedCertificates[0:len((*c.CallOptions).ListAuthorizedCertificates):len((*c.CallOptions).ListAuthorizedCertificates)], opts...)
 	it := &AuthorizedCertificateIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedCertificatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedCertificate, string, error) {
-		var resp *appenginepb.ListAuthorizedCertificatesResponse
-		req.PageToken = pageToken
+		resp := &appenginepb.ListAuthorizedCertificatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -179,17 +260,18 @@ func (c *AuthorizedCertificatesClient) ListAuthorizedCertificates(ctx context.Co
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetAuthorizedCertificate gets the specified SSL certificate.
-func (c *AuthorizedCertificatesClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+func (c *authorizedCertificatesGRPCClient) GetAuthorizedCertificate(ctx context.Context, req *appenginepb.GetAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAuthorizedCertificate[0:len(c.CallOptions.GetAuthorizedCertificate):len(c.CallOptions.GetAuthorizedCertificate)], opts...)
+	opts = append((*c.CallOptions).GetAuthorizedCertificate[0:len((*c.CallOptions).GetAuthorizedCertificate):len((*c.CallOptions).GetAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -202,11 +284,10 @@ func (c *AuthorizedCertificatesClient) GetAuthorizedCertificate(ctx context.Cont
 	return resp, nil
 }
 
-// CreateAuthorizedCertificate uploads the specified SSL certificate.
-func (c *AuthorizedCertificatesClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+func (c *authorizedCertificatesGRPCClient) CreateAuthorizedCertificate(ctx context.Context, req *appenginepb.CreateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateAuthorizedCertificate[0:len(c.CallOptions.CreateAuthorizedCertificate):len(c.CallOptions.CreateAuthorizedCertificate)], opts...)
+	opts = append((*c.CallOptions).CreateAuthorizedCertificate[0:len((*c.CallOptions).CreateAuthorizedCertificate):len((*c.CallOptions).CreateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -219,15 +300,10 @@ func (c *AuthorizedCertificatesClient) CreateAuthorizedCertificate(ctx context.C
 	return resp, nil
 }
 
-// UpdateAuthorizedCertificate updates the specified SSL certificate. To renew a certificate and maintain
-// its existing domain mappings, update certificate_data with a new
-// certificate. The new certificate must be applicable to the same domains as
-// the original certificate. The certificate display_name may also be
-// updated.
-func (c *AuthorizedCertificatesClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
+func (c *authorizedCertificatesGRPCClient) UpdateAuthorizedCertificate(ctx context.Context, req *appenginepb.UpdateAuthorizedCertificateRequest, opts ...gax.CallOption) (*appenginepb.AuthorizedCertificate, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateAuthorizedCertificate[0:len(c.CallOptions.UpdateAuthorizedCertificate):len(c.CallOptions.UpdateAuthorizedCertificate)], opts...)
+	opts = append((*c.CallOptions).UpdateAuthorizedCertificate[0:len((*c.CallOptions).UpdateAuthorizedCertificate):len((*c.CallOptions).UpdateAuthorizedCertificate)], opts...)
 	var resp *appenginepb.AuthorizedCertificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,11 +316,10 @@ func (c *AuthorizedCertificatesClient) UpdateAuthorizedCertificate(ctx context.C
 	return resp, nil
 }
 
-// DeleteAuthorizedCertificate deletes the specified SSL certificate.
-func (c *AuthorizedCertificatesClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
+func (c *authorizedCertificatesGRPCClient) DeleteAuthorizedCertificate(ctx context.Context, req *appenginepb.DeleteAuthorizedCertificateRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAuthorizedCertificate[0:len(c.CallOptions.DeleteAuthorizedCertificate):len(c.CallOptions.DeleteAuthorizedCertificate)], opts...)
+	opts = append((*c.CallOptions).DeleteAuthorizedCertificate[0:len((*c.CallOptions).DeleteAuthorizedCertificate):len((*c.CallOptions).DeleteAuthorizedCertificate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.authorizedCertificatesClient.DeleteAuthorizedCertificate(ctx, req, settings.GRPC...)

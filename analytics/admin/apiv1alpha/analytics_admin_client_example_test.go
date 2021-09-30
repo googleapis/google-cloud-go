@@ -30,21 +30,23 @@ func ExampleNewAnalyticsAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAnalyticsAdminClient_GetAccount() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAccountRequest.
 	}
 	resp, err := c.GetAccount(ctx, req)
 	if err != nil {
@@ -55,17 +57,16 @@ func ExampleAnalyticsAdminClient_GetAccount() {
 }
 
 func ExampleAnalyticsAdminClient_ListAccounts() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAccountsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAccountsRequest.
 	}
 	it := c.ListAccounts(ctx, req)
 	for {
@@ -87,9 +88,11 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteAccountRequest.
 	}
 	err = c.DeleteAccount(ctx, req)
 	if err != nil {
@@ -98,16 +101,16 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateAccount() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAccountRequest.
 	}
 	resp, err := c.UpdateAccount(ctx, req)
 	if err != nil {
@@ -118,16 +121,16 @@ func ExampleAnalyticsAdminClient_UpdateAccount() {
 }
 
 func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ProvisionAccountTicketRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ProvisionAccountTicketRequest.
 	}
 	resp, err := c.ProvisionAccountTicket(ctx, req)
 	if err != nil {
@@ -138,17 +141,16 @@ func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 }
 
 func ExampleAnalyticsAdminClient_ListAccountSummaries() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAccountSummariesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAccountSummariesRequest.
 	}
 	it := c.ListAccountSummaries(ctx, req)
 	for {
@@ -165,16 +167,16 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 }
 
 func ExampleAnalyticsAdminClient_GetProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetPropertyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetPropertyRequest.
 	}
 	resp, err := c.GetProperty(ctx, req)
 	if err != nil {
@@ -185,17 +187,16 @@ func ExampleAnalyticsAdminClient_GetProperty() {
 }
 
 func ExampleAnalyticsAdminClient_ListProperties() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListPropertiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListPropertiesRequest.
 	}
 	it := c.ListProperties(ctx, req)
 	for {
@@ -212,16 +213,16 @@ func ExampleAnalyticsAdminClient_ListProperties() {
 }
 
 func ExampleAnalyticsAdminClient_CreateProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreatePropertyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreatePropertyRequest.
 	}
 	resp, err := c.CreateProperty(ctx, req)
 	if err != nil {
@@ -237,27 +238,31 @@ func ExampleAnalyticsAdminClient_DeleteProperty() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeletePropertyRequest.
 	}
-	err = c.DeleteProperty(ctx, req)
+	resp, err := c.DeleteProperty(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAnalyticsAdminClient_UpdateProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdatePropertyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdatePropertyRequest.
 	}
 	resp, err := c.UpdateProperty(ctx, req)
 	if err != nil {
@@ -268,16 +273,16 @@ func ExampleAnalyticsAdminClient_UpdateProperty() {
 }
 
 func ExampleAnalyticsAdminClient_GetUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetUserLinkRequest.
 	}
 	resp, err := c.GetUserLink(ctx, req)
 	if err != nil {
@@ -288,16 +293,16 @@ func ExampleAnalyticsAdminClient_GetUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchGetUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchGetUserLinksRequest.
 	}
 	resp, err := c.BatchGetUserLinks(ctx, req)
 	if err != nil {
@@ -308,17 +313,16 @@ func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_ListUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListUserLinksRequest.
 	}
 	it := c.ListUserLinks(ctx, req)
 	for {
@@ -335,17 +339,16 @@ func ExampleAnalyticsAdminClient_ListUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_AuditUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.AuditUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#AuditUserLinksRequest.
 	}
 	it := c.AuditUserLinks(ctx, req)
 	for {
@@ -362,16 +365,16 @@ func ExampleAnalyticsAdminClient_AuditUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_CreateUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateUserLinkRequest.
 	}
 	resp, err := c.CreateUserLink(ctx, req)
 	if err != nil {
@@ -382,16 +385,16 @@ func ExampleAnalyticsAdminClient_CreateUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchCreateUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchCreateUserLinksRequest.
 	}
 	resp, err := c.BatchCreateUserLinks(ctx, req)
 	if err != nil {
@@ -402,16 +405,16 @@ func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateUserLinkRequest.
 	}
 	resp, err := c.UpdateUserLink(ctx, req)
 	if err != nil {
@@ -422,16 +425,16 @@ func ExampleAnalyticsAdminClient_UpdateUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchUpdateUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchUpdateUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchUpdateUserLinksRequest.
 	}
 	resp, err := c.BatchUpdateUserLinks(ctx, req)
 	if err != nil {
@@ -447,9 +450,11 @@ func ExampleAnalyticsAdminClient_DeleteUserLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteUserLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteUserLinkRequest.
 	}
 	err = c.DeleteUserLink(ctx, req)
 	if err != nil {
@@ -463,9 +468,11 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchDeleteUserLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#BatchDeleteUserLinksRequest.
 	}
 	err = c.BatchDeleteUserLinks(ctx, req)
 	if err != nil {
@@ -474,16 +481,16 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetWebDataStreamRequest.
 	}
 	resp, err := c.GetWebDataStream(ctx, req)
 	if err != nil {
@@ -499,9 +506,11 @@ func ExampleAnalyticsAdminClient_DeleteWebDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteWebDataStreamRequest.
 	}
 	err = c.DeleteWebDataStream(ctx, req)
 	if err != nil {
@@ -510,16 +519,16 @@ func ExampleAnalyticsAdminClient_DeleteWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateWebDataStreamRequest.
 	}
 	resp, err := c.UpdateWebDataStream(ctx, req)
 	if err != nil {
@@ -530,16 +539,16 @@ func ExampleAnalyticsAdminClient_UpdateWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_CreateWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateWebDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateWebDataStreamRequest.
 	}
 	resp, err := c.CreateWebDataStream(ctx, req)
 	if err != nil {
@@ -550,17 +559,16 @@ func ExampleAnalyticsAdminClient_CreateWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_ListWebDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListWebDataStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListWebDataStreamsRequest.
 	}
 	it := c.ListWebDataStreams(ctx, req)
 	for {
@@ -577,16 +585,16 @@ func ExampleAnalyticsAdminClient_ListWebDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetIosAppDataStreamRequest.
 	}
 	resp, err := c.GetIosAppDataStream(ctx, req)
 	if err != nil {
@@ -602,9 +610,11 @@ func ExampleAnalyticsAdminClient_DeleteIosAppDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteIosAppDataStreamRequest.
 	}
 	err = c.DeleteIosAppDataStream(ctx, req)
 	if err != nil {
@@ -613,16 +623,16 @@ func ExampleAnalyticsAdminClient_DeleteIosAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateIosAppDataStreamRequest.
 	}
 	resp, err := c.UpdateIosAppDataStream(ctx, req)
 	if err != nil {
@@ -632,38 +642,17 @@ func ExampleAnalyticsAdminClient_UpdateIosAppDataStream() {
 	_ = resp
 }
 
-func ExampleAnalyticsAdminClient_CreateIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &adminpb.CreateIosAppDataStreamRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateIosAppDataStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAnalyticsAdminClient_ListIosAppDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIosAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListIosAppDataStreamsRequest.
 	}
 	it := c.ListIosAppDataStreams(ctx, req)
 	for {
@@ -680,16 +669,16 @@ func ExampleAnalyticsAdminClient_ListIosAppDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetAndroidAppDataStreamRequest.
 	}
 	resp, err := c.GetAndroidAppDataStream(ctx, req)
 	if err != nil {
@@ -705,9 +694,11 @@ func ExampleAnalyticsAdminClient_DeleteAndroidAppDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteAndroidAppDataStreamRequest.
 	}
 	err = c.DeleteAndroidAppDataStream(ctx, req)
 	if err != nil {
@@ -716,16 +707,16 @@ func ExampleAnalyticsAdminClient_DeleteAndroidAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateAndroidAppDataStreamRequest.
 	}
 	resp, err := c.UpdateAndroidAppDataStream(ctx, req)
 	if err != nil {
@@ -735,38 +726,17 @@ func ExampleAnalyticsAdminClient_UpdateAndroidAppDataStream() {
 	_ = resp
 }
 
-func ExampleAnalyticsAdminClient_CreateAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &adminpb.CreateAndroidAppDataStreamRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateAndroidAppDataStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAnalyticsAdminClient_ListAndroidAppDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAndroidAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListAndroidAppDataStreamsRequest.
 	}
 	it := c.ListAndroidAppDataStreams(ctx, req)
 	for {
@@ -783,16 +753,16 @@ func ExampleAnalyticsAdminClient_ListAndroidAppDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetEnhancedMeasurementSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetEnhancedMeasurementSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetEnhancedMeasurementSettingsRequest.
 	}
 	resp, err := c.GetEnhancedMeasurementSettings(ctx, req)
 	if err != nil {
@@ -803,16 +773,16 @@ func ExampleAnalyticsAdminClient_GetEnhancedMeasurementSettings() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateEnhancedMeasurementSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateEnhancedMeasurementSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateEnhancedMeasurementSettingsRequest.
 	}
 	resp, err := c.UpdateEnhancedMeasurementSettings(ctx, req)
 	if err != nil {
@@ -823,38 +793,18 @@ func ExampleAnalyticsAdminClient_UpdateEnhancedMeasurementSettings() {
 }
 
 func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateFirebaseLinkRequest.
 	}
 	resp, err := c.CreateFirebaseLink(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAnalyticsAdminClient_UpdateFirebaseLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &adminpb.UpdateFirebaseLinkRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateFirebaseLink(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -868,9 +818,11 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteFirebaseLinkRequest.
 	}
 	err = c.DeleteFirebaseLink(ctx, req)
 	if err != nil {
@@ -879,17 +831,16 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 }
 
 func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListFirebaseLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListFirebaseLinksRequest.
 	}
 	it := c.ListFirebaseLinks(ctx, req)
 	for {
@@ -906,16 +857,16 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetGlobalSiteTagRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGlobalSiteTagRequest.
 	}
 	resp, err := c.GetGlobalSiteTag(ctx, req)
 	if err != nil {
@@ -926,16 +877,16 @@ func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
 }
 
 func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateGoogleAdsLinkRequest.
 	}
 	resp, err := c.CreateGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -946,16 +897,16 @@ func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateGoogleAdsLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateGoogleAdsLinkRequest.
 	}
 	resp, err := c.UpdateGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -971,9 +922,11 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteGoogleAdsLinkRequest.
 	}
 	err = c.DeleteGoogleAdsLink(ctx, req)
 	if err != nil {
@@ -982,17 +935,16 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 }
 
 func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListGoogleAdsLinksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListGoogleAdsLinksRequest.
 	}
 	it := c.ListGoogleAdsLinks(ctx, req)
 	for {
@@ -1009,18 +961,748 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetDataSharingSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataSharingSettingsRequest.
 	}
 	resp, err := c.GetDataSharingSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetMeasurementProtocolSecretRequest.
+	}
+	resp, err := c.GetMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListMeasurementProtocolSecretsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListMeasurementProtocolSecretsRequest.
+	}
+	it := c.ListMeasurementProtocolSecrets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateMeasurementProtocolSecretRequest.
+	}
+	resp, err := c.CreateMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteMeasurementProtocolSecretRequest.
+	}
+	err = c.DeleteMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateMeasurementProtocolSecretRequest.
+	}
+	resp, err := c.UpdateMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.SearchChangeHistoryEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#SearchChangeHistoryEventsRequest.
+	}
+	it := c.SearchChangeHistoryEvents(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetGoogleSignalsSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetGoogleSignalsSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetGoogleSignalsSettingsRequest.
+	}
+	resp, err := c.GetGoogleSignalsSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateGoogleSignalsSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateGoogleSignalsSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateGoogleSignalsSettingsRequest.
+	}
+	resp, err := c.UpdateGoogleSignalsSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateConversionEventRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateConversionEventRequest.
+	}
+	resp, err := c.CreateConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetConversionEventRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetConversionEventRequest.
+	}
+	resp, err := c.GetConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteConversionEventRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteConversionEventRequest.
+	}
+	err = c.DeleteConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_ListConversionEvents() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListConversionEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListConversionEventsRequest.
+	}
+	it := c.ListConversionEvents(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.GetDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListDisplayVideo360AdvertiserLinksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinksRequest.
+	}
+	it := c.ListDisplayVideo360AdvertiserLinks(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.CreateDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkRequest.
+	}
+	err = c.DeleteDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.UpdateDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.GetDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinkProposalsRequest.
+	}
+	it := c.ListDisplayVideo360AdvertiserLinkProposals(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	err = c.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_ApproveDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ApproveDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CancelDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CancelDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomDimensionRequest.
+	}
+	resp, err := c.CreateCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateCustomDimensionRequest.
+	}
+	resp, err := c.UpdateCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListCustomDimensions() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListCustomDimensionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomDimensionsRequest.
+	}
+	it := c.ListCustomDimensions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_ArchiveCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ArchiveCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ArchiveCustomDimensionRequest.
+	}
+	err = c.ArchiveCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetCustomDimensionRequest.
+	}
+	resp, err := c.GetCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateCustomMetricRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateCustomMetricRequest.
+	}
+	resp, err := c.CreateCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateCustomMetricRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateCustomMetricRequest.
+	}
+	resp, err := c.UpdateCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListCustomMetrics() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListCustomMetricsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListCustomMetricsRequest.
+	}
+	it := c.ListCustomMetrics(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_ArchiveCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ArchiveCustomMetricRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ArchiveCustomMetricRequest.
+	}
+	err = c.ArchiveCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetCustomMetricRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetCustomMetricRequest.
+	}
+	resp, err := c.GetCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetDataRetentionSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDataRetentionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataRetentionSettingsRequest.
+	}
+	resp, err := c.GetDataRetentionSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateDataRetentionSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateDataRetentionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDataRetentionSettingsRequest.
+	}
+	resp, err := c.UpdateDataRetentionSettings(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

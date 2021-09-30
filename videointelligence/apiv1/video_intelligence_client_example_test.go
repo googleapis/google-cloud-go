@@ -29,21 +29,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_AnnotateVideo() {
-	// import videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
-
 	ctx := context.Background()
 	c, err := videointelligence.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &videointelligencepb.AnnotateVideoRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/videointelligence/v1#AnnotateVideoRequest.
 	}
 	op, err := c.AnnotateVideo(ctx, req)
 	if err != nil {

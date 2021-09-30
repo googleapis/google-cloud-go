@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newEntityTypesClientHook clientHook
@@ -55,12 +55,13 @@ type EntityTypesCallOptions struct {
 	BatchDeleteEntities    []gax.CallOption
 }
 
-func defaultEntityTypesClientOptions() []option.ClientOption {
+func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -182,37 +183,261 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 	}
 }
 
+// internalEntityTypesClient is an interface that defines the methods availaible from Dialogflow API.
+type internalEntityTypesClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListEntityTypes(context.Context, *dialogflowpb.ListEntityTypesRequest, ...gax.CallOption) *EntityTypeIterator
+	GetEntityType(context.Context, *dialogflowpb.GetEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
+	CreateEntityType(context.Context, *dialogflowpb.CreateEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
+	UpdateEntityType(context.Context, *dialogflowpb.UpdateEntityTypeRequest, ...gax.CallOption) (*dialogflowpb.EntityType, error)
+	DeleteEntityType(context.Context, *dialogflowpb.DeleteEntityTypeRequest, ...gax.CallOption) error
+	BatchUpdateEntityTypes(context.Context, *dialogflowpb.BatchUpdateEntityTypesRequest, ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error)
+	BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation
+	BatchDeleteEntityTypes(context.Context, *dialogflowpb.BatchDeleteEntityTypesRequest, ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error)
+	BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation
+	BatchCreateEntities(context.Context, *dialogflowpb.BatchCreateEntitiesRequest, ...gax.CallOption) (*BatchCreateEntitiesOperation, error)
+	BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation
+	BatchUpdateEntities(context.Context, *dialogflowpb.BatchUpdateEntitiesRequest, ...gax.CallOption) (*BatchUpdateEntitiesOperation, error)
+	BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation
+	BatchDeleteEntities(context.Context, *dialogflowpb.BatchDeleteEntitiesRequest, ...gax.CallOption) (*BatchDeleteEntitiesOperation, error)
+	BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation
+}
+
 // EntityTypesClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing EntityTypes.
+type EntityTypesClient struct {
+	// The internal transport-dependent client.
+	internalClient internalEntityTypesClient
+
+	// The call options for this service.
+	CallOptions *EntityTypesCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *EntityTypesClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *EntityTypesClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *EntityTypesClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListEntityTypes returns the list of all entity types in the specified agent.
+func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+	return c.internalClient.ListEntityTypes(ctx, req, opts...)
+}
+
+// GetEntityType retrieves the specified entity type.
+func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	return c.internalClient.GetEntityType(ctx, req, opts...)
+}
+
+// CreateEntityType creates an entity type in the specified agent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	return c.internalClient.CreateEntityType(ctx, req, opts...)
+}
+
+// UpdateEntityType updates the specified entity type.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	return c.internalClient.UpdateEntityType(ctx, req, opts...)
+}
+
+// DeleteEntityType deletes the specified entity type.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEntityType(ctx, req, opts...)
+}
+
+// BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: BatchUpdateEntityTypesResponse
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
+	return c.internalClient.BatchUpdateEntityTypes(ctx, req, opts...)
+}
+
+// BatchUpdateEntityTypesOperation returns a new BatchUpdateEntityTypesOperation from a given name.
+// The name must be that of a previously created BatchUpdateEntityTypesOperation, possibly from a different process.
+func (c *EntityTypesClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
+	return c.internalClient.BatchUpdateEntityTypesOperation(name)
+}
+
+// BatchDeleteEntityTypes deletes entity types in the specified agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
+	return c.internalClient.BatchDeleteEntityTypes(ctx, req, opts...)
+}
+
+// BatchDeleteEntityTypesOperation returns a new BatchDeleteEntityTypesOperation from a given name.
+// The name must be that of a previously created BatchDeleteEntityTypesOperation, possibly from a different process.
+func (c *EntityTypesClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
+	return c.internalClient.BatchDeleteEntityTypesOperation(name)
+}
+
+// BatchCreateEntities creates multiple new entities in the specified entity type.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
+	return c.internalClient.BatchCreateEntities(ctx, req, opts...)
+}
+
+// BatchCreateEntitiesOperation returns a new BatchCreateEntitiesOperation from a given name.
+// The name must be that of a previously created BatchCreateEntitiesOperation, possibly from a different process.
+func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
+	return c.internalClient.BatchCreateEntitiesOperation(name)
+}
+
+// BatchUpdateEntities updates or creates multiple entities in the specified entity type. This
+// method does not affect entities in the entity type that aren’t explicitly
+// specified in the request.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
+	return c.internalClient.BatchUpdateEntities(ctx, req, opts...)
+}
+
+// BatchUpdateEntitiesOperation returns a new BatchUpdateEntitiesOperation from a given name.
+// The name must be that of a previously created BatchUpdateEntitiesOperation, possibly from a different process.
+func (c *EntityTypesClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
+	return c.internalClient.BatchUpdateEntitiesOperation(name)
+}
+
+// BatchDeleteEntities deletes entities in the specified entity type.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
+func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
+	return c.internalClient.BatchDeleteEntities(ctx, req, opts...)
+}
+
+// BatchDeleteEntitiesOperation returns a new BatchDeleteEntitiesOperation from a given name.
+// The name must be that of a previously created BatchDeleteEntitiesOperation, possibly from a different process.
+func (c *EntityTypesClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
+	return c.internalClient.BatchDeleteEntitiesOperation(name)
+}
+
+// entityTypesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type EntityTypesClient struct {
+type entityTypesGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing EntityTypesClient
+	CallOptions **EntityTypesCallOptions
+
 	// The gRPC API client.
 	entityTypesClient dialogflowpb.EntityTypesClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *EntityTypesCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewEntityTypesClient creates a new entity types client.
+// NewEntityTypesClient creates a new entity types client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing EntityTypes.
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
-	clientOpts := defaultEntityTypesClientOptions()
-
+	clientOpts := defaultEntityTypesGRPCClientOptions()
 	if newEntityTypesClientHook != nil {
 		hookOpts, err := newEntityTypesClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -230,16 +455,19 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 	if err != nil {
 		return nil, err
 	}
-	c := &EntityTypesClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultEntityTypesCallOptions(),
+	client := EntityTypesClient{CallOptions: defaultEntityTypesCallOptions()}
 
+	c := &entityTypesGRPCClient{
+		connPool:          connPool,
+		disableDeadlines:  disableDeadlines,
 		entityTypesClient: dialogflowpb.NewEntityTypesClient(connPool),
+		CallOptions:       &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -249,44 +477,46 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EntityTypesClient) Connection() *grpc.ClientConn {
+func (c *entityTypesGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *EntityTypesClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EntityTypesClient) setGoogleClientInfo(keyval ...string) {
+func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListEntityTypes returns the list of all entity types in the specified agent.
-func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *entityTypesGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *dialogflowpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEntityTypes[0:len(c.CallOptions.ListEntityTypes):len(c.CallOptions.ListEntityTypes)], opts...)
+	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
 	it := &EntityTypeIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListEntityTypesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EntityType, string, error) {
-		var resp *dialogflowpb.ListEntityTypesResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListEntityTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -309,14 +539,15 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetEntityType retrieves the specified entity type.
-func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *entityTypesGRPCClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -324,7 +555,7 @@ func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEntityType[0:len(c.CallOptions.GetEntityType):len(c.CallOptions.GetEntityType)], opts...)
+	opts = append((*c.CallOptions).GetEntityType[0:len((*c.CallOptions).GetEntityType):len((*c.CallOptions).GetEntityType)], opts...)
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -337,8 +568,7 @@ func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb
 	return resp, nil
 }
 
-// CreateEntityType creates an entity type in the specified agent.
-func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *entityTypesGRPCClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -346,7 +576,7 @@ func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateEntityType[0:len(c.CallOptions.CreateEntityType):len(c.CallOptions.CreateEntityType)], opts...)
+	opts = append((*c.CallOptions).CreateEntityType[0:len((*c.CallOptions).CreateEntityType):len((*c.CallOptions).CreateEntityType)], opts...)
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -359,8 +589,7 @@ func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflo
 	return resp, nil
 }
 
-// UpdateEntityType updates the specified entity type.
-func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+func (c *entityTypesGRPCClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -368,7 +597,7 @@ func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateEntityType[0:len(c.CallOptions.UpdateEntityType):len(c.CallOptions.UpdateEntityType)], opts...)
+	opts = append((*c.CallOptions).UpdateEntityType[0:len((*c.CallOptions).UpdateEntityType):len((*c.CallOptions).UpdateEntityType)], opts...)
 	var resp *dialogflowpb.EntityType
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -381,8 +610,7 @@ func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflo
 	return resp, nil
 }
 
-// DeleteEntityType deletes the specified entity type.
-func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
+func (c *entityTypesGRPCClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -390,7 +618,7 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteEntityType[0:len(c.CallOptions.DeleteEntityType):len(c.CallOptions.DeleteEntityType)], opts...)
+	opts = append((*c.CallOptions).DeleteEntityType[0:len((*c.CallOptions).DeleteEntityType):len((*c.CallOptions).DeleteEntityType)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.entityTypesClient.DeleteEntityType(ctx, req, settings.GRPC...)
@@ -399,10 +627,7 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 	return err
 }
 
-// BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
-//
-// Operation <response: BatchUpdateEntityTypesResponse>
-func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
+func (c *entityTypesGRPCClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -410,7 +635,7 @@ func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchUpdateEntityTypes[0:len(c.CallOptions.BatchUpdateEntityTypes):len(c.CallOptions.BatchUpdateEntityTypes)], opts...)
+	opts = append((*c.CallOptions).BatchUpdateEntityTypes[0:len((*c.CallOptions).BatchUpdateEntityTypes):len((*c.CallOptions).BatchUpdateEntityTypes)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -421,14 +646,11 @@ func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dia
 		return nil, err
 	}
 	return &BatchUpdateEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchDeleteEntityTypes deletes entity types in the specified agent.
-//
-// Operation <response: google.protobuf.Empty>
-func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
+func (c *entityTypesGRPCClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -436,7 +658,7 @@ func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchDeleteEntityTypes[0:len(c.CallOptions.BatchDeleteEntityTypes):len(c.CallOptions.BatchDeleteEntityTypes)], opts...)
+	opts = append((*c.CallOptions).BatchDeleteEntityTypes[0:len((*c.CallOptions).BatchDeleteEntityTypes):len((*c.CallOptions).BatchDeleteEntityTypes)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -447,14 +669,11 @@ func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dia
 		return nil, err
 	}
 	return &BatchDeleteEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchCreateEntities creates multiple new entities in the specified entity type.
-//
-// Operation <response: google.protobuf.Empty>
-func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
+func (c *entityTypesGRPCClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -462,7 +681,7 @@ func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialog
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchCreateEntities[0:len(c.CallOptions.BatchCreateEntities):len(c.CallOptions.BatchCreateEntities)], opts...)
+	opts = append((*c.CallOptions).BatchCreateEntities[0:len((*c.CallOptions).BatchCreateEntities):len((*c.CallOptions).BatchCreateEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -473,16 +692,11 @@ func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialog
 		return nil, err
 	}
 	return &BatchCreateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchUpdateEntities updates or creates multiple entities in the specified entity type. This
-// method does not affect entities in the entity type that aren’t explicitly
-// specified in the request.
-//
-// Operation <response: google.protobuf.Empty>
-func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
+func (c *entityTypesGRPCClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -490,7 +704,7 @@ func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialog
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchUpdateEntities[0:len(c.CallOptions.BatchUpdateEntities):len(c.CallOptions.BatchUpdateEntities)], opts...)
+	opts = append((*c.CallOptions).BatchUpdateEntities[0:len((*c.CallOptions).BatchUpdateEntities):len((*c.CallOptions).BatchUpdateEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -501,14 +715,11 @@ func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialog
 		return nil, err
 	}
 	return &BatchUpdateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchDeleteEntities deletes entities in the specified entity type.
-//
-// Operation <response: google.protobuf.Empty>
-func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
+func (c *entityTypesGRPCClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -516,7 +727,7 @@ func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialog
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchDeleteEntities[0:len(c.CallOptions.BatchDeleteEntities):len(c.CallOptions.BatchDeleteEntities)], opts...)
+	opts = append((*c.CallOptions).BatchDeleteEntities[0:len((*c.CallOptions).BatchDeleteEntities):len((*c.CallOptions).BatchDeleteEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -527,7 +738,7 @@ func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialog
 		return nil, err
 	}
 	return &BatchDeleteEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -538,9 +749,9 @@ type BatchCreateEntitiesOperation struct {
 
 // BatchCreateEntitiesOperation returns a new BatchCreateEntitiesOperation from a given name.
 // The name must be that of a previously created BatchCreateEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
+func (c *entityTypesGRPCClient) BatchCreateEntitiesOperation(name string) *BatchCreateEntitiesOperation {
 	return &BatchCreateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -596,9 +807,9 @@ type BatchDeleteEntitiesOperation struct {
 
 // BatchDeleteEntitiesOperation returns a new BatchDeleteEntitiesOperation from a given name.
 // The name must be that of a previously created BatchDeleteEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
+func (c *entityTypesGRPCClient) BatchDeleteEntitiesOperation(name string) *BatchDeleteEntitiesOperation {
 	return &BatchDeleteEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -654,9 +865,9 @@ type BatchDeleteEntityTypesOperation struct {
 
 // BatchDeleteEntityTypesOperation returns a new BatchDeleteEntityTypesOperation from a given name.
 // The name must be that of a previously created BatchDeleteEntityTypesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
+func (c *entityTypesGRPCClient) BatchDeleteEntityTypesOperation(name string) *BatchDeleteEntityTypesOperation {
 	return &BatchDeleteEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -712,9 +923,9 @@ type BatchUpdateEntitiesOperation struct {
 
 // BatchUpdateEntitiesOperation returns a new BatchUpdateEntitiesOperation from a given name.
 // The name must be that of a previously created BatchUpdateEntitiesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
+func (c *entityTypesGRPCClient) BatchUpdateEntitiesOperation(name string) *BatchUpdateEntitiesOperation {
 	return &BatchUpdateEntitiesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -770,9 +981,9 @@ type BatchUpdateEntityTypesOperation struct {
 
 // BatchUpdateEntityTypesOperation returns a new BatchUpdateEntityTypesOperation from a given name.
 // The name must be that of a previously created BatchUpdateEntityTypesOperation, possibly from a different process.
-func (c *EntityTypesClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
+func (c *entityTypesGRPCClient) BatchUpdateEntityTypesOperation(name string) *BatchUpdateEntityTypesOperation {
 	return &BatchUpdateEntityTypesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

@@ -75,6 +75,11 @@
                 "GetEntitlement"
               ]
             },
+            "ImportCustomer": {
+              "methods": [
+                "ImportCustomer"
+              ]
+            },
             "ListChannelPartnerLinks": {
               "methods": [
                 "ListChannelPartnerLinks"
@@ -128,6 +133,11 @@
             "ListTransferableSkus": {
               "methods": [
                 "ListTransferableSkus"
+              ]
+            },
+            "LookupOffer": {
+              "methods": [
+                "LookupOffer"
               ]
             },
             "ProvisionCloudIdentity": {

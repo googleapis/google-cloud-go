@@ -113,6 +113,11 @@
                 "GetEnvironment"
               ]
             },
+            "ListContinuousTestResults": {
+              "methods": [
+                "ListContinuousTestResults"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
@@ -121,6 +126,11 @@
             "LookupEnvironmentHistory": {
               "methods": [
                 "LookupEnvironmentHistory"
+              ]
+            },
+            "RunContinuousTest": {
+              "methods": [
+                "RunContinuousTest"
               ]
             },
             "UpdateEnvironment": {
@@ -191,6 +201,11 @@
                 "DeleteFlow"
               ]
             },
+            "ExportFlow": {
+              "methods": [
+                "ExportFlow"
+              ]
+            },
             "GetFlow": {
               "methods": [
                 "GetFlow"
@@ -199,6 +214,11 @@
             "GetFlowValidationResult": {
               "methods": [
                 "GetFlowValidationResult"
+              ]
+            },
+            "ImportFlow": {
+              "methods": [
+                "ImportFlow"
               ]
             },
             "ListFlows": {

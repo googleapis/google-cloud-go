@@ -30,22 +30,23 @@ func ExampleNewAnswerRecordsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAnswerRecordsClient_ListAnswerRecords() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListAnswerRecordsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListAnswerRecordsRequest.
 	}
 	it := c.ListAnswerRecords(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleAnswerRecordsClient_ListAnswerRecords() {
 }
 
 func ExampleAnswerRecordsClient_UpdateAnswerRecord() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAnswerRecordsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateAnswerRecordRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateAnswerRecordRequest.
 	}
 	resp, err := c.UpdateAnswerRecord(ctx, req)
 	if err != nil {

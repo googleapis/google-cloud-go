@@ -30,22 +30,23 @@ func ExampleNewContextsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleContextsClient_ListContexts() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListContextsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ListContextsRequest.
 	}
 	it := c.ListContexts(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleContextsClient_ListContexts() {
 }
 
 func ExampleContextsClient_GetContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#GetContextRequest.
 	}
 	resp, err := c.GetContext(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleContextsClient_GetContext() {
 }
 
 func ExampleContextsClient_CreateContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#CreateContextRequest.
 	}
 	resp, err := c.CreateContext(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleContextsClient_CreateContext() {
 }
 
 func ExampleContextsClient_UpdateContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#UpdateContextRequest.
 	}
 	resp, err := c.UpdateContext(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleContextsClient_DeleteContext() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteContextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteContextRequest.
 	}
 	err = c.DeleteContext(ctx, req)
 	if err != nil {
@@ -143,9 +146,11 @@ func ExampleContextsClient_DeleteAllContexts() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteAllContextsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DeleteAllContextsRequest.
 	}
 	err = c.DeleteAllContexts(ctx, req)
 	if err != nil {

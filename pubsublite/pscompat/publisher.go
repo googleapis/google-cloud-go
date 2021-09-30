@@ -77,15 +77,12 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(topicPath.Zone)
+	region, err := wire.LocationToRegion(topicPath.Location)
 	if err != nil {
 		return nil, err
 	}
 
-	// Note: ctx is not used to create the wire publisher, because if it is
-	// cancelled, the publisher will not be able to perform graceful shutdown
-	// (e.g. flush pending messages).
-	wirePub, err := wire.NewPublisher(context.Background(), settings.toWireSettings(), region, topic, opts...)
+	wirePub, err := wire.NewPublisher(ctx, settings.toWireSettings(), region, topic, opts...)
 	if err != nil {
 		return nil, err
 	}
