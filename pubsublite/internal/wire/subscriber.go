@@ -510,6 +510,7 @@ func (as *assigningSubscriber) handleAssignment(nextPartitions PartitionSet) err
 	return nil
 }
 
+// Returns the previous set of partitions and removed subscribers.
 func (as *assigningSubscriber) doHandleAssignment(nextPartitions PartitionSet) (PartitionSet, []*singlePartitionSubscriber, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()

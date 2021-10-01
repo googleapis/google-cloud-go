@@ -170,7 +170,8 @@ type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) e
 //
 // When this handler is called, partitions that are being assigned away are
 // stopping and new partitions are starting. Acks and nacks for messages from
-// partitions that are being assigned away will have no effect.
+// partitions that are being assigned away will have no effect, but message
+// deliveries may still be in flight.
 //
 // The client library will not acknowledge the assignment until this handler
 // returns. The server will not assign any of the partitions in
