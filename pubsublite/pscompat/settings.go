@@ -166,7 +166,8 @@ type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) e
 
 // ReassignmentHandlerFunc is called any time a new partition assignment is
 // received from the server. It will be called with both the previous and new
-// partition numbers as decided by the server.
+// partition numbers as decided by the server. Both slices of partition numbers
+// are sorted in ascending order.
 //
 // When this handler is called, partitions that are being assigned away are
 // stopping and new partitions are starting. Acks and nacks for messages from
