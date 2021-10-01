@@ -633,10 +633,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	if leftover > 0 {
 		// Wasn't able to copy all of the data in the message, store for
 		// future Read calls.
-		// TODO: Instead of acquiring a new block of memory, should we reuse
-		// the existing leftovers slice, expanding it if necessary?
-		r.leftovers = make([]byte, leftover)
-		copy(r.leftovers, content[n:])
+		r.leftovers = content[n:]
 	}
 	r.seen += int64(n)
 
