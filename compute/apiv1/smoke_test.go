@@ -600,9 +600,6 @@ func TestCapitalLetter(t *testing.T) {
 }
 
 func TestHeaders(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping integration test in short mode")
-	}
 	ctx := context.Background()
 
 	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -616,8 +613,11 @@ func TestHeaders(t *testing.T) {
 		}
 	}))
 	defer svr.Close()
-	opts := option.WithEndpoint(svr.URL)
-	c, err := NewAcceleratorTypesRESTClient(ctx, opts)
+	opts := []option.ClientOption{
+		option.WithEndpoint(svr.URL),
+		option.WithoutAuthentication(),
+	}
+	c, err := NewAcceleratorTypesRESTClient(ctx, opts...)
 	if err != nil {
 		t.Fatal(err)
 	}
