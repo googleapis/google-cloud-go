@@ -197,6 +197,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/bigquery/migration/v2alpha",
+		pkg:                   "migration",
+		importPath:            "cloud.google.com/go/bigquery/migration/apiv2alpha",
+		gRPCServiceConfigPath: "bigquerymigration_grpc_service_config.json",
+		apiServiceConfigPath:  "bigquerymigration_v2alpha.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
 		pkg:                   "reservation",
 		importPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
@@ -1289,6 +1297,24 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/10/11
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/orchestration/airflow/service/v1",
+		pkg:                   "service",
+		importPath:            "cloud.google.com/go/orchestration/airflow/service/apiv1",
+		gRPCServiceConfigPath: "composer_grpc_service_config.json",
+		apiServiceConfigPath:  "composer_v1.yaml",
+		// GA after 2021/10/27
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/filestore/v1",
+		pkg:                   "filestore",
+		importPath:            "cloud.google.com/go/filestore/apiv1",
+		gRPCServiceConfigPath: "file_grpc_service_config.json",
+		apiServiceConfigPath:  "file_v1.yaml",
+		// GA after 2021/10/30
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -1297,14 +1323,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
 		gRPCServiceConfigPath: "admin_grpc_service_config.json",
 		apiServiceConfigPath:  "analyticsadmin_v1alpha.yaml",
-		releaseLevel:          "alpha",
-	},
-	{
-		inputDirectoryPath:    "google/analytics/data/v1alpha",
-		pkg:                   "data",
-		importPath:            "cloud.google.com/go/analytics/data/apiv1alpha",
-		gRPCServiceConfigPath: "analytics_data_grpc_service_config.json",
-		apiServiceConfigPath:  "analyticsdata_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
 	{

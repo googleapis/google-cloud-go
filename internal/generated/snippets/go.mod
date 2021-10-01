@@ -23,7 +23,7 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.94.1
+	cloud.google.com/go v0.95.0
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/accesscontextmanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/aiplatform v0.1.0
@@ -82,6 +82,7 @@ require (
 	cloud.google.com/go/networkmanagement v0.1.0
 	cloud.google.com/go/networksecurity v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/notebooks v0.1.0
+	cloud.google.com/go/orchestration v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/orgpolicy v0.1.0
 	cloud.google.com/go/osconfig v0.1.0
 	cloud.google.com/go/oslogin v0.1.0
@@ -121,8 +122,8 @@ require (
 	cloud.google.com/go/webrisk v0.1.0
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
-	google.golang.org/api v0.57.0
-	google.golang.org/genproto v0.0.0-20210921142501-181ce0d877f6
+	google.golang.org/api v0.58.0
+	google.golang.org/genproto v0.0.0-20210930144712-2e2e1008e8a3
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -308,3 +309,5 @@ replace cloud.google.com/go/accesscontextmanager => ../../../accesscontextmanage
 replace cloud.google.com/go/contactcenterinsights => ../../../contactcenterinsights
 
 replace cloud.google.com/go/networksecurity => ../../../networksecurity
+
+replace cloud.google.com/go/orchestration => ../../../orchestration

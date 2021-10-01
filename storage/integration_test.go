@@ -265,6 +265,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
 	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
+	}
 	h.mustDeleteBucket(b)
 
 	// Test Create and Delete with attributes.
@@ -330,6 +333,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	}
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
+	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
 	}
 	h.mustDeleteBucket(b)
 }
@@ -639,6 +645,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
 		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
 	}
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4890")
 
 	// Update PAP setting to unspecified should work and not affect UBLA setting.
 	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})

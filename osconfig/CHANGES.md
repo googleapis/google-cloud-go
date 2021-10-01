@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surface.
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/osconfig/v0.1.0...osconfig/v0.2.0) (2021-09-11)
 
 
@@ -12,3 +16,4 @@
 
 This is the first tag to carve out osconfig as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+ 
