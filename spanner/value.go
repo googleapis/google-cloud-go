@@ -212,6 +212,7 @@ func (n *NullInt64) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullInt64) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -219,6 +220,7 @@ func (n NullInt64) Value() (driver.Value, error) {
 	return n.Int64, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullInt64) Scan(value interface{}) error {
 	if value == nil {
 		n.Int64, n.Valid = 0, false
@@ -242,6 +244,7 @@ func (n *NullInt64) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullInt64) GormDataType() string {
 	return "INT64"
 }
@@ -292,6 +295,7 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullString) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -299,6 +303,7 @@ func (n NullString) Value() (driver.Value, error) {
 	return n.StringVal, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullString) Scan(value interface{}) error {
 	if value == nil {
 		n.StringVal, n.Valid = "", false
@@ -322,6 +327,7 @@ func (n *NullString) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullString) GormDataType() string {
 	return "STRING(MAX)"
 }
@@ -372,6 +378,7 @@ func (n *NullFloat64) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullFloat64) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -379,6 +386,7 @@ func (n NullFloat64) Value() (driver.Value, error) {
 	return n.Float64, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullFloat64) Scan(value interface{}) error {
 	if value == nil {
 		n.Float64, n.Valid = 0, false
@@ -402,6 +410,7 @@ func (n *NullFloat64) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullFloat64) GormDataType() string {
 	return "FLOAT64"
 }
@@ -452,6 +461,7 @@ func (n *NullBool) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullBool) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -459,6 +469,7 @@ func (n NullBool) Value() (driver.Value, error) {
 	return n.Bool, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullBool) Scan(value interface{}) error {
 	if value == nil {
 		n.Bool, n.Valid = false, false
@@ -482,6 +493,7 @@ func (n *NullBool) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullBool) GormDataType() string {
 	return "BOOL"
 }
@@ -537,6 +549,7 @@ func (n *NullTime) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullTime) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -544,6 +557,7 @@ func (n NullTime) Value() (driver.Value, error) {
 	return n.Time, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullTime) Scan(value interface{}) error {
 	if value == nil {
 		n.Time, n.Valid = time.Time{}, false
@@ -567,6 +581,7 @@ func (n *NullTime) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullTime) GormDataType() string {
 	return "TIMESTAMP"
 }
@@ -622,6 +637,7 @@ func (n *NullDate) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullDate) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -629,6 +645,7 @@ func (n NullDate) Value() (driver.Value, error) {
 	return n.Date, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullDate) Scan(value interface{}) error {
 	if value == nil {
 		n.Date, n.Valid = civil.Date{}, false
@@ -652,6 +669,7 @@ func (n *NullDate) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullDate) GormDataType() string {
 	return "DATE"
 }
@@ -707,6 +725,7 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// Value implements the driver.Valuer interface.
 func (n NullNumeric) Value() (driver.Value, error) {
 	if n.IsNull() {
 		return nil, nil
@@ -714,6 +733,7 @@ func (n NullNumeric) Value() (driver.Value, error) {
 	return n.Numeric, nil
 }
 
+// Scan implements the sql.Scanner interface.
 func (n *NullNumeric) Scan(value interface{}) error {
 	if value == nil {
 		n.Numeric, n.Valid = big.Rat{}, false
@@ -737,6 +757,7 @@ func (n *NullNumeric) Scan(value interface{}) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullNumeric) GormDataType() string {
 	return "NUMERIC"
 }
@@ -794,6 +815,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// GormDataType is used by gorm to determine the default data type for fields with this type.
 func (n NullJSON) GormDataType() string {
 	return "JSON"
 }
