@@ -77,6 +77,9 @@ type FileConfig struct {
 
 	// Additional options for Parquet files.
 	ParquetOptions *ParquetOptions
+
+	// Additional options for Avro files.
+	AvroOptions *AvroOptions
 }
 
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
@@ -97,6 +100,9 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 			EnumAsString:        fc.ParquetOptions.EnumAsString,
 			EnableListInference: fc.ParquetOptions.EnableListInference,
 		}
+	}
+	if fc.AvroOptions != nil {
+		conf.UseAvroLogicalTypes = fc.AvroOptions.UseAvroLogicalTypes
 	}
 	conf.Quote = fc.quote()
 }
@@ -130,6 +136,11 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 	}
 	if format == CSV {
 		fc.CSVOptions.populateExternalDataConfig(conf)
+	}
+	if fc.AvroOptions != nil {
+		conf.AvroOptions = &bq.AvroOptions{
+			UseAvroLogicalTypes: fc.AvroOptions.UseAvroLogicalTypes,
+		}
 	}
 	if fc.ParquetOptions != nil {
 		conf.ParquetOptions = &bq.ParquetOptions{
