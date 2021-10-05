@@ -186,6 +186,35 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: true,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&DropView{
+				Name:     "SingersView",
+				Position: line(1),
+			},
+			"DROP VIEW SingersView",
+			reparseDDL,
+		},
+		{
 			&AlterTable{
 				Name:       "Ta",
 				Alteration: AddColumn{Def: ColumnDef{Name: "Ca", Type: Type{Base: Bool}, Position: line(1)}},
