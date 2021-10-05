@@ -21,7 +21,9 @@ import (
 
 	privateca "cloud.google.com/go/security/privateca/apiv1"
 	"google.golang.org/api/iterator"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewCertificateAuthorityClient() {
@@ -705,6 +707,112 @@ func ExampleCertificateAuthorityClient_UpdateCertificateTemplate() {
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_GetLocation() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.GetLocationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#GetLocationRequest.
+	}
+	resp, err := c.GetLocation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_ListLocations() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &locationpb.ListLocationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/location#ListLocationsRequest.
+	}
+	it := c.ListLocations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCertificateAuthorityClient_GetIamPolicy() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_SetIamPolicy() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_TestIamPermissions() {
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

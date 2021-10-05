@@ -45,6 +45,7 @@ type database struct {
 	lastTS  time.Time // last commit timestamp
 	tables  map[spansql.ID]*table
 	indexes map[spansql.ID]struct{} // only record their existence
+	views   map[spansql.ID]struct{} // only record their existence
 
 	rwMu sync.Mutex // held by read-write transactions
 }
@@ -249,6 +250,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	if d.indexes == nil {
 		d.indexes = make(map[spansql.ID]struct{})
 	}
+	if d.views == nil {
+		d.views = make(map[spansql.ID]struct{})
+	}
 
 	switch stmt := stmt.(type) {
 	default:
@@ -305,6 +309,14 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		}
 		d.indexes[stmt.Name] = struct{}{}
 		return nil
+	case *spansql.CreateView:
+		if !stmt.OrReplace {
+			if _, ok := d.views[stmt.Name]; ok {
+				return status.Newf(codes.AlreadyExists, "view %s already exists", stmt.Name)
+			}
+		}
+		d.views[stmt.Name] = struct{}{}
+		return nil
 	case *spansql.DropTable:
 		if _, ok := d.tables[stmt.Name]; !ok {
 			return status.Newf(codes.NotFound, "no table named %s", stmt.Name)
@@ -317,6 +329,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.NotFound, "no index named %s", stmt.Name)
 		}
 		delete(d.indexes, stmt.Name)
+		return nil
+	case *spansql.DropView:
+		if _, ok := d.views[stmt.Name]; !ok {
+			return status.Newf(codes.NotFound, "no view named %s", stmt.Name)
+		}
+		delete(d.views, stmt.Name)
 		return nil
 	case *spansql.AlterTable:
 		t, ok := d.tables[stmt.Name]

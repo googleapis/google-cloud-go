@@ -35,15 +35,6 @@
     "release_level": "alpha",
     "library_type": ""
   },
-  "cloud.google.com/go/analytics/data/apiv1alpha": {
-    "distribution_name": "cloud.google.com/go/analytics/data/apiv1alpha",
-    "description": "Google Analytics Data API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/analytics/latest/data/apiv1alpha",
-    "release_level": "alpha",
-    "library_type": ""
-  },
   "cloud.google.com/go/apigateway/apiv1": {
     "distribution_name": "cloud.google.com/go/apigateway/apiv1",
     "description": "API Gateway API",
@@ -575,6 +566,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/filestore/apiv1": {
+    "distribution_name": "cloud.google.com/go/filestore/apiv1",
+    "description": "Cloud Filestore API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/filestore/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/firestore": {
     "distribution_name": "cloud.google.com/go/firestore",
     "description": "Cloud Firestore API",
@@ -896,6 +896,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/notebooks/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
+  "cloud.google.com/go/orchestration/airflow/service/apiv1": {
+    "distribution_name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
+    "description": "Cloud Composer API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/orchestration/latest/airflow/service/apiv1",
     "release_level": "beta",
     "library_type": ""
   },

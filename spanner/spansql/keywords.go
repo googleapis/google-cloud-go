@@ -152,7 +152,9 @@ var allFuncs = []string{
 	"ABS",
 
 	// Hash functions.
+	"FARM_FINGERPRINT",
 	"SHA1",
+	"SHA256", "SHA512",
 
 	// String functions.
 	"BYTE_LENGTH", "CHAR_LENGTH", "CHARACTER_LENGTH",
