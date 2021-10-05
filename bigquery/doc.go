@@ -180,7 +180,7 @@ automatically inferred as nullable, so the "nullable" tag is only needed for []b
         Name     string `bigquery:"full_name"`
         Grades   []int
         Secret   string `bigquery:"-"`
-        Optional []byte `bigquery:",nullable"
+        Optional []byte `bigquery:",nullable"`
     }
     schema3, err := bigquery.InferSchema(student2{})
     if err != nil {
