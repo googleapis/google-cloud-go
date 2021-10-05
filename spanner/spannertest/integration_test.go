@@ -1387,6 +1387,32 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 }
 
+func TestIntegration_Views(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	err := updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers`)
+	if err != nil {
+		t.Fatalf("Creating view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if g, w := spanner.ErrCode(err), codes.AlreadyExists; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+	err = updateDDL(t, adminClient, `CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if err != nil {
+		t.Fatalf("Replacing view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if err != nil {
+		t.Fatalf("Dropping view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if g, w := spanner.ErrCode(err), codes.NotFound; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+}
+
 func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
 	t.Helper()
 	err := updateDDL(t, adminClient, "DROP TABLE "+table)
