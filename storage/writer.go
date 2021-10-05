@@ -27,6 +27,8 @@ import (
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -353,6 +355,7 @@ func (w *Writer) openGRPC() error {
 			// Note: This blocks until either the buffer is full or EOF is read.
 			recvd, doneReading, err := read(pr, buf)
 			if err != nil {
+				err = checkCanceled(err)
 				w.error(err)
 				pr.CloseWithError(err)
 				return
@@ -369,6 +372,7 @@ func (w *Writer) openGRPC() error {
 			if !doneReading && w.upid == "" {
 				err = w.startResumableUpload()
 				if err != nil {
+					err = checkCanceled(err)
 					w.error(err)
 					pr.CloseWithError(err)
 					return
@@ -377,6 +381,7 @@ func (w *Writer) openGRPC() error {
 
 			o, off, finalized, err := w.uploadBuffer(toWrite, recvd, offset, doneReading)
 			if err != nil {
+				err = checkCanceled(err)
 				w.error(err)
 				pr.CloseWithError(err)
 				return
@@ -636,4 +641,12 @@ func read(r io.Reader, buf []byte) (int, bool, error) {
 		err = nil
 	}
 	return recvd, done, err
+}
+
+func checkCanceled(err error) error {
+	if status.Code(err) == codes.Canceled {
+		return context.Canceled
+	}
+
+	return err
 }
