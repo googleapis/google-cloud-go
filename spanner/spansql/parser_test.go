@@ -500,6 +500,12 @@ func TestParseDDL(t *testing.T) {
 		ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
 		ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
 
+		CREATE VIEW SingersView
+		SQL SECURITY INVOKER
+		AS SELECT SingerId, FullName
+		FROM Singers
+		ORDER BY LastName, FirstName;
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -689,6 +695,23 @@ func TestParseDDL(t *testing.T) {
 				},
 				Position: line(58),
 			},
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: false,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(60),
+			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
@@ -711,7 +734,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(60), End: line(60), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(66), End: line(66), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -763,6 +786,35 @@ func TestParseDDL(t *testing.T) {
 							EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
 						},
 					},
+					Position: line(1),
+				},
+			},
+			}},
+		{"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&CreateView{
+					Name:      "SingersView",
+					OrReplace: true,
+					Query: Query{
+						Select: Select{
+							List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+							From: []SelectFrom{SelectFromTable{
+								Table: "Singers",
+							}},
+						},
+						Order: []Order{
+							{Expr: ID("LastName")},
+							{Expr: ID("FirstName")},
+						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
+		{"DROP VIEW `SingersView`",
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&DropView{
+					Name:     "SingersView",
 					Position: line(1),
 				},
 			},
