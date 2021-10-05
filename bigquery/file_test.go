@@ -96,6 +96,19 @@ func TestFileConfigPopulateLoadConfig(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "avro",
+			fileConfig: &FileConfig{
+				SourceFormat: Avro,
+				AvroOptions: &AvroOptions{
+					UseAvroLogicalTypes: true,
+				},
+			},
+			want: &bq.JobConfigurationLoad{
+				SourceFormat:        "AVRO",
+				UseAvroLogicalTypes: true,
+			},
+		},
 	}
 	for _, tc := range testcases {
 		got := &bq.JobConfigurationLoad{}
