@@ -20,6 +20,7 @@ func TestPkgStatus(t *testing.T) {
 	tests := []struct {
 		importPath string
 		doc        string
+		version    string
 		want       string
 	}{
 		{
@@ -56,10 +57,18 @@ func TestPkgStatus(t *testing.T) {
 			doc:        "Package foo is great\nDeprecated: not anymore",
 			want:       "deprecated", // Deprecated comes before alpha and beta.
 		},
+		{
+			version: "v0.1.0",
+			want:    "",
+		},
+		{
+			version: "v2.1.0-alpha",
+			want:    "preview", // Preview comes before alpha and beta.
+		},
 	}
 	for _, test := range tests {
-		if got := pkgStatus(test.importPath, test.doc); got != test.want {
-			t.Errorf("pkgStatus(%q, %q) got %q, want %q", test.importPath, test.doc, got, test.want)
+		if got := pkgStatus(test.importPath, test.doc, test.version); got != test.want {
+			t.Errorf("pkgStatus(%q, %q, %q) got %q, want %q", test.importPath, test.doc, test.version, got, test.want)
 		}
 	}
 }
