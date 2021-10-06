@@ -378,7 +378,7 @@ const (
 	// not set in a call to GCS.
 	PublicAccessPreventionUnknown PublicAccessPrevention = iota
 
-	// PublicAccessPreventionUnspecified corresponds to a value of "inherited".
+	// PublicAccessPreventionUnspecified corresponds to a value of "unspecified".
 	// Deprecated: use PublicAccessPreventionInherited
 	PublicAccessPreventionUnspecified
 

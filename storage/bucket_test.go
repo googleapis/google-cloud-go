@@ -257,7 +257,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
-	// undeprecrated setting being propagated in the proto.
+	// inherited setting being propagated in the proto.
 	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
 	got = attrs.toRawBucket()
 	want.IamConfiguration = &raw.BucketIamConfiguration{
