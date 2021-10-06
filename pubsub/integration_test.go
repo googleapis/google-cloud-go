@@ -659,7 +659,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 		ExpirationPolicy:    25 * time.Hour,
 	}
 
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -672,7 +672,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 	want.ExpirationPolicy = time.Duration(0)
 
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -693,7 +693,7 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	// service issue: PushConfig attributes are not removed.
 	// TODO(jba): remove when issue resolved.
 	want.PushConfig.Attributes = map[string]string{"x-goog-version": "v1"}
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 	// If nothing changes, our client returns an error.
@@ -734,7 +734,9 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 
 	// Set ExpirationPolicy within the valid range.
 	got, err := sub.Update(ctx, SubscriptionConfigToUpdate{
-		ExpirationPolicy: 25 * time.Hour,
+		RetentionDuration: 2 * time.Hour,
+		ExpirationPolicy:  25 * time.Hour,
+		AckDeadline:       2 * time.Minute,
 	})
 	if err != nil {
 		t.Fatal(err)
