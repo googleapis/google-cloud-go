@@ -12,24 +12,24 @@ items:
     as described in\nhttps://cloud.google.com/storage/docs/exponential-backoff. Retrying
     continues\nindefinitely unless the controlling context is canceled or the client
     is closed. See\ncontext.WithTimeout and context.WithCancel.</p>\n<h3>Creating
-    a Client</h3>\n<p>To start working with this package, create a client:</p>\n<pre><code
-    class=\"prettyprint\">ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif
+    a Client</h3>\n<p>To start working with this package, create a client:</p>\n<pre
+    class=\"prettyprint\"><code>ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif
     err != nil {\n    // TODO: Handle error.\n}\n</code></pre><p>The client will use
     your default application credentials. Clients should be\nreused instead of created
     as needed. The methods of Client are safe for\nconcurrent use by multiple goroutines.</p>\n<p>If
     you only wish to access public data, you can create\nan unauthenticated client
-    with</p>\n<pre><code class=\"prettyprint\">client, err := storage.NewClient(ctx,
+    with</p>\n<pre class=\"prettyprint\"><code>client, err := storage.NewClient(ctx,
     option.WithoutAuthentication())\n</code></pre><h3>Buckets</h3>\n<p>A Google Cloud
     Storage bucket is a collection of objects. To work with a\nbucket, make a bucket
-    handle:</p>\n<pre><code class=\"prettyprint\">bkt := client.Bucket(bucketName)\n</code></pre><p>A
+    handle:</p>\n<pre class=\"prettyprint\"><code>bkt := client.Bucket(bucketName)\n</code></pre><p>A
     handle is a reference to a bucket. You can have a handle even if the\nbucket doesn't
-    exist yet. To create a bucket in Google Cloud Storage,\ncall Create on the handle:</p>\n<pre><code
-    class=\"prettyprint\">if err := bkt.Create(ctx, projectID, nil); err != nil {\n
-    \   // TODO: Handle error.\n}\n</code></pre><p>Note that although buckets are
-    associated with projects, bucket names are\nglobal across all projects.</p>\n<p>Each
+    exist yet. To create a bucket in Google Cloud Storage,\ncall Create on the handle:</p>\n<pre
+    class=\"prettyprint\"><code>if err := bkt.Create(ctx, projectID, nil); err !=
+    nil {\n    // TODO: Handle error.\n}\n</code></pre><p>Note that although buckets
+    are associated with projects, bucket names are\nglobal across all projects.</p>\n<p>Each
     bucket has associated metadata, represented in this package by\nBucketAttrs. The
     third argument to BucketHandle.Create allows you to set\nthe initial BucketAttrs
-    of a bucket. To retrieve a bucket's attributes, use\nAttrs:</p>\n<pre><code class=\"prettyprint\">attrs,
+    of a bucket. To retrieve a bucket's attributes, use\nAttrs:</p>\n<pre class=\"prettyprint\"><code>attrs,
     err := bkt.Attrs(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;bucket
     %s, created at %s, is located in %s with storage class %s\\n&quot;,\n    attrs.Name,
     attrs.Created, attrs.Location, attrs.StorageClass)\n</code></pre><h3>Objects</h3>\n<p>An
@@ -37,7 +37,7 @@ items:
     objects using a handle, just as with buckets, but unlike buckets\nyou don't explicitly
     create an object. Instead, the first time you write\nto an object it will be created.
     You can use the standard Go io.Reader\nand io.Writer interfaces to read and write
-    object data:</p>\n<pre><code class=\"prettyprint\">obj := bkt.Object(&quot;data&quot;)\n//
+    object data:</p>\n<pre class=\"prettyprint\"><code>obj := bkt.Object(&quot;data&quot;)\n//
     Write something to obj.\n// w implements io.Writer.\nw := obj.NewWriter(ctx)\n//
     Write some text to obj. This will either create the object or overwrite whatever
     is there already.\nif _, err := fmt.Fprintf(w, &quot;This object contains text.\\n&quot;);
@@ -46,51 +46,51 @@ items:
     err := obj.NewReader(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\ndefer
     r.Close()\nif _, err := io.Copy(os.Stdout, r); err != nil {\n    // TODO: Handle
     error.\n}\n// Prints &quot;This object contains text.&quot;\n</code></pre><p>Objects
-    also have attributes, which you can fetch with Attrs:</p>\n<pre><code class=\"prettyprint\">objAttrs,
+    also have attributes, which you can fetch with Attrs:</p>\n<pre class=\"prettyprint\"><code>objAttrs,
     err := obj.Attrs(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;object
     %s has size %d and can be read using %s\\n&quot;,\n    objAttrs.Name, objAttrs.Size,
     objAttrs.MediaLink)\n</code></pre><h3>Listing objects</h3>\n<p>Listing objects
-    in a bucket is done with the Bucket.Objects method:</p>\n<pre><code class=\"prettyprint\">query
+    in a bucket is done with the Bucket.Objects method:</p>\n<pre class=\"prettyprint\"><code>query
     := &amp;storage.Query{Prefix: &quot;&quot;}\n\nvar names []string\nit := bkt.Objects(ctx,
     query)\nfor {\n    attrs, err := it.Next()\n    if err == iterator.Done {\n        break\n
     \   }\n    if err != nil {\n        log.Fatal(err)\n    }\n    names = append(names,
     attrs.Name)\n}\n</code></pre><p>If only a subset of object attributes is needed
     when listing, specifying this\nsubset using Query.SetAttrSelection may speed up
-    the listing process:</p>\n<pre><code class=\"prettyprint\">query := &amp;storage.Query{Prefix:
+    the listing process:</p>\n<pre class=\"prettyprint\"><code>query := &amp;storage.Query{Prefix:
     &quot;&quot;}\nquery.SetAttrSelection([]string{&quot;Name&quot;})\n\n// ... as
     before\n</code></pre><h3>ACLs</h3>\n<p>Both objects and buckets have ACLs (Access
     Control Lists). An ACL is a list of\nACLRules, each of which specifies the role
     of a user, group or project. ACLs\nare suitable for fine-grained control, but
     you may prefer using IAM to control\naccess at the project level (see\nhttps://cloud.google.com/storage/docs/access-control/iam).</p>\n<p>To
-    list the ACLs of a bucket or object, obtain an ACLHandle and call its List method:</p>\n<pre><code
-    class=\"prettyprint\">acls, err := obj.ACL().List(ctx)\nif err != nil {\n    //
-    TODO: Handle error.\n}\nfor _, rule := range acls {\n    fmt.Printf(&quot;%s has
-    role %s\\n&quot;, rule.Entity, rule.Role)\n}\n</code></pre><p>You can also set
-    and delete ACLs.</p>\n<h3>Conditions</h3>\n<p>Every object has a generation and
-    a metageneration. The generation changes\nwhenever the content changes, and the
-    metageneration changes whenever the\nmetadata changes. Conditions let you check
-    these values before an operation;\nthe operation only executes if the conditions
+    list the ACLs of a bucket or object, obtain an ACLHandle and call its List method:</p>\n<pre
+    class=\"prettyprint\"><code>acls, err := obj.ACL().List(ctx)\nif err != nil {\n
+    \   // TODO: Handle error.\n}\nfor _, rule := range acls {\n    fmt.Printf(&quot;%s
+    has role %s\\n&quot;, rule.Entity, rule.Role)\n}\n</code></pre><p>You can also
+    set and delete ACLs.</p>\n<h3>Conditions</h3>\n<p>Every object has a generation
+    and a metageneration. The generation changes\nwhenever the content changes, and
+    the metageneration changes whenever the\nmetadata changes. Conditions let you
+    check these values before an operation;\nthe operation only executes if the conditions
     match. You can use conditions to\nprevent race conditions in read-modify-write
     operations.</p>\n<p>For example, say you've read an object's metadata into objAttrs.
     Now\nyou want to write to that object, but only if its contents haven't changed\nsince
-    you read it. Here is how to express that:</p>\n<pre><code class=\"prettyprint\">w
+    you read it. Here is how to express that:</p>\n<pre class=\"prettyprint\"><code>w
     = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)\n//
     Proceed with writing as above.\n</code></pre><h3>Signed URLs</h3>\n<p>You can
     obtain a URL that lets anyone read or write an object for a limited time.\nYou
     don't need to create a client to do this. See the documentation of\nSignedURL
-    for details.</p>\n<pre><code class=\"prettyprint\">url, err := storage.SignedURL(bucketName,
+    for details.</p>\n<pre class=\"prettyprint\"><code>url, err := storage.SignedURL(bucketName,
     &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</code></pre><h3>Post
     Policy V4 Signed Request</h3>\n<p>A type of signed request that allows uploads
     through HTML forms directly to Cloud Storage with\ntemporary permission. Conditions
     can be applied to restrict how the HTML form is used and exercised\nby a user.</p>\n<p>For
     more information, please see https://cloud.google.com/storage/docs/xml-api/post-object
-    as well\nas the documentation of GenerateSignedPostPolicyV4.</p>\n<pre><code class=\"prettyprint\">pv4,
+    as well\nas the documentation of GenerateSignedPostPolicyV4.</p>\n<pre class=\"prettyprint\"><code>pv4,
     err := storage.GenerateSignedPostPolicyV4(bucketName, objectName, opts)\nif err
     != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields; %v\\n&quot;,
     pv4.URL, pv4.Fields)\n</code></pre><h3>Errors</h3>\n<p>Errors returned by this
     client are often of the type <a href=\"https://godoc.org/google.golang.org/api/googleapi#Error\"><code>googleapi.Error</code></a>.\nThese
     errors can be introspected for more information by type asserting to the richer
-    <code>googleapi.Error</code> type. For example:</p>\n<pre><code class=\"prettyprint\">if
+    <code>googleapi.Error</code> type. For example:</p>\n<pre class=\"prettyprint\"><code>if
     e, ok := err.(*googleapi.Error); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre>"
   type: package
   langs:
