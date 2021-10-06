@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
@@ -624,7 +625,8 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
+	if diff := testutil.Diff(got, want, opt); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 	// Add a PushConfig and change other fields.
