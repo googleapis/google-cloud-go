@@ -9,6 +9,8 @@ require (
 	github.com/google/go-cmp v0.5.6
 	github.com/googleapis/gax-go/v2 v2.1.0
 	go.opencensus.io v0.23.0
+	go.opentelemetry.io/otel v1.0.0
+	go.opentelemetry.io/otel/trace v1.0.0
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
