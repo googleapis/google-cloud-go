@@ -959,26 +959,28 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	if p.sniff("CREATE", "TABLE") {
 		ct, err := p.parseCreateTable()
 		return ct, err
-	} else if p.sniff("CREATE") {
-		// The only other statement starting with CREATE is CREATE INDEX,
-		// which can have UNIQUE or NULL_FILTERED as the token after CREATE.
+	} else if p.sniff("CREATE", "INDEX") || p.sniff("CREATE", "UNIQUE", "INDEX") || p.sniff("CREATE", "NULL_FILTERED", "INDEX") || p.sniff("CREATE", "UNIQUE", "NULL_FILTERED", "INDEX") {
 		ci, err := p.parseCreateIndex()
 		return ci, err
+	} else if p.sniff("CREATE", "VIEW") || p.sniff("CREATE", "OR", "REPLACE", "VIEW") {
+		cv, err := p.parseCreateView()
+		return cv, err
 	} else if p.sniff("ALTER", "TABLE") {
 		a, err := p.parseAlterTable()
 		return a, err
 	} else if p.eat("DROP") {
 		pos := p.Pos()
 		// These statements are simple.
-		//	DROP TABLE table_name
-		//	DROP INDEX index_name
+		// DROP TABLE table_name
+		// DROP INDEX index_name
+		// DROP VIEW view_name
 		tok := p.next()
 		if tok.err != nil {
 			return nil, tok.err
 		}
 		switch {
 		default:
-			return nil, p.errorf("got %q, want TABLE or INDEX", tok.value)
+			return nil, p.errorf("got %q, want TABLE, VIEW or INDEX", tok.value)
 		case tok.caseEqual("TABLE"):
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
@@ -991,6 +993,12 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 				return nil, err
 			}
 			return &DropIndex{Name: name, Position: pos}, nil
+		case tok.caseEqual("VIEW"):
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropView{Name: name, Position: pos}, nil
 		}
 	} else if p.sniff("ALTER", "DATABASE") {
 		a, err := p.parseAlterDatabase()
@@ -1195,6 +1203,45 @@ func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	}
 
 	return ci, nil
+}
+
+func (p *parser) parseCreateView() (*CreateView, *parseError) {
+	debugf("parseCreateView: %v", p)
+
+	/*
+		{ CREATE VIEW | CREATE OR REPLACE VIEW } view_name
+		SQL SECURITY INVOKER
+		AS query
+	*/
+
+	var orReplace bool
+
+	if err := p.expect("CREATE"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if p.eat("OR", "REPLACE") {
+		orReplace = true
+	}
+	if err := p.expect("VIEW"); err != nil {
+		return nil, err
+	}
+	vname, err := p.parseTableOrIndexOrColumnName()
+	if err := p.expect("SQL", "SECURITY", "INVOKER", "AS"); err != nil {
+		return nil, err
+	}
+	query, err := p.parseQuery()
+	if err != nil {
+		return nil, err
+	}
+
+	return &CreateView{
+		Name:      vname,
+		OrReplace: orReplace,
+		Query:     query,
+
+		Position: pos,
+	}, nil
 }
 
 func (p *parser) parseAlterTable() (*AlterTable, *parseError) {

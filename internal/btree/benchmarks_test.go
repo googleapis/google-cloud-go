@@ -232,7 +232,7 @@ func BenchmarkFind(b *testing.B) {
 func findBinary(k Key, s []item) (int, bool) {
 	i := sort.Search(len(s), func(i int) bool { return less(k, s[i].key) })
 	// i is the smallest index of s for which key.Less(s[i].Key), or len(s).
-	if i > 0 && !less(s[i-1], k) {
+	if i > 0 && !less(s[i-1].key, k) {
 		return i - 1, true
 	}
 	return i, false

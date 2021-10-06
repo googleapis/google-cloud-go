@@ -1110,7 +1110,6 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_CancelWriteGRPC(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4772")
 	ctx := context.Background()
 
 	// Create an HTTP client to verify test and a gRPC client to test writing.
@@ -1128,9 +1127,12 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	}()
 
 	cctx, cancel := context.WithCancel(ctx)
-	content := []byte("Hello, world this is a grpc request")
 
 	w := gobj.NewWriter(cctx)
+	// Set a chunk size and send that amount of data to provoke a network call
+	// on the next Write that would fail due to context cancelation.
+	w.ChunkSize = googleapi.MinUploadChunkSize
+	content := make([]byte, w.ChunkSize)
 	_, err := w.Write(content)
 	if err != nil {
 		t.Fatal(err)
@@ -1505,16 +1507,17 @@ func TestIntegration_Objects(t *testing.T) {
 	// Since a 429 or 5xx is hard to cause, we trigger a 416.
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
-	if err, ok := err.(*googleapi.Error); !ok {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
-		if err.Code != 416 {
-			t.Errorf("Code = %d; want %d", err.Code, 416)
+		if e.Code != 416 {
+			t.Errorf("Code = %d; want %d", e.Code, 416)
 		}
-		if len(err.Header) == 0 {
+		if len(e.Header) == 0 {
 			t.Error("Missing googleapi.Error.Header")
 		}
-		if len(err.Body) == 0 {
+		if len(e.Body) == 0 {
 			t.Error("Missing googleapi.Error.Body")
 		}
 	}
@@ -2779,8 +2782,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		if err == nil {
 			return 0
 		}
-		if err, ok := err.(*googleapi.Error); ok {
-			return err.Code
+		var e *googleapi.Error
+		if ok := xerrors.As(err, &e); ok {
+			return e.Code
 		}
 		return -1
 	}
@@ -3029,8 +3033,8 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	}
 
 	errCode := func(err error) int {
-		err2, ok := err.(*googleapi.Error)
-		if !ok {
+		var err2 *googleapi.Error
+		if ok := xerrors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
@@ -3212,14 +3216,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
-	// check for context cancellation instead.
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3871,7 +3873,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if readErr == context.Canceled {
+			if xerrors.Is(readErr, context.Canceled) {
 				return
 			}
 			break

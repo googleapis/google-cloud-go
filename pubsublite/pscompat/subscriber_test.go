@@ -30,7 +30,10 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-const defaultSubscriberTestTimeout = 10 * time.Second
+const (
+	defaultSubscriberTestTimeout = 10 * time.Second
+	activePartition              = 1
+)
 
 // mockAckConsumer is a mock implementation of the wire.AckConsumer interface.
 type mockAckConsumer struct {
@@ -43,12 +46,14 @@ func (ac *mockAckConsumer) Ack() {
 
 // mockWireSubscriber is a mock implementation of the wire.Subscriber interface.
 type mockWireSubscriber struct {
-	receiver   wire.MessageReceiverFunc
-	msgsC      chan *wire.ReceivedMessage
-	stopC      chan struct{}
-	err        error
-	Stopped    bool
-	Terminated bool
+	receiver         wire.MessageReceiverFunc
+	onReassignment   wire.ReassignmentHandlerFunc
+	activePartitions wire.PartitionSet
+	msgsC            chan *wire.ReceivedMessage
+	stopC            chan struct{}
+	err              error
+	Stopped          bool
+	Terminated       bool
 }
 
 // DeliverMessages should be called from the test to simulate a message
@@ -56,6 +61,14 @@ type mockWireSubscriber struct {
 func (ms *mockWireSubscriber) DeliverMessages(msgs ...*wire.ReceivedMessage) {
 	for _, m := range msgs {
 		ms.msgsC <- m
+	}
+}
+
+// OnReassignment should be called from the test to simulate a partition
+// reassignment.
+func (ms *mockWireSubscriber) DeliverReassignment(before, after wire.PartitionSet) {
+	if err := ms.onReassignment(before, after); err != nil {
+		ms.SimulateFatalError(err)
 	}
 }
 
@@ -111,13 +124,19 @@ func (ms *mockWireSubscriber) WaitStopped() error {
 	return ms.err
 }
 
+func (ms *mockWireSubscriber) PartitionActive(partition int) bool {
+	return ms.activePartitions.Contains(partition)
+}
+
 type mockWireSubscriberFactory struct{}
 
-func (f *mockWireSubscriberFactory) New(ctx context.Context, receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
+func (f *mockWireSubscriberFactory) New(ctx context.Context, receiver wire.MessageReceiverFunc, onReassignment wire.ReassignmentHandlerFunc) (wire.Subscriber, error) {
 	return &mockWireSubscriber{
-		receiver: receiver,
-		msgsC:    make(chan *wire.ReceivedMessage, 10),
-		stopC:    make(chan struct{}),
+		receiver:         receiver,
+		onReassignment:   onReassignment,
+		activePartitions: wire.NewPartitionSet([]int{activePartition}),
+		msgsC:            make(chan *wire.ReceivedMessage, 10),
+		stopC:            make(chan struct{}),
 	}, nil
 }
 
@@ -289,6 +308,7 @@ func TestSubscriberInstanceNack(t *testing.T) {
 		desc string
 		// mutateSettings is passed a copy of DefaultReceiveSettings to mutate.
 		mutateSettings func(settings *ReceiveSettings)
+		msgPartition   int
 		wantErr        error
 		wantAckCount   int
 		wantStopped    bool
@@ -297,9 +317,18 @@ func TestSubscriberInstanceNack(t *testing.T) {
 		{
 			desc:           "default settings",
 			mutateSettings: func(settings *ReceiveSettings) {},
+			msgPartition:   activePartition,
 			wantErr:        errNackCalled,
 			wantAckCount:   0,
 			wantTerminated: true,
+		},
+		{
+			desc:           "message partition inactive",
+			mutateSettings: func(settings *ReceiveSettings) {},
+			msgPartition:   activePartition + 1,
+			wantErr:        nil,
+			wantAckCount:   0,
+			wantStopped:    true,
 		},
 		{
 			desc: "nack handler returns nil",
@@ -308,6 +337,7 @@ func TestSubscriberInstanceNack(t *testing.T) {
 					return nil
 				}
 			},
+			msgPartition: activePartition,
 			wantErr:      nil,
 			wantAckCount: 1,
 			wantStopped:  true,
@@ -319,6 +349,7 @@ func TestSubscriberInstanceNack(t *testing.T) {
 					return nackErr
 				}
 			},
+			msgPartition:   activePartition,
 			wantErr:        nackErr,
 			wantAckCount:   0,
 			wantTerminated: true,
@@ -329,7 +360,7 @@ func TestSubscriberInstanceNack(t *testing.T) {
 			tc.mutateSettings(&settings)
 
 			ack := &mockAckConsumer{}
-			msg := &wire.ReceivedMessage{Msg: msg, Ack: ack}
+			msg := &wire.ReceivedMessage{Msg: msg, Ack: ack, Partition: tc.msgPartition}
 
 			cctx, stopSubscriber := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
 			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
@@ -358,6 +389,67 @@ func TestSubscriberInstanceNack(t *testing.T) {
 			}
 			if got, want := subInstance.wireSub.(*mockWireSubscriber).Terminated, tc.wantTerminated; got != want {
 				t.Errorf("mockWireSubscriber.Terminated: got %v, want %v", got, want)
+			}
+		})
+	}
+}
+
+func TestSubscriberInstanceReassignmentHandler(t *testing.T) {
+	reassignmentErr := errors.New("reassignment failure")
+	before := wire.NewPartitionSet([]int{3, 2, 1})
+	after := wire.NewPartitionSet([]int{4, 5, 3})
+	ctx := context.Background()
+
+	for _, tc := range []struct {
+		desc string
+		// mutateSettings is passed a copy of DefaultReceiveSettings to mutate.
+		mutateSettings func(settings *ReceiveSettings)
+		wantErr        error
+	}{
+		{
+			desc:           "default settings",
+			mutateSettings: func(settings *ReceiveSettings) {},
+		},
+		{
+			desc: "reassignment handler returns nil",
+			mutateSettings: func(settings *ReceiveSettings) {
+				settings.ReassignmentHandler = func(before, after []int) error {
+					if got, want := before, []int{1, 2, 3}; !testutil.Equal(got, want) {
+						t.Errorf("before: got %d, want %d", got, want)
+					}
+					if got, want := after, []int{3, 4, 5}; !testutil.Equal(got, want) {
+						t.Errorf("after: got %d, want %d", got, want)
+					}
+					return nil
+				}
+			},
+		},
+		{
+			desc: "reassignment handler returns error",
+			mutateSettings: func(settings *ReceiveSettings) {
+				settings.ReassignmentHandler = func(before, after []int) error {
+					return reassignmentErr
+				}
+			},
+			wantErr: reassignmentErr,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			settings := DefaultReceiveSettings
+			tc.mutateSettings(&settings)
+
+			cctx, stopSubscriber := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
+				t.Error("Message receiver should not be called")
+			}
+			subInstance := newTestSubscriberInstance(cctx, settings, messageReceiver)
+			subInstance.wireSub.(*mockWireSubscriber).DeliverReassignment(before, after)
+			if tc.wantErr == nil {
+				stopSubscriber()
+			}
+
+			if gotErr := subInstance.Wait(cctx); !test.ErrorEqual(gotErr, tc.wantErr) {
+				t.Errorf("subscriberInstance.Wait() got err: (%v), want err: (%v)", gotErr, tc.wantErr)
 			}
 		})
 	}

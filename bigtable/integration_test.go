@@ -2424,7 +2424,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.Close()
 	uniqueID := make([]byte, 8)
 	_, err = rand.Read(uniqueID)
-	diffInstance := testEnv.Config().Instance + "-d" + string(uniqueID)
+	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,

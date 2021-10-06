@@ -41,6 +41,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -867,7 +868,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	var obj *raw.Object
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -967,7 +969,8 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	var obj *raw.Object
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -1030,13 +1033,9 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	// Encryption doesn't apply to Delete.
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() error { return call.Do() })
-	switch e := err.(type) {
-	case nil:
-		return nil
-	case *googleapi.Error:
-		if e.Code == http.StatusNotFound {
-			return ErrObjectNotExist
-		}
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return ErrObjectNotExist
 	}
 	return err
 }
