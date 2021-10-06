@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -190,7 +191,8 @@ func TestUpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if !testutil.Equal(cfg, want) {
+	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
+	if !testutil.Equal(cfg, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
 	}
 
@@ -225,7 +227,7 @@ func TestUpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -238,7 +240,7 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 	want.RetentionDuration = 2 * time.Hour
 	want.Labels = nil
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}
 
@@ -255,7 +257,7 @@ func TestUpdateSubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.ExpirationPolicy = time.Duration(0)
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}
 }
