@@ -1998,9 +1998,6 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(cfg, tc) {
-		t.Fatalf("got: %v, want %v", cfg, tc)
-	}
 
 	newDur := 11 * time.Minute
 	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
