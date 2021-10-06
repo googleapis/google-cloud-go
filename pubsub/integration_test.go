@@ -544,15 +544,9 @@ func TestIntegration_CreateSubscription_NeverExpire(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := SubscriptionConfig{
-		Topic:               topic,
-		AckDeadline:         10 * time.Second,
-		RetainAckedMessages: false,
-		RetentionDuration:   defaultRetentionDuration,
-		ExpirationPolicy:    time.Duration(0),
-	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Fatalf("\ngot: - want: +\n%s", diff)
+	want := time.Duration(0)
+	if got.ExpirationPolicy != want {
+		t.Fatalf("config.ExpirationPolicy mismatch, got: %v, want: %v\n", got.ExpirationPolicy, want)
 	}
 }
 
