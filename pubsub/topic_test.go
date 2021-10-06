@@ -113,7 +113,7 @@ func TestListTopics(t *testing.T) {
 
 	var ids []string
 	numTopics := 4
-	for i := 1; i <= numTopics; i++ {
+	for i := 0; i < numTopics; i++ {
 		id := fmt.Sprintf("t%d", i)
 		ids = append(ids, id)
 		mustCreateTopic(t, c, id)
@@ -135,6 +135,16 @@ func TestListTopics(t *testing.T) {
 	}
 	if got := len(tt); got != numTopics {
 		t.Errorf("c.Topics(ctx) returned %d topics, expected %d", got, numTopics)
+	}
+	for i, top := range tt {
+		want := fmt.Sprintf("t%d", i)
+		if got := top.ID(); got != want {
+			t.Errorf("topic.ID() mismatch: got %s, want: %s", got, want)
+		}
+		want = fmt.Sprintf("projects/P/topics/t%d", i)
+		if got := top.String(); got != want {
+			t.Errorf("topic.String() mismatch: got %s, want: %s", got, want)
+		}
 	}
 }
 
