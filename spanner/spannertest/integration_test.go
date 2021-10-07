@@ -1413,6 +1413,46 @@ func TestIntegration_Views(t *testing.T) {
 	}
 }
 
+func TestIntegration_RowDeletionPolicy(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE WithRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id), ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`,
+		`CREATE TABLE WithoutRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id)`); err != nil {
+		t.Fatalf("Create tables: %v", err)
+	}
+	// These should succeed.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Replacing row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY`); err != nil {
+		t.Fatalf("Dropping row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Adding row deletion policy: %v", err)
+	}
+
+	// These should fail.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for replacing row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy DROP ROW DELETION POLICY`); err == nil {
+		t.Fatalf("Missing error for dropping row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for adding row deletion policy")
+	}
+}
+
 func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
 	t.Helper()
 	err := updateDDL(t, adminClient, "DROP TABLE "+table)
