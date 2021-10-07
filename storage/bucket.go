@@ -493,23 +493,29 @@ const (
 	// not set in a call to GCS.
 	PublicAccessPreventionUnknown PublicAccessPrevention = iota
 
-	// PublicAccessPreventionUnspecified corresponds to a value of "unspecified"
-	// and is the default for buckets.
+	// PublicAccessPreventionUnspecified corresponds to a value of "unspecified".
+	// Deprecated: use PublicAccessPreventionInherited
 	PublicAccessPreventionUnspecified
 
 	// PublicAccessPreventionEnforced corresponds to a value of "enforced". This
 	// enforces Public Access Prevention on the bucket.
 	PublicAccessPreventionEnforced
 
-	publicAccessPreventionUnknown     string = ""
-	publicAccessPreventionUnspecified        = "unspecified"
-	publicAccessPreventionEnforced           = "enforced"
+	// PublicAccessPreventionInherited corresponds to a value of "inherited"
+	// and is the default for buckets.
+	PublicAccessPreventionInherited
+
+	publicAccessPreventionUnknown string = ""
+	// TODO: remove unspecified when change is fully completed
+	publicAccessPreventionUnspecified = "unspecified"
+	publicAccessPreventionEnforced    = "enforced"
+	publicAccessPreventionInherited   = "inherited"
 )
 
 func (p PublicAccessPrevention) String() string {
 	switch p {
-	case PublicAccessPreventionUnspecified:
-		return publicAccessPreventionUnspecified
+	case PublicAccessPreventionInherited, PublicAccessPreventionUnspecified:
+		return publicAccessPreventionInherited
 	case PublicAccessPreventionEnforced:
 		return publicAccessPreventionEnforced
 	default:
@@ -1329,8 +1335,8 @@ func toPublicAccessPrevention(b *raw.BucketIamConfiguration) PublicAccessPrevent
 		return PublicAccessPreventionUnknown
 	}
 	switch b.PublicAccessPrevention {
-	case publicAccessPreventionUnspecified:
-		return PublicAccessPreventionUnspecified
+	case publicAccessPreventionInherited, publicAccessPreventionUnspecified:
+		return PublicAccessPreventionInherited
 	case publicAccessPreventionEnforced:
 		return PublicAccessPreventionEnforced
 	default:

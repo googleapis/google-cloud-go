@@ -648,13 +648,13 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
 	}
 
-	// Update PAP setting to unspecified should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
+	// Update PAP setting to inherited should work and not affect UBLA setting.
+	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
 	if err != nil {
 		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
 	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
 	}
 	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
 		t.Error("updating PublicAccessPrevention changed UBLA setting")
@@ -690,8 +690,8 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	if !attrs.UniformBucketLevelAccess.Enabled {
 		t.Error("updating UBLA: got UBLA not enabled, want enabled")
 	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
 	}
 }
 

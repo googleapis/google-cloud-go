@@ -28,6 +28,13 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
+# Remove expired certificate; otherwise `go mod download` may fail.
+# See https://letsencrypt.org/docs/dst-root-ca-x3-expiration-september-2021/
+# for more context.
+sudo apt-get install -y ca-certificates
+sudo rm -f /usr/share/ca-certificates/mozilla/DST_Root_CA_X3.crt
+sudo update-ca-certificates
+
 cd $(dirname $0)/..
 
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
