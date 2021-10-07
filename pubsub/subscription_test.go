@@ -85,6 +85,7 @@ func TestListProjectSubscriptions(t *testing.T) {
 
 	// Call list again, but check the config this time.
 	it := c.Subscriptions(ctx)
+	i := 1
 	for {
 		sub, err := it.NextConfig()
 		if err == iterator.Done {
@@ -96,6 +97,16 @@ func TestListProjectSubscriptions(t *testing.T) {
 		if got := sub.Topic.ID(); got != topic.ID() {
 			t.Errorf("subConfig.Topic mismatch, got: %v, want: %v", got, topic.ID())
 		}
+
+		want := fmt.Sprintf("s%d", i)
+		if got := sub.ID(); got != want {
+			t.Errorf("sub.ID() mismatch: got %s, want: %s", got, want)
+		}
+		want = fmt.Sprintf("projects/P/subscriptions/s%d", i)
+		if got := sub.String(); got != want {
+			t.Errorf("sub.String() mismatch: got %s, want: %s", got, want)
+		}
+		i++
 	}
 }
 
