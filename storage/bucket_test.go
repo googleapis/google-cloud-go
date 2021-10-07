@@ -257,11 +257,22 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
-	// setting being propagated in the proto.
+	// inherited setting being propagated in the proto.
 	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
 	got = attrs.toRawBucket()
 	want.IamConfiguration = &raw.BucketIamConfiguration{
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "inherited" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionInherited
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -274,7 +285,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
