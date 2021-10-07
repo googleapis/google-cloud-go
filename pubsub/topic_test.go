@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
@@ -99,8 +100,8 @@ func TestCreateTopicWithConfig(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error getting topic config: %v", err)
 	}
-
-	if !testutil.Equal(got, want) {
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(got, want, opt) {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }
@@ -227,7 +228,8 @@ func TestUpdateTopic_Label(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := TopicConfig{}
-	if !testutil.Equal(config, want) {
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(config, want, opt) {
 		t.Errorf("got %+v, want %+v", config, want)
 	}
 
@@ -242,7 +244,7 @@ func TestUpdateTopic_Label(t *testing.T) {
 	want = TopicConfig{
 		Labels: labels,
 	}
-	if !testutil.Equal(config2, want) {
+	if !testutil.Equal(config2, want, opt) {
 		t.Errorf("got %+v, want %+v", config2, want)
 	}
 
@@ -253,7 +255,7 @@ func TestUpdateTopic_Label(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.Labels = nil
-	if !testutil.Equal(config3, want) {
+	if !testutil.Equal(config3, want, opt) {
 		t.Errorf("got %+v, want %+v", config3, want)
 	}
 }
@@ -270,7 +272,8 @@ func TestUpdateTopic_MessageStoragePolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := TopicConfig{}
-	if !testutil.Equal(config, want) {
+	opt := cmpopts.IgnoreUnexported(TopicConfig{})
+	if !testutil.Equal(config, want, opt) {
 		t.Errorf("\ngot  %+v\nwant %+v", config, want)
 	}
 
@@ -285,7 +288,7 @@ func TestUpdateTopic_MessageStoragePolicy(t *testing.T) {
 	want.MessageStoragePolicy = MessageStoragePolicy{
 		AllowedPersistenceRegions: []string{"us-east1"},
 	}
-	if !testutil.Equal(config2, want) {
+	if !testutil.Equal(config2, want, opt) {
 		t.Errorf("\ngot  %+v\nwant %+v", config2, want)
 	}
 }
