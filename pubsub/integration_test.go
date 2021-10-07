@@ -919,7 +919,7 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 
 	// Specify some regions to set.
 	regions := []string{"asia-east1", "us-east1"}
-	got, err := topic.Update(ctx, TopicConfigToUpdate{
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
 		MessageStoragePolicy: &MessageStoragePolicy{
 			AllowedPersistenceRegions: regions,
 		},
@@ -927,10 +927,9 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := &MessageStoragePolicy{
-		AllowedPersistenceRegions: regions,
-	}
-	if !testutil.Equal(got.MessageStoragePolicy, want) {
+	got := cfg.MessageStoragePolicy.AllowedPersistenceRegions
+	want := regions
+	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant regions%+v", got, want)
 	}
 
