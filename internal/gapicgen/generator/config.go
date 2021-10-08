@@ -1315,6 +1315,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/10/30
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/deploy/v1",
+		pkg:                   "deploy",
+		importPath:            "cloud.google.com/go/deploy/apiv1",
+		gRPCServiceConfigPath: "clouddeploy_grpc_service_config.json",
+		apiServiceConfigPath:  "clouddeploy_v1.yaml",
+		// GA after 2021/11/08
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
