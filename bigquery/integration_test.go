@@ -41,6 +41,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -1374,14 +1375,15 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Wanted row size error, got successful insert.")
 	}
-	e, ok := err.(*googleapi.Error)
+	var e1 *googleapi.Error
+	ok := xerrors.As(err, &e1)
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	if e.Code != http.StatusRequestEntityTooLarge {
+	if e1.Code != http.StatusRequestEntityTooLarge {
 		want := "Request payload size exceeds the limit"
-		if !strings.Contains(e.Message, want) {
-			t.Errorf("Error didn't contain expected message (%s): %#v", want, e)
+		if !strings.Contains(e1.Message, want) {
+			t.Errorf("Error didn't contain expected message (%s): %#v", want, e1)
 		}
 	}
 	// Case 2: Very Large Request
@@ -1393,12 +1395,13 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Wanted error, got successful insert.")
 	}
-	e, ok = err.(*googleapi.Error)
+	var e2 *googleapi.Error
+	ok = xerrors.As(err, &e2)
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
-	if e.Code != http.StatusBadRequest && e.Code != http.StatusRequestEntityTooLarge {
-		t.Errorf("Wanted HTTP 400 or 413, got %d", e.Code)
+	if e2.Code != http.StatusBadRequest && e2.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("Wanted HTTP 400 or 413, got %d", e2.Code)
 	}
 }
 
@@ -2049,14 +2052,16 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := q.Run(ctx)
 		if err != nil {
-			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+			var e *googleapi.Error
+			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
 		}
 		_, err = job.Wait(ctx)
 		if err != nil {
-			if e, ok := err.(*googleapi.Error); ok && e.Code < 500 {
+			var e *googleapi.Error
+			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
 			return false, err
@@ -3553,7 +3558,8 @@ func (b byCol0) Less(i, j int) bool {
 }
 
 func hasStatusCode(err error, code int) bool {
-	if e, ok := err.(*googleapi.Error); ok && e.Code == code {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == code {
 		return true
 	}
 	return false
