@@ -1441,6 +1441,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
+	instanceToCreate += "0"
 
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1540,6 +1541,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
+	instanceToCreate += "1"
 
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1718,6 +1720,8 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
+	instanceToCreate += "2"
+
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1809,6 +1813,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance update testing")
 	}
+	instanceToCreate += "3"
 
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
