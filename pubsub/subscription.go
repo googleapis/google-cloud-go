@@ -212,6 +212,9 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
+	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
+	name string
+
 	Topic      *Topic
 	PushConfig PushConfig
 
@@ -289,6 +292,26 @@ type SubscriptionConfig struct {
 	TopicMessageRetentionDuration time.Duration
 }
 
+// String returns the globally unique printable name of the subscription config.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) String() string {
+	return s.name
+}
+
+// ID returns the unique identifier of the subscription within its project.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) ID() string {
+	slash := strings.LastIndex(s.name, "/")
+	if slash == -1 {
+		return ""
+	}
+	return s.name[slash+1:]
+}
+
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	var pbPushConfig *pb.PushConfig
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
@@ -335,6 +358,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
+		name:                          pbSub.Name,
 		Topic:                         newTopic(c, pbSub.Topic),
 		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
 		RetainAckedMessages:           pbSub.RetainAckedMessages,
