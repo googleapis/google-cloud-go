@@ -322,6 +322,8 @@ func (tb TypeBase) SQL() string {
 		return "DATE"
 	case Timestamp:
 		return "TIMESTAMP"
+	case JSON:
+		return "JSON"
 	}
 	panic("unknown TypeBase")
 }

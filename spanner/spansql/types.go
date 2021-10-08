@@ -387,6 +387,7 @@ const (
 	Bytes
 	Date
 	Timestamp
+	JSON
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
