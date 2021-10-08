@@ -327,18 +327,6 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	return client, err
 }
 
-// A url is only parsed correctly by the url package if it has a scheme,
-// so we have to check and build it ourselves if not supplied in host
-// Assumes http if not provided
-func parseURL(host string) (*url.URL, error) {
-	if strings.Contains(host, "://") {
-		return url.Parse(host)
-	} else {
-		url := &url.URL{Scheme: "http", Host: host}
-		return url, nil
-	}
-}
-
 func TestPostPolicyV4Conformance(t *testing.T) {
 	oldUTCNow := utcNow
 	defer func() {
