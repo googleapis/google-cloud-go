@@ -54,6 +54,7 @@ require (
 	cloud.google.com/go/dataqna v0.1.0
 	cloud.google.com/go/datastore v0.90.0
 	cloud.google.com/go/datastream v0.1.0
+	cloud.google.com/go/deploy v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dialogflow v0.1.0
 	cloud.google.com/go/dlp v0.1.0
 	cloud.google.com/go/documentai v0.1.0
@@ -314,3 +315,5 @@ replace cloud.google.com/go/networksecurity => ../../../networksecurity
 replace cloud.google.com/go/orchestration => ../../../orchestration
 
 replace cloud.google.com/go/filestore => ../../../filestore
+
+replace cloud.google.com/go/deploy => ../../../deploy
