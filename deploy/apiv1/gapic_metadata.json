@@ -1,0 +1,108 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.deploy.v1",
+  "libraryPackage": "cloud.google.com/go/deploy/apiv1",
+  "services": {
+    "CloudDeploy": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudDeployClient",
+          "rpcs": {
+            "ApproveRollout": {
+              "methods": [
+                "ApproveRollout"
+              ]
+            },
+            "CreateDeliveryPipeline": {
+              "methods": [
+                "CreateDeliveryPipeline"
+              ]
+            },
+            "CreateRelease": {
+              "methods": [
+                "CreateRelease"
+              ]
+            },
+            "CreateRollout": {
+              "methods": [
+                "CreateRollout"
+              ]
+            },
+            "CreateTarget": {
+              "methods": [
+                "CreateTarget"
+              ]
+            },
+            "DeleteDeliveryPipeline": {
+              "methods": [
+                "DeleteDeliveryPipeline"
+              ]
+            },
+            "DeleteTarget": {
+              "methods": [
+                "DeleteTarget"
+              ]
+            },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
+            "GetDeliveryPipeline": {
+              "methods": [
+                "GetDeliveryPipeline"
+              ]
+            },
+            "GetRelease": {
+              "methods": [
+                "GetRelease"
+              ]
+            },
+            "GetRollout": {
+              "methods": [
+                "GetRollout"
+              ]
+            },
+            "GetTarget": {
+              "methods": [
+                "GetTarget"
+              ]
+            },
+            "ListDeliveryPipelines": {
+              "methods": [
+                "ListDeliveryPipelines"
+              ]
+            },
+            "ListReleases": {
+              "methods": [
+                "ListReleases"
+              ]
+            },
+            "ListRollouts": {
+              "methods": [
+                "ListRollouts"
+              ]
+            },
+            "ListTargets": {
+              "methods": [
+                "ListTargets"
+              ]
+            },
+            "UpdateDeliveryPipeline": {
+              "methods": [
+                "UpdateDeliveryPipeline"
+              ]
+            },
+            "UpdateTarget": {
+              "methods": [
+                "UpdateTarget"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

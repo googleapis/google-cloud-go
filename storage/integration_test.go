@@ -54,6 +54,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -202,11 +203,11 @@ func initUIDsAndRand(t time.Time) {
 // testConfig returns the Client used to access GCS. testConfig skips
 // the current test if credentials are not available or when being run
 // in Short mode.
-func testConfig(ctx context.Context, t *testing.T) *Client {
+func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	client := config(ctx)
+	client := config(ctx, scopes...)
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -229,8 +230,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 }
 
 // config is like testConfig, but it doesn't need a *testing.T.
-func config(ctx context.Context) *Client {
-	ts := testutil.TokenSource(ctx, ScopeFullControl)
+func config(ctx context.Context, scopes ...string) *Client {
+	scopes = append(scopes, ScopeFullControl)
+	ts := testutil.TokenSource(ctx, scopes...)
 	if ts == nil {
 		return nil
 	}
@@ -2017,7 +2019,8 @@ func TestIntegration_SignedURL(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Method = "GET"
 		opts.Expires = time.Now().Add(time.Hour)
-		u, err := SignedURL(bucketName, obj, &opts)
+
+		u, err := bkt.SignedURL(obj, &opts)
 		if err != nil {
 			t.Errorf("%s: SignedURL: %v", test.desc, err)
 			continue
@@ -2048,6 +2051,8 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+
+	bkt := client.Bucket(bucketName)
 
 	// TODO(deklerk): document how these were generated and their significance
 	encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
@@ -2089,7 +2094,6 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	}
 	defer func() {
 		// Delete encrypted object.
-		bkt := client.Bucket(bucketName)
 		err := bkt.Object("csek.json").Delete(ctx)
 		if err != nil {
 			log.Printf("failed to deleted encrypted file: %v", err)
@@ -2102,7 +2106,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Expires = time.Now().Add(time.Hour)
 
-		u, err := SignedURL(bucketName, "csek.json", test.opts)
+		u, err := bkt.SignedURL("csek.json", test.opts)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
@@ -2152,7 +2156,8 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 		Expires:        time.Now().Add(time.Hour),
 	}
 
-	u, err := SignedURL(bucketName, "", opts)
+	bkt := client.Bucket(bucketName)
+	u, err := bkt.SignedURL("", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -4239,6 +4244,110 @@ func TestIntegration_Scopes(t *testing.T) {
 		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
 	}
 
+}
+
+func TestBucketSignURL(t *testing.T) {
+	ctx := context.Background()
+
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// We explictly send the key to the client to sign with the private key
+	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
+	defer clientWithCredentials.Close()
+
+	// Create another client to test the sign byte function as well
+	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	defer clientWithoutPrivateKey.Close()
+
+	jwt, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	// We can use any client to create the object
+	obj := "testBucketSignedURL"
+	contents := []byte("test")
+	if err := writeObject(ctx, clientWithoutPrivateKey.Bucket(bucketName).Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+
+	for _, test := range []struct {
+		desc   string
+		opts   SignedURLOptions
+		client *Client
+	}{
+		{
+			desc: "signing with the private key",
+			opts: SignedURLOptions{
+				Method:  "GET",
+				Expires: time.Now().Add(30 * time.Second),
+			},
+			client: clientWithCredentials,
+		},
+		{
+			desc: "signing with the default sign bytes func",
+			opts: SignedURLOptions{
+				Method:         "GET",
+				Expires:        time.Now().Add(30 * time.Second),
+				GoogleAccessID: jwt.Email,
+			},
+			client: clientWithoutPrivateKey,
+		},
+	} {
+		bkt := test.client.Bucket(bucketName)
+		url, err := bkt.SignedURL(obj, &test.opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+		resp, err := http.Get(url)
+		if err != nil {
+			t.Fatalf("http.Get(%q) errored: %q", url, err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			t.Fatalf("resp.StatusCode = %v, want 200: %v", resp.StatusCode, err)
+		}
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unable to read resp.Body: %v", err)
+		}
+		if !bytes.Equal(b, contents) {
+			t.Fatalf("got %q, want %q", b, contents)
+		}
+	}
+}
+
+func newTestClientWithExplicitCredentials(ctx context.Context, t *testing.T) *Client {
+	// By default we are authed with a token source, so don't have the context to
+	// read some of the fields from the keyfile
+	// Here we explictly send the key to the client
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	clientWithCredentials, err := newTestClient(ctx, option.WithCredentials(creds))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	if clientWithCredentials == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	return clientWithCredentials
+}
+
+func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
+	key := os.Getenv(envVar)
+	var opts []option.ClientOption
+	if len(scopes) > 0 {
+		opts = append(opts, option.WithScopes(scopes...))
+	}
+	if key != "" {
+		opts = append(opts, option.WithCredentialsFile(key))
+	}
+	return transport.Creds(ctx, opts...)
 }
 
 type testHelper struct {
