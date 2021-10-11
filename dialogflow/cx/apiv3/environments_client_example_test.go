@@ -226,3 +226,28 @@ func ExampleEnvironmentsClient_ListContinuousTestResults() {
 		_ = resp
 	}
 }
+
+func ExampleEnvironmentsClient_DeployFlow() {
+	ctx := context.Background()
+	c, err := cx.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.DeployFlowRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3#DeployFlowRequest.
+	}
+	op, err := c.DeployFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

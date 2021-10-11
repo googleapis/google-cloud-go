@@ -209,3 +209,21 @@ func ExampleMetricClient_CreateTimeSeries() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleMetricClient_CreateServiceTimeSeries() {
+	ctx := context.Background()
+	c, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.CreateTimeSeriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+	}
+	err = c.CreateServiceTimeSeries(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
