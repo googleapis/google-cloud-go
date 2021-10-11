@@ -25,7 +25,7 @@ replace cloud.google.com/go/storage => ../../../storage
 require (
 	cloud.google.com/go v0.97.0
 	cloud.google.com/go/accessapproval v0.1.0
-	cloud.google.com/go/accesscontextmanager v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/accesscontextmanager v0.1.0
 	cloud.google.com/go/aiplatform v0.1.0
 	cloud.google.com/go/analytics v0.1.0
 	cloud.google.com/go/apigateway v0.1.0
@@ -36,23 +36,23 @@ require (
 	cloud.google.com/go/asset v0.1.0
 	cloud.google.com/go/assuredworkloads v0.1.0
 	cloud.google.com/go/automl v0.1.0
-	cloud.google.com/go/bigquery v0.90.0
+	cloud.google.com/go/bigquery v0.1.0
 	cloud.google.com/go/billing v0.1.0
 	cloud.google.com/go/binaryauthorization v0.1.0
 	cloud.google.com/go/channel v0.1.0
 	cloud.google.com/go/cloudbuild v0.1.0
 	cloud.google.com/go/clouddms v0.1.0
 	cloud.google.com/go/cloudtasks v0.1.0
-	cloud.google.com/go/contactcenterinsights v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/contactcenterinsights v0.1.0
 	cloud.google.com/go/container v0.1.0
 	cloud.google.com/go/containeranalysis v0.1.0
-	cloud.google.com/go/datacatalog v0.1.0
+	cloud.google.com/go/datacatalog v1.0.0
 	cloud.google.com/go/dataflow v0.1.0
 	cloud.google.com/go/datafusion v0.1.0
 	cloud.google.com/go/datalabeling v0.1.0
 	cloud.google.com/go/dataproc v0.1.0
 	cloud.google.com/go/dataqna v0.1.0
-	cloud.google.com/go/datastore v0.90.0
+	cloud.google.com/go/datastore v0.1.0
 	cloud.google.com/go/datastream v0.1.0
 	cloud.google.com/go/deploy v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dialogflow v0.1.0
@@ -62,8 +62,8 @@ require (
 	cloud.google.com/go/errorreporting v0.1.0
 	cloud.google.com/go/essentialcontacts v0.1.0
 	cloud.google.com/go/eventarc v0.1.0
-	cloud.google.com/go/filestore v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/firestore v0.90.0
+	cloud.google.com/go/filestore v0.1.0
+	cloud.google.com/go/firestore v0.1.0
 	cloud.google.com/go/functions v0.1.0
 	cloud.google.com/go/gaming v0.1.0
 	cloud.google.com/go/gkeconnect v0.1.0
@@ -71,10 +71,10 @@ require (
 	cloud.google.com/go/gsuiteaddons v0.1.0
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/iot v0.1.0
-	cloud.google.com/go/kms v0.1.0
+	cloud.google.com/go/kms v1.0.0
 	cloud.google.com/go/language v0.1.0
 	cloud.google.com/go/lifesciences v0.1.0
-	cloud.google.com/go/logging v0.90.0
+	cloud.google.com/go/logging v0.1.0
 	cloud.google.com/go/managedidentities v0.1.0
 	cloud.google.com/go/mediatranslation v0.1.0
 	cloud.google.com/go/memcache v0.1.0
@@ -82,9 +82,9 @@ require (
 	cloud.google.com/go/monitoring v0.1.0
 	cloud.google.com/go/networkconnectivity v0.1.0
 	cloud.google.com/go/networkmanagement v0.1.0
-	cloud.google.com/go/networksecurity v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/networksecurity v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
-	cloud.google.com/go/orchestration v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/orchestration v0.1.0
 	cloud.google.com/go/orgpolicy v0.1.0
 	cloud.google.com/go/osconfig v0.1.0
 	cloud.google.com/go/oslogin v0.1.0
@@ -92,7 +92,7 @@ require (
 	cloud.google.com/go/policytroubleshooter v0.1.0
 	cloud.google.com/go/privatecatalog v0.1.0
 	cloud.google.com/go/pubsub v1.9.1
-	cloud.google.com/go/pubsublite v0.90.0
+	cloud.google.com/go/pubsublite v0.1.0
 	cloud.google.com/go/recaptchaenterprise v0.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
 	cloud.google.com/go/recommender v0.1.0
@@ -109,9 +109,9 @@ require (
 	cloud.google.com/go/servicemanagement v0.1.0
 	cloud.google.com/go/serviceusage v0.1.0
 	cloud.google.com/go/shell v0.1.0
-	cloud.google.com/go/spanner v0.90.0
+	cloud.google.com/go/spanner v0.1.0
 	cloud.google.com/go/speech v0.1.0
-	cloud.google.com/go/storagetransfer v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/storagetransfer v0.1.0
 	cloud.google.com/go/talent v0.1.0
 	cloud.google.com/go/texttospeech v0.1.0
 	cloud.google.com/go/tpu v0.1.0

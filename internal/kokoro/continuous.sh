@@ -38,11 +38,11 @@ export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRing
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 
 # Bigtable integration tests expect an existing instance and cluster
-#  ❯ cbt createinstance gcloud-bt-it-tests-instance gcloud-bt-it-tests-instance \
-#    gcloud-bt-it-tests-cluster us-west1-b 1 SSD
+#  ❯ cbt createinstance gc-bt-it-instance gc-bt-it-instance \
+#    gc-bt-it-cluster us-west1-b 1 SSD
 export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test
-export GCLOUD_TESTS_BIGTABLE_CLUSTER="gcloud-bt-it-tests-cluster"
-export GCLOUD_TESTS_BIGTABLE_INSTANCE="gcloud-bt-it-tests-instance"
+export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
+export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
 # Fail on any error
 set -eo pipefail
