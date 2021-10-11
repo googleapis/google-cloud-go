@@ -15,6 +15,9 @@
         "google.golang.org/genproto",
         "google.golang.org/grpc"
     ],
+    "ignorePaths": [
+        "**/snippets/**"
+    ],
     "force": {
         "constraints": {
           "go": "1.17"
