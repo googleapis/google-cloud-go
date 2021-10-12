@@ -478,7 +478,7 @@ func (n *NullBool) Scan(value interface{}) error {
 	n.Valid = true
 	switch p := value.(type) {
 	default:
-		return spannerErrorf(codes.InvalidArgument, "invalid type for NullFloat64: %v", p)
+		return spannerErrorf(codes.InvalidArgument, "invalid type for NullBool: %v", p)
 	case *bool:
 		n.Bool = *p
 	case bool:
@@ -566,7 +566,7 @@ func (n *NullTime) Scan(value interface{}) error {
 	n.Valid = true
 	switch p := value.(type) {
 	default:
-		return spannerErrorf(codes.InvalidArgument, "invalid type for NullTimestamp: %v", p)
+		return spannerErrorf(codes.InvalidArgument, "invalid type for NullTime: %v", p)
 	case *time.Time:
 		n.Time = *p
 	case time.Time:
