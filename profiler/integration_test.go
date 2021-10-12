@@ -273,9 +273,11 @@ func TestAgentIntegration(t *testing.T) {
 	testcases := []goGCETestCase{
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-gomaster-%s", runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             "profiler-test-gomaster",
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -286,9 +288,11 @@ func TestAgentIntegration(t *testing.T) {
 		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             fmt.Sprintf("profiler-test-go%s", goVersionName),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -310,6 +314,9 @@ func TestAgentIntegration(t *testing.T) {
 					// memory than is available on an n1-standard-1. Use a
 					// machine type with more memory for backoff test.
 					MachineType: "n1-highmem-2",
+
+					ImageProject: "debian-cloud",
+					ImageFamily:  "debian-11",
 				},
 				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
 				goVersion:     goVersion,

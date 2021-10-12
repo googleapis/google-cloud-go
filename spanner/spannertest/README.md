@@ -19,6 +19,7 @@ by ascending esotericism:
 
 - expression functions
 - NUMERIC
+- JSON
 - more aggregation functions
 - SELECT HAVING
 - more literal types
