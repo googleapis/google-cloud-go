@@ -3171,6 +3171,7 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	skipEmulatorTest(t)
 	t.Parallel()
 
+	startTime := time.Now()
 	// Backups can be slow, so use 1 hour timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
 	defer cancel()
@@ -3190,6 +3191,7 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Logf("create backup operation took: %v\n", time.Since(startTime))
 	respMetadata, err := respLRO.Metadata()
 	if err != nil {
 		t.Fatalf("backup response metadata, got error %v, want nil", err)
