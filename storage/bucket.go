@@ -260,7 +260,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 		newopts.GoogleAccessID = id
 	}
 	if newopts.SignBytes == nil && len(newopts.PrivateKey) == 0 {
-		if len(b.c.creds.JSON) > 0 {
+		if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
 			var sa struct {
 				PrivateKey string `json:"private_key"`
 			}
@@ -285,7 +285,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 	returnErr := errors.New("no credentials found on client and not on GCE (Google Compute Engine)")
 
-	if len(b.c.creds.JSON) > 0 {
+	if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
 		var sa struct {
 			ClientEmail string `json:"client_email"`
 		}
