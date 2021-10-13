@@ -136,8 +136,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// client which does not auth with ADC or other common conventions.
 		c, err := transport.Creds(ctx, opts...)
 		if err == nil {
-			opts = append(opts, internaloption.WithCredentials(creds))
 			creds = c
+			opts = append(opts, internaloption.WithCredentials(creds))
 		}
 	} else {
 		var hostURL *url.URL
