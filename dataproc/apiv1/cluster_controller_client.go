@@ -219,6 +219,8 @@ func (c *ClusterControllerClient) CreateClusterOperation(name string) *CreateClu
 // UpdateCluster updates a cluster in a project. The returned
 // Operation.metadata will be
 // ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
+// The cluster must be in a [RUNNING][google.cloud.dataproc.v1.ClusterStatus.State] state or an error
+// is returned.
 func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
 	return c.internalClient.UpdateCluster(ctx, req, opts...)
 }
