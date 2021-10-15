@@ -1,5 +1,9 @@
 # Changes
 
+## 1.0.0
+
+Stabilize GA surface.
+
 ## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v0.2.0...monitoring/v0.3.0) (2021-09-21)
 
 
@@ -18,3 +22,4 @@
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+ 

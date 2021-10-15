@@ -1,5 +1,13 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.1.0...pubsublite/v1.2.0) (2021-10-01)
+
+
+### Features
+
+* **pubsublite:** notify subscriber clients on partition reassignment ([#4777](https://www.github.com/googleapis/google-cloud-go/issues/4777)) ([393b0a3](https://www.github.com/googleapis/google-cloud-go/commit/393b0a39bf917a5bade854dddeb278aa95f9d3f0))
+* **pubsublite:** support reservations in AdminClient ([#4294](https://www.github.com/googleapis/google-cloud-go/issues/4294)) ([65b0f88](https://www.github.com/googleapis/google-cloud-go/commit/65b0f88a78d8833bcaaf8fc59401ec0a1527db1d))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.0.0...pubsublite/v1.1.0) (2021-08-09)
 
 
