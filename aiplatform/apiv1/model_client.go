@@ -167,7 +167,8 @@ func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateM
 }
 
 // DeleteModel deletes a Model.
-// Note: Model can only be deleted if there are no DeployedModels created
+//
+// Model can only be deleted if there are no DeployedModels created
 // from it.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	return c.internalClient.DeleteModel(ctx, req, opts...)

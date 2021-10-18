@@ -1603,14 +1603,15 @@ func TestDetectProjectID(t *testing.T) {
 }
 
 func TestIntegration_ColGroupRefPartitions(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4717")
 	h := testHelper{t}
-	coll := integrationColl(t)
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
 	ctx := context.Background()
 
 	// Create a doc in the test collection so a collectionID is live for testing
 	doc := coll.NewDoc()
 	h.mustCreate(doc, integrationTestMap)
+	defer doc.Delete(ctx)
 
 	for idx, tc := range []struct {
 		collectionID           string
@@ -1629,17 +1630,18 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
 			t.Errorf("Unexpected Partition Count:index:%d, got %d, want %d", idx, got, want)
 			for _, v := range partitions {
-				t.Errorf("Partition: %v, %v", v.startDoc, v.endDoc)
+				t.Errorf("Partition: %v, %v, %v, %v", v.startDoc, v.endDoc, v.startVals, v.endVals)
 			}
 		}
 	}
+
 }
 
 func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	// Create collection with enough documents to have multiple partitions.
-	coll := integrationColl(t)
-	collectionID := coll.collectionID + "largeCollection"
-	coll = iClient.Collection(collectionID)
+	client := integrationClient(t)
+	coll := client.Collection(collectionIDs.New())
+	collectionID := coll.collectionID
 
 	ctx := context.Background()
 
