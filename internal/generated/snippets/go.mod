@@ -54,6 +54,7 @@ require (
 	cloud.google.com/go/dataqna v0.1.0
 	cloud.google.com/go/datastore v0.1.0
 	cloud.google.com/go/datastream v0.1.0
+	cloud.google.com/go/deploy v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dialogflow v0.1.0
 	cloud.google.com/go/dlp v0.1.0
 	cloud.google.com/go/documentai v0.1.0
@@ -124,7 +125,7 @@ require (
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
 	google.golang.org/api v0.58.0
-	google.golang.org/genproto v0.0.0-20211008145708-270636b82663
+	google.golang.org/genproto v0.0.0-20211018162055-cf77aa76bad2
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -314,3 +315,5 @@ replace cloud.google.com/go/networksecurity => ../../../networksecurity
 replace cloud.google.com/go/orchestration => ../../../orchestration
 
 replace cloud.google.com/go/filestore => ../../../filestore
+
+replace cloud.google.com/go/deploy => ../../../deploy
