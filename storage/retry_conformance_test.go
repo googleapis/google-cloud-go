@@ -60,11 +60,6 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
-	//appCreds := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	// os.Unsetenv("GOOGLE_CLOUD_PROJECT")
-	// os.Unsetenv("GOOGLE_APPLICATION_CREDENTIALS")
-	// defer os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", appCreds)
-	//os.Setenv("STORAGE_EMULATOR_HOST", "http://localhost:9000")
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		// This test is currently skipped in CI as the env variable is not set
@@ -98,7 +93,7 @@ func TestRetryConformance(t *testing.T) {
 						t.Run(testName, func(t *testing.T) {
 
 							// Create the retry subtest
-							subtest := &retrySubtest{T: t, name: testName, host: endpoint}
+							subtest := &emulatorTest{T: t, name: testName, host: endpoint}
 							subtest.create(map[string][]string{
 								method.Name: instructions.Instructions,
 							})
@@ -123,20 +118,18 @@ func TestRetryConformance(t *testing.T) {
 							subtest.delete()
 						})
 					}
-
 				}
 			}
 		}
 	}
-
 }
 
-type retrySubtest struct {
+type emulatorTest struct {
 	*testing.T
 	name          string
 	id            string // ID to pass as a header in the test execution
 	resources     resources
-	host          *url.URL // set the path when using; path is not guaranteed betwen calls
+	host          *url.URL // set the path when using; path is not guaranteed between calls
 	wrappedClient *Client
 }
 
@@ -149,57 +142,58 @@ type resources struct {
 	hmacKey      *HMACKey
 }
 
-func (rt *retrySubtest) populateResources(ctx context.Context, c *Client, resources []storage_v1_tests.Resource) {
+// Creates given test resources with the provided client
+func (et *emulatorTest) populateResources(ctx context.Context, c *Client, resources []storage_v1_tests.Resource) {
 	for _, resource := range resources {
 		switch resource {
 		case storage_v1_tests.Resource_BUCKET:
 			bkt := c.Bucket(bucketIDs.New())
 			if err := bkt.Create(ctx, projectID, &BucketAttrs{}); err != nil {
-				rt.Fatalf("creating bucket: %v", err)
+				et.Fatalf("creating bucket: %v", err)
 			}
 			attrs, err := bkt.Attrs(ctx)
 			if err != nil {
-				rt.Fatalf("getting bucket attrs: %v", err)
+				et.Fatalf("getting bucket attrs: %v", err)
 			}
-			rt.resources.bucket = attrs
+			et.resources.bucket = attrs
 		case storage_v1_tests.Resource_OBJECT:
 			// Assumes bucket has been populated first.
-			obj := c.Bucket(rt.resources.bucket.Name).Object(objectIDs.New())
+			obj := c.Bucket(et.resources.bucket.Name).Object(objectIDs.New())
 			w := obj.NewWriter(ctx)
 			if _, err := w.Write(randomBytesToWrite); err != nil {
-				rt.Fatalf("writing object: %v", err)
+				et.Fatalf("writing object: %v", err)
 			}
 			if err := w.Close(); err != nil {
-				rt.Fatalf("closing object: %v", err)
+				et.Fatalf("closing object: %v", err)
 			}
 			attrs, err := obj.Attrs(ctx)
 			if err != nil {
-				rt.Fatalf("getting object attrs: %v", err)
+				et.Fatalf("getting object attrs: %v", err)
 			}
-			rt.resources.object = attrs
+			et.resources.object = attrs
 		case storage_v1_tests.Resource_NOTIFICATION:
 			// Assumes bucket has been populated first.
-			n, err := c.Bucket(rt.resources.bucket.Name).AddNotification(ctx, &Notification{
+			n, err := c.Bucket(et.resources.bucket.Name).AddNotification(ctx, &Notification{
 				TopicProjectID: projectID,
 				TopicID:        notificationIDs.New(),
 				PayloadFormat:  JSONPayload,
 			})
 			if err != nil {
-				rt.Fatalf("adding notification: %v", err)
+				et.Fatalf("adding notification: %v", err)
 			}
-			rt.resources.notification = n
+			et.resources.notification = n
 		case storage_v1_tests.Resource_HMAC_KEY:
 			key, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
 			if err != nil {
-				rt.Fatalf("creating HMAC key: %v", err)
+				et.Fatalf("creating HMAC key: %v", err)
 			}
-			rt.resources.hmacKey = key
+			et.resources.hmacKey = key
 		}
 	}
 }
 
-// create creates a retry test resource in the emulator
-func (rt *retrySubtest) create(instructions map[string][]string) {
+// Creates a retry test resource in the emulator
+func (et *emulatorTest) create(instructions map[string][]string) {
 	c := http.DefaultClient
 	data := struct {
 		Instructions map[string][]string `json:"instructions"`
@@ -209,13 +203,13 @@ func (rt *retrySubtest) create(instructions map[string][]string) {
 
 	buf := new(bytes.Buffer)
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
-		rt.Fatalf("encoding request: %v", err)
+		et.Fatalf("encoding request: %v", err)
 	}
 
-	rt.host.Path = "retry_test"
-	resp, err := c.Post(rt.host.String(), "application/json", buf)
+	et.host.Path = "retry_test"
+	resp, err := c.Post(et.host.String(), "application/json", buf)
 	if err != nil || resp.StatusCode != 200 {
-		rt.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
+		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
@@ -227,27 +221,27 @@ func (rt *retrySubtest) create(instructions map[string][]string) {
 		TestID string `json:"id"`
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
-		rt.Fatalf("decoding test ID: %v", err)
+		et.Fatalf("decoding test ID: %v", err)
 	}
 
-	rt.id = testRes.TestID
+	et.id = testRes.TestID
 
 	// Create wrapped client which will send emulator instructions
-	rt.host.Path = ""
-	client, err := wrappedClient(rt.T, rt.host.String(), rt.id)
+	et.host.Path = ""
+	client, err := wrappedClient(et.T, et.host.String(), et.id)
 	if err != nil {
-		rt.Fatalf("creating wrapped client: %v", err)
+		et.Fatalf("creating wrapped client: %v", err)
 	}
-	rt.wrappedClient = client
+	et.wrappedClient = client
 }
 
-// check verifies that all instructions for a given retry testID have been used up
-func (rt *retrySubtest) check() {
-	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
+// Verifies that all instructions for a given retry testID have been used up
+func (et *emulatorTest) check() {
+	et.host.Path = strings.Join([]string{"retry_test", et.id}, "/")
 	c := http.DefaultClient
-	resp, err := c.Get(rt.host.String())
+	resp, err := c.Get(et.host.String())
 	if err != nil || resp.StatusCode != 200 {
-		rt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+		et.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
@@ -260,24 +254,24 @@ func (rt *retrySubtest) check() {
 		Completed    bool
 	}{}
 	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
-		rt.Errorf("decoding response: %v", err)
+		et.Errorf("decoding response: %v", err)
 	}
 	if !testRes.Completed {
-		rt.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
+		et.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
 	}
 }
 
-// Delete a retry test resource.
-func (rt *retrySubtest) delete() {
-	rt.host.Path = strings.Join([]string{"retry_test", rt.id}, "/")
+// Deletes a retry test resource
+func (et *emulatorTest) delete() {
+	et.host.Path = strings.Join([]string{"retry_test", et.id}, "/")
 	c := http.DefaultClient
-	req, err := http.NewRequest("DELETE", rt.host.String(), nil)
+	req, err := http.NewRequest("DELETE", et.host.String(), nil)
 	if err != nil {
-		rt.Errorf("creating request: %v", err)
+		et.Errorf("creating request: %v", err)
 	}
 	resp, err := c.Do(req)
 	if err != nil || resp.StatusCode != 200 {
-		rt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
+		et.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
 }
 
