@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/dataproc/v1.0.0...dataproc/v1.1.0) (2021-10-18)
+
+
+### Features
+
+* **dataproc:** add Dataproc Serverless for Spark Batches API ([30794e7](https://www.github.com/googleapis/google-cloud-go/commit/30794e70050b55ff87d6a80d0b4075065e9d271d))
+
 ## 1.0.0
 
 Stabilize GA surface.
@@ -15,4 +22,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out dataproc as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
- 
