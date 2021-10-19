@@ -463,7 +463,7 @@ type BucketAttrs struct {
 	ProjectNumber uint64
 
 	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
-	// Set to ASYNC_TURBO to turn on Turbo Replication on a bucket.
+	// Set to RPOAsyncTurbo to turn on Turbo Replication for a bucket.
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
@@ -898,7 +898,7 @@ type BucketAttrsToUpdate struct {
 	PredefinedDefaultObjectACL string
 
 	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
-	// Set to ASYNC_TURBO to turn on Turbo Replication on a bucket.
+	// Set to RPOAsyncTurbo to turn on Turbo Replication for a bucket.
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
