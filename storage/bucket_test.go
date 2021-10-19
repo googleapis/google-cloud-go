@@ -44,6 +44,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
 		PublicAccessPrevention:   PublicAccessPreventionEnforced,
 		VersioningEnabled:        false,
+		RPO:                      RPOAsyncTurbo,
 		// should be ignored:
 		MetaGeneration: 39,
 		Created:        time.Now(),
@@ -125,6 +126,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 			PublicAccessPrevention: "enforced",
 		},
 		Versioning: nil, // ignore VersioningEnabled if false
+		Rpo:        rpoAsyncTurbo,
 		Labels:     map[string]string{"label": "value"},
 		Cors: []*raw.BucketCors{
 			{
@@ -274,6 +276,14 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	want.IamConfiguration = &raw.BucketIamConfiguration{
 		PublicAccessPrevention: "inherited",
 	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting RPO to default is propagated in the proto.
+	attrs.RPO = RPODefault
+	got = attrs.toRawBucket()
+	want.Rpo = rpoDefault
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
 	}

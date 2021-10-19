@@ -461,6 +461,12 @@ type BucketAttrs struct {
 	// The project number of the project the bucket belongs to.
 	// This field is read-only.
 	ProjectNumber uint64
+
+	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
+	// Set to ASYNC_TURBO to turn on Turbo Replication on a bucket.
+	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
+	// more information.
+	RPO RPO
 }
 
 // BucketPolicyOnly is an alias for UniformBucketLevelAccess.
@@ -728,6 +734,7 @@ func newBucket(b *raw.Bucket) (*BucketAttrs, error) {
 		Etag:                     b.Etag,
 		LocationType:             b.LocationType,
 		ProjectNumber:            b.ProjectNumber,
+		RPO:                      toRPO(b),
 	}, nil
 }
 
@@ -780,6 +787,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		Logging:          b.Logging.toRawBucketLogging(),
 		Website:          b.Website.toRawBucketWebsite(),
 		IamConfiguration: bktIAM,
+		Rpo:              b.RPO.String(),
 	}
 }
 
@@ -888,6 +896,12 @@ type BucketAttrsToUpdate struct {
 	// If not empty, applies a predefined set of default object access controls.
 	// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.
 	PredefinedDefaultObjectACL string
+
+	// RPO configures the Recovery Point Objective (RPO) policy of the bucket.
+	// Set to ASYNC_TURBO to turn on Turbo Replication on a bucket.
+	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
+	// more information.
+	RPO RPO
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
@@ -1001,7 +1015,10 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		rb.DefaultObjectAcl = nil
 		rb.ForceSendFields = append(rb.ForceSendFields, "DefaultObjectAcl")
 	}
+
 	rb.StorageClass = ua.StorageClass
+	rb.Rpo = ua.RPO.String()
+
 	if ua.setLabels != nil || ua.deleteLabels != nil {
 		rb.Labels = map[string]string{}
 		for k, v := range ua.setLabels {
@@ -1347,6 +1364,20 @@ func toPublicAccessPrevention(b *raw.BucketIamConfiguration) PublicAccessPrevent
 	}
 }
 
+func toRPO(b *raw.Bucket) RPO {
+	if b == nil {
+		return RPODefault
+	}
+	switch b.Rpo {
+	case rpoDefault:
+		return RPODefault
+	case rpoAsyncTurbo:
+		return RPOAsyncTurbo
+	default:
+		return RPODefault
+	}
+}
+
 // Objects returns an iterator over the objects in the bucket that match the
 // Query q. If q is nil, no filtering is done. Objects will be iterated over
 // lexicographically by name.
@@ -1533,4 +1564,30 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 		it.buckets = append(it.buckets, b)
 	}
 	return resp.NextPageToken, nil
+}
+
+type RPO int
+
+const (
+	// See: https://cloud.google.com/storage/docs/managing-turbo-replication
+
+	// RPODefault is used to reset RPO on an existing bucket with RPO set to RPOAsyncTurbo.
+	// Otherwise RPODefault is equivalent to the RPO field being absent, and is always ignored
+	RPODefault RPO = iota
+	// Set RPO to RPOAsyncTurbo to enable Turbo Replication on a bucket
+	RPOAsyncTurbo
+
+	rpoDefault    string = "DEFAULT"
+	rpoAsyncTurbo        = "ASYNC_TURBO"
+)
+
+func (rpo RPO) String() string {
+	switch rpo {
+	case RPODefault:
+		return rpoDefault
+	case RPOAsyncTurbo:
+		return rpoAsyncTurbo
+	default:
+		return rpoDefault
+	}
 }
