@@ -766,6 +766,11 @@ func (n NullNumeric) GormDataType() string {
 //
 // This type must always be used when encoding values to a JSON column in Cloud
 // Spanner.
+//
+// NullJSON does not implement the driver.Valuer and sql.Scanner interfaces, as
+// the underlying value can be anything. This means that the type NullJSON must
+// also be used when calling sql.Row#Scan(dest ...interface{}) for a JSON
+// column.
 type NullJSON struct {
 	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
 	Valid bool        // Valid is true if Json is not NULL.
