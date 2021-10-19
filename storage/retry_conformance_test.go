@@ -315,6 +315,6 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"), option.WithScopes(raw.DevstorageFullControlScope))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"), option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))
 	return client, err
 }
