@@ -1,0 +1,45 @@
+{
+  "retryTests": [
+    {
+      "id": 1,
+      "description": "always_idempotent",
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503"]
+        },
+        {
+          "instructions": ["return-reset-connection", "return-reset-connection"]
+        },
+        {
+          "instructions": ["return-reset-connection", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.bucket_acl.get",                "resources": ["BUCKET"]},
+        {"name": "storage.bucket_acl.list",               "resources": ["BUCKET"]},
+        {"name": "storage.buckets.delete",                "resources": ["BUCKET"]},
+        {"name": "storage.buckets.get",                   "resources": ["BUCKET"]},
+        {"name": "storage.buckets.getIamPolicy",          "resources": ["BUCKET"]},
+        {"name": "storage.buckets.insert",                "resources": []},
+        {"name": "storage.buckets.list",                  "resources": ["BUCKET"]},
+        {"name": "storage.buckets.lockRetentionPolicy",   "resources": ["BUCKET"]},
+        {"name": "storage.buckets.testIamPermissions",    "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.get",        "resources": ["BUCKET"]},
+        {"name": "storage.default_object_acl.list",       "resources": ["BUCKET"]},
+        {"name": "storage.hmacKey.delete",                "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.get",                   "resources": ["HMAC_KEY"]},
+        {"name": "storage.hmacKey.list",                  "resources": ["HMAC_KEY"]},
+        {"name": "storage.notifications.delete",          "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.get",             "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.notifications.list",            "resources": ["BUCKET", "NOTIFICATION"]},
+        {"name": "storage.object_acl.get",                "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.object_acl.list",               "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.get",                   "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.objects.list",                  "resources": ["BUCKET", "OBJECT"]},
+        {"name": "storage.serviceaccount.get",            "resources": []}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": true
+    }
+  ]
+}
