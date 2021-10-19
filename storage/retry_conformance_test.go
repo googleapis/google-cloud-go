@@ -61,7 +61,7 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
-	time.Sleep(time.Second * 20)
+	time.Sleep(time.Second * 5)
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		// This test is currently skipped in CI as the env variable is not set

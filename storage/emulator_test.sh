@@ -20,9 +20,9 @@ set -eo pipefail
 set -x
 
 export STORAGE_EMULATOR_PORT=9000
-export STORAGE_EMULATOR_HOST=http://0.0.0.0:$STORAGE_EMULATOR_PORT
+
+#$STORAGE_EMULATOR_PORT
 #export GCLOUD_TESTS_GOLANG_PROJECT_ID=emulator-test-project
-echo "Running the Cloud Storage emulator: $STORAGE_EMULATOR_HOST";
 
 # Download the emulator
 export DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
@@ -31,12 +31,20 @@ export DEFAULT_IMAGE_TAG='latest'
 docker pull ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 
 # Start the emulator
-docker run --rm -d -p 9000 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} 
+docker run --name storage_emulator --rm -d -p 9000:9000 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} 
+
+#EMULATOR_PID=$!
+
+
+VAR=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' storage_emulator)
+
+export STORAGE_EMULATOR_HOST=http://localhost:9000
+echo "Running the Cloud Storage emulator: $STORAGE_EMULATOR_HOST";
 
 # Stop the emulator & clean the environment variables
 function cleanup() {
     echo "Cleanup environment variables"
-    #kill -2 $EMULATOR_PID
+    docker stop storage_emulator
     unset STORAGE_EMULATOR_HOST
     unset STORAGE_EMULATOR_PORT
     unset DEFAULT_IMAGE_NAME
@@ -45,5 +53,5 @@ function cleanup() {
 trap cleanup EXIT
 
 # the regex ^[^23] skips conformance tests with ids 2 and 3, which are non-idempotent and do not yet pass
-# TODO: remove regex once non-idempotent retries are aligned
+# TODO: remove regent retries are aligned
 go test -v -timeout 10m ./ -run=TestRetryConformance/^[^23] -short 2>&1 | tee -a sponge_log.log
