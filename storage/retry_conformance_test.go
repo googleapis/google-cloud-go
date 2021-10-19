@@ -25,6 +25,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
@@ -60,6 +61,7 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
+	time.Sleep(time.Second * 20)
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		// This test is currently skipped in CI as the env variable is not set

@@ -20,7 +20,7 @@ set -eo pipefail
 set -x
 
 export STORAGE_EMULATOR_PORT=9000
-export STORAGE_EMULATOR_HOST=http://localhost:$STORAGE_EMULATOR_PORT
+export STORAGE_EMULATOR_HOST=http://0.0.0.0:$STORAGE_EMULATOR_PORT
 #export GCLOUD_TESTS_GOLANG_PROJECT_ID=emulator-test-project
 echo "Running the Cloud Storage emulator: $STORAGE_EMULATOR_HOST";
 
@@ -31,14 +31,12 @@ export DEFAULT_IMAGE_TAG='latest'
 docker pull ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 
 # Start the emulator
-docker run -p 9010 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} &
-
-EMULATOR_PID=$!
+docker run --rm -d -p 9000 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} 
 
 # Stop the emulator & clean the environment variables
 function cleanup() {
     echo "Cleanup environment variables"
-    kill -2 $EMULATOR_PID
+    #kill -2 $EMULATOR_PID
     unset STORAGE_EMULATOR_HOST
     unset STORAGE_EMULATOR_PORT
     unset DEFAULT_IMAGE_NAME
