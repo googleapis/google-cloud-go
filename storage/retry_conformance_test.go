@@ -61,7 +61,7 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 2)
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		// This test is currently skipped in CI as the env variable is not set
@@ -315,6 +315,6 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"), option.WithScopes(raw.DevstorageFullControlScope))
 	return client, err
 }

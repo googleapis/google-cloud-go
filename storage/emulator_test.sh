@@ -19,36 +19,27 @@ set -eo pipefail
 # Display commands being run
 set -x
 
-export STORAGE_EMULATOR_PORT=9000
+STORAGE_EMULATOR_PORT=9000
+export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
-#$STORAGE_EMULATOR_PORT
 #export GCLOUD_TESTS_GOLANG_PROJECT_ID=emulator-test-project
 
 # Download the emulator
-export DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
-export DEFAULT_IMAGE_TAG='latest'
-
-docker pull ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
+DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
+DEFAULT_IMAGE_TAG='latest'
+DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
+CONTAINER_NAME=storage_emulator
+docker pull $DOCKER_IMAGE
 
 # Start the emulator
-docker run --name storage_emulator --rm -d -p 9000:9000 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} 
-
-#EMULATOR_PID=$!
-
-
-VAR=$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' storage_emulator)
-
-export STORAGE_EMULATOR_HOST=http://localhost:9000
+docker run --name $CONTAINER_NAME --rm -p $STORAGE_EMULATOR_PORT:$STORAGE_EMULATOR_PORT $DOCKER_IMAGE &
 echo "Running the Cloud Storage emulator: $STORAGE_EMULATOR_HOST";
 
 # Stop the emulator & clean the environment variables
 function cleanup() {
-    echo "Cleanup environment variables"
-    docker stop storage_emulator
-    unset STORAGE_EMULATOR_HOST
-    unset STORAGE_EMULATOR_PORT
-    unset DEFAULT_IMAGE_NAME
-    unset DEFAULT_IMAGE_TAG;
+    echo "Cleanup emulator"
+    docker stop $CONTAINER_NAME
+    unset STORAGE_EMULATOR_HOST;
 }
 trap cleanup EXIT
 
