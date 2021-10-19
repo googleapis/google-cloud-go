@@ -31,7 +31,7 @@ export DEFAULT_IMAGE_TAG='latest'
 docker pull ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 
 # Start the emulator
-docker run -p $STORAGE_EMULATOR_PORT ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} &
+docker run -p 9010 ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} &
 
 EMULATOR_PID=$!
 
