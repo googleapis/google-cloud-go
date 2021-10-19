@@ -31,11 +31,14 @@ export DEFAULT_IMAGE_TAG='latest'
 docker pull ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 
 # Start the emulator
-docker run --rm -d -p $STORAGE_EMULATOR_PORT ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} 
+docker run -p $STORAGE_EMULATOR_PORT ${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG} &
+
+EMULATOR_PID=$!
 
 # Stop the emulator & clean the environment variables
 function cleanup() {
     echo "Cleanup environment variables"
+    kill -2 $EMULATOR_PID
     unset STORAGE_EMULATOR_HOST
     unset STORAGE_EMULATOR_PORT
     unset DEFAULT_IMAGE_NAME
