@@ -121,7 +121,7 @@ func validPropertyName(name string) bool {
 		for _, c := range s {
 			if first {
 				first = false
-				if c != '_' && !unicode.IsLetter(c) {
+				if c != '_' && !unicode.IsLetter(c) && !unicode.IsDigit(c) {
 					return false
 				}
 			} else {
