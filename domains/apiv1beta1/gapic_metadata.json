@@ -65,9 +65,19 @@
                 "RetrieveRegisterParameters"
               ]
             },
+            "RetrieveTransferParameters": {
+              "methods": [
+                "RetrieveTransferParameters"
+              ]
+            },
             "SearchDomains": {
               "methods": [
                 "SearchDomains"
+              ]
+            },
+            "TransferDomain": {
+              "methods": [
+                "TransferDomain"
               ]
             },
             "UpdateRegistration": {
