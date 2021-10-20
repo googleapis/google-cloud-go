@@ -44,6 +44,8 @@ type CallOptions struct {
 	SearchDomains               []gax.CallOption
 	RetrieveRegisterParameters  []gax.CallOption
 	RegisterDomain              []gax.CallOption
+	RetrieveTransferParameters  []gax.CallOption
+	TransferDomain              []gax.CallOption
 	ListRegistrations           []gax.CallOption
 	GetRegistration             []gax.CallOption
 	UpdateRegistration          []gax.CallOption
@@ -74,6 +76,8 @@ func defaultCallOptions() *CallOptions {
 		SearchDomains:               []gax.CallOption{},
 		RetrieveRegisterParameters:  []gax.CallOption{},
 		RegisterDomain:              []gax.CallOption{},
+		RetrieveTransferParameters:  []gax.CallOption{},
+		TransferDomain:              []gax.CallOption{},
 		ListRegistrations:           []gax.CallOption{},
 		GetRegistration:             []gax.CallOption{},
 		UpdateRegistration:          []gax.CallOption{},
@@ -96,6 +100,9 @@ type internalClient interface {
 	RetrieveRegisterParameters(context.Context, *domainspb.RetrieveRegisterParametersRequest, ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error)
 	RegisterDomain(context.Context, *domainspb.RegisterDomainRequest, ...gax.CallOption) (*RegisterDomainOperation, error)
 	RegisterDomainOperation(name string) *RegisterDomainOperation
+	RetrieveTransferParameters(context.Context, *domainspb.RetrieveTransferParametersRequest, ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error)
+	TransferDomain(context.Context, *domainspb.TransferDomainRequest, ...gax.CallOption) (*TransferDomainOperation, error)
+	TransferDomainOperation(name string) *TransferDomainOperation
 	ListRegistrations(context.Context, *domainspb.ListRegistrationsRequest, ...gax.CallOption) *RegistrationIterator
 	GetRegistration(context.Context, *domainspb.GetRegistrationRequest, ...gax.CallOption) (*domainspb.Registration, error)
 	UpdateRegistration(context.Context, *domainspb.UpdateRegistrationRequest, ...gax.CallOption) (*UpdateRegistrationOperation, error)
@@ -191,6 +198,45 @@ func (c *Client) RegisterDomainOperation(name string) *RegisterDomainOperation {
 	return c.internalClient.RegisterDomainOperation(name)
 }
 
+// RetrieveTransferParameters gets parameters needed to transfer a domain name from another registrar to
+// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
+// Domains is not supported.
+//
+// Use the returned values to call TransferDomain.
+func (c *Client) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
+	return c.internalClient.RetrieveTransferParameters(ctx, req, opts...)
+}
+
+// TransferDomain transfers a domain name from another registrar to Cloud Domains.  For
+// domains managed by Google Domains, transferring to Cloud Domains is not
+// supported.
+//
+// Before calling this method, go to the domain’s current registrar to unlock
+// the domain for transfer and retrieve the domain’s transfer authorization
+// code. Then call RetrieveTransferParameters to confirm that the domain is
+// unlocked and to get values needed to build a call to this method.
+//
+// A successful call creates a Registration resource in state
+// TRANSFER_PENDING. It can take several days to complete the transfer
+// process. The registrant can often speed up this process by approving the
+// transfer through the current registrar, either by clicking a link in an
+// email from the registrar or by visiting the registrar’s website.
+//
+// A few minutes after transfer approval, the resource transitions to state
+// ACTIVE, indicating that the transfer was successful. If the transfer is
+// rejected or the request expires without being approved, the resource can
+// end up in state TRANSFER_FAILED. If transfer fails, you can safely delete
+// the resource and retry the transfer.
+func (c *Client) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
+	return c.internalClient.TransferDomain(ctx, req, opts...)
+}
+
+// TransferDomainOperation returns a new TransferDomainOperation from a given name.
+// The name must be that of a previously created TransferDomainOperation, possibly from a different process.
+func (c *Client) TransferDomainOperation(name string) *TransferDomainOperation {
+	return c.internalClient.TransferDomainOperation(name)
+}
+
 // ListRegistrations lists the Registration resources in a project.
 func (c *Client) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
 	return c.internalClient.ListRegistrations(ctx, req, opts...)
@@ -253,22 +299,15 @@ func (c *Client) ConfigureContactSettingsOperation(name string) *ConfigureContac
 	return c.internalClient.ConfigureContactSettingsOperation(name)
 }
 
-// ExportRegistration exports a Registration that you no longer want to use with
-// Cloud Domains. You can continue to use the domain in
-// Google Domains (at https://domains.google/) until it expires.
+// ExportRegistration exports a Registration resource, such that it is no longer managed by
+// Cloud Domains.
 //
-// If the export is successful:
-//
-//   The resource’s state becomes EXPORTED, meaning that it is no longer
-//   managed by Cloud Domains
-//
-//   Because individual users can own domains in Google Domains, the calling
-//   user becomes the domain’s sole owner. Permissions for the domain are
-//   subsequently managed in Google Domains.
-//
-//   Without further action, the domain does not renew automatically.
-//   The new owner can set up billing in Google Domains to renew the domain
-//   if needed.
+// When an active domain is successfully exported, you can continue to use the
+// domain in Google Domains (at https://domains.google/) until it expires. The
+// calling user becomes the domain’s sole owner in Google Domains, and
+// permissions for the domain are subsequently managed there. The domain does
+// not renew automatically unless the new owner sets up billing in Google
+// Domains.
 func (c *Client) ExportRegistration(ctx context.Context, req *domainspb.ExportRegistrationRequest, opts ...gax.CallOption) (*ExportRegistrationOperation, error) {
 	return c.internalClient.ExportRegistration(ctx, req, opts...)
 }
@@ -281,11 +320,25 @@ func (c *Client) ExportRegistrationOperation(name string) *ExportRegistrationOpe
 
 // DeleteRegistration deletes a Registration resource.
 //
-// This method only works on resources in one of the following states:
+// This method works on any Registration resource using Subscription or
+// Commitment billing (at /domains/pricing#billing-models), provided that the
+// resource was created at least 1 day in the past.
+//
+// For Registration resources using
+// Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
 //   state is EXPORTED with expire_time in the past
 //
 //   state is REGISTRATION_FAILED
+//
+//   state is TRANSFER_FAILED
+//
+// When an active registration is successfully deleted, you can continue to
+// use the domain in Google Domains (at https://domains.google/) until it
+// expires. The calling user becomes the domain’s sole owner in Google
+// Domains, and permissions for the domain are subsequently managed there. The
+// domain does not renew automatically unless the new owner sets up billing in
+// Google Domains.
 func (c *Client) DeleteRegistration(ctx context.Context, req *domainspb.DeleteRegistrationRequest, opts ...gax.CallOption) (*DeleteRegistrationOperation, error) {
 	return c.internalClient.DeleteRegistration(ctx, req, opts...)
 }
@@ -455,6 +508,40 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 		return nil, err
 	}
 	return &RegisterDomainOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
+	var resp *domainspb.RetrieveTransferParametersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveTransferParameters(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TransferDomain[0:len((*c.CallOptions).TransferDomain):len((*c.CallOptions).TransferDomain)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TransferDomain(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &TransferDomainOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1059,6 +1146,75 @@ func (op *RegisterDomainOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RegisterDomainOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TransferDomainOperation manages a long-running operation from TransferDomain.
+type TransferDomainOperation struct {
+	lro *longrunning.Operation
+}
+
+// TransferDomainOperation returns a new TransferDomainOperation from a given name.
+// The name must be that of a previously created TransferDomainOperation, possibly from a different process.
+func (c *gRPCClient) TransferDomainOperation(name string) *TransferDomainOperation {
+	return &TransferDomainOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TransferDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
+	var resp domainspb.Registration
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TransferDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
+	var resp domainspb.Registration
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TransferDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
+	var meta domainspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TransferDomainOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TransferDomainOperation) Name() string {
 	return op.lro.Name()
 }
 
