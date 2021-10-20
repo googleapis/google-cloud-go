@@ -1,5 +1,12 @@
 # Changes
 
+## [1.27.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.26.0...spanner/v1.27.0) (2021-10-19)
+
+
+### Features
+
+* **spanner:** implement valuer and scanner interfaces ([#4936](https://www.github.com/googleapis/google-cloud-go/issues/4936)) ([4537b45](https://www.github.com/googleapis/google-cloud-go/commit/4537b45d2611ce480abfb5d186b59e7258ec872c))
+
 ## [1.26.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.25.0...spanner/v1.26.0) (2021-10-11)
 
 

@@ -1,5 +1,17 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v1.0.0...monitoring/v1.1.0) (2021-10-18)
+
+
+### Features
+
+* **monitoring/apiv3:** add CreateServiceTimeSeries RPC ([9e41088](https://www.github.com/googleapis/google-cloud-go/commit/9e41088bb395fbae0e757738277d5c95fa2749c8))
+
+
+### Bug Fixes
+
+* **monitoring/apiv3:** Reintroduce deprecated field/enum for backward compatibility docs: Use absolute link targets in comments ([45fd259](https://www.github.com/googleapis/google-cloud-go/commit/45fd2594d99ef70c776df26866f0a3b537e7e69e))
+
 ## 1.0.0
 
 Stabilize GA surface.
@@ -22,4 +34,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
- 
