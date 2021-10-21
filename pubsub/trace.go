@@ -22,6 +22,10 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/propagation"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // The following keys are used to tag requests with a specific topic/subscription ID.
@@ -235,4 +239,78 @@ func withSubscriptionKey(ctx context.Context, subName string) context.Context {
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
+}
+
+// func parseSpanContext(sc string) *trace.SpanContextConfig {
+// 	ctx := context.Background()
+// 	// TODO: figure out how to unmarshal json spancontext -> scc
+// 	if err := json.Unmarshal([]byte(sc), spanContext); err != nil {
+// 		panic(err)
+// 	}
+// 	fmt.Printf("got span context: %+v\n", spanContext)
+
+// 	return &trace.SpanContextConfig{
+// 		TraceID:    trace.TraceID{},
+// 		SpanID:     spanContext.SpanID(),
+// 		TraceFlags: spanContext.TraceFlags(),
+// 		TraceState: spanContext.TraceState(),
+// 		Remote:     spanContext.IsRemote(),
+// 	}
+// }
+
+var _ propagation.TextMapCarrier = (*PubsubMessageCarrier)(nil)
+
+// PubsubMessageCarrier injects and extracts traces from a pubsub.Message.
+type PubsubMessageCarrier struct {
+	msg *Message
+}
+
+// NewPubsubMessageCarrier creates a new PubsubMessageCarrier.PubsubMessageCarrier.
+func NewPubsubMessageCarrier(msg *Message) PubsubMessageCarrier {
+	return PubsubMessageCarrier{msg: msg}
+}
+
+// Get retrieves a single value for a given key.
+func (c PubsubMessageCarrier) Get(key string) string {
+	return c.msg.Attributes[key]
+}
+
+// Set sets a header.
+func (c PubsubMessageCarrier) Set(key, val string) {
+	c.msg.Attributes[key] = val
+}
+
+// Keys returns a slice of all keys in the carrier.
+func (c PubsubMessageCarrier) Keys() []string {
+	i := 0
+	out := make([]string, len(c.msg.Attributes))
+	for k := range c.msg.Attributes {
+		out[i] = k
+		i++
+	}
+	return out
+}
+
+func getPublisherAttributes(topic, key string) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKey.String(topic),
+			semconv.MessagingDestinationKindTopic,
+			attribute.String("pubsub.ordering_key", key),
+		),
+		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+	return opts
+}
+
+func getSubscriberAttributes(sub string) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKey.String(sub),
+		),
+		trace.WithSpanKind(trace.SpanKindConsumer),
+	}
+	return opts
 }

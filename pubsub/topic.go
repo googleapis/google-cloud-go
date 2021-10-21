@@ -505,14 +505,20 @@ type PublishResult = ipubsub.PublishResult
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var span trace.Span
-	ctx, span = t.tracer.Start(ctx, t.String()+" send")
-	span.SetAttributes(semconv.MessagingSystemKey.String("pubsub"), semconv.MessagingDestinationKey.String(t.String()),
-		semconv.MessagingDestinationKindTopic)
+	opts := getPublisherAttributes(t.String(), msg.OrderingKey)
+	ctx, span = t.tracer.Start(ctx, t.String()+" send", opts...)
 	defer span.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
 		return r
+	}
+
+	if span.SpanContext().IsValid() {
+		if msg.Attributes == nil {
+			msg.Attributes = make(map[string]string)
+		}
+		otel.GetTextMapPropagator().Inject(ctx, NewPubsubMessageCarrier(msg))
 	}
 
 	// Calculate the size of the encoded proto message by accounting
@@ -538,8 +544,13 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{ctx, msg, r, msgSize}, msgSize)
-	if err != nil {
+	bmsg := &bundledMessage{
+		ctx:  ctx,
+		msg:  msg,
+		res:  r,
+		size: msgSize,
+	}
+	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 	}
@@ -658,7 +669,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
-		_, span := t.tracer.Start(bm.ctx, "msg")
+		_, span := t.tracer.Start(bm.ctx, "publish message bundle")
 		span.SetAttributes(semconv.MessagingSystemKey.String("pubsub"), semconv.MessagingDestinationKey.String(t.String()),
 			semconv.MessagingDestinationKindTopic)
 		defer span.End()

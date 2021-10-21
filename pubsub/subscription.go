@@ -27,6 +27,8 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
@@ -51,6 +53,8 @@ type Subscription struct {
 	receiveActive bool
 
 	enableOrdering bool
+
+	tracer trace.Tracer
 }
 
 // Subscription creates a reference to a subscription.
@@ -60,9 +64,15 @@ func (c *Client) Subscription(id string) *Subscription {
 
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
+	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
+}
+
+func newSubscription(c *Client, name string) *Subscription {
 	return &Subscription{
-		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		c:               c,
+		name:            name,
+		ReceiveSettings: DefaultReceiveSettings,
+		tracer:          otel.Tracer("instrumentation/pubsub/sub"),
 	}
 }
 
@@ -112,7 +122,7 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Subscription{c: subs.c, name: subName}, nil
+	return newSubscription(subs.c, subName), nil
 }
 
 // NextConfig returns the next subscription config. If there are no more subscriptions,
@@ -949,6 +959,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				default:
 				}
 				for i, msg := range msgs {
+					ctx2 = otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(msg))
+					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.String()))
+					defer receiveSpan.End()
+
 					msg := msg
 					// TODO(jba): call acquire closer to when the message is allocated.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
@@ -975,8 +989,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
+						ctx2, consumeSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.String()))
 						defer wg.Done()
 						f(ctx2, msg.(*Message))
+						consumeSpan.End()
 					}); err != nil {
 						wg.Done()
 						return err
