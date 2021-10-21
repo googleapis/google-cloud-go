@@ -1579,7 +1579,8 @@ const (
 	// RPODefault is used to reset RPO on an existing bucket with RPO set to RPOAsyncTurbo.
 	// Otherwise RPODefault is equivalent to RPOUnknown, and is always ignored
 	RPODefault
-	// Set RPO to RPOAsyncTurbo to enable Turbo Replication on a bucket
+	// RPOAsyncTurbo is used to enable Turbo Replication on a bucket.
+	// The bucket must be dual-region
 	RPOAsyncTurbo
 
 	rpoUnknown    string = ""
