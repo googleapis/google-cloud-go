@@ -476,3 +476,63 @@ func TestConvertAccessEntry(t *testing.T) {
 		t.Error("got nil, want error")
 	}
 }
+
+func TestDatasetIdentifiers(t *testing.T) {
+	testDataset := &Dataset{
+		ProjectID: "p",
+		DatasetID: "d",
+		c:         nil,
+	}
+	for _, tc := range []struct {
+		description string
+		in          *Dataset
+		format      IdentifierFormat
+		want        string
+		wantErr     bool
+	}{
+		{
+			description: "empty format string",
+			in:          testDataset,
+			format:      "",
+			wantErr:     true,
+		},
+		{
+			description: "legacy",
+			in:          testDataset,
+			format:      LegacySQLID,
+			want:        "p:d",
+		},
+		{
+			description: "standard unquoted",
+			in:          testDataset,
+			format:      StandardSQLID,
+			want:        "p.d",
+		},
+		{
+			description: "standard w/quoting",
+			in:          &Dataset{ProjectID: "p-p", DatasetID: "d"},
+			format:      StandardSQLID,
+			want:        "`p-p`.d",
+		},
+		{
+			description: "api resource",
+			in:          testDataset,
+			format:      APIResourceID,
+			want:        "projects/p/datasets/d",
+		},
+	} {
+		got, err := tc.in.Identifier(tc.format)
+		if tc.wantErr && err == nil {
+			t.Errorf("case %q: wanted err, was success", tc.description)
+		}
+		if !tc.wantErr {
+			if err != nil {
+				t.Errorf("case %q: wanted success, got err: %v", tc.description, err)
+			} else {
+				if got != tc.want {
+					t.Errorf("case %q:  got %s, want %s", tc.description, got, tc.want)
+				}
+			}
+		}
+	}
+}

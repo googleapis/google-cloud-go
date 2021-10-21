@@ -167,3 +167,63 @@ func TestRoutineTypeConversions(t *testing.T) {
 		})
 	}
 }
+
+func TestRoutineIdentifiers(t *testing.T) {
+	testRoutine := &Routine{
+		ProjectID: "p",
+		DatasetID: "d",
+		RoutineID: "r",
+		c:         nil,
+	}
+	for _, tc := range []struct {
+		description string
+		in          *Routine
+		format      IdentifierFormat
+		want        string
+		wantErr     bool
+	}{
+		{
+			description: "empty format string",
+			in:          testRoutine,
+			format:      "",
+			wantErr:     true,
+		},
+		{
+			description: "legacy",
+			in:          testRoutine,
+			wantErr:     true,
+		},
+		{
+			description: "standard unquoted",
+			in:          testRoutine,
+			format:      StandardSQLID,
+			want:        "p.d.r",
+		},
+		{
+			description: "standard w/dash",
+			in:          &Routine{ProjectID: "p-p", DatasetID: "d", RoutineID: "r"},
+			format:      StandardSQLID,
+			want:        "`p-p`.d.r",
+		},
+		{
+			description: "api resource",
+			in:          testRoutine,
+			format:      APIResourceID,
+			wantErr:     true,
+		},
+	} {
+		got, err := tc.in.Identifier(tc.format)
+		if tc.wantErr && err == nil {
+			t.Errorf("case %q: wanted err, was success", tc.description)
+		}
+		if !tc.wantErr {
+			if err != nil {
+				t.Errorf("case %q: wanted success, got err: %v", tc.description, err)
+			} else {
+				if got != tc.want {
+					t.Errorf("case %q:  got %s, want %s", tc.description, got, tc.want)
+				}
+			}
+		}
+	}
+}

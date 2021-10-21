@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -85,6 +86,24 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 		ProjectID: projectID,
 		DatasetID: datasetID,
 		c:         c,
+	}
+}
+
+// Identifier returns the ID of the dataset in the requested format.
+func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s", d.ProjectID, d.DatasetID), nil
+	case APIResourceID:
+		return fmt.Sprintf("projects/%s/datasets/%s", d.ProjectID, d.DatasetID), nil
+	case StandardSQLID:
+		// Quote project identifiers if they have a dash character.
+		if strings.Contains(d.ProjectID, "-") {
+			return fmt.Sprintf("`%s`.%s", d.ProjectID, d.DatasetID), nil
+		}
+		return fmt.Sprintf("%s.%s", d.ProjectID, d.DatasetID), nil
+	default:
+		return "", ErrUnknownIdentifierFormat
 	}
 }
 

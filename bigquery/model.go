@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -41,9 +42,30 @@ type Model struct {
 	c *Client
 }
 
+// Identifier returns the ID of the model in the requested format.
+//
+// StandardSQL identifiers will be quoted
+func (m *Model) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s.%s", m.ProjectID, m.DatasetID, m.ModelID), nil
+	case StandardSQLID:
+		// Per https://cloud.google.com/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-create#model_name
+		// we quote the entire identifier.
+		out := fmt.Sprintf("%s.%s.%s", m.ProjectID, m.DatasetID, m.ModelID)
+		if strings.Contains(out, "-") {
+			out = fmt.Sprintf("`%s`", out)
+		}
+		return out, nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns the ID of the model in projectID:datasetID.modelid format.
 func (m *Model) FullyQualifiedName() string {
-	return fmt.Sprintf("%s:%s.%s", m.ProjectID, m.DatasetID, m.ModelID)
+	s, _ := m.Identifier(LegacySQLID)
+	return s
 }
 
 func (m *Model) toBQ() *bq.ModelReference {
