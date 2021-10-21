@@ -46,6 +46,9 @@ func (r *Routine) toBQ() *bq.RoutineReference {
 }
 
 // Identifier returns the ID of the routine in the requested format.
+//
+// For Standard SQL format, the identifier will be quoted if the
+// ProjectID contains dash (-) characters.
 func (r *Routine) Identifier(f IdentifierFormat) (string, error) {
 	switch f {
 	case StandardSQLID:

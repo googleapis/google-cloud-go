@@ -90,6 +90,9 @@ func (c *Client) DatasetInProject(projectID, datasetID string) *Dataset {
 }
 
 // Identifier returns the ID of the dataset in the requested format.
+//
+// For Standard SQL format, the identifier will be quoted if the
+// ProjectID contains dash (-) characters.
 func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
 	switch f {
 	case LegacySQLID:

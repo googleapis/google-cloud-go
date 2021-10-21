@@ -44,7 +44,8 @@ type Model struct {
 
 // Identifier returns the ID of the model in the requested format.
 //
-// StandardSQL identifiers will be quoted
+// For Standard SQL format, the identifier will be quoted if the
+// ProjectID contains dash (-) characters.
 func (m *Model) Identifier(f IdentifierFormat) (string, error) {
 	switch f {
 	case LegacySQLID:
