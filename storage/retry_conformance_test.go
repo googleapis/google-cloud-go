@@ -70,6 +70,7 @@ type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions
 // storage.objects.copy
 // storage.objects.update
 var methods = map[string][]retryFunc{
+	// Idempotent operations
 	"storage.bucket_acl.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			_, err := c.Bucket(fs.bucket.Name).ACL().List(ctx)
@@ -124,11 +125,7 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.buckets.lockRetentionPolicy": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			attrs, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
-			if err != nil {
-				return err
-			}
-			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)
+			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration}).LockRetentionPolicy(ctx)
 		},
 	},
 	"storage.buckets.testIamPermissions": {
@@ -207,7 +204,8 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 	},
-	// all conditionally idempotent operations currently fail:
+	// Conditionally idempotent operations
+	// (all conditionally idempotent operations currently fail)
 	"storage.buckets.patch": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
@@ -311,6 +309,7 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 	},
+	// Non-idempotent operations
 	"storage.bucket_acl.delete": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			return c.Bucket(fs.bucket.Name).ACL().Delete(ctx, AllUsers)
