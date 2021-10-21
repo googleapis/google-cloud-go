@@ -1366,7 +1366,7 @@ func toPublicAccessPrevention(b *raw.BucketIamConfiguration) PublicAccessPrevent
 
 func toRPO(b *raw.Bucket) RPO {
 	if b == nil {
-		return RPODefault
+		return RPOUnknown
 	}
 	switch b.Rpo {
 	case rpoDefault:
@@ -1374,7 +1374,7 @@ func toRPO(b *raw.Bucket) RPO {
 	case rpoAsyncTurbo:
 		return RPOAsyncTurbo
 	default:
-		return RPODefault
+		return RPOUnknown
 	}
 }
 
@@ -1566,18 +1566,24 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	return resp.NextPageToken, nil
 }
 
+// RPO configures the turbo replication feature
+// See https://cloud.google.com/storage/docs/managing-turbo-replication for more information
 type RPO int
 
 const (
 	// See: https://cloud.google.com/storage/docs/managing-turbo-replication
 
+	// RPOUnknown is a zero value, used only if this field is not set in a call to GCS
+	RPOUnknown RPO = iota
+
 	// RPODefault is used to reset RPO on an existing bucket with RPO set to RPOAsyncTurbo.
-	// Otherwise RPODefault is equivalent to the RPO field being absent, and is always ignored
-	RPODefault RPO = iota
+	// Otherwise RPODefault is equivalent to RPOUnknown, and is always ignored
+	RPODefault
 	// Set RPO to RPOAsyncTurbo to enable Turbo Replication on a bucket
 	RPOAsyncTurbo
 
-	rpoDefault    string = "DEFAULT"
+	rpoUnknown    string = ""
+	rpoDefault           = "DEFAULT"
 	rpoAsyncTurbo        = "ASYNC_TURBO"
 )
 
@@ -1588,6 +1594,6 @@ func (rpo RPO) String() string {
 	case RPOAsyncTurbo:
 		return rpoAsyncTurbo
 	default:
-		return rpoDefault
+		return rpoUnknown
 	}
 }
