@@ -486,6 +486,8 @@ var (
 	// like BigQuery Storage.
 	APIResourceID IdentifierFormat = "API_RESOURCE"
 
+	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
+	// not supported.
 	ErrUnknownIdentifierFormat = errors.New("unknown identifier format")
 )
 
