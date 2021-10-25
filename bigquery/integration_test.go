@@ -1951,7 +1951,6 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 }
 
 func TestIntegration_Load(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4418")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
