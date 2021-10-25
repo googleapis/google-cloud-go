@@ -30,7 +30,6 @@ import (
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -303,8 +302,7 @@ func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, err
 func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
-	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
-		option.WithUserAgent("custom-user-agent"))
+	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http client: %v", err)
 	}
@@ -315,6 +313,6 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"), option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c))
 	return client, err
 }
