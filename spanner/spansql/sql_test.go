@@ -482,6 +482,21 @@ func TestSQL(t *testing.T) {
 			reparseQuery,
 		},
 		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						CastFunc{
+							Op:   SafeCast,
+							Expr: StringLiteral("apple"),
+							Type: Type{Base: Int64},
+						},
+					},
+				},
+			},
+			`SELECT SAFE_CAST("apple" AS INT64)`,
+			reparseQuery,
+		},
+		{
 			DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27}),
 			`DATE '2014-09-27'`,
 			reparseExpr,

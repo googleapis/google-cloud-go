@@ -627,6 +627,24 @@ type PathExp []ID
 
 func (PathExp) isExpr() {}
 
+// Cast Functions
+
+type CastOperator int
+
+const (
+	Cast CastOperator = iota
+	SafeCast
+)
+
+type CastFunc struct {
+	Op   CastOperator
+	Expr Expr
+	Type Type
+}
+
+func (CastFunc) isBoolExpr() {} // possibly bool
+func (CastFunc) isExpr()     {}
+
 // Func represents a function call.
 type Func struct {
 	Name string // not ID

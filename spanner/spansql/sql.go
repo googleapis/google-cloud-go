@@ -574,6 +574,23 @@ func (io IsOp) addSQL(sb *strings.Builder) {
 	io.RHS.addSQL(sb)
 }
 
+func (c CastFunc) SQL() string { return buildSQL(c) }
+func (c CastFunc) addSQL(sb *strings.Builder) {
+	switch c.Op {
+	default:
+		panic("unknown CastOp")
+	case Cast:
+		sb.WriteString("CAST")
+	case SafeCast:
+		sb.WriteString("SAFE_CAST")
+	}
+	sb.WriteString("(")
+	c.Expr.addSQL(sb)
+	sb.WriteString(" AS ")
+	sb.WriteString(c.Type.SQL())
+	sb.WriteString(")")
+}
+
 func (f Func) SQL() string { return buildSQL(f) }
 func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(f.Name)

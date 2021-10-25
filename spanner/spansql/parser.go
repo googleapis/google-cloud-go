@@ -1538,7 +1538,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	cd := ColumnDef{Name: name, Position: p.Pos()}
 
-	cd.Type, err = p.parseType()
+	cd.Type, err = p.parseType(false)
 	if err != nil {
 		return ColumnDef{}, err
 	}
@@ -1584,7 +1584,7 @@ func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 		return SetColumnOptions{Options: co}, nil
 	}
 
-	typ, err := p.parseType()
+	typ, err := p.parseType(false)
 	if err != nil {
 		return nil, err
 	}
@@ -1893,7 +1893,7 @@ var baseTypes = map[string]TypeBase{
 	"JSON":      JSON,
 }
 
-func (p *parser) parseType() (Type, *parseError) {
+func (p *parser) parseType(noParam bool) (Type, *parseError) {
 	debugf("parseType: %v", p)
 
 	/*
@@ -1928,7 +1928,7 @@ func (p *parser) parseType() (Type, *parseError) {
 	}
 	t.Base = base
 
-	if t.Base == String || t.Base == Bytes {
+	if (t.Base == String || t.Base == Bytes) && !noParam {
 		if err := p.expect("("); err != nil {
 			return Type{}, err
 		}
@@ -2763,6 +2763,42 @@ func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
 	return p.parseLit()
 }
 
+func (p *parser) parseCast(op CastOperator) (Expr, *parseError) {
+	/*
+		CAST(expression AS typename)
+		SAFE_CAST(expression AS typename)
+	*/
+
+	if err := p.expect("("); err != nil {
+		return nil, err
+	}
+
+	expr, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := p.expect("AS"); err != nil {
+		return nil, err
+	}
+
+	// typename in cast function must not be parameterized types
+	toType, err := p.parseType(true)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := p.expect(")"); err != nil {
+		return nil, err
+	}
+
+	return CastFunc{
+		Op:   op,
+		Expr: expr,
+		Type: toType,
+	}, nil
+}
+
 func (p *parser) parseLit() (Expr, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
@@ -2794,6 +2830,14 @@ func (p *parser) parseLit() (Expr, *parseError) {
 			return nil, err
 		}
 		return Paren{Expr: e}, nil
+	}
+
+	// Handle type conversion functions.
+	if tok.caseEqual("CAST") {
+		return p.parseCast(Cast)
+	}
+	if tok.caseEqual("SAFE_CAST") {
+		return p.parseCast(SafeCast)
 	}
 
 	// If the literal was an identifier, and there's an open paren next,

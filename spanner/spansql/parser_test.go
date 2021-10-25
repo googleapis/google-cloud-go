@@ -322,6 +322,8 @@ func TestParseExpr(t *testing.T) {
 		{`X BETWEEN Y AND Z`, ComparisonOp{LHS: ID("X"), Op: Between, RHS: ID("Y"), RHS2: ID("Z")}},
 		{`@needle IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), RHS: []Expr{Param("haystack")}, Unnest: true}},
 		{`@needle NOT IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), Neg: true, RHS: []Expr{Param("haystack")}, Unnest: true}},
+		{`CAST(x=1 AS STRING)`, CastFunc{Op: Cast, Expr: ComparisonOp{LHS: ID("x"), Op: Eq, RHS: IntegerLiteral(1)}, Type: Type{Base: String}}},
+		{`SAFE_CAST("apple" AS INT64)`, CastFunc{Op: SafeCast, Expr: StringLiteral("apple"), Type: Type{Base: Int64}}},
 
 		// Functions
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
