@@ -25,7 +25,6 @@ import (
 	"os"
 	"strings"
 	"testing"
-	"time"
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
@@ -60,7 +59,6 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
-	time.Sleep(time.Second * 2)
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		// This test is currently skipped in CI as the env variable is not set
@@ -302,10 +300,14 @@ func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, err
 func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
-	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
+
+	trans, err := htransport.NewTransport(ctx, base,
+		option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http client: %v", err)
 	}
+
+	//trans.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client

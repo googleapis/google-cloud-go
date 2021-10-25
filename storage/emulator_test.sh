@@ -19,25 +19,22 @@ set -eo pipefail
 # Display commands being run
 set -x
 
-STORAGE_EMULATOR_PORT=9000
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
-#export GCLOUD_TESTS_GOLANG_PROJECT_ID=emulator-test-project
-
-# Download the emulator
+# Get the docker image for the testbench
 DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
 DEFAULT_IMAGE_TAG='latest'
 DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
-CONTAINER_NAME=storage_emulator
+CONTAINER_NAME=storage_testbench
 docker pull $DOCKER_IMAGE
 
-# Start the emulator
-docker run --name $CONTAINER_NAME --rm -p $STORAGE_EMULATOR_PORT:$STORAGE_EMULATOR_PORT $DOCKER_IMAGE &
-echo "Running the Cloud Storage emulator: $STORAGE_EMULATOR_HOST";
+# Start the testbench
+docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
+echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST";
 
-# Stop the emulator & clean the environment variables
+# Stop the testbench & clean the environment variables
 function cleanup() {
-    echo "Cleanup emulator"
+    echo "Cleanup testbench"
     docker stop $CONTAINER_NAME
     unset STORAGE_EMULATOR_HOST;
 }
