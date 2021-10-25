@@ -17,7 +17,7 @@ package managedwriter
 import (
 	"context"
 
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -26,10 +26,10 @@ import (
 // stream offset (e.g. a default stream which allows simultaneous append streams).
 const NoStreamOffset int64 = -1
 
-// AppendResult tracks the status of a single row of data.
+// AppendResult tracks the status of a batch of data rows.
 type AppendResult struct {
 	// rowData contains the serialized row data.
-	rowData []byte
+	rowData [][]byte
 
 	ready chan struct{}
 
@@ -40,7 +40,7 @@ type AppendResult struct {
 	offset int64
 }
 
-func newAppendResult(data []byte) *AppendResult {
+func newAppendResult(data [][]byte) *AppendResult {
 	return &AppendResult{
 		ready:   make(chan struct{}),
 		rowData: data,
@@ -66,7 +66,7 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 // append request.
 type pendingWrite struct {
 	request *storagepb.AppendRowsRequest
-	results []*AppendResult
+	result  *AppendResult
 
 	// this is used by the flow controller.
 	reqSize int
@@ -78,11 +78,6 @@ type pendingWrite struct {
 // the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
 // streams, this should be managed by the user.
 func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
-
-	results := make([]*AppendResult, len(appends))
-	for k, r := range appends {
-		results[k] = newAppendResult(r)
-	}
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -93,7 +88,7 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 				},
 			},
 		},
-		results: results,
+		result: newAppendResult(appends),
 	}
 	if offset > 0 {
 		pw.request.Offset = &wrapperspb.Int64Value{Value: offset}
@@ -105,24 +100,12 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 	return pw
 }
 
-// markDone propagates finalization of an append request to associated
-// AppendResult references.
+// markDone propagates finalization of an append request to the associated
+// AppendResult.
 func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowController) {
-	curOffset := startOffset
-	for _, ar := range pw.results {
-		if err != nil {
-			ar.err = err
-			close(ar.ready)
-			continue
-		}
-
-		ar.offset = curOffset
-		// only advance curOffset if we were given a valid starting offset.
-		if startOffset >= 0 {
-			curOffset = curOffset + 1
-		}
-		close(ar.ready)
-	}
+	pw.result.err = err
+	pw.result.offset = startOffset
+	close(pw.result.ready)
 	// Clear the reference to the request.
 	pw.request = nil
 	// if there's a flow controller, signal release.  The only time this should be nil is when

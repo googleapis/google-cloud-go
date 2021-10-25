@@ -12,7 +12,11 @@
     "commitMessageAction": "update",
     "groupName": "all",
     "ignoreDeps": [
-        "google.golang.org/genproto"
+        "google.golang.org/genproto",
+        "google.golang.org/grpc"
+    ],
+    "ignorePaths": [
+        "**/snippets/**"
     ],
     "force": {
         "constraints": {

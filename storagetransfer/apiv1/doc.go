@@ -20,8 +20,6 @@
 // Transfers data from external data sources to a Google Cloud Storage bucket
 // or between Google Cloud Storage buckets.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.
@@ -87,7 +85,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210821"
+const versionClient = "20211019"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

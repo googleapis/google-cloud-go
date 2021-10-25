@@ -84,6 +84,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
 					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
+					{Name: "Cn", Type: Type{Base: JSON}, Position: line(15)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -105,6 +106,7 @@ func TestSQL(t *testing.T) {
   Ck ARRAY<STRING(MAX)>,
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
   Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
+  Cn JSON,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -183,6 +185,35 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"DROP INDEX Ia",
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: true,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&DropView{
+				Name:     "SingersView",
+				Position: line(1),
+			},
+			"DROP VIEW SingersView",
 			reparseDDL,
 		},
 		{
@@ -481,6 +512,34 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS: SelectFromJoin{
+								Type: InnerJoin,
+								LHS:  SelectFromTable{Table: "Table1"},
+								RHS:  SelectFromTable{Table: "Table2"},
+								On: ComparisonOp{
+									LHS: PathExp{"Table1", "A"},
+									Op:  Eq,
+									RHS: PathExp{"Table2", "A"},
+								},
+							},
+							RHS:   SelectFromTable{Table: "Table3"},
+							Using: []ID{"X"},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
 			reparseQuery,
 		},
 	}

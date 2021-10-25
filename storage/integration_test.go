@@ -49,10 +49,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -201,11 +203,11 @@ func initUIDsAndRand(t time.Time) {
 // testConfig returns the Client used to access GCS. testConfig skips
 // the current test if credentials are not available or when being run
 // in Short mode.
-func testConfig(ctx context.Context, t *testing.T) *Client {
+func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	client := config(ctx)
+	client := config(ctx, scopes...)
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
@@ -228,8 +230,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 }
 
 // config is like testConfig, but it doesn't need a *testing.T.
-func config(ctx context.Context) *Client {
-	ts := testutil.TokenSource(ctx, ScopeFullControl)
+func config(ctx context.Context, scopes ...string) *Client {
+	scopes = append(scopes, ScopeFullControl)
+	ts := testutil.TokenSource(ctx, scopes...)
 	if ts == nil {
 		return nil
 	}
@@ -263,6 +266,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	}
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
+	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
 	}
 	h.mustDeleteBucket(b)
 
@@ -329,6 +335,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	}
 	if attrs.LocationType == "" {
 		t.Error("got an empty LocationType")
+	}
+	if attrs.ProjectNumber == 0 {
+		t.Errorf("got a zero ProjectNumber")
 	}
 	h.mustDeleteBucket(b)
 }
@@ -639,13 +648,13 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
 	}
 
-	// Update PAP setting to unspecified should work and not affect UBLA setting.
-	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
+	// Update PAP setting to inherited should work and not affect UBLA setting.
+	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionInherited})
 	if err != nil {
 		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
 	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
 	}
 	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
 		t.Error("updating PublicAccessPrevention changed UBLA setting")
@@ -681,8 +690,8 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	if !attrs.UniformBucketLevelAccess.Enabled {
 		t.Error("updating UBLA: got UBLA not enabled, want enabled")
 	}
-	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	if attrs.PublicAccessPrevention != PublicAccessPreventionInherited {
+		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionInherited)
 	}
 }
 
@@ -769,6 +778,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -829,6 +839,7 @@ func TestIntegration_ObjectReadGRPC(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -893,6 +904,7 @@ func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -956,6 +968,7 @@ func TestIntegration_ObjectReadRelativeToEndGRPC(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadPartialContentGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -1009,6 +1022,7 @@ func TestIntegration_ObjectReadPartialContentGRPC(t *testing.T) {
 }
 
 func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -1041,6 +1055,240 @@ func TestIntegration_ConditionalDownloadGRPC(t *testing.T) {
 	}
 	if _, err := obj.If(Conditions{GenerationMatch: gen}).NewReader(ctx); err != nil {
 		t.Fatalf("Download failed: %v", err)
+	}
+}
+
+func TestIntegration_SimpleWriteGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	content := []byte("Hello, world this is a grpc request")
+	crc32c := crc32.Checksum(content, crc32cTable)
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+}
+
+func TestIntegration_CancelWriteGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
+	ctx := context.Background()
+
+	// Create an HTTP client to verify test and a gRPC client to test writing.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		// As insurance attempt to delete the object, ignore the error if it
+		// doesn't exist, because it wasn't made.
+		gobj.Delete(ctx)
+	}()
+
+	cctx, cancel := context.WithCancel(ctx)
+
+	w := gobj.NewWriter(cctx)
+	// Set a chunk size and send that amount of data to provoke a network call
+	// on the next Write that would fail due to context cancelation.
+	w.ChunkSize = googleapi.MinUploadChunkSize
+	content := make([]byte, w.ChunkSize)
+	_, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Cancel the Writer context before flushing.
+	// TODO: Add a test that writes at least a chunk before canceling part way through.
+	cancel()
+
+	// The next Write should return context.Canceled.
+	_, err = w.Write(content)
+	if !xerrors.Is(err, context.Canceled) {
+		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
+	}
+	// The Close should too.
+	err = w.Close()
+	if !xerrors.Is(err, context.Canceled) {
+		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
+	}
+
+	// Use HTTP client to ensure the object wasn't written.
+	if attrs, err := hc.Bucket(grpcBucketName).Object(name).Attrs(ctx); err == nil {
+		t.Fatalf("Expected Object to not be written, but got attrs: %+v", attrs)
+	}
+}
+
+func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+
+	crc32c := crc32.Checksum(content, crc32cTable)
+	w := gobj.NewWriter(ctx)
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hr, err := hc.Bucket(grpcBucketName).Object(name).NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
+	}
+}
+
+func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4963")
+	ctx := context.Background()
+
+	// Create an HTTP client to read test data and a gRPC client to test write
+	// with.
+	hc := testConfig(ctx, t)
+	defer hc.Close()
+	gc := testConfigGRPC(ctx, t)
+	defer gc.Close()
+
+	name := uidSpace.New()
+	gobj := gc.Bucket(grpcBucketName).Object(name)
+	defer func() {
+		if err := gobj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	// Use a larger blob to test multi-message logic. This is a little over 5MB.
+	content := bytes.Repeat([]byte("a"), 5<<20)
+	crc32c := crc32.Checksum(content, crc32cTable)
+
+	w := gobj.NewWriter(ctx)
+	w.SendCRC32C = true
+	w.CRC32C = crc32c
+	// Use a 1 MB chunk size.
+	w.ChunkSize = 1 << 20
+	w.ProgressFunc = func(p int64) {
+		t.Logf("%s: committed %d\n", t.Name(), p)
+	}
+	got, err := w.Write(content)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Flush the buffer to finish the upload.
+	if err := w.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	want := len(content)
+	if got != want {
+		t.Errorf("While writing got: %d want %d", got, want)
+	}
+
+	// Use HTTP client to read back the Object for verification.
+	hobj := hc.Bucket(grpcBucketName).Object(name)
+	hr, err := hobj.NewReader(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer hr.Close()
+
+	buf := make([]byte, want+4<<10)
+	b := bytes.NewBuffer(buf)
+	gotr, err := io.Copy(b, hr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotr != int64(want) {
+		t.Errorf("While reading got: %d want %d", gotr, want)
 	}
 }
 
@@ -1269,16 +1517,17 @@ func TestIntegration_Objects(t *testing.T) {
 	// Since a 429 or 5xx is hard to cause, we trigger a 416.
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
-	if err, ok := err.(*googleapi.Error); !ok {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
-		if err.Code != 416 {
-			t.Errorf("Code = %d; want %d", err.Code, 416)
+		if e.Code != 416 {
+			t.Errorf("Code = %d; want %d", e.Code, 416)
 		}
-		if len(err.Header) == 0 {
+		if len(e.Header) == 0 {
 			t.Error("Missing googleapi.Error.Header")
 		}
-		if len(err.Body) == 0 {
+		if len(e.Body) == 0 {
 			t.Error("Missing googleapi.Error.Body")
 		}
 	}
@@ -1770,7 +2019,8 @@ func TestIntegration_SignedURL(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Method = "GET"
 		opts.Expires = time.Now().Add(time.Hour)
-		u, err := SignedURL(bucketName, obj, &opts)
+
+		u, err := bkt.SignedURL(obj, &opts)
 		if err != nil {
 			t.Errorf("%s: SignedURL: %v", test.desc, err)
 			continue
@@ -1801,6 +2051,8 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+
+	bkt := client.Bucket(bucketName)
 
 	// TODO(deklerk): document how these were generated and their significance
 	encryptionKey := "AAryxNglNkXQY0Wa+h9+7BLSFMhCzPo22MtXUWjOBbI="
@@ -1842,7 +2094,6 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 	}
 	defer func() {
 		// Delete encrypted object.
-		bkt := client.Bucket(bucketName)
 		err := bkt.Object("csek.json").Delete(ctx)
 		if err != nil {
 			log.Printf("failed to deleted encrypted file: %v", err)
@@ -1855,7 +2106,7 @@ func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
 		opts.PrivateKey = jwtConf.PrivateKey
 		opts.Expires = time.Now().Add(time.Hour)
 
-		u, err := SignedURL(bucketName, "csek.json", test.opts)
+		u, err := bkt.SignedURL("csek.json", test.opts)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
@@ -1905,7 +2156,8 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 		Expires:        time.Now().Add(time.Hour),
 	}
 
-	u, err := SignedURL(bucketName, "", opts)
+	bkt := client.Bucket(bucketName)
+	u, err := bkt.SignedURL("", opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -2472,6 +2724,7 @@ func TestIntegration_BucketIAM(t *testing.T) {
 }
 
 func TestIntegration_RequesterPays(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4720")
 	// This test needs a second project and user (token source) to test
 	// all possibilities. Since we need these things for Firestore already,
 	// we use them here.
@@ -2542,8 +2795,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		if err == nil {
 			return 0
 		}
-		if err, ok := err.(*googleapi.Error); ok {
-			return err.Code
+		var e *googleapi.Error
+		if ok := xerrors.As(err, &e); ok {
+			return e.Code
 		}
 		return -1
 	}
@@ -2792,8 +3046,8 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	}
 
 	errCode := func(err error) int {
-		err2, ok := err.(*googleapi.Error)
-		if !ok {
+		var err2 *googleapi.Error
+		if ok := xerrors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
@@ -2975,14 +3229,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
-	// check for context cancellation instead.
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
+	if !xerrors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3634,7 +3886,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if readErr == context.Canceled {
+			if xerrors.Is(readErr, context.Canceled) {
 				return
 			}
 			break
@@ -3992,6 +4244,110 @@ func TestIntegration_Scopes(t *testing.T) {
 		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
 	}
 
+}
+
+func TestBucketSignURL(t *testing.T) {
+	ctx := context.Background()
+
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// We explictly send the key to the client to sign with the private key
+	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
+	defer clientWithCredentials.Close()
+
+	// Create another client to test the sign byte function as well
+	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	defer clientWithoutPrivateKey.Close()
+
+	jwt, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	// We can use any client to create the object
+	obj := "testBucketSignedURL"
+	contents := []byte("test")
+	if err := writeObject(ctx, clientWithoutPrivateKey.Bucket(bucketName).Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+
+	for _, test := range []struct {
+		desc   string
+		opts   SignedURLOptions
+		client *Client
+	}{
+		{
+			desc: "signing with the private key",
+			opts: SignedURLOptions{
+				Method:  "GET",
+				Expires: time.Now().Add(30 * time.Second),
+			},
+			client: clientWithCredentials,
+		},
+		{
+			desc: "signing with the default sign bytes func",
+			opts: SignedURLOptions{
+				Method:         "GET",
+				Expires:        time.Now().Add(30 * time.Second),
+				GoogleAccessID: jwt.Email,
+			},
+			client: clientWithoutPrivateKey,
+		},
+	} {
+		bkt := test.client.Bucket(bucketName)
+		url, err := bkt.SignedURL(obj, &test.opts)
+		if err != nil {
+			t.Fatalf("unable to create signed URL: %v", err)
+		}
+		resp, err := http.Get(url)
+		if err != nil {
+			t.Fatalf("http.Get(%q) errored: %q", url, err)
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != 200 {
+			t.Fatalf("resp.StatusCode = %v, want 200: %v", resp.StatusCode, err)
+		}
+		b, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			t.Fatalf("unable to read resp.Body: %v", err)
+		}
+		if !bytes.Equal(b, contents) {
+			t.Fatalf("got %q, want %q", b, contents)
+		}
+	}
+}
+
+func newTestClientWithExplicitCredentials(ctx context.Context, t *testing.T) *Client {
+	// By default we are authed with a token source, so don't have the context to
+	// read some of the fields from the keyfile
+	// Here we explictly send the key to the client
+	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	clientWithCredentials, err := newTestClient(ctx, option.WithCredentials(creds))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	if clientWithCredentials == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	return clientWithCredentials
+}
+
+func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (*google.Credentials, error) {
+	key := os.Getenv(envVar)
+	var opts []option.ClientOption
+	if len(scopes) > 0 {
+		opts = append(opts, option.WithScopes(scopes...))
+	}
+	if key != "" {
+		opts = append(opts, option.WithCredentialsFile(key))
+	}
+	return transport.Creds(ctx, opts...)
 }
 
 type testHelper struct {

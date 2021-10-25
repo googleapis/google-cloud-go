@@ -257,11 +257,22 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	}
 
 	// Test that setting PublicAccessPrevention to "unspecified" leads to the
-	// setting being propagated in the proto.
+	// inherited setting being propagated in the proto.
 	attrs.PublicAccessPrevention = PublicAccessPreventionUnspecified
 	got = attrs.toRawBucket()
 	want.IamConfiguration = &raw.BucketIamConfiguration{
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
+
+	// Test that setting PublicAccessPrevention to "inherited" leads to the
+	// setting being propagated in the proto.
+	attrs.PublicAccessPrevention = PublicAccessPreventionInherited
+	got = attrs.toRawBucket()
+	want.IamConfiguration = &raw.BucketIamConfiguration{
+		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -274,7 +285,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		UniformBucketLevelAccess: &raw.BucketIamConfigurationUniformBucketLevelAccess{
 			Enabled: true,
 		},
-		PublicAccessPrevention: "unspecified",
+		PublicAccessPrevention: "inherited",
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
@@ -642,10 +653,11 @@ func TestNewBucket(t *testing.T) {
 		Acl: []*raw.BucketAccessControl{
 			{Bucket: "name", Role: "READER", Email: "joe@example.com", Entity: "allUsers"},
 		},
-		LocationType: "dual-region",
-		Encryption:   &raw.BucketEncryption{DefaultKmsKeyName: "key"},
-		Logging:      &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website:      &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		LocationType:  "dual-region",
+		Encryption:    &raw.BucketEncryption{DefaultKmsKeyName: "key"},
+		Logging:       &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:       &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		ProjectNumber: 123231313,
 	}
 	want := &BucketAttrs{
 		Name:                  "name",
@@ -695,6 +707,7 @@ func TestNewBucket(t *testing.T) {
 		ACL:              []ACLRule{{Entity: "allUsers", Role: RoleReader, Email: "joe@example.com"}},
 		DefaultObjectACL: nil,
 		LocationType:     "dual-region",
+		ProjectNumber:    123231313,
 	}
 	got, err := newBucket(rb)
 	if err != nil {

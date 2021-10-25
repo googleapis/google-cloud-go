@@ -40,6 +40,7 @@ func handleNack(_ *pubsub.Message) error {
 type pslAckHandler struct {
 	ackh        wire.AckConsumer
 	msg         *pubsub.Message
+	partition   int
 	nackh       NackHandler
 	subInstance *subscriberInstance
 }
@@ -58,6 +59,11 @@ func (ah *pslAckHandler) OnNack() {
 		return
 	}
 
+	// Ignore nacks for partitions that have been assigned away.
+	if !ah.subInstance.wireSub.PartitionActive(ah.partition) {
+		return
+	}
+
 	err := ah.nackh(ah.msg)
 	if err != nil {
 		// If the NackHandler returns an error, shut down the subscriber client.
@@ -72,7 +78,7 @@ func (ah *pslAckHandler) OnNack() {
 // wireSubscriberFactory is a factory for creating wire subscribers, which can
 // be overridden with a mock in unit tests.
 type wireSubscriberFactory interface {
-	New(context.Context, wire.MessageReceiverFunc) (wire.Subscriber, error)
+	New(context.Context, wire.MessageReceiverFunc, wire.ReassignmentHandlerFunc) (wire.Subscriber, error)
 }
 
 type wireSubscriberFactoryImpl struct {
@@ -82,8 +88,8 @@ type wireSubscriberFactoryImpl struct {
 	options      []option.ClientOption
 }
 
-func (f *wireSubscriberFactoryImpl) New(ctx context.Context, receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
-	return wire.NewSubscriber(ctx, f.settings, receiver, f.region, f.subscription.String(), f.options...)
+func (f *wireSubscriberFactoryImpl) New(ctx context.Context, receiver wire.MessageReceiverFunc, onReassignment wire.ReassignmentHandlerFunc) (wire.Subscriber, error) {
+	return wire.NewSubscriber(ctx, f.settings, receiver, onReassignment, f.region, f.subscription.String(), f.options...)
 }
 
 type messageReceiverFunc = func(context.Context, *pubsub.Message)
@@ -116,7 +122,7 @@ func newSubscriberInstance(recvCtx, clientCtx context.Context, factory wireSubsc
 	// cancelled, the gRPC streams will be disconnected and the subscriber will
 	// not be able to process acks and commit the final cursor offset. Use the
 	// context from NewSubscriberClient (clientCtx) instead.
-	wireSub, err := factory.New(clientCtx, subInstance.onMessage)
+	wireSub, err := factory.New(clientCtx, subInstance.onMessage, subInstance.onReassignment)
 	if err != nil {
 		return nil, err
 	}
@@ -129,6 +135,13 @@ func newSubscriberInstance(recvCtx, clientCtx context.Context, factory wireSubsc
 		subInstance.settings.NackHandler = handleNack
 	}
 	return subInstance, nil
+}
+
+func (si *subscriberInstance) onReassignment(before, after wire.PartitionSet) error {
+	if si.settings.ReassignmentHandler != nil {
+		return si.settings.ReassignmentHandler(before.SortedInts(), after.SortedInts())
+	}
+	return nil
 }
 
 func (si *subscriberInstance) transformMessage(in *wire.ReceivedMessage, out *pubsub.Message) error {
@@ -147,6 +160,7 @@ func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	pslAckh := &pslAckHandler{
 		ackh:        msg.Ack,
 		nackh:       si.settings.NackHandler,
+		partition:   msg.Partition,
 		subInstance: si,
 	}
 	psMsg := ipubsub.NewMessage(pslAckh)
@@ -256,7 +270,7 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 	if err != nil {
 		return nil, err
 	}
-	region, err := wire.ZoneToRegion(subscriptionPath.Zone)
+	region, err := wire.LocationToRegion(subscriptionPath.Location)
 	if err != nil {
 		return nil, err
 	}

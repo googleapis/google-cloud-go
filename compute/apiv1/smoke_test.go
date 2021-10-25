@@ -19,7 +19,16 @@ package compute
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
+
+	"google.golang.org/api/option"
+
+	"cloud.google.com/go/internal"
+	"github.com/googleapis/gax-go/v2"
 
 	"github.com/google/go-cmp/cmp"
 
@@ -564,11 +573,16 @@ func TestCapitalLetter(t *testing.T) {
 		t.Error(err)
 	}
 	defer func() {
-		_, err := c.Delete(ctx,
-			&computepb.DeleteFirewallRequest{
-				Project:  projectId,
-				Firewall: name,
-			})
+		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			_, err = c.Delete(timeoutCtx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			return err == nil, err
+		})
 		if err != nil {
 			t.Error(err)
 		}
@@ -582,5 +596,37 @@ func TestCapitalLetter(t *testing.T) {
 	}
 	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
+	}
+}
+
+func TestHeaders(t *testing.T) {
+	ctx := context.Background()
+
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		contentType := r.Header.Get("Content-Type")
+		xGoog := r.Header.Get("X-Goog-Api-Client")
+		if contentType != "application/json" {
+			t.Fatalf("Content-Type header was %s, expected `application/json`.", contentType)
+		}
+		if !strings.Contains(xGoog, "rest/") {
+			t.Fatal("X-Goog-Api-Client header doesn't contain `rest/`")
+		}
+	}))
+	defer svr.Close()
+	opts := []option.ClientOption{
+		option.WithEndpoint(svr.URL),
+		option.WithoutAuthentication(),
+	}
+	c, err := NewAcceleratorTypesRESTClient(ctx, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = c.Get(ctx, &computepb.GetAcceleratorTypeRequest{
+		AcceleratorType: "test",
+		Project:         "test",
+		Zone:            "test",
+	})
+	if err != nil {
+		return
 	}
 }

@@ -415,13 +415,14 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // partitions.
 type multiPartitionSubscriber struct {
 	// Immutable after creation.
-	subscribers []*singlePartitionSubscriber
+	subscribers map[int]*singlePartitionSubscriber
 
 	apiClientService
 }
 
 func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
 	ms := &multiPartitionSubscriber{
+		subscribers:      make(map[int]*singlePartitionSubscriber),
 		apiClientService: apiClientService{clients: allClients},
 	}
 	ms.init()
@@ -429,7 +430,7 @@ func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartit
 	for _, partition := range subFactory.settings.Partitions {
 		subscriber := subFactory.New(partition)
 		ms.unsafeAddServices(subscriber)
-		ms.subscribers = append(ms.subscribers, subscriber)
+		ms.subscribers[partition] = subscriber
 	}
 	return ms
 }
@@ -445,13 +446,23 @@ func (ms *multiPartitionSubscriber) Terminate() {
 	}
 }
 
+// PartitionActive returns whether the partition is active.
+func (ms *multiPartitionSubscriber) PartitionActive(partition int) bool {
+	_, exists := ms.subscribers[partition]
+	return exists
+}
+
+// ReassignmentHandlerFunc receives a partition assignment change.
+type ReassignmentHandlerFunc func(before, after PartitionSet) error
+
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
 // listen to its assigned partition numbers and dynamically add/remove
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
-	subFactory *singlePartitionSubscriberFactory
-	assigner   *assigner
+	reassignmentHandler ReassignmentHandlerFunc
+	subFactory          *singlePartitionSubscriberFactory
+	assigner            *assigner
 
 	// Fields below must be guarded with mu.
 	// Subscribers keyed by partition number. Updated as assignments change.
@@ -460,11 +471,13 @@ type assigningSubscriber struct {
 	apiClientService
 }
 
-func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
+func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, reassignmentHandler ReassignmentHandlerFunc,
+	genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
-		apiClientService: apiClientService{clients: allClients},
-		subFactory:       subFactory,
-		subscribers:      make(map[int]*singlePartitionSubscriber),
+		apiClientService:    apiClientService{clients: allClients},
+		reassignmentHandler: reassignmentHandler,
+		subFactory:          subFactory,
+		subscribers:         make(map[int]*singlePartitionSubscriber),
 	}
 	as.init()
 
@@ -477,9 +490,14 @@ func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.Partit
 	return as, nil
 }
 
-func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
-	removedSubscribers, err := as.doHandleAssignment(partitions)
+func (as *assigningSubscriber) handleAssignment(nextPartitions PartitionSet) error {
+	previousPartitions, removedSubscribers, err := as.doHandleAssignment(nextPartitions)
 	if err != nil {
+		return err
+	}
+
+	// Notify the user reassignment handler.
+	if err := as.reassignmentHandler(previousPartitions, nextPartitions); err != nil {
 		return err
 	}
 
@@ -492,17 +510,23 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	return nil
 }
 
-func (as *assigningSubscriber) doHandleAssignment(partitions partitionSet) ([]*singlePartitionSubscriber, error) {
+// Returns the previous set of partitions and removed subscribers.
+func (as *assigningSubscriber) doHandleAssignment(nextPartitions PartitionSet) (PartitionSet, []*singlePartitionSubscriber, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()
 
+	var previousPartitions []int
+	for partition := range as.subscribers {
+		previousPartitions = append(previousPartitions, partition)
+	}
+
 	// Handle new partitions.
-	for _, partition := range partitions.Ints() {
+	for _, partition := range nextPartitions.Ints() {
 		if _, exists := as.subscribers[partition]; !exists {
 			subscriber := as.subFactory.New(partition)
 			if err := as.unsafeAddServices(subscriber); err != nil {
 				// Occurs when the assigningSubscriber is stopping/stopped.
-				return nil, err
+				return nil, nil, err
 			}
 			as.subscribers[partition] = subscriber
 		}
@@ -511,7 +535,7 @@ func (as *assigningSubscriber) doHandleAssignment(partitions partitionSet) ([]*s
 	// Handle removed partitions.
 	var removedSubscribers []*singlePartitionSubscriber
 	for partition, subscriber := range as.subscribers {
-		if !partitions.Contains(partition) {
+		if !nextPartitions.Contains(partition) {
 			// Ignore unacked messages from this point on to avoid conflicting with
 			// the commits of the new subscriber that will be assigned this partition.
 			subscriber.Terminate()
@@ -523,7 +547,7 @@ func (as *assigningSubscriber) doHandleAssignment(partitions partitionSet) ([]*s
 			delete(as.subscribers, partition)
 		}
 	}
-	return removedSubscribers, nil
+	return NewPartitionSet(previousPartitions), removedSubscribers, nil
 }
 
 // Terminate shuts down all singlePartitionSubscribers without waiting for
@@ -537,6 +561,15 @@ func (as *assigningSubscriber) Terminate() {
 	}
 }
 
+// PartitionActive returns whether the partition is still active.
+func (as *assigningSubscriber) PartitionActive(partition int) bool {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+
+	_, exists := as.subscribers[partition]
+	return exists
+}
+
 // Subscriber is the client interface exported from this package for receiving
 // messages.
 type Subscriber interface {
@@ -545,10 +578,12 @@ type Subscriber interface {
 	Stop()
 	WaitStopped() error
 	Terminate()
+	PartitionActive(int) bool
 }
 
 // NewSubscriber creates a new client for receiving messages.
-func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver MessageReceiverFunc, region, subscriptionPath string, opts ...option.ClientOption) (Subscriber, error) {
+func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver MessageReceiverFunc, reassignmentHandler ReassignmentHandlerFunc,
+	region, subscriptionPath string, opts ...option.ClientOption) (Subscriber, error) {
 	if err := ValidateRegion(region); err != nil {
 		return nil, err
 	}
@@ -588,5 +623,5 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 		return nil, err
 	}
 	allClients = append(allClients, partitionClient)
-	return newAssigningSubscriber(allClients, partitionClient, uuid.NewRandom, subFactory)
+	return newAssigningSubscriber(allClients, partitionClient, reassignmentHandler, uuid.NewRandom, subFactory)
 }

@@ -82,7 +82,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210821"
+const versionClient = "20211019"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -109,6 +109,7 @@ func checkDisableDeadlines() (bool, error) {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/bigquery",
+		"https://www.googleapis.com/auth/bigquery.insertdata",
 		"https://www.googleapis.com/auth/bigquery.readonly",
 		"https://www.googleapis.com/auth/cloud-platform",
 	}

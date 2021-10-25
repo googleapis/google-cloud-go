@@ -41,13 +41,17 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"golang.org/x/oauth2/google"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -96,6 +100,8 @@ type Client struct {
 	scheme string
 	// ReadHost is the default host used on the reader.
 	readHost string
+	// May be nil.
+	creds *google.Credentials
 
 	// gc is an optional gRPC-based, GAPIC client.
 	//
@@ -110,6 +116,7 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	var creds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -120,10 +127,18 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		// Prepend default options to avoid overriding options passed by the user.
-		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
+		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, opts...)
 
 		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
+
+		// Don't error out here. The user may have passed in their own HTTP
+		// client which does not auth with ADC or other common conventions.
+		c, err := transport.Creds(ctx, opts...)
+		if err == nil {
+			creds = c
+			opts = append(opts, internaloption.WithCredentials(creds))
+		}
 	} else {
 		var hostURL *url.URL
 
@@ -170,6 +185,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		raw:      rawService,
 		scheme:   u.Scheme,
 		readHost: u.Host,
+		creds:    creds,
 	}, nil
 }
 
@@ -208,6 +224,7 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	c.creds = nil
 	if c.gc != nil {
 		return c.gc.Close()
 	}
@@ -394,6 +411,23 @@ type SignedURLOptions struct {
 	Scheme SigningScheme
 }
 
+func (opts *SignedURLOptions) clone() *SignedURLOptions {
+	return &SignedURLOptions{
+		GoogleAccessID:  opts.GoogleAccessID,
+		SignBytes:       opts.SignBytes,
+		PrivateKey:      opts.PrivateKey,
+		Method:          opts.Method,
+		Expires:         opts.Expires,
+		ContentType:     opts.ContentType,
+		Headers:         opts.Headers,
+		QueryParameters: opts.QueryParameters,
+		MD5:             opts.MD5,
+		Style:           opts.Style,
+		Insecure:        opts.Insecure,
+		Scheme:          opts.Scheme,
+	}
+}
+
 var (
 	tabRegex = regexp.MustCompile(`[\t]+`)
 	// I was tempted to call this spacex. :)
@@ -507,11 +541,11 @@ func v4SanitizeHeaders(hdrs []string) []string {
 	return sanitizedHeaders
 }
 
-// SignedURL returns a URL for the specified object. Signed URLs allow
-// the users access to a restricted resource for a limited time without having a
-// Google account or signing in. For more information about the signed
-// URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
-func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
+// SignedURL returns a URL for the specified object. Signed URLs allow anyone
+// access to a restricted resource for a limited time without needing a
+// Google account or signing in. For more information about signed URLs, see
+// https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
 		return "", err
@@ -520,13 +554,13 @@ func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error) {
 	switch opts.Scheme {
 	case SigningSchemeV2:
 		opts.Headers = v2SanitizeHeaders(opts.Headers)
-		return signedURLV2(bucket, name, opts)
+		return signedURLV2(bucket, object, opts)
 	case SigningSchemeV4:
 		opts.Headers = v4SanitizeHeaders(opts.Headers)
-		return signedURLV4(bucket, name, opts, now)
+		return signedURLV4(bucket, object, opts, now)
 	default: // SigningSchemeDefault
 		opts.Headers = v2SanitizeHeaders(opts.Headers)
-		return signedURLV2(bucket, name, opts)
+		return signedURLV2(bucket, object, opts)
 	}
 }
 
@@ -866,7 +900,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	var obj *raw.Object
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -966,7 +1001,8 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	var obj *raw.Object
 	setClientHeader(call.Header())
 	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
-	if e, ok := err.(*googleapi.Error); ok && e.Code == http.StatusNotFound {
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -1029,13 +1065,9 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	// Encryption doesn't apply to Delete.
 	setClientHeader(call.Header())
 	err := runWithRetry(ctx, func() error { return call.Do() })
-	switch e := err.(type) {
-	case nil:
-		return nil
-	case *googleapi.Error:
-		if e.Code == http.StatusNotFound {
-			return ErrObjectNotExist
-		}
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return ErrObjectNotExist
 	}
 	return err
 }
@@ -1388,9 +1420,8 @@ func newObject(o *raw.Object) *ObjectAttrs {
 	}
 }
 
-func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
-	o := r.GetResource()
-	if r == nil || o == nil {
+func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
+	if o == nil {
 		return nil
 	}
 	return &ObjectAttrs{
@@ -1413,7 +1444,7 @@ func newObjectFromProto(r *storagepb.WriteObjectResponse) *ObjectAttrs {
 		Generation:              o.Generation,
 		Metageneration:          o.Metageneration,
 		StorageClass:            o.StorageClass,
-		CustomerKeySHA256:       o.GetCustomerEncryption().GetKeySha256(),
+		CustomerKeySHA256:       string(o.GetCustomerEncryption().GetKeySha256Bytes()),
 		KMSKeyName:              o.GetKmsKey(),
 		Created:                 convertProtoTime(o.GetCreateTime()),
 		Deleted:                 convertProtoTime(o.GetDeleteTime()),
@@ -1769,7 +1800,12 @@ func setEncryptionHeaders(headers http.Header, key []byte, copySource bool) erro
 // ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	r := c.raw.Projects.ServiceAccount.Get(projectID)
-	res, err := r.Context(ctx).Do()
+	var res *raw.ServiceAccount
+	var err error
+	err = runWithRetry(ctx, func() error {
+		res, err = r.Context(ctx).Do()
+		return err
+	})
 	if err != nil {
 		return "", err
 	}
@@ -1787,4 +1823,64 @@ func bucketResourceName(p, b string) string {
 // bucket ID, which is the simple Bucket name typical of the v1 API.
 func parseBucketName(b string) string {
 	return strings.TrimPrefix(b, "projects/_/buckets/")
+}
+
+// setConditionProtoField uses protobuf reflection to set named condition field
+// to the given condition value if supported on the protobuf message.
+//
+// This is an experimental API and not intended for public use.
+func setConditionProtoField(m protoreflect.Message, f string, v int64) bool {
+	fields := m.Descriptor().Fields()
+	if rf := fields.ByName(protoreflect.Name(f)); rf != nil {
+		m.Set(rf, protoreflect.ValueOfInt64(v))
+		return true
+	}
+
+	return false
+}
+
+// applyCondsProto validates and attempts to set the conditions on a protobuf
+// message using protobuf reflection.
+//
+// This is an experimental API and not intended for public use.
+func applyCondsProto(method string, gen int64, conds *Conditions, msg proto.Message) error {
+	rmsg := msg.ProtoReflect()
+
+	if gen >= 0 {
+		if !setConditionProtoField(rmsg, "generation", gen) {
+			return fmt.Errorf("storage: %s: generation not supported", method)
+		}
+	}
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+
+	switch {
+	case conds.GenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_match", conds.GenerationMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationMatch not supported", method)
+		}
+	case conds.GenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_generation_not_match", conds.GenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifGenerationNotMatch not supported", method)
+		}
+	case conds.DoesNotExist:
+		if !setConditionProtoField(rmsg, "if_generation_match", int64(0)) {
+			return fmt.Errorf("storage: %s: DoesNotExist not supported", method)
+		}
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_match", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_not_match", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
+		}
+	}
+	return nil
 }
