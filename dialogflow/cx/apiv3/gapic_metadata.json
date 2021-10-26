@@ -59,6 +59,44 @@
         }
       }
     },
+    "Changelogs": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ChangelogsClient",
+          "rpcs": {
+            "GetChangelog": {
+              "methods": [
+                "GetChangelog"
+              ]
+            },
+            "ListChangelogs": {
+              "methods": [
+                "ListChangelogs"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Deployments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DeploymentsClient",
+          "rpcs": {
+            "GetDeployment": {
+              "methods": [
+                "GetDeployment"
+              ]
+            },
+            "ListDeployments": {
+              "methods": [
+                "ListDeployments"
+              ]
+            }
+          }
+        }
+      }
+    },
     "EntityTypes": {
       "clients": {
         "grpc": {
@@ -106,6 +144,11 @@
             "DeleteEnvironment": {
               "methods": [
                 "DeleteEnvironment"
+              ]
+            },
+            "DeployFlow": {
+              "methods": [
+                "DeployFlow"
               ]
             },
             "GetEnvironment": {

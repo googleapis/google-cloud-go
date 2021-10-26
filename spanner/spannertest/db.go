@@ -45,6 +45,7 @@ type database struct {
 	lastTS  time.Time // last commit timestamp
 	tables  map[spansql.ID]*table
 	indexes map[spansql.ID]struct{} // only record their existence
+	views   map[spansql.ID]struct{} // only record their existence
 
 	rwMu sync.Mutex // held by read-write transactions
 }
@@ -55,10 +56,11 @@ type table struct {
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
 	cols      []colInfo
-	colIndex  map[spansql.ID]int // col name to index
-	origIndex map[spansql.ID]int // original index of each column upon construction
-	pkCols    int                // number of primary key columns (may be 0)
-	pkDesc    []bool             // whether each primary key column is in descending order
+	colIndex  map[spansql.ID]int         // col name to index
+	origIndex map[spansql.ID]int         // original index of each column upon construction
+	pkCols    int                        // number of primary key columns (may be 0)
+	pkDesc    []bool                     // whether each primary key column is in descending order
+	rdw       *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -249,6 +251,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	if d.indexes == nil {
 		d.indexes = make(map[spansql.ID]struct{})
 	}
+	if d.views == nil {
+		d.views = make(map[spansql.ID]struct{})
+	}
 
 	switch stmt := stmt.(type) {
 	default:
@@ -297,6 +302,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 				return status.Newf(codes.InvalidArgument, "primary key column %q not in table", col)
 			}
 		}
+		t.rdw = stmt.RowDeletionPolicy
 		d.tables[stmt.Name] = t
 		return nil
 	case *spansql.CreateIndex:
@@ -304,6 +310,14 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.AlreadyExists, "index %s already exists", stmt.Name)
 		}
 		d.indexes[stmt.Name] = struct{}{}
+		return nil
+	case *spansql.CreateView:
+		if !stmt.OrReplace {
+			if _, ok := d.views[stmt.Name]; ok {
+				return status.Newf(codes.AlreadyExists, "view %s already exists", stmt.Name)
+			}
+		}
+		d.views[stmt.Name] = struct{}{}
 		return nil
 	case *spansql.DropTable:
 		if _, ok := d.tables[stmt.Name]; !ok {
@@ -317,6 +331,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.NotFound, "no index named %s", stmt.Name)
 		}
 		delete(d.indexes, stmt.Name)
+		return nil
+	case *spansql.DropView:
+		if _, ok := d.views[stmt.Name]; !ok {
+			return status.Newf(codes.NotFound, "no view named %s", stmt.Name)
+		}
+		delete(d.views, stmt.Name)
 		return nil
 	case *spansql.AlterTable:
 		t, ok := d.tables[stmt.Name]
@@ -338,6 +358,21 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return nil
 		case spansql.AlterColumn:
 			if st := t.alterColumn(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.AddRowDeletionPolicy:
+			if st := t.addRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.ReplaceRowDeletionPolicy:
+			if st := t.replaceRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.DropRowDeletionPolicy:
+			if st := t.dropRowDeletionPolicy(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -802,6 +837,38 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 			}
 		}
 	}
+	return nil
+}
+
+func (t *table) addRowDeletionPolicy(ard spansql.AddRowDeletionPolicy) *status.Status {
+	_, ok := t.colIndex[ard.RowDeletionPolicy.Column]
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unknown column %q", ard.RowDeletionPolicy.Column)
+	}
+	if t.rdw != nil {
+		return status.New(codes.InvalidArgument, "table already has a row deletion policy")
+	}
+	t.rdw = &ard.RowDeletionPolicy
+	return nil
+}
+
+func (t *table) replaceRowDeletionPolicy(ard spansql.ReplaceRowDeletionPolicy) *status.Status {
+	_, ok := t.colIndex[ard.RowDeletionPolicy.Column]
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unknown column %q", ard.RowDeletionPolicy.Column)
+	}
+	if t.rdw == nil {
+		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
+	}
+	t.rdw = &ard.RowDeletionPolicy
+	return nil
+}
+
+func (t *table) dropRowDeletionPolicy(ard spansql.DropRowDeletionPolicy) *status.Status {
+	if t.rdw == nil {
+		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
+	}
+	t.rdw = nil
 	return nil
 }
 

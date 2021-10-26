@@ -177,28 +177,24 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 	return nil
 }
 
-// BatchCommit is used to commit one or more PendingStream streams belonging to the same table
-// as a single transaction.  Streams must be finalized before committing.
+// BatchCommitWriteStreams atomically commits a group of PENDING streams that belong to the same
+// parent table.
 //
-// Format of the parentTable is: projects/{project}/datasets/{dataset}/tables/{table} and the utility
-// function TableParentFromStreamName can be used to derive this from a Stream's name.
-//
-// If the returned response contains stream errors, this indicates that the batch commit failed and no data was
-// committed.
-//
-// TODO: currently returns the raw response.  Determine how we want to surface StreamErrors.
-func (c *Client) BatchCommit(ctx context.Context, parentTable string, streamNames []string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+// Streams must be finalized before commit and cannot be committed multiple
+// times. Once a stream is committed, data in the stream becomes available
+// for read operations.
+func (c *Client) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+	return c.rawClient.BatchCommitWriteStreams(ctx, req, opts...)
+}
 
-	// determine table from first streamName, as all must share the same table.
-	if len(streamNames) <= 0 {
-		return nil, fmt.Errorf("no streamnames provided")
-	}
-
-	req := &storagepb.BatchCommitWriteStreamsRequest{
-		Parent:       TableParentFromStreamName(streamNames[0]),
-		WriteStreams: streamNames,
-	}
-	return c.rawClient.BatchCommitWriteStreams(ctx, req)
+// CreateWriteStream creates a write stream to the given table.
+// Additionally, every table has a special stream named ‘_default’
+// to which data can be written. This stream doesn’t need to be created using
+// CreateWriteStream. It is a stream that can be used simultaneously by any
+// number of clients. Data written to this stream is considered committed as
+// soon as an acknowledgement is received.
+func (c *Client) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	return c.rawClient.CreateWriteStream(ctx, req, opts...)
 }
 
 // getWriteStream returns information about a given write stream.
