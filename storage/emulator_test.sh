@@ -27,7 +27,7 @@ DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 CONTAINER_NAME=storage_testbench
 
 # Get the docker image for the testbench
-docker pull $DOCKER_IMAGE
+sudo docker pull $DOCKER_IMAGE
 
 # Start the testbench
 # Note: --net=host makes the container bind directly to the Docker host’s network, 
@@ -35,17 +35,27 @@ docker pull $DOCKER_IMAGE
 # would be captured differently and cause unexpected test behaviour.
 # The host networking driver works only on Linux hosts.
 # See more about using host networking: https://docs.docker.com/network/host/
-docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
-echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST";
+sudo docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
+echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST"
+
+# Check that the server is running - retry several times to allow for start-up time
+response=$(curl -w "%{http_code}\n" $STORAGE_EMULATOR_HOST --retry-connrefused --retry 5 -o /dev/null) 
+
+if [[ $response != 200 ]]
+then
+    echo "Testbench server did not start correctly"
+    exit 1
+fi
 
 # Stop the testbench & clean the environment variables
 function cleanup() {
     echo "Cleanup testbench"
-    docker stop $CONTAINER_NAME
+    sudo docker stop $CONTAINER_NAME
     unset STORAGE_EMULATOR_HOST;
 }
 trap cleanup EXIT
 
+# Run tests
 # the regex ^[^23] skips conformance tests with ids 2 and 3, which are non-idempotent and do not yet pass
 # TODO: remove regex to skip tests once retries are aligned
 go test -v -timeout 10m ./ -run=TestRetryConformance/^[^23] -short 2>&1 | tee -a sponge_log.log
