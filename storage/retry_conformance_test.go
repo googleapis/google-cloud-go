@@ -227,7 +227,7 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 
 	// Create wrapped client which will send emulator instructions
 	et.host.Path = ""
-	client, err := wrappedClient(et.T, et.host.String(), et.id)
+	client, err := wrappedClient(et.T, et.id)
 	if err != nil {
 		et.Fatalf("creating wrapped client: %v", err)
 	}
@@ -297,17 +297,15 @@ func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, err
 }
 
 // Create custom client that sends instructions to the storage testbench Retry Test API
-func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
+func wrappedClient(t *testing.T, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 
-	trans, err := htransport.NewTransport(ctx, base,
-		option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
+	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http client: %v", err)
 	}
 
-	//trans.(*http.Transport).TLSClientConfig.InsecureSkipVerify = true
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client
@@ -315,6 +313,7 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
+	// STORAGE_EMULATOR_HOST takes care of setting the correct endpoint
 	client, err := NewClient(ctx, option.WithHTTPClient(&c))
 	return client, err
 }
