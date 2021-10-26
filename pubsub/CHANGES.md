@@ -1,5 +1,14 @@
 # Changes
 
+### [1.17.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.0...pubsub/v1.17.1) (2021-10-25)
+
+
+### Bug Fixes
+
+* **pubsub:** add methods to allow retrieval of topic/sub config names ([#4953](https://www.github.com/googleapis/google-cloud-go/issues/4953)) ([bff5b1c](https://www.github.com/googleapis/google-cloud-go/commit/bff5b1ca331a0d193407a0f3eb501772cbb8ba78))
+* **pubsub:** prevent draining error return for Receive ([#4733](https://www.github.com/googleapis/google-cloud-go/issues/4733)) ([c6d5189](https://www.github.com/googleapis/google-cloud-go/commit/c6d51891649d8169089a0a2b7365ea54f991af56))
+* **pubsub:** tag ctx in iterator with subscription for opencensus ([#5011](https://www.github.com/googleapis/google-cloud-go/issues/5011)) ([cdf9588](https://www.github.com/googleapis/google-cloud-go/commit/cdf958864e278bb394cc548cb5f15ad08859f347))
+
 ## [1.17.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.16.0...pubsub/v1.17.0) (2021-09-08)
 
 
