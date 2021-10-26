@@ -1566,21 +1566,24 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 	return resp.NextPageToken, nil
 }
 
-// RPO configures the turbo replication feature
-// See https://cloud.google.com/storage/docs/managing-turbo-replication for more information
+// RPO (Recovery Point Objective) configures the turbo replication feature. See
+// https://cloud.google.com/storage/docs/managing-turbo-replication for more information.
 type RPO int
 
 const (
-	// See: https://cloud.google.com/storage/docs/managing-turbo-replication
-
-	// RPOUnknown is a zero value, used only if this field is not set in a call to GCS
+	// RPOUnknown is a zero value. It may be returned from bucket.Attrs() if RPO
+	// is not present in the bucket metadata, that is, the bucket is not dual-region.
+	// This value is also used if the RPO field is not set in a call to GCS.
 	RPOUnknown RPO = iota
 
-	// RPODefault is used to reset RPO on an existing bucket with RPO set to RPOAsyncTurbo.
-	// Otherwise RPODefault is equivalent to RPOUnknown, and is always ignored
+	// RPODefault represents default replication. It is used to reset RPO on an
+	// existing bucket  that has this field set to RPOAsyncTurbo. Otherwise it
+	// is equivalent to RPOUnknown, and is always ignored. This value is valid
+	// for dual- or multi-region buckets.
 	RPODefault
-	// RPOAsyncTurbo is used to enable Turbo Replication on a bucket.
-	// The bucket must be dual-region
+
+	// RPOAsyncTurbo represents turbo replication and is used to enable Turbo
+	// Replication on a bucket. This value is only valid for dual-region buckets.
 	RPOAsyncTurbo
 
 	rpoUnknown    string = ""
