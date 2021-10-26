@@ -670,8 +670,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		}
 		bm.msg = nil // release bm.msg for GC
 		_, span := t.tracer.Start(bm.ctx, "publish message bundle")
-		span.SetAttributes(semconv.MessagingSystemKey.String("pubsub"), semconv.MessagingDestinationKey.String(t.String()),
-			semconv.MessagingDestinationKindTopic)
 		defer span.End()
 	}
 	var res *pb.PublishResponse
