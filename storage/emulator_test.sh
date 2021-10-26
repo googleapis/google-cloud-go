@@ -41,5 +41,5 @@ function cleanup() {
 trap cleanup EXIT
 
 # the regex ^[^23] skips conformance tests with ids 2 and 3, which are non-idempotent and do not yet pass
-# TODO: remove regent retries are aligned
+# TODO: remove regex to skip tests once retries are aligned
 go test -v -timeout 10m ./ -run=TestRetryConformance/^[^23] -short 2>&1 | tee -a sponge_log.log
