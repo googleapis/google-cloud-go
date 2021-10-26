@@ -193,9 +193,13 @@ func defaultClientOptions(region string) []option.ClientOption {
 }
 
 func streamClientOptions(region string) []option.ClientOption {
-	// To ensure most users don't hit the limit of 100 streams per connection, if
-	// they have a high number of topic partitions.
-	return append(defaultClientOptions(region), option.WithGRPCConnectionPool(8))
+	return append(defaultClientOptions(region),
+		// To ensure most users don't hit the limit of 100 streams per connection, if
+		// they have a high number of topic partitions.
+		option.WithGRPCConnectionPool(8),
+		// Stream reconnections must be handled here in order to reinitialize state,
+		// rather than in grpc-go.
+		option.WithGRPCDialOption(grpc.WithDisableRetry()))
 }
 
 // NewAdminClient creates a new gapic AdminClient for a region.
