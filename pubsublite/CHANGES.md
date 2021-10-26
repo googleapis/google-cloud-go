@@ -1,5 +1,12 @@
 # Changes
 
+### [1.2.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.0...pubsublite/v1.2.1) (2021-10-26)
+
+
+### Bug Fixes
+
+* **pubsublite:** disable grpc stream retries ([#5019](https://www.github.com/googleapis/google-cloud-go/issues/5019)) ([74f9c11](https://www.github.com/googleapis/google-cloud-go/commit/74f9c112eadb83fea7b759f37ddb8ced9317f238))
+
 ## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.1.0...pubsublite/v1.2.0) (2021-10-01)
 
 

@@ -216,8 +216,8 @@ func InsertMap(table string, in map[string]interface{}) *Mutation {
 // codes.AlreadyExists.
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
-// fields specify the column names and values. Use a field tag like "spanner:name"
-// to provide an alternative column name, or use "spanner:-" to ignore the field.
+// fields specify the column names and values. Use a field tag like `spanner:"name"`
+// to provide an alternative column name, or use `spanner:"-"` to ignore the field.
 func InsertStruct(table string, in interface{}) (*Mutation, error) {
 	cols, vals, err := structToMutationParams(in)
 	if err != nil {
@@ -285,7 +285,7 @@ func InsertOrUpdateMap(table string, in map[string]interface{}) *Mutation {
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
 // fields specify the column names and values. Use a field tag like
-// "spanner:name" to provide an alternative column name, or use "spanner:-" to
+// `spanner:"name"` to provide an alternative column name, or use `spanner:"-"` to
 // ignore the field.
 //
 // For a similar example, See UpdateStruct.
@@ -326,8 +326,8 @@ func ReplaceMap(table string, in map[string]interface{}) *Mutation {
 // written become NULL.  The row is specified by a Go struct.
 //
 // The in argument must be a struct or a pointer to a struct. Its exported
-// fields specify the column names and values. Use a field tag like "spanner:name"
-// to provide an alternative column name, or use "spanner:-" to ignore the field.
+// fields specify the column names and values. Use a field tag like `spanner:"name"`
+// to provide an alternative column name, or use `spanner:"-"` to ignore the field.
 //
 // For a similar example, See UpdateStruct.
 func ReplaceStruct(table string, in interface{}) (*Mutation, error) {
