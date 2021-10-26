@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	cloud.google.com/go v0.97.0
-	cloud.google.com/go/grafeas v0.97.0
+	cloud.google.com/go/grafeas v0.1.0
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.1.1
 	google.golang.org/api v0.59.0
