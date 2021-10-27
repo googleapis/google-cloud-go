@@ -26,6 +26,8 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // The following keys are used to tag requests with a specific topic/subscription ID.
@@ -241,23 +243,6 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }
 
-// func parseSpanContext(sc string) *trace.SpanContextConfig {
-// 	ctx := context.Background()
-// 	// TODO: figure out how to unmarshal json spancontext -> scc
-// 	if err := json.Unmarshal([]byte(sc), spanContext); err != nil {
-// 		panic(err)
-// 	}
-// 	fmt.Printf("got span context: %+v\n", spanContext)
-
-// 	return &trace.SpanContextConfig{
-// 		TraceID:    trace.TraceID{},
-// 		SpanID:     spanContext.SpanID(),
-// 		TraceFlags: spanContext.TraceFlags(),
-// 		TraceState: spanContext.TraceState(),
-// 		Remote:     spanContext.IsRemote(),
-// 	}
-// }
-
 var _ propagation.TextMapCarrier = (*PubsubMessageCarrier)(nil)
 
 // PubsubMessageCarrier injects and extracts traces from a pubsub.Message.
@@ -291,26 +276,25 @@ func (c PubsubMessageCarrier) Keys() []string {
 	return out
 }
 
-func getPublisherAttributes(topic, key string) []trace.SpanStartOption {
-	opts := []trace.SpanStartOption{
+func getSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+	// TODO(hongalex): benchmark this to make sure no significant performance degradation
+	// when calculating proto.Size in receive paths.
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	ss := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingSystemKey.String("pubsub"),
 			semconv.MessagingDestinationKey.String(topic),
 			semconv.MessagingDestinationKindTopic,
-			attribute.String("pubsub.ordering_key", key),
+			semconv.MessagingMessageIDKey.String(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String("pubsub.ordering_key", msg.OrderingKey),
 		),
+		trace.WithAttributes(opts...),
 		trace.WithSpanKind(trace.SpanKindProducer),
 	}
-	return opts
-}
-
-func getSubscriberAttributes(sub string) []trace.SpanStartOption {
-	opts := []trace.SpanStartOption{
-		trace.WithAttributes(
-			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationKey.String(sub),
-		),
-		trace.WithSpanKind(trace.SpanKindConsumer),
-	}
-	return opts
+	return ss
 }

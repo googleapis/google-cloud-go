@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
@@ -959,7 +960,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				default:
 				}
 				for i, msg := range msgs {
-					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.String()))
+					opts := getSpanAttributes("", msg, semconv.MessagingOperationReceive)
+					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.String()), opts...)
 
 					msg := msg
 					// TODO(jba): call acquire closer to when the message is allocated.
@@ -987,11 +989,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
-						lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(msg.(*Message)))
+						m := msg.(*Message)
+						lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
 						link := trace.LinkFromContext(lctx)
-						opts := []trace.SpanStartOption{
-							trace.WithLinks(link),
-						}
+						opts := getSpanAttributes("", m, semconv.MessagingOperationProcess)
+						opts = append(opts, trace.WithLinks(link))
 						ctx2, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.String()), opts...)
 						defer wg.Done()
 						f(ctx2, msg.(*Message))

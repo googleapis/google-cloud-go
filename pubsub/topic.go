@@ -505,7 +505,7 @@ type PublishResult = ipubsub.PublishResult
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var span trace.Span
-	opts := getPublisherAttributes(t.String(), msg.OrderingKey)
+	opts := getSpanAttributes(t.String(), msg)
 	ctx, span = t.tracer.Start(ctx, t.String()+" send", opts...)
 	defer span.End()
 	r := ipubsub.NewPublishResult()
@@ -668,9 +668,10 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		bm.msg = nil // release bm.msg for GC
-		_, span := t.tracer.Start(bm.ctx, "publish message bundle")
+		opts := getSpanAttributes(t.String(), bm.msg)
+		_, span := t.tracer.Start(bm.ctx, "publish message", opts...)
 		defer span.End()
+		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
 	start := time.Now()
