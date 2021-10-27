@@ -118,6 +118,21 @@ func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 
+// CreateView represents a CREATE [OR REPLACE] VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#view_statements
+type CreateView struct {
+	Name      ID
+	OrReplace bool
+	Query     Query
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
+func (*CreateView) isDDLStmt()        {}
+func (cv *CreateView) Pos() Position  { return cv.Position }
+func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
+
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
@@ -143,6 +158,19 @@ func (di *DropIndex) String() string { return fmt.Sprintf("%#v", di) }
 func (*DropIndex) isDDLStmt()        {}
 func (di *DropIndex) Pos() Position  { return di.Position }
 func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
+
+// DropView represents a DROP VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#drop-view
+type DropView struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
+func (*DropView) isDDLStmt()        {}
+func (dv *DropView) Pos() Position  { return dv.Position }
+func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
 
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
@@ -359,6 +387,7 @@ const (
 	Bytes
 	Date
 	Timestamp
+	JSON
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.

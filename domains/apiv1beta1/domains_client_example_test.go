@@ -101,6 +101,51 @@ func ExampleClient_RegisterDomain() {
 	_ = resp
 }
 
+func ExampleClient_RetrieveTransferParameters() {
+	ctx := context.Background()
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.RetrieveTransferParametersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#RetrieveTransferParametersRequest.
+	}
+	resp, err := c.RetrieveTransferParameters(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_TransferDomain() {
+	ctx := context.Background()
+	c, err := domains.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &domainspb.TransferDomainRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/domains/v1beta1#TransferDomainRequest.
+	}
+	op, err := c.TransferDomain(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListRegistrations() {
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)

@@ -2345,8 +2345,25 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
-	_, client, teardown := setupMockedTestServer(t)
+	minOpened := uint64(1)
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
 
 	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	iter.Do(func(r *Row) error {
@@ -2357,6 +2374,8 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
 	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
@@ -2370,8 +2389,25 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
-	server, client, teardown := setupMockedTestServer(t)
+	minOpened := uint64(1)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
 
 	sql := "SELECT * FROM"
 	server.TestSpanner.PutStatementResult(sql, &StatementResult{
@@ -2388,6 +2424,8 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
 	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}

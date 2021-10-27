@@ -467,6 +467,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/deploy/apiv1": {
+    "distribution_name": "cloud.google.com/go/deploy/apiv1",
+    "description": "Google Cloud Deploy API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/deploy/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/dialogflow/apiv2": {
     "distribution_name": "cloud.google.com/go/dialogflow/apiv2",
     "description": "Dialogflow API",
@@ -564,6 +573,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/filestore/apiv1": {
+    "distribution_name": "cloud.google.com/go/filestore/apiv1",
+    "description": "Cloud Filestore API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/filestore/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/firestore": {
