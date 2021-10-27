@@ -87,12 +87,25 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (cv CreateView) SQL() string {
+	str := "CREATE"
+	if cv.OrReplace {
+		str += " OR REPLACE"
+	}
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	return str
+}
+
 func (dt DropTable) SQL() string {
 	return "DROP TABLE " + dt.Name.SQL()
 }
 
 func (di DropIndex) SQL() string {
 	return "DROP INDEX " + di.Name.SQL()
+}
+
+func (dv DropView) SQL() string {
+	return "DROP VIEW " + dv.Name.SQL()
 }
 
 func (at AlterTable) SQL() string {
@@ -309,6 +322,8 @@ func (tb TypeBase) SQL() string {
 		return "DATE"
 	case Timestamp:
 		return "TIMESTAMP"
+	case JSON:
+		return "JSON"
 	}
 	panic("unknown TypeBase")
 }

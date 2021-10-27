@@ -92,6 +92,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
 	cctx, cancel := context.WithCancel(context.Background())
+	cctx = withSubscriptionKey(cctx, subName)
 	it := &messageIterator{
 		ctx:                cctx,
 		cancel:             cancel,
