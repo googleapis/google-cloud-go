@@ -119,11 +119,10 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 	if length == 0 {
 		verb = "HEAD"
 	}
-	req, err := http.NewRequest(verb, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, verb, u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-	req = req.WithContext(ctx)
 	if o.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", o.userProject)
 	}
