@@ -1623,7 +1623,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
 
-		encryptionKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
+		encryptionKeyVersion = encryptionInfo[clusterID][0].KMSKeyVersion
 		if encryptionKeyVersion != "" {
 			break
 		}
