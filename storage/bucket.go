@@ -284,6 +284,40 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 
 // TODO: Add a similar wrapper for GenerateSignedPostPolicyV4 allowing users to
 // omit PrivateKey/SignBytes
+//func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
+func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
+	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+		return GenerateSignedPostPolicyV4(b.name, object, opts)
+	}
+	// Make a copy of opts so we don't modify the pointer parameter.
+	newopts := opts.clone()
+
+	if newopts.GoogleAccessID == "" {
+		id, err := b.detectDefaultGoogleAccessID()
+		if err != nil {
+			return nil, err
+		}
+		newopts.GoogleAccessID = id
+	}
+	if newopts.SignBytes == nil && len(newopts.PrivateKey) == 0 {
+		if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
+			var sa struct {
+				PrivateKey string `json:"private_key"`
+			}
+			err := json.Unmarshal(b.c.creds.JSON, &sa)
+			if err == nil && sa.PrivateKey != "" {
+				newopts.PrivateKey = []byte(sa.PrivateKey)
+			}
+		}
+
+		// Don't error out if we can't unmarshal the private key from the client,
+		// fallback to the default sign function for the service account.
+		if len(newopts.PrivateKey) == 0 {
+			newopts.SignBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
+		}
+	}
+	return GenerateSignedPostPolicyV4(b.name, object, newopts)
+}
 
 func (b *BucketHandle) detectDefaultGoogleAccessID() (string, error) {
 	returnErr := errors.New("no credentials found on client and not on GCE (Google Compute Engine)")

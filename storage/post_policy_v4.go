@@ -98,6 +98,19 @@ type PostPolicyV4Options struct {
 	Conditions []PostPolicyV4Condition
 }
 
+func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
+	return &PostPolicyV4Options{
+		GoogleAccessID: opts.GoogleAccessID,
+		PrivateKey:     opts.PrivateKey,
+		SignBytes:      opts.SignBytes,
+		Expires:        opts.Expires,
+		Style:          opts.Style,
+		Insecure:       opts.Insecure,
+		Fields:         opts.Fields,
+		Conditions:     opts.Conditions,
+	}
+}
+
 // PolicyV4Fields describes the attributes for a PostPolicyV4 request.
 type PolicyV4Fields struct {
 	// ACL specifies the access control permissions for the object.
