@@ -1537,7 +1537,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 }
 
 func TestIntegration_AdminEncryptionInfo(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/4173")
+	//t.Skip("https://github.com/googleapis/google-cloud-go/issues/4173")
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
