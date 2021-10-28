@@ -2579,8 +2579,13 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("List after Delete: %v", err)
 	}
-	if got, want := len(backups), 0; got != want {
-		t.Errorf("List after delete len: %d, want: %d", got, want)
+
+	// Verify the backup was deleted.
+	for _, backup := range backups {
+		if backup.Name == backupName {
+			t.Errorf("Backup '%v' was not deleted", backup.Name)
+			break
+		}
 	}
 }
 
