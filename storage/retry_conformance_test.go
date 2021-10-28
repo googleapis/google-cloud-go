@@ -157,6 +157,9 @@ var methods = map[string][]retryFunc{
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.ListHMACKeys(ctx, projectID)
 			_, err := it.Next()
+			if err == iterator.Done {
+				return nil
+			}
 			return err
 		},
 	},
@@ -195,6 +198,9 @@ var methods = map[string][]retryFunc{
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.Bucket(fs.bucket.Name).Objects(ctx, nil)
 			_, err := it.Next()
+			if err == iterator.Done {
+				return nil
+			}
 			return err
 		},
 	},
