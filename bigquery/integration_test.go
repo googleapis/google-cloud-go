@@ -304,12 +304,12 @@ func TestIntegration_TableCreateView(t *testing.T) {
 	}
 	ctx := context.Background()
 	table := newTable(t, schema)
+	tableIdentifier, _ := table.Identifier(StandardSQLID)
 	defer table.Delete(ctx)
 
 	// Test that standard SQL views work.
 	view := dataset.Table("t_view_standardsql")
-	query := fmt.Sprintf("SELECT APPROX_COUNT_DISTINCT(name) FROM `%s.%s.%s`",
-		dataset.ProjectID, dataset.DatasetID, table.TableID)
+	query := fmt.Sprintf("SELECT APPROX_COUNT_DISTINCT(name) FROM %s", tableIdentifier)
 	err := view.Create(context.Background(), &TableMetadata{
 		ViewQuery:      query,
 		UseStandardSQL: true,
@@ -869,10 +869,11 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	// Create a sample UDF so we can verify adding authorized UDFs
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
-		routine.FullyQualifiedName())
+			CREATE FUNCTION %s(x INT64) AS (x * 3);`,
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -1281,13 +1282,14 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 	// Define a simple stored procedure via DDL.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 	sql := fmt.Sprintf(`
-		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		CREATE OR REPLACE PROCEDURE %s(val INT64)
 		BEGIN
 			SELECT CURRENT_TIMESTAMP() as ts;
 			SELECT val * 2 as f2;
 		END`,
-		routine.FullyQualifiedName())
+		routineSQLID)
 
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
@@ -1296,8 +1298,8 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 
 	// Invoke the stored procedure.
 	sql = fmt.Sprintf(`
-	CALL `+"`%s`"+`(5)`,
-		routine.FullyQualifiedName())
+	CALL %s(5)`,
+		routineSQLID)
 
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
@@ -2276,8 +2278,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 	}
 	defer customTable.Delete(ctx)
 
+	customTableSQLID, _ := customTable.Identifier(StandardSQLID)
+
 	// Issue a test query that prunes based on the custom hive partitioning key, and verify the result is as expected.
-	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM `%s`.%s.%s WHERE pkey=\"foo\"", customTable.ProjectID, customTable.DatasetID, customTable.TableID)
+	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM %s WHERE pkey=\"foo\"", customTableSQLID)
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -3149,10 +3153,10 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	// Create a model via a CREATE MODEL query
 	modelID := modelIDs.New()
 	model := dataset.Model(modelID)
-	modelRef := fmt.Sprintf("%s.%s.%s", dataset.ProjectID, dataset.DatasetID, modelID)
+	modelSQLID, _ := model.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-		CREATE MODEL `+"`%s`"+`
+		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
 			max_iteration=1,
@@ -3162,7 +3166,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			SELECT 'a' AS f1, 2.0 AS label
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
-		)`, modelRef)
+		)`, modelSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -3339,13 +3343,14 @@ func TestIntegration_RoutineComplexTypes(t *testing.T) {
 
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 	sql := fmt.Sprintf(`
-		CREATE FUNCTION `+"`%s`("+`
+		CREATE FUNCTION %s(
 			arr ARRAY<STRUCT<name STRING, val INT64>>
 		  ) AS (
 			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
 		  )`,
-		routine.FullyQualifiedName())
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -3402,10 +3407,11 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 	// Create a scalar UDF routine via a CREATE FUNCTION query
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
-		routine.FullyQualifiedName())
+		CREATE FUNCTION %s(x INT64) AS (x * 3);`,
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
