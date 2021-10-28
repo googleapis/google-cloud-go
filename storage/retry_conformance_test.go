@@ -116,11 +116,15 @@ var methods = map[string][]retryFunc{
 	"storage.buckets.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.Buckets(ctx, projectID)
-			_, err := it.Next()
-			if err == iterator.Done {
-				return nil
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
 			}
-			return err
 		},
 	},
 	"storage.buckets.lockRetentionPolicy": {
@@ -156,11 +160,15 @@ var methods = map[string][]retryFunc{
 	"storage.hmacKey.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.ListHMACKeys(ctx, projectID)
-			_, err := it.Next()
-			if err == iterator.Done {
-				return nil
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
 			}
-			return err
 		},
 	},
 	"storage.notifications.delete": {
@@ -197,11 +205,15 @@ var methods = map[string][]retryFunc{
 	"storage.objects.list": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			it := c.Bucket(fs.bucket.Name).Objects(ctx, nil)
-			_, err := it.Next()
-			if err == iterator.Done {
-				return nil
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
 			}
-			return err
 		},
 	},
 	"storage.serviceaccount.get": {
