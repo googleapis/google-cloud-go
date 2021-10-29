@@ -2395,7 +2395,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 10 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	adminClient, err := testEnv.NewAdminClient()
