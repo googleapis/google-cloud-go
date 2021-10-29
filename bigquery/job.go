@@ -1012,15 +1012,6 @@ type SessionInfo struct {
 	SessionID string
 }
 
-func (s *SessionInfo) toBQ() *bq.SessionInfo {
-	if s == nil {
-		return nil
-	}
-	return &bq.SessionInfo{
-		SessionId: s.SessionID,
-	}
-}
-
 func bqToSessionInfo(in *bq.SessionInfo) *SessionInfo {
 	if in == nil {
 		return nil
