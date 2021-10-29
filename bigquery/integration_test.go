@@ -200,6 +200,9 @@ func initIntegrationTest() func() {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
+		if err != nil {
+			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
 	}
@@ -2047,8 +2050,7 @@ func runQuerySQL(ctx context.Context, sql string) (*JobStatistics, *QueryStatist
 func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistics, error) {
 	var jobStats *JobStatistics
 	var queryStats *QueryStatistics
-	var err error
-	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+	var err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := q.Run(ctx)
 		if err != nil {
 			var e *googleapi.Error
