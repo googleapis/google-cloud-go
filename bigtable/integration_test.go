@@ -1613,7 +1613,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	encryptionKeyVersion := kmsKeyName + "/cryptoKeyVersions/1"
+	var encryptionKeyVersion string
 
 	// The encryption info can take 30-300s (currently about 120-190s) to
 	// become ready.
@@ -1623,8 +1623,8 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
 
-		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
-		if kmsKeyVersion != "" {
+		encryptionKeyVersion = encryptionInfo[clusterID][0].KMSKeyVersion
+		if encryptionKeyVersion != "" {
 			break
 		}
 
