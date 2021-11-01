@@ -2213,8 +2213,8 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL: could not delete entity %s", entity)
 	}
 
-	entity2 := ACLEntity("user-jbd@google.com")
-	rule2 := ACLRule{Entity: entity2, Role: RoleReader, Email: "jbd@google.com"}
+	entity2 := ACLEntity("user-crwilcox@google.com")
+	rule2 := ACLRule{Entity: entity2, Role: RoleReader, Email: "crwilcox@google.com"}
 	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
