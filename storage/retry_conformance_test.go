@@ -129,6 +129,7 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.buckets.lockRetentionPolicy": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// buckets.lockRetentionPolicy is always idempotent, but is a special case because IfMetagenerationMatch is always required
 			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration}).LockRetentionPolicy(ctx)
 		},
 	},
