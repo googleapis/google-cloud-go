@@ -250,6 +250,70 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	}
 }
 
+func TestIntegration_JobFrom(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a job we can use for referencing.
+	q := client.Query("SELECT 123 as foo")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("failed to run test query: %v", err)
+	}
+	want := it.SourceJob()
+
+	// establish a new client that's pointed at an invalid project/location.
+	otherClient, err := NewClient(ctx, "bad-project-id")
+	if err != nil {
+		t.Fatalf("failed to create other client: %v", err)
+	}
+	otherClient.Location = "badloc"
+
+	for _, tc := range []struct {
+		description string
+		f           func(*Client) (*Job, error)
+		wantErr     bool
+	}{
+		{
+			description: "JobFromID",
+			f:           func(c *Client) (*Job, error) { return c.JobFromID(ctx, want.jobID) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromIDLocation",
+			f:           func(c *Client) (*Job, error) { return c.JobFromIDLocation(ctx, want.jobID, want.location) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromProject",
+			f:           func(c *Client) (*Job, error) { return c.JobFromProject(ctx, want.projectID, want.jobID, want.location) },
+		},
+	} {
+		got, err := tc.f(otherClient)
+		if err != nil {
+			if !tc.wantErr {
+				t.Errorf("case %q errored: %v", tc.description, err)
+			}
+			continue
+		}
+		if tc.wantErr {
+			t.Errorf("case %q got success, expected error", tc.description)
+		}
+		if got.projectID != want.projectID {
+			t.Errorf("case %q projectID mismatch, got %s want %s", tc.description, got.projectID, want.projectID)
+		}
+		if got.location != want.location {
+			t.Errorf("case %q location mismatch, got %s want %s", tc.description, got.location, want.location)
+		}
+		if got.jobID != want.jobID {
+			t.Errorf("case %q jobID mismatch, got %s want %s", tc.description, got.jobID, want.jobID)
+		}
+	}
+
+}
+
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
