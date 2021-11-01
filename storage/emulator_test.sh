@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 CONTAINER_NAME=storage_testbench
 
 # Get the docker image for the testbench
-sudo docker pull $DOCKER_IMAGE
+docker pull $DOCKER_IMAGE
 
 # Start the testbench
 # Note: --net=host makes the container bind directly to the Docker host’s network, 
@@ -35,7 +35,7 @@ sudo docker pull $DOCKER_IMAGE
 # would be captured differently and cause unexpected test behaviour.
 # The host networking driver works only on Linux hosts.
 # See more about using host networking: https://docs.docker.com/network/host/
-sudo docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
+docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
 echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST"
 
 # Check that the server is running - retry several times to allow for start-up time
@@ -50,7 +50,7 @@ fi
 # Stop the testbench & clean the environment variables
 function cleanup() {
     echo "Cleanup testbench"
-    sudo docker stop $CONTAINER_NAME
+    docker stop $CONTAINER_NAME
     unset STORAGE_EMULATOR_HOST;
 }
 trap cleanup EXIT

@@ -61,8 +61,6 @@ var methods = map[string][]retryFunc{
 func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
-		// This test is currently skipped in CI as the env variable is not set
-		// TODO: Add test to CI
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
 	endpoint, err := url.Parse(host)
