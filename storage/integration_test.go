@@ -2743,6 +2743,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	const wantErrorCode = 400
 
 	ctx := context.Background()
+
+	// Start first client
+	client := testConfig(ctx, t)
+	defer client.Close()
+
 	h := testHelper{t}
 
 	// Set project IDs
@@ -2761,9 +2766,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		t.Fatalf("need a second account (env var %s)", envFirestorePrivateKey)
 	}
 
-	// Start clients
-	client := testConfig(ctx, t)
-	defer client.Close()
+	// Start second client
 	otherClient, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
 		t.Fatal(err)
@@ -2812,12 +2815,14 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	if err := b1.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
 		t.Fatal(err)
 	}
+	defer h.mustDeleteBucket(b1)
 
 	// Repeat for b1a
 	h.mustCreate(b1a, projID, &BucketAttrs{RequesterPays: true})
 	if err := b1a.ACL().Set(ctx, ACLEntity("user-"+otherUser), RoleOwner); err != nil {
 		t.Fatal(err)
 	}
+	defer h.mustDeleteBucket(b1a)
 
 	// Call f under various conditions.
 	// Here b1 and b2 refer to the same bucket, but b1 is bound to client,
@@ -2983,8 +2988,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		}
 	}
 
-	h.mustDeleteBucket(b1)
-	h.mustDeleteBucket(b1a)
 }
 
 func TestIntegration_Notifications(t *testing.T) {
