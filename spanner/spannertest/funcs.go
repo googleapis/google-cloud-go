@@ -105,9 +105,8 @@ func cast(values []interface{}, types []spansql.Type, safe bool) (interface{}, s
 	if err, ok := values[0].(error); ok {
 		if safe {
 			return nil, types[0], nil
-		} else {
-			return nil, types[0], err
 		}
+		return nil, types[0], err
 	}
 	return values[0], types[0], nil
 }
