@@ -71,7 +71,7 @@ require (
 	cloud.google.com/go/gsuiteaddons v0.1.0
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/iot v0.1.0
-	cloud.google.com/go/kms v1.0.0
+	cloud.google.com/go/kms v1.1.0
 	cloud.google.com/go/language v0.1.0
 	cloud.google.com/go/lifesciences v0.1.0
 	cloud.google.com/go/logging v0.1.0
@@ -91,7 +91,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v0.1.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.9.1
+	cloud.google.com/go/pubsub v1.17.1
 	cloud.google.com/go/pubsublite v0.1.0
 	cloud.google.com/go/recaptchaenterprise v0.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
@@ -116,7 +116,7 @@ require (
 	cloud.google.com/go/texttospeech v0.1.0
 	cloud.google.com/go/tpu v0.1.0
 	cloud.google.com/go/trace v0.1.0
-	cloud.google.com/go/translate v0.1.0
+	cloud.google.com/go/translate v1.0.0
 	cloud.google.com/go/video v0.1.0
 	cloud.google.com/go/videointelligence v0.1.0
 	cloud.google.com/go/vision v0.1.0
@@ -124,7 +124,7 @@ require (
 	cloud.google.com/go/webrisk v0.1.0
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
-	google.golang.org/api v0.59.0
+	google.golang.org/api v0.60.0
 	google.golang.org/genproto v0.0.0-20211028162531-8db9c33dc351
 )
 
