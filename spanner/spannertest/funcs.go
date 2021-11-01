@@ -19,8 +19,11 @@ package spannertest
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,12 +33,24 @@ import (
 
 type function struct {
 	// Eval evaluates the result of the function using the given input.
-	Eval func(values []interface{}) (interface{}, spansql.Type, error)
+	Eval func(values []interface{}, types []spansql.Type, errors []error) (interface{}, spansql.Type, error)
+}
+
+func firstErr(errors []error) error {
+	for _, err := range errors {
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 var functions = map[string]function{
 	"STARTS_WITH": {
-		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+		Eval: func(values []interface{}, types []spansql.Type, errors []error) (interface{}, spansql.Type, error) {
+			if err := firstErr(errors); err != nil {
+				return nil, spansql.Type{}, err
+			}
 			// TODO: Refine error messages to exactly match Spanner.
 			// Check input values first.
 			if len(values) != 2 {
@@ -53,7 +68,10 @@ var functions = map[string]function{
 		},
 	},
 	"LOWER": {
-		Eval: func(values []interface{}) (interface{}, spansql.Type, error) {
+		Eval: func(values []interface{}, types []spansql.Type, errors []error) (interface{}, spansql.Type, error) {
+			if err := firstErr(errors); err != nil {
+				return nil, spansql.Type{}, err
+			}
 			if len(values) != 1 {
 				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function LOWER for the given argument types")
 			}
@@ -66,6 +84,148 @@ var functions = map[string]function{
 			return strings.ToLower(values[0].(string)), spansql.Type{Base: spansql.String}, nil
 		},
 	},
+	"CAST": {
+		Eval: func(values []interface{}, types []spansql.Type, errors []error) (interface{}, spansql.Type, error) {
+			return cast(values, types, errors, false)
+		},
+	},
+	"SAFE_CAST": {
+		Eval: func(values []interface{}, types []spansql.Type, errors []error) (interface{}, spansql.Type, error) {
+			return cast(values, types, errors, true)
+		},
+	},
+}
+
+func cast(values []interface{}, types []spansql.Type, errors []error, safe bool) (interface{}, spansql.Type, error) {
+	name := "CAST"
+	if safe {
+		name = "SAFE_CAST"
+	}
+	if len(types) != 1 {
+		return nil, spansql.Type{}, status.Errorf(codes.InvalidArgument, "No type information for function %s for the given arguments", name)
+	}
+	if len(values) != 1 {
+		return nil, spansql.Type{}, status.Errorf(codes.InvalidArgument, "No matching signature for function %s for the given arguments", name)
+	}
+	if err := firstErr(errors); err != nil {
+		if safe {
+			return nil, types[0], nil
+		} else {
+			return nil, types[0], err
+		}
+	}
+	return values[0], types[0], nil
+}
+
+func convert(val interface{}, tp spansql.Type) (interface{}, error) {
+	// TODO: Implement more conversions.
+	if tp.Array {
+		return nil, status.Errorf(codes.Unimplemented, "conversion to ARRAY types is not implemented")
+	}
+	switch tp.Base {
+	case spansql.Int64:
+		return convertToInt64(val)
+	case spansql.Float64:
+		return convertToFloat64(val)
+	case spansql.String:
+		return convertToString(val)
+	case spansql.Bool:
+		return convertToBool(val)
+	case spansql.Date:
+		return convertToDate(val)
+	case spansql.Timestamp:
+		return convertToTimestamp(val)
+	case spansql.Numeric:
+	case spansql.JSON:
+	}
+
+	return nil, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to %v", val, tp.Base.SQL())
+}
+
+func convertToInt64(val interface{}) (int64, error) {
+	switch v := val.(type) {
+	case int64:
+		return v, nil
+	case string:
+		res, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return 0, status.Errorf(codes.InvalidArgument, "invalid value for INT64: %q", v)
+		}
+		return res, nil
+	}
+	return 0, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to INT64", val)
+}
+
+func convertToFloat64(val interface{}) (float64, error) {
+	switch v := val.(type) {
+	case int64:
+		return float64(v), nil
+	case float64:
+		return v, nil
+	case string:
+		res, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return 0, status.Errorf(codes.InvalidArgument, "invalid value for FLOAT64: %q", v)
+		}
+		return res, nil
+	}
+	return 0, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to FLOAT64", val)
+}
+
+func convertToString(val interface{}) (string, error) {
+	switch v := val.(type) {
+	case string:
+		return v, nil
+	case bool, int64, float64:
+		return fmt.Sprintf("%v", v), nil
+	case civil.Date:
+		return v.String(), nil
+	case time.Time:
+		return v.UTC().Format(time.RFC3339Nano), nil
+	}
+	return "", status.Errorf(codes.Unimplemented, "unsupported conversion for %v to STRING", val)
+}
+
+func convertToBool(val interface{}) (bool, error) {
+	switch v := val.(type) {
+	case bool:
+		return v, nil
+	case string:
+		res, err := strconv.ParseBool(v)
+		if err != nil {
+			return false, status.Errorf(codes.InvalidArgument, "invalid value for BOOL: %q", v)
+		}
+		return res, nil
+	}
+	return false, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to BOOL", val)
+}
+
+func convertToDate(val interface{}) (civil.Date, error) {
+	switch v := val.(type) {
+	case civil.Date:
+		return v, nil
+	case string:
+		res, err := civil.ParseDate(v)
+		if err != nil {
+			return civil.Date{}, status.Errorf(codes.InvalidArgument, "invalid value for DATE: %q", v)
+		}
+		return res, nil
+	}
+	return civil.Date{}, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to DATE", val)
+}
+
+func convertToTimestamp(val interface{}) (time.Time, error) {
+	switch v := val.(type) {
+	case time.Time:
+		return v, nil
+	case string:
+		res, err := time.Parse(time.RFC3339Nano, v)
+		if err != nil {
+			return time.Time{}, status.Errorf(codes.InvalidArgument, "invalid value for TIMESTAMP: %q", v)
+		}
+		return res, nil
+	}
+	return time.Time{}, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to TIMESTAMP", val)
 }
 
 type aggregateFunc struct {
