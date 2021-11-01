@@ -385,17 +385,19 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 }
 
 func (ec evalContext) evalFunc(e spansql.Func) (interface{}, spansql.Type, error) {
+	var err error
 	if f, ok := functions[e.Name]; ok {
 		args := make([]interface{}, len(e.Args))
 		types := make([]spansql.Type, len(e.Args))
-		errs := make([]error, len(e.Args))
 		for i, arg := range e.Args {
-			args[i], errs[i] = ec.evalExpr(arg)
+			if args[i], err = ec.evalExpr(arg); err != nil {
+				return nil, spansql.Type{}, err
+			}
 			if te, ok := arg.(spansql.TypedExpr); ok {
 				types[i] = te.Type
 			}
 		}
-		return f.Eval(args, types, errs)
+		return f.Eval(args, types)
 	}
 	return nil, spansql.Type{}, status.Errorf(codes.Unimplemented, "function %q is not implemented", e.Name)
 }
@@ -665,7 +667,7 @@ func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiter
 	return nil, fmt.Errorf("unable to coerce string literal %q to match %v", slit, ci.Type)
 }
 
-func (ec evalContext) evalTypedExpr(expr spansql.TypedExpr) (interface{}, error) {
+func (ec evalContext) evalTypedExpr(expr spansql.TypedExpr) (result interface{}, err error) {
 	val, err := ec.evalExpr(expr.Expr)
 	if err != nil {
 		return nil, err
