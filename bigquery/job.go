@@ -46,17 +46,24 @@ type Job struct {
 // For jobs whose location is other than "US" or "EU", set Client.Location or use
 // JobFromIDLocation.
 func (c *Client) JobFromID(ctx context.Context, id string) (*Job, error) {
-	return c.JobFromIDLocation(ctx, id, c.Location)
+	return c.JobFromProject(ctx, c.projectID, id, c.Location)
 }
 
 // JobFromIDLocation creates a Job which refers to an existing BigQuery job. The job
 // need not have been created by this package (for example, it may have
 // been created in the BigQuery console), but it must exist in the specified location.
 func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j *Job, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.JobFromIDLocation")
+	return c.JobFromProject(ctx, c.projectID, id, location)
+}
+
+// JobFromProject creates a Job which refers to an existing BigQuery job.  The job
+// need not have been created by this package, nor does it need to reside within the same
+// project or location as the instantiated client.
+func (c *Client) JobFromProject(ctx context.Context, projectID, jobID, location string) (j *Job, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.JobFromProject")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	bqjob, err := c.getJobInternal(ctx, id, location, "configuration", "jobReference", "status", "statistics")
+	bqjob, err := c.getJobInternal(ctx, jobID, location, projectID, "configuration", "jobReference", "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
@@ -799,9 +806,13 @@ func convertListedJob(j *bq.JobListJobs, c *Client) (*Job, error) {
 	return bqToJob2(j.JobReference, j.Configuration, j.Status, j.Statistics, j.UserEmail, c)
 }
 
-func (c *Client) getJobInternal(ctx context.Context, jobID, location string, fields ...googleapi.Field) (*bq.Job, error) {
+func (c *Client) getJobInternal(ctx context.Context, jobID, location, projectID string, fields ...googleapi.Field) (*bq.Job, error) {
 	var job *bq.Job
-	call := c.bqs.Jobs.Get(c.projectID, jobID).Context(ctx)
+	proj := projectID
+	if proj == "" {
+		proj = c.projectID
+	}
+	call := c.bqs.Jobs.Get(proj, jobID).Context(ctx)
 	if location != "" {
 		call = call.Location(location)
 	}
@@ -1010,15 +1021,6 @@ func bqToTransactionInfo(in *bq.TransactionInfo) *TransactionInfo {
 // SessionInfo contains information about a session associated with a job.
 type SessionInfo struct {
 	SessionID string
-}
-
-func (s *SessionInfo) toBQ() *bq.SessionInfo {
-	if s == nil {
-		return nil
-	}
-	return &bq.SessionInfo{
-		SessionId: s.SessionID,
-	}
 }
 
 func bqToSessionInfo(in *bq.SessionInfo) *SessionInfo {
