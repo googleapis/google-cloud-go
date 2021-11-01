@@ -207,7 +207,7 @@ func (j *Job) Status(ctx context.Context) (js *JobStatus, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Status")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	bqjob, err := j.c.getJobInternal(ctx, j.jobID, j.location, "status", "statistics")
+	bqjob, err := j.c.getJobInternal(ctx, j.jobID, j.location, j.projectID, "status", "statistics")
 	if err != nil {
 		return nil, err
 	}
