@@ -625,7 +625,11 @@ func toHTML(s string) string {
 		panic(err)
 	}
 
-	return mdBuf.String()
+	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
+	// which sometimes interprets * as <em>.
+	result := string(bytes.ReplaceAll(mdBuf.Bytes(), []byte("*"), []byte("&#42;")))
+
+	return result
 }
 
 func hasPrefix(s string, prefixes []string) bool {
