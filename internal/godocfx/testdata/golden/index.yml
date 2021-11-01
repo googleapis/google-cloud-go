@@ -91,7 +91,7 @@ items:
     client are often of the type <a href=\"https://godoc.org/google.golang.org/api/googleapi#Error\"><code>googleapi.Error</code></a>.\nThese
     errors can be introspected for more information by type asserting to the richer
     <code>googleapi.Error</code> type. For example:</p>\n<pre class=\"prettyprint\"><code>if
-    e, ok := err.(*googleapi.Error); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre>"
+    e, ok := err.(&#42;googleapi.Error); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre>"
   type: package
   langs:
   - go
