@@ -193,7 +193,6 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 		}
 
 		for i := 0; i < t.NumField(); i++ {
-			innerFlatten := false
 			f := t.Field(i)
 
 			// If a named field is unexported, ignore it. An anonymous
@@ -214,9 +213,9 @@ func validateChildType(t reflect.Type, fieldName string, flatten, prevSlice bool
 			}
 			if other != nil {
 				opts := other.(saveOpts)
-				innerFlatten = flatten || opts.flatten
+				flatten = flatten || opts.flatten
 			}
-			if err := validateChildType(f.Type, f.Name, innerFlatten, prevSlice, prevTypes); err != nil {
+			if err := validateChildType(f.Type, f.Name, flatten, prevSlice, prevTypes); err != nil {
 				return err
 			}
 		}

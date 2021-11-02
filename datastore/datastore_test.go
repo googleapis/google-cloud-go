@@ -395,6 +395,16 @@ type SliceOfSlices struct {
 	} `datastore:",flatten"`
 }
 
+type LastFlattened struct {
+	Bs []struct{ IDs []string }
+	A  struct{ T time.Time } `datastore:",flatten"`
+}
+
+type FirstFlattened struct {
+	A  struct{ T time.Time } `datastore:",flatten"`
+	Bs []struct{ IDs []string }
+}
+
 type Recursive struct {
 	I int
 	R []Recursive
@@ -1851,6 +1861,22 @@ var testCases = []testCase{
 		"",
 	},
 	{
+		"last field flattened",
+		&LastFlattened{},
+		&LastFlattened{},
+		"",
+		"",
+	},
+	{
+		// Request/Bug: https://github.com/googleapis/google-cloud-go/issues/5026
+		// User expected this to work as it worked when the last field. (above test)
+		"first field flattened",
+		&FirstFlattened{},
+		nil,
+		"flattening nested structs leads to a slice of slices",
+		"",
+	},
+	{
 		"slice of slices",
 		&SliceOfSlices{},
 		nil,
@@ -3041,39 +3067,6 @@ func TestPutMultiTypes(t *testing.T) {
 			if !proto.Equal(e, want[i]) {
 				t.Logf("%s: entity %d doesn't match\ngot:  %v\nwant: %v", tt.desc, i, e, want[i])
 			}
-		}
-	}
-}
-
-func TestPutMultiTypes_Flatten(t *testing.T) {
-	ctx := context.Background()
-	c := newTestClient(ctx, t)
-	defer c.Close()
-
-	type CustomTime struct {
-		T time.Time
-	}
-
-	type B struct {
-		IDs []string
-	}
-
-	type S0 struct {
-		Bs []B
-		A  CustomTime `datastore:",flatten"`
-	}
-
-	type S1 struct {
-		A  CustomTime `datastore:",flatten"`
-		Bs []B
-	}
-
-	structs := []interface{}{&S0{}, &S1{}}
-
-	for k, s := range structs {
-		_, err := putMutations([]*Key{IncompleteKey("s", nil)}, []interface{}{s})
-		if err != nil {
-			t.Fatalf("putMutations(%v): %v", k, err)
 		}
 	}
 }
