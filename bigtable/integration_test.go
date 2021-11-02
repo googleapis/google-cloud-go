@@ -1232,8 +1232,12 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("adminClient.Tables return %#v. unwanted %#v", got, unwanted)
 	}
 
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	tableID := fmt.Sprintf("conftable%x", uniqueID)
+
 	tblConf := TableConf{
-		TableID: "conftable",
+		TableID: tableID,
 		Families: map[string]GCPolicy{
 			"fam1": MaxVersionsPolicy(1),
 			"fam2": MaxVersionsPolicy(2),
@@ -2207,11 +2211,15 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		return
 	}
 
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	profileID := fmt.Sprintf("app_profile%x", uniqueID)
+
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
 
 	defer iAdminClient.Close()
 	profile := ProfileConf{
-		ProfileID:     "app_profile1",
+		ProfileID:     profileID,
 		InstanceID:    adminClient.instance,
 		ClusterID:     testEnv.Config().Cluster,
 		Description:   "creating new app profile 1",
@@ -2223,7 +2231,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("Creating app profile: %v", err)
 	}
 
-	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
+	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
 	}
@@ -2298,7 +2306,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			},
 		},
 	} {
-		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, "app_profile1", test.uattrs)
+		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
 		if err != nil {
 			if test.want != nil {
 				t.Errorf("%s: %v", test.desc, err)
@@ -2310,7 +2318,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			continue
 		}
 
-		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
+		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 
 		if !proto.Equal(got, test.want) {
 			t.Fatalf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
@@ -2318,7 +2326,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 
 	}
 
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
 	if err != nil {
 		t.Fatalf("Delete app profile: %v", err)
 	}
@@ -2395,7 +2403,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 10 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	adminClient, err := testEnv.NewAdminClient()
@@ -2427,7 +2435,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 	uniqueID := make([]byte, 4)
-	_, err = rand.Read(uniqueID)
+	rand.Read(uniqueID)
 	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
