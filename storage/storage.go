@@ -83,7 +83,9 @@ const (
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 
 	// defaultConnPoolSize is the default number of connections
-	// to initialize in the GAPIC gRPC connection pool.
+	// to initialize in the GAPIC gRPC connection pool. A larger
+	// connection pool may be necessary for jobs that require
+	// high throughput and/or leverage many concurrent streams.
 	defaultConnPoolSize = 4
 )
 
