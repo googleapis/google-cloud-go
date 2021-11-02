@@ -1893,8 +1893,6 @@ var testCases = []testCase{
 			J int
 			F []float64
 		}{{J: 2, F: []float64{3.4, 5.6}}}},
-
-		//		"datastore: cannot load field \"S.F\" into a \"datastore.SliceOfSlices\": type mismatch: empty versus float64",
 		"flattening nested structs leads to a slice of slices: field \"F\"",
 		"",
 	},
