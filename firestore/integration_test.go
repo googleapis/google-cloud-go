@@ -1613,24 +1613,34 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 	h.mustCreate(doc, integrationTestMap)
 	defer doc.Delete(ctx)
 
+	// Verify partitions are within an expected range. Paritioning isn't exact
+	// so a fuzzy count needs to be used.
 	for idx, tc := range []struct {
-		collectionID           string
-		expectedPartitionCount int
+		collectionID              string
+		minExpectedPartitionCount int
+		maxExpectedPartitionCount int
 	}{
 		// Verify no failures if a collection doesn't exist
-		{collectionID: "does-not-exist", expectedPartitionCount: 1},
+		{collectionID: "does-not-exist", minExpectedPartitionCount: 1, maxExpectedPartitionCount: 1},
 		// Verify a collectionID with a small number of results returns a partition
-		{collectionID: coll.collectionID, expectedPartitionCount: 1},
+		{collectionID: coll.collectionID, minExpectedPartitionCount: 1, maxExpectedPartitionCount: 2},
 	} {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
 		partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
 		if err != nil {
 			t.Fatalf("getPartitions: received unexpected error: %v", err)
 		}
-		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
-			t.Errorf("Unexpected Partition Count:index:%d, got %d, want %d", idx, got, want)
+		got, minWant, maxWant := len(partitions), tc.minExpectedPartitionCount, tc.maxExpectedPartitionCount
+		if got < minWant || got > maxWant {
+			t.Errorf(
+				"Unexpected Partition Count:index:%d, got %d, want min:%d max:%d",
+				idx, got, minWant, maxWant,
+			)
 			for _, v := range partitions {
-				t.Errorf("Partition: %v, %v, %v, %v", v.startDoc, v.endDoc, v.startVals, v.endVals)
+				t.Errorf(
+					"Partition: startDoc:%v, endDoc:%v, startVals:%v, endVals:%v",
+					v.startDoc, v.endDoc, v.startVals, v.endVals,
+				)
 			}
 		}
 	}
