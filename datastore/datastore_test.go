@@ -1889,10 +1889,7 @@ var testCases = []testCase{
 			J int
 			F []float64
 		}{{J: 2, F: []float64{3.4, 5.6}}}},
-		&SliceOfSlices{I: 1, S: []struct {
-			J int
-			F []float64
-		}{{J: 2, F: []float64{3.4, 5.6}}}},
+		nil,
 		"flattening nested structs leads to a slice of slices: field \"F\"",
 		"",
 	},
