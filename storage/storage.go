@@ -82,7 +82,7 @@ const (
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 
-	// defualtConnPoolSize is the default number of connections
+	// defaultConnPoolSize is the default number of connections
 	// to initialize in the GAPIC gRPC connection pool.
 	defaultConnPoolSize = 4
 )
