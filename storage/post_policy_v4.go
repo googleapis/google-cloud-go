@@ -52,22 +52,27 @@ type PostPolicyV4Options struct {
 	// Exactly one of PrivateKey or SignBytes must be non-nil.
 	PrivateKey []byte
 
-	// SignBytes is a function for implementing custom signing. For example, if
+	// SignBytes is a function for implementing custom signing.
+	//
+	// Deprecated: Use SignRawBytes.
+	SignBytes func(hashBytes []byte) (signature []byte, err error)
+
+	// SignRawBytes is a function for implementing custom signing. For example, if
 	// your application is running on Google App Engine, you can use
 	// appengine's internal signing function:
 	//     ctx := appengine.NewContext(request)
 	//     acc, _ := appengine.ServiceAccount(ctx)
 	//     url, err := SignedURL("bucket", "object", &SignedURLOptions{
 	//     	GoogleAccessID: acc,
-	//     	SignBytes: func(b []byte) ([]byte, error) {
+	//     	SignRawBytes: func(b []byte) ([]byte, error) {
 	//     		_, signedBytes, err := appengine.SignBytes(ctx, b)
 	//     		return signedBytes, err
 	//     	},
 	//     	// etc.
 	//     })
 	//
-	// Exactly one of PrivateKey or SignBytes must be non-nil.
-	SignBytes func(hashBytes []byte) (signature []byte, err error)
+	// Exactly one of PrivateKey or SignRawBytes must be non-nil.
+	SignRawBytes func(bytes []byte) (signature []byte, err error)
 
 	// Expires is the expiration time on the signed URL.
 	// It must be a time in the future.
@@ -222,14 +227,16 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	switch {
 	case opts.SignBytes != nil:
 		signingFn = opts.SignBytes
-
+	case opts.SignRawBytes != nil:
+		signingFn = opts.SignRawBytes
 	case len(opts.PrivateKey) != 0:
 		parsedRSAPrivKey, err := parseKey(opts.PrivateKey)
 		if err != nil {
 			return nil, err
 		}
-		signingFn = func(hashedBytes []byte) ([]byte, error) {
-			return rsa.SignPKCS1v15(rand.Reader, parsedRSAPrivKey, crypto.SHA256, hashedBytes)
+		signingFn = func(b []byte) ([]byte, error) {
+			sum := sha256.Sum256(b)
+			return rsa.SignPKCS1v15(rand.Reader, parsedRSAPrivKey, crypto.SHA256, sum[:])
 		}
 
 	default:
@@ -307,10 +314,17 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	}
 
 	b64Policy := base64.StdEncoding.EncodeToString(condsAsJSON)
-	shaSum := sha256.Sum256([]byte(b64Policy))
-	signature, err := signingFn(shaSum[:])
-	if err != nil {
-		return nil, err
+	var signature []byte
+	var signErr error
+	if opts.SignBytes != nil {
+		shaSum := sha256.Sum256([]byte(b64Policy))
+		signature, signErr = signingFn(shaSum[:])
+	} else {
+		signature, signErr = signingFn([]byte(b64Policy))
+
+	}
+	if signErr != nil {
+		return nil, signErr
 	}
 
 	policyFields["policy"] = b64Policy
