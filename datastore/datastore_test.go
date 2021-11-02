@@ -3045,6 +3045,39 @@ func TestPutMultiTypes(t *testing.T) {
 	}
 }
 
+func TestPutMultiTypes_Flatten(t *testing.T) {
+	ctx := context.Background()
+	c := newTestClient(ctx, t)
+	defer c.Close()
+
+	type CustomTime struct {
+		T time.Time
+	}
+
+	type B struct {
+		IDs []string
+	}
+
+	type S0 struct {
+		Bs []B
+		A  CustomTime `datastore:",flatten"`
+	}
+
+	type S1 struct {
+		A  CustomTime `datastore:",flatten"`
+		Bs []B
+	}
+
+	structs := []interface{}{&S0{}, &S1{}}
+
+	for k, s := range structs {
+		_, err := putMutations([]*Key{IncompleteKey("s", nil)}, []interface{}{s})
+		if err != nil {
+			t.Fatalf("putMutations(%v): %v", k, err)
+		}
+	}
+}
+
 func TestNoIndexOnSliceProperties(t *testing.T) {
 	// Check that ExcludeFromIndexes is set on the inner elements,
 	// rather than the top-level ArrayValue value.
