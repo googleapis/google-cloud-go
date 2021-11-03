@@ -19,7 +19,6 @@ import (
 	"context"
 	"encoding/csv"
 	"errors"
-	"fmt"
 	"testing"
 	"time"
 
@@ -481,7 +480,6 @@ func TestCsvParseAndWriteDuplicateRowkeys(t *testing.T) {
 		for _, cf := range row { // each column family in row
 			for _, column := range cf { // each cf:column, aka each mutation
 				colId := string(column.Column)
-				fmt.Printf("val %s", string(column.Value))
 				k := "rk-0:" + colId + ":" + string(column.Value)
 				_, ok := valMap[k]
 				if ok {
