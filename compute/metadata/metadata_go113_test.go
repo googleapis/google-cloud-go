@@ -32,6 +32,7 @@ func TestRetry(t *testing.T) {
 		failCode    int
 		failErr     error
 		response    string
+		expectError bool
 	}{
 		{
 			name:     "no retries",
@@ -49,6 +50,12 @@ func TestRetry(t *testing.T) {
 			failErr:     io.ErrUnexpectedEOF,
 			timesToFail: 1,
 		},
+		{
+			name:        "retry io.ErrUnexpectedEOF permanent",
+			failErr:     io.ErrUnexpectedEOF,
+			timesToFail: maxRetryAttempts + 1,
+			expectError: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -60,14 +67,22 @@ func TestRetry(t *testing.T) {
 			}
 			c := NewClient(&http.Client{Transport: ft})
 			s, err := c.Get("")
-			if err != nil {
+			if tt.expectError && err == nil {
+				t.Fatalf("did not receive expected error")
+			} else if !tt.expectError && err != nil {
 				t.Fatalf("unexpected error: %v", err)
 			}
-			if ft.called != ft.failedAttempts+1 {
-				t.Fatalf("failed %d times, want %d", ft.called, ft.failedAttempts+1)
-			}
-			if s != tt.response {
+
+			expectedCount := ft.failedAttempts + 1
+			if tt.expectError {
+				expectedCount = ft.failedAttempts
+			} else if s != tt.response {
+				// Responses are only meaningful if err == nil
 				t.Fatalf("c.Get() = %q, want %q", s, tt.response)
+			}
+
+			if ft.called != expectedCount {
+				t.Fatalf("failed %d times, want %d", ft.called, expectedCount)
 			}
 		})
 	}
