@@ -741,6 +741,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Errorf("Updating with DML affected %d rows, want 3", n)
 	}
 
+	rows := client.Single().Query(ctx, spanner.NewStatement("SELECT CAST('Foo' AS INT64)"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid CAST\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -748,9 +755,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B')`,
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64)`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
