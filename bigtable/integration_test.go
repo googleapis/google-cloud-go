@@ -2263,8 +2263,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 
 	// App Profile list should contain default, app_profile1
-	if got, want := len(profiles), 2; got != want {
-		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
+	wantProfiles := map[string]struct{}{"default": {}, profileID: {}}
+	for _, profile := range profiles {
+		delete(wantProfiles, profile.Name)
+	}
+	if len(wantProfiles) > 0 {
+		t.Fatalf("Initial app profile list missing profile: %v", wantProfiles)
 	}
 
 	for _, test := range []struct {
