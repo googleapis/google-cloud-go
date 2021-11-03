@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/csv"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -179,7 +180,7 @@ func TestParseColumnsFilter(t *testing.T) {
 	}
 }
 
-func TestImporterArgs(t *testing.T) {
+func TestCsvImporterArgs(t *testing.T) {
 	tests := []struct {
 		in   []string
 		out  importerArgs
@@ -246,7 +247,7 @@ func writeAsCSV(records [][]string) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func TestCsvParser(t *testing.T) {
+func TestCsvHeaderParser(t *testing.T) {
 	tests := []struct {
 		iData    [][]string
 		iFams    []string
@@ -369,8 +370,7 @@ func setupEmulator(t *testing.T, tables, families []string) (context.Context, *b
 	return ctx, client
 }
 
-// test against in-memory bttest emulator
-func TestParseAndWrite(t *testing.T) {
+func TestCsvParseAndWrite(t *testing.T) {
 	ctx, client := setupEmulator(t, []string{"my-table"}, []string{"my-family", "my-family-2"})
 
 	tbl := client.Open("my-table")
@@ -427,8 +427,7 @@ func TestParseAndWrite(t *testing.T) {
 	}
 }
 
-// test against in-memory bttest emulator
-func TestParseAndWriteBadFamily(t *testing.T) {
+func TestCsvParseAndWriteBadFamily(t *testing.T) {
 	ctx, client := setupEmulator(t, []string{"my-table"}, []string{"my-family"})
 
 	tbl := client.Open("my-table")
@@ -451,7 +450,54 @@ func TestParseAndWriteBadFamily(t *testing.T) {
 	}
 }
 
-// test against in-memory bttest emulator
+func TestCsvParseAndWriteDuplicateRowkeys(t *testing.T) {
+	ctx, client := setupEmulator(t, []string{"my-table"}, []string{"my-family"})
+
+	tbl := client.Open("my-table")
+	fams := []string{"", "my-family", "my-family"}
+	cols := []string{"", "col-1", "col-2"}
+	rowData := [][]string{
+		{"rk-0", "A", ""},
+		{"rk-0", "", "B"},
+		{"rk-0", "C", ""},
+	}
+
+	byteData, err := writeAsCSV(rowData)
+	if err != nil {
+		t.Fatal(err)
+	}
+	reader := csv.NewReader(bytes.NewReader(byteData))
+
+	sr := safeReader{r: reader}
+	if err = sr.parseAndWrite(ctx, tbl, fams, cols, 1, 1, 1); err != nil {
+		t.Fatalf("parseAndWrite() should not have failed for duplicate rowkeys: %s", err)
+	}
+
+	// the "A" not present result is expected, the emulator only keeps 1 version
+	valMap := map[string]bool{"rk-0:my-family:col-2:B": true, "rk-0:my-family:col-1:C": true}
+	if row, err := tbl.ReadRow(ctx, "rk-0"); err != nil {
+		t.Errorf("error %s", err)
+	} else {
+		for _, cf := range row { // each column family in row
+			for _, column := range cf { // each cf:column, aka each mutation
+				colId := string(column.Column)
+				fmt.Printf("val %s", string(column.Value))
+				k := "rk-0:" + colId + ":" + string(column.Value)
+				_, ok := valMap[k]
+				if ok {
+					delete(valMap, k)
+					continue
+				}
+				t.Errorf("row data not found, colId: %s\n", colId)
+			}
+		}
+	}
+
+	if len(valMap) != 0 {
+		t.Fatalf("values were not present in table: %v", valMap)
+	}
+}
+
 func TestCsvToCbt(t *testing.T) {
 	tests := []struct {
 		label        string

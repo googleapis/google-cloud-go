@@ -1698,11 +1698,11 @@ func (sr *safeReader) parseAndWrite(ctx context.Context, tbl *bigtable.Table, fa
 				}
 			}
 			if empty {
-				log.Printf("RowKey [%s] has no mutations, skipping", line[0])
+				log.Printf("[%d] RowKey [%s] has no mutations, skipping", worker, line[0])
 				continue
 			}
 			if line[0] == "" {
-				log.Printf("RowKey not present, skipping line")
+				log.Printf("[%d] RowKey not present, skipping line", worker)
 				continue
 			}
 			rowKey = append(rowKey, line[0])
