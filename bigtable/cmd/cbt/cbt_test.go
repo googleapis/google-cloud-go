@@ -360,7 +360,7 @@ func setupEmulator(t *testing.T, tables, families []string) (context.Context, *b
 			}
 		}
 	}
-	
+
 	client, err := bigtable.NewClient(ctx, proj, instance, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatalf("Error %s", err)
@@ -378,7 +378,7 @@ func TestParseAndWrite(t *testing.T) {
 	cols := []string{"", "col-1", "col-2"}
 	rowData := [][]string{
 		{"rk-0", "A", "B"},
-		{"rk-1",  "", "C"},
+		{"rk-1", "", "C"},
 	}
 	matchCount := 3
 
@@ -400,7 +400,7 @@ func TestParseAndWrite(t *testing.T) {
 		for _, r := range rowData {
 			col = append(col, r[i])
 		}
-		colMap[fams[i] + ":" + cols[i]] = col
+		colMap[fams[i]+":"+cols[i]] = col
 	}
 	for rowIdx, data := range rowData {
 		if row, err := tbl.ReadRow(ctx, data[0]); err != nil {
@@ -415,7 +415,7 @@ func TestParseAndWrite(t *testing.T) {
 							matchCount--
 							continue
 						}
-						t.Errorf("Column data didnt match, colId: %s, got: %s, want %s\n", colId, string(column.Value) , col[rowIdx])
+						t.Errorf("Column data didnt match, colId: %s, got: %s, want %s\n", colId, string(column.Value), col[rowIdx])
 					}
 				}
 			}
@@ -436,7 +436,7 @@ func TestParseAndWriteBadFamily(t *testing.T) {
 	cols := []string{"", "col-1", "col-2"}
 	rowData := [][]string{
 		{"rk-0", "A", "B"},
-		{"rk-1",  "", "C"},
+		{"rk-1", "", "C"},
 	}
 
 	byteData, err := writeAsCSV(rowData)
@@ -454,68 +454,68 @@ func TestParseAndWriteBadFamily(t *testing.T) {
 // test against in-memory bttest emulator
 func TestCsvToCbt(t *testing.T) {
 	tests := []struct {
-		label		 string
-		ia    		 importerArgs
-		csvData    	 [][]string
+		label        string
+		ia           importerArgs
+		csvData      [][]string
 		expectedFams []string
 		matchCount   int
 		dataStartIdx int
 	}{
 		{
 			label: "has-column-families",
-			ia:  importerArgs{fams: []string{""}, sz: 1, workers: 1},
+			ia:    importerArgs{fams: []string{""}, sz: 1, workers: 1},
 			csvData: [][]string{
 				{"", "my-family", ""},
 				{"", "col-1", "col-2"},
-				{"rk-0", "A",  ""},
-				{"rk-1",  "", "B"},
-				{"rk-2",  "",  ""},
-				{"rk-3", "C",  ""},
+				{"rk-0", "A", ""},
+				{"rk-1", "", "B"},
+				{"rk-2", "", ""},
+				{"rk-3", "C", ""},
 			},
 			expectedFams: []string{"", "my-family", "my-family"},
-			matchCount:	 3,
+			matchCount:   3,
 			dataStartIdx: 2,
 		},
 		{
 			label: "no-column-families",
-			ia:  importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 1},
+			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 1},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
-				{"rk-0", "A",  ""},
-				{"rk-1",  "", "B"},
-				{"rk-2",  "",  ""},
-				{"rk-3", "C",  "D"},
+				{"rk-0", "A", ""},
+				{"rk-1", "", "B"},
+				{"rk-2", "", ""},
+				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:	 4,
+			matchCount:   4,
 			dataStartIdx: 1,
 		},
 		{
 			label: "larger-batches",
-			ia:  importerArgs{fams: []string{"", "arg-family"}, sz: 100, workers: 1},
+			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 100, workers: 1},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
-				{"rk-0", "A",  ""},
-				{"rk-1",  "", "B"},
-				{"rk-2",  "",  ""},
-				{"rk-3", "C",  "D"},
+				{"rk-0", "A", ""},
+				{"rk-1", "", "B"},
+				{"rk-2", "", ""},
+				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:	 4,
+			matchCount:   4,
 			dataStartIdx: 1,
 		},
 		{
 			label: "many-workers",
-			ia:  importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 20},
+			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 20},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
-				{"rk-0", "A",  ""},
-				{"rk-1",  "", "B"},
-				{"rk-2",  "",  ""},
-				{"rk-3", "C",  "D"},
+				{"rk-0", "A", ""},
+				{"rk-1", "", "B"},
+				{"rk-2", "", ""},
+				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:	 4,
+			matchCount:   4,
 			dataStartIdx: 1,
 		},
 	}
@@ -530,7 +530,7 @@ func TestCsvToCbt(t *testing.T) {
 		}
 		reader := csv.NewReader(bytes.NewReader(byteData))
 
-		importCSV(ctx, tbl, reader, tc.ia) 
+		importCSV(ctx, tbl, reader, tc.ia)
 
 		// created lookup map for expected outputs
 		colRow := tc.csvData[tc.dataStartIdx-1]
@@ -540,7 +540,7 @@ func TestCsvToCbt(t *testing.T) {
 			for _, r := range tc.csvData[tc.dataStartIdx:] {
 				col = append(col, r[i])
 			}
-			colMap[tc.expectedFams[i] + ":" + colRow[i]] = col
+			colMap[tc.expectedFams[i]+":"+colRow[i]] = col
 		}
 
 		// read rows back and validate mutations
@@ -557,7 +557,7 @@ func TestCsvToCbt(t *testing.T) {
 								tc.matchCount--
 								continue
 							}
-							t.Errorf("%s, column data didnt match, colId: %s, got: %s, want %s\n", tc.label, colId, string(column.Value) , col[rowIdx])
+							t.Errorf("%s, column data didnt match, colId: %s, got: %s, want %s\n", tc.label, colId, string(column.Value), col[rowIdx])
 						}
 					}
 				}

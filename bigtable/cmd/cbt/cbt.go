@@ -1670,7 +1670,7 @@ func batchWrite(ctx context.Context, tbl *bigtable.Table, rk []string, muts []*b
 	}
 	if errors != nil {
 		return 0, fmt.Errorf("Applying bulk mutations had %d errors, first:%v", len(errors), errors[0])
-		
+
 	}
 	return len(rk), nil
 }
