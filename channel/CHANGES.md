@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/channel/v1.0.0...channel/v1.1.0) (2021-10-29)
+
+
+### Features
+
+* **channel:** add resource type to ChannelPartnerLink ([c206948](https://www.github.com/googleapis/google-cloud-go/commit/c2069487f6af5bcb37d519afeb60e312e35e67d5))
+
 ## 1.0.0
 
 Stabilize GA surface.
@@ -15,4 +22,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out channel as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
- 
