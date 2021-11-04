@@ -2262,14 +2262,21 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
+	fmt.Print(profiles)
+
+	// Ensure the profiles we require exist. profiles ⊂ allProfiles
+	verifyProfilesSubset := func(allProfiles []*btapb.AppProfile, profiles map[string]struct{}) {
+		for _, profile := range allProfiles {
+			delete(profiles, profile.Name)
+		}
+		if len(profiles) > 0 {
+			t.Fatalf("Initial app profile list missing profile: %v", profiles)
+		}
+	}
+
 	// App Profile list should contain default, app_profile1
 	wantProfiles := map[string]struct{}{"default": {}, profileID: {}}
-	for _, profile := range profiles {
-		delete(wantProfiles, profile.Name)
-	}
-	if len(wantProfiles) > 0 {
-		t.Fatalf("Initial app profile list missing profile: %v", wantProfiles)
-	}
+	verifyProfilesSubset(profiles, wantProfiles)
 
 	for _, test := range []struct {
 		desc   string
