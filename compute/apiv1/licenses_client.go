@@ -99,37 +99,37 @@ func (c *LicensesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// Delete deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Delete deletes the specified license. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get returns the specified License resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) Get(ctx context.Context, req *computepb.GetLicenseRequest, opts ...gax.CallOption) (*computepb.License, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// Insert create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Insert create a License resource in the specified project. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// List retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) List(ctx context.Context, req *computepb.ListLicensesRequest, opts ...gax.CallOption) *LicenseIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *LicensesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
@@ -198,7 +198,7 @@ func (c *licensesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// Delete deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Delete deletes the specified license. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
@@ -246,7 +246,7 @@ func (c *licensesRESTClient) Delete(ctx context.Context, req *computepb.DeleteLi
 	return op, err
 }
 
-// Get returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Get returns the specified License resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseRequest, opts ...gax.CallOption) (*computepb.License, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v", req.GetProject(), req.GetLicense())
@@ -286,7 +286,7 @@ func (c *licensesRESTClient) Get(ctx context.Context, req *computepb.GetLicenseR
 	return rsp, nil
 }
 
-// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/licenses/%v/getIamPolicy", req.GetProject(), req.GetResource())
@@ -333,7 +333,7 @@ func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.Ge
 	return rsp, nil
 }
 
-// Insert create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// Insert create a License resource in the specified project. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetLicenseResource()
@@ -388,7 +388,7 @@ func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLi
 	return op, err
 }
 
-// List retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// List retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicensesRequest, opts ...gax.CallOption) *LicenseIterator {
 	it := &LicenseIterator{}
 	req = proto.Clone(req).(*computepb.ListLicensesRequest)
@@ -472,7 +472,7 @@ func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicens
 	return it
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
@@ -519,7 +519,7 @@ func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.Se
 	return rsp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+// TestIamPermissions returns permissions that a caller has on the specified resource. Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()

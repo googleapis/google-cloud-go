@@ -114,7 +114,7 @@ func (c *RegionBackendServicesClient) GetHealth(ctx context.Context, req *comput
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
 func (c *RegionBackendServicesClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -124,12 +124,12 @@ func (c *RegionBackendServicesClient) List(ctx context.Context, req *computepb.L
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *RegionBackendServicesClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
+// Update updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
 func (c *RegionBackendServicesClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
 }
@@ -333,7 +333,7 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 	return rsp, nil
 }
 
-// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+// Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
 func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -472,7 +472,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 	return it
 }
 
-// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -527,7 +527,7 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 	return op, err
 }
 
-// Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
+// Update updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
 func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
