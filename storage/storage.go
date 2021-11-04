@@ -81,6 +81,12 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
+
+	// defaultConnPoolSize is the default number of connections
+	// to initialize in the GAPIC gRPC connection pool. A larger
+	// connection pool may be necessary for jobs that require
+	// high throughput and/or leverage many concurrent streams.
+	defaultConnPoolSize = 4
 )
 
 var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
@@ -203,6 +209,8 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	if opts == nil {
 		opts = &hybridClientOptions{}
 	}
+	opts.GRPCOpts = append(defaultGRPCOptions(), opts.GRPCOpts...)
+
 	c, err := NewClient(ctx, opts.HTTPOpts...)
 	if err != nil {
 		return nil, err
@@ -215,6 +223,14 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	c.gc = g
 
 	return c, nil
+}
+
+// defaultGRPCOptions returns a set of the default client options
+// for gRPC client initialization.
+func defaultGRPCOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithGRPCConnectionPool(defaultConnPoolSize),
+	}
 }
 
 // Close closes the Client.

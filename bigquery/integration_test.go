@@ -2015,6 +2015,20 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	if len(qStats.Timeline) == 0 {
 		t.Error("expected query timeline, none present")
 	}
+
+	if qStats.BIEngineStatistics == nil {
+		t.Error("expected BIEngine statistics, none present")
+	}
+
+	expectedMode := true
+	for _, m := range []string{"FULL", "PARTIAL", "DISABLED"} {
+		if qStats.BIEngineStatistics.BIEngineMode == m {
+			expectedMode = true
+		}
+	}
+	if !expectedMode {
+		t.Errorf("unexpected BIEngineMode for BI Engine statistics, got %s", qStats.BIEngineStatistics.BIEngineMode)
+	}
 }
 
 func TestIntegration_Load(t *testing.T) {

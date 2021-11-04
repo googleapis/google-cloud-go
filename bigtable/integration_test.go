@@ -1232,8 +1232,12 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("adminClient.Tables return %#v. unwanted %#v", got, unwanted)
 	}
 
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	tableID := fmt.Sprintf("conftable%x", uniqueID)
+
 	tblConf := TableConf{
-		TableID: "conftable",
+		TableID: tableID,
 		Families: map[string]GCPolicy{
 			"fam1": MaxVersionsPolicy(1),
 			"fam2": MaxVersionsPolicy(2),
@@ -2208,7 +2212,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 
 	uniqueID := make([]byte, 4)
-	_, err = rand.Read(uniqueID)
+	rand.Read(uniqueID)
 	profileID := fmt.Sprintf("app_profile%x", uniqueID)
 
 	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
@@ -2258,10 +2262,19 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
-	// App Profile list should contain default, app_profile1
-	if got, want := len(profiles), 2; got != want {
-		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
+	// Ensure the profiles we require exist. profiles ⊂ allProfiles
+	verifyProfilesSubset := func(allProfiles []*btapb.AppProfile, profiles map[string]struct{}) {
+		for _, profile := range allProfiles {
+			delete(profiles, profile.Name)
+		}
+		if len(profiles) > 0 {
+			t.Fatalf("Initial app profile list missing profile: %v", profiles)
+		}
 	}
+
+	// App Profile list should contain default, app_profile1
+	wantProfiles := map[string]struct{}{"default": {}, profileID: {}}
+	verifyProfilesSubset(profiles, wantProfiles)
 
 	for _, test := range []struct {
 		desc   string
@@ -2431,7 +2444,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 	uniqueID := make([]byte, 4)
-	_, err = rand.Read(uniqueID)
+	rand.Read(uniqueID)
 	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
 	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
