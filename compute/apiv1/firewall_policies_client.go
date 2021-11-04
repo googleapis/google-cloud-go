@@ -166,7 +166,7 @@ func (c *FirewallPoliciesClient) Insert(ctx context.Context, req *computepb.Inse
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// List lists all the policies that have been configured for the specified project.
+// List lists all the policies that have been configured for the specified folder or organization.
 func (c *FirewallPoliciesClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	return c.internalClient.List(ctx, req, opts...)
 }
@@ -726,7 +726,7 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	return op, err
 }
 
-// List lists all the policies that have been configured for the specified project.
+// List lists all the policies that have been configured for the specified folder or organization.
 func (c *firewallPoliciesRESTClient) List(ctx context.Context, req *computepb.ListFirewallPoliciesRequest, opts ...gax.CallOption) *FirewallPolicyIterator {
 	it := &FirewallPolicyIterator{}
 	req = proto.Clone(req).(*computepb.ListFirewallPoliciesRequest)
