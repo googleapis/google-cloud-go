@@ -62,10 +62,10 @@ for d in $CHANGED_DIRS; do
   for i in `find "$d" -name go.mod`; do
     pushd `dirname $i`;
       if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-        go test -race -v -timeout 15m -short ./... 2>&1 \
+        go test -race -timeout 15m -short ./... 2>&1 \
         | tee sponge_log.log
       else
-        go test -race -v -timeout 45m ./... 2>&1 \
+        go test -race -timeout 45m ./... 2>&1 \
         | tee sponge_log.log
       fi
       # Run integration tests against an emulator.
@@ -82,6 +82,11 @@ for d in $CHANGED_DIRS; do
   done
 done
 
-
+for d in $CHANGED_DIRS; do
+  echo "dir $d"
+  for i in `find "$d" -name go.mod`; do
+    echo "\tsubdir $i"
+  done
+done
 
 exit $exit_code
