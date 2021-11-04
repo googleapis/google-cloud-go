@@ -112,9 +112,7 @@ func (c *ImagesClient) Delete(ctx context.Context, req *computepb.DeleteImageReq
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Deprecate sets the deprecation status of an image.
-//
-// If an empty request body is given, clears the deprecation status instead.
+// Deprecate sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
 func (c *ImagesClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Deprecate(ctx, req, opts...)
 }
@@ -276,9 +274,7 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 	return op, err
 }
 
-// Deprecate sets the deprecation status of an image.
-//
-// If an empty request body is given, clears the deprecation status instead.
+// Deprecate sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
 func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDeprecationStatusResource()
