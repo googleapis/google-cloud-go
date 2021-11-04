@@ -1647,7 +1647,8 @@ func parseCsvHeaders(r *csv.Reader, fams []string) ([]string, []string, error) {
 	}
 	if len(fams) < 2 || fams[1] == "" {
 		return fams, cols, fmt.Errorf("The first data column requires a non-empty column family or column-family flag set")
-	} else if len(fams) < len(cols) {
+	}
+	if len(fams) < len(cols) {
 		ext := make([]string, len(cols)-len(fams))
 		fams = append(fams, ext...)
 	}
@@ -1698,7 +1699,7 @@ func (sr *safeReader) parseAndWrite(ctx context.Context, tbl *bigtable.Table, fa
 				}
 			}
 			if empty {
-				log.Printf("[%d] RowKey [%s] has no mutations, skipping", worker, line[0])
+				log.Printf("[%d] RowKey '%s' has no mutations, skipping", worker, line[0])
 				continue
 			}
 			if line[0] == "" {

@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
-	"errors"
+	"fmt"
 	"testing"
 	"time"
 
@@ -229,14 +229,13 @@ func TestCsvImporterArgs(t *testing.T) {
 	}
 }
 
-func writeAsCSV(records [][]string) ([]byte, error) {
-	if records == nil || len(records) == 0 {
-		return nil, errors.New("Records cannot be nil or empty")
+func writeAsCSV(data [][]string) ([]byte, error) {
+	if len(data) == 0 {
+		return nil, fmt.Errorf("Data cannot be empty")
 	}
 	var buf bytes.Buffer
 	csvWriter := csv.NewWriter(&buf)
-	err := csvWriter.WriteAll(records)
-	if err != nil {
+	if err := csvWriter.WriteAll(data); err != nil {
 		return nil, err
 	}
 	csvWriter.Flush()
@@ -369,6 +368,38 @@ func setupEmulator(t *testing.T, tables, families []string) (context.Context, *b
 	return ctx, client
 }
 
+func validateData(ctx context.Context, tbl *bigtable.Table, fams, cols []string, rowData [][]string) error {
+	// vaildate table entries, valMap["rowkey:family:column"] = mutation value
+	valMap := make(map[string]string)
+	for _, row := range rowData {
+		for i, val := range row {
+			if i > 0 && val != "" {
+				valMap[row[0]+":"+fams[i]+":"+cols[i]] = val
+			}
+		}
+	}
+	for _, data := range rowData {
+		row, err := tbl.ReadRow(ctx, data[0])
+		if err != nil {
+			return err
+		}
+		for _, cf := range row {
+			for _, column := range cf {
+				k := data[0] + ":" + string(column.Column)
+				v, ok := valMap[k]
+				if ok && v == string(column.Value) {
+					delete(valMap, k)
+					continue
+				}
+			}
+		}
+	}
+	if len(valMap) != 0 {
+		return fmt.Errorf("Data didn't match after read, not found %v", valMap)
+	}
+	return nil
+}
+
 func TestCsvParseAndWrite(t *testing.T) {
 	ctx, client := setupEmulator(t, []string{"my-table"}, []string{"my-family", "my-family-2"})
 
@@ -379,7 +410,6 @@ func TestCsvParseAndWrite(t *testing.T) {
 		{"rk-0", "A", "B"},
 		{"rk-1", "", "C"},
 	}
-	matchCount := 3
 
 	byteData, err := writeAsCSV(rowData)
 	if err != nil {
@@ -392,37 +422,8 @@ func TestCsvParseAndWrite(t *testing.T) {
 		t.Fatalf("parseAndWrite() failed unexpectedly")
 	}
 
-	// vaildate table entries
-	colMap := make(map[string][]string)
-	for i := range fams {
-		var col []string
-		for _, r := range rowData {
-			col = append(col, r[i])
-		}
-		colMap[fams[i]+":"+cols[i]] = col
-	}
-	for rowIdx, data := range rowData {
-		if row, err := tbl.ReadRow(ctx, data[0]); err != nil {
-			t.Errorf("Error %s", err)
-		} else {
-			for _, fam := range fams {
-				for _, column := range row[fam] {
-					colId := string(column.Column)
-					col, ok := colMap[colId]
-					if ok {
-						if string(column.Value) == col[rowIdx] {
-							matchCount--
-							continue
-						}
-						t.Errorf("Column data didnt match, colId: %s, got: %s, want %s\n", colId, string(column.Value), col[rowIdx])
-					}
-				}
-			}
-		}
-	}
-
-	if matchCount != 0 {
-		t.Fatalf("Data didn't match after read for %d values", matchCount)
+	if err := validateData(ctx, tbl, fams, cols, rowData); err != nil {
+		t.Fatalf("Read back validation error:%s", err)
 	}
 }
 
@@ -474,20 +475,19 @@ func TestCsvParseAndWriteDuplicateRowkeys(t *testing.T) {
 
 	// the "A" not present result is expected, the emulator only keeps 1 version
 	valMap := map[string]bool{"rk-0:my-family:col-2:B": true, "rk-0:my-family:col-1:C": true}
-	if row, err := tbl.ReadRow(ctx, "rk-0"); err != nil {
+	row, err := tbl.ReadRow(ctx, "rk-0")
+	if err != nil {
 		t.Errorf("error %s", err)
-	} else {
-		for _, cf := range row { // each column family in row
-			for _, column := range cf { // each cf:column, aka each mutation
-				colId := string(column.Column)
-				k := "rk-0:" + colId + ":" + string(column.Value)
-				_, ok := valMap[k]
-				if ok {
-					delete(valMap, k)
-					continue
-				}
-				t.Errorf("row data not found, colId: %s\n", colId)
+	}
+	for _, cf := range row { // each column family in row
+		for _, column := range cf { // each cf:column, aka each mutation
+			k := "rk-0:" + string(column.Column) + ":" + string(column.Value)
+			_, ok := valMap[k]
+			if ok {
+				delete(valMap, k)
+				continue
 			}
+			t.Errorf("row data not found for %s\n", k)
 		}
 	}
 
@@ -502,7 +502,6 @@ func TestCsvToCbt(t *testing.T) {
 		ia           importerArgs
 		csvData      [][]string
 		expectedFams []string
-		matchCount   int
 		dataStartIdx int
 	}{
 		{
@@ -517,7 +516,6 @@ func TestCsvToCbt(t *testing.T) {
 				{"rk-3", "C", ""},
 			},
 			expectedFams: []string{"", "my-family", "my-family"},
-			matchCount:   3,
 			dataStartIdx: 2,
 		},
 		{
@@ -531,7 +529,6 @@ func TestCsvToCbt(t *testing.T) {
 				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:   4,
 			dataStartIdx: 1,
 		},
 		{
@@ -545,7 +542,6 @@ func TestCsvToCbt(t *testing.T) {
 				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:   4,
 			dataStartIdx: 1,
 		},
 		{
@@ -559,7 +555,6 @@ func TestCsvToCbt(t *testing.T) {
 				{"rk-3", "C", "D"},
 			},
 			expectedFams: []string{"", "arg-family", "arg-family"},
-			matchCount:   4,
 			dataStartIdx: 1,
 		},
 	}
@@ -576,40 +571,8 @@ func TestCsvToCbt(t *testing.T) {
 
 		importCSV(ctx, tbl, reader, tc.ia)
 
-		// created lookup map for expected outputs
-		colRow := tc.csvData[tc.dataStartIdx-1]
-		colMap := make(map[string][]string)
-		for i := range tc.expectedFams {
-			var col []string
-			for _, r := range tc.csvData[tc.dataStartIdx:] {
-				col = append(col, r[i])
-			}
-			colMap[tc.expectedFams[i]+":"+colRow[i]] = col
-		}
-
-		// read rows back and validate mutations
-		for rowIdx, data := range tc.csvData[tc.dataStartIdx:] {
-			if row, err := tbl.ReadRow(ctx, data[0]); err != nil {
-				t.Errorf("%s error %s", tc.label, err)
-			} else {
-				for _, cf := range row { // each column family in row
-					for _, column := range cf { // each cf:column, aka each mutation
-						colId := string(column.Column)
-						col, ok := colMap[colId]
-						if ok {
-							if string(column.Value) == col[rowIdx] {
-								tc.matchCount--
-								continue
-							}
-							t.Errorf("%s, column data didnt match, colId: %s, got: %s, want %s\n", tc.label, colId, string(column.Value), col[rowIdx])
-						}
-					}
-				}
-			}
-		}
-
-		if tc.matchCount != 0 {
-			t.Fatalf("%s, data didn't match after read for %d values", tc.label, tc.matchCount)
+		if err := validateData(ctx, tbl, tc.expectedFams, tc.csvData[tc.dataStartIdx-1], tc.csvData[tc.dataStartIdx:]); err != nil {
+			t.Fatalf("Read back validation error: %s", err)
 		}
 	}
 }
