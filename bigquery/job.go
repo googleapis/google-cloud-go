@@ -512,6 +512,8 @@ func bqToBIEngineStatistics(in *bq.BiEngineStatistics) *BIEngineStatistics {
 	return stats
 }
 
+// BIEngineReason contains more detailed information about why a query wasn't fully
+// accelerated.
 type BIEngineReason struct {
 	// High-Level BI engine reason for partial or disabled acceleration.
 	Code string
