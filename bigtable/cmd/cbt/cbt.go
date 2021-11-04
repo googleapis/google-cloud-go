@@ -1554,7 +1554,7 @@ func doDeleteAppProfile(ctx context.Context, args ...string) {
 
 type importerArgs struct {
 	appProfile string
-	fams       []string
+	fam        string
 	sz         int
 	workers    int
 }
@@ -1568,11 +1568,11 @@ type safeReader struct {
 func doImport(ctx context.Context, args ...string) {
 	ia, err := parseImporterArgs(ctx, args)
 	if err != nil {
-		log.Fatalf("Error parsing importer args: %s", err)
+		log.Fatalf("error parsing importer args: %s", err)
 	}
 	f, err := os.Open(args[1])
 	if err != nil {
-		log.Fatalf("Couldn't open the csv file: %s", err)
+		log.Fatalf("couldn't open the csv file: %s", err)
 	}
 
 	tbl := getClient(bigtable.ClientConfig{AppProfile: ia.appProfile}).Open(args[0])
@@ -1583,7 +1583,7 @@ func doImport(ctx context.Context, args ...string) {
 func parseImporterArgs(ctx context.Context, args []string) (importerArgs, error) {
 	var err error
 	ia := importerArgs{
-		fams:    []string{""},
+		fam:     "",
 		sz:      500,
 		workers: 1,
 	}
@@ -1595,7 +1595,10 @@ func parseImporterArgs(ctx context.Context, args []string) (importerArgs, error)
 		case strings.HasPrefix(arg, "app-profile="):
 			ia.appProfile = strings.Split(arg, "=")[1]
 		case strings.HasPrefix(arg, "column-family="):
-			ia.fams = append(ia.fams, strings.Split(arg, "=")[1])
+			ia.fam = strings.Split(arg, "=")[1]
+			if ia.fam == "" {
+				return ia, fmt.Errorf("column-family cannot be ''")
+			}
 		case strings.HasPrefix(arg, "batch-size="):
 			ia.sz, err = strconv.Atoi(strings.Split(arg, "=")[1])
 			if err != nil || ia.sz <= 0 || ia.sz >= 100000 {
@@ -1604,7 +1607,7 @@ func parseImporterArgs(ctx context.Context, args []string) (importerArgs, error)
 		case strings.HasPrefix(arg, "workers="):
 			ia.workers, err = strconv.Atoi(strings.Split(arg, "=")[1])
 			if err != nil || ia.workers <= 0 {
-				return ia, fmt.Errorf("Workers must be > 0, err:%s", err)
+				return ia, fmt.Errorf("workers must be > 0, err:%s", err)
 			}
 		}
 	}
@@ -1612,9 +1615,9 @@ func parseImporterArgs(ctx context.Context, args []string) (importerArgs, error)
 }
 
 func importCSV(ctx context.Context, tbl *bigtable.Table, r *csv.Reader, ia importerArgs) {
-	fams, cols, err := parseCsvHeaders(r, ia.fams)
+	fams, cols, err := parseCsvHeaders(r, ia.fam)
 	if err != nil {
-		log.Fatalf("Error parsing headers: %s", err)
+		log.Fatalf("error parsing headers: %s", err)
 	}
 	sr := safeReader{r: r}
 	ts := bigtable.Now()
@@ -1625,7 +1628,7 @@ func importCSV(ctx context.Context, tbl *bigtable.Table, r *csv.Reader, ia impor
 		go func(w int) {
 			defer wg.Done()
 			if e := sr.parseAndWrite(ctx, tbl, fams, cols, ts, ia.sz, w); e != nil {
-				log.Fatalf("Error: %s", e)
+				log.Fatalf("error: %s", e)
 			}
 		}(i)
 	}
@@ -1633,31 +1636,35 @@ func importCSV(ctx context.Context, tbl *bigtable.Table, r *csv.Reader, ia impor
 	log.Printf("Done importing %d rows.\n", sr.t)
 }
 
-func parseCsvHeaders(r *csv.Reader, fams []string) ([]string, []string, error) {
+func parseCsvHeaders(r *csv.Reader, family string) ([]string, []string, error) {
 	var err error
-	if len(fams) < 2 { // no column-family from flag, using first row
+	var fams, cols []string
+	if family == "" { // no column-family from flag, using first row
 		fams, err = r.Read()
 		if err != nil {
-			return fams, nil, fmt.Errorf("Family header reader error:%s", err)
+			return nil, nil, fmt.Errorf("family header reader error:%s", err)
 		}
 	}
-	cols, err := r.Read()
+	cols, err = r.Read() // column names are next row
 	if err != nil {
-		return fams, cols, fmt.Errorf("Columns header reader error:%s", err)
+		return nil, nil, fmt.Errorf("columns header reader error:%s", err)
 	}
-	if len(fams) < 2 || fams[1] == "" {
-		return fams, cols, fmt.Errorf("The first data column requires a non-empty column family or column-family flag set")
+	if family != "" {
+		fams = make([]string, len(cols))
+		fams[1] = family
 	}
-	if len(fams) < len(cols) {
-		ext := make([]string, len(cols)-len(fams))
-		fams = append(fams, ext...)
+	if len(fams) < 2 || len(cols) < 2 {
+		return fams, cols, fmt.Errorf("at least 2 columns are required (rowkey + data)")
 	}
-	for i := range cols[1:] {
-		if fams[i+1] == "" {
-			fams[i+1] = fams[i]
-		}
-		if fams[i+1] == "" {
-			return fams, cols, fmt.Errorf("Empty column family for column %d", i)
+	if fams[0] != "" || cols[0] != "" {
+		return fams, cols, fmt.Errorf("the first column must be empty for column-family and column name rows")
+	}
+	if fams[1] == "" || cols[1] == "" {
+		return fams, cols, fmt.Errorf("the second column (first data column) must have values for column family and column name rows if present")
+	}
+	for i := range cols { // fill any blank column families with previous
+		if i > 0 && fams[i] == "" {
+			fams[i] = fams[i-1]
 		}
 	}
 	return fams, cols, nil
@@ -1667,10 +1674,10 @@ func batchWrite(ctx context.Context, tbl *bigtable.Table, rk []string, muts []*b
 	log.Printf("[%d] Writing batch:: size: %d, firstRowKey: %s, lastRowKey: %s\n", worker, len(rk), rk[0], rk[len(rk)-1])
 	errors, err := tbl.ApplyBulk(ctx, rk, muts)
 	if err != nil {
-		return 0, fmt.Errorf("Applying bulk mutations process error: %v", err)
+		return 0, fmt.Errorf("applying bulk mutations process error: %v", err)
 	}
 	if errors != nil {
-		return 0, fmt.Errorf("Applying bulk mutations had %d errors, first:%v", len(errors), errors[0])
+		return 0, fmt.Errorf("applying bulk mutations had %d errors, first:%v", len(errors), errors[0])
 
 	}
 	return len(rk), nil

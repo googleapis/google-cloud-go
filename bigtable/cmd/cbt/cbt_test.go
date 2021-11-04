@@ -185,13 +185,14 @@ func TestCsvImporterArgs(t *testing.T) {
 		out  importerArgs
 		fail bool
 	}{
-		{in: []string{"my-table", "my-file.csv"}, out: importerArgs{"", []string{""}, 500, 1}},
-		{in: []string{"my-table", "my-file.csv", "app-profile="}, out: importerArgs{"", []string{""}, 500, 1}},
-		{in: []string{"my-table", "my-file.csv", "column-family="}, out: importerArgs{"", []string{"", ""}, 500, 1}},
+		{in: []string{"my-table", "my-file.csv"}, out: importerArgs{"", "", 500, 1}},
+		{in: []string{"my-table", "my-file.csv", "app-profile="}, out: importerArgs{"", "", 500, 1}},
 		{in: []string{"my-table", "my-file.csv", "app-profile=my-ap", "column-family=my-family", "batch-size=100", "workers=20"},
-			out: importerArgs{"my-ap", []string{"", "my-family"}, 100, 20}},
+			out: importerArgs{"my-ap", "my-family", 100, 20}},
 
 		{in: []string{}, fail: true},
+
+		{in: []string{"my-table", "my-file.csv", "column-family="}, fail: true},
 		{in: []string{"my-table", "my-file.csv", "batch-size=-5"}, fail: true},
 		{in: []string{"my-table", "my-file.csv", "batch-size=5000000"}, fail: true},
 		{in: []string{"my-table", "my-file.csv", "batch-size=nan"}, fail: true},
@@ -214,22 +215,15 @@ func TestCsvImporterArgs(t *testing.T) {
 			continue
 		}
 		if got.appProfile != tc.out.appProfile ||
-			len(got.fams) != len(tc.out.fams) ||
+			got.fam != tc.out.fam ||
 			got.sz != tc.out.sz ||
 			got.workers != tc.out.workers {
 			t.Errorf("parseImportArgs(%q) did not fail, out: %q", tc.in, got)
-			continue
-		}
-		for i, f := range got.fams {
-			if f != tc.out.fams[i] {
-				t.Errorf("parseImportArgs(%q) incorrect column families, out: %q", tc.in, got)
-				continue
-			}
 		}
 	}
 }
 
-func writeAsCSV(data [][]string) ([]byte, error) {
+func transformToCsvBuffer(data [][]string) ([]byte, error) {
 	if len(data) == 0 {
 		return nil, fmt.Errorf("Data cannot be empty")
 	}
@@ -248,7 +242,7 @@ func writeAsCSV(data [][]string) ([]byte, error) {
 func TestCsvHeaderParser(t *testing.T) {
 	tests := []struct {
 		iData    [][]string
-		iFams    []string
+		iFam     string
 		oFams    []string
 		oCols    []string
 		nextLine []string
@@ -256,36 +250,32 @@ func TestCsvHeaderParser(t *testing.T) {
 	}{
 		// extends "my-family" to col-2
 		{iData: [][]string{{"", "my-family", "", "my-family-2"}, {"", "col-1", "col-2", "col-3"}, {"rk-1", "A", "", ""}},
-			iFams:    []string{""},
+			iFam:     "",
 			oFams:    []string{"", "my-family", "my-family", "my-family-2"},
 			oCols:    []string{"", "col-1", "col-2", "col-3"},
 			nextLine: []string{"rk-1", "A", "", ""}},
 		// handles column-faimly=arg-family flag
 		{iData: [][]string{{"", "col-1", "col-2"}, {"rk-1", "A", ""}},
-			iFams:    []string{"", "arg-family"},
+			iFam:     "arg-family",
 			oFams:    []string{"", "arg-family", "arg-family"},
 			oCols:    []string{"", "col-1", "col-2"},
 			nextLine: []string{"rk-1", "A", ""}},
 
 		// early EOF in headers
 		{iData: [][]string{{"", "my-family", ""}},
-			iFams: []string{""},
-			fail:  true},
-		// empty column-family from iFams[1] (ie: empty column-family arg)
-		{iData: [][]string{{"", "my-family", ""}, {"", "col-1", "col-2"}},
-			iFams: []string{"", ""},
-			fail:  true},
+			iFam: "",
+			fail: true},
 	}
 
 	for _, tc := range tests {
 		// create in memory csv like file
-		byteData, err := writeAsCSV(tc.iData)
+		byteData, err := transformToCsvBuffer(tc.iData)
 		if err != nil {
 			t.Fatal(err)
 		}
 		reader := csv.NewReader(bytes.NewReader(byteData))
 
-		fams, cols, err := parseCsvHeaders(reader, tc.iFams)
+		fams, cols, err := parseCsvHeaders(reader, tc.iFam)
 		if !tc.fail && err != nil {
 			t.Errorf("parseCsvHeaders() failed. input:%+v, error:%s", tc, err)
 			continue
@@ -389,7 +379,6 @@ func validateData(ctx context.Context, tbl *bigtable.Table, fams, cols []string,
 				v, ok := valMap[k]
 				if ok && v == string(column.Value) {
 					delete(valMap, k)
-					continue
 				}
 			}
 		}
@@ -411,7 +400,7 @@ func TestCsvParseAndWrite(t *testing.T) {
 		{"rk-1", "", "C"},
 	}
 
-	byteData, err := writeAsCSV(rowData)
+	byteData, err := transformToCsvBuffer(rowData)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -438,7 +427,7 @@ func TestCsvParseAndWriteBadFamily(t *testing.T) {
 		{"rk-1", "", "C"},
 	}
 
-	byteData, err := writeAsCSV(rowData)
+	byteData, err := transformToCsvBuffer(rowData)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -462,7 +451,7 @@ func TestCsvParseAndWriteDuplicateRowkeys(t *testing.T) {
 		{"rk-0", "C", ""},
 	}
 
-	byteData, err := writeAsCSV(rowData)
+	byteData, err := transformToCsvBuffer(rowData)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -506,7 +495,7 @@ func TestCsvToCbt(t *testing.T) {
 	}{
 		{
 			label: "has-column-families",
-			ia:    importerArgs{fams: []string{""}, sz: 1, workers: 1},
+			ia:    importerArgs{fam: "", sz: 1, workers: 1},
 			csvData: [][]string{
 				{"", "my-family", ""},
 				{"", "col-1", "col-2"},
@@ -520,7 +509,7 @@ func TestCsvToCbt(t *testing.T) {
 		},
 		{
 			label: "no-column-families",
-			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 1},
+			ia:    importerArgs{fam: "arg-family", sz: 1, workers: 1},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
 				{"rk-0", "A", ""},
@@ -533,7 +522,7 @@ func TestCsvToCbt(t *testing.T) {
 		},
 		{
 			label: "larger-batches",
-			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 100, workers: 1},
+			ia:    importerArgs{fam: "arg-family", sz: 100, workers: 1},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
 				{"rk-0", "A", ""},
@@ -546,7 +535,7 @@ func TestCsvToCbt(t *testing.T) {
 		},
 		{
 			label: "many-workers",
-			ia:    importerArgs{fams: []string{"", "arg-family"}, sz: 1, workers: 20},
+			ia:    importerArgs{fam: "arg-family", sz: 1, workers: 20},
 			csvData: [][]string{
 				{"", "col-1", "col-2"},
 				{"rk-0", "A", ""},
@@ -563,7 +552,7 @@ func TestCsvToCbt(t *testing.T) {
 		ctx, client := setupEmulator(t, []string{"my-table"}, []string{"my-family", "arg-family"})
 		tbl := client.Open("my-table")
 
-		byteData, err := writeAsCSV(tc.csvData)
+		byteData, err := transformToCsvBuffer(tc.csvData)
 		if err != nil {
 			t.Fatal(err)
 		}
