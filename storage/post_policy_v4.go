@@ -54,7 +54,8 @@ type PostPolicyV4Options struct {
 
 	// SignBytes is a function for implementing custom signing.
 	//
-	// Deprecated: Use SignRawBytes.
+	// Deprecated: Use SignRawBytes. If both SignBytes and SignRawBytes are defined,
+	// SignBytes will be ignored.
 	SignBytes func(hashBytes []byte) (signature []byte, err error)
 
 	// SignRawBytes is a function for implementing custom signing. For example, if
@@ -72,6 +73,8 @@ type PostPolicyV4Options struct {
 	//     })
 	//
 	// Exactly one of PrivateKey or SignRawBytes must be non-nil.
+	// If previously using SignBytes, add the following to use SignRawBytesInstead:
+	//
 	SignRawBytes func(bytes []byte) (signature []byte, err error)
 
 	// Expires is the expiration time on the signed URL.
@@ -225,10 +228,10 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 
 	var signingFn func(hashedBytes []byte) ([]byte, error)
 	switch {
-	case opts.SignBytes != nil:
-		signingFn = opts.SignBytes
 	case opts.SignRawBytes != nil:
 		signingFn = opts.SignRawBytes
+	case opts.SignRawBytes == nil && opts.SignBytes != nil:
+		signingFn = opts.SignBytes
 	case len(opts.PrivateKey) != 0:
 		parsedRSAPrivKey, err := parseKey(opts.PrivateKey)
 		if err != nil {
@@ -240,7 +243,7 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 		}
 
 	default:
-		return nil, errors.New("storage: exactly one of PrivateKey or SignedBytes must be set")
+		return nil, errors.New("storage: exactly one of PrivateKey or SignRawBytes must be set")
 	}
 
 	var descFields PolicyV4Fields
@@ -316,12 +319,13 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	b64Policy := base64.StdEncoding.EncodeToString(condsAsJSON)
 	var signature []byte
 	var signErr error
-	if opts.SignBytes != nil {
+	// SignBytes is used only if SignRawBytes is not defined
+	if opts.SignRawBytes == nil && opts.SignBytes != nil {
+		// SignBytes expects hashed bytes as input instead of raw bytes, so we hash them
 		shaSum := sha256.Sum256([]byte(b64Policy))
 		signature, signErr = signingFn(shaSum[:])
 	} else {
 		signature, signErr = signingFn([]byte(b64Policy))
-
 	}
 	if signErr != nil {
 		return nil, signErr
@@ -369,8 +373,8 @@ func validatePostPolicyV4Options(opts *PostPolicyV4Options, now time.Time) error
 	if opts == nil || opts.GoogleAccessID == "" {
 		return errors.New("storage: missing required GoogleAccessID")
 	}
-	if privBlank, signBlank := len(opts.PrivateKey) == 0, opts.SignBytes == nil; privBlank == signBlank {
-		return errors.New("storage: exactly one of PrivateKey or SignedBytes must be set")
+	if privBlank, signBlank := len(opts.PrivateKey) == 0, opts.SignBytes == nil && opts.SignRawBytes == nil; privBlank == signBlank {
+		return errors.New("storage: exactly one of PrivateKey or SignRawBytes must be set")
 	}
 	if opts.Expires.Before(now) {
 		return errors.New("storage: expecting Expires to be in the future")
