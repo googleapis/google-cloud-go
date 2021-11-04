@@ -56,25 +56,26 @@ type PostPolicyV4Options struct {
 	//
 	// Deprecated: Use SignRawBytes. If both SignBytes and SignRawBytes are defined,
 	// SignBytes will be ignored.
+	// Add the following to the top of your signing function to use SignRawBytes instead:
+	//		shaSum := sha256.Sum256(bytes)
+	//		bytes = shaSum[:]
 	SignBytes func(hashBytes []byte) (signature []byte, err error)
 
 	// SignRawBytes is a function for implementing custom signing. For example, if
 	// your application is running on Google App Engine, you can use
 	// appengine's internal signing function:
-	//     ctx := appengine.NewContext(request)
-	//     acc, _ := appengine.ServiceAccount(ctx)
-	//     url, err := SignedURL("bucket", "object", &SignedURLOptions{
-	//     	GoogleAccessID: acc,
-	//     	SignRawBytes: func(b []byte) ([]byte, error) {
-	//     		_, signedBytes, err := appengine.SignBytes(ctx, b)
-	//     		return signedBytes, err
-	//     	},
-	//     	// etc.
-	//     })
+	//		ctx := appengine.NewContext(request)
+	//     	acc, _ := appengine.ServiceAccount(ctx)
+	//     	&PostPolicyV4Options{
+	//     		GoogleAccessID: acc,
+	//     		SignRawBytes: func(b []byte) ([]byte, error) {
+	//     			_, signedBytes, err := appengine.SignBytes(ctx, b)
+	//     			return signedBytes, err
+	//     		},
+	//     		// etc.
+	//     	})
 	//
 	// Exactly one of PrivateKey or SignRawBytes must be non-nil.
-	// If previously using SignBytes, add the following to use SignRawBytesInstead:
-	//
 	SignRawBytes func(bytes []byte) (signature []byte, err error)
 
 	// Expires is the expiration time on the signed URL.
@@ -366,8 +367,8 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 
 // validatePostPolicyV4Options checks that:
 // * GoogleAccessID is set
-// * either but not both PrivateKey and SignBytes are set or nil, but not both
-// * Expires, the deadline is not in the past
+// * either PrivateKey or SignRawBytes/SignBytes is set, but not both
+// * the deadline set in Expires is not in the past
 // * if Style is not set, it'll use PathStyle
 func validatePostPolicyV4Options(opts *PostPolicyV4Options, now time.Time) error {
 	if opts == nil || opts.GoogleAccessID == "" {
