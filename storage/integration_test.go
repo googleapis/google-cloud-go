@@ -4216,7 +4216,7 @@ func TestIntegration_Scopes(t *testing.T) {
 
 }
 
-func TestBucketSignURL(t *testing.T) {
+func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	ctx := context.Background()
 
 	if testing.Short() && !replaying {
