@@ -419,6 +419,10 @@ type LoadStatistics struct {
 
 // QueryStatistics contains statistics about a query job.
 type QueryStatistics struct {
+
+	// BI-Engine specific statistics.
+	BIEngineStatistics *BIEngineStatistics
+
 	// Billing tier for the job.
 	BillingTier int64
 
@@ -481,6 +485,51 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
+}
+
+// BIEngineStatistics contains query statistics specific to the use of BI Engine.
+type BIEngineStatistics struct {
+	// Specifies which mode of BI Engine acceleration was performed.
+	BIEngineMode string
+
+	// In case of DISABLED or PARTIAL BIEngineMode, these
+	// contain the explanatory reasons as to why BI Engine could not
+	// accelerate. In case the full query was accelerated, this field is not
+	// populated.
+	BIEngineReasons []*BIEngineReason
+}
+
+func bqToBIEngineStatistics(in *bq.BiEngineStatistics) *BIEngineStatistics {
+	if in == nil {
+		return nil
+	}
+	stats := &BIEngineStatistics{
+		BIEngineMode: in.BiEngineMode,
+	}
+	for _, v := range in.BiEngineReasons {
+		stats.BIEngineReasons = append(stats.BIEngineReasons, bqToBIEngineReason(v))
+	}
+	return stats
+}
+
+// BIEngineReason contains more detailed information about why a query wasn't fully
+// accelerated.
+type BIEngineReason struct {
+	// High-Level BI engine reason for partial or disabled acceleration.
+	Code string
+
+	// Human-readable reason for partial or disabled acceleration.
+	Message string
+}
+
+func bqToBIEngineReason(in *bq.BiEngineReason) *BIEngineReason {
+	if in == nil {
+		return nil
+	}
+	return &BIEngineReason{
+		Code:    in.Code,
+		Message: in.Message,
+	}
 }
 
 // ExplainQueryStage describes one stage of a query.
@@ -922,6 +971,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			tables = append(tables, bqToTable(tr, c))
 		}
 		js.Details = &QueryStatistics{
+			BIEngineStatistics:            bqToBIEngineStatistics(s.Query.BiEngineStatistics),
 			BillingTier:                   s.Query.BillingTier,
 			CacheHit:                      s.Query.CacheHit,
 			DDLTargetTable:                bqToTable(s.Query.DdlTargetTable, c),
