@@ -105,7 +105,7 @@ func (c *GlobalOperationsClient) Delete(ctx context.Context, req *computepb.Dele
 	return c.internalClient.Delete(ctx, req, opts...)
 }
 
-// Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+// Get retrieves the specified Operations resource.
 func (c *GlobalOperationsClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -115,13 +115,7 @@ func (c *GlobalOperationsClient) List(ctx context.Context, req *computepb.ListGl
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
-//
-// This method is called on a best-effort basis. Specifically:
-//
-//   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
-//
-//   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
 func (c *GlobalOperationsClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	return c.internalClient.Wait(ctx, req, opts...)
 }
@@ -324,7 +318,7 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 	return rsp, nil
 }
 
-// Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
+// Get retrieves the specified Operations resource.
 func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v", req.GetProject(), req.GetOperation())
@@ -448,13 +442,7 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 	return it
 }
 
-// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress.
-//
-// This method is called on a best-effort basis. Specifically:
-//
-//   In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds.
-//
-//   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
+// Wait waits for the specified Operation resource to return as DONE or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the GET method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be DONE or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
 func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v/wait", req.GetProject(), req.GetOperation())

@@ -64,9 +64,29 @@
         "grpc": {
           "libraryClient": "OsConfigZonalClient",
           "rpcs": {
+            "CreateOSPolicyAssignment": {
+              "methods": [
+                "CreateOSPolicyAssignment"
+              ]
+            },
+            "DeleteOSPolicyAssignment": {
+              "methods": [
+                "DeleteOSPolicyAssignment"
+              ]
+            },
             "GetInventory": {
               "methods": [
                 "GetInventory"
+              ]
+            },
+            "GetOSPolicyAssignment": {
+              "methods": [
+                "GetOSPolicyAssignment"
+              ]
+            },
+            "GetOSPolicyAssignmentReport": {
+              "methods": [
+                "GetOSPolicyAssignmentReport"
               ]
             },
             "GetVulnerabilityReport": {
@@ -79,9 +99,29 @@
                 "ListInventories"
               ]
             },
+            "ListOSPolicyAssignmentReports": {
+              "methods": [
+                "ListOSPolicyAssignmentReports"
+              ]
+            },
+            "ListOSPolicyAssignmentRevisions": {
+              "methods": [
+                "ListOSPolicyAssignmentRevisions"
+              ]
+            },
+            "ListOSPolicyAssignments": {
+              "methods": [
+                "ListOSPolicyAssignments"
+              ]
+            },
             "ListVulnerabilityReports": {
               "methods": [
                 "ListVulnerabilityReports"
+              ]
+            },
+            "UpdateOSPolicyAssignment": {
+              "methods": [
+                "UpdateOSPolicyAssignment"
               ]
             }
           }
