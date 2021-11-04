@@ -124,7 +124,7 @@ func (c *GlobalForwardingRulesClient) Patch(ctx context.Context, req *computepb.
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
 func (c *GlobalForwardingRulesClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
@@ -480,7 +480,7 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	return op, err
 }
 
-// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
+// SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
 func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
