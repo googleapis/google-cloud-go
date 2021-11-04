@@ -2262,8 +2262,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
-	fmt.Print(profiles)
-
 	// Ensure the profiles we require exist. profiles ⊂ allProfiles
 	verifyProfilesSubset := func(allProfiles []*btapb.AppProfile, profiles map[string]struct{}) {
 		for _, profile := range allProfiles {
