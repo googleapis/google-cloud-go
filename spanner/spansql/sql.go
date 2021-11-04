@@ -289,7 +289,7 @@ func (c Check) SQL() string {
 
 func (t Type) SQL() string {
 	str := t.Base.SQL()
-	if t.Base == String || t.Base == Bytes {
+	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
 		if t.Len == MaxLen {
 			str += "MAX"
@@ -580,6 +580,13 @@ func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString("(")
 	addExprList(sb, f.Args, ", ")
 	sb.WriteString(")")
+}
+
+func (te TypedExpr) SQL() string { return buildSQL(te) }
+func (te TypedExpr) addSQL(sb *strings.Builder) {
+	te.Expr.addSQL(sb)
+	sb.WriteString(" AS ")
+	sb.WriteString(te.Type.SQL())
 }
 
 func idList(l []ID, join string) string {

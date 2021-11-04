@@ -466,6 +466,30 @@ func TestSQL(t *testing.T) {
 			reparseQuery,
 		},
 		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: String}}},
+					}},
+				},
+			},
+			`SELECT CAST(7 AS STRING)`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{Func{
+						Name: "SAFE_CAST",
+						Args: []Expr{TypedExpr{Expr: IntegerLiteral(7), Type: Type{Base: Date}}},
+					}},
+				},
+			},
+			`SELECT SAFE_CAST(7 AS DATE)`,
+			reparseQuery,
+		},
+		{
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},
 			`X NOT BETWEEN Y AND Z`,
 			reparseExpr,
