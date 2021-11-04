@@ -2017,7 +2017,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	}
 
 	if qStats.BIEngineStatistics != nil {
-		expectedMode := true
+		expectedMode := false
 		for _, m := range []string{"FULL", "PARTIAL", "DISABLED"} {
 			if qStats.BIEngineStatistics.BIEngineMode == m {
 				expectedMode = true
