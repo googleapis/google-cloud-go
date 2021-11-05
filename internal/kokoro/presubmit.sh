@@ -46,7 +46,8 @@ try3 go mod download
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
-# Run tests and tee output to log file, to be pushed to GCS as artifact.
+# Run tests in the current directory and tee output to log file,
+# to be pushed to GCS as artifact.
 runPresubmitTests() {
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
     go test -race -v -timeout 15m -short ./... 2>&1 \
