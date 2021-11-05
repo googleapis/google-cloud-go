@@ -79,9 +79,10 @@ type ManagedStream struct {
 	fc               *flowController
 
 	// aspects of the stream client
-	ctx    context.Context // retained context for the stream
-	cancel context.CancelFunc
-	open   func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	ctx         context.Context // retained context for the stream
+	cancel      context.CancelFunc
+	callOptions []gax.CallOption                                                                                // options passed when opening an append client
+	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
@@ -141,14 +142,14 @@ func (ms *ManagedStream) StreamType() StreamType {
 
 // FlushRows advances the offset at which rows in a BufferedStream are visible.  Calling
 // this method for other stream types yields an error.
-func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64) (int64, error) {
+func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64, opts ...gax.CallOption) (int64, error) {
 	req := &storagepb.FlushRowsRequest{
 		WriteStream: ms.streamSettings.streamID,
 		Offset: &wrapperspb.Int64Value{
 			Value: offset,
 		},
 	}
-	resp, err := ms.c.rawClient.FlushRows(ctx, req)
+	resp, err := ms.c.rawClient.FlushRows(ctx, req, opts...)
 	recordStat(ms.ctx, FlushRequests, 1)
 	if err != nil {
 		return 0, err
@@ -161,12 +162,12 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64) (int64, er
 //
 // Finalizing does not advance the current offset of a BufferedStream, nor does it commit
 // data in a PendingStream.
-func (ms *ManagedStream) Finalize(ctx context.Context) (int64, error) {
+func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (int64, error) {
 	// TODO: consider blocking for in-flight appends once we have an appendStream plumbed in.
 	req := &storagepb.FinalizeWriteStreamRequest{
 		Name: ms.streamSettings.streamID,
 	}
-	resp, err := ms.c.rawClient.FinalizeWriteStream(ctx, req)
+	resp, err := ms.c.rawClient.FinalizeWriteStream(ctx, req, opts...)
 	if err != nil {
 		return 0, err
 	}
@@ -208,7 +209,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 		if ms.streamSettings != nil {
 			streamID = ms.streamSettings.streamID
 		}
-		arc, err := ms.open(streamID)
+		arc, err := ms.open(streamID, ms.callOptions...)
 		bo, shouldRetry := r.Retry(err)
 		if err != nil && shouldRetry {
 			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
