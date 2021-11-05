@@ -36,6 +36,197 @@ func ExampleNewOsConfigZonalClient() {
 	_ = c
 }
 
+func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.CreateOSPolicyAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#CreateOSPolicyAssignmentRequest.
+	}
+	op, err := c.CreateOSPolicyAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#UpdateOSPolicyAssignmentRequest.
+	}
+	op, err := c.UpdateOSPolicyAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.GetOSPolicyAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetOSPolicyAssignmentRequest.
+	}
+	resp, err := c.GetOSPolicyAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentsRequest.
+	}
+	it := c.ListOSPolicyAssignments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentRevisionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentRevisionsRequest.
+	}
+	it := c.ListOSPolicyAssignmentRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#DeleteOSPolicyAssignmentRequest.
+	}
+	op, err := c.DeleteOSPolicyAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleOsConfigZonalClient_GetOSPolicyAssignmentReport() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.GetOSPolicyAssignmentReportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#GetOSPolicyAssignmentReportRequest.
+	}
+	resp, err := c.GetOSPolicyAssignmentReport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
+	ctx := context.Background()
+	c, err := osconfig.NewOsConfigZonalClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &osconfigpb.ListOSPolicyAssignmentReportsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/v1#ListOSPolicyAssignmentReportsRequest.
+	}
+	it := c.ListOSPolicyAssignmentReports(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleOsConfigZonalClient_GetInventory() {
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)

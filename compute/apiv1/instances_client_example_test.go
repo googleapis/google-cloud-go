@@ -454,6 +454,26 @@ func ExampleInstancesClient_Reset() {
 	_ = resp
 }
 
+func ExampleInstancesClient_SendDiagnosticInterrupt() {
+	ctx := context.Background()
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SendDiagnosticInterruptInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SendDiagnosticInterruptInstanceRequest.
+	}
+	resp, err := c.SendDiagnosticInterrupt(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleInstancesClient_SetDeletionProtection() {
 	ctx := context.Background()
 	c, err := compute.NewInstancesRESTClient(ctx)

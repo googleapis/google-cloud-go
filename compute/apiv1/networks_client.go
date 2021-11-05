@@ -157,7 +157,7 @@ func (c *NetworksClient) SwitchToCustomMode(ctx context.Context, req *computepb.
 	return c.internalClient.SwitchToCustomMode(ctx, req, opts...)
 }
 
-// UpdatePeering updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes
+// UpdatePeering updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
 func (c *NetworksClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdatePeering(ctx, req, opts...)
 }
@@ -799,7 +799,7 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 	return op, err
 }
 
-// UpdatePeering updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes
+// UpdatePeering updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
 func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksUpdatePeeringRequestResource()
