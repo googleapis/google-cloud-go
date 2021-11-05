@@ -46,8 +46,28 @@ try3 go mod download
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
+# Run tests and tee output to log file, to be pushed to GCS as artifact.
+runPresubmitTests() {
+  if [ -z ${RUN_INTEGRATION_TESTS} ]; then
+    go test -race -v -timeout 15m -short ./... 2>&1 \
+    | tee sponge_log.log
+  else
+    go test -race -v -timeout 45m ./... 2>&1 \
+    | tee sponge_log.log
+  fi
 
-# Run only tests in submodules changed by the PR
+  # Run integration tests against an emulator.
+  if [ -f "emulator_test.sh" ]; then
+    ./emulator_test.sh
+  fi
+  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+  # xUnit XML file.
+  cat sponge_log.log \
+    | go-junit-report -set-exit-code > sponge_log.xml
+  # Add the exit codes together so we exit non-zero if any module fails.
+  exit_code=$(($exit_code + $?))
+}
+
 SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT \
   | grep -Ev '(\.md$|^\.github)' || true)
 # CHANGED_DIRS is the list of significant top-level directories that changed,
@@ -55,37 +75,12 @@ SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKO
 CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u \
   | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
 
-
 echo "Running tests only in changed submodules: $CHANGED_DIRS"
 for d in $CHANGED_DIRS; do
-    # Run tests and tee output to log file, to be pushed to GCS as artifact.
   for i in `find "$d" -name go.mod`; do
     pushd `dirname $i`;
-      if [ -z ${RUN_INTEGRATION_TESTS} ]; then
-        go test -race -timeout 15m -short ./... 2>&1 \
-        | tee sponge_log.log
-      else
-        go test -race -timeout 45m ./... 2>&1 \
-        | tee sponge_log.log
-      fi
-      # Run integration tests against an emulator.
-      if [ -f "emulator_test.sh" ]; then
-        ./emulator_test.sh
-      fi
-      # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-      # xUnit XML file.
-      cat sponge_log.log \
-        | go-junit-report -set-exit-code > sponge_log.xml
-      # Add the exit codes together so we exit non-zero if any module fails.
-      exit_code=$(($exit_code + $?))
+      runPresubmitTests
     popd;
-  done
-done
-
-for d in $CHANGED_DIRS; do
-  echo "dir $d"
-  for i in `find "$d" -name go.mod`; do
-    echo "\tsubdir $i"
   done
 done
 
