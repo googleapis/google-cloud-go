@@ -43,12 +43,13 @@ var newVersionsClientHook clientHook
 
 // VersionsCallOptions contains the retry settings for each method of VersionsClient.
 type VersionsCallOptions struct {
-	ListVersions  []gax.CallOption
-	GetVersion    []gax.CallOption
-	CreateVersion []gax.CallOption
-	UpdateVersion []gax.CallOption
-	DeleteVersion []gax.CallOption
-	LoadVersion   []gax.CallOption
+	ListVersions    []gax.CallOption
+	GetVersion      []gax.CallOption
+	CreateVersion   []gax.CallOption
+	UpdateVersion   []gax.CallOption
+	DeleteVersion   []gax.CallOption
+	LoadVersion     []gax.CallOption
+	CompareVersions []gax.CallOption
 }
 
 func defaultVersionsGRPCClientOptions() []option.ClientOption {
@@ -132,6 +133,17 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 				})
 			}),
 		},
+		CompareVersions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -148,6 +160,7 @@ type internalVersionsClient interface {
 	DeleteVersion(context.Context, *cxpb.DeleteVersionRequest, ...gax.CallOption) error
 	LoadVersion(context.Context, *cxpb.LoadVersionRequest, ...gax.CallOption) (*LoadVersionOperation, error)
 	LoadVersionOperation(name string) *LoadVersionOperation
+	CompareVersions(context.Context, *cxpb.CompareVersionsRequest, ...gax.CallOption) (*cxpb.CompareVersionsResponse, error)
 }
 
 // VersionsClient is a client for interacting with Dialogflow API.
@@ -247,6 +260,11 @@ func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionR
 // The name must be that of a previously created LoadVersionOperation, possibly from a different process.
 func (c *VersionsClient) LoadVersionOperation(name string) *LoadVersionOperation {
 	return c.internalClient.LoadVersionOperation(name)
+}
+
+// CompareVersions compares the specified base version with target version.
+func (c *VersionsClient) CompareVersions(ctx context.Context, req *cxpb.CompareVersionsRequest, opts ...gax.CallOption) (*cxpb.CompareVersionsResponse, error) {
+	return c.internalClient.CompareVersions(ctx, req, opts...)
 }
 
 // versionsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
@@ -492,6 +510,27 @@ func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 	return &LoadVersionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *versionsGRPCClient) CompareVersions(ctx context.Context, req *cxpb.CompareVersionsRequest, opts ...gax.CallOption) (*cxpb.CompareVersionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "base_version", url.QueryEscape(req.GetBaseVersion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CompareVersions[0:len((*c.CallOptions).CompareVersions):len((*c.CallOptions).CompareVersions)], opts...)
+	var resp *cxpb.CompareVersionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.versionsClient.CompareVersions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateVersionOperation manages a long-running operation from CreateVersion.
