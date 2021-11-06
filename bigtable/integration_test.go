@@ -1564,7 +1564,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("NewProdEnv: %v", err)
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 10 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
