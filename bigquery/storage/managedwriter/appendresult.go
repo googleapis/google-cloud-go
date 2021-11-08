@@ -19,6 +19,7 @@ import (
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -66,7 +67,9 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 // append request.
 type pendingWrite struct {
 	request *storagepb.AppendRowsRequest
-	result  *AppendResult
+	// for schema evolution cases, accept a new schema
+	newSchema *descriptorpb.DescriptorProto
+	result    *AppendResult
 
 	// this is used by the flow controller.
 	reqSize int
@@ -112,5 +115,16 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	// encountering issues with flow control during enqueuing the initial request.
 	if fc != nil {
 		fc.release(pw.reqSize)
+	}
+}
+
+// WriterOption are variadic options used to configure a ManagedStream instance.
+type AppendOption func(*pendingWrite)
+
+// UpdateSchemaDescriptor is used to update the descriptor message schema associated
+// with a given stream.
+func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.newSchema = schema
 	}
 }

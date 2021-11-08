@@ -327,14 +327,25 @@ func (ms *ManagedStream) Close() error {
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
 // the set of data.
 //
-// The format of the row data is binary serialized protocol buffer bytes, and and the message
-// must adhere to the format of the schema Descriptor passed in when creating the managed stream.
-func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) (*AppendResult, error) {
+// The format of the row data is binary serialized protocol buffer bytes.  The message must be compatible
+// with the schema currently set for the stream.
+//
+// Use the sentinel value NoStreamOffset to omit sending of the offset value.
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64, opts ...AppendOption) (*AppendResult, error) {
 	pw := newPendingWrite(data, offset)
+	// apply AppendOption opts
+	for _, opt := range opts {
+		opt(pw)
+	}
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
 		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
 		pw.markDone(NoStreamOffset, err, nil)
+	}
+	// if we've received an updated schema as part of a write, propagate it.
+	if pw.newSchema != nil {
+		ms.schemaDescriptor = pw.newSchema
+		// TODO: verify if we need to trigger network stream reconnection.
 	}
 	// proceed to call
 	if err := ms.append(pw); err != nil {
