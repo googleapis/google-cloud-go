@@ -4278,7 +4278,8 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	}
 }
 
-// Tests that the same SignBytes function works for both GeneratePostPolicyV4 and SignedURL
+// Tests that the same SignBytes function works for both
+// SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	ctx := context.Background()
 
