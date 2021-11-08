@@ -42,6 +42,7 @@ The commands are:
     deletetable               Delete a table
     doc                       Print godoc-suitable documentation for cbt
     help                      Print help text
+    import                    Batch write many rows based on the input file
     listinstances             List instances in a project
     listclusters              List clusters in an instance
     lookup                    Read from a single row
@@ -270,6 +271,27 @@ Usage:
 	cbt help <command>
 
 	    Example: cbt help createtable
+
+
+
+
+Batch write many rows based on the input file
+
+Usage:
+	cbt import <table-id> <input-file> [app-profile=<app-profile-id>] [column-family=<family-name>] [batch-size=<500>] [workers=<1>]
+	  app-profile=<app-profile-id>          The app profile ID to use for the request
+	  column-family=<family-name>           The column family label to use
+	  batch-size=<500>                      The max number of rows per batch write request
+	  workers=<1>                           The number of worker threads
+
+	  Import data from a csv file into an existing cbt table that has the required column families.
+	  See <example.csv.github.com/cbt-import-sample.csv> for a sample .csv file and formatting.
+	  If no column family row is present, use the column-family flag to specify an existing family.
+
+	  Examples:
+	    cbt import csv-import-table cbt-import-sample.csv
+	    cbt import csv-import-table cbt-import-sample.csv app-profile=batch-write-profile column-family=my-family workers=5
+
 
 
 
