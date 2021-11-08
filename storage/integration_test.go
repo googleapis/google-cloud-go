@@ -4170,7 +4170,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 		},
 	}
 
-	objectName := "my-object.txt"
+	objectName := uidSpace.New()
 	object := b.Object(objectName)
 	defer h.mustDeleteObject(object)
 
