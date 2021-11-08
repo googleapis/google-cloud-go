@@ -51,7 +51,7 @@ func (r *roundRobinMsgRouter) Route(_ []byte) (partition int) {
 // number. It should only be used for messages with an ordering key.
 //
 // Matches implementation at:
-// https://github.com/googleapis/java-pubsublite/blob//google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/internal/DefaultRoutingPolicy.java
+// https://github.com/googleapis/java-pubsublite/blob/main/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/internal/DefaultRoutingPolicy.java
 type hashingMsgRouter struct {
 	partitionCount *big.Int
 }

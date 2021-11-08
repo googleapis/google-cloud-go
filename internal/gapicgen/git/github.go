@@ -268,7 +268,7 @@ git push origin $BRANCH_NAME
 		Title: &t,
 		Body:  &body,
 		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
-		Base:  github.String(""),
+		Base:  github.String("main"),
 		Draft: github.Bool(draft),
 	})
 	if err != nil {
