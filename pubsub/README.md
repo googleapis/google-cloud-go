@@ -3,7 +3,7 @@
 - [About Cloud Pubsub](https://cloud.google.com/pubsub/)
 - [API documentation](https://cloud.google.com/pubsub/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsub)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsub)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/pubsub)
 
 ### Example Usage
 
