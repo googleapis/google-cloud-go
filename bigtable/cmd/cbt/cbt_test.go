@@ -270,10 +270,22 @@ func TestCsvHeaderParser(t *testing.T) {
 			oCols:    []string{"", "col-1", "col-2"},
 			nextLine: []string{"rk-1", "A", ""}},
 
-		{label: "eof-in-header",
-			iData: [][]string{{"", "my-family", ""}},
+		{label: "eof-header-family",
+			iData: [][]string{{""}},
 			iFam:  "",
+			err:   "family header reader error:EOF"},
+		{label: "eof-header-column",
+			iData: [][]string{{""}, {""}},
+			iFam:  "arg-family",
 			err:   "columns header reader error:EOF"},
+		{label: "rowkey-in-header-row",
+			iData: [][]string{{"ABC", "my-family", ""}},
+			iFam:  "arg-family",
+			err:   "the first column must be empty for column-family and column name rows"},
+		{label: "blank-first-headers",
+			iData: [][]string{{"", "", ""}},
+			iFam:  "arg-family",
+			err:   "the second column (first data column) must have values for column family and column name rows if present"},
 	}
 
 	for _, tc := range tests {
