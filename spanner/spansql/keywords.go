@@ -128,11 +128,15 @@ var keywords = map[string]bool{
 // funcs is the set of reserved keywords that are functions.
 // https://cloud.google.com/spanner/docs/functions-and-operators
 var funcs = make(map[string]bool)
+var funcArgParsers = make(map[string]func(*parser) (Expr, *parseError))
 
 func init() {
 	for _, f := range allFuncs {
 		funcs[f] = true
 	}
+	// Special case for CAST and SAFE_CAST
+	funcArgParsers["CAST"] = typedArgParser
+	funcArgParsers["SAFE_CAST"] = typedArgParser
 }
 
 var allFuncs = []string{
@@ -147,6 +151,10 @@ var allFuncs = []string{
 	"MAX",
 	"MIN",
 	"SUM",
+
+	// Cast functions.
+	"CAST",
+	"SAFE_CAST",
 
 	// Mathematical functions.
 	"ABS",

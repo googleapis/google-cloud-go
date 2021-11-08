@@ -133,16 +133,12 @@ func (c *BackendServicesClient) Get(ctx context.Context, req *computepb.GetBacke
 	return c.internalClient.Get(ctx, req, opts...)
 }
 
-// GetHealth gets the most recent health check results for this BackendService.
-//
-// Example request body:
-//
-// { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
+// GetHealth gets the most recent health check results for this BackendService. Example request body: { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
 func (c *BackendServicesClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	return c.internalClient.GetHealth(ctx, req, opts...)
 }
 
-// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
 func (c *BackendServicesClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Insert(ctx, req, opts...)
 }
@@ -152,7 +148,7 @@ func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBac
 	return c.internalClient.List(ctx, req, opts...)
 }
 
-// Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *BackendServicesClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
 }
@@ -519,11 +515,7 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 	return rsp, nil
 }
 
-// GetHealth gets the most recent health check results for this BackendService.
-//
-// Example request body:
-//
-// { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
+// GetHealth gets the most recent health check results for this BackendService. Example request body: { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
 func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
@@ -570,7 +562,7 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 	return rsp, nil
 }
 
-// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+// Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
 func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
@@ -709,7 +701,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
-// Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+// Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()

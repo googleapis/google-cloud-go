@@ -323,7 +323,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	}, nil
 }
 
-var errNoCacheData = errors.New("No rows in rowSource cache")
+var errNoCacheData = errors.New("no rows in rowSource cache")
 
 // fetchCachedPage attempts to service the first page of results.  For the jobs path specifically, we have an
 // opportunity to fetch rows before the iterator is constructed, and thus serve that data as the first request

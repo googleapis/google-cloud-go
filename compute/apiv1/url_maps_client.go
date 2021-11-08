@@ -124,9 +124,7 @@ func (c *UrlMapsClient) Insert(ctx context.Context, req *computepb.InsertUrlMapR
 	return c.internalClient.Insert(ctx, req, opts...)
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
-//
-// For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
 func (c *UrlMapsClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.InvalidateCache(ctx, req, opts...)
 }
@@ -452,9 +450,7 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 	return op, err
 }
 
-// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
-//
-// For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
+// InvalidateCache initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
 func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
