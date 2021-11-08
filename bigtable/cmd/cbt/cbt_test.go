@@ -188,6 +188,8 @@ func matchesExpectedError(want string, err error) string {
 		if want == "" || !strings.Contains(got, want) {
 			return fmt.Sprintf("expected error substr:%s, got:%s", want, got)
 		}
+	} else if want != "" {
+		return fmt.Sprintf("expected error substr:%s", want)
 	}
 	return ""
 }
