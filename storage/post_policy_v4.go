@@ -59,6 +59,7 @@ type PostPolicyV4Options struct {
 	// Add the following to the top of your signing function to use SignRawBytes instead:
 	//		shaSum := sha256.Sum256(bytes)
 	//		bytes = shaSum[:]
+	//
 	SignBytes func(hashBytes []byte) (signature []byte, err error)
 
 	// SignRawBytes is a function for implementing custom signing. For example, if
@@ -74,6 +75,9 @@ type PostPolicyV4Options struct {
 	//     		},
 	//     		// etc.
 	//     	})
+	//
+	// SignRawBytes is equivalent to the SignBytes field on SignedURLOptions;
+	// that is, you may use the same signing function for the two.
 	//
 	// Exactly one of PrivateKey or SignRawBytes must be non-nil.
 	SignRawBytes func(bytes []byte) (signature []byte, err error)
