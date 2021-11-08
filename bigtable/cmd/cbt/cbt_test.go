@@ -19,6 +19,7 @@ import (
 	"context"
 	"encoding/csv"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -179,40 +180,47 @@ func TestParseColumnsFilter(t *testing.T) {
 	}
 }
 
+// Check if we get a substring of the expected error.
+// Returns "" if so, else returns the expected substring and error.
+func matchesExpectedError(want string, err error) string {
+	if err != nil {
+		got := err.Error()
+		if want == "" || !strings.Contains(got, want) {
+			return fmt.Sprintf("expected error substr:%s, got:%s", want, got)
+		}
+	}
+	return ""
+}
+
 func TestCsvImporterArgs(t *testing.T) {
 	tests := []struct {
-		in   []string
-		out  importerArgs
-		fail bool
+		in  []string
+		out importerArgs
+		err string
 	}{
 		{in: []string{"my-table", "my-file.csv"}, out: importerArgs{"", "", 500, 1}},
 		{in: []string{"my-table", "my-file.csv", "app-profile="}, out: importerArgs{"", "", 500, 1}},
 		{in: []string{"my-table", "my-file.csv", "app-profile=my-ap", "column-family=my-family", "batch-size=100", "workers=20"},
 			out: importerArgs{"my-ap", "my-family", 100, 20}},
 
-		{in: []string{}, fail: true},
-
-		{in: []string{"my-table", "my-file.csv", "column-family="}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "batch-size=-5"}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "batch-size=5000000"}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "batch-size=nan"}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "batch-size="}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "workers=0"}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "workers=nan"}, fail: true},
-		{in: []string{"my-table", "my-file.csv", "workers="}, fail: true},
+		{in: []string{}, err: "usage: cbt import <table-id> <input-file> [app-profile=<app-profile-id>] [column-family=<family-name>] [batch-size=<500>] [workers=<1>]"},
+		{in: []string{"my-table", "my-file.csv", "column-family="}, err: "column-family cannot be ''"},
+		{in: []string{"my-table", "my-file.csv", "batch-size=-5"}, err: "batch-size must be > 0 and <= 100000"},
+		{in: []string{"my-table", "my-file.csv", "batch-size=5000000"}, err: "batch-size must be > 0 and <= 100000"},
+		{in: []string{"my-table", "my-file.csv", "batch-size=nan"}, err: "batch-size must be > 0 and <= 100000"},
+		{in: []string{"my-table", "my-file.csv", "batch-size="}, err: "batch-size must be > 0 and <= 100000"},
+		{in: []string{"my-table", "my-file.csv", "workers=0"}, err: "workers must be > 0, err:%!s(<nil>)"},
+		{in: []string{"my-table", "my-file.csv", "workers=nan"}, err: "workers must be > 0, err:strconv.Atoi: parsing \"nan\": invalid syntax"},
+		{in: []string{"my-table", "my-file.csv", "workers="}, err: "workers must be > 0, err:strconv.Atoi: parsing \"\": invalid syntax"},
 	}
 	for _, tc := range tests {
 		got, err := parseImporterArgs(context.Background(), tc.in)
-		if !tc.fail && err != nil {
-			t.Errorf("parseImportArgs(%q) unexpectedly failed: %v", tc.in, err)
+		if e := matchesExpectedError(tc.err, err); e != "" {
+			t.Errorf("%s", e)
 			continue
 		}
-		if tc.fail && err == nil {
-			t.Errorf("parseImportArgs(%q) did not fail, out: %q", tc.in, got)
-			continue
-		}
-		if tc.fail {
-			continue
+		if tc.err != "" {
+			continue // received expected error, do not parse below
 		}
 		if got.appProfile != tc.out.appProfile ||
 			got.fam != tc.out.fam ||
@@ -247,10 +255,9 @@ func TestCsvHeaderParser(t *testing.T) {
 		oFams    []string
 		oCols    []string
 		nextLine []string
-		fail     bool
+		err      string
 	}{
-		{
-			label:    "extend-family-gap",
+		{label: "extend-family-gap",
 			iData:    [][]string{{"", "my-family", "", "my-family-2"}, {"", "col-1", "col-2", "col-3"}, {"rk-1", "A", "", ""}},
 			iFam:     "",
 			oFams:    []string{"", "my-family", "my-family", "my-family-2"},
@@ -266,7 +273,7 @@ func TestCsvHeaderParser(t *testing.T) {
 		{label: "eof-in-header",
 			iData: [][]string{{"", "my-family", ""}},
 			iFam:  "",
-			fail:  true},
+			err:   "columns header reader error:EOF"},
 	}
 
 	for _, tc := range tests {
@@ -278,15 +285,12 @@ func TestCsvHeaderParser(t *testing.T) {
 		reader := csv.NewReader(bytes.NewReader(byteData))
 
 		fams, cols, err := parseCsvHeaders(reader, tc.iFam)
-		if !tc.fail && err != nil {
-			t.Errorf("parseImportArgs() failed. input:%+v, error:%s", tc, err)
+		if e := matchesExpectedError(tc.err, err); e != "" {
+			t.Errorf("%s %s", tc.label, e)
 			continue
 		}
-		if tc.fail {
-			if err == nil {
-				t.Errorf("parseImportArgs() failed with no error. input:%+v", tc)
-			}
-			continue
+		if tc.err != "" {
+			continue // received expected error, do not parse below
 		}
 
 		line, _ := reader.Read()
@@ -308,13 +312,13 @@ func TestCsvHeaderParser(t *testing.T) {
 		}
 		for i, c := range cols {
 			if c != tc.oCols[i] {
-				t.Errorf("parseImportArgs() did not fail for column names idx:%d, got: %q, want %q", i, cols[i], tc.oCols[i])
+				t.Errorf("parseCsvHeaders() did not fail for column names idx:%d, got: %q, want %q", i, cols[i], tc.oCols[i])
 				continue
 			}
 		}
 		for i, v := range line {
 			if v != tc.nextLine[i] {
-				t.Errorf("parseImportArgs() did not fail for next line idx:%d, got: %q, want %q", i, cols[i], tc.oCols[i])
+				t.Errorf("parseCsvHeaders() did not fail for next line idx:%d, got: %q, want %q", i, cols[i], tc.oCols[i])
 				continue
 			}
 		}
@@ -409,7 +413,7 @@ func TestCsvParseAndWrite(t *testing.T) {
 
 	sr := safeReader{r: reader}
 	if err = sr.parseAndWrite(ctx, tbl, fams, cols, 1, 1, 1); err != nil {
-		t.Fatalf("parseAndWrite() failed unexpectedly")
+		t.Fatalf("parseAndWrite() failed unexpectedly, error:%s", err)
 	}
 
 	if err := validateData(ctx, tbl, fams, cols, rowData); err != nil {
