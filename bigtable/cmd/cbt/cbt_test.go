@@ -241,6 +241,7 @@ func transformToCsvBuffer(data [][]string) ([]byte, error) {
 
 func TestCsvHeaderParser(t *testing.T) {
 	tests := []struct {
+		label    string
 		iData    [][]string
 		iFam     string
 		oFams    []string
@@ -248,23 +249,24 @@ func TestCsvHeaderParser(t *testing.T) {
 		nextLine []string
 		fail     bool
 	}{
-		// extends "my-family" to col-2
-		{iData: [][]string{{"", "my-family", "", "my-family-2"}, {"", "col-1", "col-2", "col-3"}, {"rk-1", "A", "", ""}},
+		{
+			label:    "extend-family-gap",
+			iData:    [][]string{{"", "my-family", "", "my-family-2"}, {"", "col-1", "col-2", "col-3"}, {"rk-1", "A", "", ""}},
 			iFam:     "",
 			oFams:    []string{"", "my-family", "my-family", "my-family-2"},
 			oCols:    []string{"", "col-1", "col-2", "col-3"},
 			nextLine: []string{"rk-1", "A", "", ""}},
-		// handles column-faimly=arg-family flag
-		{iData: [][]string{{"", "col-1", "col-2"}, {"rk-1", "A", ""}},
+		{label: "handle-family-arg",
+			iData:    [][]string{{"", "col-1", "col-2"}, {"rk-1", "A", ""}},
 			iFam:     "arg-family",
 			oFams:    []string{"", "arg-family", "arg-family"},
 			oCols:    []string{"", "col-1", "col-2"},
 			nextLine: []string{"rk-1", "A", ""}},
 
-		// early EOF in headers
-		{iData: [][]string{{"", "my-family", ""}},
-			iFam: "",
-			fail: true},
+		{label: "eof-in-header",
+			iData: [][]string{{"", "my-family", ""}},
+			iFam:  "",
+			fail:  true},
 	}
 
 	for _, tc := range tests {
@@ -277,20 +279,19 @@ func TestCsvHeaderParser(t *testing.T) {
 
 		fams, cols, err := parseCsvHeaders(reader, tc.iFam)
 		if !tc.fail && err != nil {
-			t.Errorf("parseCsvHeaders() failed. input:%+v, error:%s", tc, err)
-			continue
-		}
-		if tc.fail && err == nil {
-			t.Errorf("parseImportArgs() did not fail. input:%+v, error:%s", tc, err)
+			t.Errorf("parseImportArgs() failed. input:%+v, error:%s", tc, err)
 			continue
 		}
 		if tc.fail {
+			if err == nil {
+				t.Errorf("parseImportArgs() failed with no error. input:%+v", tc)
+			}
 			continue
 		}
 
 		line, _ := reader.Read()
 		if err != nil {
-			t.Errorf("Next line for reader error, got: %q, expect: %q", line, tc.nextLine)
+			t.Errorf("Next line for reader error, got: %q, expect: %q, error:%s", line, tc.nextLine, err)
 			continue
 		}
 		if len(fams) != len(tc.oFams) ||
