@@ -56,7 +56,10 @@ type PostPolicyV4Options struct {
 	//
 	// Deprecated: Use SignRawBytes. If both SignBytes and SignRawBytes are defined,
 	// SignBytes will be ignored.
-	// Add the following to the top of your signing function to use SignRawBytes instead:
+	// This SignBytes function expects the bytes it receives to be hashed, while
+	// SignRawBytes accepts the raw bytes without hashing, allowing more flexibility.
+	// Add the following to the top of your signing function to hash the bytes
+	// to use SignRawBytes instead:
 	//		shaSum := sha256.Sum256(bytes)
 	//		bytes = shaSum[:]
 	//
