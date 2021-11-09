@@ -243,6 +243,8 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 	stats.Record(ctx, m.M(n))
 }
 
+const defaultTracerName = "cloud.google.com/go/pubsub"
+
 var _ propagation.TextMapCarrier = (*PubsubMessageCarrier)(nil)
 
 // PubsubMessageCarrier injects and extracts traces from a pubsub.Message.

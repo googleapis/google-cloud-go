@@ -73,7 +73,7 @@ func newSubscription(c *Client, name string) *Subscription {
 		c:               c,
 		name:            name,
 		ReceiveSettings: DefaultReceiveSettings,
-		tracer:          otel.Tracer("instrumentation/pubsub/sub"),
+		tracer:          otel.Tracer(defaultTracerName),
 	}
 }
 

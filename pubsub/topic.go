@@ -197,7 +197,7 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
-		tracer:          otel.Tracer("instreumentation/package/name"),
+		tracer:          otel.Tracer(defaultTracerName),
 	}
 }
 
