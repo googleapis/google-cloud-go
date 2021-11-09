@@ -22,6 +22,12 @@ var (
 		{Name: "value", Type: bigquery.IntegerFieldType},
 	}
 
+	SimpleMessageEvolvedSchema bigquery.Schema = bigquery.Schema{
+		{Name: "name", Type: bigquery.StringFieldType, Required: true},
+		{Name: "value", Type: bigquery.IntegerFieldType},
+		{Name: "label", Type: bigquery.StringFieldType},
+	}
+
 	GithubArchiveSchema bigquery.Schema = bigquery.Schema{
 		{Name: "type", Type: bigquery.StringFieldType},
 		{Name: "public", Type: bigquery.BooleanFieldType},

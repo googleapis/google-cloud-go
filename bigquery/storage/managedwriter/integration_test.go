@@ -144,6 +144,10 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testPendingStream(ctx, t, mwClient, bqClient, dataset)
 		})
+		t.Run("SchemaEvolution", func(t *testing.T) {
+			t.Parallel()
+			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset)
+		})
 		t.Run("Instrumentation", func(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
@@ -511,6 +515,77 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("%q: metric mismatch, got %f want %d", tv.Name, got, want)
 		}
 	}
+}
+
+func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	var result *AppendResult
+	for k, mesg := range testSimpleData {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Errorf("failed to marshal message %d: %v", k, err)
+		}
+		data := [][]byte{b}
+		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		if err != nil {
+			t.Errorf("single-row append %d failed: %v", k, err)
+		}
+	}
+	// wait for the result to indicate ready, then validate.
+	result.Ready()
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(testSimpleData))))
+
+	// Now, evolve the underlying table schema.
+	_, err = testTable.Update(ctx, bigquery.TableMetadataToUpdate{Schema: testdata.SimpleMessageEvolvedSchema}, "")
+	if err != nil {
+		t.Errorf("failed to evolve table schema: %v", err)
+	}
+
+	time.Sleep(2 * time.Second)
+
+	// ready descriptor, send an additional append
+	m2 := &testdata.SimpleMessageEvolvedProto2{
+		Name:  proto.String("evolved"),
+		Value: proto.Int64(180),
+		Label: proto.String("hello evolution"),
+	}
+	descriptorProto = protodesc.ToDescriptorProto(m2.ProtoReflect().Descriptor())
+	b, err := proto.Marshal(m2)
+	if err != nil {
+		t.Errorf("failed to marshal evolved message: %v", err)
+	}
+	result, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset, UpdateSchemaDescriptor(descriptorProto))
+	if err != nil {
+		t.Errorf("failed evolved append: %v", err)
+	}
+	result.Ready()
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(testSimpleData)+1)),
+		withNullCount("name", 0),
+		withNonNullCount("label", 1),
+	)
 }
 
 func TestIntegration_DetectProjectID(t *testing.T) {

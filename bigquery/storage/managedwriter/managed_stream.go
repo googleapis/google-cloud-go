@@ -342,10 +342,13 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset i
 		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
 		pw.markDone(NoStreamOffset, err, nil)
 	}
-	// if we've received an updated schema as part of a write, propagate it.
+	// if we've received an updated schema as part of a write, propagate it to both the cached schema and
+	// populate the schema in the request.
 	if pw.newSchema != nil {
 		ms.schemaDescriptor = pw.newSchema
-		// TODO: verify if we need to trigger network stream reconnection.
+		pw.request.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+			ProtoDescriptor: pw.newSchema,
+		}
 	}
 	// proceed to call
 	if err := ms.append(pw); err != nil {
