@@ -118,7 +118,7 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	}
 }
 
-// WriterOption are variadic options used to configure a ManagedStream instance.
+// AppendOption are options that can be passed when appending data with a managed stream instance.
 type AppendOption func(*pendingWrite)
 
 // UpdateSchemaDescriptor is used to update the descriptor message schema associated
