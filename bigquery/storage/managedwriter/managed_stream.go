@@ -177,7 +177,7 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 // getStream returns either a valid ARC client stream or permanent error.
 //
 // Calling getStream locks the mutex.
-func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
+func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, forceReconnect bool) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
 	if ms.err != nil {
@@ -189,8 +189,12 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 	}
 
 	// Always return the retained ARC if the arg differs.
-	if arc != ms.arc {
+	if arc != ms.arc && !forceReconnect {
 		return ms.arc, ms.pending, nil
+	}
+	if arc != ms.arc && forceReconnect && ms.arc != nil {
+		// TODO: is closing send sufficient?
+		(*ms.arc).CloseSend()
 	}
 
 	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
@@ -247,7 +251,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 	var err error
 
 	for {
-		arc, ch, err = ms.getStream(arc)
+		arc, ch, err = ms.getStream(arc, pw.newSchema != nil)
 		if err != nil {
 			return err
 		}
@@ -303,7 +307,7 @@ func (ms *ManagedStream) Close() error {
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 
-	arc, ch, err := ms.getStream(arc)
+	arc, ch, err := ms.getStream(arc, false)
 	if err != nil {
 		return err
 	}

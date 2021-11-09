@@ -551,7 +551,10 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 	}
 	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
@@ -562,13 +565,15 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
 
-	time.Sleep(2 * time.Second)
+	// TODO: we need a more elegant mechanism for detecting when the backend has registered the schema change.
+	//       In the continuous case, we'd get it from the response, but the change-and-wait case needs something more.
+	time.Sleep(6 * time.Second)
 
 	// ready descriptor, send an additional append
 	m2 := &testdata.SimpleMessageEvolvedProto2{
 		Name:  proto.String("evolved"),
 		Value: proto.Int64(180),
-		Label: proto.String("hello evolution"),
+		Other: proto.String("hello evolution"),
 	}
 	descriptorProto = protodesc.ToDescriptorProto(m2.ProtoReflect().Descriptor())
 	b, err := proto.Marshal(m2)
@@ -579,12 +584,15 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed evolved append: %v", err)
 	}
-	result.Ready()
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on evolved append: %v", err)
+	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData)+1)),
 		withNullCount("name", 0),
-		withNonNullCount("label", 1),
+		withNonNullCount("other", 1),
 	)
 }
 
