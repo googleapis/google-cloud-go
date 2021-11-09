@@ -71,7 +71,7 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 try3 go mod download
 ./internal/kokoro/vet.sh
 
-# runTests runs all tests in the current directory.
+# runDirectoryTests runs all tests in the current directory.
 # If a PATH argument is specified, it runs `go test [PATH]`.
 runDirectoryTests() {
   go test -race -v -timeout 45m "${1:-./...}" 2>&1 \
@@ -84,12 +84,27 @@ runDirectoryTests() {
   exit_code=$(($exit_code + $?))
 }
 
-# testAllModules runs all modules tests.
+# runEmulatorTests runs emulator tests in the current directory.
+runEmulatorTests() {
+  if [ -f "emulator_test.sh" ]; then
+    ./emulator_test.sh
+  fi
+  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+  # xUnit XML file.
+  cat sponge_log.log \
+    | go-junit-report -set-exit-code > sponge_log.xml
+  # Add the exit codes together so we exit non-zero if any module fails.
+  exit_code=$(($exit_code + $?))
+}
+
+# testAllModules runs all modules' tests, including emulator tests.
 testAllModules() {
   echo "Testing all modules"
   for i in $(find . -name go.mod); do
     pushd "$(dirname "$i")" > /dev/null;
       runDirectoryTests
+      # Run integration tests against an emulator.
+      runEmulatorTests
     popd > /dev/null;
   done
 }
@@ -115,7 +130,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github)' || true)
   # CHANGED_DIRS is the list of significant top-level directories that changed,
-  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
+  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
   # If PR changes affect all submodules, then run all tests.
   if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
