@@ -140,7 +140,7 @@ func latestTag(dir string) (string, error) {
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", "origin/master")
+	c := exec.Command("git", "diff", "--name-only", "origin/main")
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
