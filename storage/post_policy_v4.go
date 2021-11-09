@@ -109,6 +109,8 @@ type PostPolicyV4Options struct {
 	// a 4XX status code, back with the message describing the problem.
 	// Optional.
 	Conditions []PostPolicyV4Condition
+
+	shouldHashSignBytes bool
 }
 
 // PolicyV4Fields describes the attributes for a PostPolicyV4 request.
@@ -235,7 +237,7 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	switch {
 	case opts.SignRawBytes != nil:
 		signingFn = opts.SignRawBytes
-	case opts.SignRawBytes == nil && opts.SignBytes != nil:
+	case opts.shouldHashSignBytes:
 		signingFn = opts.SignBytes
 	case len(opts.PrivateKey) != 0:
 		parsedRSAPrivKey, err := parseKey(opts.PrivateKey)
@@ -324,8 +326,8 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	b64Policy := base64.StdEncoding.EncodeToString(condsAsJSON)
 	var signature []byte
 	var signErr error
-	// SignBytes is used only if SignRawBytes is not defined
-	if opts.SignRawBytes == nil && opts.SignBytes != nil {
+
+	if opts.shouldHashSignBytes {
 		// SignBytes expects hashed bytes as input instead of raw bytes, so we hash them
 		shaSum := sha256.Sum256([]byte(b64Policy))
 		signature, signErr = signingFn(shaSum[:])
@@ -374,6 +376,7 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 // * either PrivateKey or SignRawBytes/SignBytes is set, but not both
 // * the deadline set in Expires is not in the past
 // * if Style is not set, it'll use PathStyle
+// * sets shouldHashSignBytes to true if opts.SignBytes should be used
 func validatePostPolicyV4Options(opts *PostPolicyV4Options, now time.Time) error {
 	if opts == nil || opts.GoogleAccessID == "" {
 		return errors.New("storage: missing required GoogleAccessID")
@@ -386,6 +389,9 @@ func validatePostPolicyV4Options(opts *PostPolicyV4Options, now time.Time) error
 	}
 	if opts.Style == nil {
 		opts.Style = PathStyle()
+	}
+	if opts.SignRawBytes == nil && opts.SignBytes != nil {
+		opts.shouldHashSignBytes = true
 	}
 	return nil
 }

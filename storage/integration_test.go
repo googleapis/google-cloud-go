@@ -4266,15 +4266,17 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 			client: clientWithoutPrivateKey,
 		},
 	} {
-		bkt := test.client.Bucket(bucketName)
-		url, err := bkt.SignedURL(obj, &test.opts)
-		if err != nil {
-			t.Fatalf("%s: unable to create signed URL: %v", test.desc, err)
-		}
+		t.Run(test.desc, func(t *testing.T) {
+			bkt := test.client.Bucket(bucketName)
+			url, err := bkt.SignedURL(obj, &test.opts)
+			if err != nil {
+				t.Fatalf("unable to create signed URL: %v", err)
+			}
 
-		if err := verifySignedURL(url, nil, contents); err != nil {
-			t.Fatalf("%s: %v", test.desc, err)
-		}
+			if err := verifySignedURL(url, nil, contents); err != nil {
+				t.Fatalf("problem with the signed URL: %v", err)
+			}
+		})
 	}
 }
 
