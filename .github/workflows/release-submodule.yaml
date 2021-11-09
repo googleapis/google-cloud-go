@@ -3,7 +3,7 @@
 on:
   push:
     branches:
-      - master
+      - main
 name: release-please-submodule
 jobs:
   # This logic looks at commits that have occurred since GitHub's magic
