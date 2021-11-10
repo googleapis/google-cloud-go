@@ -118,14 +118,15 @@ type PostPolicyV4Options struct {
 
 func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
 	return &PostPolicyV4Options{
-		GoogleAccessID: opts.GoogleAccessID,
-		PrivateKey:     opts.PrivateKey,
-		SignBytes:      opts.SignBytes,
-		Expires:        opts.Expires,
-		Style:          opts.Style,
-		Insecure:       opts.Insecure,
-		Fields:         opts.Fields,
-		Conditions:     opts.Conditions,
+		GoogleAccessID:      opts.GoogleAccessID,
+		PrivateKey:          opts.PrivateKey,
+		SignBytes:           opts.SignBytes,
+		Expires:             opts.Expires,
+		Style:               opts.Style,
+		Insecure:            opts.Insecure,
+		Fields:              opts.Fields,
+		Conditions:          opts.Conditions,
+		shouldHashSignBytes: opts.shouldHashSignBytes,
 	}
 }
 

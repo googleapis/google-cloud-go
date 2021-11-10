@@ -286,7 +286,7 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 // omit PrivateKey/SignBytes
 //func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
-	if opts.GoogleAccessID != "" && (opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
+	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
 	}
 	// Make a copy of opts so we don't modify the pointer parameter.
@@ -299,7 +299,7 @@ func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolic
 		}
 		newopts.GoogleAccessID = id
 	}
-	if newopts.SignBytes == nil && len(newopts.PrivateKey) == 0 {
+	if newopts.SignBytes == nil && newopts.SignRawBytes == nil && len(newopts.PrivateKey) == 0 {
 		if b.c.creds != nil && len(b.c.creds.JSON) > 0 {
 			var sa struct {
 				PrivateKey string `json:"private_key"`
@@ -313,7 +313,7 @@ func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolic
 		// Don't error out if we can't unmarshal the private key from the client,
 		// fallback to the default sign function for the service account.
 		if len(newopts.PrivateKey) == 0 {
-			newopts.SignBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
+			newopts.SignRawBytes = b.defaultSignBytesFunc(newopts.GoogleAccessID)
 		}
 	}
 	return GenerateSignedPostPolicyV4(b.name, object, newopts)
