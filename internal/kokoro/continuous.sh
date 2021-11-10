@@ -44,6 +44,11 @@ export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-centr
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
+# TODO: Remove this env after OMG/43748 is fixed
+# Spanner integration tests for backup/restore is flaky https://github.com/googleapis/google-cloud-go/issues/5037
+# to fix the flaky test Spanner need to run on us-west1 region.
+export GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG="regional-us-west1"
+
 # Fail on any error
 set -eo pipefail
 
@@ -130,7 +135,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github)' || true)
   # CHANGED_DIRS is the list of significant top-level directories that changed,
-  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
+  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
   # If PR changes affect all submodules, then run all tests.
   if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
