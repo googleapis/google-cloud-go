@@ -282,9 +282,21 @@ func (b *BucketHandle) SignedURL(object string, opts *SignedURLOptions) (string,
 	return SignedURL(b.name, object, newopts)
 }
 
-// TODO: Add a similar wrapper for GenerateSignedPostPolicyV4 allowing users to
-// omit PrivateKey/SignBytes
-//func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
+// GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
+// The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
+//
+// This method only requires the Expires field in the specified PostPolicyV4Options
+// to be non-nil. If not provided, it attempts to fill the GoogleAccessID and PrivateKey
+// from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+// If you are authenticating with a custom HTTP client, Service Account based
+// auto-detection will be hindered.
+//
+// If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
+// This requires the IAM Service Account Credentials API to be enabled
+// (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
+// and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+// If you do not want these fields set for you, you may pass them in through opts or use
+// GenerateSignedPostPolicyV4(bucket, name string, opts *PostPolicyV4Options) instead.
 func (b *BucketHandle) GenerateSignedPostPolicyV4(object string, opts *PostPolicyV4Options) (*PostPolicyV4, error) {
 	if opts.GoogleAccessID != "" && (opts.SignRawBytes != nil || opts.SignBytes != nil || len(opts.PrivateKey) > 0) {
 		return GenerateSignedPostPolicyV4(b.name, object, opts)
