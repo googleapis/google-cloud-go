@@ -1619,9 +1619,9 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 
 	var encryptionKeyVersion string
 
-	// The encryption info can take 30-300s (currently about 120-190s) to
+	// The encryption info can take 30-500s (currently about 120-190s) to
 	// become ready.
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 50; i++ {
 		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
@@ -1633,6 +1633,9 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		}
 
 		time.Sleep(time.Second * 10)
+	}
+	if encryptionKeyVersion == "" {
+		t.Fatalf("Encryption Key not created within alotted time limit")
 	}
 
 	// Validate Encryption Info under getTable
