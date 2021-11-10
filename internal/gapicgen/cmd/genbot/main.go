@@ -46,7 +46,6 @@ func main() {
 
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
-	googleapisDiscoDir := flag.String("googleapis-disco-dir", os.Getenv("GOOGLEAPIS_DISCO_DIR"), "Directory where sources of googleapis/googleapis-discovery resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gocloudDir := flag.String("gocloud-dir", os.Getenv("GOCLOUD_DIR"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", os.Getenv("GENPROTO_DIR"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", os.Getenv("PROTO_DIR"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
@@ -60,7 +59,6 @@ func main() {
 	if *localMode {
 		if err := genLocal(ctx, localConfig{
 			googleapisDir:      *googleapisDir,
-			googleapisDiscoDir: *googleapisDiscoDir,
 			gocloudDir:         *gocloudDir,
 			genprotoDir:        *genprotoDir,
 			protoDir:           *protoDir,

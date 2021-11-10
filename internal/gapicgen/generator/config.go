@@ -50,10 +50,6 @@ type microgenConfig struct {
 	// transports is a list of transports to generate a client for. Acceptable
 	// values are 'grpc' and 'rest'
 	transports []string
-
-	// googleapisDiscovery indicates if the protos reside in googleapis-discovery
-	// or not. Default is false, and will be looked up in googleapis.
-	googleapisDiscovery bool
 }
 
 var microgenGapicConfigs = []*microgenConfig{
@@ -65,8 +61,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath: "compute_v1.yaml",
 		transports:           []string{"rest"},
 		// TODO: Change to "ga" when ready.
-		releaseLevel:        "beta",
-		googleapisDiscovery: true,
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
