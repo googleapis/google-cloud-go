@@ -58,15 +58,15 @@ func main() {
 
 	if *localMode {
 		if err := genLocal(ctx, localConfig{
-			googleapisDir:      *googleapisDir,
-			gocloudDir:         *gocloudDir,
-			genprotoDir:        *genprotoDir,
-			protoDir:           *protoDir,
-			gapicToGenerate:    *gapicToGenerate,
-			onlyGapics:         *onlyGapics,
-			regenOnly:          *regenOnly,
-			forceAll:           *forceAll,
-			genModule:          *genModule,
+			googleapisDir:   *googleapisDir,
+			gocloudDir:      *gocloudDir,
+			genprotoDir:     *genprotoDir,
+			protoDir:        *protoDir,
+			gapicToGenerate: *gapicToGenerate,
+			onlyGapics:      *onlyGapics,
+			regenOnly:       *regenOnly,
+			forceAll:        *forceAll,
+			genModule:       *genModule,
 		}); err != nil {
 			log.Fatal(err)
 		}
