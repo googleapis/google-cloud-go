@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/dataproc/v1.1.0...dataproc/v1.2.0) (2021-11-02)
+
+
+### Features
+
+* **dataproc:** Add support for dataproc BatchController service ([8519b94](https://www.github.com/googleapis/google-cloud-go/commit/8519b948fee5dc82d39300c4d96e92c85fe78fe6))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/dataproc/v1.0.0...dataproc/v1.1.0) (2021-10-18)
 
 

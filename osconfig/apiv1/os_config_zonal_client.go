@@ -23,12 +23,15 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -39,10 +42,18 @@ var newOsConfigZonalClientHook clientHook
 
 // OsConfigZonalCallOptions contains the retry settings for each method of OsConfigZonalClient.
 type OsConfigZonalCallOptions struct {
-	GetInventory             []gax.CallOption
-	ListInventories          []gax.CallOption
-	GetVulnerabilityReport   []gax.CallOption
-	ListVulnerabilityReports []gax.CallOption
+	CreateOSPolicyAssignment        []gax.CallOption
+	UpdateOSPolicyAssignment        []gax.CallOption
+	GetOSPolicyAssignment           []gax.CallOption
+	ListOSPolicyAssignments         []gax.CallOption
+	ListOSPolicyAssignmentRevisions []gax.CallOption
+	DeleteOSPolicyAssignment        []gax.CallOption
+	GetOSPolicyAssignmentReport     []gax.CallOption
+	ListOSPolicyAssignmentReports   []gax.CallOption
+	GetInventory                    []gax.CallOption
+	ListInventories                 []gax.CallOption
+	GetVulnerabilityReport          []gax.CallOption
+	ListVulnerabilityReports        []gax.CallOption
 }
 
 func defaultOsConfigZonalGRPCClientOptions() []option.ClientOption {
@@ -60,6 +71,94 @@ func defaultOsConfigZonalGRPCClientOptions() []option.ClientOption {
 
 func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	return &OsConfigZonalCallOptions{
+		CreateOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOSPolicyAssignments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOSPolicyAssignmentRevisions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteOSPolicyAssignment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOSPolicyAssignmentReport: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListOSPolicyAssignmentReports: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetInventory: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -112,6 +211,17 @@ type internalOsConfigZonalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateOSPolicyAssignment(context.Context, *osconfigpb.CreateOSPolicyAssignmentRequest, ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error)
+	CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation
+	UpdateOSPolicyAssignment(context.Context, *osconfigpb.UpdateOSPolicyAssignmentRequest, ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error)
+	UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation
+	GetOSPolicyAssignment(context.Context, *osconfigpb.GetOSPolicyAssignmentRequest, ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error)
+	ListOSPolicyAssignments(context.Context, *osconfigpb.ListOSPolicyAssignmentsRequest, ...gax.CallOption) *OSPolicyAssignmentIterator
+	ListOSPolicyAssignmentRevisions(context.Context, *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, ...gax.CallOption) *OSPolicyAssignmentIterator
+	DeleteOSPolicyAssignment(context.Context, *osconfigpb.DeleteOSPolicyAssignmentRequest, ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error)
+	DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation
+	GetOSPolicyAssignmentReport(context.Context, *osconfigpb.GetOSPolicyAssignmentReportRequest, ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error)
+	ListOSPolicyAssignmentReports(context.Context, *osconfigpb.ListOSPolicyAssignmentReportsRequest, ...gax.CallOption) *OSPolicyAssignmentReportIterator
 	GetInventory(context.Context, *osconfigpb.GetInventoryRequest, ...gax.CallOption) (*osconfigpb.Inventory, error)
 	ListInventories(context.Context, *osconfigpb.ListInventoriesRequest, ...gax.CallOption) *InventoryIterator
 	GetVulnerabilityReport(context.Context, *osconfigpb.GetVulnerabilityReportRequest, ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error)
@@ -131,6 +241,11 @@ type OsConfigZonalClient struct {
 
 	// The call options for this service.
 	CallOptions *OsConfigZonalCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -153,6 +268,99 @@ func (c *OsConfigZonalClient) setGoogleClientInfo(keyval ...string) {
 // Deprecated.
 func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// CreateOSPolicyAssignment create an OS policy assignment.
+//
+// This method also creates the first revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
+	return c.internalClient.CreateOSPolicyAssignment(ctx, req, opts...)
+}
+
+// CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
+	return c.internalClient.CreateOSPolicyAssignmentOperation(name)
+}
+
+// UpdateOSPolicyAssignment update an existing OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
+	return c.internalClient.UpdateOSPolicyAssignment(ctx, req, opts...)
+}
+
+// UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
+	return c.internalClient.UpdateOSPolicyAssignmentOperation(name)
+}
+
+// GetOSPolicyAssignment retrieve an existing OS policy assignment.
+//
+// This method always returns the latest revision. In order to retrieve a
+// previous revision of the assignment, also provide the revision ID in the
+// name parameter.
+func (c *OsConfigZonalClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	return c.internalClient.GetOSPolicyAssignment(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignments list the OS policy assignments under the parent resource.
+//
+// For each OS policy assignment, the latest revision is returned.
+func (c *OsConfigZonalClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	return c.internalClient.ListOSPolicyAssignments(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.
+func (c *OsConfigZonalClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	return c.internalClient.ListOSPolicyAssignmentRevisions(ctx, req, opts...)
+}
+
+// DeleteOSPolicyAssignment delete the OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// If the LRO completes and is not cancelled, all revisions associated with
+// the OS policy assignment are deleted.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
+	return c.internalClient.DeleteOSPolicyAssignment(ctx, req, opts...)
+}
+
+// DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
+	return c.internalClient.DeleteOSPolicyAssignmentOperation(name)
+}
+
+// GetOSPolicyAssignmentReport get the OS policy asssignment report for the specified Compute Engine VM
+// instance.
+func (c *OsConfigZonalClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
+	return c.internalClient.GetOSPolicyAssignmentReport(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignmentReports list OS policy asssignment reports for all Compute Engine VM instances in
+// the specified zone.
+func (c *OsConfigZonalClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
+	return c.internalClient.ListOSPolicyAssignmentReports(ctx, req, opts...)
 }
 
 // GetInventory get inventory data for the specified VM instance. If the VM has no
@@ -192,6 +400,11 @@ type osConfigZonalGRPCClient struct {
 
 	// The gRPC API client.
 	osConfigZonalClient osconfigpb.OsConfigZonalServiceClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -235,6 +448,17 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -258,6 +482,249 @@ func (c *osConfigZonalGRPCClient) setGoogleClientInfo(keyval ...string) {
 // the client is no longer required.
 func (c *osConfigZonalGRPCClient) Close() error {
 	return c.connPool.Close()
+}
+
+func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateOSPolicyAssignment[0:len((*c.CallOptions).CreateOSPolicyAssignment):len((*c.CallOptions).CreateOSPolicyAssignment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.CreateOSPolicyAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateOSPolicyAssignment[0:len((*c.CallOptions).UpdateOSPolicyAssignment):len((*c.CallOptions).UpdateOSPolicyAssignment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.UpdateOSPolicyAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOSPolicyAssignment[0:len((*c.CallOptions).GetOSPolicyAssignment):len((*c.CallOptions).GetOSPolicyAssignment)], opts...)
+	var resp *osconfigpb.OSPolicyAssignment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.GetOSPolicyAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOSPolicyAssignments[0:len((*c.CallOptions).ListOSPolicyAssignments):len((*c.CallOptions).ListOSPolicyAssignments)], opts...)
+	it := &OSPolicyAssignmentIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.osConfigZonalClient.ListOSPolicyAssignments(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOsPolicyAssignments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOSPolicyAssignmentRevisions[0:len((*c.CallOptions).ListOSPolicyAssignmentRevisions):len((*c.CallOptions).ListOSPolicyAssignmentRevisions)], opts...)
+	it := &OSPolicyAssignmentIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentRevisionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.osConfigZonalClient.ListOSPolicyAssignmentRevisions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOsPolicyAssignments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteOSPolicyAssignment[0:len((*c.CallOptions).DeleteOSPolicyAssignment):len((*c.CallOptions).DeleteOSPolicyAssignment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.DeleteOSPolicyAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentReportRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignmentReport, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetOSPolicyAssignmentReport[0:len((*c.CallOptions).GetOSPolicyAssignmentReport):len((*c.CallOptions).GetOSPolicyAssignmentReport)], opts...)
+	var resp *osconfigpb.OSPolicyAssignmentReport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.osConfigZonalClient.GetOSPolicyAssignmentReport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListOSPolicyAssignmentReports[0:len((*c.CallOptions).ListOSPolicyAssignmentReports):len((*c.CallOptions).ListOSPolicyAssignmentReports)], opts...)
+	it := &OSPolicyAssignmentReportIterator{}
+	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentReportsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignmentReport, string, error) {
+		resp := &osconfigpb.ListOSPolicyAssignmentReportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.osConfigZonalClient.ListOSPolicyAssignmentReports(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOsPolicyAssignmentReports(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
@@ -390,6 +857,202 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 	return it
 }
 
+// CreateOSPolicyAssignmentOperation manages a long-running operation from CreateOSPolicyAssignment.
+type CreateOSPolicyAssignmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
+	return &CreateOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	var resp osconfigpb.OSPolicyAssignment
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	var resp osconfigpb.OSPolicyAssignment
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateOSPolicyAssignmentOperation) Metadata() (*osconfigpb.OSPolicyAssignmentOperationMetadata, error) {
+	var meta osconfigpb.OSPolicyAssignmentOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateOSPolicyAssignmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateOSPolicyAssignmentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteOSPolicyAssignmentOperation manages a long-running operation from DeleteOSPolicyAssignment.
+type DeleteOSPolicyAssignmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
+	return &DeleteOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteOSPolicyAssignmentOperation) Metadata() (*osconfigpb.OSPolicyAssignmentOperationMetadata, error) {
+	var meta osconfigpb.OSPolicyAssignmentOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteOSPolicyAssignmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteOSPolicyAssignmentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateOSPolicyAssignmentOperation manages a long-running operation from UpdateOSPolicyAssignment.
+type UpdateOSPolicyAssignmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
+	return &UpdateOSPolicyAssignmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateOSPolicyAssignmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	var resp osconfigpb.OSPolicyAssignment
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateOSPolicyAssignmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	var resp osconfigpb.OSPolicyAssignment
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateOSPolicyAssignmentOperation) Metadata() (*osconfigpb.OSPolicyAssignmentOperationMetadata, error) {
+	var meta osconfigpb.OSPolicyAssignmentOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateOSPolicyAssignmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateOSPolicyAssignmentOperation) Name() string {
+	return op.lro.Name()
+}
+
 // InventoryIterator manages a stream of *osconfigpb.Inventory.
 type InventoryIterator struct {
 	items    []*osconfigpb.Inventory
@@ -432,6 +1095,100 @@ func (it *InventoryIterator) bufLen() int {
 }
 
 func (it *InventoryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OSPolicyAssignmentIterator manages a stream of *osconfigpb.OSPolicyAssignment.
+type OSPolicyAssignmentIterator struct {
+	items    []*osconfigpb.OSPolicyAssignment
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.OSPolicyAssignment, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OSPolicyAssignmentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OSPolicyAssignmentIterator) Next() (*osconfigpb.OSPolicyAssignment, error) {
+	var item *osconfigpb.OSPolicyAssignment
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OSPolicyAssignmentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OSPolicyAssignmentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// OSPolicyAssignmentReportIterator manages a stream of *osconfigpb.OSPolicyAssignmentReport.
+type OSPolicyAssignmentReportIterator struct {
+	items    []*osconfigpb.OSPolicyAssignmentReport
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*osconfigpb.OSPolicyAssignmentReport, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *OSPolicyAssignmentReportIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *OSPolicyAssignmentReportIterator) Next() (*osconfigpb.OSPolicyAssignmentReport, error) {
+	var item *osconfigpb.OSPolicyAssignmentReport
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *OSPolicyAssignmentReportIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *OSPolicyAssignmentReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

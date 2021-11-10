@@ -4,7 +4,7 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - crwilcox
+  - dmahugh
 - labels:
   - 'api: storage'
   to:
