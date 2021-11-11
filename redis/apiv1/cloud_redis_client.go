@@ -261,7 +261,7 @@ func (c *CloudRedisClient) ExportInstanceOperation(name string) *ExportInstanceO
 	return c.internalClient.ExportInstanceOperation(name)
 }
 
-// FailoverInstance initiates a failover of the master node to current replica node for a
+// FailoverInstance initiates a failover of the primary node to current replica node for a
 // specific STANDARD tier Cloud Memorystore for Redis instance.
 func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
 	return c.internalClient.FailoverInstance(ctx, req, opts...)

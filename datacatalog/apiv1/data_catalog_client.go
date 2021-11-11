@@ -400,6 +400,10 @@ func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntry
 }
 
 // ListEntries lists entries.
+//
+// Note: Currently, this method can list only custom entries.
+// To get a list of both custom and automatically created entries, use
+// SearchCatalog.
 func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	return c.internalClient.ListEntries(ctx, req, opts...)
 }

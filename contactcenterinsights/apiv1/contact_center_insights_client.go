@@ -67,6 +67,7 @@ type CallOptions struct {
 	GetPhraseMatcher         []gax.CallOption
 	ListPhraseMatchers       []gax.CallOption
 	DeletePhraseMatcher      []gax.CallOption
+	UpdatePhraseMatcher      []gax.CallOption
 	CalculateStats           []gax.CallOption
 	GetSettings              []gax.CallOption
 	UpdateSettings           []gax.CallOption
@@ -362,6 +363,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		UpdatePhraseMatcher: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CalculateStats: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -434,6 +446,7 @@ type internalClient interface {
 	GetPhraseMatcher(context.Context, *contactcenterinsightspb.GetPhraseMatcherRequest, ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error)
 	ListPhraseMatchers(context.Context, *contactcenterinsightspb.ListPhraseMatchersRequest, ...gax.CallOption) *PhraseMatcherIterator
 	DeletePhraseMatcher(context.Context, *contactcenterinsightspb.DeletePhraseMatcherRequest, ...gax.CallOption) error
+	UpdatePhraseMatcher(context.Context, *contactcenterinsightspb.UpdatePhraseMatcherRequest, ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error)
 	CalculateStats(context.Context, *contactcenterinsightspb.CalculateStatsRequest, ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error)
 	GetSettings(context.Context, *contactcenterinsightspb.GetSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
 	UpdateSettings(context.Context, *contactcenterinsightspb.UpdateSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
@@ -640,6 +653,11 @@ func (c *Client) ListPhraseMatchers(ctx context.Context, req *contactcenterinsig
 // DeletePhraseMatcher deletes a phrase matcher.
 func (c *Client) DeletePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.DeletePhraseMatcherRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeletePhraseMatcher(ctx, req, opts...)
+}
+
+// UpdatePhraseMatcher updates a phrase matcher.
+func (c *Client) UpdatePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.UpdatePhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
+	return c.internalClient.UpdatePhraseMatcher(ctx, req, opts...)
 }
 
 // CalculateStats gets conversation statistics.
@@ -1345,6 +1363,27 @@ func (c *gRPCClient) DeletePhraseMatcher(ctx context.Context, req *contactcenter
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) UpdatePhraseMatcher(ctx context.Context, req *contactcenterinsightspb.UpdatePhraseMatcherRequest, opts ...gax.CallOption) (*contactcenterinsightspb.PhraseMatcher, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "phrase_matcher.name", url.QueryEscape(req.GetPhraseMatcher().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdatePhraseMatcher[0:len((*c.CallOptions).UpdatePhraseMatcher):len((*c.CallOptions).UpdatePhraseMatcher)], opts...)
+	var resp *contactcenterinsightspb.PhraseMatcher
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdatePhraseMatcher(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) CalculateStats(ctx context.Context, req *contactcenterinsightspb.CalculateStatsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error) {

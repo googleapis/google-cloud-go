@@ -576,6 +576,26 @@ func ExampleClient_DeletePhraseMatcher() {
 	}
 }
 
+func ExampleClient_UpdatePhraseMatcher() {
+	ctx := context.Background()
+	c, err := contactcenterinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &contactcenterinsightspb.UpdatePhraseMatcherRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/contactcenterinsights/v1#UpdatePhraseMatcherRequest.
+	}
+	resp, err := c.UpdatePhraseMatcher(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CalculateStats() {
 	ctx := context.Background()
 	c, err := contactcenterinsights.NewClient(ctx)
