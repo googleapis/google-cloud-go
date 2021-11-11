@@ -215,7 +215,7 @@ func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[strin
 		if !strings.HasSuffix(v, ".proto") {
 			continue
 		}
-		if !strings.HasSuffix(v, "compute_small.proto") {
+		if strings.HasSuffix(v, "compute_small.proto") {
 			continue
 		}
 		path := filepath.Join(g.googleapisDir, v)
