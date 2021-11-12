@@ -202,7 +202,7 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 //
 // Only getStream() should call this, and thus the calling code has the mutex lock.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	r := defaultRetryer{}
+	r := newDefaultRetryer(ms.ctx)
 	for {
 		recordStat(ms.ctx, AppendClientOpenCount, 1)
 		streamID := ""
@@ -237,9 +237,11 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 	for _, opt := range opts {
 		opt.Resolve(&settings)
 	}
-	var r gax.Retryer = &defaultRetryer{}
+	var r gax.Retryer
 	if settings.Retry != nil {
 		r = settings.Retry()
+	} else {
+		r = newDefaultRetryer(ms.ctx)
 	}
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
@@ -337,7 +339,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset i
 		pw.markDone(NoStreamOffset, err, nil)
 	}
 	// proceed to call
-	if err := ms.append(pw); err != nil {
+	if err := ms.append(pw, ms.callOptions...); err != nil {
 		// pending write is DOA.
 		pw.markDone(NoStreamOffset, err, ms.fc)
 		return nil, err
