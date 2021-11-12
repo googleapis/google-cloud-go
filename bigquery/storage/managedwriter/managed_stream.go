@@ -25,6 +25,7 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -253,7 +254,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 		}
 		var req *storagepb.AppendRowsRequest
 		ms.streamSetup.Do(func() {
-			reqCopy := *pw.request
+			reqCopy := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
 			reqCopy.WriteStream = ms.streamSettings.streamID
 			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 				ProtoDescriptor: ms.schemaDescriptor,
@@ -261,7 +262,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			if ms.streamSettings.TraceID != "" {
 				reqCopy.TraceId = ms.streamSettings.TraceID
 			}
-			req = &reqCopy
+			req = reqCopy
 		})
 
 		var err error
