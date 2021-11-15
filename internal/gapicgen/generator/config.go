@@ -1319,6 +1319,24 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/11/08
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/ids/v1",
+		pkg:                   "ids",
+		importPath:            "cloud.google.com/go/ids/apiv1",
+		gRPCServiceConfigPath: "ids_grpc_service_config.json",
+		apiServiceConfigPath:  "ids_v1.yaml",
+		// GA after 2021/12/15
+		releaseLevel: "beta",
+	},
+	// {
+	// 	inputDirectoryPath:    "google/cloud/vmmigration/v1",
+	// 	pkg:                   "vmmigration",
+	// 	importPath:            "cloud.google.com/go/vmmigration/apiv1",
+	// 	gRPCServiceConfigPath: "vmmigration_v1_grpc_service_config.json",
+	// 	apiServiceConfigPath:  "vmmigration_v1.yaml",
+	// 	// GA after 2021/12/15
+	// 	releaseLevel: "beta",
+	// },
 
 	// Non-Cloud APIs
 	{
