@@ -44,11 +44,15 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
+	BulkMuteFindings           []gax.CallOption
 	CreateSource               []gax.CallOption
 	CreateFinding              []gax.CallOption
+	CreateMuteConfig           []gax.CallOption
 	CreateNotificationConfig   []gax.CallOption
+	DeleteMuteConfig           []gax.CallOption
 	DeleteNotificationConfig   []gax.CallOption
 	GetIamPolicy               []gax.CallOption
+	GetMuteConfig              []gax.CallOption
 	GetNotificationConfig      []gax.CallOption
 	GetOrganizationSettings    []gax.CallOption
 	GetSource                  []gax.CallOption
@@ -56,13 +60,16 @@ type CallOptions struct {
 	GroupFindings              []gax.CallOption
 	ListAssets                 []gax.CallOption
 	ListFindings               []gax.CallOption
+	ListMuteConfigs            []gax.CallOption
 	ListNotificationConfigs    []gax.CallOption
 	ListSources                []gax.CallOption
 	RunAssetDiscovery          []gax.CallOption
 	SetFindingState            []gax.CallOption
+	SetMute                    []gax.CallOption
 	SetIamPolicy               []gax.CallOption
 	TestIamPermissions         []gax.CallOption
 	UpdateFinding              []gax.CallOption
+	UpdateMuteConfig           []gax.CallOption
 	UpdateNotificationConfig   []gax.CallOption
 	UpdateOrganizationSettings []gax.CallOption
 	UpdateSource               []gax.CallOption
@@ -76,7 +83,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -84,9 +90,12 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		BulkMuteFindings:         []gax.CallOption{},
 		CreateSource:             []gax.CallOption{},
 		CreateFinding:            []gax.CallOption{},
+		CreateMuteConfig:         []gax.CallOption{},
 		CreateNotificationConfig: []gax.CallOption{},
+		DeleteMuteConfig:         []gax.CallOption{},
 		DeleteNotificationConfig: []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -100,6 +109,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		GetMuteConfig: []gax.CallOption{},
 		GetNotificationConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -184,6 +194,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListMuteConfigs: []gax.CallOption{},
 		ListNotificationConfigs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -210,6 +221,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		RunAssetDiscovery: []gax.CallOption{},
 		SetFindingState:   []gax.CallOption{},
+		SetMute:           []gax.CallOption{},
 		SetIamPolicy:      []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -224,6 +236,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		UpdateFinding:              []gax.CallOption{},
+		UpdateMuteConfig:           []gax.CallOption{},
 		UpdateNotificationConfig:   []gax.CallOption{},
 		UpdateOrganizationSettings: []gax.CallOption{},
 		UpdateSource:               []gax.CallOption{},
@@ -236,11 +249,16 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	BulkMuteFindings(context.Context, *securitycenterpb.BulkMuteFindingsRequest, ...gax.CallOption) (*BulkMuteFindingsOperation, error)
+	BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation
 	CreateSource(context.Context, *securitycenterpb.CreateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	CreateFinding(context.Context, *securitycenterpb.CreateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	CreateMuteConfig(context.Context, *securitycenterpb.CreateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	CreateNotificationConfig(context.Context, *securitycenterpb.CreateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
+	DeleteMuteConfig(context.Context, *securitycenterpb.DeleteMuteConfigRequest, ...gax.CallOption) error
 	DeleteNotificationConfig(context.Context, *securitycenterpb.DeleteNotificationConfigRequest, ...gax.CallOption) error
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetMuteConfig(context.Context, *securitycenterpb.GetMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	GetNotificationConfig(context.Context, *securitycenterpb.GetNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	GetOrganizationSettings(context.Context, *securitycenterpb.GetOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
 	GetSource(context.Context, *securitycenterpb.GetSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
@@ -248,14 +266,17 @@ type internalClient interface {
 	GroupFindings(context.Context, *securitycenterpb.GroupFindingsRequest, ...gax.CallOption) *GroupResultIterator
 	ListAssets(context.Context, *securitycenterpb.ListAssetsRequest, ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator
 	ListFindings(context.Context, *securitycenterpb.ListFindingsRequest, ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator
+	ListMuteConfigs(context.Context, *securitycenterpb.ListMuteConfigsRequest, ...gax.CallOption) *MuteConfigIterator
 	ListNotificationConfigs(context.Context, *securitycenterpb.ListNotificationConfigsRequest, ...gax.CallOption) *NotificationConfigIterator
 	ListSources(context.Context, *securitycenterpb.ListSourcesRequest, ...gax.CallOption) *SourceIterator
 	RunAssetDiscovery(context.Context, *securitycenterpb.RunAssetDiscoveryRequest, ...gax.CallOption) (*RunAssetDiscoveryOperation, error)
 	RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation
 	SetFindingState(context.Context, *securitycenterpb.SetFindingStateRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	SetMute(context.Context, *securitycenterpb.SetMuteRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	UpdateFinding(context.Context, *securitycenterpb.UpdateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	UpdateMuteConfig(context.Context, *securitycenterpb.UpdateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	UpdateNotificationConfig(context.Context, *securitycenterpb.UpdateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	UpdateOrganizationSettings(context.Context, *securitycenterpb.UpdateOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
 	UpdateSource(context.Context, *securitycenterpb.UpdateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
@@ -301,6 +322,19 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
+// BulkMuteFindings kicks off an LRO to bulk mute findings for a parent based on a filter. The
+// parent can be either an organization, folder or project. The findings
+// matched by the filter will be muted after the LRO is done.
+func (c *Client) BulkMuteFindings(ctx context.Context, req *securitycenterpb.BulkMuteFindingsRequest, opts ...gax.CallOption) (*BulkMuteFindingsOperation, error) {
+	return c.internalClient.BulkMuteFindings(ctx, req, opts...)
+}
+
+// BulkMuteFindingsOperation returns a new BulkMuteFindingsOperation from a given name.
+// The name must be that of a previously created BulkMuteFindingsOperation, possibly from a different process.
+func (c *Client) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
+	return c.internalClient.BulkMuteFindingsOperation(name)
+}
+
 // CreateSource creates a source.
 func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	return c.internalClient.CreateSource(ctx, req, opts...)
@@ -312,9 +346,19 @@ func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.Create
 	return c.internalClient.CreateFinding(ctx, req, opts...)
 }
 
+// CreateMuteConfig creates a mute config.
+func (c *Client) CreateMuteConfig(ctx context.Context, req *securitycenterpb.CreateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	return c.internalClient.CreateMuteConfig(ctx, req, opts...)
+}
+
 // CreateNotificationConfig creates a notification config.
 func (c *Client) CreateNotificationConfig(ctx context.Context, req *securitycenterpb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
 	return c.internalClient.CreateNotificationConfig(ctx, req, opts...)
+}
+
+// DeleteMuteConfig deletes an existing mute config.
+func (c *Client) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteMuteConfig(ctx, req, opts...)
 }
 
 // DeleteNotificationConfig deletes a notification config.
@@ -325,6 +369,11 @@ func (c *Client) DeleteNotificationConfig(ctx context.Context, req *securitycent
 // GetIamPolicy gets the access control policy on the specified Source.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// GetMuteConfig gets a mute config.
+func (c *Client) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	return c.internalClient.GetMuteConfig(ctx, req, opts...)
 }
 
 // GetNotificationConfig gets a notification config.
@@ -372,6 +421,11 @@ func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFin
 	return c.internalClient.ListFindings(ctx, req, opts...)
 }
 
+// ListMuteConfigs lists mute configs.
+func (c *Client) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
+	return c.internalClient.ListMuteConfigs(ctx, req, opts...)
+}
+
 // ListNotificationConfigs lists notification configs.
 func (c *Client) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
 	return c.internalClient.ListNotificationConfigs(ctx, req, opts...)
@@ -403,6 +457,11 @@ func (c *Client) SetFindingState(ctx context.Context, req *securitycenterpb.SetF
 	return c.internalClient.SetFindingState(ctx, req, opts...)
 }
 
+// SetMute updates the mute state of a finding.
+func (c *Client) SetMute(ctx context.Context, req *securitycenterpb.SetMuteRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	return c.internalClient.SetMute(ctx, req, opts...)
+}
+
 // SetIamPolicy sets the access control policy on the specified Source.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
@@ -417,6 +476,11 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 // finding creation to succeed.
 func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
 	return c.internalClient.UpdateFinding(ctx, req, opts...)
+}
+
+// UpdateMuteConfig updates a mute config.
+func (c *Client) UpdateMuteConfig(ctx context.Context, req *securitycenterpb.UpdateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	return c.internalClient.UpdateMuteConfig(ctx, req, opts...)
 }
 
 // UpdateNotificationConfig updates a notification config. The following update
@@ -536,6 +600,24 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
+func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb.BulkMuteFindingsRequest, opts ...gax.CallOption) (*BulkMuteFindingsOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).BulkMuteFindings[0:len((*c.CallOptions).BulkMuteFindings):len((*c.CallOptions).BulkMuteFindings)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BulkMuteFindings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BulkMuteFindingsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -578,6 +660,22 @@ func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb.CreateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateMuteConfig[0:len((*c.CallOptions).CreateMuteConfig):len((*c.CallOptions).CreateMuteConfig)], opts...)
+	var resp *securitycenterpb.MuteConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateMuteConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *securitycenterpb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -597,6 +695,18 @@ func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *security
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteMuteConfig[0:len((*c.CallOptions).DeleteMuteConfig):len((*c.CallOptions).DeleteMuteConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteMuteConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *securitycenterpb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
@@ -629,6 +739,22 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetMuteConfig[0:len((*c.CallOptions).GetMuteConfig):len((*c.CallOptions).GetMuteConfig)], opts...)
+	var resp *securitycenterpb.MuteConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetMuteConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -876,6 +1002,50 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 	return it
 }
 
+func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListMuteConfigs[0:len((*c.CallOptions).ListMuteConfigs):len((*c.CallOptions).ListMuteConfigs)], opts...)
+	it := &MuteConfigIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListMuteConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.MuteConfig, string, error) {
+		resp := &securitycenterpb.ListMuteConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListMuteConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMuteConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1008,6 +1178,22 @@ func (c *gRPCClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 	return resp, nil
 }
 
+func (c *gRPCClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetMute[0:len((*c.CallOptions).SetMute):len((*c.CallOptions).SetMute)], opts...)
+	var resp *securitycenterpb.Finding
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SetMute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1063,6 +1249,22 @@ func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateFinding(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb.UpdateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "mute_config.name", url.QueryEscape(req.GetMuteConfig().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateMuteConfig[0:len((*c.CallOptions).UpdateMuteConfig):len((*c.CallOptions).UpdateMuteConfig)], opts...)
+	var resp *securitycenterpb.MuteConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateMuteConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1153,6 +1355,75 @@ func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 		return nil, err
 	}
 	return resp, nil
+}
+
+// BulkMuteFindingsOperation manages a long-running operation from BulkMuteFindings.
+type BulkMuteFindingsOperation struct {
+	lro *longrunning.Operation
+}
+
+// BulkMuteFindingsOperation returns a new BulkMuteFindingsOperation from a given name.
+// The name must be that of a previously created BulkMuteFindingsOperation, possibly from a different process.
+func (c *gRPCClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
+	return &BulkMuteFindingsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *BulkMuteFindingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.BulkMuteFindingsResponse, error) {
+	var resp securitycenterpb.BulkMuteFindingsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *BulkMuteFindingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.BulkMuteFindingsResponse, error) {
+	var resp securitycenterpb.BulkMuteFindingsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *BulkMuteFindingsOperation) Metadata() (*emptypb.Empty, error) {
+	var meta emptypb.Empty
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *BulkMuteFindingsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *BulkMuteFindingsOperation) Name() string {
+	return op.lro.Name()
 }
 
 // RunAssetDiscoveryOperation manages a long-running operation from RunAssetDiscovery.
@@ -1360,6 +1631,53 @@ func (it *ListFindingsResponse_ListFindingsResultIterator) bufLen() int {
 }
 
 func (it *ListFindingsResponse_ListFindingsResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// MuteConfigIterator manages a stream of *securitycenterpb.MuteConfig.
+type MuteConfigIterator struct {
+	items    []*securitycenterpb.MuteConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.MuteConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MuteConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MuteConfigIterator) Next() (*securitycenterpb.MuteConfig, error) {
+	var item *securitycenterpb.MuteConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MuteConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MuteConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
