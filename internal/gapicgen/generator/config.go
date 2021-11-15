@@ -1298,7 +1298,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/orchestration/airflow/service/apiv1",
 		gRPCServiceConfigPath: "composer_grpc_service_config.json",
 		apiServiceConfigPath:  "composer_v1.yaml",
-		releaseLevel: "ga",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/filestore/v1",
