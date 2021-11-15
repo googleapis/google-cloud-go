@@ -48,7 +48,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -121,7 +120,28 @@ type internalClient interface {
 // Client is a client for interacting with Cloud Storage API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Manages Google Cloud Storage resources.
+// API Overview and Naming SyntaxThe GCS gRPC API allows applications to read and write data through the
+// abstractions of buckets and objects. For a description of these abstractions
+// please see https://cloud.google.com/storage/docs (at https://cloud.google.com/storage/docs).
+//
+// Resources are named as follows:
+//
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
+//
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
+//
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
+//
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -232,7 +252,28 @@ type gRPCClient struct {
 // NewClient creates a new storage client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Manages Google Cloud Storage resources.
+// API Overview and Naming SyntaxThe GCS gRPC API allows applications to read and write data through the
+// abstractions of buckets and objects. For a description of these abstractions
+// please see https://cloud.google.com/storage/docs (at https://cloud.google.com/storage/docs).
+//
+// Resources are named as follows:
+//
+//   Projects are referred to as they are defined by the Resource Manager API,
+//   using strings like projects/123456 or projects/my-string-id.
+//
+//   Buckets are named using string names of the form:
+//   projects/{project}/buckets/{bucket}
+//   For globally unique buckets, _ may be substituted for the project.
+//
+//   Objects are uniquely identified by their name along with the name of the
+//   bucket they belong to, as separate strings in this API. For example:
+//
+// ReadObjectRequest {
+//   bucket: ‘projects/_/buckets/my-bucket’
+//   object: ‘my-object’
+//   }
+//   Note that object names can contain / characters, which are treated as
+//   any other character (no special directory semantics).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {

@@ -32,7 +32,6 @@ import (
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -381,8 +380,6 @@ var methods = map[string][]retryFunc{
 func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
-		// This test is currently skipped in CI as the env variable is not set
-		// TODO: Add test to CI
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
 	endpoint, err := url.Parse(host)
@@ -547,7 +544,7 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 
 	// Create wrapped client which will send emulator instructions
 	et.host.Path = ""
-	client, err := wrappedClient(et.T, et.host.String(), et.id)
+	client, err := wrappedClient(et.T, et.id)
 	if err != nil {
 		et.Fatalf("creating wrapped client: %v", err)
 	}
@@ -617,14 +614,15 @@ func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, err
 }
 
 // Create custom client that sends instructions to the storage testbench Retry Test API
-func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
+func wrappedClient(t *testing.T, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
-	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
-		option.WithUserAgent("custom-user-agent"))
+
+	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http client: %v", err)
 	}
+
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client
@@ -632,6 +630,7 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
+	// STORAGE_EMULATOR_HOST takes care of setting the correct endpoint
+	client, err := NewClient(ctx, option.WithHTTPClient(&c))
 	return client, err
 }

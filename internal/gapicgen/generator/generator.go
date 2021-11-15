@@ -30,17 +30,16 @@ import (
 
 // Config contains inputs needed to generate sources.
 type Config struct {
-	GoogleapisDir      string
-	GoogleapisDiscoDir string
-	GenprotoDir        string
-	GapicDir           string
-	ProtoDir           string
-	GapicToGenerate    string
-	OnlyGenerateGapic  bool
-	LocalMode          bool
-	RegenOnly          bool
-	ForceAll           bool
-	GenModule          bool
+	GoogleapisDir     string
+	GenprotoDir       string
+	GapicDir          string
+	ProtoDir          string
+	GapicToGenerate   string
+	OnlyGenerateGapic bool
+	LocalMode         bool
+	RegenOnly         bool
+	ForceAll          bool
+	GenModule         bool
 }
 
 // Generate generates genproto and gapics.
