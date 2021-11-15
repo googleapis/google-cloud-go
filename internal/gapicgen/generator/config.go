@@ -1289,8 +1289,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/contactcenterinsights/apiv1",
 		gRPCServiceConfigPath: "contactcenterinsights_grpc_service_config.json",
 		apiServiceConfigPath:  "contactcenterinsights_v1.yaml",
-		// GA after 2021/10/11
-		releaseLevel: "beta",
+		releaseLevel: "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/orchestration/airflow/service/v1",
