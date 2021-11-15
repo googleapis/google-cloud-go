@@ -121,6 +121,7 @@ func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
 		GoogleAccessID:      opts.GoogleAccessID,
 		PrivateKey:          opts.PrivateKey,
 		SignBytes:           opts.SignBytes,
+		SignRawBytes:        opts.SignRawBytes,
 		Expires:             opts.Expires,
 		Style:               opts.Style,
 		Insecure:            opts.Insecure,

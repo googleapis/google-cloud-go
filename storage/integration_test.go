@@ -4407,7 +4407,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 		},
 	}
 
-	pv4, err := bucket.GenerateSignedPostPolicyV4(objectName, ppv4Opts)
+	pv4, err := GenerateSignedPostPolicyV4(bucketName, objectName, ppv4Opts)
 	if err != nil {
 		t.Fatal(err)
 	}
