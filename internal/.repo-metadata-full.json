@@ -1520,6 +1520,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/vmmigration/apiv1": {
+    "distribution_name": "cloud.google.com/go/vmmigration/apiv1",
+    "description": "VM Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vmmigration/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/vpcaccess/apiv1": {
     "distribution_name": "cloud.google.com/go/vpcaccess/apiv1",
     "description": "Serverless VPC Access API",
