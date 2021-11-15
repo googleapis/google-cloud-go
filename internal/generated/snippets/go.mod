@@ -125,7 +125,7 @@ require (
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
 	google.golang.org/api v0.60.0
-	google.golang.org/genproto v0.0.0-20211112145013-271947fe86fd
+	google.golang.org/genproto v0.0.0-20211115160612-a5da7257a6f7
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
