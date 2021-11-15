@@ -1271,8 +1271,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/monitoring/metricsscope/apiv1",
 		gRPCServiceConfigPath: "metricsscopes_grpc_service_config.json",
 		apiServiceConfigPath:  "monitoring.yaml",
-		// GA after 2021/10/11
-		releaseLevel: "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/identity/accesscontextmanager/v1",

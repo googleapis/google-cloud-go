@@ -37,6 +37,31 @@ func ExampleNewClient() {
 	_ = c
 }
 
+func ExampleClient_BulkMuteFindings() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.BulkMuteFindingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#BulkMuteFindingsRequest.
+	}
+	op, err := c.BulkMuteFindings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateSource() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
@@ -77,6 +102,26 @@ func ExampleClient_CreateFinding() {
 	_ = resp
 }
 
+func ExampleClient_CreateMuteConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.CreateMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateMuteConfigRequest.
+	}
+	resp, err := c.CreateMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateNotificationConfig() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
@@ -95,6 +140,24 @@ func ExampleClient_CreateNotificationConfig() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_DeleteMuteConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#DeleteMuteConfigRequest.
+	}
+	err = c.DeleteMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleClient_DeleteNotificationConfig() {
@@ -128,6 +191,26 @@ func ExampleClient_GetIamPolicy() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetMuteConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetMuteConfigRequest.
+	}
+	resp, err := c.GetMuteConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -299,6 +382,32 @@ func ExampleClient_ListFindings() {
 	}
 }
 
+func ExampleClient_ListMuteConfigs() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListMuteConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListMuteConfigsRequest.
+	}
+	it := c.ListMuteConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListNotificationConfigs() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
@@ -396,6 +505,26 @@ func ExampleClient_SetFindingState() {
 	_ = resp
 }
 
+func ExampleClient_SetMute() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.SetMuteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#SetMuteRequest.
+	}
+	resp, err := c.SetMute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_SetIamPolicy() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
@@ -449,6 +578,26 @@ func ExampleClient_UpdateFinding() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateFindingRequest.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateMuteConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateMuteConfigRequest.
+	}
+	resp, err := c.UpdateMuteConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -55,7 +55,6 @@ func defaultBinauthzManagementServiceV1Beta1GRPCClientOptions() []option.ClientO
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -194,54 +193,42 @@ func (c *BinauthzManagementServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetPolicy a policy specifies the
-// attestors that must
-// attest to a container image, before the project is allowed to deploy that
+// GetPolicy a policy specifies the attestors that must attest to
+// a container image, before the project is allowed to deploy that
 // image. There is at most one policy per project. All image admission
 // requests are permitted if a project has no policy.
 //
-// Gets the policy for this
-// project. Returns a default
-// policy if the project
-// does not have one.
+// Gets the policy for this project. Returns a default
+// policy if the project does not have one.
 func (c *BinauthzManagementServiceV1Beta1Client) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.GetPolicy(ctx, req, opts...)
 }
 
-// UpdatePolicy creates or updates a project’s
-// policy, and returns a
-// copy of the new policy.
-// A policy is always updated as a whole, to avoid race conditions with
-// concurrent policy enforcement (or management!) requests. Returns NOT_FOUND
-// if the project does not exist, INVALID_ARGUMENT if the request is
-// malformed.
+// UpdatePolicy creates or updates a project’s policy, and returns a copy of the
+// new policy. A policy is always updated as a whole, to avoid race
+// conditions with concurrent policy enforcement (or management!)
+// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
+// if the request is malformed.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.UpdatePolicy(ctx, req, opts...)
 }
 
-// CreateAttestor creates an attestor,
-// and returns a copy of the new
-// attestor. Returns
-// NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is
-// malformed, ALREADY_EXISTS if the
-// attestor already
-// exists.
+// CreateAttestor creates an attestor, and returns a copy of the new
+// attestor. Returns NOT_FOUND if the project does not exist,
+// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
+// attestor already exists.
 func (c *BinauthzManagementServiceV1Beta1Client) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.CreateAttestor(ctx, req, opts...)
 }
 
 // GetAttestor gets an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// Returns NOT_FOUND if the attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.GetAttestor(ctx, req, opts...)
 }
 
 // UpdateAttestor updates an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// Returns NOT_FOUND if the attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.UpdateAttestor(ctx, req, opts...)
 }
@@ -252,10 +239,8 @@ func (c *BinauthzManagementServiceV1Beta1Client) ListAttestors(ctx context.Conte
 	return c.internalClient.ListAttestors(ctx, req, opts...)
 }
 
-// DeleteAttestor deletes an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// DeleteAttestor deletes an attestor. Returns NOT_FOUND if the
+// attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAttestor(ctx, req, opts...)
 }
