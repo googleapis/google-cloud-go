@@ -10,9 +10,19 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BulkMuteFindings": {
+              "methods": [
+                "BulkMuteFindings"
+              ]
+            },
             "CreateFinding": {
               "methods": [
                 "CreateFinding"
+              ]
+            },
+            "CreateMuteConfig": {
+              "methods": [
+                "CreateMuteConfig"
               ]
             },
             "CreateNotificationConfig": {
@@ -25,6 +35,11 @@
                 "CreateSource"
               ]
             },
+            "DeleteMuteConfig": {
+              "methods": [
+                "DeleteMuteConfig"
+              ]
+            },
             "DeleteNotificationConfig": {
               "methods": [
                 "DeleteNotificationConfig"
@@ -33,6 +48,11 @@
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
+              ]
+            },
+            "GetMuteConfig": {
+              "methods": [
+                "GetMuteConfig"
               ]
             },
             "GetNotificationConfig": {
@@ -70,6 +90,11 @@
                 "ListFindings"
               ]
             },
+            "ListMuteConfigs": {
+              "methods": [
+                "ListMuteConfigs"
+              ]
+            },
             "ListNotificationConfigs": {
               "methods": [
                 "ListNotificationConfigs"
@@ -95,6 +120,11 @@
                 "SetIamPolicy"
               ]
             },
+            "SetMute": {
+              "methods": [
+                "SetMute"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -103,6 +133,11 @@
             "UpdateFinding": {
               "methods": [
                 "UpdateFinding"
+              ]
+            },
+            "UpdateMuteConfig": {
+              "methods": [
+                "UpdateMuteConfig"
               ]
             },
             "UpdateNotificationConfig": {
