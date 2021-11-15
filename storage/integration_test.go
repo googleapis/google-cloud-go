@@ -2752,7 +2752,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// Get user emails from credentials
 	jwt, err := testutil.JWTConfig()
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("testutil.JWTConfig: %v", err)
 	}
 	// 1a. account that has permissions on the project that owns the bucket
 	mainUserEmail := jwt.Email
@@ -2760,7 +2760,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// 1b. account with permissions on the second project but not on the project that owns the bucket
 	otherUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("keyFileEmail error getting second account (env var %s): %v", envFirestorePrivateKey, err)
 	}
 
 	// 2. and 3a. the project that owns the requester-pays bucket
@@ -2781,7 +2781,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// Start client with otherUserEmail creds
 	otherUserClient, err := newTestClient(ctx, option.WithTokenSource(ts))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("newTestClient: %v", err)
 	}
 	defer otherUserClient.Close()
 
@@ -2803,7 +2803,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
 	h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
 	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-		t.Fatal(err)
+		t.Fatalf("set ACL: %v", err)
 	}
 	defer h.mustDeleteBucket(requesterPaysBucket)
 
