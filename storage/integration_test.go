@@ -2757,7 +2757,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// 1a. account that has permissions on the project that owns the bucket
 	mainUserEmail := jwt.Email
 
-	// 1b. account with permissions on the second project but not on the project that owns the bucket
+	// // 1b. account with permissions on the second project but not on the project that owns the bucket
 	otherUserEmail, err := keyFileEmail(os.Getenv(envFirestorePrivateKey))
 	if err != nil {
 		t.Fatalf("keyFileEmail error getting second account (env var %s): %v", envFirestorePrivateKey, err)
@@ -2813,35 +2813,30 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		userProject   *string // to set on bucket, nil if it should not be set
 		expectSuccess bool
 		wantErrorCode int
-		errorMessage  string
 	}{
 		{
 			desc:          "user is Owner on the project that owns the bucket",
-			client:        mainUserClient,
+			client:        mainUserClient, // main user should be owner on main project
 			userProject:   nil,
 			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-			errorMessage:  fmt.Sprintf("confirm that %s is an Owner on %s", mainUserEmail, mainProjectID),
 		},
 		{
 			desc:          "userProject is unnecessary but allowed",
 			client:        mainUserClient,
 			userProject:   &mainProjectID,
 			expectSuccess: true, // by the rule permitting access by owners of the containing bucket
-			errorMessage:  fmt.Sprintf("confirm that %s is an Owner on %s", mainUserEmail, mainProjectID),
 		},
 		{
 			desc:          "user is not an Owner on the containing project and no UserProject",
 			client:        otherUserClient,
 			userProject:   nil,
 			expectSuccess: false, // by the standard requester-pays rule
-			errorMessage:  fmt.Sprintf("confirm that %s is NOT an Owner on %s", otherUserEmail, mainProjectID),
 		},
 		{
 			desc:          "user is not an Owner on the containing project but is an Editor on UserProject",
 			client:        otherUserClient,
-			userProject:   &otherProjectID,
-			expectSuccess: true, // by the standard requester-pays rule
-			errorMessage:  fmt.Sprintf("confirm that %s is an Editor on %s and that that project has billing enabled", otherUserEmail, otherProjectID),
+			userProject:   &otherProjectID, // the project should have billing enabled
+			expectSuccess: true,            // by the standard requester-pays rule
 		},
 		{
 			desc:          "user is not an Owner on the containing project and is not an Editor on UserProject",
@@ -2849,18 +2844,30 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			userProject:   &mainProjectID,
 			expectSuccess: false,
 			wantErrorCode: 403,
-			errorMessage:  fmt.Sprintf("confirm that %s is NOT an Editor on %s", otherUserEmail, mainProjectID),
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
+
+			printTestCase := func() string {
+				user := mainUserEmail
+				if test.client == otherUserClient {
+					user = otherUserEmail
+				}
+				userProject := "none"
+				if test.userProject != nil {
+					userProject = *test.userProject
+				}
+				return fmt.Sprintf("user: %s\n\t\tcontaining project: %s\n\t\tUserProject: %s", user, mainProjectID, userProject)
+			}
+
 			checkforErrors := func(desc string, err error) {
 				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error; %s \n\t\terror: %v", desc, test.errorMessage, err)
+					t.Errorf("%s: got unexpected error\n\t\t%s \n\t\terror: %v", desc, printTestCase(), err)
 				} else if err == nil && !test.expectSuccess {
-					t.Errorf("%s: got unexpected success; %s", desc, test.errorMessage)
+					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
 					t.Errorf("%s: mismatched errors; %s\n\t\twant error code: %d\n\t\tgot error: %v\n",
-						desc, test.errorMessage, test.wantErrorCode, err)
+						desc, printTestCase(), test.wantErrorCode, err)
 				}
 			}
 
