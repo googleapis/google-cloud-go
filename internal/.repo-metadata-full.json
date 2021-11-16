@@ -581,7 +581,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/filestore/latest/apiv1",
-    "release_level": "ga",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/firestore": {
@@ -869,7 +869,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/monitoring/latest/metricsscope/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/networkconnectivity/apiv1": {
