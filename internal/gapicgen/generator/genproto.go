@@ -51,6 +51,10 @@ var denylist = map[string]bool{
 	// Not properly configured:
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1beta1": true,
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1":      true,
+
+	// temporarily skip bigtable generation until we're ready to merge
+	// https://github.com/googleapis/googleapis/commit/0fd6a324383fdd1220c9a937b2eef37f53764664
+	"google.golang.org/genproto/googleapis/bigtable/admin": true,
 }
 
 // noGRPC is the set of APIs that do not need gRPC stubs.
