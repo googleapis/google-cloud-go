@@ -7,6 +7,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.1.1
 	google.golang.org/api v0.60.0
-	google.golang.org/genproto v0.0.0-20211116182654-e63d96a377c4
+	google.golang.org/genproto v0.0.0-20211117155847-120650a500bb
 	google.golang.org/grpc v1.40.0
 )
