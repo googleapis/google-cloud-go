@@ -1224,6 +1224,8 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 }
 
 func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
+	t.Skip("Skipped due to internal bug b/205986378")
+
 	ctx := context.Background()
 
 	// Create an HTTP client to read test data and a gRPC client to test write
