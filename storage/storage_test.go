@@ -831,8 +831,8 @@ func TestRetryer(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			o := tc.call(&ObjectHandle{})
-			if !reflect.DeepEqual(o.retry, tc.want) {
-				s.Fatalf("retry not configured correctly: got %v, want %v", o.retry, tc.want)
+			if diff := cmp.Diff(o.retry, tc.want, cmp.AllowUnexported(retryConfig{}, gax.Backoff{})); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
 			}
 		})
 	}
