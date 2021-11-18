@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -782,6 +783,59 @@ func TestConditionErrors(t *testing.T) {
 		if err := conds.validate(""); err == nil {
 			t.Errorf("%+v: got nil, want error", conds)
 		}
+	}
+}
+
+
+// Test that ObjectHandle.Retryer correctly configures the retry configuration
+// in the ObjectHandle.
+func TestRetryer(t *testing.T) {
+	testCases := []struct {
+		name string
+		call func(o *ObjectHandle) *ObjectHandle
+		want *retryConfig
+	}{
+		{
+			name: "all defaults",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer()
+			},
+			want: &retryConfig{},
+		},
+		{
+			name: "set all backoff options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithBackoff(gax.Backoff{
+					Initial: 2 * time.Second,
+					Max: 30 * time.Second,
+					Multiplier: 3,
+				}))
+			},
+			want: &retryConfig{&gax.Backoff{
+				Initial: 2 * time.Second,
+				Max: 30 * time.Second,
+				Multiplier: 3,
+			}},
+		},
+		{
+			name: "set some backoff options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithBackoff(gax.Backoff{
+					Multiplier: 3,
+				}))
+			},
+			want: &retryConfig{&gax.Backoff{
+				Multiplier: 3,
+			}},
+		},
+	}
+	for _, tc := range(testCases) {
+		t.Run(tc.name, func(s *testing.T){
+			o := tc.call(&ObjectHandle{})
+			if !reflect.DeepEqual(o.retry, tc.want) {
+				s.Fatalf("retry not configured correctly: got %v, want %v", o.retry, tc.want)
+			}
+		})
 	}
 }
 
