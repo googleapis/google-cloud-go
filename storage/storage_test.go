@@ -786,7 +786,6 @@ func TestConditionErrors(t *testing.T) {
 	}
 }
 
-
 // Test that ObjectHandle.Retryer correctly configures the retry configuration
 // in the ObjectHandle.
 func TestRetryer(t *testing.T) {
@@ -806,14 +805,14 @@ func TestRetryer(t *testing.T) {
 			name: "set all backoff options",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(WithBackoff(gax.Backoff{
-					Initial: 2 * time.Second,
-					Max: 30 * time.Second,
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
 					Multiplier: 3,
 				}))
 			},
 			want: &retryConfig{&gax.Backoff{
-				Initial: 2 * time.Second,
-				Max: 30 * time.Second,
+				Initial:    2 * time.Second,
+				Max:        30 * time.Second,
 				Multiplier: 3,
 			}},
 		},
@@ -829,8 +828,8 @@ func TestRetryer(t *testing.T) {
 			}},
 		},
 	}
-	for _, tc := range(testCases) {
-		t.Run(tc.name, func(s *testing.T){
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
 			o := tc.call(&ObjectHandle{})
 			if !reflect.DeepEqual(o.retry, tc.want) {
 				s.Fatalf("retry not configured correctly: got %v, want %v", o.retry, tc.want)

@@ -853,7 +853,7 @@ type ObjectHandle struct {
 	encryptionKey  []byte // AES-256 key
 	userProject    string // for requester-pays buckets
 	readCompressed bool   // Accept-Encoding: gzip
-	retry					 *retryConfig
+	retry          *retryConfig
 }
 
 // ACL provides access to the object's access control list.
@@ -1785,7 +1785,7 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2 := *o
 	retry := &retryConfig{}
-	for _, opt := range(opts) {
+	for _, opt := range opts {
 		opt.apply(retry)
 	}
 	o2.retry = retry
