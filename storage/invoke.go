@@ -42,13 +42,7 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	}
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
 		err = call()
-		if err == nil {
-			return true, nil
-		}
-		if shouldRetry(err) {
-			return false, err
-		}
-		return true, err
+		return !shouldRetry(err), err
 	})
 }
 
@@ -68,6 +62,9 @@ func runWithRetry(ctx context.Context, call func() error) error {
 }
 
 func shouldRetry(err error) bool {
+	if err == nil {
+		return false
+	}
 	if err == io.ErrUnexpectedEOF {
 		return true
 	}
