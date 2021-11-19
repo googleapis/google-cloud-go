@@ -282,7 +282,7 @@ func initIntegrationTests() (cleanup func()) {
 		}
 		configName = config.Name
 	}
-	log.Printf("running test using config: %s\n", configName)
+	log.Printf("Running test by using the instance config: %s\n", configName)
 
 	// First clean up any old test instances before we start the actual testing
 	// as these might cause this test run to fail.
