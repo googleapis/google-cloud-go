@@ -2049,38 +2049,74 @@ func TestDecodeStruct(t *testing.T) {
 	)
 
 	for _, test := range []struct {
-		desc string
-		ptr  interface{}
-		want interface{}
-		fail bool
+		desc    string
+		lenient bool
+		ptr     interface{}
+		want    interface{}
+		fail    bool
 	}{
 		{
-			desc: "decode to S1",
-			ptr:  &s1,
-			want: &S1{ID: "id", Time: t1},
+			desc:    "decode to S1 with lenient enabled",
+			ptr:     &s1,
+			want:    &S1{ID: "id", Time: t1},
+			lenient: true,
 		},
 		{
-			desc: "decode to S2",
-			ptr:  &s2,
-			fail: true,
+			desc:    "decode to S1 with lenient disabled",
+			ptr:     &s1,
+			want:    &S1{ID: "id", Time: t1},
+			lenient: false,
 		},
 		{
-			desc: "decode to S3",
-			ptr:  &s3,
-			want: &S3{ID: CustomString("id"), Time: CustomTime(t1)},
+			desc:    "decode to S2 with lenient enabled",
+			ptr:     &s2,
+			fail:    true,
+			lenient: true,
 		},
 		{
-			desc: "decode to S4",
-			ptr:  &s4,
-			fail: true,
+			desc:    "decode to S2 with lenient disabled",
+			ptr:     &s2,
+			fail:    true,
+			lenient: false,
 		},
 		{
-			desc: "decode to S5",
-			ptr:  &s5,
-			fail: true,
+			desc:    "decode to S3 with lenient enabled",
+			ptr:     &s3,
+			want:    &S3{ID: CustomString("id"), Time: CustomTime(t1)},
+			lenient: true,
+		},
+		{
+			desc:    "decode to S3 with lenient disabled",
+			ptr:     &s3,
+			want:    &S3{ID: CustomString("id"), Time: CustomTime(t1)},
+			lenient: false,
+		},
+		{
+			desc:    "decode to S4 with lenient enabled",
+			ptr:     &s4,
+			fail:    true,
+			lenient: true,
+		},
+		{
+			desc:    "decode to S4 with lenient disabled",
+			ptr:     &s4,
+			fail:    true,
+			lenient: false,
+		},
+		{
+			desc:    "decode to S5 with lenient enabled",
+			ptr:     &s5,
+			want:    &S5{NullString: NullString{}, Time: CustomTime(t1)},
+			lenient: true,
+		},
+		{
+			desc:    "decode to S5 with lenient disabled",
+			ptr:     &s5,
+			fail:    true,
+			lenient: false,
 		},
 	} {
-		err := decodeStruct(stype, lv, test.ptr)
+		err := decodeStruct(stype, lv, test.ptr, test.lenient)
 		if (err != nil) != test.fail {
 			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
 		}
@@ -2195,7 +2231,7 @@ func TestDecodeStructWithPointers(t *testing.T) {
 			want: &S1{Str: nil, Int: nil, Bool: nil, Float: nil, Time: nil, Date: nil, StrArray: nil, IntArray: nil, BoolArray: nil, FloatArray: nil, TimeArray: nil, DateArray: nil},
 		},
 	} {
-		err := decodeStruct(stype, lv[i], test.ptr)
+		err := decodeStruct(stype, lv[i], test.ptr, false)
 		if (err != nil) != test.fail {
 			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
 		}
