@@ -1018,8 +1018,11 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	// TODO: configure conditional idempotency.
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
+	var isIdempotent bool
+	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
+		isIdempotent = true
+	}
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1083,8 +1086,13 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	}
 	// Encryption doesn't apply to Delete.
 	setClientHeader(call.Header())
-	// TODO: configure conditional idempotency.
-	err := run(ctx, func() error { return call.Do() }, o.retry, true)
+	var isIdempotent bool
+	// Delete is idempotent if GenerationMatch or Generation have been passed in.
+	// The default generation is negative to get the latest version of the object.
+	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
+		isIdempotent = true
+	}
+	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -1816,8 +1824,45 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
+// RetryPolicy gives options for which operations should be performed with
+// retries for transient errors.
+type RetryPolicy int
+
+const (
+	// RetryIdempotent causes only idempotent operations to be retried when the
+	// service returns a transient error. Using this policy, fully idempotent
+	// operations (such as `ObjectHandle.Attrs()`) will always be retried.
+	// Conditionally idempotent operations (for example `ObjectHandle.Update()`)
+	// will be retried only if the necessary conditions have been supplied (in
+	// the case of `ObjectHandle.Update()` this would mean supplying a
+	// `Conditions.MetagenerationMatch` condition).
+	RetryIdempotent RetryPolicy = iota
+
+	// RetryAlways causes all operations to be retried when the service returns a
+	// transient error, regardless of idempotency considerations.
+	RetryAlways
+
+	// RetryNever causes the client to not perform retries on failed operations.
+	RetryNever
+)
+
+func WithPolicy(policy RetryPolicy) RetryOption {
+	return &withPolicy{
+		policy: policy,
+	}
+}
+
+type withPolicy struct {
+	policy RetryPolicy
+}
+
+func (ws *withPolicy) apply(config *retryConfig) {
+	config.policy = ws.policy
+}
+
 type retryConfig struct {
 	backoff *gax.Backoff
+	policy  RetryPolicy
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods
