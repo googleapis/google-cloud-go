@@ -27,6 +27,25 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// run determines whether a retry is necessary based on the config and
+// idempotency information. It then calls the function with or without retries
+// as appropriate, using the configured settings.
+func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool) error {
+	if !isIdempotent {
+		return call()
+	}
+	bo := gax.Backoff{}
+	if retry != nil && retry.backoff != nil {
+		bo.Multiplier = retry.backoff.Multiplier
+		bo.Initial = retry.backoff.Initial
+		bo.Max = retry.backoff.Max
+	}
+	return internal.Retry(ctx, bo, func() (stop bool, err error) {
+		err = call()
+		return !shouldRetry(err), err
+	})
+}
+
 // runWithRetry calls the function until it returns nil or a non-retryable error, or
 // the context is done.
 func runWithRetry(ctx context.Context, call func() error) error {
@@ -43,6 +62,9 @@ func runWithRetry(ctx context.Context, call func() error) error {
 }
 
 func shouldRetry(err error) bool {
+	if err == nil {
+		return false
+	}
 	if err == io.ErrUnexpectedEOF {
 		return true
 	}
