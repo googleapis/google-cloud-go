@@ -802,30 +802,46 @@ func TestRetryer(t *testing.T) {
 			want: &retryConfig{},
 		},
 		{
-			name: "set all backoff options",
+			name: "set all options",
 			call: func(o *ObjectHandle) *ObjectHandle {
-				return o.Retryer(WithBackoff(gax.Backoff{
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Initial:    2 * time.Second,
+						Max:        30 * time.Second,
+						Multiplier: 3,
+					}),
+					WithPolicy(RetryAlways))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
 					Initial:    2 * time.Second,
 					Max:        30 * time.Second,
 					Multiplier: 3,
-				}))
+				},
+				policy: RetryAlways,
 			},
-			want: &retryConfig{&gax.Backoff{
-				Initial:    2 * time.Second,
-				Max:        30 * time.Second,
-				Multiplier: 3,
-			}},
 		},
 		{
 			name: "set some backoff options",
 			call: func(o *ObjectHandle) *ObjectHandle {
-				return o.Retryer(WithBackoff(gax.Backoff{
-					Multiplier: 3,
-				}))
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Multiplier: 3,
+					}))
 			},
-			want: &retryConfig{&gax.Backoff{
-				Multiplier: 3,
-			}},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithPolicy(RetryNever))
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
 		},
 	}
 	for _, tc := range testCases {
