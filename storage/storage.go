@@ -1824,8 +1824,8 @@ func (wb *withBackoff) apply(config *retryConfig) {
 	config.backoff = &wb.backoff
 }
 
-// RetryPolicy gives options for which operations should be performed with
-// retries for transient errors.
+// RetryPolicy describes the available policies for which operations should be
+// retried. The default is `RetryIdempotent`.
 type RetryPolicy int
 
 const (
@@ -1835,7 +1835,7 @@ const (
 	// Conditionally idempotent operations (for example `ObjectHandle.Update()`)
 	// will be retried only if the necessary conditions have been supplied (in
 	// the case of `ObjectHandle.Update()` this would mean supplying a
-	// `Conditions.MetagenerationMatch` condition).
+	// `Conditions.MetagenerationMatch` condition is required).
 	RetryIdempotent RetryPolicy = iota
 
 	// RetryAlways causes all operations to be retried when the service returns a
@@ -1846,6 +1846,8 @@ const (
 	RetryNever
 )
 
+// WithPolicy allows the configuration of which operations should be performed
+// with retries for transient errors.
 func WithPolicy(policy RetryPolicy) RetryOption {
 	return &withPolicy{
 		policy: policy,
