@@ -811,7 +811,7 @@ func TestRetryer(t *testing.T) {
 						Multiplier: 3,
 					}),
 					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error) bool {return false}))
+					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -820,7 +820,7 @@ func TestRetryer(t *testing.T) {
 					Multiplier: 3,
 				},
 				policy:      RetryAlways,
-				shouldRetry: func(err error) bool {return false},
+				shouldRetry: func(err error) bool { return false },
 			},
 		},
 		{
@@ -849,10 +849,10 @@ func TestRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(o *ObjectHandle) *ObjectHandle {
 				return o.Retryer(
-					WithErrorFunc(func(err error) bool {return false}))
+					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool {return false},
+				shouldRetry: func(err error) bool { return false },
 			},
 		},
 	}
