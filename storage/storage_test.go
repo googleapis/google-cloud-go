@@ -810,7 +810,8 @@ func TestRetryer(t *testing.T) {
 						Max:        30 * time.Second,
 						Multiplier: 3,
 					}),
-					WithPolicy(RetryAlways))
+					WithPolicy(RetryAlways),
+					WithErrorFunc(func(err error) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -818,7 +819,8 @@ func TestRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy: RetryAlways,
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
 			},
 		},
 		{
@@ -843,11 +845,30 @@ func TestRetryer(t *testing.T) {
 				policy: RetryNever,
 			},
 		},
+		{
+			name: "set ErrorFunc only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			o := tc.call(&ObjectHandle{})
-			if diff := cmp.Diff(o.retry, tc.want, cmp.AllowUnexported(retryConfig{}, gax.Backoff{})); diff != "" {
+			if diff := cmp.Diff(
+				o.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
 				s.Fatalf("retry not configured correctly: %v", diff)
 			}
 		})

@@ -1862,9 +1862,39 @@ func (ws *withPolicy) apply(config *retryConfig) {
 	config.policy = ws.policy
 }
 
+// WithErrorFunc allows users to pass a custom function to the retryer. Errors
+// will be retried if and only if `shouldRetry(err)` returns true.
+// By default, the following errors are retried (see invoke.go for the default
+// shouldRetry function):
+//
+// - HTTP responses with codes 429, 502, 503, and 504.
+//
+// - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
+//
+// - Errors which are considered transient using the Temporary() interface.
+//
+// - Wrapped versions of these errors.
+//
+// This option can be used to retry on a different set of errors than the
+// default.
+func WithErrorFunc(shouldRetry func(err error) bool) RetryOption {
+	return &withErrorFunc{
+		shouldRetry: shouldRetry,
+	}
+}
+
+type withErrorFunc struct {
+	shouldRetry func(err error) bool
+}
+
+func (wef *withErrorFunc) apply(config *retryConfig) {
+	config.shouldRetry = wef.shouldRetry
+}
+
 type retryConfig struct {
-	backoff *gax.Backoff
-	policy  RetryPolicy
+	backoff     *gax.Backoff
+	policy      RetryPolicy
+	shouldRetry func(err error) bool
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods

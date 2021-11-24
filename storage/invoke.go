@@ -45,9 +45,13 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 		bo.Initial = retry.backoff.Initial
 		bo.Max = retry.backoff.Max
 	}
+	var errorFunc func(err error) bool = shouldRetry
+	if retry.shouldRetry != nil {
+		errorFunc = retry.shouldRetry
+	}
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
 		err = call()
-		return !shouldRetry(err), err
+		return !errorFunc(err), err
 	})
 }
 
