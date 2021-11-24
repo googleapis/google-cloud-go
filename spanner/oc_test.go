@@ -261,6 +261,57 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	}
 }
 
+func TestOCStats_GFE_Latency(t *testing.T){
+	te := testutil.NewTestExporter(GFELatencyView)
+	defer te.Unregister()
+
+	GFELatencyOrHeaderMissingCountEnabled = true
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
+
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	// Wait until we see data from the view.
+	select {
+	case stat := <-te.Stats:
+		if len(stat.Rows) == 0 {
+			t.Fatal("No metrics are exported")
+		}
+		if got, want := stat.View.Measure.Name(), statsPrefix+"gfe_latency"; got != want {
+			t.Fatalf("Incorrect measure: got %v, want %v", got, want)
+		}
+		row := stat.Rows[0]
+		m := getTagMap(row.Tags)
+		checkCommonTags(t, m)
+		var data string
+		switch row.Data.(type) {
+		default:
+			data = fmt.Sprintf("%v", row.Data)
+		case *view.CountData:
+			data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
+		case *view.LastValueData:
+			data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+		}
+		if got, want := data, "1"; got != want {
+			t.Fatalf("Incorrect data: got %v, want %v", got, want)
+		}
+	case <-time.After(1 * time.Second):
+		t.Fatal("no stats were exported before timeout")
+	}
+
+}
 func getTagMap(tags []tag.Tag) map[tag.Key]string {
 	m := make(map[tag.Key]string)
 	for _, t := range tags {

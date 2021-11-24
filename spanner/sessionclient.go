@@ -19,6 +19,8 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"go.opencensus.io/tag"
+	"google.golang.org/grpc"
 	"log"
 	"reflect"
 	"sync"
@@ -130,10 +132,26 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		return nil, err
 	}
 	ctx = contextWithOutgoingMetadata(ctx, sc.md)
+	var md metadata.MD
 	sid, err := client.CreateSession(ctx, &sppb.CreateSessionRequest{
 		Database: sc.database,
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		_, instance, database, err := parseDatabaseName(sc.database)
+		if err != nil {
+			return nil, ToSpannerError(err)
+		}
+		// Errors should not prevent initializing the session pool.
+		ctxGFE, err := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, sc.id),
+			tag.Upsert(tagKeyDatabase, database),
+			tag.Upsert(tagKeyInstance, instance),
+			tag.Upsert(tagKeyLibVersion, version.Repo),
+		)
+		captureGFELatencyStats(ctxGFE, md, "createSession")
+	}
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
@@ -230,11 +248,29 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
+		var mdForGFELatency metadata.MD
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
 			SessionTemplate: &sppb.Session{Labels: labels},
-		})
+		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
+
+		if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+			_, instance, database, err := parseDatabaseName(sc.database)
+			if err != nil {
+				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", err)
+				consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
+				break
+			}
+			// Errors should not prevent initializing the session pool.
+			ctxGFE, err := tag.New(ctx,
+				tag.Upsert(tagKeyClientID, sc.id),
+				tag.Upsert(tagKeyDatabase, database),
+				tag.Upsert(tagKeyInstance, instance),
+				tag.Upsert(tagKeyLibVersion, version.Repo),
+			)
+			captureGFELatencyStats(ctxGFE, md, "executeBatchCreateSessions")
+		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
 			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)

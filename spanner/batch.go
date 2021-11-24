@@ -20,6 +20,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"log"
 	"time"
 
@@ -124,6 +128,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		partitions []*Partition
 	)
 	kset, err = keys.keySetProto()
+	var md metadata.MD
 	// Request partitions.
 	if err != nil {
 		return nil, err
@@ -136,7 +141,11 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		Columns:          columns,
 		KeySet:           kset,
 		PartitionOptions: opt.toProto(),
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "PartitionReadUsingIndexWithOptions")
+	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
 		Session:        sid,
@@ -180,6 +189,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	if err != nil {
 		return nil, err
 	}
+	var md metadata.MD
 
 	// request Partitions
 	req := &sppb.PartitionQueryRequest{
@@ -190,7 +200,11 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:           params,
 		ParamTypes:       paramTypes,
 	}
-	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
+	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "partitionQuery")
+	}
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
@@ -251,7 +265,13 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
-	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid})
+	var md metadata.MD
+	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
+
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Cleanup")
+	}
+
 	if err != nil {
 		var logger *log.Logger
 		if sh.session != nil {
@@ -277,10 +297,11 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
+	var md metadata.MD
 	// Read or query partition.
 	if p.rreq != nil {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			return client.StreamingRead(ctx, &sppb.ReadRequest{
+			client, err := client.StreamingRead(ctx, &sppb.ReadRequest{
 				Session:        p.rreq.Session,
 				Transaction:    p.rreq.Transaction,
 				Table:          p.rreq.Table,
@@ -291,10 +312,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.rreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
+			md, _ = client.Header()
+
+			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Execute")
+			}
+			return client,err
 		}
 	} else {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			return client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
+			client, err :=  client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
 				Session:        p.qreq.Session,
 				Transaction:    p.qreq.Transaction,
 				Sql:            p.qreq.Sql,
@@ -305,6 +332,12 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.qreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
+			md, _ = client.Header()
+
+			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Execute")
+			}
+			return client,err
 		}
 	}
 	return stream(

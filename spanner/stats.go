@@ -15,7 +15,12 @@
 package spanner
 
 import (
+	"cloud.google.com/go/internal/version"
 	"context"
+	"google.golang.org/grpc/metadata"
+	"strconv"
+	"strings"
+	"testing"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
@@ -36,6 +41,8 @@ var (
 	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
 	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
 	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
+	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
+	GFELatencyOrHeaderMissingCountEnabled = false
 )
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
@@ -153,7 +160,39 @@ var (
 		Aggregation: view.Count(),
 		TagKeys:     tagCommonKeys,
 	}
+
+	GFELatency = stats.Int64(
+		statsPrefix+"gfe_latency",
+		"Latency between Google's network receiving an RPC and reading back the first byte of the response",
+		stats.UnitMilliseconds,
+	)
+
+	GFELatencyView = &view.View{
+		Name:        "cloud.google.com/go/spanner/gfe_latency",
+		Measure:     GFELatency,
+		Description: "Latency between Google's network receives an RPC and reads back the first byte of the response",
+		Aggregation: view.Distribution(0.0, 0.01, 0.05, 0.1, 0.3, 0.6, 0.8, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0,
+			16.0, 20.0, 25.0, 30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0,
+			300.0, 400.0, 500.0, 650.0, 800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0,
+			100000.0),
+		TagKeys: append(tagCommonKeys,tagKeyMethod),
+	}
+
+	GFEHeaderMissingCount = stats.Int64(
+		statsPrefix+"gfe_header_missing_count",
+		"Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
+		stats.UnitDimensionless,
+	)
+
+	GFEHeaderMissingCountView = &view.View{
+		Name:        "cloud.google.com/go/spanner/gfe_header_missing_count",
+		Measure:     GFEHeaderMissingCount,
+		Description: "Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
+		Aggregation: view.Count(),
+		TagKeys: append(tagCommonKeys,tagKeyMethod),
+	}
 )
+
 
 // EnableStatViews enables all views of metrics relate to session management.
 func EnableStatViews() error {
@@ -166,4 +205,67 @@ func EnableStatViews() error {
 		AcquiredSessionsCountView,
 		ReleasedSessionsCountView,
 	)
+}
+
+func EnableGfeLatencyView() error {
+	GFELatencyOrHeaderMissingCountEnabled = true
+	return view.Register(GFELatencyView)
+}
+
+func EnableGfeHeaderMissingCountView() error {
+	GFELatencyOrHeaderMissingCountEnabled = true
+	return view.Register(GFEHeaderMissingCountView)
+}
+func EnableGfeLatencyAndHeaderMissingCountViews() error {
+	GFELatencyOrHeaderMissingCountEnabled = true
+	return view.Register(
+		GFELatencyView,
+		GFEHeaderMissingCountView,
+	)
+}
+
+func DisableGfeLatencyAndHeaderMissingCountViews() {
+	GFELatencyOrHeaderMissingCountEnabled = false
+	view.Unregister(
+		GFELatencyView,
+		GFEHeaderMissingCountView,
+	)
+}
+
+func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod string) error {
+	if len(md.Get("server-timing")) == 0 {
+		recordStat(ctx, GFEHeaderMissingCount, 1)
+		return nil
+	}
+	serverTiming := md.Get("server-timing")[0]
+	gfeLatency, err := strconv.Atoi(strings.TrimPrefix(serverTiming, "gfet4t7; dur="))
+	if !strings.HasPrefix(serverTiming,"gfet4t7; dur=") || err!= nil{
+		return err
+	}
+	// Record GFE t4t7 latency with OpenCensus.
+	ctx = tag.NewContext(ctx, tag.FromContext(ctx))
+	ctx, err = tag.New(ctx, tag.Insert(tagKeyMethod, keyMethod))
+	if err != nil {
+		return err
+	}
+	recordStat(ctx, GFELatency, int64(gfeLatency))
+	recordStat(ctx, GFEHeaderMissingCount, 0)
+	return nil
+}
+
+func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
+	// We only check prefix because client ID increases if we create
+	// multiple clients for the same database.
+	if !strings.HasPrefix(m[tagKeyClientID], "client-") {
+		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
+	}
+	if !strings.HasPrefix(m[tagKeyInstance], "gotest-") {
+		t.Fatalf("Incorrect instance ID: %v", m[tagKeyInstance])
+	}
+	if !strings.HasPrefix(m[tagKeyDatabase], "gotest_") {
+		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
+	}
+	if m[tagKeyLibVersion] != version.Repo {
+		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
+	}
 }

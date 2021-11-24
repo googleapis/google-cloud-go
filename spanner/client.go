@@ -19,6 +19,8 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
 	"log"
 	"os"
 	"regexp"
@@ -335,6 +337,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	}
 	sh = &sessionHandle{session: s}
 
+	var md metadata.MD
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
 		Session: sh.getID(),
@@ -343,7 +346,10 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 				ReadOnly: buildTransactionOptionsReadOnly(tb, true),
 			},
 		},
-	})
+	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "BatchReadOnlyTransaction_BeginTransaction")
+	}
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
