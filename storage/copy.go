@@ -230,7 +230,11 @@ func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
+
+	retryCall := func() error { obj, err = call.Do(); return err }
+
+	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
+	err = run(ctx, retryCall, c.dst.retry, isIdempotent)
 	if err != nil {
 		return nil, err
 	}
