@@ -138,8 +138,11 @@ func (c *Copier) callRewrite(ctx context.Context, rawObj *raw.Object) (*raw.Rewr
 	var res *raw.RewriteResponse
 	var err error
 	setClientHeader(call.Header())
-	err = runWithRetry(ctx, func() error { res, err = call.Do(); return err })
-	if err != nil {
+
+	retryCall := func() error { res, err = call.Do(); return err }
+	isIdempotent := c.dst.conds != nil && (c.dst.conds.GenerationMatch != 0 || c.dst.conds.DoesNotExist)
+
+	if err := run(ctx, retryCall, c.dst.retry, isIdempotent); err != nil {
 		return nil, err
 	}
 	c.RewriteToken = res.RewriteToken
