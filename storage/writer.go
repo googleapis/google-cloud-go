@@ -168,11 +168,17 @@ func (w *Writer) open() error {
 			}
 			setClientHeader(call.Header())
 
-			// The internals that perform call.Do automatically retry both the initial
-			// call to set up the upload as well as calls to upload individual chunks
-			// for a resumable upload (as long as the chunk size is non-zero). Hence
-			// there is no need to add retries here.
-			resp, err = call.Do()
+			retryCall := func() error {
+				// The internals that perform call.Do automatically retry both the initial
+				// call to set up the upload as well as calls to upload individual chunks
+				// for a resumable upload (as long as the chunk size is non-zero).
+				r, err := call.Do()
+				resp = r
+				return err
+			}
+
+			isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch != 0 || w.o.conds.DoesNotExist)
+			err = run(w.ctx, retryCall, w.o.retry, isIdempotent)
 		}
 		if err != nil {
 			w.mu.Lock()
