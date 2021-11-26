@@ -20,12 +20,18 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/googleapis/gax-go/v2/apierror"
+
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // Error is the structured error returned by Cloud Spanner client.
+//
+// Deprecated: The APIError should be extracted from the wrapped error by
+// calling Unwrap(). This struct will be removed in a future
+// release and APIError will be returned directly.
 type Error struct {
 	// Code is the canonical error code for describing the nature of a
 	// particular error.
@@ -104,10 +110,13 @@ func (e *Error) decorate(info string) {
 }
 
 // spannerErrorf generates a *spanner.Error with the given description and a
-// status error with the given error code as its wrapped error.
+// APIError error having given error code as its status.
 func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 	msg := fmt.Sprintf(format, args...)
 	wrapped := status.Error(code, msg)
+	if apiError, ok := apierror.FromError(wrapped); ok {
+		wrapped = apiError
+	}
 	return &Error{
 		Code: code,
 		err:  wrapped,
@@ -119,12 +128,21 @@ func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 // error is already a *spanner.Error, the original error will be returned.
 //
 // Spanner Errors are normally created by the Spanner client library from the
-// returned status of a RPC. This method can also be used to create Spanner
+// returned APIError of a RPC. This method can also be used to create Spanner
 // errors for use in tests. The recommended way to create test errors is
 // calling this method with a status error, e.g.
 // ToSpannerError(status.New(codes.NotFound, "Table not found").Err())
 func ToSpannerError(err error) error {
 	return toSpannerErrorWithCommitInfo(err, false)
+}
+
+// ToAPIError converts a general Go error to *gax-go.APIError. If the given
+// error is not convertible to *gax-go.APIError, the original error will be returned.
+func ToAPIError(err error) error {
+	if apiError, ok := apierror.FromError(err); ok {
+		return apiError
+	}
+	return err
 }
 
 // toSpannerErrorWithCommitInfo converts general Go error to *spanner.Error
@@ -147,9 +165,9 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{status.FromContextError(err).Code(), wrapped, desc, ""}
+		return &Error{status.FromContextError(err).Code(), ToAPIError(wrapped), desc, ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, err, err.Error(), ""}
+		return &Error{codes.Unknown, ToAPIError(err), err.Error(), ""}
 	default:
 		statusErr := status.Convert(err)
 		code, desc := statusErr.Code(), statusErr.Message()
@@ -158,7 +176,7 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
-		return &Error{code, wrapped, desc, ""}
+		return &Error{code, ToAPIError(wrapped), desc, ""}
 	}
 }
 
