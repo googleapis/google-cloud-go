@@ -212,13 +212,9 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
 	}
 
-	var isIdempotent bool
+	isIdempotent := b.conds != nil && b.conds.MetagenerationMatch != 0
+
 	var rawBucket *raw.Bucket
-
-	if b.conds != nil && b.conds.MetagenerationMatch != 0 {
-		isIdempotent = true
-	}
-
 	call := func() error {
 		rb, err := req.Context(ctx).Do()
 		rawBucket = rb
