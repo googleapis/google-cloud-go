@@ -1794,3 +1794,46 @@ func TestOperationsWithEndpoint(t *testing.T) {
 
 	}
 }
+
+func TestSignedURLClone(t *testing.T) {
+	t.Parallel()
+
+	opts := &SignedURLOptions{
+		GoogleAccessID: "accessID",
+		PrivateKey:     []byte{},
+		SignBytes: func(b []byte) ([]byte, error) {
+			return b, nil
+		},
+		Method:          "GET",
+		Expires:         time.Now(),
+		ContentType:     "text/plain",
+		Headers:         []string{},
+		QueryParameters: map[string][]string{},
+		MD5:             "some-checksum",
+		Style:           VirtualHostedStyle(),
+		Insecure:        true,
+		Scheme:          SigningSchemeV2,
+	}
+
+	// Check that all fields are set to a non-zero value, so we can check that
+	// clone accurately clones all fields and catch newly added fields not cloned
+	reflectOpts := reflect.ValueOf(*opts)
+
+	for i := 0; i < reflectOpts.NumField(); i++ {
+		if reflectOpts.Field(i).IsZero() {
+			t.Errorf("SignedURLOptions field %d not set", i)
+		}
+	}
+
+	// Check that fields are properly cloned
+	optsClone := opts.clone()
+
+	// We need a special comparer for functions
+	signBytesComp := func(a func([]byte) ([]byte, error), b func([]byte) ([]byte, error)) bool {
+		return reflect.ValueOf(a) == reflect.ValueOf(b)
+	}
+
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
