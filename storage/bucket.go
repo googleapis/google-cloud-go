@@ -44,6 +44,7 @@ type BucketHandle struct {
 	defaultObjectACL ACLHandle
 	conds            *BucketConditions
 	userProject      string // project for Requester Pays buckets
+	retry            *retryConfig
 }
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
@@ -210,12 +211,24 @@ func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (
 	if uattrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
 	}
-	// TODO(jba): retry iff metagen is set?
-	rb, err := req.Context(ctx).Do()
-	if err != nil {
+
+	var isIdempotent bool
+	var rawBucket *raw.Bucket
+
+	if b.conds != nil && b.conds.MetagenerationMatch != 0 {
+		isIdempotent = true
+	}
+
+	call := func() error {
+		rb, err := req.Context(ctx).Do()
+		rawBucket = rb
+		return err
+	}
+
+	if err := run(ctx, call, b.retry, isIdempotent); err != nil {
 		return nil, err
 	}
-	return newBucket(rb)
+	return newBucket(rawBucket)
 }
 
 func (b *BucketHandle) newPatchCall(uattrs *BucketAttrsToUpdate) (*raw.BucketsPatchCall, error) {
@@ -1365,6 +1378,19 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 		it.query = *q
 	}
 	return it
+}
+
+// Retryer returns a bucket handle that is configured with custom retry
+// behavior as specified by the options that are passed to it. All operations
+// on the new handle will use the customized retry configuration.
+func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
+	b2 := *b
+	retry := &retryConfig{}
+	for _, opt := range opts {
+		opt.apply(retry)
+	}
+	b2.retry = retry
+	return &b2
 }
 
 // An ObjectIterator is an iterator over ObjectAttrs.
