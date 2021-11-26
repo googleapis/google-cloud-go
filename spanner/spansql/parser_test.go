@@ -864,17 +864,17 @@ func TestParseDDL(t *testing.T) {
 			}},
 		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
-				Name:       "products",
+				Name: "products",
 				Alteration: AddColumn{Def: ColumnDef{
-					Name: "item",
-					Type: Type{Base: String, Len: MaxLen},
+					Name:     "item",
+					Type:     Type{Base: String, Len: MaxLen},
 					Position: line(1),
 					Generated: Func{
 						Name: "JSON_VALUE",
 						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
 					},
 				}},
-				Position:   line(1),
+				Position: line(1),
 			},
 		}}},
 	}
