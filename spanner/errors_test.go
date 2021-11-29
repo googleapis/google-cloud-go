@@ -19,10 +19,10 @@ package spanner
 import (
 	"context"
 	"errors"
-	"github.com/googleapis/gax-go/v2/apierror"
 	"strings"
 	"testing"
 
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
