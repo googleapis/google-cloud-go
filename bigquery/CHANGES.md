@@ -1,5 +1,27 @@
 # Changes
 
+## [2.0.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.24.0...bigquery/v2.0.0) (2021-11-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **bigquery/storage/managedwriter:** changes function signatures to add variadic call options
+
+### Features
+
+* **bigquery/storage/managedwriter:** extend managedstream to support call options ([#5078](https://www.github.com/googleapis/google-cloud-go/issues/5078)) ([fbc2717](https://www.github.com/googleapis/google-cloud-go/commit/fbc2717ec84b1c5557873efaa732c047da66c1e6))
+* **bigquery/storage/managedwriter:** improve method parity in managedwriter ([#5007](https://www.github.com/googleapis/google-cloud-go/issues/5007)) ([a2af4de](https://www.github.com/googleapis/google-cloud-go/commit/a2af4de215a42848368ec3081263d34782032caa))
+* **bigquery:** add BI Engine information to query statistics ([#5081](https://www.github.com/googleapis/google-cloud-go/issues/5081)) ([b78c89b](https://www.github.com/googleapis/google-cloud-go/commit/b78c89b18a81ce155441554cb5455600168eb8fd))
+* **bigquery:** add support for AvroOptions in external data config ([#4945](https://www.github.com/googleapis/google-cloud-go/issues/4945)) ([8844e40](https://www.github.com/googleapis/google-cloud-go/commit/8844e40b7c2a7347e174587ea2cf438a6da9e16f))
+* **bigquery:** allow construction of jobs from other projects ([#5048](https://www.github.com/googleapis/google-cloud-go/issues/5048)) ([6d07eca](https://www.github.com/googleapis/google-cloud-go/commit/6d07eca680362807f6dd870ba9df8c26256601ab))
+
+
+### Bug Fixes
+
+* **bigquery/migration:** correct python namespace for migration API Committer: [@shollyman](https://www.github.com/shollyman) ([8c5c6cf](https://www.github.com/googleapis/google-cloud-go/commit/8c5c6cf9df046b67998a8608d05595bd9e34feb0))
+* **bigquery/storage/managedwriter:** correctly copy request ([#5122](https://www.github.com/googleapis/google-cloud-go/issues/5122)) ([cd43a5c](https://www.github.com/googleapis/google-cloud-go/commit/cd43a5cde5e4e388266f3773f206ead90d666261))
+* **bigquery:** address one other callsite for the job construction feature ([#5059](https://www.github.com/googleapis/google-cloud-go/issues/5059)) ([98779eb](https://www.github.com/googleapis/google-cloud-go/commit/98779eba0f1f95b195aa6194210208767c169f5e))
+
 ## [1.24.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.23.0...bigquery/v1.24.0) (2021-09-27)
 
 
