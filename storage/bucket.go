@@ -96,7 +96,7 @@ func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *Buck
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
-	return runWithRetry(ctx, func() error { _, err := req.Context(ctx).Do(); return err })
+	return run(ctx, func() error { _, err := req.Context(ctx).Do(); return err }, b.retry, true)
 }
 
 // Delete deletes the Bucket.
@@ -108,7 +108,8 @@ func (b *BucketHandle) Delete(ctx context.Context) (err error) {
 	if err != nil {
 		return err
 	}
-	return runWithRetry(ctx, func() error { return req.Context(ctx).Do() })
+
+	return run(ctx, func() error { return req.Context(ctx).Do() }, b.retry, true)
 }
 
 func (b *BucketHandle) newDeleteCall() (*raw.BucketsDeleteCall, error) {
@@ -170,10 +171,10 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 		return nil, err
 	}
 	var resp *raw.Bucket
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	})
+	}, b.retry, true)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
@@ -1090,10 +1091,10 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 		metageneration = b.conds.MetagenerationMatch
 	}
 	req := b.c.raw.Buckets.LockRetentionPolicy(b.name, metageneration)
-	return runWithRetry(ctx, func() error {
+	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
-	})
+	}, b.retry, true)
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
