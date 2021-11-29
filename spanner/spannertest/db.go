@@ -700,12 +700,20 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 			// TODO: what happens in this case?
 			return status.Newf(codes.Unimplemented, "can't add NOT NULL columns to non-empty tables yet")
 		}
-		if cd.Generated != nil {
-			// TODO: should backfill the data to maintain behaviour with real spanner
-			return status.Newf(codes.Unimplemented, "can't add generated columns to non-empty tables yet")
-		}
 		for i := range t.rows {
-			t.rows[i] = append(t.rows[i], nil)
+			if cd.Generated != nil {
+				ec := evalContext{
+					cols: t.cols,
+					row:  t.rows[i],
+				}
+				val, err := ec.evalExpr(cd.Generated)
+				if err != nil {
+					return status.Newf(codes.InvalidArgument, "could not backfill values for generated column: %v", err)
+				}
+				t.rows[i] = append(t.rows[i], val)
+			} else {
+				t.rows[i] = append(t.rows[i], nil)
+			}
 		}
 	}
 
