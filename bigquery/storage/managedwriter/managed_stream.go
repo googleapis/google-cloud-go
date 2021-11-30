@@ -335,9 +335,10 @@ func (ms *ManagedStream) Close() error {
 // The format of the row data is binary serialized protocol buffer bytes.  The message must be compatible
 // with the schema currently set for the stream.
 //
-// Use the sentinel value NoStreamOffset to omit sending of the offset value.
-func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64, opts ...AppendOption) (*AppendResult, error) {
-	pw := newPendingWrite(data, offset)
+// Use the WithOffset() AppendOption to set an explicit offset for this append.  Setting an offset for
+// a default stream is unsupported.
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
+	pw := newPendingWrite(data)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)

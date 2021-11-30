@@ -185,7 +185,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -205,7 +205,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		}
 		data = append(data, b)
 	}
-	result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+	result, err = ms.AppendRows(ctx, data)
 	if err != nil {
 		t.Errorf("grouped-row append failed: %v", err)
 	}
@@ -260,7 +260,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		if err != nil {
 			t.Fatalf("failed to marshal proto bytes for row %d: %v", k, err)
 		}
-		result, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, [][]byte{b})
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -309,7 +309,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err := ms.AppendRows(ctx, data, NoStreamOffset)
+		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -362,7 +362,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -401,7 +401,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -472,7 +472,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -545,7 +545,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -580,7 +580,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset, UpdateSchemaDescriptor(descriptorProto))
+	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
 	if err != nil {
 		t.Errorf("failed evolved append: %v", err)
 	}
@@ -696,7 +696,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	result, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
+	result, err := ms.AppendRows(ctx, [][]byte{sampleRow})
 	if err != nil {
 		t.Errorf("append failed: %v", err)
 	}

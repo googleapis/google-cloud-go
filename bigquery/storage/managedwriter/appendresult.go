@@ -80,7 +80,7 @@ type pendingWrite struct {
 // that in the future, we may want to allow row batching to be managed by
 // the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
 // streams, this should be managed by the user.
-func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
+func newPendingWrite(appends [][]byte) *pendingWrite {
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -92,9 +92,6 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 			},
 		},
 		result: newAppendResult(appends),
-	}
-	if offset > 0 {
-		pw.request.Offset = &wrapperspb.Int64Value{Value: offset}
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first
@@ -126,5 +123,14 @@ type AppendOption func(*pendingWrite)
 func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
 	return func(pw *pendingWrite) {
 		pw.newSchema = schema
+	}
+}
+
+// WithOffset sets an explicit offset value for this append request.
+func WithOffset(offset int64) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.request.Offset = &wrapperspb.Int64Value{
+			Value: offset,
+		}
 	}
 }
