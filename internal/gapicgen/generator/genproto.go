@@ -51,25 +51,32 @@ var denylist = map[string]bool{
 	// Not properly configured:
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1beta1": true,
 	"google.golang.org/genproto/googleapis/cloud/ondemandscanning/v1":      true,
+
+	// temporarily skip bigtable generation until we're ready to merge
+	// https://github.com/googleapis/googleapis/commit/0fd6a324383fdd1220c9a937b2eef37f53764664
+	"google.golang.org/genproto/googleapis/bigtable/admin": true,
+}
+
+// noGRPC is the set of APIs that do not need gRPC stubs.
+var noGRPC = map[string]bool{
+	"google.golang.org/genproto/googleapis/cloud/compute/v1": true,
 }
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
 type GenprotoGenerator struct {
-	genprotoDir        string
-	googleapisDir      string
-	googleapisDiscoDir string
-	protoSrcDir        string
-	forceAll           bool
+	genprotoDir   string
+	googleapisDir string
+	protoSrcDir   string
+	forceAll      bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
 func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	return &GenprotoGenerator{
-		genprotoDir:        c.GenprotoDir,
-		googleapisDir:      c.GoogleapisDir,
-		googleapisDiscoDir: c.GoogleapisDiscoDir,
-		protoSrcDir:        filepath.Join(c.ProtoDir, "/src"),
-		forceAll:           c.ForceAll,
+		genprotoDir:   c.GenprotoDir,
+		googleapisDir: c.GoogleapisDir,
+		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
+		forceAll:      c.ForceAll,
 	}
 }
 
@@ -134,19 +141,14 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
 			continue
 		}
+		grpc := !noGRPC[pkg]
 		pk := pkg
 		fn := fileNames
 		grp.Go(func() error {
 			log.Println("running protoc on", pk)
-			return g.protoc(fn, true /* grpc */)
+			return g.protoc(fn, grpc)
 		})
 	}
-	// TODO(noahdietz): This needs to be generalized to support any proto in googleapis-discovery.
-	// It's hard because the regen.txt contains the committish from googleapis last used to regen.
-	grp.Go(func() error {
-		log.Println("running protoc on compute")
-		return g.protoc([]string{"google/cloud/compute/v1/compute.proto"}, false /* grpc */)
-	})
 	if err := grp.Wait(); err != nil {
 		return err
 	}
@@ -195,7 +197,7 @@ func (g *GenprotoGenerator) protoc(fileNames []string, grpc bool) error {
 	if grpc {
 		stubs = fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir)
 	}
-	args := []string{"--experimental_allow_proto3_optional", stubs, "-I", g.googleapisDiscoDir, "-I", g.googleapisDir, "-I", g.protoSrcDir}
+	args := []string{"--experimental_allow_proto3_optional", stubs, "-I", g.googleapisDir, "-I", g.protoSrcDir}
 	args = append(args, fileNames...)
 	c := execv.Command("protoc", args...)
 	c.Dir = g.genprotoDir
@@ -215,6 +217,9 @@ func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[strin
 	pkgFiles := make(map[string][]string)
 	for _, v := range files {
 		if !strings.HasSuffix(v, ".proto") {
+			continue
+		}
+		if strings.HasSuffix(v, "compute_small.proto") {
 			continue
 		}
 		path := filepath.Join(g.googleapisDir, v)

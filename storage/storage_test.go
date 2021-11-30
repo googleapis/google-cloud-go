@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -782,6 +783,95 @@ func TestConditionErrors(t *testing.T) {
 		if err := conds.validate(""); err == nil {
 			t.Errorf("%+v: got nil, want error", conds)
 		}
+	}
+}
+
+// Test that ObjectHandle.Retryer correctly configures the retry configuration
+// in the ObjectHandle.
+func TestRetryer(t *testing.T) {
+	testCases := []struct {
+		name string
+		call func(o *ObjectHandle) *ObjectHandle
+		want *retryConfig
+	}{
+		{
+			name: "all defaults",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer()
+			},
+			want: &retryConfig{},
+		},
+		{
+			name: "set all options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Initial:    2 * time.Second,
+						Max:        30 * time.Second,
+						Multiplier: 3,
+					}),
+					WithPolicy(RetryAlways),
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Multiplier: 3,
+					}))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithPolicy(RetryNever))
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			o := tc.call(&ObjectHandle{})
+			if diff := cmp.Diff(
+				o.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
 	}
 }
 

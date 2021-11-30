@@ -167,3 +167,23 @@ func ExampleVersionsClient_LoadVersion() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleVersionsClient_CompareVersions() {
+	ctx := context.Background()
+	c, err := cx.NewVersionsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.CompareVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CompareVersionsRequest.
+	}
+	resp, err := c.CompareVersions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

@@ -41,6 +41,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
@@ -81,6 +82,12 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
+
+	// defaultConnPoolSize is the default number of connections
+	// to initialize in the GAPIC gRPC connection pool. A larger
+	// connection pool may be necessary for jobs that require
+	// high throughput and/or leverage many concurrent streams.
+	defaultConnPoolSize = 4
 )
 
 var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
@@ -203,6 +210,8 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	if opts == nil {
 		opts = &hybridClientOptions{}
 	}
+	opts.GRPCOpts = append(defaultGRPCOptions(), opts.GRPCOpts...)
+
 	c, err := NewClient(ctx, opts.HTTPOpts...)
 	if err != nil {
 		return nil, err
@@ -215,6 +224,14 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	c.gc = g
 
 	return c, nil
+}
+
+// defaultGRPCOptions returns a set of the default client options
+// for gRPC client initialization.
+func defaultGRPCOptions() []option.ClientOption {
+	return []option.ClientOption{
+		option.WithGRPCConnectionPool(defaultConnPoolSize),
+	}
 }
 
 // Close closes the Client.
@@ -836,6 +853,7 @@ type ObjectHandle struct {
 	encryptionKey  []byte // AES-256 key
 	userProject    string // for requester-pays buckets
 	readCompressed bool   // Accept-Encoding: gzip
+	retry          *retryConfig
 }
 
 // ACL provides access to the object's access control list.
@@ -899,7 +917,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1000,7 +1018,11 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = runWithRetry(ctx, func() error { obj, err = call.Do(); return err })
+	var isIdempotent bool
+	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
+		isIdempotent = true
+	}
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1064,7 +1086,13 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	}
 	// Encryption doesn't apply to Delete.
 	setClientHeader(call.Header())
-	err := runWithRetry(ctx, func() error { return call.Do() })
+	var isIdempotent bool
+	// Delete is idempotent if GenerationMatch or Generation have been passed in.
+	// The default generation is negative to get the latest version of the object.
+	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
+		isIdempotent = true
+	}
+	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -1757,6 +1785,116 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 	}
 	m.Call([]reflect.Value{reflect.ValueOf(value)})
 	return true
+}
+
+// Retryer returns an object handle that is configured with custom retry
+// behavior as specified by the options that are passed to it. All operations
+// on the new handle will use the customized retry configuration.
+func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
+	o2 := *o
+	retry := &retryConfig{}
+	for _, opt := range opts {
+		opt.apply(retry)
+	}
+	o2.retry = retry
+	return &o2
+}
+
+// RetryOption allows users to configure non-default retry behavior for API
+// calls made to GCS.
+type RetryOption interface {
+	apply(config *retryConfig)
+}
+
+// WithBackoff allows configuration of the backoff timing used for retries.
+// Available configuration options (Initial, Max and Multiplier) are described
+// at https://pkg.go.dev/github.com/googleapis/gax-go/v2#Backoff. If any fields
+// are not supplied by the user, gax default values will be used.
+func WithBackoff(backoff gax.Backoff) RetryOption {
+	return &withBackoff{
+		backoff: backoff,
+	}
+}
+
+type withBackoff struct {
+	backoff gax.Backoff
+}
+
+func (wb *withBackoff) apply(config *retryConfig) {
+	config.backoff = &wb.backoff
+}
+
+// RetryPolicy describes the available policies for which operations should be
+// retried. The default is `RetryIdempotent`.
+type RetryPolicy int
+
+const (
+	// RetryIdempotent causes only idempotent operations to be retried when the
+	// service returns a transient error. Using this policy, fully idempotent
+	// operations (such as `ObjectHandle.Attrs()`) will always be retried.
+	// Conditionally idempotent operations (for example `ObjectHandle.Update()`)
+	// will be retried only if the necessary conditions have been supplied (in
+	// the case of `ObjectHandle.Update()` this would mean supplying a
+	// `Conditions.MetagenerationMatch` condition is required).
+	RetryIdempotent RetryPolicy = iota
+
+	// RetryAlways causes all operations to be retried when the service returns a
+	// transient error, regardless of idempotency considerations.
+	RetryAlways
+
+	// RetryNever causes the client to not perform retries on failed operations.
+	RetryNever
+)
+
+// WithPolicy allows the configuration of which operations should be performed
+// with retries for transient errors.
+func WithPolicy(policy RetryPolicy) RetryOption {
+	return &withPolicy{
+		policy: policy,
+	}
+}
+
+type withPolicy struct {
+	policy RetryPolicy
+}
+
+func (ws *withPolicy) apply(config *retryConfig) {
+	config.policy = ws.policy
+}
+
+// WithErrorFunc allows users to pass a custom function to the retryer. Errors
+// will be retried if and only if `shouldRetry(err)` returns true.
+// By default, the following errors are retried (see invoke.go for the default
+// shouldRetry function):
+//
+// - HTTP responses with codes 429, 502, 503, and 504.
+//
+// - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
+//
+// - Errors which are considered transient using the Temporary() interface.
+//
+// - Wrapped versions of these errors.
+//
+// This option can be used to retry on a different set of errors than the
+// default.
+func WithErrorFunc(shouldRetry func(err error) bool) RetryOption {
+	return &withErrorFunc{
+		shouldRetry: shouldRetry,
+	}
+}
+
+type withErrorFunc struct {
+	shouldRetry func(err error) bool
+}
+
+func (wef *withErrorFunc) apply(config *retryConfig) {
+	config.shouldRetry = wef.shouldRetry
+}
+
+type retryConfig struct {
+	backoff     *gax.Backoff
+	policy      RetryPolicy
+	shouldRetry func(err error) bool
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods

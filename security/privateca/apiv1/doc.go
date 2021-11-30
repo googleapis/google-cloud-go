@@ -20,7 +20,7 @@
 // The Certificate Authority Service API is a highly-available, scalable
 // service that enables you to simplify and automate the management of
 // private certificate authorities (CAs) while staying in control of your
-// private keys."
+// private keys.
 //
 // Example usage
 //
@@ -87,7 +87,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20211028"
+const versionClient = "20211118"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

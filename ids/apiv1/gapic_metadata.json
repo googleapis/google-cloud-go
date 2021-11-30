@@ -1,0 +1,38 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.ids.v1",
+  "libraryPackage": "cloud.google.com/go/ids/apiv1",
+  "services": {
+    "IDS": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateEndpoint": {
+              "methods": [
+                "CreateEndpoint"
+              ]
+            },
+            "DeleteEndpoint": {
+              "methods": [
+                "DeleteEndpoint"
+              ]
+            },
+            "GetEndpoint": {
+              "methods": [
+                "GetEndpoint"
+              ]
+            },
+            "ListEndpoints": {
+              "methods": [
+                "ListEndpoints"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

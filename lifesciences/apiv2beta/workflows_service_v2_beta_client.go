@@ -49,7 +49,6 @@ func defaultWorkflowsServiceV2BetaGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://lifesciences.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

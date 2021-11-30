@@ -54,7 +54,6 @@ func defaultCloudShellGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudshell.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

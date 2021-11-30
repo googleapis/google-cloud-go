@@ -200,6 +200,9 @@ func initIntegrationTest() func() {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
+		if err != nil {
+			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
 	}
@@ -245,6 +248,70 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
 		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.Project())
 	}
+}
+
+func TestIntegration_JobFrom(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a job we can use for referencing.
+	q := client.Query("SELECT 123 as foo")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("failed to run test query: %v", err)
+	}
+	want := it.SourceJob()
+
+	// establish a new client that's pointed at an invalid project/location.
+	otherClient, err := NewClient(ctx, "bad-project-id")
+	if err != nil {
+		t.Fatalf("failed to create other client: %v", err)
+	}
+	otherClient.Location = "badloc"
+
+	for _, tc := range []struct {
+		description string
+		f           func(*Client) (*Job, error)
+		wantErr     bool
+	}{
+		{
+			description: "JobFromID",
+			f:           func(c *Client) (*Job, error) { return c.JobFromID(ctx, want.jobID) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromIDLocation",
+			f:           func(c *Client) (*Job, error) { return c.JobFromIDLocation(ctx, want.jobID, want.location) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromProject",
+			f:           func(c *Client) (*Job, error) { return c.JobFromProject(ctx, want.projectID, want.jobID, want.location) },
+		},
+	} {
+		got, err := tc.f(otherClient)
+		if err != nil {
+			if !tc.wantErr {
+				t.Errorf("case %q errored: %v", tc.description, err)
+			}
+			continue
+		}
+		if tc.wantErr {
+			t.Errorf("case %q got success, expected error", tc.description)
+		}
+		if got.projectID != want.projectID {
+			t.Errorf("case %q projectID mismatch, got %s want %s", tc.description, got.projectID, want.projectID)
+		}
+		if got.location != want.location {
+			t.Errorf("case %q location mismatch, got %s want %s", tc.description, got.location, want.location)
+		}
+		if got.jobID != want.jobID {
+			t.Errorf("case %q jobID mismatch, got %s want %s", tc.description, got.jobID, want.jobID)
+		}
+	}
+
 }
 
 func TestIntegration_TableCreate(t *testing.T) {
@@ -1950,6 +2017,18 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	if len(qStats.Timeline) == 0 {
 		t.Error("expected query timeline, none present")
 	}
+
+	if qStats.BIEngineStatistics != nil {
+		expectedMode := false
+		for _, m := range []string{"FULL", "PARTIAL", "DISABLED"} {
+			if qStats.BIEngineStatistics.BIEngineMode == m {
+				expectedMode = true
+			}
+		}
+		if !expectedMode {
+			t.Errorf("unexpected BIEngineMode for BI Engine statistics, got %s", qStats.BIEngineStatistics.BIEngineMode)
+		}
+	}
 }
 
 func TestIntegration_Load(t *testing.T) {
@@ -2049,8 +2128,7 @@ func runQuerySQL(ctx context.Context, sql string) (*JobStatistics, *QueryStatist
 func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistics, error) {
 	var jobStats *JobStatistics
 	var queryStats *QueryStatistics
-	var err error
-	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+	var err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := q.Run(ctx)
 		if err != nil {
 			var e *googleapi.Error
