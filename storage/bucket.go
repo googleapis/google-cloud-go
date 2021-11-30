@@ -158,6 +158,7 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 		},
 		gen:         -1,
 		userProject: b.userProject,
+		retry:       b.retry.clone(),
 	}
 }
 
@@ -1380,6 +1381,8 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 // Retryer returns a bucket handle that is configured with custom retry
 // behavior as specified by the options that are passed to it. All operations
 // on the new handle will use the customized retry configuration.
+// Retry options set on a object handle will take precedence over options set on
+// the bucket handle.
 func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
 	b2 := *b
 	retry := &retryConfig{}

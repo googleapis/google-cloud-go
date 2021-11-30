@@ -51,6 +51,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
@@ -4446,6 +4447,131 @@ func findTestCredentials(ctx context.Context, envVar string, scopes ...string) (
 		opts = append(opts, option.WithCredentialsFile(key))
 	}
 	return transport.Creds(ctx, opts...)
+}
+
+func TestIntegration_RetryConfig(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	objectName := uidSpace.New()
+	bucket := client.Bucket(bucketName)
+
+	numTries := 2
+	// with numTries = 2, this function sets the config to retry once (if at all)
+	shouldRetry := func(err error) bool {
+		numTries--
+		return numTries > 0
+	}
+
+	testCases := []struct {
+		name                string
+		bucketOptions       []RetryOption
+		objectOptions       []RetryOption
+		shouldHaveTriesLeft bool
+		shouldBeQuickerThan time.Duration // backoff options should have a large difference in values so that this condition can be checked
+	}{
+		{
+			name: "object retryer is used",
+			objectOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			shouldHaveTriesLeft: false,
+		},
+		{
+			name: "bucket retryer is used",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			shouldHaveTriesLeft: false,
+		},
+		{
+			name: "object retryer overrides bucket retryer",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			objectOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			shouldHaveTriesLeft: true,
+		},
+		{
+			name: "object retryer overrides bucket retryer backoff options",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithErrorFunc(shouldRetry),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			shouldHaveTriesLeft: false,
+			shouldBeQuickerThan: time.Minute,
+		},
+		{
+			name: "object retryer does not override bucket retryer if option is not set",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Second,
+				}),
+			},
+			shouldHaveTriesLeft: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			numTries = 2 // reset for every test
+
+			b := bucket
+			if len(tc.bucketOptions) > 0 {
+				b = b.Retryer(tc.bucketOptions...)
+			}
+
+			o := b.Object(objectName)
+			if len(tc.objectOptions) > 0 {
+				o = o.Retryer(tc.objectOptions...)
+			}
+
+			ctx, cancel := context.WithTimeout(ctx, tc.shouldBeQuickerThan+time.Minute)
+			defer cancel()
+
+			start := time.Now()
+			_, err := o.Attrs(ctx) // object doesn't exist so this should always error
+			timeTaken := time.Since(start)
+			if err == nil {
+				t.Error("Object should not exist but call to attrs does not error")
+			}
+
+			if (numTries > 0 && !tc.shouldHaveTriesLeft) || (numTries <= 0 && tc.shouldHaveTriesLeft) {
+				t.Errorf("Unexpected number of retries; want tries left: %t, got tries left: %d", tc.shouldHaveTriesLeft, numTries)
+			}
+
+			if tc.shouldBeQuickerThan > 0 && timeTaken > tc.shouldBeQuickerThan {
+				t.Errorf("Retries took longer than expected; check backoff options.\n"+
+					"time taken (context may have been cancelled prior to full completion of retries): %s\nmax time expected to take: %s",
+					timeTaken, tc.shouldBeQuickerThan)
+			}
+
+		})
+	}
 }
 
 type testHelper struct {

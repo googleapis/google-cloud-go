@@ -1790,9 +1790,16 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 // Retryer returns an object handle that is configured with custom retry
 // behavior as specified by the options that are passed to it. All operations
 // on the new handle will use the customized retry configuration.
+// These retry options will merge with the bucket's retryer (if set) for the
+// returned handle. Options passed into this method will take precedence over
+// options on the bucket's retryer.
 func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2 := *o
 	retry := &retryConfig{}
+	if o.retry != nil {
+		// this will merge the options with the existing retry
+		retry = o.retry
+	}
 	for _, opt := range opts {
 		opt.apply(retry)
 	}
@@ -1895,6 +1902,29 @@ type retryConfig struct {
 	backoff     *gax.Backoff
 	policy      RetryPolicy
 	shouldRetry func(err error) bool
+}
+
+func (r *retryConfig) clone() *retryConfig {
+	if r == nil {
+		return nil
+	}
+
+	var bo *gax.Backoff
+	if r.backoff == nil {
+		bo = nil
+	} else {
+		bo = &gax.Backoff{
+			Initial:    r.backoff.Initial,
+			Max:        r.backoff.Max,
+			Multiplier: r.backoff.Multiplier,
+		}
+	}
+
+	return &retryConfig{
+		backoff:     bo,
+		policy:      r.policy,
+		shouldRetry: r.shouldRetry,
+	}
 }
 
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods
