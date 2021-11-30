@@ -17,12 +17,7 @@
 // Package monitoring is an auto-generated package for the
 // Cloud Monitoring API.
 //
-// Manages your Cloud Monitoring data and configurations. Most projects must
-// be associated with a Workspace, with a few exceptions as noted on the
-// individual method pages. The table entries below are presented in
-// alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the Cloud Monitoring
-// documentation (at https://cloud.google.com/monitoring/docs).
+// Manages your Cloud Monitoring data and configurations.
 //
 // Example usage
 //
@@ -95,7 +90,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20211030"
+const versionClient = "20211118"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

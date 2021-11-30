@@ -145,6 +145,11 @@
                 "UpdateIssueModel"
               ]
             },
+            "UpdatePhraseMatcher": {
+              "methods": [
+                "UpdatePhraseMatcher"
+              ]
+            },
             "UpdateSettings": {
               "methods": [
                 "UpdateSettings"

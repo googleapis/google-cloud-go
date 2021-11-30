@@ -88,6 +88,25 @@ var functions = map[string]function{
 			return cast(values, types, true)
 		},
 	},
+	"JSON_VALUE": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			if len(values) != 2 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function JSON_VALUE for the given argument types")
+			}
+			if values[0] == nil || values[1] == nil {
+				return nil, spansql.Type{Base: spansql.String}, nil
+			}
+			_, okArg1 := values[0].(string)
+			_, okArg2 := values[1].(string)
+			if !(okArg1 && okArg2) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function JSON_VALUE for the given argument types")
+			}
+			// This function currently has no implementation and always returns
+			// an empty string, as it would otherwise require an XPath query
+			// engine.
+			return "", spansql.Type{Base: spansql.String}, nil
+		},
+	},
 }
 
 func cast(values []interface{}, types []spansql.Type, safe bool) (interface{}, spansql.Type, error) {
