@@ -471,9 +471,46 @@ func (t *Table) toBQ() *bq.TableReference {
 	}
 }
 
+// IdentifierFormat represents a how certain resource identifiers such as table references
+// are formatted.
+type IdentifierFormat string
+
+var (
+	// StandardSQLID returns an identifier suitable for use with Standard SQL.
+	StandardSQLID IdentifierFormat = "SQL"
+
+	// LegacySQLID returns an identifier suitable for use with Legacy SQL.
+	LegacySQLID IdentifierFormat = "LEGACY_SQL"
+
+	// StorageAPIResourceID returns an identifier suitable for use with the Storage API.  Namely, it's for formatting
+	// a table resource for invoking read and write functionality.
+	StorageAPIResourceID IdentifierFormat = "STORAGE_API_RESOURCE"
+
+	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
+	// not supported.
+	ErrUnknownIdentifierFormat = errors.New("unknown identifier format")
+)
+
+// Identifier returns the ID of the table in the requested format.
+func (t *Table) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StorageAPIResourceID:
+		return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StandardSQLID:
+		// Note we don't need to quote the project ID here, as StandardSQL has special rules to allow
+		// dash identifiers for projects without issue in table identifiers.
+		return fmt.Sprintf("%s.%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns the ID of the table in projectID:datasetID.tableID format.
 func (t *Table) FullyQualifiedName() string {
-	return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID)
+	s, _ := t.Identifier(LegacySQLID)
+	return s
 }
 
 // implicitTable reports whether Table is an empty placeholder, which signifies that a new table should be created with an auto-generated Table ID.
