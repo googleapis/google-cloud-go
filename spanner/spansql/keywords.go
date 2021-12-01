@@ -231,4 +231,7 @@ var allFuncs = []string{
 	"UNIX_MILLIS",
 	"UNIX_MICROS",
 	"PENDING_COMMIT_TIMESTAMP",
+
+	// JSON functions.
+	"JSON_VALUE",
 }
