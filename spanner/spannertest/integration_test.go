@@ -1312,8 +1312,8 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	err = updateDDL(t, adminClient,
 		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales2 INT64 AS (NumSongs * EstimatedSales) STORED`)
-	if err == nil {
-		t.Fatalf("Should have failed to add a generated column to non empty table")
+	if err != nil {
+		t.Fatalf("Failed to add a generated column to a non-empty table: %v", err)
 	}
 
 	ri := client.Single().Query(ctx, spanner.NewStatement(

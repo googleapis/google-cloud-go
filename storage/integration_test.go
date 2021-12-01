@@ -4142,7 +4142,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 	object := b.Object(objectName)
 	defer h.mustDeleteObject(object)
 
-	pv4, err := GenerateSignedPostPolicyV4(newBucketName, objectName, opts)
+	pv4, err := b.GenerateSignedPostPolicyV4(objectName, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -4248,6 +4248,78 @@ func TestIntegration_SignedURL_Bucket(t *testing.T) {
 	}
 }
 
+func TestIntegration_PostPolicyV4_Bucket(t *testing.T) {
+	h := testHelper{t}
+	ctx := context.Background()
+
+	if testing.Short() && !replaying {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	// We explictly send the key to the client to sign with the private key
+	clientWithCredentials := newTestClientWithExplicitCredentials(ctx, t)
+	defer clientWithCredentials.Close()
+
+	// Create another client to test the sign byte function as well
+	clientWithoutPrivateKey := testConfig(ctx, t, ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
+	defer clientWithoutPrivateKey.Close()
+
+	jwt, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatalf("unable to find test credentials: %v", err)
+	}
+
+	statusCodeToRespond := 200
+
+	for _, test := range []struct {
+		desc   string
+		opts   PostPolicyV4Options
+		client *Client
+	}{
+		{
+			desc: "signing with the private key",
+			opts: PostPolicyV4Options{
+				Expires: time.Now().Add(30 * time.Minute),
+
+				Fields: &PolicyV4Fields{
+					StatusCodeOnSuccess: statusCodeToRespond,
+					ContentType:         "text/plain",
+					ACL:                 "public-read",
+				},
+			},
+			client: clientWithCredentials,
+		},
+		{
+			desc: "signing with the default sign bytes func",
+			opts: PostPolicyV4Options{
+				Expires:        time.Now().Add(30 * time.Minute),
+				GoogleAccessID: jwt.Email,
+				Fields: &PolicyV4Fields{
+					StatusCodeOnSuccess: statusCodeToRespond,
+					ContentType:         "text/plain",
+					ACL:                 "public-read",
+				},
+			},
+			client: clientWithoutPrivateKey,
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			objectName := uidSpace.New()
+			object := test.client.Bucket(bucketName).Object(objectName)
+			defer h.mustDeleteObject(object)
+
+			pv4, err := test.client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, &test.opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if err := verifyPostPolicy(pv4, object, bytes.Repeat([]byte("a"), 25), statusCodeToRespond); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
 // Tests that the same SignBytes function works for both
 // SignRawBytes on GeneratePostPolicyV4 and SignBytes on SignedURL
 func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
@@ -4263,7 +4335,7 @@ func TestIntegration_PostPolicyV4_SignedURL_WithSignBytes(t *testing.T) {
 	h := testHelper{t}
 	projectID := testutil.ProjID()
 	bucketName := uidSpace.New()
-	objectName := "my-object.txt"
+	objectName := uidSpace.New()
 	fileBody := bytes.Repeat([]byte("b"), 25)
 	bucket := client.Bucket(bucketName)
 
@@ -4491,7 +4563,7 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 
 func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 	if err := o.Delete(context.Background()); err != nil {
-		h.t.Fatalf("%s: object delete: %v", loc(), err)
+		h.t.Fatalf("%s: delete object %s from bucket %s: %v", loc(), o.ObjectName(), o.BucketName(), err)
 	}
 }
 

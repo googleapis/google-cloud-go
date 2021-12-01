@@ -21,11 +21,21 @@ option go_package = "cloud.google.com/go/bigquery/storage/managedwriter/testdata
 message SimpleMessageProto2 {
     // name is a simple scalar string.
     optional string name = 1;
+
     // value is a simple int64 value.
     optional int64 value = 2;
 }
 
+message SimpleMessageEvolvedProto2 {
+    // name is a simple scalar string.
+    optional string name = 1;
 
+    // value is a simple int64 value.
+    optional int64 value = 2;
+    
+    // other is an additional string.
+    optional string other = 3;
+}
 
 message GithubArchiveEntityProto2 {
     optional int64 id = 1;
