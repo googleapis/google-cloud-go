@@ -70,6 +70,7 @@ require (
 	cloud.google.com/go/gkehub v0.1.0
 	cloud.google.com/go/gsuiteaddons v0.1.0
 	cloud.google.com/go/iap v0.1.0
+	cloud.google.com/go/ids v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/iot v0.1.0
 	cloud.google.com/go/kms v1.0.0
 	cloud.google.com/go/language v0.1.0
@@ -120,12 +121,13 @@ require (
 	cloud.google.com/go/video v0.1.0
 	cloud.google.com/go/videointelligence v0.1.0
 	cloud.google.com/go/vision v0.1.0
+	cloud.google.com/go/vmmigration v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/vpcaccess v0.1.0
 	cloud.google.com/go/webrisk v0.1.0
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
 	google.golang.org/api v0.60.0
-	google.golang.org/genproto v0.0.0-20211115160612-a5da7257a6f7
+	google.golang.org/genproto v0.0.0-20211118181313-81c1377c94b1
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -317,3 +319,7 @@ replace cloud.google.com/go/orchestration => ../../../orchestration
 replace cloud.google.com/go/filestore => ../../../filestore
 
 replace cloud.google.com/go/deploy => ../../../deploy
+
+replace cloud.google.com/go/ids => ../../../ids
+
+replace cloud.google.com/go/vmmigration => ../../../vmmigration

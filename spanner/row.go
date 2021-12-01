@@ -288,6 +288,10 @@ func errToStructArgType(p interface{}) error {
 //   2. Otherwise, if the name of a field matches the name of a column (ignoring case),
 //      decode the column into the field.
 //
+//   3. The number of columns in the row must match the number of exported fields in the struct.
+//      There must be exactly one match for each column in the row. The method will return an error
+//      if a column in the row cannot be assigned to a field in the struct.
+//
 // The fields of the destination struct can be of any type that is acceptable
 // to spanner.Row.Column.
 //
@@ -311,5 +315,48 @@ func (r *Row) ToStruct(p interface{}) error {
 		&sppb.StructType{Fields: r.fields},
 		&proto3.ListValue{Values: r.vals},
 		p,
+		false,
+	)
+}
+
+// ToStructLenient fetches the columns in a row into the fields of a struct.
+// The rules for mapping a row's columns into a struct's exported fields
+// are:
+//
+//   1. If a field has a `spanner: "column_name"` tag, then decode column
+//      'column_name' into the field. A special case is the `spanner: "-"`
+//      tag, which instructs ToStruct to ignore the field during decoding.
+//
+//   2. Otherwise, if the name of a field matches the name of a column (ignoring case),
+//      decode the column into the field.
+//
+//   3. The number of columns in the row and exported fields in the struct do not need to match.
+//      Any field in the struct that cannot not be assigned a value from the row is assigned its default value.
+//      Any column in the row that does not have a corresponding field in the struct is ignored.
+//
+// The fields of the destination struct can be of any type that is acceptable
+// to spanner.Row.Column.
+//
+// Slice and pointer fields will be set to nil if the source column is NULL, and a
+// non-nil value if the column is not NULL. To decode NULL values of other types, use
+// one of the spanner.NullXXX types as the type of the destination field.
+//
+// If ToStructLenient returns an error, the contents of p are undefined. Some fields may
+// have been successfully populated, while others were not; you should not use any of
+// the fields.
+func (r *Row) ToStructLenient(p interface{}) error {
+	// Check if p is a pointer to a struct
+	if t := reflect.TypeOf(p); t == nil || t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
+		return errToStructArgType(p)
+	}
+	if len(r.vals) != len(r.fields) {
+		return errFieldsMismatchVals(r)
+	}
+	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
+	return decodeStruct(
+		&sppb.StructType{Fields: r.fields},
+		&proto3.ListValue{Values: r.vals},
+		p,
+		true,
 	)
 }
