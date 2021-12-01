@@ -194,7 +194,10 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 		return ms.arc, ms.pending, nil
 	}
 	if arc != ms.arc && forceReconnect && ms.arc != nil {
-		// TODO: is closing send sufficient?
+		// In this case, we're forcing a close to apply changes to the stream
+		// that currently can't be modified on an established connection.
+		//
+		// TODO: clean this up once internal issue 205756033 is resolved.
 		(*ms.arc).CloseSend()
 	}
 

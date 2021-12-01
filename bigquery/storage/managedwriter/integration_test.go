@@ -362,7 +362,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data)
+		result, err = ms.AppendRows(ctx, data, WithOffset(int64(k)))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
@@ -401,7 +401,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data)
+		result, err = ms.AppendRows(ctx, data, WithOffset(int64(k)))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
