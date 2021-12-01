@@ -4454,10 +4454,9 @@ func TestIntegration_RetryConfig(t *testing.T) {
 	client := testConfig(ctx, t)
 	defer client.Close()
 
-	objectName := uidSpace.New()
 	bucket := client.Bucket(bucketName)
 
-	numTries := 2
+	var numTries int
 	// with numTries = 2, this function sets the config to retry once (if at all)
 	shouldRetry := func(err error) bool {
 		numTries--
@@ -4518,7 +4517,7 @@ func TestIntegration_RetryConfig(t *testing.T) {
 				WithErrorFunc(shouldRetry),
 			},
 			shouldHaveTriesLeft: false,
-			shouldBeQuickerThan: time.Minute,
+			shouldBeQuickerThan: time.Second,
 		},
 		{
 			name: "object retryer does not override bucket retryer if option is not set",
@@ -4534,23 +4533,41 @@ func TestIntegration_RetryConfig(t *testing.T) {
 			},
 			shouldHaveTriesLeft: true,
 		},
+		{
+			name: "object's backoff completely overwrites bucket's backoff",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+				WithBackoff(gax.Backoff{
+					Initial: time.Hour,
+				}),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 2,
+				}),
+			},
+			shouldHaveTriesLeft: false,
+			shouldBeQuickerThan: time.Minute,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			numTries = 2 // reset for every test
+			numTries = 2
 
 			b := bucket
 			if len(tc.bucketOptions) > 0 {
 				b = b.Retryer(tc.bucketOptions...)
 			}
 
-			o := b.Object(objectName)
+			o := b.Object(uidSpace.New())
 			if len(tc.objectOptions) > 0 {
 				o = o.Retryer(tc.objectOptions...)
 			}
 
-			ctx, cancel := context.WithTimeout(ctx, tc.shouldBeQuickerThan+time.Minute)
+			// set a timeout so that tests do not retry longer than expected
+			ctx, cancel := context.WithTimeout(ctx, tc.shouldBeQuickerThan+time.Second*5)
 			defer cancel()
 
 			start := time.Now()
@@ -4569,7 +4586,6 @@ func TestIntegration_RetryConfig(t *testing.T) {
 					"time taken (context may have been cancelled prior to full completion of retries): %s\nmax time expected to take: %s",
 					timeTaken, tc.shouldBeQuickerThan)
 			}
-
 		})
 	}
 }
