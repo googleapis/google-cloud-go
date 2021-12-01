@@ -1795,10 +1795,12 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 // options on the bucket's retryer.
 func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2 := *o
-	retry := &retryConfig{}
+	var retry *retryConfig
 	if o.retry != nil {
-		// this will merge the options with the existing retry
+		// merge the options with the existing retry
 		retry = o.retry
+	} else {
+		retry = &retryConfig{}
 	}
 	for _, opt := range opts {
 		opt.apply(retry)
@@ -1910,9 +1912,7 @@ func (r *retryConfig) clone() *retryConfig {
 	}
 
 	var bo *gax.Backoff
-	if r.backoff == nil {
-		bo = nil
-	} else {
+	if r.backoff != nil {
 		bo = &gax.Backoff{
 			Initial:    r.backoff.Initial,
 			Max:        r.backoff.Max,
