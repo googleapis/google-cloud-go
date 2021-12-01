@@ -405,8 +405,15 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
+		// be explicit about waiting/checking each response.
+		off, err := result.GetResult(ctx)
+		if err != nil {
+			t.Errorf("response %d error: %v", k, err)
+		}
+		if off != int64(k) {
+			t.Errorf("offset mismatch, got %d want %d", off, k)
+		}
 	}
-	result.Ready()
 	wantRows := int64(len(testSimpleData))
 
 	// Mark stream complete.
