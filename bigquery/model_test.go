@@ -162,7 +162,7 @@ func TestModelIdentifiers(t *testing.T) {
 		{
 			description: "api resource",
 			in:          testModel,
-			format:      APIResourceID,
+			format:      StorageAPIResourceID,
 			wantErr:     true,
 		},
 	} {

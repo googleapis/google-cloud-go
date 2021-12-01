@@ -482,9 +482,9 @@ var (
 	// LegacySQLID returns an identifier suitable for use with Legacy SQL.
 	LegacySQLID IdentifierFormat = "LEGACY_SQL"
 
-	// APIResourceID returns an identifier suitable for use with related BigQuery APIs
-	// like BigQuery Storage.
-	APIResourceID IdentifierFormat = "API_RESOURCE"
+	// StorageAPIResourceID returns an identifier suitable for use with the Storage API.  Namely, it's for formatting
+	// a table resource for invoking read and write functionality.
+	StorageAPIResourceID IdentifierFormat = "STORAGE_API_RESOURCE"
 
 	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
 	// not supported.
@@ -496,7 +496,7 @@ func (t *Table) Identifier(f IdentifierFormat) (string, error) {
 	switch f {
 	case LegacySQLID:
 		return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
-	case APIResourceID:
+	case StorageAPIResourceID:
 		return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", t.ProjectID, t.DatasetID, t.TableID), nil
 	case StandardSQLID:
 		// Note we don't need to quote the project ID here, as StandardSQL has special rules to allow

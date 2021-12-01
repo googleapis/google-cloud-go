@@ -483,7 +483,7 @@ func TestTableIdentifiers(t *testing.T) {
 		{
 			description: "api resource",
 			in:          testTable,
-			format:      APIResourceID,
+			format:      StorageAPIResourceID,
 			want:        "projects/p/datasets/d/tables/t",
 		},
 	} {

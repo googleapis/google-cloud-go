@@ -517,8 +517,8 @@ func TestDatasetIdentifiers(t *testing.T) {
 		{
 			description: "api resource",
 			in:          testDataset,
-			format:      APIResourceID,
-			want:        "projects/p/datasets/d",
+			format:      StorageAPIResourceID,
+			wantErr:     true,
 		},
 	} {
 		got, err := tc.in.Identifier(tc.format)

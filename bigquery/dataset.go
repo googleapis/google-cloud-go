@@ -97,8 +97,6 @@ func (d *Dataset) Identifier(f IdentifierFormat) (string, error) {
 	switch f {
 	case LegacySQLID:
 		return fmt.Sprintf("%s:%s", d.ProjectID, d.DatasetID), nil
-	case APIResourceID:
-		return fmt.Sprintf("projects/%s/datasets/%s", d.ProjectID, d.DatasetID), nil
 	case StandardSQLID:
 		// Quote project identifiers if they have a dash character.
 		if strings.Contains(d.ProjectID, "-") {

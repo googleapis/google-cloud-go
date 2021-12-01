@@ -208,7 +208,7 @@ func TestRoutineIdentifiers(t *testing.T) {
 		{
 			description: "api resource",
 			in:          testRoutine,
-			format:      APIResourceID,
+			format:      StorageAPIResourceID,
 			wantErr:     true,
 		},
 	} {
