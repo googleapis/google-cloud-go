@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -44,9 +45,26 @@ func (r *Routine) toBQ() *bq.RoutineReference {
 	}
 }
 
+// Identifier returns the ID of the routine in the requested format.
+//
+// For Standard SQL format, the identifier will be quoted if the
+// ProjectID contains dash (-) characters.
+func (r *Routine) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case StandardSQLID:
+		if strings.Contains(r.ProjectID, "-") {
+			return fmt.Sprintf("`%s`.%s.%s", r.ProjectID, r.DatasetID, r.RoutineID), nil
+		}
+		return fmt.Sprintf("%s.%s.%s", r.ProjectID, r.DatasetID, r.RoutineID), nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns an identifer for the routine in project.dataset.routine format.
 func (r *Routine) FullyQualifiedName() string {
-	return fmt.Sprintf("%s.%s.%s", r.ProjectID, r.DatasetID, r.RoutineID)
+	s, _ := r.Identifier(StandardSQLID)
+	return s
 }
 
 // Create creates a Routine in the BigQuery service.
