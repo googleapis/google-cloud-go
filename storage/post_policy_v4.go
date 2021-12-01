@@ -116,6 +116,21 @@ type PostPolicyV4Options struct {
 	shouldHashSignBytes bool
 }
 
+func (opts *PostPolicyV4Options) clone() *PostPolicyV4Options {
+	return &PostPolicyV4Options{
+		GoogleAccessID:      opts.GoogleAccessID,
+		PrivateKey:          opts.PrivateKey,
+		SignBytes:           opts.SignBytes,
+		SignRawBytes:        opts.SignRawBytes,
+		Expires:             opts.Expires,
+		Style:               opts.Style,
+		Insecure:            opts.Insecure,
+		Fields:              opts.Fields,
+		Conditions:          opts.Conditions,
+		shouldHashSignBytes: opts.shouldHashSignBytes,
+	}
+}
+
 // PolicyV4Fields describes the attributes for a PostPolicyV4 request.
 type PolicyV4Fields struct {
 	// ACL specifies the access control permissions for the object.
