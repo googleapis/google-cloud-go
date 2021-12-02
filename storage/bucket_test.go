@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 )
@@ -715,5 +716,92 @@ func TestNewBucket(t *testing.T) {
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("got=-, want=+:\n%s", diff)
+	}
+}
+
+func TestBucketRetryer(t *testing.T) {
+	testCases := []struct {
+		name string
+		call func(b *BucketHandle) *BucketHandle
+		want *retryConfig
+	}{
+		{
+			name: "all defaults",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer()
+			},
+			want: &retryConfig{},
+		},
+		{
+			name: "set all options",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithBackoff(gax.Backoff{
+						Initial:    2 * time.Second,
+						Max:        30 * time.Second,
+						Multiplier: 3,
+					}),
+					WithPolicy(RetryAlways),
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithBackoff(gax.Backoff{
+						Multiplier: 3,
+					}))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithPolicy(RetryNever))
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			b := tc.call(&BucketHandle{})
+			if diff := cmp.Diff(
+				b.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
 	}
 }
