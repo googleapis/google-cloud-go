@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.11.0...bigtable/v1.12.0) (2021-11-15)
+
+
+### Features
+
+* **bigtable/cbt:** cbt 'import' cmd to parse a .csv file and write to CBT ([#5072](https://www.github.com/googleapis/google-cloud-go/issues/5072)) ([5a2ed6b](https://www.github.com/googleapis/google-cloud-go/commit/5a2ed6b2cd1c304e0f59daa29959863bff9b5c29))
+
 ## [1.11.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.10.1...bigtable/v1.11.0) (2021-10-29)
 
 
