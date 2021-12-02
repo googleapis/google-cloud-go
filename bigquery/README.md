@@ -1,5 +1,5 @@
 ## BigQuery [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/bigquery.svg)](https://pkg.go.dev/cloud.google.com/go/bigquery)
- 
+
 - [About BigQuery](https://cloud.google.com/bigquery/)
 - [API documentation](https://cloud.google.com/bigquery/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/bigquery)
