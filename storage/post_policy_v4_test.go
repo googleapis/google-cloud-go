@@ -22,7 +22,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestPostPolicyV4Clone(t *testing.T) {
+func TestPostPolicyV4OptionsClone(t *testing.T) {
 	t.Parallel()
 
 	opts := &PostPolicyV4Options{
@@ -45,10 +45,13 @@ func TestPostPolicyV4Clone(t *testing.T) {
 	// Check that all fields are set to a non-zero value, so we can check that
 	// clone accurately clones all fields and catch newly added fields not cloned
 	reflectOpts := reflect.ValueOf(*opts)
-
 	for i := 0; i < reflectOpts.NumField(); i++ {
-		if reflectOpts.Field(i).IsZero() {
-			t.Errorf("SignedURLOptions field %d not set", i)
+		zero, err := isZeroValue(reflectOpts.Field(i))
+		if err != nil {
+			t.Errorf("IsZero: %v", err)
+		}
+		if zero {
+			t.Errorf("PostPolicyV4Options field %d not set", i)
 		}
 	}
 
