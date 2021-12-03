@@ -1196,9 +1196,7 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
-	if req.GetSize() != 0 {
-		params.Add("size", fmt.Sprintf("%v", req.GetSize()))
-	}
+	params.Add("size", fmt.Sprintf("%v", req.GetSize()))
 
 	baseUrl.RawQuery = params.Encode()
 
