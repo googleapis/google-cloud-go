@@ -593,9 +593,7 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
-	if req.GetInitialNodeCount() != 0 {
-		params.Add("initialNodeCount", fmt.Sprintf("%v", req.GetInitialNodeCount()))
-	}
+	params.Add("initialNodeCount", fmt.Sprintf("%v", req.GetInitialNodeCount()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
