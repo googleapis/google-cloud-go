@@ -681,7 +681,7 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
 
 	params := url.Values{}
-	if req != nil && req.ParentId != nil {
+	if req.GetParentId() != "" {
 		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	}
 	if req != nil && req.RequestId != nil {
@@ -866,7 +866,7 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/move", req.GetFirewallPolicy())
 
 	params := url.Values{}
-	if req != nil && req.ParentId != nil {
+	if req.GetParentId() != "" {
 		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	}
 	if req != nil && req.RequestId != nil {
