@@ -73,6 +73,7 @@ type ACLHandle struct {
 	object      string
 	isDefault   bool
 	userProject string // for requester-pays buckets
+	retry       *retryConfig
 }
 
 // Delete permanently deletes the ACL entry for the given entity.
@@ -120,12 +121,12 @@ func (a *ACLHandle) List(ctx context.Context) (rules []ACLRule, err error) {
 func (a *ACLHandle) bucketDefaultList(ctx context.Context) ([]ACLRule, error) {
 	var acls *raw.ObjectAccessControls
 	var err error
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		req := a.c.raw.DefaultObjectAccessControls.List(a.bucket)
 		a.configureCall(ctx, req)
 		acls, err = req.Do()
 		return err
-	})
+	}, a.retry, true)
 	if err != nil {
 		return nil, err
 	}
@@ -141,12 +142,12 @@ func (a *ACLHandle) bucketDefaultDelete(ctx context.Context, entity ACLEntity) e
 func (a *ACLHandle) bucketList(ctx context.Context) ([]ACLRule, error) {
 	var acls *raw.BucketAccessControls
 	var err error
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		req := a.c.raw.BucketAccessControls.List(a.bucket)
 		a.configureCall(ctx, req)
 		acls, err = req.Do()
 		return err
-	})
+	}, a.retry, true)
 	if err != nil {
 		return nil, err
 	}
@@ -174,12 +175,12 @@ func (a *ACLHandle) bucketDelete(ctx context.Context, entity ACLEntity) error {
 func (a *ACLHandle) objectList(ctx context.Context) ([]ACLRule, error) {
 	var acls *raw.ObjectAccessControls
 	var err error
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		req := a.c.raw.ObjectAccessControls.List(a.bucket, a.object)
 		a.configureCall(ctx, req)
 		acls, err = req.Do()
 		return err
-	})
+	}, a.retry, true)
 	if err != nil {
 		return nil, err
 	}
