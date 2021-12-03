@@ -17,7 +17,7 @@
 set -eo pipefail
 
 # Display commands being run
- set -x
+set -x
 
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
@@ -47,7 +47,7 @@ then
     exit 1
 fi
 
-# Stop the testbench & clean the environment variables
+# Stop the testbench & cleanup environment variables
 function cleanup() {
     echo "Cleanup testbench"
     docker stop $CONTAINER_NAME
@@ -55,15 +55,13 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-
-
 # TODO: move to passing once fixed
 FAILING=(   "buckets.setIamPolicy"
             "objects.insert"
             "hmacKey.update"
         )
 # TODO: remove regex once all tests are passing
-# Unfortunately, there is no simple way to skip specific tests here (see https://github.com/golang/go/issues/41583)
+# Unfortunately, there is no simple way to skip specific tests (see https://github.com/golang/go/issues/41583)
 # Therefore, we have to simply run all the specific tests we know pass
 PASSING=(   "buckets.list"
             "buckets.insert"
