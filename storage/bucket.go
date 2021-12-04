@@ -55,18 +55,22 @@ type BucketHandle struct {
 // found at:
 //   https://cloud.google.com/storage/docs/bucket-naming
 func (c *Client) Bucket(name string) *BucketHandle {
+	retry := c.retry.clone()
 	return &BucketHandle{
 		c:    c,
 		name: name,
 		acl: ACLHandle{
 			c:      c,
 			bucket: name,
+			retry:  retry,
 		},
 		defaultObjectACL: ACLHandle{
 			c:         c,
 			bucket:    name,
 			isDefault: true,
+			retry:     retry,
 		},
+		retry: retry,
 	}
 }
 
@@ -1433,7 +1437,13 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 // the bucket handle.
 func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
 	b2 := *b
-	retry := &retryConfig{}
+	var retry *retryConfig
+	if b.retry != nil {
+		// merge the options with the existing retry
+		retry = b.retry
+	} else {
+		retry = &retryConfig{}
+	}
 	for _, opt := range opts {
 		opt.apply(retry)
 	}

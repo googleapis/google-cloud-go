@@ -109,6 +109,7 @@ type Client struct {
 	readHost string
 	// May be nil.
 	creds *google.Credentials
+	retry *retryConfig
 
 	// gc is an optional gRPC-based, GAPIC client.
 	//
@@ -1808,6 +1809,28 @@ func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2.retry = retry
 	o2.acl.retry = retry
 	return &o2
+}
+
+// Retryer returns an object handle that is configured with custom retry
+// behavior as specified by the options that are passed to it. All operations
+// on the new handle will use the customized retry configuration.
+// These retry options will merge with the bucket's retryer (if set) for the
+// returned handle. Options passed into this method will take precedence over
+// options on the bucket's retryer.
+func (c *Client) Retryer(opts ...RetryOption) *Client {
+	c2 := *c
+	var retry *retryConfig
+	if c.retry != nil {
+		// merge the options with the existing retry
+		retry = c.retry
+	} else {
+		retry = &retryConfig{}
+	}
+	for _, opt := range opts {
+		opt.apply(retry)
+	}
+	c2.retry = retry
+	return &c2
 }
 
 // RetryOption allows users to configure non-default retry behavior for API
