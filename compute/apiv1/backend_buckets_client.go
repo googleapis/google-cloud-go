@@ -314,9 +314,7 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
-	if req.GetKeyName() != "" {
-		params.Add("keyName", fmt.Sprintf("%v", req.GetKeyName()))
-	}
+	params.Add("keyName", fmt.Sprintf("%v", req.GetKeyName()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
