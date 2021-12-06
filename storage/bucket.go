@@ -1435,6 +1435,10 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 // on the new handle will use the customized retry configuration.
 // Retry options set on a object handle will take precedence over options set on
 // the bucket handle.
+// These retry options will merge with the client's retryer (if set) for the
+// returned handle. Options passed into this method will take precedence over
+// options on the client's retryers. Note that you must explicitly pass in each
+// option you want to override.
 func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
 	b2 := *b
 	var retry *retryConfig
