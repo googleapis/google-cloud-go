@@ -788,7 +788,7 @@ func TestConditionErrors(t *testing.T) {
 
 // Test that ObjectHandle.Retryer correctly configures the retry configuration
 // in the ObjectHandle.
-func TestRetryer(t *testing.T) {
+func TestObjectRetryer(t *testing.T) {
 	testCases := []struct {
 		name string
 		call func(o *ObjectHandle) *ObjectHandle
@@ -859,6 +859,154 @@ func TestRetryer(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			o := tc.call(&ObjectHandle{})
+			if diff := cmp.Diff(
+				o.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+// Test the interactions between ObjectHandle and BucketHandle Retryers and that
+// they correctly configure the retry configuration
+func TestRetryer(t *testing.T) {
+	testCases := []struct {
+		name          string
+		bucketOptions []RetryOption
+		objectOptions []RetryOption
+		want          *retryConfig
+	}{
+		{
+			name: "no retries",
+			want: nil,
+		},
+		{
+			name: "object retryer configures retry",
+			objectOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
+			name: "bucket retryer configures retry",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				},
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
+			name: "object retryer overrides bucket retryer",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+			},
+			objectOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+			},
+		},
+		{
+			name: "object retryer overrides bucket retryer backoff options",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				},
+			},
+		},
+		{
+			name: "object retryer does not override bucket retryer if option is not set",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Second,
+				}),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Second,
+				},
+			},
+		},
+		{
+			name: "object's backoff completely overwrites bucket's backoff",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Hour,
+				}),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 4,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 4,
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			b := &BucketHandle{}
+			if len(tc.bucketOptions) > 0 {
+				b = b.Retryer(tc.bucketOptions...)
+			}
+			o := b.Object("obj")
+			if len(tc.objectOptions) > 0 {
+				o = o.Retryer(tc.objectOptions...)
+			}
+
 			if diff := cmp.Diff(
 				o.retry,
 				tc.want,
