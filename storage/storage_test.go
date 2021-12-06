@@ -965,7 +965,7 @@ func TestClientRetryer(t *testing.T) {
 }
 
 // Test the interactions between Client, ObjectHandle and BucketHandle Retryers,
-// and that they correctly configure the retry configuration for objects and ACLs
+// and that they correctly configure the retry configuration for objects, ACLs, and HmacKeys
 func TestRetryer(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -1190,6 +1190,11 @@ func TestRetryer(t *testing.T) {
 					name: "bucket.DefaultObjectACL()",
 					r:    b.DefaultObjectACL().retry,
 					want: b.retry,
+				},
+				{
+					name: "client.HMACKeyHandle()",
+					r:    c.HMACKeyHandle("pID", "accessID").retry,
+					want: c.retry,
 				},
 			}
 			for _, ac := range configHandleCases {
