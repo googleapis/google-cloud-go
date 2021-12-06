@@ -1994,10 +1994,10 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	r := c.raw.Projects.ServiceAccount.Get(projectID)
 	var res *raw.ServiceAccount
 	var err error
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		res, err = r.Context(ctx).Do()
 		return err
-	})
+	}, c.retry, true)
 	if err != nil {
 		return "", err
 	}
