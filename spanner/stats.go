@@ -242,14 +242,13 @@ func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod strin
 	if !strings.HasPrefix(serverTiming,"gfet4t7; dur=") || err!= nil{
 		return err
 	}
-	// Record GFE t4t7 latency with OpenCensus.
+	// Record GFE latency with OpenCensus.
 	ctx = tag.NewContext(ctx, tag.FromContext(ctx))
 	ctx, err = tag.New(ctx, tag.Insert(tagKeyMethod, keyMethod))
 	if err != nil {
 		return err
 	}
 	recordStat(ctx, GFELatency, int64(gfeLatency))
-	recordStat(ctx, GFEHeaderMissingCount, 0)
 	return nil
 }
 
