@@ -130,6 +130,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateExternalSystem": {
+              "methods": [
+                "UpdateExternalSystem"
+              ]
+            },
             "UpdateFinding": {
               "methods": [
                 "UpdateFinding"

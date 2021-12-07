@@ -19,6 +19,7 @@ import (
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -66,7 +67,9 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 // append request.
 type pendingWrite struct {
 	request *storagepb.AppendRowsRequest
-	result  *AppendResult
+	// for schema evolution cases, accept a new schema
+	newSchema *descriptorpb.DescriptorProto
+	result    *AppendResult
 
 	// this is used by the flow controller.
 	reqSize int
@@ -77,7 +80,7 @@ type pendingWrite struct {
 // that in the future, we may want to allow row batching to be managed by
 // the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
 // streams, this should be managed by the user.
-func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
+func newPendingWrite(appends [][]byte) *pendingWrite {
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -89,9 +92,6 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 			},
 		},
 		result: newAppendResult(appends),
-	}
-	if offset > 0 {
-		pw.request.Offset = &wrapperspb.Int64Value{Value: offset}
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first
@@ -112,5 +112,25 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	// encountering issues with flow control during enqueuing the initial request.
 	if fc != nil {
 		fc.release(pw.reqSize)
+	}
+}
+
+// AppendOption are options that can be passed when appending data with a managed stream instance.
+type AppendOption func(*pendingWrite)
+
+// UpdateSchemaDescriptor is used to update the descriptor message schema associated
+// with a given stream.
+func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.newSchema = schema
+	}
+}
+
+// WithOffset sets an explicit offset value for this append request.
+func WithOffset(offset int64) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.request.Offset = &wrapperspb.Int64Value{
+			Value: offset,
+		}
 	}
 }
