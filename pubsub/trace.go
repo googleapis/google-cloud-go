@@ -252,19 +252,19 @@ type PubsubMessageCarrier struct {
 	msg *Message
 }
 
-// NewPubsubMessageCarrier creates a new PubsubMessageCarrier.PubsubMessageCarrier.
+// NewPubsubMessageCarrier creates a new PubsubMessageCarrier.
 func NewPubsubMessageCarrier(msg *Message) PubsubMessageCarrier {
 	return PubsubMessageCarrier{msg: msg}
 }
 
 // Get retrieves a single value for a given key.
 func (c PubsubMessageCarrier) Get(key string) string {
-	return c.msg.Attributes[key]
+	return c.msg.Attributes["googclient_"+key]
 }
 
-// Set sets a header.
+// Set sets an attribute.
 func (c PubsubMessageCarrier) Set(key, val string) {
-	c.msg.Attributes[key] = val
+	c.msg.Attributes["googclient_"+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.
