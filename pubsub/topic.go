@@ -531,7 +531,8 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var span trace.Span
 	opts := getSpanAttributes(t.String(), msg)
 	ctx, span = t.tracer.Start(ctx, t.String()+" send", opts...)
-	defer span.End()
+	_, span2 := t.tracer.Start(ctx, t.String()+" add to batch", opts...)
+	defer span2.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
@@ -573,6 +574,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		msg:  msg,
 		res:  r,
 		size: msgSize,
+		span: span,
 	}
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
@@ -608,6 +610,7 @@ type bundledMessage struct {
 	msg  *Message
 	res  *PublishResult
 	size int
+	span trace.Span
 }
 
 func (t *Topic) initBundler() {
@@ -693,8 +696,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		opts := getSpanAttributes(t.String(), bm.msg)
-		_, span := t.tracer.Start(bm.ctx, "publish message", opts...)
+		_, span := t.tracer.Start(bm.ctx, t.String()+" publish RPC", opts...)
 		defer span.End()
+		defer bm.span.End()
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
@@ -724,6 +728,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
+			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
 		}
 	}
 }

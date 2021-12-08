@@ -55,7 +55,9 @@ type Subscription struct {
 
 	enableOrdering bool
 
-	tracer trace.Tracer
+	// topicName is for creating spans for OpenTelemetry tracing.
+	topicName string
+	tracer    trace.Tracer
 }
 
 // Subscription creates a reference to a subscription.
@@ -851,7 +853,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkOrdering()
+	s.checkSubConfig()
 
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -985,7 +987,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 				for i, msg := range msgs {
 					opts := getSpanAttributes("", msg, semconv.MessagingOperationReceive)
-					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.String()), opts...)
+					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
 
 					msg := msg
 					// TODO(jba): call acquire closer to when the message is allocated.
@@ -1014,19 +1016,26 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
-						lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
-						link := trace.LinkFromContext(lctx)
-						opts := getSpanAttributes("", m, semconv.MessagingOperationProcess)
-						opts = append(opts, trace.WithLinks(link))
-						ctx2, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.String()), opts...)
+						if m.Attributes != nil && m.Attributes["googclient_traceparent"] != "" {
+							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
+							link := trace.LinkFromContext(lctx)
+							opts := getSpanAttributes("", m, semconv.MessagingOperationProcess)
+							opts = append(opts, trace.WithLinks(link))
+							_, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
+							// End spans to ack handler doneFunc, which also handles flow control release.
+							old := ackh.doneFunc
+							ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+								defer processSpan.End()
+								defer receiveSpan.End()
+								old(ackID, ack, receiveTime)
+							}
+						}
 						defer wg.Done()
 						f(ctx2, msg.(*Message))
-						processSpan.End()
 					}); err != nil {
 						wg.Done()
 						return err
 					}
-					receiveSpan.End()
 				}
 			}
 		})
@@ -1050,18 +1059,21 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	return group.Wait()
 }
 
-// checkOrdering calls Config to check theEnableMessageOrdering field.
+// checkSubConfig calls Config to check the subscription config fields.
+// For ordering, we check the EnableMessageOrdering field.
+// For OpenTelemetry, we check the topic name.
 // If this call fails (e.g. because the service account doesn't have
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering() {
+func (s *Subscription) checkSubConfig() {
 	ctx := context.Background()
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true
 	} else {
 		s.enableOrdering = cfg.EnableMessageOrdering
+		s.topicName = cfg.Topic.name
 	}
 }
 
