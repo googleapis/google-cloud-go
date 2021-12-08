@@ -68,7 +68,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 				{
 					AutoDelete: proto.Bool(true),
 					Boot:       proto.Bool(true),
-					Type:       computepb.AttachedDisk_PERSISTENT.Enum(),
+					Type:       proto.String(computepb.AttachedDisk_PERSISTENT.String()),
 					InitializeParams: &computepb.AttachedDiskInitializeParams{
 						SourceImage: proto.String("projects/debian-cloud/global/images/family/debian-10"),
 					},
@@ -238,7 +238,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 				"*",
 			},
 		},
-		VersionedExpr: computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1.Enum(),
+		VersionedExpr: proto.String(computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1.String()),
 	}
 	securityPolicyRule := &computepb.SecurityPolicyRule{
 		Action:      &action,

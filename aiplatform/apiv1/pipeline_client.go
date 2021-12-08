@@ -60,7 +60,6 @@ func defaultPipelineGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -105,7 +104,7 @@ type internalPipelineClient interface {
 //
 // A service for creating and managing Vertex AI’s pipelines. This includes both
 // TrainingPipeline resources (used for AutoML and custom training) and
-// PipelineJob resources (used for Vertex Pipelines).
+// PipelineJob resources (used for Vertex AI Pipelines).
 type PipelineClient struct {
 	// The internal transport-dependent client.
 	internalClient internalPipelineClient
@@ -252,7 +251,7 @@ type pipelineGRPCClient struct {
 //
 // A service for creating and managing Vertex AI’s pipelines. This includes both
 // TrainingPipeline resources (used for AutoML and custom training) and
-// PipelineJob resources (used for Vertex Pipelines).
+// PipelineJob resources (used for Vertex AI Pipelines).
 func NewPipelineClient(ctx context.Context, opts ...option.ClientOption) (*PipelineClient, error) {
 	clientOpts := defaultPipelineGRPCClientOptions()
 	if newPipelineClientHook != nil {

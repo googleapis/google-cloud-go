@@ -82,7 +82,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -565,9 +564,6 @@ func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTrigg
 // HybridInspectJobTrigger inspect hybrid content and store findings to a trigger. The inspection
 // will be processed asynchronously. To review the findings monitor the
 // jobs within the trigger.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
 func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridInspectJobTriggerRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
 	return c.internalClient.HybridInspectJobTrigger(ctx, req, opts...)
 }
@@ -676,20 +672,14 @@ func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStor
 }
 
 // HybridInspectDlpJob inspect hybrid content and store findings to a job.
-// To review the findings inspect the job. Inspection will occur
+// To review the findings, inspect the job. Inspection will occur
 // asynchronously.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
 func (c *Client) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspectDlpJobRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
 	return c.internalClient.HybridInspectDlpJob(ctx, req, opts...)
 }
 
 // FinishDlpJob finish a running hybrid DlpJob. Triggers the finalization steps and running
 // of any enabled actions that have not yet run.
-// Early access feature is in a pre-release state and might change or have
-// limited support. For more information, see
-// https://cloud.google.com/products#product-launch-stages (at https://cloud.google.com/products#product-launch-stages).
 func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.FinishDlpJob(ctx, req, opts...)
 }

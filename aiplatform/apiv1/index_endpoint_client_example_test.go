@@ -199,3 +199,28 @@ func ExampleIndexEndpointClient_UndeployIndex() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleIndexEndpointClient_MutateDeployedIndex() {
+	ctx := context.Background()
+	c, err := aiplatform.NewIndexEndpointClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.MutateDeployedIndexRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#MutateDeployedIndexRequest.
+	}
+	op, err := c.MutateDeployedIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
