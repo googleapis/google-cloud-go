@@ -21,8 +21,6 @@ import (
 	"container/list"
 	"context"
 	"fmt"
-	"github.com/googleapis/gax-go/v2"
-	"google.golang.org/grpc"
 	"log"
 	"math"
 	"math/rand"
@@ -235,16 +233,11 @@ func (s *session) ping() error {
 	_, span := octrace.StartSpan(ctx, "cloud.google.com/go/spanner.ping", octrace.WithSampler(octrace.NeverSample()))
 	defer span.End()
 
-	var md metadata.MD
 	// s.getID is safe even when s is invalid.
 	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
 		Session: s.getID(),
 		Sql:     "SELECT 1",
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, s.pool.tagMap), md, "ping")
-	}
+	})
 	return err
 }
 
@@ -355,12 +348,7 @@ func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	var md metadata.MD
-	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, s.pool.tagMap), md, "delete")
-	}
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
 
 	// Do not log DeadlineExceeded errors when deleting sessions, as these do
 	// not indicate anything the user can or should act upon.

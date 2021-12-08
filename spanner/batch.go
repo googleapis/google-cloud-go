@@ -144,7 +144,13 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "PartitionReadUsingIndexWithOptions")
+		ctxGFE, _ := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+		)
+		captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
 	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
@@ -203,7 +209,14 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "partitionQuery")
+		ctxGFE, errGFE := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+		)
+		errGFE = captureGFELatencyStats(ctxGFE, md, "partitionQuery")
+		return nil, errGFE
 	}
 
 	// prepare ExecuteSqlRequest
@@ -265,18 +278,27 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
+	var logger *log.Logger
+	if sh.session != nil {
+		logger = sh.session.logger
+	}
 	var md metadata.MD
 	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Cleanup")
+		ctxGFE, errGFE := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+		)
+		errGFE = captureGFELatencyStats(ctxGFE, md, "Cleanup")
+		if errGFE != nil{
+			logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
+		}
 	}
 
 	if err != nil {
-		var logger *log.Logger
-		if sh.session != nil {
-			logger = sh.session.logger
-		}
 		logf(logger, "Failed to delete session %v. Error: %v", sid, err)
 	}
 }
@@ -315,7 +337,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			md, _ = client.Header()
 
 			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Execute")
+				ctxGFE, errGFE := tag.New(ctx,
+					tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+					tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+					tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+					tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+				)
+				errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
+				if errGFE != nil{
+					return client, errGFE
+				}
 			}
 			return client,err
 		}
@@ -335,7 +366,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			md, _ = client.Header()
 
 			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "Execute")
+				ctxGFE, errGFE := tag.New(ctx,
+					tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+					tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+					tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+					tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+				)
+				errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
+				if errGFE != nil{
+					return client, errGFE
+				}
 			}
 			return client,err
 		}

@@ -3299,13 +3299,12 @@ func TestIntegration_GFE_Latency(t *testing.T){
 		return waitErr
 	})
 
-	var viewMap = map[string]bool{
-		statsPrefix+"gfe_latency" : false,
+	var viewMap = map[string]bool{statsPrefix+"gfe_latency" : false,
 		statsPrefix+"gfe_header_missing_count" : false,
 	}
 
 	for {
-		if viewMap[statsPrefix+"gfe_latency"] && viewMap[statsPrefix+"gfe_header_missing_count"]{
+		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"]{
 			break
 		}
 		select {
@@ -3338,7 +3337,7 @@ func TestIntegration_GFE_Latency(t *testing.T){
 				}
 			}
 		case <-time.After(2 * time.Second):
-			if !viewMap[statsPrefix+"gfe_latency"] || !viewMap[statsPrefix+"gfe_header_missing_count"] {
+			if !viewMap[statsPrefix+"gfe_latency"] && !viewMap[statsPrefix+"gfe_header_missing_count"] {
 				t.Fatal("no stats were exported before timeout")
 			}
 		}

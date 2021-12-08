@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"cloud.google.com/go/internal/version"
 	"context"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
@@ -79,6 +80,9 @@ type txReadOnly struct {
 
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
+
+	// Common Tags for GFE Latency Metrics
+	CommonTags
 }
 
 // TransactionOptions provides options for a transaction.
@@ -192,7 +196,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			md, _ = client.Header()
 
 			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "ReadWithOptions")
+				ctxGFE, errGFE := tag.New(ctx,
+					tag.Upsert(tagKeyClientID, t.clientId),
+					tag.Upsert(tagKeyDatabase, t.database),
+					tag.Upsert(tagKeyInstance, t.instance),
+					tag.Upsert(tagKeyLibVersion, t.libVersion),
+				)
+				if errGFE != nil{
+					return client, errGFE
+				}
+				captureGFELatencyStats(ctxGFE, md, "ReadWithOptions")
 			}
 			return client, err
 		},
@@ -388,7 +401,16 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			var md metadata.MD
 			md, _ = client.Header()
 			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "query")
+				ctxGFE, errGFE := tag.New(ctx,
+					tag.Upsert(tagKeyClientID, t.clientId),
+					tag.Upsert(tagKeyDatabase, t.database),
+					tag.Upsert(tagKeyInstance, t.instance),
+					tag.Upsert(tagKeyLibVersion, t.libVersion),
+				)
+				if errGFE != nil{
+					return client, errGFE
+				}
+				captureGFELatencyStats(ctxGFE, md, "query")
 			}
 			return client, err
 		},
@@ -496,6 +518,17 @@ type ReadOnlyTransaction struct {
 	// tb is the read staleness bound specification for transactional reads.
 	tb TimestampBound
 }
+// CommonTags stored for GFE Latency and Header Missing Count
+type CommonTags struct {
+	// Client ID
+	clientId string
+	// Database Name
+	database string
+	// Instance ID
+	instance string
+	// Library Version
+	libVersion string
+}
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
 // the transaction.
@@ -561,7 +594,16 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 		if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-			captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "begin_BeginTransaction")
+			ctxGFE, errGFE := tag.New(ctx,
+				tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+				tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+				tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+				tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+			)
+			if errGFE != nil{
+				return errGFE
+			}
+			captureGFELatencyStats(ctxGFE, md, "begin_BeginTransaction")
 		}
 
 		if isSessionNotFoundError(err) {
@@ -913,7 +955,16 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req,  gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "update")
+		ctxGFE, errGFE := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, t.clientId),
+			tag.Upsert(tagKeyDatabase, t.database),
+			tag.Upsert(tagKeyInstance, t.instance),
+			tag.Upsert(tagKeyLibVersion, t.libVersion),
+		)
+		if errGFE != nil{
+			return 0, ToSpannerError(errGFE)
+		}
+		captureGFELatencyStats(ctxGFE, md, "update")
 	}
 	if err != nil {
 		return 0, ToSpannerError(err)
@@ -986,7 +1037,16 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "batchUpdateWithOptions")
+		ctxGFE, errGFE := tag.New(ctx,
+			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+		)
+		if errGFE != nil{
+			return nil, ToSpannerError(errGFE)
+		}
+		captureGFELatencyStats(ctxGFE, md, "batchUpdateWithOptions")
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -1239,10 +1299,21 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			tx: sh.getTransactionID(),
 		},
 	}
+	_, instance, database, err := parseDatabaseName(c.sc.database)
+	if err != nil {
+		// Could not parse database name
+		return nil, err
+	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txOpts = options
+	t.txReadOnly.CommonTags = CommonTags{
+		clientId: c.sc.id,
+		database: database,
+		instance: instance,
+		libVersion: version.Repo,
+	}
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {

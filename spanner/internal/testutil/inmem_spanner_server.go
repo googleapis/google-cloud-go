@@ -19,6 +19,8 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"math/rand"
 	"sort"
 	"strings"
@@ -687,6 +689,10 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
 	}
+	header := metadata.New(map[string]string{"server-timing": "123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return &spannerpb.BatchCreateSessionsResponse{Session: sessions}, nil
 }
 
@@ -922,6 +928,10 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
+	header := metadata.New(map[string]string{"server-timing": "123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
 }
 
@@ -1050,6 +1060,7 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 		}
 		partitions = append(partitions, &spannerpb.Partition{PartitionToken: token})
 	}
+
 	return &spannerpb.PartitionResponse{
 		Partitions:  partitions,
 		Transaction: tx,

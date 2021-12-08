@@ -109,11 +109,7 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 		Options: &sppb.TransactionOptions{
 			Mode: &sppb.TransactionOptions_PartitionedDml_{PartitionedDml: &sppb.TransactionOptions_PartitionedDml{}},
 		},
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_BeginTransaction")
-	}
+	})
 	if err != nil {
 		return 0, ToSpannerError(err)
 	}

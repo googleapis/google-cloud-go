@@ -17,6 +17,9 @@ package spanner
 import (
 	"context"
 	"fmt"
+	structpb "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/api/iterator"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"math"
 	"strings"
 	"testing"
@@ -262,15 +265,47 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 }
 
 func TestOCStats_GFE_Latency(t *testing.T){
-	te := testutil.NewTestExporter(GFELatencyView)
+	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
 
 	GFELatencyOrHeaderMissingCountEnabled = true
 
-	_, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
+	if err := server.TestSpanner.PutStatementResult("SELECT email FROM Users", &stestutil.StatementResult{
+		Type: stestutil.StatementResultResultSet,
+		ResultSet: &spannerpb.ResultSet{
+			Metadata: &spannerpb.ResultSetMetadata{
+				RowType: &spannerpb.StructType{
+					Fields: []*spannerpb.StructType_Field{
+						{
+							Name: "email",
+							Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+						},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{{
+					Kind: &structpb.Value_StringValue{StringValue: "test@test.com"},
+				}}},
+			},
+		},
+	}); err != nil {
+		t.Fatalf("could not add result: %v", err)
+	}
+	iter := client.Single().Read(context.Background(), "Users", AllKeys(), []string{"email"})
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil{
+			t.Fatal(err.Error())
+			break
+		}
+	}
 
 	waitErr := &Error{}
 	waitFor(t, func() error {
@@ -289,8 +324,8 @@ func TestOCStats_GFE_Latency(t *testing.T){
 		if len(stat.Rows) == 0 {
 			t.Fatal("No metrics are exported")
 		}
-		if got, want := stat.View.Measure.Name(), statsPrefix+"gfe_latency"; got != want {
-			t.Fatalf("Incorrect measure: got %v, want %v", got, want)
+		if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
+			t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_header_missing_count or "+ statsPrefix+"gfe_latency")
 		}
 		row := stat.Rows[0]
 		m := getTagMap(row.Tags)

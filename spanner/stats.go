@@ -255,13 +255,13 @@ func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod strin
 func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	// We only check prefix because client ID increases if we create
 	// multiple clients for the same database.
-	if !strings.HasPrefix(m[tagKeyClientID], "client-") {
+	if !strings.HasPrefix(m[tagKeyClientID], "client") {
 		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
 	}
-	if !strings.HasPrefix(m[tagKeyInstance], "gotest-") {
+	if !strings.HasPrefix(m[tagKeyInstance], "gotest") {
 		t.Fatalf("Incorrect instance ID: %v", m[tagKeyInstance])
 	}
-	if !strings.HasPrefix(m[tagKeyDatabase], "gotest_") {
+	if !strings.HasPrefix(m[tagKeyDatabase], "gotest") {
 		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
 	}
 	if m[tagKeyLibVersion] != version.Repo {
