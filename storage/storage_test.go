@@ -2136,3 +2136,84 @@ func TestOperationsWithEndpoint(t *testing.T) {
 
 	}
 }
+
+func TestSignedURLOptionsClone(t *testing.T) {
+	t.Parallel()
+
+	opts := &SignedURLOptions{
+		GoogleAccessID: "accessID",
+		PrivateKey:     []byte{},
+		SignBytes: func(b []byte) ([]byte, error) {
+			return b, nil
+		},
+		Method:          "GET",
+		Expires:         time.Now(),
+		ContentType:     "text/plain",
+		Headers:         []string{},
+		QueryParameters: map[string][]string{},
+		MD5:             "some-checksum",
+		Style:           VirtualHostedStyle(),
+		Insecure:        true,
+		Scheme:          SigningSchemeV2,
+	}
+
+	// Check that all fields are set to a non-zero value, so we can check that
+	// clone accurately clones all fields and catch newly added fields not cloned
+	reflectOpts := reflect.ValueOf(*opts)
+	for i := 0; i < reflectOpts.NumField(); i++ {
+		zero, err := isZeroValue(reflectOpts.Field(i))
+		if err != nil {
+			t.Errorf("IsZero: %v", err)
+		}
+		if zero {
+			t.Errorf("SignedURLOptions field %d not set", i)
+		}
+	}
+
+	// Check that fields are properly cloned
+	optsClone := opts.clone()
+
+	// We need a special comparer for functions
+	signBytesComp := func(a func([]byte) ([]byte, error), b func([]byte) ([]byte, error)) bool {
+		return reflect.ValueOf(a) == reflect.ValueOf(b)
+	}
+
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
+
+// isZeroValue reports whether v is the zero value for its type
+// It errors if the argument is unknown
+func isZeroValue(v reflect.Value) (bool, error) {
+	switch v.Kind() {
+	case reflect.Bool:
+		return !v.Bool(), nil
+	case reflect.Int, reflect.Int64:
+		return v.Int() == 0, nil
+	case reflect.Uint, reflect.Uint64:
+		return v.Uint() == 0, nil
+	case reflect.Array:
+		for i := 0; i < v.Len(); i++ {
+			zero, err := isZeroValue(v.Index(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	case reflect.Func, reflect.Interface, reflect.Map, reflect.Slice, reflect.Ptr:
+		return v.IsNil(), nil
+	case reflect.String:
+		return v.Len() == 0, nil
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			zero, err := isZeroValue(v.Field(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	default:
+		return false, fmt.Errorf("unable to check kind %s", v.Kind())
+	}
+}

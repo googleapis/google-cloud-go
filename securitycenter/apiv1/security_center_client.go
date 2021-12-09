@@ -68,6 +68,7 @@ type CallOptions struct {
 	SetMute                    []gax.CallOption
 	SetIamPolicy               []gax.CallOption
 	TestIamPermissions         []gax.CallOption
+	UpdateExternalSystem       []gax.CallOption
 	UpdateFinding              []gax.CallOption
 	UpdateMuteConfig           []gax.CallOption
 	UpdateNotificationConfig   []gax.CallOption
@@ -235,6 +236,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		UpdateExternalSystem:       []gax.CallOption{},
 		UpdateFinding:              []gax.CallOption{},
 		UpdateMuteConfig:           []gax.CallOption{},
 		UpdateNotificationConfig:   []gax.CallOption{},
@@ -275,6 +277,7 @@ type internalClient interface {
 	SetMute(context.Context, *securitycenterpb.SetMuteRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	UpdateExternalSystem(context.Context, *securitycenterpb.UpdateExternalSystemRequest, ...gax.CallOption) (*securitycenterpb.ExternalSystem, error)
 	UpdateFinding(context.Context, *securitycenterpb.UpdateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	UpdateMuteConfig(context.Context, *securitycenterpb.UpdateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	UpdateNotificationConfig(context.Context, *securitycenterpb.UpdateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
@@ -470,6 +473,11 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // TestIamPermissions returns the permissions that a caller has on the specified source.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// UpdateExternalSystem updates external system. This is for a given finding.
+func (c *Client) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
+	return c.internalClient.UpdateExternalSystem(ctx, req, opts...)
 }
 
 // UpdateFinding creates or updates a finding. The corresponding source must exist for a
@@ -1228,6 +1236,22 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "external_system.name", url.QueryEscape(req.GetExternalSystem().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateExternalSystem[0:len((*c.CallOptions).UpdateExternalSystem):len((*c.CallOptions).UpdateExternalSystem)], opts...)
+	var resp *securitycenterpb.ExternalSystem
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateExternalSystem(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
