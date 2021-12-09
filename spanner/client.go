@@ -262,7 +262,6 @@ func (c *Client) Close() {
 // "time-travel" to prior versions of the database, see the documentation of
 // TimestampBound for details.
 func (c *Client) Single() *ReadOnlyTransaction {
-	_, instance, database, _ := parseDatabaseName(c.sc.database)
 	t := &ReadOnlyTransaction{singleUse: true}
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
@@ -282,11 +281,19 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
-	t.txReadOnly.CommonTags = CommonTags{
-		clientId: c.sc.id,
-		database: database,
-		instance: instance,
-		libVersion: version.Repo,
+	t.txReadOnly.CommonTags = CommonTags{}
+	t.txReadOnly.CommonTags.init()
+	if c.sc != nil {
+		_, instance, database, err := parseDatabaseName(c.sc.database)
+		if err == nil {
+			t.txReadOnly.CommonTags = CommonTags{
+				set:        true,
+				clientId:   c.sc.id,
+				database:   database,
+				instance:   instance,
+				libVersion: version.Repo,
+			}
+		}
 	}
 	return t
 }
@@ -301,7 +308,6 @@ func (c *Client) Single() *ReadOnlyTransaction {
 // "time-travel" to prior versions of the database, see the documentation of
 // TimestampBound for details.
 func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
-	_, instance, database, _ := parseDatabaseName(c.sc.database)
 	t := &ReadOnlyTransaction{
 		singleUse:       false,
 		txReadyOrClosed: make(chan struct{}),
@@ -309,11 +315,19 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags = CommonTags{
-		clientId: c.sc.id,
-		database: database,
-		instance: instance,
-		libVersion: version.Repo,
+	t.txReadOnly.CommonTags = CommonTags{}
+	t.txReadOnly.CommonTags.init()
+	if c.sc != nil {
+		_, instance, database, err := parseDatabaseName(c.sc.database)
+		if err == nil {
+			t.txReadOnly.CommonTags = CommonTags{
+				set:        true,
+				clientId:   c.sc.id,
+				database:   database,
+				instance:   instance,
+				libVersion: version.Repo,
+			}
+		}
 	}
 	return t
 }
@@ -367,7 +381,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
 	}
 
-	_, instance, database, err := parseDatabaseName(c.sc.database)
 	if err != nil {
 		return nil, ToSpannerError(err)
 	}
@@ -387,11 +400,19 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags =  CommonTags{
-		clientId: c.sc.id,
-		database: database,
-		instance: instance,
-		libVersion: version.Repo,
+	t.txReadOnly.CommonTags = CommonTags{}
+	t.txReadOnly.CommonTags.init()
+	if c.sc != nil {
+		_, instance, database, err := parseDatabaseName(c.sc.database)
+		if err == nil {
+			t.txReadOnly.CommonTags = CommonTags{
+				set:        true,
+				clientId:   c.sc.id,
+				database:   database,
+				instance:   instance,
+				libVersion: version.Repo,
+			}
+		}
 	}
 	return t, nil
 }
@@ -408,7 +429,6 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	}
 	sh := &sessionHandle{session: s}
 
-	_, instance, database, err := parseDatabaseName(c.sc.database)
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
 			tx:              tid.tid,
@@ -421,11 +441,19 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags =  CommonTags{
-		clientId: c.sc.id,
-		database: database,
-		instance: instance,
-		libVersion: version.Repo,
+	t.txReadOnly.CommonTags = CommonTags{}
+	t.txReadOnly.CommonTags.init()
+	if c.sc != nil {
+		_, instance, database, err := parseDatabaseName(c.sc.database)
+		if err == nil {
+			t.txReadOnly.CommonTags = CommonTags{
+				set:        true,
+				clientId:   c.sc.id,
+				database:   database,
+				instance:   instance,
+				libVersion: version.Repo,
+			}
+		}
 	}
 	return t
 }
@@ -508,16 +536,23 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		} else {
 			t = &ReadWriteTransaction{}
 		}
-		_, instance, database, _ := parseDatabaseName(c.sc.database)
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txOpts = options
-		t.txReadOnly.CommonTags = CommonTags{
-			clientId: c.sc.id,
-			database: database,
-			instance: instance,
-			libVersion: version.Repo,
+		t.txReadOnly.CommonTags = CommonTags{}
+		t.txReadOnly.CommonTags.init()
+		if c.sc != nil {
+			_, instance, database, err := parseDatabaseName(c.sc.database)
+			if err == nil {
+				t.txReadOnly.CommonTags = CommonTags{
+					set:        true,
+					clientId:   c.sc.id,
+					database:   database,
+					instance:   instance,
+					libVersion: version.Repo,
+				}
+			}
 		}
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},

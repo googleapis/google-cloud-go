@@ -689,7 +689,7 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 		s.totalSessionsCreated++
 		s.sessions[sessionName] = sessions[i]
 	}
-	header := metadata.New(map[string]string{"server-timing": "123"})
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
 	if err := grpc.SendHeader(ctx, header); err != nil {
 		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
 	}
@@ -928,7 +928,7 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 	}
 	s.receivedRequests <- req
 	s.mu.Unlock()
-	header := metadata.New(map[string]string{"server-timing": "123"})
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
 	if err := grpc.SendHeader(ctx, header); err != nil {
 		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
 	}

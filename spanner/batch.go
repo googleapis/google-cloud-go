@@ -143,14 +143,17 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		PartitionOptions: opt.toProto(),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
 		ctxGFE, _ := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
 			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
 			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
 			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
 		)
-		captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
+		errGFE := captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
+		if errGFE != nil {
+			return nil, errGFE
+		}
 	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
@@ -208,7 +211,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	}
 	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
 		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
 			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
@@ -285,7 +288,7 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	var md metadata.MD
 	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
 		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
 			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
@@ -293,7 +296,7 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
 		)
 		errGFE = captureGFELatencyStats(ctxGFE, md, "Cleanup")
-		if errGFE != nil{
+		if errGFE != nil {
 			logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
 		}
 	}
@@ -334,25 +337,27 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.rreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
-			md, _ = client.Header()
+			if client != nil {
+				md, _ = client.Header()
 
-			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				ctxGFE, errGFE := tag.New(ctx,
-					tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-					tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-					tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-					tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-				)
-				errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
-				if errGFE != nil{
-					return client, errGFE
+				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
+					ctxGFE, errGFE := tag.New(ctx,
+						tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+						tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+						tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+						tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+					)
+					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
+					if errGFE != nil {
+						return client, errGFE
+					}
 				}
 			}
-			return client,err
+			return client, err
 		}
 	} else {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			client, err :=  client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
+			client, err := client.ExecuteStreamingSql(ctx, &sppb.ExecuteSqlRequest{
 				Session:        p.qreq.Session,
 				Transaction:    p.qreq.Transaction,
 				Sql:            p.qreq.Sql,
@@ -363,21 +368,23 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.qreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
-			md, _ = client.Header()
+			if client != nil {
+				md, _ = client.Header()
 
-			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				ctxGFE, errGFE := tag.New(ctx,
-					tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-					tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-					tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-					tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-				)
-				errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
-				if errGFE != nil{
-					return client, errGFE
+				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
+					ctxGFE, errGFE := tag.New(ctx,
+						tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
+						tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
+						tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
+						tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
+					)
+					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
+					if errGFE != nil {
+						return client, errGFE
+					}
 				}
 			}
-			return client,err
+			return client, err
 		}
 	}
 	return stream(

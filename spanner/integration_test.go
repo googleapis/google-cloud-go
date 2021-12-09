@@ -3265,13 +3265,13 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
-func TestIntegration_GFE_Latency(t *testing.T){
+func TestIntegration_GFE_Latency(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
-	GFELatencyOrHeaderMissingCountEnabled= true
+	GFELatencyOrHeaderMissingCountEnabled = true
 
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
 	defer cleanup()
@@ -3281,11 +3281,11 @@ func TestIntegration_GFE_Latency(t *testing.T){
 		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
 	}
 	_, err := client.Apply(ctx, ms)
-	if err!= nil {
+	if err != nil {
 		t.Fatalf("got error %v", err)
 	}
 	_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId", "FirstName", "LastName"})
-	if err!= nil {
+	if err != nil {
 		t.Fatalf("got error %v", err)
 	}
 	waitErr := &Error{}
@@ -3299,12 +3299,12 @@ func TestIntegration_GFE_Latency(t *testing.T){
 		return waitErr
 	})
 
-	var viewMap = map[string]bool{statsPrefix+"gfe_latency" : false,
-		statsPrefix+"gfe_header_missing_count" : false,
+	var viewMap = map[string]bool{statsPrefix + "gfe_latency": false,
+		statsPrefix + "gfe_header_missing_count": false,
 	}
 
 	for {
-		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"]{
+		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"] {
 			break
 		}
 		select {
@@ -3314,8 +3314,7 @@ func TestIntegration_GFE_Latency(t *testing.T){
 			}
 			if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
 				t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_latency or "+statsPrefix+"gfe_header_missing_count")
-			} else
-			{
+			} else {
 				viewMap[stat.View.Measure.Name()] = true
 			}
 			for _, row := range stat.Rows {

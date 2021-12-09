@@ -118,8 +118,11 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil && sh.session.pool != nil {
+		errGFE := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
+		if errGFE != nil {
+			return 0, errGFE
+		}
 	}
 	if err != nil {
 		return 0, err

@@ -23,6 +23,7 @@ import (
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"log"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -83,6 +84,25 @@ type txReadOnly struct {
 
 	// Common Tags for GFE Latency Metrics
 	CommonTags
+}
+
+// CommonTags stored for GFE Latency and Header Missing Count
+type CommonTags struct {
+	// Common Tags value set
+	set bool
+	// Client ID
+	clientId string
+	// Database Name
+	database string
+	// Instance ID
+	instance string
+	// Library Version
+	libVersion string
+}
+
+func (ct *CommonTags) init() {
+	// setting default value of set as false
+	ct.set = false
 }
 
 // TransactionOptions provides options for a transaction.
@@ -193,19 +213,28 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					Limit:          int64(limit),
 					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 				})
-			md, _ = client.Header()
+			if client != nil {
+				md, _ = client.Header()
 
-			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				ctxGFE, errGFE := tag.New(ctx,
-					tag.Upsert(tagKeyClientID, t.clientId),
-					tag.Upsert(tagKeyDatabase, t.database),
-					tag.Upsert(tagKeyInstance, t.instance),
-					tag.Upsert(tagKeyLibVersion, t.libVersion),
-				)
-				if errGFE != nil{
-					return client, errGFE
+				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
+					ctxGFE, errGFE := tag.New(ctx,
+						tag.Upsert(tagKeyClientID, t.clientId),
+						tag.Upsert(tagKeyDatabase, t.database),
+						tag.Upsert(tagKeyInstance, t.instance),
+						tag.Upsert(tagKeyLibVersion, t.libVersion),
+					)
+					var logger *log.Logger
+					if sh.session != nil {
+						logger = sh.session.logger
+					}
+					if errGFE != nil {
+						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+					}
+					errGFE = captureGFELatencyStats(ctxGFE, md, "ReadWithOptions")
+					if errGFE != nil {
+						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+					}
 				}
-				captureGFELatencyStats(ctxGFE, md, "ReadWithOptions")
 			}
 			return client, err
 		},
@@ -397,20 +426,29 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
-			client, err :=client.ExecuteStreamingSql(ctx, req)
+			client, err := client.ExecuteStreamingSql(ctx, req)
 			var md metadata.MD
-			md, _ = client.Header()
-			if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-				ctxGFE, errGFE := tag.New(ctx,
-					tag.Upsert(tagKeyClientID, t.clientId),
-					tag.Upsert(tagKeyDatabase, t.database),
-					tag.Upsert(tagKeyInstance, t.instance),
-					tag.Upsert(tagKeyLibVersion, t.libVersion),
-				)
-				if errGFE != nil{
-					return client, errGFE
+			if client != nil {
+				md, _ = client.Header()
+				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
+					ctxGFE, errGFE := tag.New(ctx,
+						tag.Upsert(tagKeyClientID, t.clientId),
+						tag.Upsert(tagKeyDatabase, t.database),
+						tag.Upsert(tagKeyInstance, t.instance),
+						tag.Upsert(tagKeyLibVersion, t.libVersion),
+					)
+					var logger *log.Logger
+					if sh.session != nil {
+						logger = sh.session.logger
+					}
+					if errGFE != nil {
+						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+					}
+					errGFE = captureGFELatencyStats(ctxGFE, md, "query")
+					if errGFE != nil {
+						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+					}
 				}
-				captureGFELatencyStats(ctxGFE, md, "query")
 			}
 			return client, err
 		},
@@ -518,17 +556,6 @@ type ReadOnlyTransaction struct {
 	// tb is the read staleness bound specification for transactional reads.
 	tb TimestampBound
 }
-// CommonTags stored for GFE Latency and Header Missing Count
-type CommonTags struct {
-	// Client ID
-	clientId string
-	// Database Name
-	database string
-	// Instance ID
-	instance string
-	// Library Version
-	libVersion string
-}
 
 // errTxInitTimeout returns error for timeout in waiting for initialization of
 // the transaction.
@@ -593,17 +620,20 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-		if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+		if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
 			ctxGFE, errGFE := tag.New(ctx,
 				tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
 				tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
 				tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
 				tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
 			)
-			if errGFE != nil{
+			if errGFE != nil {
 				return errGFE
 			}
-			captureGFELatencyStats(ctxGFE, md, "begin_BeginTransaction")
+			errGFE = captureGFELatencyStats(ctxGFE, md, "begin_BeginTransaction")
+			if errGFE != nil {
+				return errGFE
+			}
 		}
 
 		if isSessionNotFoundError(err) {
@@ -952,19 +982,22 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		return 0, err
 	}
 	var md metadata.MD
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req,  gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
 		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, t.clientId),
 			tag.Upsert(tagKeyDatabase, t.database),
 			tag.Upsert(tagKeyInstance, t.instance),
 			tag.Upsert(tagKeyLibVersion, t.libVersion),
 		)
-		if errGFE != nil{
+		if errGFE != nil {
 			return 0, ToSpannerError(errGFE)
 		}
-		captureGFELatencyStats(ctxGFE, md, "update")
+		errGFE = captureGFELatencyStats(ctxGFE, md, "update")
+		if errGFE != nil {
+			return 0, ToSpannerError(errGFE)
+		}
 	}
 	if err != nil {
 		return 0, ToSpannerError(err)
@@ -1036,17 +1069,20 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
 		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
 			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
 			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
 			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
 		)
-		if errGFE != nil{
+		if errGFE != nil {
 			return nil, ToSpannerError(errGFE)
 		}
-		captureGFELatencyStats(ctxGFE, md, "batchUpdateWithOptions")
+		errGFE = captureGFELatencyStats(ctxGFE, md, "batchUpdateWithOptions")
+		if errGFE != nil {
+			return nil, ToSpannerError(errGFE)
+		}
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -1299,7 +1335,6 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			tx: sh.getTransactionID(),
 		},
 	}
-	_, instance, database, err := parseDatabaseName(c.sc.database)
 	if err != nil {
 		// Could not parse database name
 		return nil, err
@@ -1308,11 +1343,19 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txOpts = options
-	t.txReadOnly.CommonTags = CommonTags{
-		clientId: c.sc.id,
-		database: database,
-		instance: instance,
-		libVersion: version.Repo,
+	t.txReadOnly.CommonTags = CommonTags{}
+	t.txReadOnly.CommonTags.init()
+	if c.sc != nil {
+		_, instance, database, err := parseDatabaseName(c.sc.database)
+		if err == nil {
+			t.txReadOnly.CommonTags = CommonTags{
+				set:        true,
+				clientId:   c.sc.id,
+				database:   database,
+				instance:   instance,
+				libVersion: version.Repo,
+			}
+		}
 	}
 
 	if err = t.begin(ctx); err != nil {

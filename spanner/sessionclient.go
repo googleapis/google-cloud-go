@@ -138,19 +138,26 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil{
-		_, instance, database, err := parseDatabaseName(sc.database)
-		if err != nil {
-			return nil, ToSpannerError(err)
+	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
+		_, instance, database, errGFE := parseDatabaseName(sc.database)
+		if errGFE != nil {
+			return nil, ToSpannerError(errGFE)
 		}
 		// Errors should not prevent initializing the session pool.
-		ctxGFE, err := tag.New(ctx,
+		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, sc.id),
 			tag.Upsert(tagKeyDatabase, database),
 			tag.Upsert(tagKeyInstance, instance),
 			tag.Upsert(tagKeyLibVersion, version.Repo),
 		)
-		captureGFELatencyStats(ctxGFE, md, "createSession")
+		if errGFE != nil {
+			return nil, ToSpannerError(errGFE)
+		}
+		errGFE = captureGFELatencyStats(ctxGFE, md, "createSession")
+		if errGFE != nil {
+			return nil, ToSpannerError(errGFE)
+		}
+
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -255,26 +262,31 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			SessionTemplate: &sppb.Session{Labels: labels},
 		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
 
-		if GFELatencyOrHeaderMissingCountEnabled && mdForGFELatency != nil{
-			_, instance, database, errGfe := parseDatabaseName(sc.database)
-			if errGfe != nil {
-				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", errGfe)
-				consumer.sessionCreationFailed(ToSpannerError(errGfe), remainingCreateCount)
+		if GFELatencyOrHeaderMissingCountEnabled && mdForGFELatency != nil {
+			_, instance, database, errGFE := parseDatabaseName(sc.database)
+			if errGFE != nil {
+				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", errGFE)
+				consumer.sessionCreationFailed(ToSpannerError(errGFE), remainingCreateCount)
 				break
 			}
 			// Errors should not prevent initializing the session pool.
-			ctxGFE, errGfe := tag.New(ctx,
+			ctxGFE, errGFE := tag.New(ctx,
 				tag.Upsert(tagKeyClientID, sc.id),
 				tag.Upsert(tagKeyDatabase, database),
 				tag.Upsert(tagKeyInstance, instance),
 				tag.Upsert(tagKeyLibVersion, version.Repo),
 			)
-			if errGfe != nil {
-				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", errGfe)
-				consumer.sessionCreationFailed(ToSpannerError(errGfe), remainingCreateCount)
+			if errGFE != nil {
+				trace.TracePrintf(ctx, nil, "Error in adding tags in BatchCreateSessions for GFE Latency: %v", errGFE)
+				consumer.sessionCreationFailed(ToSpannerError(errGFE), remainingCreateCount)
 				break
 			}
-			captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
+			errGFE = captureGFELatencyStats(ctxGFE, mdForGFELatency, "executeBatchCreateSessions")
+			if errGFE != nil {
+				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: : %v", errGFE)
+				consumer.sessionCreationFailed(ToSpannerError(errGFE), remainingCreateCount)
+				break
+			}
 		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)

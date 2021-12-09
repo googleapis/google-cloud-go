@@ -37,11 +37,11 @@ var (
 	tagKeyType       = tag.MustNewKey("type")
 	tagCommonKeys    = []tag.Key{tagKeyClientID, tagKeyDatabase, tagKeyInstance, tagKeyLibVersion}
 
-	tagNumInUseSessions = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
-	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
-	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
-	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
-	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
+	tagNumInUseSessions                   = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
+	tagNumBeingPrepared                   = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
+	tagNumReadSessions                    = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
+	tagNumWriteSessions                   = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
+	tagKeyMethod                          = tag.MustNewKey("grpc_client_method")
 	GFELatencyOrHeaderMissingCountEnabled = false
 )
 
@@ -175,7 +175,7 @@ var (
 			16.0, 20.0, 25.0, 30.0, 40.0, 50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0,
 			300.0, 400.0, 500.0, 650.0, 800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0,
 			100000.0),
-		TagKeys: append(tagCommonKeys,tagKeyMethod),
+		TagKeys: append(tagCommonKeys, tagKeyMethod),
 	}
 
 	GFEHeaderMissingCount = stats.Int64(
@@ -189,10 +189,9 @@ var (
 		Measure:     GFEHeaderMissingCount,
 		Description: "Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
 		Aggregation: view.Count(),
-		TagKeys: append(tagCommonKeys,tagKeyMethod),
+		TagKeys:     append(tagCommonKeys, tagKeyMethod),
 	}
 )
-
 
 // EnableStatViews enables all views of metrics relate to session management.
 func EnableStatViews() error {
@@ -239,7 +238,7 @@ func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod strin
 	}
 	serverTiming := md.Get("server-timing")[0]
 	gfeLatency, err := strconv.Atoi(strings.TrimPrefix(serverTiming, "gfet4t7; dur="))
-	if !strings.HasPrefix(serverTiming,"gfet4t7; dur=") || err!= nil{
+	if !strings.HasPrefix(serverTiming, "gfet4t7; dur=") || err != nil {
 		return err
 	}
 	// Record GFE latency with OpenCensus.

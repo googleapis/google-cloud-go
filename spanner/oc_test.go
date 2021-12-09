@@ -264,7 +264,7 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	}
 }
 
-func TestOCStats_GFE_Latency(t *testing.T){
+func TestOCStats_GFE_Latency(t *testing.T) {
 	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
 
@@ -301,7 +301,7 @@ func TestOCStats_GFE_Latency(t *testing.T){
 		if err == iterator.Done {
 			break
 		}
-		if err != nil{
+		if err != nil {
 			t.Fatal(err.Error())
 			break
 		}
@@ -325,7 +325,7 @@ func TestOCStats_GFE_Latency(t *testing.T){
 			t.Fatal("No metrics are exported")
 		}
 		if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
-			t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_header_missing_count or "+ statsPrefix+"gfe_latency")
+			t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_header_missing_count or "+statsPrefix+"gfe_latency")
 		}
 		row := stat.Rows[0]
 		m := getTagMap(row.Tags)
@@ -338,9 +338,11 @@ func TestOCStats_GFE_Latency(t *testing.T){
 			data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
 		case *view.LastValueData:
 			data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+		case *view.DistributionData:
+			data = fmt.Sprintf("%v", row.Data.(*view.DistributionData).Count)
 		}
-		if got, want := data, "1"; got != want {
-			t.Fatalf("Incorrect data: got %v, want %v", got, want)
+		if got, want := fmt.Sprintf("%v", data), "0"; got <= want {
+			t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
 		}
 	case <-time.After(1 * time.Second):
 		t.Fatal("no stats were exported before timeout")
