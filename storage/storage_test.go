@@ -876,7 +876,7 @@ func TestObjectRetryer(t *testing.T) {
 }
 
 // Test the interactions between ObjectHandle and BucketHandle Retryers and that
-// they correctly configure the retry configuration
+// they correctly configure the retry configuration for objects and ACLs
 func TestRetryer(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -1007,17 +1007,47 @@ func TestRetryer(t *testing.T) {
 				o = o.Retryer(tc.objectOptions...)
 			}
 
-			if diff := cmp.Diff(
-				o.retry,
-				tc.want,
-				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
-				// ErrorFunc cannot be compared directly, but we check if both are
-				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
-					return (a == nil && b == nil) || (a != nil && b != nil)
-				}),
-			); diff != "" {
-				s.Fatalf("retry not configured correctly: %v", diff)
+			configHandleCases := []struct {
+				r    *retryConfig
+				name string
+				want *retryConfig
+			}{
+				{
+					name: "object.retry",
+					r:    o.retry,
+					want: tc.want,
+				},
+				{
+					name: "object.ACL()",
+					r:    o.ACL().retry,
+					want: tc.want,
+				},
+				{
+					name: "bucket.ACL()",
+					r:    b.ACL().retry,
+					want: b.retry,
+				},
+				{
+					name: "bucket.DefaultObjectACL()",
+					r:    b.DefaultObjectACL().retry,
+					want: b.retry,
+				},
+			}
+			for _, ac := range configHandleCases {
+				s.Run(ac.name, func(ss *testing.T) {
+					if diff := cmp.Diff(
+						ac.want,
+						ac.r,
+						cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+						// ErrorFunc cannot be compared directly, but we check if both are
+						// either nil or non-nil.
+						cmp.Comparer(func(a, b func(err error) bool) bool {
+							return (a == nil && b == nil) || (a != nil && b != nil)
+						}),
+					); diff != "" {
+						ss.Fatalf("retry not configured correctly: %v", diff)
+					}
+				})
 			}
 		})
 	}
