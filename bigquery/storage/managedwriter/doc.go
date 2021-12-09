@@ -146,7 +146,7 @@ an error.
 	}
 
 
-Advanced Stream Management - Buffered Streams
+Buffered Stream Management
 
 For Buffered streams, users control when data is made visible in the destination table/stream
 independently of when it is written.  Use FlushRows on the ManagedStream to advance the flush
@@ -156,7 +156,7 @@ point ahead in the stream.
 	// ahead to make the first 1000 rows available.
 	flushOffset, err := managedStream.FlushRows(ctx, 1000)
 
-Advanced Stream Managedment - Pending Streams
+Pending Stream Management
 
 Pending streams allow users to commit data from multiple streams together once the streams
 have been finalized, meaning they'll no longer allow further data writes.
@@ -172,7 +172,7 @@ have been finalized, meaning they'll no longer allow further data writes.
 		Parent: parentName,
 		WriteStreams: []string{managedStream.StreamName()},
 	}
-	// Using the original client, we can commit data from multple streams to the same
+	// Using the client, we can commit data from multple streams to the same
 	// table atomically.
 	resp, err := client.BatchCommitWriteStreams(ctx, req)
 
