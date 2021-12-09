@@ -1806,6 +1806,7 @@ func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 		opt.apply(retry)
 	}
 	o2.retry = retry
+	o2.acl.retry = retry
 	return &o2
 }
 
