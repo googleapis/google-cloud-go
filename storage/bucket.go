@@ -146,6 +146,7 @@ func (b *BucketHandle) DefaultObjectACL() *ACLHandle {
 // for valid object names can be found at:
 //   https://cloud.google.com/storage/docs/naming-objects
 func (b *BucketHandle) Object(name string) *ObjectHandle {
+	retry := b.retry.clone()
 	return &ObjectHandle{
 		c:      b.c,
 		bucket: b.name,
@@ -155,10 +156,11 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 			bucket:      b.name,
 			object:      name,
 			userProject: b.userProject,
+			retry:       retry,
 		},
 		gen:         -1,
 		userProject: b.userProject,
-		retry:       b.retry.clone(),
+		retry:       retry,
 	}
 }
 
@@ -1436,6 +1438,8 @@ func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
 		opt.apply(retry)
 	}
 	b2.retry = retry
+	b2.acl.retry = retry
+	b2.defaultObjectACL.retry = retry
 	return &b2
 }
 
