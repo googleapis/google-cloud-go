@@ -19,12 +19,13 @@ package spanner
 import (
 	"context"
 	"fmt"
-	"go.opencensus.io/tag"
-	"google.golang.org/grpc"
 	"log"
 	"reflect"
 	"sync"
 	"time"
+
+	"go.opencensus.io/tag"
+	"google.golang.org/grpc"
 
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"

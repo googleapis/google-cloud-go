@@ -17,13 +17,14 @@ limitations under the License.
 package spanner
 
 import (
-	"cloud.google.com/go/internal/version"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"regexp"
 	"time"
+
+	"cloud.google.com/go/internal/version"
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"

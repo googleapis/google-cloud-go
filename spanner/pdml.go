@@ -15,8 +15,9 @@
 package spanner
 
 import (
-	"cloud.google.com/go/internal/trace"
 	"context"
+
+	"cloud.google.com/go/internal/trace"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

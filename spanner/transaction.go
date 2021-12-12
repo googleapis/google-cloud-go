@@ -17,16 +17,17 @@ limitations under the License.
 package spanner
 
 import (
-	"cloud.google.com/go/internal/version"
 	"context"
-	"github.com/googleapis/gax-go/v2"
-	"go.opencensus.io/tag"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"log"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"cloud.google.com/go/internal/version"
+	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"

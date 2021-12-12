@@ -17,13 +17,14 @@ package spanner
 import (
 	"context"
 	"fmt"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"google.golang.org/api/iterator"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"math"
 	"strings"
 	"testing"
 	"time"
+
+	structpb "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/api/iterator"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/version"

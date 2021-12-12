@@ -22,7 +22,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"go.opencensus.io/stats/view"
 	"log"
 	"math"
 	"math/big"
@@ -34,6 +33,8 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"go.opencensus.io/stats/view"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"

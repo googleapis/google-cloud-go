@@ -20,12 +20,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
+	"log"
+	"time"
+
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"log"
-	"time"
 
 	"github.com/golang/protobuf/proto"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"

@@ -15,12 +15,13 @@
 package spanner
 
 import (
-	"cloud.google.com/go/internal/version"
 	"context"
-	"google.golang.org/grpc/metadata"
 	"strconv"
 	"strings"
 	"testing"
+
+	"cloud.google.com/go/internal/version"
+	"google.golang.org/grpc/metadata"
 
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
