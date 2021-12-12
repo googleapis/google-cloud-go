@@ -1061,7 +1061,6 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 		}
 		partitions = append(partitions, &spannerpb.Partition{PartitionToken: token})
 	}
-
 	return &spannerpb.PartitionResponse{
 		Partitions:  partitions,
 		Transaction: tx,

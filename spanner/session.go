@@ -349,7 +349,6 @@ func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
 	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
-
 	// Do not log DeadlineExceeded errors when deleting sessions, as these do
 	// not indicate anything the user can or should act upon.
 	if err != nil && ErrCode(err) != codes.DeadlineExceeded {

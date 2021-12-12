@@ -23,13 +23,11 @@ import (
 	"log"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
-	"go.opencensus.io/tag"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-
-	"github.com/golang/protobuf/proto"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // BatchReadOnlyTransaction is a ReadOnlyTransaction that allows for exporting
@@ -144,14 +142,12 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		PartitionOptions: opt.toProto(),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
-		ctxGFE, _ := tag.New(ctx,
-			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-		)
-		errGFE := captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
+	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
+		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
+		if errGFE != nil {
+			return nil, errGFE
+		}
+		errGFE = captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
 		if errGFE != nil {
 			return nil, errGFE
 		}
@@ -212,15 +208,15 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	}
 	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
-		ctxGFE, errGFE := tag.New(ctx,
-			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-		)
+	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
+		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
+		if errGFE != nil {
+			return nil, errGFE
+		}
 		errGFE = captureGFELatencyStats(ctxGFE, md, "partitionQuery")
-		return nil, errGFE
+		if errGFE != nil {
+			return nil, errGFE
+		}
 	}
 
 	// prepare ExecuteSqlRequest
@@ -282,23 +278,22 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
+
+	var md metadata.MD
+	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
+
 	var logger *log.Logger
 	if sh.session != nil {
 		logger = sh.session.logger
 	}
-	var md metadata.MD
-	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
-		ctxGFE, errGFE := tag.New(ctx,
-			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-		)
+	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
+		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
+		if errGFE != nil {
+			logf(logger, "Error in creating new context. Try disabling and rerunning. Error: %v", errGFE)
+		}
 		errGFE = captureGFELatencyStats(ctxGFE, md, "Cleanup")
 		if errGFE != nil {
-			logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
+			logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
 		}
 	}
 
@@ -323,7 +318,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
-	var md metadata.MD
 	// Read or query partition.
 	if p.rreq != nil {
 		rpc = func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
@@ -339,15 +333,15 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:    resumeToken,
 			})
 			if client != nil {
-				md, _ = client.Header()
-
-				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
-					ctxGFE, errGFE := tag.New(ctx,
-						tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-						tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-						tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-						tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-					)
+				md, errGFE := client.Header()
+				if errGFE != nil {
+					return nil, errGFE
+				}
+				if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
+					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
+					if errGFE != nil {
+						return client, errGFE
+					}
 					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
 					if errGFE != nil {
 						return client, errGFE
@@ -370,15 +364,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ResumeToken:    resumeToken,
 			})
 			if client != nil {
-				md, _ = client.Header()
+				md, errGFE := client.Header()
+				if errGFE != nil {
+					return nil, errGFE
+				}
 
-				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.txReadOnly.set == true {
-					ctxGFE, errGFE := tag.New(ctx,
-						tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-						tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-						tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-						tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-					)
+				if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
+					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
+					if errGFE != nil {
+						return client, errGFE
+					}
 					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
 					if errGFE != nil {
 						return client, errGFE

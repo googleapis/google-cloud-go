@@ -24,9 +24,8 @@ import (
 	"regexp"
 	"time"
 
-	"cloud.google.com/go/internal/version"
-
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -282,14 +281,11 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
-	t.txReadOnly.CommonTags = CommonTags{}
-	t.txReadOnly.CommonTags.init()
 	if c.sc != nil {
 		_, instance, database, err := parseDatabaseName(c.sc.database)
 		if err == nil {
-			t.txReadOnly.CommonTags = CommonTags{
-				set:        true,
-				clientId:   c.sc.id,
+			t.txReadOnly.CommonTags = &CommonTags{
+				clientID:   c.sc.id,
 				database:   database,
 				instance:   instance,
 				libVersion: version.Repo,
@@ -316,14 +312,11 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags = CommonTags{}
-	t.txReadOnly.CommonTags.init()
 	if c.sc != nil {
 		_, instance, database, err := parseDatabaseName(c.sc.database)
 		if err == nil {
-			t.txReadOnly.CommonTags = CommonTags{
-				set:        true,
-				clientId:   c.sc.id,
+			t.txReadOnly.CommonTags = &CommonTags{
+				clientID:   c.sc.id,
 				database:   database,
 				instance:   instance,
 				libVersion: version.Repo,
@@ -382,9 +375,6 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
 	}
 
-	if err != nil {
-		return nil, ToSpannerError(err)
-	}
 	t := &BatchReadOnlyTransaction{
 		ReadOnlyTransaction: ReadOnlyTransaction{
 			tx:              tx,
@@ -401,14 +391,11 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags = CommonTags{}
-	t.txReadOnly.CommonTags.init()
 	if c.sc != nil {
 		_, instance, database, err := parseDatabaseName(c.sc.database)
 		if err == nil {
-			t.txReadOnly.CommonTags = CommonTags{
-				set:        true,
-				clientId:   c.sc.id,
+			t.txReadOnly.CommonTags = &CommonTags{
+				clientID:   c.sc.id,
 				database:   database,
 				instance:   instance,
 				libVersion: version.Repo,
@@ -442,14 +429,11 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.CommonTags = CommonTags{}
-	t.txReadOnly.CommonTags.init()
 	if c.sc != nil {
 		_, instance, database, err := parseDatabaseName(c.sc.database)
 		if err == nil {
-			t.txReadOnly.CommonTags = CommonTags{
-				set:        true,
-				clientId:   c.sc.id,
+			t.txReadOnly.CommonTags = &CommonTags{
+				clientID:   c.sc.id,
 				database:   database,
 				instance:   instance,
 				libVersion: version.Repo,
@@ -541,14 +525,11 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txOpts = options
-		t.txReadOnly.CommonTags = CommonTags{}
-		t.txReadOnly.CommonTags.init()
 		if c.sc != nil {
 			_, instance, database, err := parseDatabaseName(c.sc.database)
 			if err == nil {
-				t.txReadOnly.CommonTags = CommonTags{
-					set:        true,
-					clientId:   c.sc.id,
+				t.txReadOnly.CommonTags = &CommonTags{
+					clientID:   c.sc.id,
 					database:   database,
 					instance:   instance,
 					libVersion: version.Repo,

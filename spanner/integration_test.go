@@ -34,13 +34,12 @@ import (
 	"testing"
 	"time"
 
-	"go.opencensus.io/stats/view"
-
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"go.opencensus.io/stats/view"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
@@ -3272,7 +3271,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	defer cancel()
 
 	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
-	GFELatencyOrHeaderMissingCountEnabled = true
+	GFELatencyMetricsEnabled = true
 
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
 	defer cleanup()
@@ -3283,11 +3282,11 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	}
 	_, err := client.Apply(ctx, ms)
 	if err != nil {
-		t.Fatalf("got error %v", err)
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
 	}
 	_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId", "FirstName", "LastName"})
 	if err != nil {
-		t.Fatalf("got error %v", err)
+		t.Fatalf("Could not read row. Got error %v", err)
 	}
 	waitErr := &Error{}
 	waitFor(t, func() error {
@@ -3336,7 +3335,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 					t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
 				}
 			}
-		case <-time.After(2 * time.Second):
+		case <-time.After(10 * time.Second):
 			if !viewMap[statsPrefix+"gfe_latency"] && !viewMap[statsPrefix+"gfe_header_missing_count"] {
 				t.Fatal("no stats were exported before timeout")
 			}

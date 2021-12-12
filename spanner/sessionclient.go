@@ -24,16 +24,15 @@ import (
 	"sync"
 	"time"
 
-	"go.opencensus.io/tag"
-	"google.golang.org/grpc"
-
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -139,12 +138,11 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
+	if GFELatencyMetricsEnabled && md != nil {
 		_, instance, database, errGFE := parseDatabaseName(sc.database)
 		if errGFE != nil {
 			return nil, ToSpannerError(errGFE)
 		}
-		// Errors should not prevent initializing the session pool.
 		ctxGFE, errGFE := tag.New(ctx,
 			tag.Upsert(tagKeyClientID, sc.id),
 			tag.Upsert(tagKeyDatabase, database),
@@ -263,7 +261,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			SessionTemplate: &sppb.Session{Labels: labels},
 		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
 
-		if GFELatencyOrHeaderMissingCountEnabled && mdForGFELatency != nil {
+		if GFELatencyMetricsEnabled && mdForGFELatency != nil {
 			_, instance, database, errGFE := parseDatabaseName(sc.database)
 			if errGFE != nil {
 				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", errGFE)

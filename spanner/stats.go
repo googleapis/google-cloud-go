@@ -21,11 +21,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/version"
-	"google.golang.org/grpc/metadata"
-
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"google.golang.org/grpc/metadata"
 )
 
 const statsPrefix = "cloud.google.com/go/spanner/"
@@ -38,12 +37,13 @@ var (
 	tagKeyType       = tag.MustNewKey("type")
 	tagCommonKeys    = []tag.Key{tagKeyClientID, tagKeyDatabase, tagKeyInstance, tagKeyLibVersion}
 
-	tagNumInUseSessions                   = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
-	tagNumBeingPrepared                   = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
-	tagNumReadSessions                    = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
-	tagNumWriteSessions                   = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
-	tagKeyMethod                          = tag.MustNewKey("grpc_client_method")
-	GFELatencyOrHeaderMissingCountEnabled = false
+	tagNumInUseSessions = tag.Tag{Key: tagKeyType, Value: "num_in_use_sessions"}
+	tagNumBeingPrepared = tag.Tag{Key: tagKeyType, Value: "num_sessions_being_prepared"}
+	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
+	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
+	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
+	// GFELatencyMetricsEnabled is used to track if GFELatency and GFEHeaderMissingCount need to be recorded
+	GFELatencyMetricsEnabled = false
 )
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
@@ -162,12 +162,14 @@ var (
 		TagKeys:     tagCommonKeys,
 	}
 
+	// GFELatency is the latency between Google's network receiving an RPC and reading back the first byte of the response
 	GFELatency = stats.Int64(
 		statsPrefix+"gfe_latency",
 		"Latency between Google's network receiving an RPC and reading back the first byte of the response",
 		stats.UnitMilliseconds,
 	)
 
+	// GFELatencyView is the view of distribution of GFELatency values
 	GFELatencyView = &view.View{
 		Name:        "cloud.google.com/go/spanner/gfe_latency",
 		Measure:     GFELatency,
@@ -179,12 +181,14 @@ var (
 		TagKeys: append(tagCommonKeys, tagKeyMethod),
 	}
 
+	// GFEHeaderMissingCount is the number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network
 	GFEHeaderMissingCount = stats.Int64(
 		statsPrefix+"gfe_header_missing_count",
 		"Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
 		stats.UnitDimensionless,
 	)
 
+	// GFEHeaderMissingCountView is the view of number of GFEHeaderMissingCount
 	GFEHeaderMissingCountView = &view.View{
 		Name:        "cloud.google.com/go/spanner/gfe_header_missing_count",
 		Measure:     GFEHeaderMissingCount,
@@ -207,25 +211,30 @@ func EnableStatViews() error {
 	)
 }
 
+// EnableGfeLatencyView enables GFELatency metric
 func EnableGfeLatencyView() error {
-	GFELatencyOrHeaderMissingCountEnabled = true
+	GFELatencyMetricsEnabled = true
 	return view.Register(GFELatencyView)
 }
 
+// EnableGfeHeaderMissingCountView enables GFEHeaderMissingCount metric
 func EnableGfeHeaderMissingCountView() error {
-	GFELatencyOrHeaderMissingCountEnabled = true
+	GFELatencyMetricsEnabled = true
 	return view.Register(GFEHeaderMissingCountView)
 }
+
+// EnableGfeLatencyAndHeaderMissingCountViews enables GFEHeaderMissingCount and GFELatency metric
 func EnableGfeLatencyAndHeaderMissingCountViews() error {
-	GFELatencyOrHeaderMissingCountEnabled = true
+	GFELatencyMetricsEnabled = true
 	return view.Register(
 		GFELatencyView,
 		GFEHeaderMissingCountView,
 	)
 }
 
+// DisableGfeLatencyAndHeaderMissingCountViews disables GFEHeaderMissingCount and GFELatency metric
 func DisableGfeLatencyAndHeaderMissingCountViews() {
-	GFELatencyOrHeaderMissingCountEnabled = false
+	GFELatencyMetricsEnabled = false
 	view.Unregister(
 		GFELatencyView,
 		GFEHeaderMissingCountView,
@@ -267,4 +276,13 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyLibVersion] != version.Repo {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
+}
+
+func createContextForGFELatencyMetrics(ctx context.Context, t txReadOnly) (context.Context, error) {
+	return tag.New(ctx,
+		tag.Upsert(tagKeyClientID, t.clientID),
+		tag.Upsert(tagKeyDatabase, t.database),
+		tag.Upsert(tagKeyInstance, t.instance),
+		tag.Upsert(tagKeyLibVersion, t.libVersion),
+	)
 }

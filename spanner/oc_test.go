@@ -22,15 +22,14 @@ import (
 	"testing"
 	"time"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"google.golang.org/api/iterator"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/version"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"google.golang.org/api/iterator"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 // Check that stats are being exported.
@@ -269,7 +268,7 @@ func TestOCStats_GFE_Latency(t *testing.T) {
 	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
 
-	GFELatencyOrHeaderMissingCountEnabled = true
+	GFELatencyMetricsEnabled = true
 
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()

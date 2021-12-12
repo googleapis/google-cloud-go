@@ -18,23 +18,20 @@ package spanner
 
 import (
 	"context"
-	"log"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"cloud.google.com/go/internal/version"
-	"github.com/googleapis/gax-go/v2"
-	"go.opencensus.io/tag"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"github.com/golang/protobuf/proto"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -84,26 +81,19 @@ type txReadOnly struct {
 	txOpts TransactionOptions
 
 	// Common Tags for GFE Latency Metrics
-	CommonTags
+	*CommonTags
 }
 
 // CommonTags stored for GFE Latency and Header Missing Count
 type CommonTags struct {
-	// Common Tags value set
-	set bool
 	// Client ID
-	clientId string
+	clientID string
 	// Database Name
 	database string
 	// Instance ID
 	instance string
 	// Library Version
 	libVersion string
-}
-
-func (ct *CommonTags) init() {
-	// setting default value of set as false
-	ct.set = false
 }
 
 // TransactionOptions provides options for a transaction.
@@ -201,7 +191,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
-			var md metadata.MD
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
 					Session:        t.sh.getID(),
@@ -215,25 +204,18 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 				})
 			if client != nil {
-				md, _ = client.Header()
-
-				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
-					ctxGFE, errGFE := tag.New(ctx,
-						tag.Upsert(tagKeyClientID, t.clientId),
-						tag.Upsert(tagKeyDatabase, t.database),
-						tag.Upsert(tagKeyInstance, t.instance),
-						tag.Upsert(tagKeyLibVersion, t.libVersion),
-					)
-					var logger *log.Logger
-					if sh.session != nil {
-						logger = sh.session.logger
-					}
+				md, errGFE := client.Header()
+				if errGFE != nil {
+					return nil, errGFE
+				}
+				if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
+					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, *t)
 					if errGFE != nil {
-						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+						return nil, errGFE
 					}
 					errGFE = captureGFELatencyStats(ctxGFE, md, "ReadWithOptions")
 					if errGFE != nil {
-						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+						return client, errGFE
 					}
 				}
 			}
@@ -428,26 +410,19 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			client, err := client.ExecuteStreamingSql(ctx, req)
-			var md metadata.MD
 			if client != nil {
-				md, _ = client.Header()
-				if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
-					ctxGFE, errGFE := tag.New(ctx,
-						tag.Upsert(tagKeyClientID, t.clientId),
-						tag.Upsert(tagKeyDatabase, t.database),
-						tag.Upsert(tagKeyInstance, t.instance),
-						tag.Upsert(tagKeyLibVersion, t.libVersion),
-					)
-					var logger *log.Logger
-					if sh.session != nil {
-						logger = sh.session.logger
-					}
+				md, errGFE := client.Header()
+				if errGFE != nil {
+					return nil, errGFE
+				}
+				if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
+					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, *t)
 					if errGFE != nil {
-						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+						return client, errGFE
 					}
 					errGFE = captureGFELatencyStats(ctxGFE, md, "query")
 					if errGFE != nil {
-						logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+						return client, errGFE
 					}
 				}
 			}
@@ -621,13 +596,8 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-		if GFELatencyOrHeaderMissingCountEnabled && md != nil && t.set == true {
-			ctxGFE, errGFE := tag.New(ctx,
-				tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-				tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-				tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-				tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-			)
+		if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
+			ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
 			if errGFE != nil {
 				return errGFE
 			}
@@ -985,13 +955,8 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
-		ctxGFE, errGFE := tag.New(ctx,
-			tag.Upsert(tagKeyClientID, t.clientId),
-			tag.Upsert(tagKeyDatabase, t.database),
-			tag.Upsert(tagKeyInstance, t.instance),
-			tag.Upsert(tagKeyLibVersion, t.libVersion),
-		)
+	if GFELatencyMetricsEnabled && md != nil {
+		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
 		if errGFE != nil {
 			return 0, ToSpannerError(errGFE)
 		}
@@ -1070,13 +1035,8 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyOrHeaderMissingCountEnabled && md != nil {
-		ctxGFE, errGFE := tag.New(ctx,
-			tag.Upsert(tagKeyClientID, t.txReadOnly.clientId),
-			tag.Upsert(tagKeyDatabase, t.txReadOnly.database),
-			tag.Upsert(tagKeyInstance, t.txReadOnly.instance),
-			tag.Upsert(tagKeyLibVersion, t.txReadOnly.libVersion),
-		)
+	if GFELatencyMetricsEnabled && md != nil {
+		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
 		if errGFE != nil {
 			return nil, ToSpannerError(errGFE)
 		}
@@ -1336,22 +1296,15 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			tx: sh.getTransactionID(),
 		},
 	}
-	if err != nil {
-		// Could not parse database name
-		return nil, err
-	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txOpts = options
-	t.txReadOnly.CommonTags = CommonTags{}
-	t.txReadOnly.CommonTags.init()
 	if c.sc != nil {
 		_, instance, database, err := parseDatabaseName(c.sc.database)
 		if err == nil {
-			t.txReadOnly.CommonTags = CommonTags{
-				set:        true,
-				clientId:   c.sc.id,
+			t.txReadOnly.CommonTags = &CommonTags{
+				clientID:   c.sc.id,
 				database:   database,
 				instance:   instance,
 				libVersion: version.Repo,
