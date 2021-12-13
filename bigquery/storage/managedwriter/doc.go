@@ -39,7 +39,7 @@ To start working with this package, create a client:
 Defining the Protocol Buffer Schema
 
 The write functionality of BigQuery Storage requires data to be sent using encoded
-protocol buffer messages using proto2 syntax.  As the protocol buffer is not
+protocol buffer messages using proto2 wire format.  As the protocol buffer is not
 self-describing, you will need to provide the protocol buffer schema.
 This is communicated using a DescriptorProto message, defined within the protocol
 buffer libraries: https://pkg.go.dev/google.golang.org/protobuf/types/descriptorpb#DescriptorProto
