@@ -947,7 +947,6 @@ func TestClientRetryer(t *testing.T) {
 				t.Fatalf("NewClient: %v", err)
 			}
 			defer c.Close()
-
 			c.SetRetry(tc.clientOptions...)
 
 			if diff := cmp.Diff(

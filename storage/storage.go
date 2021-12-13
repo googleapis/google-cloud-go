@@ -1793,8 +1793,8 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 // on the new handle will use the customized retry configuration.
 // These retry options will merge with the bucket's retryer (if set) for the
 // returned handle. Options passed into this method will take precedence over
-// options on the bucket's and client's retryers. Note that you must explicitly
-// pass in each option you want to override.
+// retry options on the bucket and client. Note that you must explicitly pass in
+// each option you want to override.
 func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2 := *o
 	var retry *retryConfig
