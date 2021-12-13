@@ -174,10 +174,7 @@ func (w *Writer) open() error {
 			// there is no need to add retries here.
 
 			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
-			var isIdempotent bool
-			if w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true) {
-				isIdempotent = true
-			}
+			isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true)
 			var useRetry bool
 			if (w.o.retry == nil || w.o.retry.policy == RetryIdempotent) && isIdempotent {
 				useRetry = true
