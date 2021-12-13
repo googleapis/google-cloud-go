@@ -65,6 +65,8 @@ import (
 //	*Date(not NULL), *NullDate - DATE
 //	*[]civil.Date, *[]NullDate - DATE ARRAY
 //	*[]*some_go_struct, *[]NullRow - STRUCT ARRAY
+//	*NullJSON - JSON
+//	*[]NullJSON - JSON ARRAY
 //	*GenericColumnValue - any Cloud Spanner type
 //
 // For TIMESTAMP columns, the returned time.Time object will be in UTC.
