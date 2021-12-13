@@ -879,28 +879,25 @@ func TestObjectRetryer(t *testing.T) {
 // on the Client.
 func TestClientRetryer(t *testing.T) {
 	testCases := []struct {
-		name string
-		call func(c *Client) *Client
-		want *retryConfig
+		name          string
+		clientOptions []RetryOption
+		want          *retryConfig
 	}{
 		{
-			name: "all defaults",
-			call: func(c *Client) *Client {
-				return c.Retryer()
-			},
-			want: &retryConfig{},
+			name:          "all defaults",
+			clientOptions: []RetryOption{},
+			want:          &retryConfig{},
 		},
 		{
 			name: "set all options",
-			call: func(c *Client) *Client {
-				return c.Retryer(
-					WithBackoff(gax.Backoff{
-						Initial:    2 * time.Second,
-						Max:        30 * time.Second,
-						Multiplier: 3,
-					}),
-					WithPolicy(RetryAlways),
-					WithErrorFunc(func(err error) bool { return false }))
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(func(err error) bool { return false }),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -914,11 +911,10 @@ func TestClientRetryer(t *testing.T) {
 		},
 		{
 			name: "set some backoff options",
-			call: func(c *Client) *Client {
-				return c.Retryer(
-					WithBackoff(gax.Backoff{
-						Multiplier: 3,
-					}))
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 3,
+				}),
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -927,8 +923,8 @@ func TestClientRetryer(t *testing.T) {
 		},
 		{
 			name: "set policy only",
-			call: func(c *Client) *Client {
-				return c.Retryer(WithPolicy(RetryNever))
+			clientOptions: []RetryOption{
+				WithPolicy(RetryNever),
 			},
 			want: &retryConfig{
 				policy: RetryNever,
@@ -936,9 +932,8 @@ func TestClientRetryer(t *testing.T) {
 		},
 		{
 			name: "set ErrorFunc only",
-			call: func(c *Client) *Client {
-				return c.Retryer(
-					WithErrorFunc(func(err error) bool { return false }))
+			clientOptions: []RetryOption{
+				WithErrorFunc(func(err error) bool { return false }),
 			},
 			want: &retryConfig{
 				shouldRetry: func(err error) bool { return false },
@@ -947,7 +942,14 @@ func TestClientRetryer(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			c := tc.call(&Client{})
+			c, err := NewClient(context.Background())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+
+			c.SetRetry(tc.clientOptions...)
+
 			if diff := cmp.Diff(
 				c.retry,
 				tc.want,
@@ -1155,7 +1157,7 @@ func TestRetryer(t *testing.T) {
 			}
 			defer c.Close()
 			if len(tc.clientOptions) > 0 {
-				c = c.Retryer(tc.clientOptions...)
+				c.SetRetry(tc.clientOptions...)
 			}
 			b := c.Bucket("buck")
 			if len(tc.bucketOptions) > 0 {

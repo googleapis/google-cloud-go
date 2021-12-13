@@ -1812,13 +1812,14 @@ func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	return &o2
 }
 
-// Retryer returns an Client that is configured with custom retry behavior as
-// specified by the options that are passed to it. All operations on the new
-// handle will use the customized retry configuration.
+// SetRetry configures the client with custom retry behavior as specified by the
+// options that are passed to it. All operations using this client will use the
+// customized retry configuration.
+// This should be called once before using the client for network operations, as
+// there could be indeterminate behaviour with operations in progress.
 // Retry options set on a bucket or object handle will take precedence over
 // these options.
-func (c *Client) Retryer(opts ...RetryOption) *Client {
-	c2 := *c
+func (c *Client) SetRetry(opts ...RetryOption) {
 	var retry *retryConfig
 	if c.retry != nil {
 		// merge the options with the existing retry
@@ -1829,8 +1830,7 @@ func (c *Client) Retryer(opts ...RetryOption) *Client {
 	for _, opt := range opts {
 		opt.apply(retry)
 	}
-	c2.retry = retry
-	return &c2
+	c.retry = retry
 }
 
 // RetryOption allows users to configure non-default retry behavior for API
