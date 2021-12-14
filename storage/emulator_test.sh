@@ -57,7 +57,6 @@ trap cleanup EXIT
 
 # TODO: move to passing once fixed
 FAILING=(   "buckets.setIamPolicy"
-            "objects.insert"
             "hmacKey.update"
         )
 # TODO: remove regex once all tests are passing
@@ -74,6 +73,7 @@ PASSING=(   "buckets.list"
             "buckets.lockRetentionPolicy"
             "objects.copy"
             "objects.get"
+            "objects.insert"
             "objects.list"
             "objects.delete"
             "objects.update"
