@@ -582,6 +582,13 @@ func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (ee ExtractExpr) SQL() string { return buildSQL(ee) }
+func (ee ExtractExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString(ee.Part)
+	sb.WriteString(" FROM ")
+	ee.Expr.addSQL(sb)
+}
+
 func (te TypedExpr) SQL() string { return buildSQL(te) }
 func (te TypedExpr) addSQL(sb *strings.Builder) {
 	te.Expr.addSQL(sb)

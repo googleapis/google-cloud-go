@@ -528,9 +528,9 @@ func TestParseDDL(t *testing.T) {
 		CREATE TABLE users (
 		  user_id      STRING(36) NOT NULL,
 		  some_string  STRING(16) NOT NULL,
-          some_time TIMESTAMP NOT NULL,
+		  some_time TIMESTAMP NOT NULL,
 		  number_key   INT64 AS (SAFE_CAST(SUBSTR(some_string, 2) AS INT64)) STORED,
-          generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
+		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
 		) PRIMARY KEY(user_id);
 
 		-- Trailing comment at end of file.
@@ -761,7 +761,7 @@ func TestParseDDL(t *testing.T) {
 					{
 						Name: "generated_date", Type: Type{Base: Date},
 						Generated: Func{Name: "EXTRACT", Args: []Expr{
-							TypedExpr{Expr: Func{Name: "AT TIME ZONE", Args: []Expr{ID("some_time"), StringLiteral("CET")}}, Type: Type{Base: Date}},
+							ExtractExpr{Part: "DATE", Expr: Func{Name: "AT TIME ZONE", Args: []Expr{ID("some_time"), StringLiteral("CET")}}, Type: Type{Base: Date}},
 						}},
 						Position: line(71),
 					},

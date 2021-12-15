@@ -755,9 +755,10 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64)`,
+
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64), EXTRACT(DATE FROM TIMESTAMP('2008-12-25T05:30:00Z') AT TIME ZONE 'Europe/Amsterdam')`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil, civil.Date{Year: 2008, Month: 12, Day: 25}}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
@@ -1277,13 +1278,16 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	defer cancel()
 
 	tableName := "SongWriters"
-
 	err := updateDDL(t, adminClient,
 		`CREATE TABLE `+tableName+` (
 			Name STRING(50) NOT NULL,
 			NumSongs INT64,
+			CreatedAT TIMESTAMP,
+			CreatedDate DATE,
 			EstimatedSales INT64 NOT NULL,
 			CanonicalName STRING(50) AS (LOWER(Name)) STORED,
+			GeneratedCreatedDate DATE AS (EXTRACT(DATE FROM CreatedAT AT TIME ZONE "CET")) STORED,
+			GeneratedCreatedDay INT64 AS (EXTRACT(DAY FROM CreatedDate)) STORED,
 		) PRIMARY KEY (Name)`)
 	if err != nil {
 		t.Fatalf("Setting up fresh table: %v", err)
@@ -1295,16 +1299,18 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	// Insert some data.
+	d1, _ := civil.ParseDate("2016-11-15")
+	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "NumSongs"},
-			[]interface{}{"Average Writer", 10, 10}),
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Average Writer", 10, 10, t1, d1}),
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales"},
-			[]interface{}{"Great Writer", 100}),
+			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Great Writer", 100, t1, d1}),
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "NumSongs"},
-			[]interface{}{"Poor Writer", 1, 50}),
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Poor Writer", 1, 50, t1, d1}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -1317,7 +1323,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	ri := client.Single().Query(ctx, spanner.NewStatement(
-		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+		`SELECT CanonicalName, TotalSales, GeneratedCreatedDate, GeneratedCreatedDay FROM `+tableName+` ORDER BY Name`,
 	))
 	all, err := slurpRows(t, ri)
 	if err != nil {
@@ -1326,9 +1332,9 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	// Great writer has nil because NumSongs is nil
 	want := [][]interface{}{
-		{"average writer", int64(100)},
-		{"great writer", nil},
-		{"poor writer", int64(50)},
+		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
 	}
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)

@@ -107,6 +107,46 @@ var functions = map[string]function{
 			return "", spansql.Type{Base: spansql.String}, nil
 		},
 	},
+	"EXTRACT": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			date, okArg1 := values[0].(civil.Date)
+			part, okArg2 := values[0].(int64)
+			if !(okArg1 || okArg2) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function EXTRACT for the given argument types")
+			}
+			if okArg1 {
+				return date, spansql.Type{Base: spansql.Date}, nil
+			}
+			return part, spansql.Type{Base: spansql.Int64}, nil
+		},
+	},
+	"AT TIME ZONE": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			t, okArg1 := values[0].(time.Time)
+			z, okArg2 := values[1].(string)
+			if !(okArg1 && okArg2) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function AT TIME ZONE for the given argument types")
+			}
+			loc, err := time.LoadLocation(z)
+			if err != nil {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function AT TIME ZONE for the given argument types")
+			}
+			return t.In(loc), spansql.Type{Base: spansql.Timestamp}, nil
+		},
+	},
+	"TIMESTAMP": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			t, okArg1 := values[0].(string)
+			if !(okArg1) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function TIMESTAMP for the given argument types")
+			}
+			timestamp, err := time.Parse(time.RFC3339, t)
+			if err != nil {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function TIMESTAMP for the given argument types")
+			}
+			return timestamp, spansql.Type{Base: spansql.Timestamp}, nil
+		},
+	},
 }
 
 func cast(values []interface{}, types []spansql.Type, safe bool) (interface{}, spansql.Type, error) {
