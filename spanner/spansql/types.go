@@ -653,7 +653,17 @@ type ExtractExpr struct {
 	Expr Expr
 }
 
-func (ExtractExpr) isExpr() {}
+func (ExtractExpr) isBoolExpr() {} // possibly bool
+func (ExtractExpr) isExpr()     {}
+
+type AtTimeZoneExpr struct {
+	Expr Expr
+	Type Type
+	Zone string
+}
+
+func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
+func (AtTimeZoneExpr) isExpr()     {}
 
 // Paren represents a parenthesised expression.
 type Paren struct {

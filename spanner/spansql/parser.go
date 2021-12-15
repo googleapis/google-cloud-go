@@ -2534,7 +2534,7 @@ var extractArgParser = func(p *parser) (Expr, *parseError) {
 		if tok.err != nil {
 			return nil, err
 		}
-		return ExtractExpr{Part: part, Expr: Func{Name: "AT TIME ZONE", Args: []Expr{e, StringLiteral(tok.string)}}, Type: partType}, nil
+		return ExtractExpr{Part: part, Type: partType, Expr: AtTimeZoneExpr{Expr: e, Zone: tok.string, Type: Type{Base: Timestamp}}}, nil
 	}
 	return ExtractExpr{
 		Part: part,

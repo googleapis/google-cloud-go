@@ -471,6 +471,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return ec.evalTypedExpr(e)
 	case spansql.ExtractExpr:
 		return ec.evalExtractExpr(e)
+	case spansql.AtTimeZoneExpr:
+		return ec.evalAtTimeZoneExpr(e)
 	case spansql.Func:
 		v, _, err := ec.evalFunc(e)
 		if err != nil {
@@ -713,6 +715,23 @@ func (ec evalContext) evalExtractExpr(expr spansql.ExtractExpr) (result interfac
 		}
 	}
 	return nil, fmt.Errorf("LiteralOrParam with %T not supported", val)
+}
+
+func (ec evalContext) evalAtTimeZoneExpr(expr spansql.AtTimeZoneExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case time.Time:
+		loc, err := time.LoadLocation(expr.Zone)
+		if err != nil {
+			return nil, fmt.Errorf("AtTimeZone with %T not supported", v)
+		}
+		return v.In(loc), nil
+	default:
+		return nil, fmt.Errorf("AtTimeZone with %T not supported", val)
+	}
 }
 
 func evalLiteralOrParam(lop spansql.LiteralOrParam, params queryParams) (int64, error) {

@@ -582,6 +582,13 @@ func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (te TypedExpr) SQL() string { return buildSQL(te) }
+func (te TypedExpr) addSQL(sb *strings.Builder) {
+	te.Expr.addSQL(sb)
+	sb.WriteString(" AS ")
+	sb.WriteString(te.Type.SQL())
+}
+
 func (ee ExtractExpr) SQL() string { return buildSQL(ee) }
 func (ee ExtractExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(ee.Part)
@@ -589,11 +596,11 @@ func (ee ExtractExpr) addSQL(sb *strings.Builder) {
 	ee.Expr.addSQL(sb)
 }
 
-func (te TypedExpr) SQL() string { return buildSQL(te) }
-func (te TypedExpr) addSQL(sb *strings.Builder) {
-	te.Expr.addSQL(sb)
-	sb.WriteString(" AS ")
-	sb.WriteString(te.Type.SQL())
+func (aze AtTimeZoneExpr) SQL() string { return buildSQL(aze) }
+func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
+	aze.Expr.addSQL(sb)
+	sb.WriteString(" AT TIME ZONE  ")
+	sb.WriteString(aze.Zone)
 }
 
 func idList(l []ID, join string) string {

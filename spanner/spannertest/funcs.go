@@ -120,20 +120,6 @@ var functions = map[string]function{
 			return part, spansql.Type{Base: spansql.Int64}, nil
 		},
 	},
-	"AT TIME ZONE": {
-		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
-			t, okArg1 := values[0].(time.Time)
-			z, okArg2 := values[1].(string)
-			if !(okArg1 && okArg2) {
-				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function AT TIME ZONE for the given argument types")
-			}
-			loc, err := time.LoadLocation(z)
-			if err != nil {
-				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function AT TIME ZONE for the given argument types")
-			}
-			return t.In(loc), spansql.Type{Base: spansql.Timestamp}, nil
-		},
-	},
 	"TIMESTAMP": {
 		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
 			t, okArg1 := values[0].(string)

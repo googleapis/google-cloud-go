@@ -340,10 +340,8 @@ func TestParseExpr(t *testing.T) {
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
 		{`CAST(Bar AS STRING)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}}},
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
-		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{
-			TypedExpr{Expr: Func{Name: "AT TIME ZONE", Args: []Expr{ID("TIMESTAMP"), StringLiteral("America/Los_Angeles")}}, Type: Type{Base: Date}},
-		}}},
-		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{TypedExpr{Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
+		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
+		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -761,7 +759,7 @@ func TestParseDDL(t *testing.T) {
 					{
 						Name: "generated_date", Type: Type{Base: Date},
 						Generated: Func{Name: "EXTRACT", Args: []Expr{
-							ExtractExpr{Part: "DATE", Expr: Func{Name: "AT TIME ZONE", Args: []Expr{ID("some_time"), StringLiteral("CET")}}, Type: Type{Base: Date}},
+							ExtractExpr{Part: "DATE", Expr: AtTimeZoneExpr{Expr: ID("some_time"), Zone: "CET", Type: Type{Base: Date}}},
 						}},
 						Position: line(71),
 					},
