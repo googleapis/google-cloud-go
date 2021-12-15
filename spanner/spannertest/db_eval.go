@@ -714,7 +714,7 @@ func (ec evalContext) evalExtractExpr(expr spansql.ExtractExpr) (result interfac
 			return int64(v.Year), nil
 		}
 	}
-	return nil, fmt.Errorf("LiteralOrParam with %T not supported", val)
+	return nil, fmt.Errorf("Extract with part %v not supported", expr.Part)
 }
 
 func (ec evalContext) evalAtTimeZoneExpr(expr spansql.AtTimeZoneExpr) (result interface{}, err error) {

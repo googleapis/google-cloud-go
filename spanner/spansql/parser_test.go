@@ -759,7 +759,7 @@ func TestParseDDL(t *testing.T) {
 					{
 						Name: "generated_date", Type: Type{Base: Date},
 						Generated: Func{Name: "EXTRACT", Args: []Expr{
-							ExtractExpr{Part: "DATE", Expr: AtTimeZoneExpr{Expr: ID("some_time"), Zone: "CET", Type: Type{Base: Date}}},
+							ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("some_time"), Zone: "CET", Type: Type{Base: Timestamp}}},
 						}},
 						Position: line(71),
 					},
