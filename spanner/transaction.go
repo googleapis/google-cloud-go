@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
@@ -80,20 +79,8 @@ type txReadOnly struct {
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
 
-	// Common Tags for GFE Latency Metrics
-	*CommonTags
-}
-
-// CommonTags stored for GFE Latency and Header Missing Count
-type CommonTags struct {
-	// Client ID
-	clientID string
-	// Database Name
-	database string
-	// Instance ID
-	instance string
-	// Library Version
-	libVersion string
+	// CommonTags for opencensus metrics
+	ct *CommonTags
 }
 
 // TransactionOptions provides options for a transaction.
@@ -203,20 +190,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					Limit:          int64(limit),
 					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 				})
-			if client != nil {
-				md, errGFE := client.Header()
-				if errGFE != nil {
-					return nil, errGFE
-				}
-				if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
-					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, *t)
-					if errGFE != nil {
-						return nil, errGFE
-					}
-					errGFE = captureGFELatencyStats(ctxGFE, md, "ReadWithOptions")
-					if errGFE != nil {
-						return client, errGFE
-					}
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if err != nil {
+				return nil, err
+			}
+			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
 			return client, err
@@ -410,20 +393,16 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 			req.ResumeToken = resumeToken
 			req.Session = t.sh.getID()
 			client, err := client.ExecuteStreamingSql(ctx, req)
-			if client != nil {
-				md, errGFE := client.Header()
-				if errGFE != nil {
-					return nil, errGFE
-				}
-				if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
-					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, *t)
-					if errGFE != nil {
-						return client, errGFE
-					}
-					errGFE = captureGFELatencyStats(ctxGFE, md, "query")
-					if errGFE != nil {
-						return client, errGFE
-					}
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if err != nil {
+				return nil, err
+			}
+			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
 			return client, err
@@ -596,14 +575,9 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-		if GFELatencyMetricsEnabled && md != nil && t.CommonTags != nil {
-			ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-			if errGFE != nil {
-				return errGFE
-			}
-			errGFE = captureGFELatencyStats(ctxGFE, md, "begin_BeginTransaction")
-			if errGFE != nil {
-				return errGFE
+		if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+			if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
 		}
 
@@ -955,14 +929,9 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil {
-		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-		if errGFE != nil {
-			return 0, ToSpannerError(errGFE)
-		}
-		errGFE = captureGFELatencyStats(ctxGFE, md, "update")
-		if errGFE != nil {
-			return 0, ToSpannerError(errGFE)
+	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 	if err != nil {
@@ -1035,14 +1004,9 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil {
-		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-		if errGFE != nil {
-			return nil, ToSpannerError(errGFE)
-		}
-		errGFE = captureGFELatencyStats(ctxGFE, md, "batchUpdateWithOptions")
-		if errGFE != nil {
-			return nil, ToSpannerError(errGFE)
+	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
 	}
 	if err != nil {
@@ -1300,17 +1264,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
 	t.txOpts = options
-	if c.sc != nil {
-		_, instance, database, err := parseDatabaseName(c.sc.database)
-		if err == nil {
-			t.txReadOnly.CommonTags = &CommonTags{
-				clientID:   c.sc.id,
-				database:   database,
-				instance:   instance,
-				libVersion: version.Repo,
-			}
-		}
-	}
+	t.ct = c.ct
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {

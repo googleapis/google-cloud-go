@@ -15,9 +15,8 @@
 package spanner
 
 import (
-	"context"
-
 	"cloud.google.com/go/internal/trace"
+	"context"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -120,14 +119,15 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 	}
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 	if GFELatencyMetricsEnabled && md != nil && sh.session.pool != nil {
-		errGFE := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
-		if errGFE != nil {
-			return 0, errGFE
+		err := captureGFELatencyStats(tag.NewContext(ctx, sh.session.pool.tagMap), md, "executePdml_ExecuteSql")
+		if err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 	if err != nil {
 		return 0, err
 	}
+
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", req.Sql)
 	}

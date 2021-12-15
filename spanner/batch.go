@@ -23,6 +23,7 @@ import (
 	"log"
 	"time"
 
+	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -127,11 +128,11 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		partitions []*Partition
 	)
 	kset, err = keys.keySetProto()
-	var md metadata.MD
 	// Request partitions.
 	if err != nil {
 		return nil, err
 	}
+	var md metadata.MD
 	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.PartitionReadRequest{
 		Session:          sid,
 		Transaction:      ts,
@@ -142,14 +143,9 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 		PartitionOptions: opt.toProto(),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
-		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-		if errGFE != nil {
-			return nil, errGFE
-		}
-		errGFE = captureGFELatencyStats(ctxGFE, md, "PartitionReadUsingIndexWithOptions")
-		if errGFE != nil {
-			return nil, errGFE
+	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "PartitionReadUsingIndexWithOptions"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 	// Prepare ReadRequest.
@@ -208,14 +204,9 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 	}
 	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
-		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-		if errGFE != nil {
-			return nil, errGFE
-		}
-		errGFE = captureGFELatencyStats(ctxGFE, md, "partitionQuery")
-		if errGFE != nil {
-			return nil, errGFE
+	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "partitionQuery"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 
@@ -282,22 +273,17 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	var md metadata.MD
 	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	var logger *log.Logger
-	if sh.session != nil {
-		logger = sh.session.logger
-	}
-	if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
-		ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-		if errGFE != nil {
-			logf(logger, "Error in creating new context. Try disabling and rerunning. Error: %v", errGFE)
-		}
-		errGFE = captureGFELatencyStats(ctxGFE, md, "Cleanup")
-		if errGFE != nil {
-			logf(logger, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", errGFE)
+	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Cleanup"); err != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
 
 	if err != nil {
+		var logger *log.Logger
+		if sh.session != nil {
+			logger = sh.session.logger
+		}
 		logf(logger, "Failed to delete session %v. Error: %v", sid, err)
 	}
 }
@@ -332,20 +318,16 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.rreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
-			if client != nil {
-				md, errGFE := client.Header()
-				if errGFE != nil {
-					return nil, errGFE
-				}
-				if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
-					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-					if errGFE != nil {
-						return client, errGFE
-					}
-					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
-					if errGFE != nil {
-						return client, errGFE
-					}
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if err != nil {
+				return nil, err
+			}
+			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
 			return client, err
@@ -363,21 +345,17 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				RequestOptions: p.qreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
-			if client != nil {
-				md, errGFE := client.Header()
-				if errGFE != nil {
-					return nil, errGFE
-				}
+			if err != nil {
+				return client, err
+			}
+			md, err := client.Header()
+			if err != nil {
+				return nil, err
+			}
 
-				if GFELatencyMetricsEnabled && md != nil && t.txReadOnly.CommonTags != nil {
-					ctxGFE, errGFE := createContextForGFELatencyMetrics(ctx, t.txReadOnly)
-					if errGFE != nil {
-						return client, errGFE
-					}
-					errGFE = captureGFELatencyStats(ctxGFE, md, "Execute")
-					if errGFE != nil {
-						return client, errGFE
-					}
+			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
+					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
 			return client, err

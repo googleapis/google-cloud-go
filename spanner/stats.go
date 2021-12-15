@@ -278,11 +278,40 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	}
 }
 
-func createContextForGFELatencyMetrics(ctx context.Context, t txReadOnly) (context.Context, error) {
-	return tag.New(ctx,
-		tag.Upsert(tagKeyClientID, t.clientID),
-		tag.Upsert(tagKeyDatabase, t.database),
-		tag.Upsert(tagKeyInstance, t.instance),
-		tag.Upsert(tagKeyLibVersion, t.libVersion),
+func createContextAndCaptureGFELatencyMetrics(ctx context.Context, ct *CommonTags, md metadata.MD, keyMethod string) error {
+	var ctxGFE, err = tag.New(ctx,
+		tag.Upsert(tagKeyClientID, ct.clientID),
+		tag.Upsert(tagKeyDatabase, ct.database),
+		tag.Upsert(tagKeyInstance, ct.instance),
+		tag.Upsert(tagKeyLibVersion, ct.libVersion),
 	)
+	if err != nil {
+		return err
+	}
+	return captureGFELatencyStats(ctxGFE, md, keyMethod)
+}
+
+func getCommonTags(sc *sessionClient) *CommonTags {
+	_, instance, database, err := parseDatabaseName(sc.database)
+	if err != nil {
+		return nil
+	}
+	return &CommonTags{
+		clientID:   sc.id,
+		database:   database,
+		instance:   instance,
+		libVersion: version.Repo,
+	}
+}
+
+// CommonTags are common key-value pairs of data associated with the GFELatency measure
+type CommonTags struct {
+	// Client ID
+	clientID string
+	// Database Name
+	database string
+	// Instance ID
+	instance string
+	// Library Version
+	libVersion string
 }

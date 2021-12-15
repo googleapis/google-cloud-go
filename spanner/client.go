@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -81,6 +80,7 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
+	ct           *CommonTags
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -205,6 +205,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		idleSessions: sp,
 		logger:       config.logger,
 		qo:           getQueryOptions(config.QueryOptions),
+		ct:           getCommonTags(sc),
 	}
 	return c, nil
 }
@@ -281,17 +282,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
-	if c.sc != nil {
-		_, instance, database, err := parseDatabaseName(c.sc.database)
-		if err == nil {
-			t.txReadOnly.CommonTags = &CommonTags{
-				clientID:   c.sc.id,
-				database:   database,
-				instance:   instance,
-				libVersion: version.Repo,
-			}
-		}
-	}
+	t.ct = c.ct
 	return t
 }
 
@@ -312,17 +303,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	if c.sc != nil {
-		_, instance, database, err := parseDatabaseName(c.sc.database)
-		if err == nil {
-			t.txReadOnly.CommonTags = &CommonTags{
-				clientID:   c.sc.id,
-				database:   database,
-				instance:   instance,
-				libVersion: version.Repo,
-			}
-		}
-	}
+	t.ct = c.ct
 	return t
 }
 
@@ -391,17 +372,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	if c.sc != nil {
-		_, instance, database, err := parseDatabaseName(c.sc.database)
-		if err == nil {
-			t.txReadOnly.CommonTags = &CommonTags{
-				clientID:   c.sc.id,
-				database:   database,
-				instance:   instance,
-				libVersion: version.Repo,
-			}
-		}
-	}
+	t.ct = c.ct
 	return t, nil
 }
 
@@ -429,17 +400,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	if c.sc != nil {
-		_, instance, database, err := parseDatabaseName(c.sc.database)
-		if err == nil {
-			t.txReadOnly.CommonTags = &CommonTags{
-				clientID:   c.sc.id,
-				database:   database,
-				instance:   instance,
-				libVersion: version.Repo,
-			}
-		}
-	}
+	t.ct = c.ct
 	return t
 }
 
@@ -525,17 +486,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txOpts = options
-		if c.sc != nil {
-			_, instance, database, err := parseDatabaseName(c.sc.database)
-			if err == nil {
-				t.txReadOnly.CommonTags = &CommonTags{
-					clientID:   c.sc.id,
-					database:   database,
-					instance:   instance,
-					libVersion: version.Repo,
-				}
-			}
-		}
+		t.ct = c.ct
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
