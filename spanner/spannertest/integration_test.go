@@ -748,6 +748,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	rows.Stop()
 
+	rows = client.Single().Query(ctx, spanner.NewStatement("SELECT EXTRACT(INVALID_PART FROM TIMESTAMP('2008-12-25T05:30:00Z')"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid part from EXTRACT\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string

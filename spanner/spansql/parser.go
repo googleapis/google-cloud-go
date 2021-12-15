@@ -1902,22 +1902,10 @@ func (p *parser) parseType() (Type, *parseError) {
 }
 
 var extractPartTypes = map[string]TypeBase{
-	"NANOSECOND":  Int64,
-	"MICROSECOND": Int64,
-	"MILLISECOND": Int64,
-	"SECOND":      Int64,
-	"MINUTE":      Int64,
-	"HOUR":        Int64,
-	"DAYOFWEEK":   Int64,
-	"DAY":         Int64,
-	"DAYOFYEAR":   Int64,
-	"WEEK":        Int64,
-	"ISOWEEK":     Int64,
-	"MONTH":       Int64,
-	"QUARTER":     Int64,
-	"YEAR":        Int64,
-	"ISOYEAR":     Int64,
-	"DATE":        Date,
+	"DAY":   Int64,
+	"MONTH": Int64,
+	"YEAR":  Int64,
+	"DATE":  Date,
 }
 
 func (p *parser) parseExtractType() (Type, string, *parseError) {
