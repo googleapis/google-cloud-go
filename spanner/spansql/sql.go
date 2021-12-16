@@ -599,7 +599,7 @@ func (ee ExtractExpr) addSQL(sb *strings.Builder) {
 func (aze AtTimeZoneExpr) SQL() string { return buildSQL(aze) }
 func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	aze.Expr.addSQL(sb)
-	sb.WriteString(" AT TIME ZONE  ")
+	sb.WriteString(" AT TIME ZONE ")
 	sb.WriteString(aze.Zone)
 }
 
