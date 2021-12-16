@@ -469,6 +469,10 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return ec.evalExpr(e.Expr)
 	case spansql.TypedExpr:
 		return ec.evalTypedExpr(e)
+	case spansql.ExtractExpr:
+		return ec.evalExtractExpr(e)
+	case spansql.AtTimeZoneExpr:
+		return ec.evalAtTimeZoneExpr(e)
 	case spansql.Func:
 		v, _, err := ec.evalFunc(e)
 		if err != nil {
@@ -673,6 +677,61 @@ func (ec evalContext) evalTypedExpr(expr spansql.TypedExpr) (result interface{},
 		return nil, err
 	}
 	return convert(val, expr.Type)
+}
+
+func (ec evalContext) evalExtractExpr(expr spansql.ExtractExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	switch expr.Part {
+	case "DATE":
+		switch v := val.(type) {
+		case time.Time:
+			return civil.DateOf(v), nil
+		case civil.Date:
+			return v, nil
+		}
+	case "DAY":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Day()), nil
+		case civil.Date:
+			return int64(v.Day), nil
+		}
+	case "MONTH":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Month()), nil
+		case civil.Date:
+			return int64(v.Month), nil
+		}
+	case "YEAR":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Year()), nil
+		case civil.Date:
+			return int64(v.Year), nil
+		}
+	}
+	return nil, fmt.Errorf("Extract with part %v not supported", expr.Part)
+}
+
+func (ec evalContext) evalAtTimeZoneExpr(expr spansql.AtTimeZoneExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case time.Time:
+		loc, err := time.LoadLocation(expr.Zone)
+		if err != nil {
+			return nil, fmt.Errorf("AtTimeZone with %T not supported", v)
+		}
+		return v.In(loc), nil
+	default:
+		return nil, fmt.Errorf("AtTimeZone with %T not supported", val)
+	}
 }
 
 func evalLiteralOrParam(lop spansql.LiteralOrParam, params queryParams) (int64, error) {
