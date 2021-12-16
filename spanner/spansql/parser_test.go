@@ -340,6 +340,8 @@ func TestParseExpr(t *testing.T) {
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
 		{`CAST(Bar AS STRING)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}}},
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
+		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
+		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -524,7 +526,9 @@ func TestParseDDL(t *testing.T) {
 		CREATE TABLE users (
 		  user_id      STRING(36) NOT NULL,
 		  some_string  STRING(16) NOT NULL,
+		  some_time TIMESTAMP NOT NULL,
 		  number_key   INT64 AS (SAFE_CAST(SUBSTR(some_string, 2) AS INT64)) STORED,
+		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
 		) PRIMARY KEY(user_id);
 
 		-- Trailing comment at end of file.
@@ -744,12 +748,20 @@ func TestParseDDL(t *testing.T) {
 				Columns: []ColumnDef{
 					{Name: "user_id", Type: Type{Base: String, Len: 36}, NotNull: true, Position: line(67)},
 					{Name: "some_string", Type: Type{Base: String, Len: 16}, NotNull: true, Position: line(68)},
+					{Name: "some_time", Type: Type{Base: Timestamp}, NotNull: true, Position: line(69)},
 					{
 						Name: "number_key", Type: Type{Base: Int64},
 						Generated: Func{Name: "SAFE_CAST", Args: []Expr{
 							TypedExpr{Expr: Func{Name: "SUBSTR", Args: []Expr{ID("some_string"), IntegerLiteral(2)}}, Type: Type{Base: Int64}},
 						}},
-						Position: line(69),
+						Position: line(70),
+					},
+					{
+						Name: "generated_date", Type: Type{Base: Date},
+						Generated: Func{Name: "EXTRACT", Args: []Expr{
+							ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("some_time"), Zone: "CET", Type: Type{Base: Timestamp}}},
+						}},
+						Position: line(71),
 					},
 				},
 				PrimaryKey: []KeyPart{{Column: "user_id"}},
@@ -777,7 +789,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(72), End: line(72), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(74), End: line(74), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
