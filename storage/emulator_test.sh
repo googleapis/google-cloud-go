@@ -21,39 +21,39 @@ set -x
 
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
-# DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
-# DEFAULT_IMAGE_TAG='latest'
-# DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
-# CONTAINER_NAME=storage_testbench
+DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
+DEFAULT_IMAGE_TAG='latest'
+DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
+CONTAINER_NAME=storage_testbench
 
-# # Get the docker image for the testbench
-# docker pull $DOCKER_IMAGE
+# Get the docker image for the testbench
+docker pull $DOCKER_IMAGE
 
-# # Start the testbench
-# # Note: --net=host makes the container bind directly to the Docker host’s network, 
-# # with no network isolation. If we were to use port-mapping instead, reset connection errors 
-# # would be captured differently and cause unexpected test behaviour.
-# # The host networking driver works only on Linux hosts.
-# # See more about using host networking: https://docs.docker.com/network/host/
-# docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
-# echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST"
+# Start the testbench
+# Note: --net=host makes the container bind directly to the Docker host’s network, 
+# with no network isolation. If we were to use port-mapping instead, reset connection errors 
+# would be captured differently and cause unexpected test behaviour.
+# The host networking driver works only on Linux hosts.
+# See more about using host networking: https://docs.docker.com/network/host/
+docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
+echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST"
 
-# # Check that the server is running - retry several times to allow for start-up time
-# response=$(curl -w "%{http_code}\n" $STORAGE_EMULATOR_HOST --retry-connrefused --retry 5 -o /dev/null) 
+# Check that the server is running - retry several times to allow for start-up time
+response=$(curl -w "%{http_code}\n" $STORAGE_EMULATOR_HOST --retry-connrefused --retry 5 -o /dev/null) 
 
-# if [[ $response != 200 ]]
-# then
-#     echo "Testbench server did not start correctly"
-#     exit 1
-# fi
+if [[ $response != 200 ]]
+then
+    echo "Testbench server did not start correctly"
+    exit 1
+fi
 
-# # Stop the testbench & cleanup environment variables
-# function cleanup() {
-#     echo "Cleanup testbench"
-#     docker stop $CONTAINER_NAME
-#     unset STORAGE_EMULATOR_HOST;
-# }
-# trap cleanup EXIT
+# Stop the testbench & cleanup environment variables
+function cleanup() {
+    echo "Cleanup testbench"
+    docker stop $CONTAINER_NAME
+    unset STORAGE_EMULATOR_HOST;
+}
+trap cleanup EXIT
 
 # TODO: move to passing once fixed
 FAILING=(   "buckets.setIamPolicy"
