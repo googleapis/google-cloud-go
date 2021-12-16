@@ -216,12 +216,12 @@ func (c *Client) CreateHMACKey(ctx context.Context, projectID, serviceAccountEma
 	setClientHeader(call.Header())
 
 	var hkPb *raw.HmacKey
-	var err error
-	err = run(ctx, func() error {
-		hkPb, err = call.Context(ctx).Do()
+
+	if err := run(ctx, func() error {
+		h, err := call.Context(ctx).Do()
+		hkPb = h
 		return err
-	}, c.retry, false)
-	if err != nil {
+	}, c.retry, false); err != nil {
 		return nil, err
 	}
 
@@ -263,10 +263,11 @@ func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate, opt
 
 	var metadata *raw.HmacKeyMetadata
 	var err error
+	isIdempotent := len(au.Etag) > 0
 	err = run(ctx, func() error {
 		metadata, err = call.Context(ctx).Do()
 		return err
-	}, h.retry, true)
+	}, h.retry, isIdempotent)
 
 	if err != nil {
 		return nil, err

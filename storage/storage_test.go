@@ -875,9 +875,9 @@ func TestObjectRetryer(t *testing.T) {
 	}
 }
 
-// Test that Client.Retryer correctly configures the retry configuration
+// Test that Client.SetRetry correctly configures the retry configuration
 // on the Client.
-func TestClientRetryer(t *testing.T) {
+func TestClientSetRetry(t *testing.T) {
 	testCases := []struct {
 		name          string
 		clientOptions []RetryOption
