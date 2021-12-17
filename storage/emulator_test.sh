@@ -56,7 +56,7 @@ function cleanup() {
 trap cleanup EXIT
 
 # TODO: move to passing once fixed
-FAILING=(   "buckets.setIamPolicy"
+FAILING=(   
             "objects.insert"
         )
 # TODO: remove regex once all tests are passing
@@ -69,6 +69,7 @@ PASSING=(   "buckets.list"
             "buckets.update"
             "buckets.patch"
             "buckets.getIamPolicy"
+            "buckets.setIamPolicy"
             "buckets.testIamPermissions"
             "buckets.lockRetentionPolicy"
             "objects.copy"
