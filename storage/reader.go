@@ -163,7 +163,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		}
 
 		var res *http.Response
-		err = runWithRetry(ctx, func() error {
+		err = run(ctx, func() error {
 			res, err = o.c.hc.Do(req)
 			if err != nil {
 				return err
@@ -210,7 +210,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		})
+		}, o.retry, true)
 		if err != nil {
 			return nil, err
 		}
