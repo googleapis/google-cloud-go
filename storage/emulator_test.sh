@@ -58,7 +58,6 @@ trap cleanup EXIT
 # TODO: move to passing once fixed
 FAILING=(   "buckets.setIamPolicy"
             "objects.insert"
-            "hmacKey.update"
         )
 # TODO: remove regex once all tests are passing
 # Unfortunately, there is no simple way to skip specific tests (see https://github.com/golang/go/issues/41583)
@@ -85,6 +84,7 @@ PASSING=(   "buckets.list"
             "hmacKey.list"
             "hmacKey.create"
             "hmacKey.delete"
+            "hmacKey.update"
             "notifications.list"
             "notifications.create"
             "notifications.get"
