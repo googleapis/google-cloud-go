@@ -255,11 +255,7 @@ var methods = map[string][]retryFunc{
 			uattrs := HMACKeyAttrsToUpdate{State: "INACTIVE"}
 
 			if preconditions {
-				k, err := key.Get(ctx)
-				if err != nil {
-					return err
-				}
-				uattrs.Etag = k.Etag
+				uattrs.Etag = fs.hmacKey.Etag
 			}
 
 			_, err := key.Update(ctx, uattrs)
