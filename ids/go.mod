@@ -3,10 +3,10 @@ module cloud.google.com/go/ids
 go 1.17
 
 require (
-	cloud.google.com/go v0.97.0
+	cloud.google.com/go v0.99.0
 	github.com/googleapis/gax-go/v2 v2.1.1
-	google.golang.org/api v0.61.0
-	google.golang.org/genproto v0.0.0-20211207154714-918901c715cf
+	google.golang.org/api v0.63.0
+	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
 	google.golang.org/grpc v1.42.0
 	google.golang.org/protobuf v1.27.1
 )
@@ -24,7 +24,7 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
+	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
