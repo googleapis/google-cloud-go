@@ -55,18 +55,22 @@ type BucketHandle struct {
 // found at:
 //   https://cloud.google.com/storage/docs/bucket-naming
 func (c *Client) Bucket(name string) *BucketHandle {
+	retry := c.retry.clone()
 	return &BucketHandle{
 		c:    c,
 		name: name,
 		acl: ACLHandle{
 			c:      c,
 			bucket: name,
+			retry:  retry,
 		},
 		defaultObjectACL: ACLHandle{
 			c:         c,
 			bucket:    name,
 			isDefault: true,
+			retry:     retry,
 		},
+		retry: retry,
 	}
 }
 
@@ -1431,9 +1435,19 @@ func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 // on the new handle will use the customized retry configuration.
 // Retry options set on a object handle will take precedence over options set on
 // the bucket handle.
+// These retry options will merge with the client's retry configuration (if set)
+// for the returned handle. Options passed into this method will take precedence
+// over retry options on the client. Note that you must explicitly pass in each
+// option you want to override.
 func (b *BucketHandle) Retryer(opts ...RetryOption) *BucketHandle {
 	b2 := *b
-	retry := &retryConfig{}
+	var retry *retryConfig
+	if b.retry != nil {
+		// merge the options with the existing retry
+		retry = b.retry
+	} else {
+		retry = &retryConfig{}
+	}
 	for _, opt := range opts {
 		opt.apply(retry)
 	}
