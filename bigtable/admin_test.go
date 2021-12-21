@@ -408,6 +408,32 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	}
 }
 
+func TestInstanceAdmin_UpdateInstanceWithClusters_IgnoresInvalidClusters(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+
+	err := c.UpdateInstanceWithClusters(context.Background(), &InstanceWithClustersConfig{
+		InstanceID:  "myinst",
+		DisplayName: "myinst",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID: "mycluster",
+				Zone:      "us-central1-a",
+				// Cluster has no autoscaling or num nodes
+				// It should be ignored
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("UpdateInstanceWithClusters failed: %v", err)
+	}
+
+	if mock.partialUpdateClusterReq != nil {
+		t.Fatalf("PartialUpdateCluster should not have been called, got = %v",
+			mock.partialUpdateClusterReq)
+	}
+}
+
 func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) {
 	mock := &mockAdminClock{}
 	c := setupClient(t, mock)

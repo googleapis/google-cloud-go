@@ -951,7 +951,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 		var clusterErr error
 		if !cluster.AutoscalingConfig.isZero() {
 			clusterErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID, cluster.AutoscalingConfig)
-		} else {
+		} else if cluster.NumNodes > 0 {
 			clusterErr = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID, cluster.NumNodes)
 		}
 		if clusterErr != nil {
