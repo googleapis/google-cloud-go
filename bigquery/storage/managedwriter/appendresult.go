@@ -20,7 +20,6 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // NoStreamOffset is a sentinel value for signalling we're not tracking
@@ -112,25 +111,5 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	// encountering issues with flow control during enqueuing the initial request.
 	if fc != nil {
 		fc.release(pw.reqSize)
-	}
-}
-
-// AppendOption are options that can be passed when appending data with a managed stream instance.
-type AppendOption func(*pendingWrite)
-
-// UpdateSchemaDescriptor is used to update the descriptor message schema associated
-// with a given stream.
-func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
-	return func(pw *pendingWrite) {
-		pw.newSchema = schema
-	}
-}
-
-// WithOffset sets an explicit offset value for this append request.
-func WithOffset(offset int64) AppendOption {
-	return func(pw *pendingWrite) {
-		pw.request.Offset = &wrapperspb.Int64Value{
-			Value: offset,
-		}
 	}
 }
