@@ -134,9 +134,10 @@ func init() {
 	for _, f := range allFuncs {
 		funcs[f] = true
 	}
-	// Special case for CAST and SAFE_CAST
+	// Special case for CAST, SAFE_CAST and EXTRACT
 	funcArgParsers["CAST"] = typedArgParser
 	funcArgParsers["SAFE_CAST"] = typedArgParser
+	funcArgParsers["EXTRACT"] = extractArgParser
 }
 
 var allFuncs = []string{
