@@ -712,7 +712,7 @@ func TestInstanceGroupResize(t *testing.T) {
 		t.Fatal(err)
 	}
 	if fetched.GetTargetSize() != 1 {
-		t.Fatal(fmt.Sprintf("expected target size: %d, got: %d", 1, fetched.GetTargetSize()))
+		t.Fatalf("expected target size: %d, got: %d", 1, fetched.GetTargetSize())
 	}
 	resizeOperation, err := instanceGroupManagersClient.Resize(
 		ctx,
@@ -746,6 +746,6 @@ func TestInstanceGroupResize(t *testing.T) {
 		t.Fatal(err)
 	}
 	if fetched.GetTargetSize() != 0 {
-		t.Fatal(fmt.Sprintf("expected target size: %d, got: %d", 0, fetched.GetTargetSize()))
+		t.Fatalf("expected target size: %d, got: %d", 0, fetched.GetTargetSize())
 	}
 }
