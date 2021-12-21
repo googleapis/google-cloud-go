@@ -10,7 +10,7 @@
 /firestore/             @enocom @dmahugh @tritone @crwilcox @googleapis/yoshi-go-admins
 /pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
-/spanner/               @skuruppu @hengfengli @googleapis/yoshi-go-admins
+/spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins
 /storage/               @googleapis/cloud-storage-dpe @googleapis/yoshi-go-admins
 /errorreporting/        @googleapis/api-logging @googleapis/yoshi-go-admins
 /logging/               @googleapis/api-logging @googleapis/yoshi-go-admins

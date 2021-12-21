@@ -339,22 +339,28 @@ func TestNilDst(t *testing.T) {
 			})(nil)),
 		},
 	} {
-		if gotErr := test.r.Column(0, test.dst); !testEqual(gotErr, test.wantErr) {
-			t.Errorf("%v: test.r.Column() returns error %v, want %v", i, gotErr, test.wantErr)
-		}
-		if gotErr := test.r.ColumnByName("Col0", test.dst); !testEqual(gotErr, test.wantErr) {
-			t.Errorf("%v: test.r.ColumnByName() returns error %v, want %v", i, gotErr, test.wantErr)
-		}
-		// Row.Columns(T) should return nil on T == nil, otherwise, it should return test.wantErr.
-		wantColumnsErr := test.wantErr
-		if test.dst == nil {
-			wantColumnsErr = nil
-		}
-		if gotErr := test.r.Columns(test.dst); !testEqual(gotErr, wantColumnsErr) {
-			t.Errorf("%v: test.r.Columns() returns error %v, want %v", i, gotErr, wantColumnsErr)
-		}
-		if gotErr := test.r.ToStruct(test.structDst); !testEqual(gotErr, test.wantToStructErr) {
-			t.Errorf("%v: test.r.ToStruct() returns error %v, want %v", i, gotErr, test.wantToStructErr)
+		for j, toStuct := range []func(ptr interface{}) error{test.r.ToStruct, test.r.ToStructLenient} {
+			if gotErr := test.r.Column(0, test.dst); !testEqual(gotErr, test.wantErr) {
+				t.Errorf("%v: test.r.Column() returns error %v, want %v", i, gotErr, test.wantErr)
+			}
+			if gotErr := test.r.ColumnByName("Col0", test.dst); !testEqual(gotErr, test.wantErr) {
+				t.Errorf("%v: test.r.ColumnByName() returns error %v, want %v", i, gotErr, test.wantErr)
+			}
+			// Row.Columns(T) should return nil on T == nil, otherwise, it should return test.wantErr.
+			wantColumnsErr := test.wantErr
+			if test.dst == nil {
+				wantColumnsErr = nil
+			}
+			if gotErr := test.r.Columns(test.dst); !testEqual(gotErr, wantColumnsErr) {
+				t.Errorf("%v: test.r.Columns() returns error %v, want %v", i, gotErr, wantColumnsErr)
+			}
+			if gotErr := toStuct(test.structDst); !testEqual(gotErr, test.wantToStructErr) {
+				if j == 0 {
+					t.Errorf("%v: test.r.ToStruct() returns error %v, want %v", i, gotErr, test.wantToStructErr)
+				} else {
+					t.Errorf("%v: test.r.ToStructLenient() returns error %v, want %v", i, gotErr, test.wantToStructErr)
+				}
+			}
 		}
 	}
 }
@@ -526,6 +532,46 @@ func TestInvalidColumnRequest(t *testing.T) {
 				{Name: "", Type: stringType()},
 			}}, 0),
 		},
+		{
+			"Call ToStructLenient on row with duplicated column names",
+			func() error {
+				s := &struct {
+					Val string
+				}{}
+				r := &Row{
+					[]*sppb.StructType_Field{
+						{Name: "Val", Type: stringType()},
+						{Name: "Val", Type: stringType()},
+					},
+					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+				}
+				return r.ToStructLenient(s)
+			},
+			errDupSpannerField("Val", &sppb.StructType{
+				Fields: []*sppb.StructType_Field{
+					{Name: "Val", Type: stringType()},
+					{Name: "Val", Type: stringType()},
+				},
+			}),
+		},
+		{
+			"Call ToStructLenient on a row with unnamed field",
+			func() error {
+				s := &struct {
+					Val string
+				}{}
+				r := &Row{
+					[]*sppb.StructType_Field{
+						{Name: "", Type: stringType()},
+					},
+					[]*proto3.Value{stringProto("value1")},
+				}
+				return r.ToStructLenient(s)
+			},
+			errUnnamedField(&sppb.StructType{Fields: []*sppb.StructType_Field{
+				{Name: "", Type: stringType()},
+			}}, 0),
+		},
 	} {
 		if gotErr := test.f(); !testEqual(gotErr, test.wantErr) {
 			t.Errorf("%v: test.f() returns error %v, want %v", test.desc, gotErr, test.wantErr)
@@ -536,22 +582,37 @@ func TestInvalidColumnRequest(t *testing.T) {
 // Test decoding the row with row.ToStruct into an invalid destination.
 func TestToStructInvalidDst(t *testing.T) {
 	for _, test := range []struct {
-		desc    string
-		dst     interface{}
-		wantErr error
+		desc     string
+		dst      interface{}
+		wantErr  error
+		toStruct func(ptr interface{}) error
 	}{
 		{
-			"Decode row as STRUCT into int32",
+			"row.ToStruct(): Decode row as STRUCT into int32",
 			proto.Int(1),
 			errToStructArgType(proto.Int(1)),
+			row.ToStruct,
 		},
 		{
-			"Decode row as STRUCT to nil Go struct",
+			"ToStructLenient(): Decode row as STRUCT into int32",
+			proto.Int(1),
+			errToStructArgType(proto.Int(1)),
+			row.ToStructLenient,
+		},
+		{
+			"row.ToStruct(): Decode row as STRUCT to nil Go struct",
 			(*struct{})(nil),
 			errNilDst((*struct{})(nil)),
+			row.ToStruct,
 		},
 		{
-			"Decode row as STRUCT to Go struct with duplicated fields for the PK column",
+			"row.ToStructLenient(): Decode row as STRUCT to nil Go struct",
+			(*struct{})(nil),
+			errNilDst((*struct{})(nil)),
+			row.ToStructLenient,
+		},
+		{
+			"row.ToStruct(): Decode row as STRUCT to Go struct with duplicated fields for the PK column",
 			&struct {
 				PK1 string `spanner:"STRING"`
 				PK2 string `spanner:"STRING"`
@@ -560,26 +621,58 @@ func TestToStructInvalidDst(t *testing.T) {
 				PK1 string `spanner:"STRING"`
 				PK2 string `spanner:"STRING"`
 			}{}, "STRING"),
+			row.ToStruct,
 		},
 		{
-			"Decode row as STRUCT to Go struct with no field for the PK column",
+			"row.ToStructLenient(): Decode row as STRUCT to Go struct with duplicated fields for the PK column",
+			&struct {
+				PK1 string `spanner:"STRING"`
+				PK2 string `spanner:"STRING"`
+			}{},
+			errDupGoField(&struct {
+				PK1 string `spanner:"STRING"`
+				PK2 string `spanner:"STRING"`
+			}{}, "STRING"),
+			row.ToStructLenient,
+		},
+		{
+			"row.ToStruct(): Decode row as STRUCT to Go struct with no field for the PK column",
 			&struct {
 				PK1 string `spanner:"_STRING"`
 			}{},
 			errNoOrDupGoField(&struct {
 				PK1 string `spanner:"_STRING"`
 			}{}, "STRING"),
+			row.ToStruct,
 		},
 		{
-			"Decode row as STRUCT to Go struct with wrong type for the PK column",
+			"row.ToStructLenient(): Decode row as STRUCT to Go struct with no field for the PK column",
+			&struct {
+				PK1 string `spanner:"_STRING"`
+			}{},
+			nil,
+			row.ToStructLenient,
+		},
+		{
+			"row.ToStruct(): Decode row as STRUCT to Go struct with wrong type for the PK column",
 			&struct {
 				PK1 int64 `spanner:"STRING"`
 			}{},
 			errDecodeStructField(&sppb.StructType{Fields: row.fields}, "STRING",
 				errTypeMismatch(sppb.TypeCode_STRING, sppb.TypeCode_TYPE_CODE_UNSPECIFIED, proto.Int64(0))),
+			row.ToStruct,
+		},
+		{
+			"row.ToStructLenient(): Decode row as STRUCT to Go struct with wrong type for the PK column",
+			&struct {
+				PK1 int64 `spanner:"STRING"`
+			}{},
+			errDecodeStructField(&sppb.StructType{Fields: row.fields}, "STRING",
+				errTypeMismatch(sppb.TypeCode_STRING, sppb.TypeCode_TYPE_CODE_UNSPECIFIED, proto.Int64(0))),
+			row.ToStructLenient,
 		},
 	} {
-		if gotErr := row.ToStruct(test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.toStruct(test.dst); !testEqual(gotErr, test.wantErr) {
 			t.Errorf("%v: decoding:\ngot  %v\nwant %v", test.desc, gotErr, test.wantErr)
 		}
 	}
@@ -1408,115 +1501,122 @@ func TestBrokenRow(t *testing.T) {
 
 // Test Row.ToStruct().
 func TestToStruct(t *testing.T) {
-	s := []struct {
-		// STRING / STRING ARRAY
-		PrimaryKey      string       `spanner:"STRING"`
-		NullString      NullString   `spanner:"NULL_STRING"`
-		StringArray     []NullString `spanner:"STRING_ARRAY"`
-		NullStringArray []NullString `spanner:"NULL_STRING_ARRAY"`
-		// BYTES / BYTES ARRAY
-		Bytes          []byte   `spanner:"BYTES"`
-		NullBytes      []byte   `spanner:"NULL_BYTES"`
-		BytesArray     [][]byte `spanner:"BYTES_ARRAY"`
-		NullBytesArray [][]byte `spanner:"NULL_BYTES_ARRAY"`
-		// INT64 / INT64 ARRAY
-		Int64          int64       `spanner:"INT64"`
-		NullInt64      NullInt64   `spanner:"NULL_INT64"`
-		Int64Array     []NullInt64 `spanner:"INT64_ARRAY"`
-		NullInt64Array []NullInt64 `spanner:"NULL_INT64_ARRAY"`
-		// BOOL / BOOL ARRAY
-		Bool          bool       `spanner:"BOOL"`
-		NullBool      NullBool   `spanner:"NULL_BOOL"`
-		BoolArray     []NullBool `spanner:"BOOL_ARRAY"`
-		NullBoolArray []NullBool `spanner:"NULL_BOOL_ARRAY"`
-		// FLOAT64 / FLOAT64 ARRAY
-		Float64          float64       `spanner:"FLOAT64"`
-		NullFloat64      NullFloat64   `spanner:"NULL_FLOAT64"`
-		Float64Array     []NullFloat64 `spanner:"FLOAT64_ARRAY"`
-		NullFloat64Array []NullFloat64 `spanner:"NULL_FLOAT64_ARRAY"`
-		// TIMESTAMP / TIMESTAMP ARRAY
-		Timestamp          time.Time  `spanner:"TIMESTAMP"`
-		NullTimestamp      NullTime   `spanner:"NULL_TIMESTAMP"`
-		TimestampArray     []NullTime `spanner:"TIMESTAMP_ARRAY"`
-		NullTimestampArray []NullTime `spanner:"NULL_TIMESTAMP_ARRAY"`
-		// DATE / DATE ARRAY
-		Date          civil.Date `spanner:"DATE"`
-		NullDate      NullDate   `spanner:"NULL_DATE"`
-		DateArray     []NullDate `spanner:"DATE_ARRAY"`
-		NullDateArray []NullDate `spanner:"NULL_DATE_ARRAY"`
 
-		// STRUCT ARRAY
-		StructArray []*struct {
-			Col1 int64
-			Col2 float64
-			Col3 string
-		} `spanner:"STRUCT_ARRAY"`
-		NullStructArray []*struct {
-			Col1 int64
-			Col2 float64
-			Col3 string
-		} `spanner:"NULL_STRUCT_ARRAY"`
-	}{
-		{}, // got
-		{
+	for i, toStuct := range []func(ptr interface{}) error{row.ToStruct, row.ToStructLenient} {
+		s := []struct {
 			// STRING / STRING ARRAY
-			"value",
-			NullString{},
-			[]NullString{{"value1", true}, {}, {"value3", true}},
-			[]NullString(nil),
+			PrimaryKey      string       `spanner:"STRING"`
+			NullString      NullString   `spanner:"NULL_STRING"`
+			StringArray     []NullString `spanner:"STRING_ARRAY"`
+			NullStringArray []NullString `spanner:"NULL_STRING_ARRAY"`
 			// BYTES / BYTES ARRAY
-			[]byte("value"),
-			[]byte(nil),
-			[][]byte{[]byte("value1"), nil, []byte("value3")},
-			[][]byte(nil),
+			Bytes          []byte   `spanner:"BYTES"`
+			NullBytes      []byte   `spanner:"NULL_BYTES"`
+			BytesArray     [][]byte `spanner:"BYTES_ARRAY"`
+			NullBytesArray [][]byte `spanner:"NULL_BYTES_ARRAY"`
 			// INT64 / INT64 ARRAY
-			int64(17),
-			NullInt64{},
-			[]NullInt64{{int64(1), true}, {int64(2), true}, {}},
-			[]NullInt64(nil),
+			Int64          int64       `spanner:"INT64"`
+			NullInt64      NullInt64   `spanner:"NULL_INT64"`
+			Int64Array     []NullInt64 `spanner:"INT64_ARRAY"`
+			NullInt64Array []NullInt64 `spanner:"NULL_INT64_ARRAY"`
 			// BOOL / BOOL ARRAY
-			true,
-			NullBool{},
-			[]NullBool{{}, {true, true}, {false, true}},
-			[]NullBool(nil),
+			Bool          bool       `spanner:"BOOL"`
+			NullBool      NullBool   `spanner:"NULL_BOOL"`
+			BoolArray     []NullBool `spanner:"BOOL_ARRAY"`
+			NullBoolArray []NullBool `spanner:"NULL_BOOL_ARRAY"`
 			// FLOAT64 / FLOAT64 ARRAY
-			1.7,
-			NullFloat64{},
-			[]NullFloat64{{}, {}, {1.7, true}},
-			[]NullFloat64(nil),
+			Float64          float64       `spanner:"FLOAT64"`
+			NullFloat64      NullFloat64   `spanner:"NULL_FLOAT64"`
+			Float64Array     []NullFloat64 `spanner:"FLOAT64_ARRAY"`
+			NullFloat64Array []NullFloat64 `spanner:"NULL_FLOAT64_ARRAY"`
 			// TIMESTAMP / TIMESTAMP ARRAY
-			tm,
-			NullTime{},
-			[]NullTime{{}, {tm, true}},
-			[]NullTime(nil),
+			Timestamp          time.Time  `spanner:"TIMESTAMP"`
+			NullTimestamp      NullTime   `spanner:"NULL_TIMESTAMP"`
+			TimestampArray     []NullTime `spanner:"TIMESTAMP_ARRAY"`
+			NullTimestampArray []NullTime `spanner:"NULL_TIMESTAMP_ARRAY"`
 			// DATE / DATE ARRAY
-			dt,
-			NullDate{},
-			[]NullDate{{}, {dt, true}},
-			[]NullDate(nil),
-			// STRUCT ARRAY
-			[]*struct {
-				Col1 int64
-				Col2 float64
-				Col3 string
-			}{
-				nil,
+			Date          civil.Date `spanner:"DATE"`
+			NullDate      NullDate   `spanner:"NULL_DATE"`
+			DateArray     []NullDate `spanner:"DATE_ARRAY"`
+			NullDateArray []NullDate `spanner:"NULL_DATE_ARRAY"`
 
-				{3, 33.3, "three"},
-				nil,
-			},
-			[]*struct {
+			// STRUCT ARRAY
+			StructArray []*struct {
 				Col1 int64
 				Col2 float64
 				Col3 string
-			}(nil),
-		}, // want
-	}
-	err := row.ToStruct(&s[0])
-	if err != nil {
-		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
-	} else if !testEqual(s[0], s[1]) {
-		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
+			} `spanner:"STRUCT_ARRAY"`
+			NullStructArray []*struct {
+				Col1 int64
+				Col2 float64
+				Col3 string
+			} `spanner:"NULL_STRUCT_ARRAY"`
+		}{
+			{}, // got
+			{
+				// STRING / STRING ARRAY
+				"value",
+				NullString{},
+				[]NullString{{"value1", true}, {}, {"value3", true}},
+				[]NullString(nil),
+				// BYTES / BYTES ARRAY
+				[]byte("value"),
+				[]byte(nil),
+				[][]byte{[]byte("value1"), nil, []byte("value3")},
+				[][]byte(nil),
+				// INT64 / INT64 ARRAY
+				int64(17),
+				NullInt64{},
+				[]NullInt64{{int64(1), true}, {int64(2), true}, {}},
+				[]NullInt64(nil),
+				// BOOL / BOOL ARRAY
+				true,
+				NullBool{},
+				[]NullBool{{}, {true, true}, {false, true}},
+				[]NullBool(nil),
+				// FLOAT64 / FLOAT64 ARRAY
+				1.7,
+				NullFloat64{},
+				[]NullFloat64{{}, {}, {1.7, true}},
+				[]NullFloat64(nil),
+				// TIMESTAMP / TIMESTAMP ARRAY
+				tm,
+				NullTime{},
+				[]NullTime{{}, {tm, true}},
+				[]NullTime(nil),
+				// DATE / DATE ARRAY
+				dt,
+				NullDate{},
+				[]NullDate{{}, {dt, true}},
+				[]NullDate(nil),
+				// STRUCT ARRAY
+				[]*struct {
+					Col1 int64
+					Col2 float64
+					Col3 string
+				}{
+					nil,
+
+					{3, 33.3, "three"},
+					nil,
+				},
+				[]*struct {
+					Col1 int64
+					Col2 float64
+					Col3 string
+				}(nil),
+			}, // want
+		}
+		funcName := "row.ToStruct()"
+		if i != 0 {
+			funcName = "row.ToStructLenient"
+		}
+		err := toStuct(&s[0])
+		if err != nil {
+			t.Errorf("%s returns error: %v, want nil", funcName, err)
+		} else if !testEqual(s[0], s[1]) {
+			t.Errorf("%s fetches struct %v, want %v", funcName, s[0], s[1])
+		}
 	}
 }
 
@@ -1536,115 +1636,121 @@ func TestToStructWithCustomTypes(t *testing.T) {
 	type CustomDate civil.Date
 	type CustomNullDate NullDate
 
-	s := []struct {
-		// STRING / STRING ARRAY
-		PrimaryKey      CustomString       `spanner:"STRING"`
-		NullString      CustomNullString   `spanner:"NULL_STRING"`
-		StringArray     []CustomNullString `spanner:"STRING_ARRAY"`
-		NullStringArray []CustomNullString `spanner:"NULL_STRING_ARRAY"`
-		// BYTES / BYTES ARRAY
-		Bytes          CustomBytes   `spanner:"BYTES"`
-		NullBytes      CustomBytes   `spanner:"NULL_BYTES"`
-		BytesArray     []CustomBytes `spanner:"BYTES_ARRAY"`
-		NullBytesArray []CustomBytes `spanner:"NULL_BYTES_ARRAY"`
-		// INT64 / INT64 ARRAY
-		Int64          CustomInt64       `spanner:"INT64"`
-		NullInt64      CustomNullInt64   `spanner:"NULL_INT64"`
-		Int64Array     []CustomNullInt64 `spanner:"INT64_ARRAY"`
-		NullInt64Array []CustomNullInt64 `spanner:"NULL_INT64_ARRAY"`
-		// BOOL / BOOL ARRAY
-		Bool          CustomBool       `spanner:"BOOL"`
-		NullBool      CustomNullBool   `spanner:"NULL_BOOL"`
-		BoolArray     []CustomNullBool `spanner:"BOOL_ARRAY"`
-		NullBoolArray []CustomNullBool `spanner:"NULL_BOOL_ARRAY"`
-		// FLOAT64 / FLOAT64 ARRAY
-		Float64          CustomFloat64       `spanner:"FLOAT64"`
-		NullFloat64      CustomNullFloat64   `spanner:"NULL_FLOAT64"`
-		Float64Array     []CustomNullFloat64 `spanner:"FLOAT64_ARRAY"`
-		NullFloat64Array []CustomNullFloat64 `spanner:"NULL_FLOAT64_ARRAY"`
-		// TIMESTAMP / TIMESTAMP ARRAY
-		Timestamp          CustomTime       `spanner:"TIMESTAMP"`
-		NullTimestamp      CustomNullTime   `spanner:"NULL_TIMESTAMP"`
-		TimestampArray     []CustomNullTime `spanner:"TIMESTAMP_ARRAY"`
-		NullTimestampArray []CustomNullTime `spanner:"NULL_TIMESTAMP_ARRAY"`
-		// DATE / DATE ARRAY
-		Date          CustomDate       `spanner:"DATE"`
-		NullDate      CustomNullDate   `spanner:"NULL_DATE"`
-		DateArray     []CustomNullDate `spanner:"DATE_ARRAY"`
-		NullDateArray []CustomNullDate `spanner:"NULL_DATE_ARRAY"`
-
-		// STRUCT ARRAY
-		StructArray []*struct {
-			Col1 CustomInt64
-			Col2 CustomFloat64
-			Col3 CustomString
-		} `spanner:"STRUCT_ARRAY"`
-		NullStructArray []*struct {
-			Col1 CustomInt64
-			Col2 CustomFloat64
-			Col3 CustomString
-		} `spanner:"NULL_STRUCT_ARRAY"`
-	}{
-		{}, // got
-		{
+	for i, toStuct := range []func(ptr interface{}) error{row.ToStruct, row.ToStructLenient} {
+		s := []struct {
 			// STRING / STRING ARRAY
-			"value",
-			CustomNullString{},
-			[]CustomNullString{{"value1", true}, {}, {"value3", true}},
-			[]CustomNullString(nil),
+			PrimaryKey      CustomString       `spanner:"STRING"`
+			NullString      CustomNullString   `spanner:"NULL_STRING"`
+			StringArray     []CustomNullString `spanner:"STRING_ARRAY"`
+			NullStringArray []CustomNullString `spanner:"NULL_STRING_ARRAY"`
 			// BYTES / BYTES ARRAY
-			CustomBytes("value"),
-			CustomBytes(nil),
-			[]CustomBytes{[]byte("value1"), nil, []byte("value3")},
-			[]CustomBytes(nil),
+			Bytes          CustomBytes   `spanner:"BYTES"`
+			NullBytes      CustomBytes   `spanner:"NULL_BYTES"`
+			BytesArray     []CustomBytes `spanner:"BYTES_ARRAY"`
+			NullBytesArray []CustomBytes `spanner:"NULL_BYTES_ARRAY"`
 			// INT64 / INT64 ARRAY
-			CustomInt64(17),
-			CustomNullInt64{},
-			[]CustomNullInt64{{int64(1), true}, {int64(2), true}, {}},
-			[]CustomNullInt64(nil),
+			Int64          CustomInt64       `spanner:"INT64"`
+			NullInt64      CustomNullInt64   `spanner:"NULL_INT64"`
+			Int64Array     []CustomNullInt64 `spanner:"INT64_ARRAY"`
+			NullInt64Array []CustomNullInt64 `spanner:"NULL_INT64_ARRAY"`
 			// BOOL / BOOL ARRAY
-			true,
-			CustomNullBool{},
-			[]CustomNullBool{{}, {true, true}, {false, true}},
-			[]CustomNullBool(nil),
+			Bool          CustomBool       `spanner:"BOOL"`
+			NullBool      CustomNullBool   `spanner:"NULL_BOOL"`
+			BoolArray     []CustomNullBool `spanner:"BOOL_ARRAY"`
+			NullBoolArray []CustomNullBool `spanner:"NULL_BOOL_ARRAY"`
 			// FLOAT64 / FLOAT64 ARRAY
-			1.7,
-			CustomNullFloat64{},
-			[]CustomNullFloat64{{}, {}, {1.7, true}},
-			[]CustomNullFloat64(nil),
+			Float64          CustomFloat64       `spanner:"FLOAT64"`
+			NullFloat64      CustomNullFloat64   `spanner:"NULL_FLOAT64"`
+			Float64Array     []CustomNullFloat64 `spanner:"FLOAT64_ARRAY"`
+			NullFloat64Array []CustomNullFloat64 `spanner:"NULL_FLOAT64_ARRAY"`
 			// TIMESTAMP / TIMESTAMP ARRAY
-			CustomTime(tm),
-			CustomNullTime{},
-			[]CustomNullTime{{}, {tm, true}},
-			[]CustomNullTime(nil),
+			Timestamp          CustomTime       `spanner:"TIMESTAMP"`
+			NullTimestamp      CustomNullTime   `spanner:"NULL_TIMESTAMP"`
+			TimestampArray     []CustomNullTime `spanner:"TIMESTAMP_ARRAY"`
+			NullTimestampArray []CustomNullTime `spanner:"NULL_TIMESTAMP_ARRAY"`
 			// DATE / DATE ARRAY
-			CustomDate(dt),
-			CustomNullDate{},
-			[]CustomNullDate{{}, {dt, true}},
-			[]CustomNullDate(nil),
-			// STRUCT ARRAY
-			[]*struct {
-				Col1 CustomInt64
-				Col2 CustomFloat64
-				Col3 CustomString
-			}{
-				nil,
+			Date          CustomDate       `spanner:"DATE"`
+			NullDate      CustomNullDate   `spanner:"NULL_DATE"`
+			DateArray     []CustomNullDate `spanner:"DATE_ARRAY"`
+			NullDateArray []CustomNullDate `spanner:"NULL_DATE_ARRAY"`
 
-				{3, 33.3, "three"},
-				nil,
-			},
-			[]*struct {
+			// STRUCT ARRAY
+			StructArray []*struct {
 				Col1 CustomInt64
 				Col2 CustomFloat64
 				Col3 CustomString
-			}(nil),
-		}, // want
-	}
-	err := row.ToStruct(&s[0])
-	if err != nil {
-		t.Errorf("row.ToStruct() returns error: %v, want nil", err)
-	} else if !testutil.Equal(s[0], s[1], cmp.AllowUnexported(CustomTime{})) {
-		t.Errorf("row.ToStruct() fetches struct %v, want %v", s[0], s[1])
+			} `spanner:"STRUCT_ARRAY"`
+			NullStructArray []*struct {
+				Col1 CustomInt64
+				Col2 CustomFloat64
+				Col3 CustomString
+			} `spanner:"NULL_STRUCT_ARRAY"`
+		}{
+			{}, // got
+			{
+				// STRING / STRING ARRAY
+				"value",
+				CustomNullString{},
+				[]CustomNullString{{"value1", true}, {}, {"value3", true}},
+				[]CustomNullString(nil),
+				// BYTES / BYTES ARRAY
+				CustomBytes("value"),
+				CustomBytes(nil),
+				[]CustomBytes{[]byte("value1"), nil, []byte("value3")},
+				[]CustomBytes(nil),
+				// INT64 / INT64 ARRAY
+				CustomInt64(17),
+				CustomNullInt64{},
+				[]CustomNullInt64{{int64(1), true}, {int64(2), true}, {}},
+				[]CustomNullInt64(nil),
+				// BOOL / BOOL ARRAY
+				true,
+				CustomNullBool{},
+				[]CustomNullBool{{}, {true, true}, {false, true}},
+				[]CustomNullBool(nil),
+				// FLOAT64 / FLOAT64 ARRAY
+				1.7,
+				CustomNullFloat64{},
+				[]CustomNullFloat64{{}, {}, {1.7, true}},
+				[]CustomNullFloat64(nil),
+				// TIMESTAMP / TIMESTAMP ARRAY
+				CustomTime(tm),
+				CustomNullTime{},
+				[]CustomNullTime{{}, {tm, true}},
+				[]CustomNullTime(nil),
+				// DATE / DATE ARRAY
+				CustomDate(dt),
+				CustomNullDate{},
+				[]CustomNullDate{{}, {dt, true}},
+				[]CustomNullDate(nil),
+				// STRUCT ARRAY
+				[]*struct {
+					Col1 CustomInt64
+					Col2 CustomFloat64
+					Col3 CustomString
+				}{
+					nil,
+
+					{3, 33.3, "three"},
+					nil,
+				},
+				[]*struct {
+					Col1 CustomInt64
+					Col2 CustomFloat64
+					Col3 CustomString
+				}(nil),
+			}, // want
+		}
+		funcName := "row.ToStruct()"
+		if i != 0 {
+			funcName = "row.ToStructLenient()"
+		}
+		err := toStuct(&s[0])
+		if err != nil {
+			t.Errorf("%s returns error: %v, want nil", funcName, err)
+		} else if !testutil.Equal(s[0], s[1], cmp.AllowUnexported(CustomTime{})) {
+			t.Errorf("%s fetches struct %v, want %v", funcName, s[0], s[1])
+		}
 	}
 }
 
@@ -1673,6 +1779,77 @@ func TestToStructEmbedded(t *testing.T) {
 	want := S2{S1: S1{F1: "v1"}, F2: "v2"}
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
+	}
+
+	var gotLenient S2
+	if err := r.ToStructLenient(&gotLenient); err != nil {
+		t.Fatal(err)
+	}
+	if !testEqual(gotLenient, want) {
+		t.Errorf("gotLenient %+v, want %+v", got, want)
+	}
+}
+
+func TestToStructWithUnEqualFields(t *testing.T) {
+	type (
+		extraField struct {
+			F1 string
+			F2 string
+			F3 string
+		}
+		lessField struct {
+			F1 string
+			F3 string
+		}
+	)
+	testCases := []struct {
+		name string
+		dst  interface{}
+		want interface{}
+		row  Row
+	}{
+		{
+			name: "destination struct has extra field",
+			dst:  &extraField{},
+			row: Row{
+				[]*sppb.StructType_Field{
+					{Name: "F1", Type: stringType()},
+					{Name: "F2", Type: stringType()},
+				},
+				[]*proto3.Value{
+					stringProto("v1"),
+					stringProto("v2"),
+				},
+			},
+			want: &extraField{F1: "v1", F2: "v2", F3: ""},
+		},
+		{
+			name: "destination struct has less field",
+			dst:  &lessField{},
+			row: Row{
+				[]*sppb.StructType_Field{
+					{Name: "F1", Type: stringType()},
+					{Name: "F2", Type: stringType()},
+					{Name: "F3", Type: stringType()},
+				},
+				[]*proto3.Value{
+					stringProto("v1"),
+					stringProto("v2"),
+					stringProto("v3"),
+				},
+			},
+			want: &lessField{F1: "v1", F3: "v3"},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := tc.row.ToStructLenient(tc.dst); err != nil {
+				t.Fatal(err)
+			}
+			if !testEqual(tc.dst, tc.want) {
+				t.Errorf("got %+v, want %+v", tc.dst, tc.want)
+			}
+		})
 	}
 }
 

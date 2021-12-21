@@ -43,7 +43,6 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	log.Printf("working out %s\n", tmpDir)
 
 	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	googleapisDiscoDir := filepath.Join(tmpDir, "googleapis-discovery")
 	gocloudDir := filepath.Join(tmpDir, "gocloud")
 	genprotoDir := filepath.Join(tmpDir, "genproto")
 	protoDir := filepath.Join(tmpDir, "proto")
@@ -53,9 +52,6 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
-	})
-	grp.Go(func() error {
-		return git.DeepClone("https://github.com/googleapis/googleapis-discovery", googleapisDiscoDir)
 	})
 	grp.Go(func() error {
 		return git.DeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
@@ -72,12 +68,11 @@ func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool
 
 	// Regen.
 	conf := &generator.Config{
-		GoogleapisDir:      googleapisDir,
-		GoogleapisDiscoDir: googleapisDiscoDir,
-		GenprotoDir:        genprotoDir,
-		GapicDir:           gocloudDir,
-		ProtoDir:           protoDir,
-		ForceAll:           forceAll,
+		GoogleapisDir: googleapisDir,
+		GenprotoDir:   genprotoDir,
+		GapicDir:      gocloudDir,
+		ProtoDir:      protoDir,
+		ForceAll:      forceAll,
 	}
 	changes, err := generator.Generate(ctx, conf)
 	if err != nil {

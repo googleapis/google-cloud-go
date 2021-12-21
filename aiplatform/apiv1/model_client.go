@@ -60,7 +60,6 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -168,8 +167,9 @@ func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateM
 
 // DeleteModel deletes a Model.
 //
-// Model can only be deleted if there are no DeployedModels created
-// from it.
+// A model cannot be deleted if any Endpoint resource has a
+// DeployedModel based on the model in its
+// deployed_models field.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -180,7 +180,7 @@ func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return c.internalClient.DeleteModelOperation(name)
 }
 
-// ExportModel exports a trained, exportable, Model to a location specified by the
+// ExportModel exports a trained, exportable Model to a location specified by the
 // user. A Model is considered to be exportable if it has at least one
 // [supported export format][google.cloud.aiplatform.v1.Model.supported_export_formats].
 func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {

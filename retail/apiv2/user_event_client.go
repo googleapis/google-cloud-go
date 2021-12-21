@@ -55,7 +55,6 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -405,7 +404,7 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *retailpb
 
 func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *retailpb.ImportUserEventsRequest, opts ...gax.CallOption) (*ImportUserEventsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
