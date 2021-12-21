@@ -307,7 +307,7 @@ These errors can be introspected for more information by using `xerrors.As` with
 
 	var e *googleapi.Error
 	if ok := xerrors.As(err, &e); ok {
-		  if e.Code = 409 { ... }
+		  if e.Code == 409 { ... }
     }
 
 In some cases, your client may received unstructured googleapi.Error error responses.  In such cases, it is likely that
