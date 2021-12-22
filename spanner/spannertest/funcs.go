@@ -133,6 +133,40 @@ var functions = map[string]function{
 			return timestamp, spansql.Type{Base: spansql.Timestamp}, nil
 		},
 	},
+	"FARM_FINGERPRINT": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			// Check input values first.
+			if len(values) != 1 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function FARM_FINGERPRINT for the given argument types")
+			}
+			if values[0] == nil {
+				return int64(1), spansql.Type{Base: spansql.Int64}, nil
+			}
+			if _, ok := values[0].(string); !ok {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function FARM_FINGERPRINT for the given argument types")
+			}
+			// This function currently has no implementation and always returns
+			// same value, as it would otherwise require an fingerprint function
+			return int64(1), spansql.Type{Base: spansql.Int64}, nil
+		},
+	},
+	"MOD": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			// Check input values first.
+			if len(values) != 2 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function MOD for the given argument types")
+			}
+			x, okArg1 := values[0].(int64)
+			y, okArg2 := values[1].(int64)
+			if !(okArg1 && okArg2) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function MOD for the given argument types")
+			}
+			if y == 0 {
+				return nil, spansql.Type{}, status.Error(codes.OutOfRange, "Division by zero")
+			}
+			return x % y, spansql.Type{Base: spansql.Int64}, nil
+		},
+	},
 }
 
 func cast(values []interface{}, types []spansql.Type, safe bool) (interface{}, spansql.Type, error) {
