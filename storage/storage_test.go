@@ -875,11 +875,102 @@ func TestObjectRetryer(t *testing.T) {
 	}
 }
 
-// Test the interactions between ObjectHandle and BucketHandle Retryers and that
-// they correctly configure the retry configuration
+// Test that Client.SetRetry correctly configures the retry configuration
+// on the Client.
+func TestClientSetRetry(t *testing.T) {
+	testCases := []struct {
+		name          string
+		clientOptions []RetryOption
+		want          *retryConfig
+	}{
+		{
+			name:          "all defaults",
+			clientOptions: []RetryOption{},
+			want:          &retryConfig{},
+		},
+		{
+			name: "set all options",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(func(err error) bool { return false }),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 3,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			clientOptions: []RetryOption{
+				WithPolicy(RetryNever),
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			clientOptions: []RetryOption{
+				WithErrorFunc(func(err error) bool { return false }),
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			c, err := NewClient(context.Background())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+			c.SetRetry(tc.clientOptions...)
+
+			if diff := cmp.Diff(
+				c.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+// Test the interactions between Client, ObjectHandle and BucketHandle Retryers,
+// and that they correctly configure the retry configuration for objects, ACLs, and HmacKeys
 func TestRetryer(t *testing.T) {
 	testCases := []struct {
 		name          string
+		clientOptions []RetryOption
 		bucketOptions []RetryOption
 		objectOptions []RetryOption
 		want          *retryConfig
@@ -921,6 +1012,27 @@ func TestRetryer(t *testing.T) {
 			},
 		},
 		{
+			name: "client retryer configures retry",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				},
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
 			name: "object retryer overrides bucket retryer",
 			bucketOptions: []RetryOption{
 				WithPolicy(RetryAlways),
@@ -932,6 +1044,46 @@ func TestRetryer(t *testing.T) {
 			want: &retryConfig{
 				policy:      RetryNever,
 				shouldRetry: shouldRetry,
+			},
+		},
+		{
+			name: "object retryer overrides client retryer",
+			clientOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+			},
+			objectOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+			},
+		},
+		{
+			name: "bucket retryer overrides client retryer",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+			},
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				}),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryAlways,
+				shouldRetry: shouldRetry,
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				},
 			},
 		},
 		{
@@ -998,7 +1150,15 @@ func TestRetryer(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			b := &BucketHandle{}
+			c, err := NewClient(context.Background())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+			if len(tc.clientOptions) > 0 {
+				c.SetRetry(tc.clientOptions...)
+			}
+			b := c.Bucket("buck")
 			if len(tc.bucketOptions) > 0 {
 				b = b.Retryer(tc.bucketOptions...)
 			}
@@ -1007,17 +1167,52 @@ func TestRetryer(t *testing.T) {
 				o = o.Retryer(tc.objectOptions...)
 			}
 
-			if diff := cmp.Diff(
-				o.retry,
-				tc.want,
-				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
-				// ErrorFunc cannot be compared directly, but we check if both are
-				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
-					return (a == nil && b == nil) || (a != nil && b != nil)
-				}),
-			); diff != "" {
-				s.Fatalf("retry not configured correctly: %v", diff)
+			configHandleCases := []struct {
+				r    *retryConfig
+				name string
+				want *retryConfig
+			}{
+				{
+					name: "object.retry",
+					r:    o.retry,
+					want: tc.want,
+				},
+				{
+					name: "object.ACL()",
+					r:    o.ACL().retry,
+					want: tc.want,
+				},
+				{
+					name: "bucket.ACL()",
+					r:    b.ACL().retry,
+					want: b.retry,
+				},
+				{
+					name: "bucket.DefaultObjectACL()",
+					r:    b.DefaultObjectACL().retry,
+					want: b.retry,
+				},
+				{
+					name: "client.HMACKeyHandle()",
+					r:    c.HMACKeyHandle("pID", "accessID").retry,
+					want: c.retry,
+				},
+			}
+			for _, ac := range configHandleCases {
+				s.Run(ac.name, func(ss *testing.T) {
+					if diff := cmp.Diff(
+						ac.want,
+						ac.r,
+						cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+						// ErrorFunc cannot be compared directly, but we check if both are
+						// either nil or non-nil.
+						cmp.Comparer(func(a, b func(err error) bool) bool {
+							return (a == nil && b == nil) || (a != nil && b != nil)
+						}),
+					); diff != "" {
+						ss.Fatalf("retry not configured correctly: %v", diff)
+					}
+				})
 			}
 		})
 	}
@@ -1940,5 +2135,86 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestSignedURLOptionsClone(t *testing.T) {
+	t.Parallel()
+
+	opts := &SignedURLOptions{
+		GoogleAccessID: "accessID",
+		PrivateKey:     []byte{},
+		SignBytes: func(b []byte) ([]byte, error) {
+			return b, nil
+		},
+		Method:          "GET",
+		Expires:         time.Now(),
+		ContentType:     "text/plain",
+		Headers:         []string{},
+		QueryParameters: map[string][]string{},
+		MD5:             "some-checksum",
+		Style:           VirtualHostedStyle(),
+		Insecure:        true,
+		Scheme:          SigningSchemeV2,
+	}
+
+	// Check that all fields are set to a non-zero value, so we can check that
+	// clone accurately clones all fields and catch newly added fields not cloned
+	reflectOpts := reflect.ValueOf(*opts)
+	for i := 0; i < reflectOpts.NumField(); i++ {
+		zero, err := isZeroValue(reflectOpts.Field(i))
+		if err != nil {
+			t.Errorf("IsZero: %v", err)
+		}
+		if zero {
+			t.Errorf("SignedURLOptions field %d not set", i)
+		}
+	}
+
+	// Check that fields are properly cloned
+	optsClone := opts.clone()
+
+	// We need a special comparer for functions
+	signBytesComp := func(a func([]byte) ([]byte, error), b func([]byte) ([]byte, error)) bool {
+		return reflect.ValueOf(a) == reflect.ValueOf(b)
+	}
+
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
+
+// isZeroValue reports whether v is the zero value for its type
+// It errors if the argument is unknown
+func isZeroValue(v reflect.Value) (bool, error) {
+	switch v.Kind() {
+	case reflect.Bool:
+		return !v.Bool(), nil
+	case reflect.Int, reflect.Int64:
+		return v.Int() == 0, nil
+	case reflect.Uint, reflect.Uint64:
+		return v.Uint() == 0, nil
+	case reflect.Array:
+		for i := 0; i < v.Len(); i++ {
+			zero, err := isZeroValue(v.Index(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	case reflect.Func, reflect.Interface, reflect.Map, reflect.Slice, reflect.Ptr:
+		return v.IsNil(), nil
+	case reflect.String:
+		return v.Len() == 0, nil
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			zero, err := isZeroValue(v.Field(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	default:
+		return false, fmt.Errorf("unable to check kind %s", v.Kind())
 	}
 }

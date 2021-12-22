@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // WriterOption are variadic options used to configure a ManagedStream instance.
@@ -94,5 +95,25 @@ func WithDataOrigin(dataOrigin string) WriterOption {
 func WithAppendRowsCallOption(o gax.CallOption) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.callOptions = append(ms.callOptions, o)
+	}
+}
+
+// AppendOption are options that can be passed when appending data with a managed stream instance.
+type AppendOption func(*pendingWrite)
+
+// UpdateSchemaDescriptor is used to update the descriptor message schema associated
+// with a given stream.
+func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.newSchema = schema
+	}
+}
+
+// WithOffset sets an explicit offset value for this append request.
+func WithOffset(offset int64) AppendOption {
+	return func(pw *pendingWrite) {
+		pw.request.Offset = &wrapperspb.Int64Value{
+			Value: offset,
+		}
 	}
 }

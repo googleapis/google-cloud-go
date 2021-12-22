@@ -3,17 +3,17 @@ module cloud.google.com/go/orchestration
 go 1.17
 
 require (
-	cloud.google.com/go v0.97.0
+	cloud.google.com/go v0.98.0
 	github.com/googleapis/gax-go/v2 v2.1.1
-	google.golang.org/api v0.61.0
-	google.golang.org/genproto v0.0.0-20211206160659-862468c7d6e0
-	google.golang.org/grpc v1.41.0
+	google.golang.org/api v0.62.0
+	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa
+	google.golang.org/grpc v1.40.1
 	google.golang.org/protobuf v1.27.1
 )
 
 require (
 	github.com/census-instrumentation/opencensus-proto v0.2.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403 // indirect
 	github.com/cncf/xds/go v0.0.0-20210805033703-aa0b78936158 // indirect
 	github.com/envoyproxy/go-control-plane v0.9.10-0.20210907150352-cf90f659a021 // indirect
@@ -24,7 +24,7 @@ require (
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20210503060351-7fd8e65b6420 // indirect
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
-	golang.org/x/sys v0.0.0-20211124211545-fe61309f8881 // indirect
+	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 )
