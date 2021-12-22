@@ -529,6 +529,7 @@ func TestParseDDL(t *testing.T) {
 		  some_time TIMESTAMP NOT NULL,
 		  number_key   INT64 AS (SAFE_CAST(SUBSTR(some_string, 2) AS INT64)) STORED,
 		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
+		  shard_id  INT64 AS (MOD(FARM_FINGERPRINT(user_id), 19)) STORED,
 		) PRIMARY KEY(user_id);
 
 		-- Trailing comment at end of file.
@@ -763,6 +764,13 @@ func TestParseDDL(t *testing.T) {
 						}},
 						Position: line(71),
 					},
+					{
+						Name: "shard_id", Type: Type{Base: Int64},
+						Generated: Func{Name: "MOD", Args: []Expr{
+							Func{Name: "FARM_FINGERPRINT", Args: []Expr{ID("user_id")}}, IntegerLiteral(19),
+						}},
+						Position: line(72),
+					},
 				},
 				PrimaryKey: []KeyPart{{Column: "user_id"}},
 				Position:   line(66),
@@ -789,7 +797,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(74), End: line(74), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
