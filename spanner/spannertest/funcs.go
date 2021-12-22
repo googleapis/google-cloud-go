@@ -162,7 +162,7 @@ var functions = map[string]function{
 				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function MOD for the given argument types")
 			}
 			if y == 0 {
-				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function MOD for the given argument types")
+				return nil, spansql.Type{}, status.Error(codes.OutOfRange, "Division by zero")
 			}
 			return x % y, spansql.Type{Base: spansql.Int64}, nil
 		},
