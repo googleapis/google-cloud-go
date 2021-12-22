@@ -252,12 +252,14 @@ var methods = map[string][]retryFunc{
 	"storage.hmacKey.update": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			key := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID)
+			uattrs := HMACKeyAttrsToUpdate{State: "INACTIVE"}
 
-			_, err := key.Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
-			if err != nil {
-				return err
+			if preconditions {
+				uattrs.Etag = fs.hmacKey.Etag
 			}
-			return fmt.Errorf("Etag preconditions not supported")
+
+			_, err := key.Update(ctx, uattrs)
+			return err
 		},
 	},
 	"storage.objects.compose": {

@@ -647,6 +647,24 @@ type TypedExpr struct {
 func (TypedExpr) isBoolExpr() {} // possibly bool
 func (TypedExpr) isExpr()     {}
 
+type ExtractExpr struct {
+	Part string
+	Type Type
+	Expr Expr
+}
+
+func (ExtractExpr) isBoolExpr() {} // possibly bool
+func (ExtractExpr) isExpr()     {}
+
+type AtTimeZoneExpr struct {
+	Expr Expr
+	Type Type
+	Zone string
+}
+
+func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
+func (AtTimeZoneExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
