@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "AnalyticsAdminClient",
           "rpcs": {
+            "AcknowledgeUserDataCollection": {
+              "methods": [
+                "AcknowledgeUserDataCollection"
+              ]
+            },
             "ApproveDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "ApproveDisplayVideo360AdvertiserLinkProposal"
@@ -70,6 +75,11 @@
                 "CreateCustomMetric"
               ]
             },
+            "CreateDataStream": {
+              "methods": [
+                "CreateDataStream"
+              ]
+            },
             "CreateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "CreateDisplayVideo360AdvertiserLink"
@@ -123,6 +133,11 @@
             "DeleteConversionEvent": {
               "methods": [
                 "DeleteConversionEvent"
+              ]
+            },
+            "DeleteDataStream": {
+              "methods": [
+                "DeleteDataStream"
               ]
             },
             "DeleteDisplayVideo360AdvertiserLink": {
@@ -205,6 +220,11 @@
                 "GetDataSharingSettings"
               ]
             },
+            "GetDataStream": {
+              "methods": [
+                "GetDataStream"
+              ]
+            },
             "GetDisplayVideo360AdvertiserLink": {
               "methods": [
                 "GetDisplayVideo360AdvertiserLink"
@@ -213,11 +233,6 @@
             "GetDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "GetDisplayVideo360AdvertiserLinkProposal"
-              ]
-            },
-            "GetEnhancedMeasurementSettings": {
-              "methods": [
-                "GetEnhancedMeasurementSettings"
               ]
             },
             "GetGlobalSiteTag": {
@@ -283,6 +298,11 @@
             "ListCustomMetrics": {
               "methods": [
                 "ListCustomMetrics"
+              ]
+            },
+            "ListDataStreams": {
+              "methods": [
+                "ListDataStreams"
               ]
             },
             "ListDisplayVideo360AdvertiserLinkProposals": {
@@ -365,14 +385,14 @@
                 "UpdateDataRetentionSettings"
               ]
             },
+            "UpdateDataStream": {
+              "methods": [
+                "UpdateDataStream"
+              ]
+            },
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
-              ]
-            },
-            "UpdateEnhancedMeasurementSettings": {
-              "methods": [
-                "UpdateEnhancedMeasurementSettings"
               ]
             },
             "UpdateGoogleAdsLink": {
