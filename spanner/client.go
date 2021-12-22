@@ -80,7 +80,7 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
-	ct           *CommonTags
+	ct           *commonTags
 }
 
 // DatabaseName returns the full name of a database, e.g.,

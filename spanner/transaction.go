@@ -79,8 +79,8 @@ type txReadOnly struct {
 	// txOpts provides options for a transaction.
 	txOpts TransactionOptions
 
-	// CommonTags for opencensus metrics
-	ct *CommonTags
+	// commonTags for opencensus metrics
+	ct *commonTags
 }
 
 // TransactionOptions provides options for a transaction.

@@ -156,7 +156,6 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
-
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
