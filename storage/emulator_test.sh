@@ -19,13 +19,15 @@ set -eo pipefail
 # Display commands being run
 set -x
 
-# Only run on the latest
-min_ver=1.17
+# Only run on Go 1.17+
+min_minor_ver=17
 
 v=`go version | { read _ _ v _; echo ${v#go}; }`
-v=${v%.*}
+comps=(${v//./ })
+minor_ver=${comps[1]}
 
-if (( $(echo "$v < $min_ver" |bc -l) )); then
+if [ "$minor_ver" -lt "$min_minor_ver" ]; then
+    echo minor version $minor_ver, skipping
     exit 0
 fi
 
