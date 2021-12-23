@@ -29,6 +29,8 @@ import (
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/grpc/codes"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -41,7 +43,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 30 * time.Second
+	defaultTestTimeout = 180 * time.Second
 )
 
 // our test data has cardinality 5 for names, 3 for values
@@ -546,16 +548,20 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(0))
 
 	var result *AppendResult
+	var curOffset int64
+	var latestRow []byte
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
+		latestRow = b
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data)
+		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
+		curOffset = curOffset + int64(len(data))
 	}
 	// wait for the result to indicate ready, then validate.
 	_, err = result.GetResult(ctx)
@@ -572,9 +578,34 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
 
-	// TODO: we need a more elegant mechanism for detecting when the backend has registered the schema change.
-	//       In the continuous case, we'd get it from the response, but the change-and-wait case needs something more.
-	time.Sleep(6 * time.Second)
+	// Resend latest row until we get a new schema notification; using offsets this yields a duplicate row error.
+	pollCount := 0
+	for {
+		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		if err != nil {
+			t.Errorf("got error on dupe append: %v", err)
+			break
+		}
+		if resp != nil {
+			_, err := resp.GetResult(ctx)
+			if err == nil {
+				t.Errorf("got result, expected err")
+			}
+			if grpcstatus.Code(err) != codes.AlreadyExists {
+				t.Errorf("got unexpected code: %v, error: %+v", grpcstatus.Code(err), err)
+			}
+			s, err := resp.UpdatedSchema(ctx)
+			if err != nil {
+				t.Errorf("broke poll on error: %v", err)
+				break
+			}
+			if s != nil {
+				break
+			}
+		}
+		pollCount = pollCount + 1
+	}
+	t.Logf("polled %d times", pollCount)
 
 	// ready descriptor, send an additional append
 	m2 := &testdata.SimpleMessageEvolvedProto2{
@@ -587,7 +618,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto), WithOffset(curOffset))
 	if err != nil {
 		t.Errorf("failed evolved append: %v", err)
 	}
