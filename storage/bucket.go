@@ -1524,10 +1524,10 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	}
 	var resp *raw.Objects
 	var err error
-	err = runWithRetry(it.ctx, func() error {
+	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	})
+	}, it.bucket.retry, true)
 	if err != nil {
 		var e *googleapi.Error
 		if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -1608,10 +1608,10 @@ func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, e
 		req.MaxResults(int64(pageSize))
 	}
 	var resp *raw.Buckets
-	err = runWithRetry(it.ctx, func() error {
+	err = run(it.ctx, func() error {
 		resp, err = req.Context(it.ctx).Do()
 		return err
-	})
+	}, it.client.retry, true)
 	if err != nil {
 		return "", err
 	}

@@ -19,6 +19,16 @@ set -eo pipefail
 # Display commands being run
 set -x
 
+# Only run on the latest
+min_ver=1.17
+
+v=`go version | { read _ _ v _; echo ${v#go}; }`
+v=${v%.*}
+
+if (( $(echo "$v < $min_ver" |bc -l) )); then
+    exit 0
+fi
+
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
 DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
@@ -56,7 +66,7 @@ function cleanup() {
 trap cleanup EXIT
 
 # TODO: move to passing once fixed
-FAILING=(   "buckets.setIamPolicy"
+FAILING=(   
             "objects.insert"
         )
 # TODO: remove regex once all tests are passing
@@ -69,6 +79,7 @@ PASSING=(   "buckets.list"
             "buckets.update"
             "buckets.patch"
             "buckets.getIamPolicy"
+            "buckets.setIamPolicy"
             "buckets.testIamPermissions"
             "buckets.lockRetentionPolicy"
             "objects.copy"
