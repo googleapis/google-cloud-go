@@ -1,13 +1,13 @@
 # Default owner for all directories not owned by others
 *                       @googleapis/yoshi-go-admins
 
-/bigtable/              @enocom @dmahugh @tritone @crwilcox @googleapis/api-bigtable @googleapis/yoshi-go-admins
+/bigtable/              @enocom @dmahugh @tritone @telpirion @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/cbt       @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/emulator  @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/bttest        @garye @igorbernstein2 @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigquery/              @googleapis/api-bigquery @googleapis/yoshi-go-admins
-/datastore/             @enocom @dmahugh @tritone @crwilcox @googleapis/yoshi-go-admins
-/firestore/             @enocom @dmahugh @tritone @crwilcox @googleapis/yoshi-go-admins
+/datastore/             @enocom @dmahugh @tritone @telpirion @googleapis/yoshi-go-admins
+/firestore/             @enocom @dmahugh @tritone @telpirion @googleapis/yoshi-go-admins
 /pubsub/                @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /pubsublite/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /spanner/               @googleapis/api-spanner-go @googleapis/yoshi-go-admins
