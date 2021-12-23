@@ -5,7 +5,7 @@ go 1.11
 require (
 	cloud.google.com/go v0.99.0
 	cloud.google.com/go/datacatalog v1.0.0
-	cloud.google.com/go/storage v1.10.0
+	cloud.google.com/go/storage v1.18.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.6
 	github.com/googleapis/gax-go/v2 v2.1.1
