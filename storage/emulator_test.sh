@@ -55,10 +55,6 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-# TODO: move to passing once fixed
-FAILING=(   "buckets.setIamPolicy"
-            "hmacKey.update"
-        )
 # TODO: remove regex once all tests are passing
 # Unfortunately, there is no simple way to skip specific tests (see https://github.com/golang/go/issues/41583)
 # Therefore, we have to simply run all the specific tests we know pass
@@ -69,6 +65,7 @@ PASSING=(   "buckets.list"
             "buckets.update"
             "buckets.patch"
             "buckets.getIamPolicy"
+            "buckets.setIamPolicy"
             "buckets.testIamPermissions"
             "buckets.lockRetentionPolicy"
             "objects.copy"
@@ -85,6 +82,7 @@ PASSING=(   "buckets.list"
             "hmacKey.list"
             "hmacKey.create"
             "hmacKey.delete"
+            "hmacKey.update"
             "notifications.list"
             "notifications.create"
             "notifications.get"
