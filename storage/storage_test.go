@@ -1150,7 +1150,8 @@ func TestRetryer(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			c, err := NewClient(context.Background())
+			ctx := context.Background()
+			c, err := NewClient(ctx)
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -1196,6 +1197,16 @@ func TestRetryer(t *testing.T) {
 					name: "client.HMACKeyHandle()",
 					r:    c.HMACKeyHandle("pID", "accessID").retry,
 					want: c.retry,
+				},
+				{
+					name: "client.Buckets()",
+					r:    c.Buckets(ctx, "pID").client.retry,
+					want: c.retry,
+				},
+				{
+					name: "bucket.Objects()",
+					r:    b.Objects(ctx, nil).bucket.retry,
+					want: b.retry,
 				},
 			}
 			for _, ac := range configHandleCases {
