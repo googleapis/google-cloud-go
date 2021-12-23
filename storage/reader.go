@@ -163,7 +163,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		}
 
 		var res *http.Response
-		err = runWithRetry(ctx, func() error {
+		err = run(ctx, func() error {
 			res, err = o.c.hc.Do(req)
 			if err != nil {
 				return err
@@ -210,7 +210,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 				gen = gen64
 			}
 			return nil
-		})
+		}, o.retry, true)
 		if err != nil {
 			return nil, err
 		}
@@ -483,7 +483,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		var msg *storagepb.ReadObjectResponse
 		var err error
 
-		err = runWithRetry(cc, func() error {
+		err = run(cc, func() error {
 			stream, err = o.c.gc.ReadObject(cc, req)
 			if err != nil {
 				return err
@@ -492,7 +492,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 			msg, err = stream.Recv()
 
 			return err
-		})
+		}, o.retry, true)
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
 			// resources.
