@@ -2860,6 +2860,21 @@ func TestClient_Single_Read_WithNumericKey(t *testing.T) {
 	}
 }
 
+func TestClient_Single_ReadRowWithOptions(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	row, err := client.Single().ReadRowWithOptions(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{RequestTag: "foo/bar"})
+	if err != nil {
+		t.Fatalf("Unexpected error for read row with options: %v", err)
+	}
+	if row == nil {
+		t.Fatal("ReadRowWithOptions did not return a row")
+	}
+}
+
 func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	t.Parallel()
 
