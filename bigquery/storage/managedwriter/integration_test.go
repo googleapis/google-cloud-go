@@ -29,8 +29,6 @@ import (
 	"go.opencensus.io/stats/view"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	"google.golang.org/grpc/codes"
-	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -578,34 +576,30 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
 
-	// Resend latest row until we get a new schema notification; using offsets this yields a duplicate row error.
-	pollCount := 0
+	// Resend latest row until we get a new schema notification.
+	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
+	// Internal issue: b/211899346
 	for {
 		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
 		if err != nil {
 			t.Errorf("got error on dupe append: %v", err)
 			break
 		}
-		if resp != nil {
-			_, err := resp.GetResult(ctx)
-			if err == nil {
-				t.Errorf("got result, expected err")
-			}
-			if grpcstatus.Code(err) != codes.AlreadyExists {
-				t.Errorf("got unexpected code: %v, error: %+v", grpcstatus.Code(err), err)
-			}
-			s, err := resp.UpdatedSchema(ctx)
-			if err != nil {
-				t.Errorf("broke poll on error: %v", err)
-				break
-			}
-			if s != nil {
-				break
-			}
+		curOffset = curOffset + 1
+		if err != nil {
+			t.Errorf("got error on offset %d: %v", curOffset, err)
+			break
 		}
-		pollCount = pollCount + 1
+		s, err := resp.UpdatedSchema(ctx)
+		if err != nil {
+			t.Errorf("getting schema error: %v", err)
+			break
+		}
+		if s != nil {
+			break
+		}
+
 	}
-	t.Logf("polled %d times", pollCount)
 
 	// ready descriptor, send an additional append
 	m2 := &testdata.SimpleMessageEvolvedProto2{
@@ -628,7 +622,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(len(testSimpleData)+1)),
+		withExactRowCount(int64(curOffset+1)),
 		withNullCount("name", 0),
 		withNonNullCount("other", 1),
 	)
