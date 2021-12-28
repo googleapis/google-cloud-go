@@ -19,6 +19,18 @@ set -eo pipefail
 # Display commands being run
 set -x
 
+# Only run on Go 1.17+
+min_minor_ver=17
+
+v=`go version | { read _ _ v _; echo ${v#go}; }`
+comps=(${v//./ })
+minor_ver=${comps[1]}
+
+if [ "$minor_ver" -lt "$min_minor_ver" ]; then
+    echo minor version $minor_ver, skipping
+    exit 0
+fi
+
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
 DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
@@ -55,61 +67,5 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-# TODO: move to passing once fixed
-FAILING=(   "buckets.setIamPolicy"
-            "objects.insert"
-        )
-# TODO: remove regex once all tests are passing
-# Unfortunately, there is no simple way to skip specific tests (see https://github.com/golang/go/issues/41583)
-# Therefore, we have to simply run all the specific tests we know pass
-PASSING=(   "buckets.list"
-            "buckets.insert"
-            "buckets.get"
-            "buckets.delete"
-            "buckets.update"
-            "buckets.patch"
-            "buckets.getIamPolicy"
-            "buckets.testIamPermissions"
-            "buckets.lockRetentionPolicy"
-            "objects.copy"
-            "objects.get"
-            "objects.list"
-            "objects.delete"
-            "objects.update"
-            "objects.patch"
-            "objects.compose"
-            "objects.rewrite"
-            "serviceaccount.get"
-            "hmacKey.get"
-            "hmacKey.list"
-            "hmacKey.create"
-            "hmacKey.delete"
-            "hmacKey.update"
-            "notifications.list"
-            "notifications.create"
-            "notifications.get"
-            "notifications.delete"
-            "object_acl.insert"
-            "object_acl.get"
-            "object_acl.list"
-            "object_acl.patch"
-            "object_acl.update"
-            "object_acl.delete"
-            "default_object_acl.insert"
-            "default_object_acl.get"
-            "default_object_acl.list"
-            "default_object_acl.patch"
-            "default_object_acl.update"
-            "default_object_acl.delete"
-            "bucket_acl.insert"
-            "bucket_acl.get"
-            "bucket_acl.list"
-            "bucket_acl.patch"
-            "bucket_acl.update"
-            "bucket_acl.delete"
-        )
-TEMP=${PASSING[@]} 
-PASSING_REGEX=${TEMP// /|}
-
 # Run tests
-go test -v -timeout 10m ./ -run="TestRetryConformance/($PASSING_REGEX)-" -short 2>&1 | tee -a sponge_log.log
+go test -v -timeout 10m ./ -run="TestRetryConformance" -short 2>&1 | tee -a sponge_log.log
