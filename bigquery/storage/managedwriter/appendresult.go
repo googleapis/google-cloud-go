@@ -66,6 +66,8 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	}
 }
 
+// UpdatedSchema returns the updated schema for a table if supplied by the backend as part
+// of the append response.  It blocks until the result is ready.
 func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
 	select {
 	case <-ctx.Done():
