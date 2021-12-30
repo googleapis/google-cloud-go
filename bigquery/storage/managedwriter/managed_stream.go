@@ -400,6 +400,11 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			}
 			recordStat(ctx, AppendResponses, 1)
 
+			// Retain the updated schema if present, for eventual presentation to the user.
+			if resp.GetUpdatedSchema() != nil {
+				nextWrite.result.updatedSchema = resp.GetUpdatedSchema()
+			}
+
 			if status := resp.GetError(); status != nil {
 				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
 				if err != nil {
