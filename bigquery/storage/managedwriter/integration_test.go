@@ -41,7 +41,7 @@ import (
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
 	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
-	defaultTestTimeout = 180 * time.Second
+	defaultTestTimeout = 30 * time.Second
 )
 
 // our test data has cardinality 5 for names, 3 for values
