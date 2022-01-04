@@ -72,7 +72,7 @@ require (
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/ids v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/iot v0.1.0
-	cloud.google.com/go/kms v1.0.0
+	cloud.google.com/go/kms v1.1.0
 	cloud.google.com/go/language v0.1.0
 	cloud.google.com/go/lifesciences v0.1.0
 	cloud.google.com/go/logging v0.1.0
@@ -92,7 +92,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v0.1.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.9.1
+	cloud.google.com/go/pubsub v1.17.1
 	cloud.google.com/go/pubsublite v0.1.0
 	cloud.google.com/go/recaptchaenterprise v0.1.0
 	cloud.google.com/go/recommendationengine v0.1.0

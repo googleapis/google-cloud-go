@@ -546,16 +546,20 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		withExactRowCount(0))
 
 	var result *AppendResult
+	var curOffset int64
+	var latestRow []byte
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
+		latestRow = b
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data)
+		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
+		curOffset = curOffset + int64(len(data))
 	}
 	// wait for the result to indicate ready, then validate.
 	_, err = result.GetResult(ctx)
@@ -572,9 +576,30 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
 
-	// TODO: we need a more elegant mechanism for detecting when the backend has registered the schema change.
-	//       In the continuous case, we'd get it from the response, but the change-and-wait case needs something more.
-	time.Sleep(6 * time.Second)
+	// Resend latest row until we get a new schema notification.
+	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
+	// Internal issue: b/211899346
+	for {
+		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		if err != nil {
+			t.Errorf("got error on dupe append: %v", err)
+			break
+		}
+		curOffset = curOffset + 1
+		if err != nil {
+			t.Errorf("got error on offset %d: %v", curOffset, err)
+			break
+		}
+		s, err := resp.UpdatedSchema(ctx)
+		if err != nil {
+			t.Errorf("getting schema error: %v", err)
+			break
+		}
+		if s != nil {
+			break
+		}
+
+	}
 
 	// ready descriptor, send an additional append
 	m2 := &testdata.SimpleMessageEvolvedProto2{
@@ -587,7 +612,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Errorf("failed to marshal evolved message: %v", err)
 	}
-	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto))
+	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto), WithOffset(curOffset))
 	if err != nil {
 		t.Errorf("failed evolved append: %v", err)
 	}
@@ -597,7 +622,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	}
 
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
-		withExactRowCount(int64(len(testSimpleData)+1)),
+		withExactRowCount(int64(curOffset+1)),
 		withNullCount("name", 0),
 		withNonNullCount("other", 1),
 	)

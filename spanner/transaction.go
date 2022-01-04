@@ -228,7 +228,15 @@ func errMultipleRowsFound(table string, key Key, index string) error {
 // If no row is present with the given key, then ReadRow returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
-	iter := t.Read(ctx, table, key, columns)
+	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
+}
+
+// ReadRowWithOptions reads a single row from the database. Pass a ReadOptions to modify the read operation.
+//
+// If no row is present with the given key, then ReadRowWithOptions returns an error where
+// spanner.ErrCode(err) is codes.NotFound.
+func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
+	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
 	row, err := iter.Next()
 	switch err {
