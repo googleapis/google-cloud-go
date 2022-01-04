@@ -1,5 +1,13 @@
 # Changes
 
+## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.12.0...bigtable/v1.13.0) (2022-01-04)
+
+
+### Features
+
+* **bigtable/spanner:** add google-c2p dependence to bigtable and spanner ([#5090](https://www.github.com/googleapis/google-cloud-go/issues/5090)) ([5343756](https://www.github.com/googleapis/google-cloud-go/commit/534375668b5b81bae5ef750c96856bef027f9d1e))
+* **bigtable:** add google-c2p dependence ([5343756](https://www.github.com/googleapis/google-cloud-go/commit/534375668b5b81bae5ef750c96856bef027f9d1e))
+
 ## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.11.0...bigtable/v1.12.0) (2021-11-15)
 
 
