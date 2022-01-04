@@ -194,9 +194,6 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				return client, err
 			}
 			md, err := client.Header()
-			if err != nil {
-				return nil, err
-			}
 			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
@@ -397,9 +394,6 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				return client, err
 			}
 			md, err := client.Header()
-			if err != nil {
-				return nil, err
-			}
 			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)

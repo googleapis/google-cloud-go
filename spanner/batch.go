@@ -322,9 +322,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				return client, err
 			}
 			md, err := client.Header()
-			if err != nil {
-				return nil, err
-			}
 			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
@@ -349,9 +346,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				return client, err
 			}
 			md, err := client.Header()
-			if err != nil {
-				return nil, err
-			}
 
 			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
