@@ -1,5 +1,13 @@
 # Changes
 
+### [1.1.1](https://www.github.com/googleapis/google-cloud-go/compare/security/v1.1.0...security/v1.1.1) (2022-01-04)
+
+
+### Bug Fixes
+
+* **security/privateca:** include mixin protos as input for mixin rpcs ([479c2f9](https://www.github.com/googleapis/google-cloud-go/commit/479c2f90d556a106b25ebcdb1539d231488182da))
+* **security/privateca:** repair service config to enable mixins ([83b941c](https://www.github.com/googleapis/google-cloud-go/commit/83b941c0983e44fdd18ceee8c6f3e91219d72ad1))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/security/v1.0.0...security/v1.1.0) (2021-10-11)
 
 
