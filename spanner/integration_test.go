@@ -39,6 +39,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"go.opencensus.io/stats/view"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
@@ -3262,6 +3263,85 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	if !countEnough {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
+}
+
+func TestIntegration_GFE_Latency(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
+	GFELatencyMetricsEnabled = true
+
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	_, err := client.Apply(ctx, ms)
+	if err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId", "FirstName", "LastName"})
+	if err != nil {
+		t.Fatalf("Could not read row. Got error %v", err)
+	}
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	var viewMap = map[string]bool{statsPrefix + "gfe_latency": false,
+		statsPrefix + "gfe_header_missing_count": false,
+	}
+
+	for {
+		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"] {
+			break
+		}
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) == 0 {
+				t.Fatal("No metrics are exported")
+			}
+			if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
+				t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_latency or "+statsPrefix+"gfe_header_missing_count")
+			} else {
+				viewMap[stat.View.Measure.Name()] = true
+			}
+			for _, row := range stat.Rows {
+				m := getTagMap(row.Tags)
+				checkCommonTagsGFELatency(t, m)
+				var data string
+				switch row.Data.(type) {
+				default:
+					data = fmt.Sprintf("%v", row.Data)
+				case *view.CountData:
+					data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
+				case *view.LastValueData:
+					data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+				case *view.DistributionData:
+					data = fmt.Sprintf("%v", row.Data.(*view.DistributionData).Count)
+				}
+				if got, want := fmt.Sprintf("%v", data), "0"; got <= want {
+					t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
+				}
+			}
+		case <-time.After(10 * time.Second):
+			if !viewMap[statsPrefix+"gfe_latency"] && !viewMap[statsPrefix+"gfe_header_missing_count"] {
+				t.Fatal("no stats were exported before timeout")
+			}
+		}
+	}
+	DisableGfeLatencyAndHeaderMissingCountViews()
 }
 
 // Prepare initializes Cloud Spanner testing DB and clients.
