@@ -1,5 +1,13 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/osconfig/v1.1.0...osconfig/v1.2.0) (2022-01-04)
+
+
+### Features
+
+* **osconfig:** OSConfig: add OS policy assignment rpcs ([83b941c](https://www.github.com/googleapis/google-cloud-go/commit/83b941c0983e44fdd18ceee8c6f3e91219d72ad1))
+* **osconfig:** Update OSConfig API ([e33350c](https://www.github.com/googleapis/google-cloud-go/commit/e33350cfcabcddcda1a90069383d39c68deb977a))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/osconfig/v1.0.0...osconfig/v1.1.0) (2021-11-02)
 
 
