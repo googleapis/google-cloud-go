@@ -1,5 +1,13 @@
 # Changes
 
+### [0.1.2](https://www.github.com/googleapis/google-cloud-go/compare/profiler/v0.1.1...profiler/v0.1.2) (2022-01-04)
+
+
+### Bug Fixes
+
+* **profiler:** refine regular expression for parsing backoff duration in E2E tests ([#5229](https://www.github.com/googleapis/google-cloud-go/issues/5229)) ([4438aeb](https://www.github.com/googleapis/google-cloud-go/commit/4438aebca2ec01d4dbf22287aa651937a381e043))
+* **profiler:** remove certificate expiration workaround ([#5222](https://www.github.com/googleapis/google-cloud-go/issues/5222)) ([2da36c9](https://www.github.com/googleapis/google-cloud-go/commit/2da36c95f44d5f88fd93cd949ab78823cea74fe7))
+
 ### [0.1.1](https://www.github.com/googleapis/google-cloud-go/compare/profiler/v0.1.0...profiler/v0.1.1) (2021-10-11)
 
 
