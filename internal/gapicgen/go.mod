@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	cloud.google.com/go v0.99.0
-	cloud.google.com/go/internal/godocfx v0.0.0-20211223213628-ee4f600929df
+	cloud.google.com/go/internal/godocfx v0.0.0-20220104051850-d0ff35ec157d
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20211117020012-5800b9de5b8b
 	github.com/shurcooL/graphql v0.0.0-20200928012149-18c5c3165e3a // indirect

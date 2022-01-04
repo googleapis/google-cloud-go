@@ -38,8 +38,8 @@ cloud.google.com/go/datacatalog v1.0.0/go.mod h1:cz8rXsZV278v0nXPhnp5eXRnZtqx2Mt
 cloud.google.com/go/datastore v1.0.0/go.mod h1:LXYbyblFSglQ5pkeyhO+Qmw7ukd3C+pD7TKLgZqpHYE=
 cloud.google.com/go/datastore v1.1.0/go.mod h1:umbIZjpQpHh4hmRpGhH4tLFup+FVzqBi1b3c64qFpCk=
 cloud.google.com/go/datastore v1.6.0/go.mod h1:q3ZJj1GMQRdU0OCv5XXpCqfLqHHZnI5zcumkvuYDmHI=
-cloud.google.com/go/internal/godocfx v0.0.0-20211223213628-ee4f600929df h1:G+8B3k3cRkLjJ9AXbXzydcNeDPEVz/xtgx9xZ4kaKgE=
-cloud.google.com/go/internal/godocfx v0.0.0-20211223213628-ee4f600929df/go.mod h1:/9AZF0eErB+Nw97GS4AcgydxpaLaWJlWkN/eBX8zoDs=
+cloud.google.com/go/internal/godocfx v0.0.0-20220104051850-d0ff35ec157d h1:YX5mP42ttIIJ1+w3gkqSAQDCJbAQi9aqDS7/IMOn6CY=
+cloud.google.com/go/internal/godocfx v0.0.0-20220104051850-d0ff35ec157d/go.mod h1:/9AZF0eErB+Nw97GS4AcgydxpaLaWJlWkN/eBX8zoDs=
 cloud.google.com/go/pubsub v1.0.1/go.mod h1:R0Gpsv3s54REJCy4fxDixWD93lHJMoZTyQ2kNxGRt3I=
 cloud.google.com/go/pubsub v1.1.0/go.mod h1:EwwdRX2sKPjnvnqCa270oGRyludottCI76h+R3AArQw=
 cloud.google.com/go/pubsub v1.2.0/go.mod h1:jhfEVHT8odbXTkndysNHCcx0awwzvfOlguIAii9o8iA=
