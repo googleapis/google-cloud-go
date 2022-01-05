@@ -18,6 +18,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/internal/version"
@@ -42,8 +43,10 @@ var (
 	tagNumReadSessions  = tag.Tag{Key: tagKeyType, Value: "num_read_sessions"}
 	tagNumWriteSessions = tag.Tag{Key: tagKeyType, Value: "num_write_prepared_sessions"}
 	tagKeyMethod        = tag.MustNewKey("grpc_client_method")
-	// GFELatencyMetricsEnabled is used to track if GFELatency and GFEHeaderMissingCount need to be recorded
-	GFELatencyMetricsEnabled = false
+	// gfeLatencyMetricsEnabled is used to track if GFELatency and GFEHeaderMissingCount need to be recorded
+	gfeLatencyMetricsEnabled = false
+	// mutex to avoid data race in reading/writing the above flag
+	statsMu = sync.RWMutex{}
 )
 
 func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
@@ -213,28 +216,40 @@ func EnableStatViews() error {
 
 // EnableGfeLatencyView enables GFELatency metric
 func EnableGfeLatencyView() error {
-	GFELatencyMetricsEnabled = true
+	setGFELatencyMetricsFlag(true)
 	return view.Register(GFELatencyView)
 }
 
 // EnableGfeHeaderMissingCountView enables GFEHeaderMissingCount metric
 func EnableGfeHeaderMissingCountView() error {
-	GFELatencyMetricsEnabled = true
+	setGFELatencyMetricsFlag(true)
 	return view.Register(GFEHeaderMissingCountView)
 }
 
 // EnableGfeLatencyAndHeaderMissingCountViews enables GFEHeaderMissingCount and GFELatency metric
 func EnableGfeLatencyAndHeaderMissingCountViews() error {
-	GFELatencyMetricsEnabled = true
+	setGFELatencyMetricsFlag(true)
 	return view.Register(
 		GFELatencyView,
 		GFEHeaderMissingCountView,
 	)
 }
 
+func getGFELatencyMetricsFlag() bool {
+	statsMu.RLock()
+	defer statsMu.RUnlock()
+	return gfeLatencyMetricsEnabled
+}
+
+func setGFELatencyMetricsFlag(enable bool) {
+	statsMu.Lock()
+	gfeLatencyMetricsEnabled = enable
+	statsMu.Unlock()
+}
+
 // DisableGfeLatencyAndHeaderMissingCountViews disables GFEHeaderMissingCount and GFELatency metric
 func DisableGfeLatencyAndHeaderMissingCountViews() {
-	GFELatencyMetricsEnabled = false
+	setGFELatencyMetricsFlag(false)
 	view.Unregister(
 		GFELatencyView,
 		GFEHeaderMissingCountView,
@@ -266,12 +281,6 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	// multiple clients for the same database.
 	if !strings.HasPrefix(m[tagKeyClientID], "client") {
 		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
-	}
-	if !strings.HasPrefix(m[tagKeyInstance], "gotest") {
-		t.Fatalf("Incorrect instance ID: %v", m[tagKeyInstance])
-	}
-	if !strings.HasPrefix(m[tagKeyDatabase], "gotest") {
-		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
 	}
 	if m[tagKeyLibVersion] != version.Repo {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])

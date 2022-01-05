@@ -268,7 +268,7 @@ func TestOCStats_GFE_Latency(t *testing.T) {
 	te := testutil.NewTestExporter([]*view.View{GFELatencyView, GFEHeaderMissingCountView}...)
 	defer te.Unregister()
 
-	GFELatencyMetricsEnabled = true
+	setGFELatencyMetricsFlag(true)
 
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
