@@ -5,6 +5,8 @@ cloud.google.com/go/bigquery v1.7.0/go.mod h1://okPTzCYNXSlb24MZs83e2Do+h+VXtc4g
 cloud.google.com/go/bigquery v1.8.0/go.mod h1:J5hqkt3O0uAFnINi6JXValWIb1v0goeZM77hZzJN/fQ=
 cloud.google.com/go/bigquery v1.25.0 h1:8MQohtqep0hpDh5PGy3juVaawv9l5335EX27SeeE1qo=
 cloud.google.com/go/bigquery v1.25.0/go.mod h1:4WtqW7wUNz7dklHMg62ST1k97dQrsnZN5iCeZYrIsC8=
+cloud.google.com/go/compute v0.1.0 h1:rSUBvAyVwNJ5uQCKNJFMwPtTvJkfN38b6Pvb9zZoqJ8=
+cloud.google.com/go/compute v0.1.0/go.mod h1:GAesmwr110a34z04OlxYkATPBEfVhkymfTBXtfbBFow=
 cloud.google.com/go/datacatalog v1.0.0 h1:KHjIs525XbESSGHxwEKHTzkwfvj7xxYrCy4gcvvlHBY=
 cloud.google.com/go/datacatalog v1.0.0/go.mod h1:cz8rXsZV278v0nXPhnp5eXRnZtqx2Mtv96W8r7a7Oxs=
 cloud.google.com/go/datastore v1.1.0/go.mod h1:umbIZjpQpHh4hmRpGhH4tLFup+FVzqBi1b3c64qFpCk=
