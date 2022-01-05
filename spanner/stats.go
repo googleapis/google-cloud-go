@@ -267,12 +267,6 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if !strings.HasPrefix(m[tagKeyClientID], "client") {
 		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
 	}
-	if !strings.HasPrefix(m[tagKeyInstance], "gotest") {
-		t.Fatalf("Incorrect instance ID: %v", m[tagKeyInstance])
-	}
-	if !strings.HasPrefix(m[tagKeyDatabase], "gotest") {
-		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
-	}
 	if m[tagKeyLibVersion] != version.Repo {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
