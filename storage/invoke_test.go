@@ -33,32 +33,97 @@ func TestInvoke(t *testing.T) {
 	// returns with the right error.
 
 	for _, test := range []struct {
-		count      int   // Number of times to return retryable error.
-		initialErr error // Error to return initially.
-		finalErr   error // Error to return after count returns of retryCode.
+		count             int   // Number of times to return retryable error.
+		initialErr        error // Error to return initially.
+		finalErr          error // Error to return after count returns of retryCode.
+		retry             *retryConfig
+		isIdempotentValue bool
+		expectFinalErr    bool
 	}{
-		{0, &googleapi.Error{Code: 0}, nil},
-		{0, &googleapi.Error{Code: 0}, errors.New("foo")},
-		{1, &googleapi.Error{Code: 429}, nil},
-		{1, &googleapi.Error{Code: 429}, errors.New("bar")},
-		{2, &googleapi.Error{Code: 518}, nil},
-		{2, &googleapi.Error{Code: 599}, &googleapi.Error{Code: 428}},
-		{1, &url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")}, nil},
-		{1, io.ErrUnexpectedEOF, nil},
-		{1, xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}), nil},
-		{0, xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}), &googleapi.Error{Code: 400}},
+		{
+			count:             0,
+			initialErr:        &googleapi.Error{Code: 0},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             0,
+			initialErr:        &googleapi.Error{Code: 0},
+			finalErr:          errors.New("foo"),
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             1,
+			initialErr:        &googleapi.Error{Code: 429},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             1,
+			initialErr:        &googleapi.Error{Code: 429},
+			finalErr:          errors.New("bar"),
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             2,
+			initialErr:        &googleapi.Error{Code: 518},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             2,
+			initialErr:        &googleapi.Error{Code: 599},
+			finalErr:          &googleapi.Error{Code: 428},
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             1,
+			initialErr:        &url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             1,
+			initialErr:        io.ErrUnexpectedEOF,
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             1,
+			initialErr:        xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
+			finalErr:          nil,
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
+		{
+			count:             0,
+			initialErr:        xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
+			finalErr:          &googleapi.Error{Code: 400},
+			isIdempotentValue: true,
+			expectFinalErr:    true,
+		},
 	} {
-		counter := 0
-		call := func() error {
-			counter++
-			if counter <= test.count {
-				return test.initialErr
+		t.Run("", func(s *testing.T) {
+			counter := 0
+			call := func() error {
+				counter++
+				if counter <= test.count {
+					return test.initialErr
+				}
+				return test.finalErr
 			}
-			return test.finalErr
-		}
-		got := runWithRetry(ctx, call)
-		if got != test.finalErr {
-			t.Errorf("%+v: got %v, want %v", test, got, test.finalErr)
-		}
+			got := run(ctx, call, test.retry, test.isIdempotentValue)
+			if got != test.finalErr {
+				s.Errorf("%+v: got %v, want %v", test, got, test.finalErr)
+			}
+		})
 	}
 }

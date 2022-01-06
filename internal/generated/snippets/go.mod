@@ -23,7 +23,7 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.99.0
+	cloud.google.com/go v0.100.2
 	cloud.google.com/go/accessapproval v0.1.0
 	cloud.google.com/go/accesscontextmanager v0.1.0
 	cloud.google.com/go/aiplatform v0.1.0
@@ -43,6 +43,7 @@ require (
 	cloud.google.com/go/cloudbuild v0.1.0
 	cloud.google.com/go/clouddms v0.1.0
 	cloud.google.com/go/cloudtasks v0.1.0
+	cloud.google.com/go/compute v0.1.0
 	cloud.google.com/go/contactcenterinsights v0.1.0
 	cloud.google.com/go/container v0.1.0
 	cloud.google.com/go/containeranalysis v0.1.0
@@ -69,6 +70,7 @@ require (
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.1.0
 	cloud.google.com/go/gsuiteaddons v0.1.0
+	cloud.google.com/go/iam v0.1.0
 	cloud.google.com/go/iap v0.1.0
 	cloud.google.com/go/ids v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/iot v0.1.0
@@ -126,8 +128,8 @@ require (
 	cloud.google.com/go/webrisk v0.1.0
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
-	google.golang.org/api v0.63.0
-	google.golang.org/genproto v0.0.0-20211221195035-429b39de9b1c
+	google.golang.org/api v0.64.0
+	google.golang.org/genproto v0.0.0-20220106162220-2482ccee2e38
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -323,3 +325,5 @@ replace cloud.google.com/go/deploy => ../../../deploy
 replace cloud.google.com/go/ids => ../../../ids
 
 replace cloud.google.com/go/vmmigration => ../../../vmmigration
+
+replace cloud.google.com/go/iam => ../../../iam
