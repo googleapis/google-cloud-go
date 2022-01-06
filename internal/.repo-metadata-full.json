@@ -688,7 +688,7 @@
     "description": "IAM Service Account Credentials API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/iam/credentials/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest/credentials/apiv1",
     "release_level": "ga",
     "library_type": ""
   },
