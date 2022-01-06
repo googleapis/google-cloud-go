@@ -3271,7 +3271,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	defer cancel()
 
 	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
-	GFELatencyMetricsEnabled = true
+	setGFELatencyMetricsFlag(true)
 
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
 	defer cleanup()
