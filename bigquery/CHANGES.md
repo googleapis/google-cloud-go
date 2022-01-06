@@ -1,5 +1,14 @@
 # Changes
 
+## [1.26.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.25.0...bigquery/v1.26.0) (2022-01-06)
+
+
+### Features
+
+* **bigquery/reservation:** increase the logical timeout (retry deadline) to 5 minutes ([5444809](https://www.github.com/googleapis/google-cloud-go/commit/5444809e0b7cf9f5416645ea2df6fec96f8b9023))
+* **bigquery/storage/managedwriter:** support schema change notification ([#5253](https://www.github.com/googleapis/google-cloud-go/issues/5253)) ([70e40db](https://www.github.com/googleapis/google-cloud-go/commit/70e40db88bc016f228a425da1e278fc76dbf2e36))
+* **bigquery/storage:** add write_mode support for BigQuery Storage Write API v1 ([615b42b](https://www.github.com/googleapis/google-cloud-go/commit/615b42bbb549b6fd3e8b1ba751bc109f79a5575b))
+
 ## [1.26.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.25.0...bigquery/v1.26.0) (2022-01-04)
 
 
