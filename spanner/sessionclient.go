@@ -138,7 +138,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil {
+	if getGFELatencyMetricsFlag() && md != nil {
 		_, instance, database, err := parseDatabaseName(sc.database)
 		if err != nil {
 			return nil, ToSpannerError(err)
@@ -260,7 +260,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			SessionTemplate: &sppb.Session{Labels: labels},
 		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
 
-		if GFELatencyMetricsEnabled && mdForGFELatency != nil {
+		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {
 			_, instance, database, err := parseDatabaseName(sc.database)
 			if err != nil {
 				trace.TracePrintf(ctx, nil, "Error getting instance and database name: %v", err)
