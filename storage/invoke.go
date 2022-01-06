@@ -55,21 +55,6 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	})
 }
 
-// runWithRetry calls the function until it returns nil or a non-retryable error, or
-// the context is done.
-func runWithRetry(ctx context.Context, call func() error) error {
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		err = call()
-		if err == nil {
-			return true, nil
-		}
-		if shouldRetry(err) {
-			return false, err
-		}
-		return true, err
-	})
-}
-
 func shouldRetry(err error) bool {
 	if err == nil {
 		return false

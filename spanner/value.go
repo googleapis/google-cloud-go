@@ -286,12 +286,17 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	payload, err := trimDoubleQuotes(payload)
-	if err != nil {
+	var s *string
+	if err := json.Unmarshal(payload, &s); err != nil {
 		return err
 	}
-	n.StringVal = string(payload)
-	n.Valid = true
+	if s != nil {
+		n.StringVal = *s
+		n.Valid = true
+	} else {
+		n.StringVal = ""
+		n.Valid = false
+	}
 	return nil
 }
 
