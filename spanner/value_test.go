@@ -2647,6 +2647,7 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"this is a test string"`), got: NullString{}, isNull: false, expect: "this is a test string", expectError: false},
 				{input: []byte(`""`), got: NullString{}, isNull: false, expect: "", expectError: false},
 				{input: []byte("null"), got: NullString{}, isNull: true, expect: nullString, expectError: false},
+				{input: []byte(`"{\"sub_a\": \"value_1\"}"`), got: NullString{}, isNull: false, expect: `{"sub_a": "value_1"}`, expectError: false},
 				{input: nil, got: NullString{}, isNull: true, expect: nullString, expectError: true},
 				{input: []byte(""), got: NullString{}, isNull: true, expect: nullString, expectError: true},
 				{input: []byte(`"hello`), got: NullString{}, isNull: true, expect: nullString, expectError: true},
