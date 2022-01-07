@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import (
 	"context"
 
 	storage "cloud.google.com/go/storage/internal/apiv2"
+	"google.golang.org/api/iterator"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
@@ -33,6 +35,398 @@ func ExampleNewClient() {
 
 	// TODO: Use client.
 	_ = c
+}
+
+func ExampleClient_DeleteBucket() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.DeleteBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteBucketRequest.
+	}
+	err = c.DeleteBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetBucket() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.GetBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetBucketRequest.
+	}
+	resp, err := c.GetBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateBucket() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.CreateBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateBucketRequest.
+	}
+	resp, err := c.CreateBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListBuckets() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.ListBucketsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListBucketsRequest.
+	}
+	it := c.ListBuckets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_LockBucketRetentionPolicy() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.LockBucketRetentionPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#LockBucketRetentionPolicyRequest.
+	}
+	resp, err := c.LockBucketRetentionPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetIamPolicy() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_SetIamPolicy() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_TestIamPermissions() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateBucket() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.UpdateBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateBucketRequest.
+	}
+	resp, err := c.UpdateBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteNotification() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.DeleteNotificationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteNotificationRequest.
+	}
+	err = c.DeleteNotification(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetNotification() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.GetNotificationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetNotificationRequest.
+	}
+	resp, err := c.GetNotification(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateNotification() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.CreateNotificationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateNotificationRequest.
+	}
+	resp, err := c.CreateNotification(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListNotifications() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.ListNotificationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListNotificationsRequest.
+	}
+	it := c.ListNotifications(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ComposeObject() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.ComposeObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ComposeObjectRequest.
+	}
+	resp, err := c.ComposeObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteObject() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.DeleteObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteObjectRequest.
+	}
+	err = c.DeleteObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetObject() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.GetObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetObjectRequest.
+	}
+	resp, err := c.GetObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateObject() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.UpdateObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateObjectRequest.
+	}
+	resp, err := c.UpdateObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListObjects() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.ListObjectsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListObjectsRequest.
+	}
+	it := c.ListObjects(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_RewriteObject() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.RewriteObjectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#RewriteObjectRequest.
+	}
+	resp, err := c.RewriteObject(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_StartResumableWrite() {
@@ -68,6 +462,130 @@ func ExampleClient_QueryWriteStatus() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#QueryWriteStatusRequest.
 	}
 	resp, err := c.QueryWriteStatus(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetServiceAccount() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.GetServiceAccountRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetServiceAccountRequest.
+	}
+	resp, err := c.GetServiceAccount(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateHmacKey() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.CreateHmacKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#CreateHmacKeyRequest.
+	}
+	resp, err := c.CreateHmacKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteHmacKey() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.DeleteHmacKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#DeleteHmacKeyRequest.
+	}
+	err = c.DeleteHmacKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetHmacKey() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.GetHmacKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#GetHmacKeyRequest.
+	}
+	resp, err := c.GetHmacKey(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListHmacKeys() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.ListHmacKeysRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#ListHmacKeysRequest.
+	}
+	it := c.ListHmacKeys(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_UpdateHmacKey() {
+	ctx := context.Background()
+	c, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storagepb.UpdateHmacKeyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/storage/v2#UpdateHmacKeyRequest.
+	}
+	resp, err := c.UpdateHmacKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
