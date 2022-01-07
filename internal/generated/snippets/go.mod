@@ -129,7 +129,7 @@ require (
 	cloud.google.com/go/websecurityscanner v0.1.0
 	cloud.google.com/go/workflows v0.1.0
 	google.golang.org/api v0.64.0
-	google.golang.org/genproto v0.0.0-20220106162220-2482ccee2e38
+	google.golang.org/genproto v0.0.0-20220106181925-4b6d468c965f
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -327,3 +327,5 @@ replace cloud.google.com/go/ids => ../../../ids
 replace cloud.google.com/go/vmmigration => ../../../vmmigration
 
 replace cloud.google.com/go/iam => ../../../iam
+
+replace cloud.google.com/go/compute => ../../../compute
