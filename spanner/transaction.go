@@ -194,7 +194,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				return client, err
 			}
 			md, err := client.Header()
-			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
@@ -402,7 +402,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				return client, err
 			}
 			md, err := client.Header()
-			if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
@@ -577,7 +577,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-		if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+		if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 			if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
@@ -931,7 +931,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	var md metadata.MD
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
@@ -1006,7 +1006,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
-	if GFELatencyMetricsEnabled && md != nil && t.ct != nil {
+	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
