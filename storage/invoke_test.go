@@ -24,6 +24,8 @@ import (
 	"golang.org/x/xerrors"
 
 	"google.golang.org/api/googleapi"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestInvoke(t *testing.T) {
@@ -232,12 +234,12 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: true,
 		},
 		{
-			desc:        "Test unwrapping of a temporary error",
+			desc:        "wrapped retryable error",
 			inputErr:    xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
 			shouldRetry: true,
 		},
 		{
-			desc:        "Test unwrapping of a non-retriable error",
+			desc:        "wrapped non-retryable error",
 			inputErr:    xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
 			shouldRetry: false,
 		},
@@ -250,6 +252,16 @@ func TestShouldRetry(t *testing.T) {
 			desc:        "googleapi.Error{Code: 408}",
 			inputErr:    &googleapi.Error{Code: 408},
 			shouldRetry: false, // to be changed
+		},
+		{
+			desc:        "retryable gRPC error",
+			inputErr:    status.Error(codes.Unavailable, "retryable gRPC error"),
+			shouldRetry: true,
+		},
+		{
+			desc:        "non-retryable gRPC error",
+			inputErr:    status.Error(codes.PermissionDenied, "non-retryable gRPC error"),
+			shouldRetry: false,
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
