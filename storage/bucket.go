@@ -74,6 +74,20 @@ func (c *Client) Bucket(name string) *BucketHandle {
 	}
 }
 
+// BucketExists checks whether bucket exists or not with given bucket object
+// https://stackoverflow.com/a/52935830/5905905
+func (c *Client) BucketExists(ctx context.Context, bucket *BucketHandle) (bool, error) {
+	_, err := bucket.Attrs(ctx)
+	if err != nil {
+		if err == ErrBucketNotExist {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return true, nil
+}
+
 // Create creates the Bucket in the project.
 // If attrs is nil the API defaults will be used.
 func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *BucketAttrs) (err error) {
