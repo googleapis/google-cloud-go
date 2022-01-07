@@ -1,5 +1,12 @@
 # Changes
 
+### [0.100.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.100.0...v0.100.1) (2022-01-07)
+
+
+### Bug Fixes
+
+* **iam:** run formatter ([#5277](https://www.github.com/googleapis/google-cloud-go/issues/5277)) ([8682e4e](https://www.github.com/googleapis/google-cloud-go/commit/8682e4ed57a4428a659fbc225f56c91767e2a4a9))
+
 ## [0.100.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.99.0...v0.100.0) (2022-01-04)
 
 
