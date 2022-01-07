@@ -71,6 +71,11 @@ type CallOptions struct {
 	CalculateStats           []gax.CallOption
 	GetSettings              []gax.CallOption
 	UpdateSettings           []gax.CallOption
+	CreateView               []gax.CallOption
+	GetView                  []gax.CallOption
+	ListViews                []gax.CallOption
+	UpdateView               []gax.CallOption
+	DeleteView               []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -406,6 +411,61 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		CreateView: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetView: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListViews: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateView: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteView: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -449,6 +509,11 @@ type internalClient interface {
 	CalculateStats(context.Context, *contactcenterinsightspb.CalculateStatsRequest, ...gax.CallOption) (*contactcenterinsightspb.CalculateStatsResponse, error)
 	GetSettings(context.Context, *contactcenterinsightspb.GetSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
 	UpdateSettings(context.Context, *contactcenterinsightspb.UpdateSettingsRequest, ...gax.CallOption) (*contactcenterinsightspb.Settings, error)
+	CreateView(context.Context, *contactcenterinsightspb.CreateViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
+	GetView(context.Context, *contactcenterinsightspb.GetViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
+	ListViews(context.Context, *contactcenterinsightspb.ListViewsRequest, ...gax.CallOption) *ViewIterator
+	UpdateView(context.Context, *contactcenterinsightspb.UpdateViewRequest, ...gax.CallOption) (*contactcenterinsightspb.View, error)
+	DeleteView(context.Context, *contactcenterinsightspb.DeleteViewRequest, ...gax.CallOption) error
 }
 
 // Client is a client for interacting with Contact Center AI Insights API.
@@ -672,6 +737,31 @@ func (c *Client) GetSettings(ctx context.Context, req *contactcenterinsightspb.G
 // UpdateSettings updates project-level settings.
 func (c *Client) UpdateSettings(ctx context.Context, req *contactcenterinsightspb.UpdateSettingsRequest, opts ...gax.CallOption) (*contactcenterinsightspb.Settings, error) {
 	return c.internalClient.UpdateSettings(ctx, req, opts...)
+}
+
+// CreateView creates a view.
+func (c *Client) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	return c.internalClient.CreateView(ctx, req, opts...)
+}
+
+// GetView gets a view.
+func (c *Client) GetView(ctx context.Context, req *contactcenterinsightspb.GetViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	return c.internalClient.GetView(ctx, req, opts...)
+}
+
+// ListViews lists views.
+func (c *Client) ListViews(ctx context.Context, req *contactcenterinsightspb.ListViewsRequest, opts ...gax.CallOption) *ViewIterator {
+	return c.internalClient.ListViews(ctx, req, opts...)
+}
+
+// UpdateView updates a view.
+func (c *Client) UpdateView(ctx context.Context, req *contactcenterinsightspb.UpdateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	return c.internalClient.UpdateView(ctx, req, opts...)
+}
+
+// DeleteView deletes a view.
+func (c *Client) DeleteView(ctx context.Context, req *contactcenterinsightspb.DeleteViewRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteView(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Contact Center AI Insights API over gRPC transport.
@@ -1448,6 +1538,130 @@ func (c *gRPCClient) UpdateSettings(ctx context.Context, req *contactcenterinsig
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateView(ctx context.Context, req *contactcenterinsightspb.CreateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateView[0:len((*c.CallOptions).CreateView):len((*c.CallOptions).CreateView)], opts...)
+	var resp *contactcenterinsightspb.View
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetView(ctx context.Context, req *contactcenterinsightspb.GetViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetView[0:len((*c.CallOptions).GetView):len((*c.CallOptions).GetView)], opts...)
+	var resp *contactcenterinsightspb.View
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListViews(ctx context.Context, req *contactcenterinsightspb.ListViewsRequest, opts ...gax.CallOption) *ViewIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
+	it := &ViewIterator{}
+	req = proto.Clone(req).(*contactcenterinsightspb.ListViewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*contactcenterinsightspb.View, string, error) {
+		resp := &contactcenterinsightspb.ListViewsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListViews(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateView(ctx context.Context, req *contactcenterinsightspb.UpdateViewRequest, opts ...gax.CallOption) (*contactcenterinsightspb.View, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "view.name", url.QueryEscape(req.GetView().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateView[0:len((*c.CallOptions).UpdateView):len((*c.CallOptions).UpdateView)], opts...)
+	var resp *contactcenterinsightspb.View
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteView(ctx context.Context, req *contactcenterinsightspb.DeleteViewRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // CreateAnalysisOperation manages a long-running operation from CreateAnalysis.
 type CreateAnalysisOperation struct {
 	lro *longrunning.Operation
@@ -1987,6 +2201,53 @@ func (it *PhraseMatcherIterator) bufLen() int {
 }
 
 func (it *PhraseMatcherIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ViewIterator manages a stream of *contactcenterinsightspb.View.
+type ViewIterator struct {
+	items    []*contactcenterinsightspb.View
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*contactcenterinsightspb.View, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ViewIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ViewIterator) Next() (*contactcenterinsightspb.View, error) {
+	var item *contactcenterinsightspb.View
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ViewIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
