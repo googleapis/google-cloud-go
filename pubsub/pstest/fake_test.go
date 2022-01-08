@@ -15,9 +15,11 @@
 package pstest
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"reflect"
 	"strings"
@@ -61,7 +63,7 @@ func TestNewServerWithPort(t *testing.T) {
 }
 
 func TestTopics(t *testing.T) {
-	pclient, _, server, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, server, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	ctx := context.Background()
@@ -101,6 +103,39 @@ func TestTopics(t *testing.T) {
 	if got, want := len(server.GServer.topics), 0; got != want {
 		t.Fatalf("got %d topics, want %d", got, want)
 	}
+
+	t.Run(`Given a topic that is used by a subscription as deadletter,
+	When topic deleted,
+	Then error raised`, func(t *testing.T) {
+		var topics []*pb.Topic
+		for i := 1; i < 3; i++ {
+			topics = append(topics, mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{
+				Name:   fmt.Sprintf("projects/P/topics/T%d", i),
+				Labels: map[string]string{"num": fmt.Sprintf("%d", i)},
+			}))
+		}
+
+		if got, want := len(server.GServer.topics), len(topics); got != want {
+			t.Fatalf("got %d topics, want %d", got, want)
+		}
+
+		s := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+			Name:               fmt.Sprintf("project/P/subscriptions/sub_with_deadletter"),
+			Topic:              topics[0].Name,
+			AckDeadlineSeconds: 10,
+			DeadLetterPolicy: &pb.DeadLetterPolicy{
+				DeadLetterTopic: topics[1].Name,
+			},
+		})
+
+		_, err := pclient.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: topics[1].Name,
+		})
+		expectedErr := status.Errorf(codes.FailedPrecondition, "topic %q used as deadletter for %s", topics[1].Name, s.Name)
+		if err == nil || err.Error() != expectedErr.Error() {
+			t.Fatalf("returned a different error than the expected one. \nReceived '%s'; \nExpected: '%s'", err, expectedErr)
+		}
+	})
 }
 
 func TestSubscriptions(t *testing.T) {
@@ -169,6 +204,30 @@ func TestSubscriptions(t *testing.T) {
 	if got, want := len(server.GServer.subs), 0; got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
 	}
+
+	t.Run(`Given a subscription creation,
+	When called with a deadletter topic that does not exist,
+	Then error returned`, func(t *testing.T) {
+		topic := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/test"})
+		_, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+			Name:               "projects/P/subscriptions/test",
+			Topic:              topic.Name,
+			AckDeadlineSeconds: 10,
+			DeadLetterPolicy: &pb.DeadLetterPolicy{
+				DeadLetterTopic: "projects/P/topics/nonexisting",
+			},
+		})
+		expectedErr := status.Errorf(codes.NotFound, "deadletter topic \"projects/P/topics/nonexisting\"")
+		if err == nil || err.Error() != expectedErr.Error() {
+			t.Fatalf("expected subscription creation to fail with a specific err but it didn't. \nError: %s \nExepcted err: %s", err, expectedErr)
+		}
+		_, err = server.GServer.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: topic.Name,
+		})
+		if err != nil {
+			t.Fatalf("unexpected error during deleting topic")
+		}
+	})
 }
 
 func TestSubscriptionErrors(t *testing.T) {
@@ -217,6 +276,138 @@ func TestSubscriptionErrors(t *testing.T) {
 	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
 	checkCode(err, codes.NotFound)
+}
+
+func TestSubscriptionDeadletter(t *testing.T) {
+	_, _, server, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	ctx := context.Background()
+
+	topic, err := server.GServer.CreateTopic(ctx, &pb.Topic{
+		Name: "projects/P/topics/in",
+	})
+	if err != nil {
+		t.Fatalf("failed to create in topic")
+	}
+	deadletterTopic, err := server.GServer.CreateTopic(ctx, &pb.Topic{
+		Name: "projects/P/topics/deadletter",
+	})
+	if err != nil {
+		t.Fatalf("failed to create deadletter topic")
+	}
+	retries := 3
+	sub, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              topic.Name,
+		AckDeadlineSeconds: 10,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic:     deadletterTopic.Name,
+			MaxDeliveryAttempts: int32(retries),
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription")
+	}
+	dlSub, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:               "projects/P/subscriptions/SD",
+		Topic:              deadletterTopic.Name,
+		AckDeadlineSeconds: 10,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription")
+	}
+
+	messageData := []byte("message data")
+	_, err = server.GServer.Publish(ctx, &pb.PublishRequest{
+		Topic: topic.Name,
+		Messages: []*pb.PubsubMessage{
+			{
+				Data: messageData,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed to publish message")
+	}
+	rand.Seed(time.Now().UTC().UnixNano())
+	maxAttempts := rand.Intn(5) + retries
+	for i := 0; i < maxAttempts; i++ {
+		pull, err := server.GServer.Pull(ctx, &pb.PullRequest{
+			Subscription: sub.Name,
+			MaxMessages:  10,
+		})
+		if err != nil {
+			t.Fatalf("failed during pull")
+		}
+		if i < retries {
+			if len(pull.ReceivedMessages) != 1 {
+				t.Fatalf("expected 1 message received a different number %d", len(pull.ReceivedMessages))
+			}
+			for _, m := range pull.ReceivedMessages {
+				_, err := server.GServer.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
+					Subscription:       sub.Name,
+					AckIds:             []string{m.AckId},
+					AckDeadlineSeconds: 0,
+				})
+				if err != nil {
+					t.Fatalf("failed to modify ack deadline")
+				}
+			}
+		} else {
+			if len(pull.ReceivedMessages) > 0 {
+				t.Fatalf("received a non empty list of messages %d", len(pull.ReceivedMessages))
+			}
+		}
+	}
+
+	dlPull, err := server.GServer.Pull(ctx, &pb.PullRequest{
+		Subscription: dlSub.Name,
+		MaxMessages:  10,
+	})
+	if err != nil {
+		t.Fatalf("failed during pulling from deadletter sub")
+	}
+	if len(dlPull.ReceivedMessages) != 1 {
+		t.Fatalf("expected 1 message received a different number %d", len(dlPull.ReceivedMessages))
+	}
+	receivedMessage := dlPull.ReceivedMessages[0]
+	if bytes.Compare(receivedMessage.Message.Data, messageData) != 0 {
+		t.Fatalf("unexpected message received from deadletter")
+	}
+	_, err = server.GServer.Acknowledge(ctx, &pb.AcknowledgeRequest{
+		Subscription: dlSub.Name,
+		AckIds:       []string{receivedMessage.GetAckId()},
+	})
+	if err != nil {
+		t.Fatalf("failed to acknowledge message from deadletter")
+	}
+
+	for _, s := range []string{"projects/P/subscriptions/S", "projects/P/subscriptions/SD"} {
+		_, err = server.GServer.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{
+			Subscription: s,
+		})
+		if err != nil {
+			t.Fatalf("failed to delete subscription %s; error: %s", s, err)
+		}
+	}
+
+	for _, delTopic := range []string{"projects/P/topics/in", "projects/P/topics/deadletter"} {
+		_, err = server.GServer.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: delTopic,
+		})
+		if err != nil {
+			t.Fatalf("failed to delete topic %s; error: %s", delTopic, err)
+		}
+	}
+
+	if got, want := len(server.GServer.subs), 0; got != want {
+		t.Fatalf("got %d subscriptions, want %d", got, want)
+	}
+
+	if got, want := len(server.GServer.topics), 0; got != want {
+		t.Fatalf("got %d topics, want %d", got, want)
+	}
 }
 
 func TestPublish(t *testing.T) {
@@ -684,7 +875,7 @@ func TestTryDeliverMessage(t *testing.T) {
 		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
 	} {
 		top := newTopic(&pb.Topic{Name: "some-topic"})
-		sub := newSubscription(top, &sync.Mutex{}, time.Now, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, time.Now, nil, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
 
 		done := make(chan struct{}, 1)
 		done <- struct{}{}
