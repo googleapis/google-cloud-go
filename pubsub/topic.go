@@ -528,10 +528,9 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	var span trace.Span
-	opts := getSpanAttributes(t.String(), msg)
-	ctx, span = t.tracer.Start(ctx, t.String()+" send", opts...)
-	_, span2 := t.tracer.Start(ctx, t.String()+" add to batch", opts...)
+	opts := getPublishSpanAttributes(t.String(), msg)
+	ctx, span := t.tracer.Start(ctx, t.String()+" send", opts...)
+	ctx, span2 := t.tracer.Start(ctx, t.String()+" add to batch", opts...)
 	defer span2.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
@@ -569,12 +568,15 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
+	_, span3 := t.tracer.Start(ctx, t.String()+" schedule batch")
+
 	bmsg := &bundledMessage{
-		ctx:  ctx,
-		msg:  msg,
-		res:  r,
-		size: msgSize,
-		span: span,
+		ctx:       ctx,
+		msg:       msg,
+		res:       r,
+		size:      msgSize,
+		pubSpan:   span,
+		batchSpan: span3,
 	}
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
@@ -606,11 +608,12 @@ func (t *Topic) Flush() {
 }
 
 type bundledMessage struct {
-	ctx  context.Context
-	msg  *Message
-	res  *PublishResult
-	size int
-	span trace.Span
+	ctx       context.Context
+	msg       *Message
+	res       *PublishResult
+	size      int
+	pubSpan   trace.Span
+	batchSpan trace.Span
 }
 
 func (t *Topic) initBundler() {
@@ -645,7 +648,11 @@ func (t *Topic) initBundler() {
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-		t.publishMessageBundle(ctx, bundle.([]*bundledMessage))
+		bmsgs := bundle.([]*bundledMessage)
+		for _, m := range bmsgs {
+			m.batchSpan.End()
+		}
+		t.publishMessageBundle(ctx, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
@@ -695,10 +702,10 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		opts := getSpanAttributes(t.String(), bm.msg)
+		opts := getPublishSpanAttributes(t.String(), bm.msg)
 		_, span := t.tracer.Start(bm.ctx, t.String()+" publish RPC", opts...)
 		defer span.End()
-		defer bm.span.End()
+		defer bm.pubSpan.End()
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
@@ -728,7 +735,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
-			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			bm.pubSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
 		}
 	}
 }

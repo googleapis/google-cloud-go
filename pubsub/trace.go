@@ -259,12 +259,12 @@ func NewPubsubMessageCarrier(msg *Message) PubsubMessageCarrier {
 
 // Get retrieves a single value for a given key.
 func (c PubsubMessageCarrier) Get(key string) string {
-	return c.msg.Attributes["googclient_"+key]
+	return c.msg.Attributes["gogclient_"+key]
 }
 
 // Set sets an attribute.
 func (c PubsubMessageCarrier) Set(key, val string) {
-	c.msg.Attributes["googclient_"+key] = val
+	c.msg.Attributes["gogclient_"+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.
@@ -278,7 +278,7 @@ func (c PubsubMessageCarrier) Keys() []string {
 	return out
 }
 
-func getSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	// TODO(hongalex): benchmark this to make sure no significant performance degradation
 	// when calculating proto.Size in receive paths.
 	msgSize := proto.Size(&pb.PubsubMessage{
@@ -297,6 +297,27 @@ func getSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) [
 		),
 		trace.WithAttributes(opts...),
 		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+	return ss
+}
+
+func getSubSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	ss := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String("pubsub"),
+			semconv.MessagingDestinationKey.String(topic),
+			semconv.MessagingDestinationKindTopic,
+			semconv.MessagingMessageIDKey.String(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+			attribute.String("pubsub.ordering_key", msg.OrderingKey),
+		),
+		trace.WithAttributes(opts...),
+		trace.WithSpanKind(trace.SpanKindConsumer),
 	}
 	return ss
 }

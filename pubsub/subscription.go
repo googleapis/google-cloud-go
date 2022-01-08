@@ -986,7 +986,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				default:
 				}
 				for i, msg := range msgs {
-					opts := getSpanAttributes("", msg, semconv.MessagingOperationReceive)
+					opts := getSubSpanAttributes("", msg, semconv.MessagingOperationReceive)
 					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
 
 					msg := msg
@@ -1019,7 +1019,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						if m.Attributes != nil && m.Attributes["googclient_traceparent"] != "" {
 							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
 							link := trace.LinkFromContext(lctx)
-							opts := getSpanAttributes("", m, semconv.MessagingOperationProcess)
+							opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
 							opts = append(opts, trace.WithLinks(link))
 							_, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
 							// End spans to ack handler doneFunc, which also handles flow control release.
