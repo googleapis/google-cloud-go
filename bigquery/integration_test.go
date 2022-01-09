@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -560,12 +559,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run snapshot: %v", err)
 	}
-	status, err := job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("job %q: polling snapshot failed: %v", job.ID(), err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("job %q: snapshot failed in error: %v", job.ID(), status.Err())
+		t.Fatalf("snapshot failed: %v", err)
 	}
 
 	// verify metadata on the snapshot
@@ -592,12 +588,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run restore: %v", err)
 	}
-	status, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("job %q: polling restore failed: %v", job.ID(), err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("job %q: restore failed in error: %v", job.ID(), status.Err())
+		t.Fatalf("restore failed: %v", err)
 	}
 
 	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
@@ -2931,7 +2924,7 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("job Run failure: %v", err)
 	}
-	_, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
 		t.Fatalf("job %q completion failure: %v", job.ID(), err)
 	}
@@ -3341,8 +3334,8 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to extract model to GCS: %v", err)
 	}
-	if _, err := job.Wait(ctx); err != nil {
-		t.Errorf("failed to complete extract job (%s): %v", job.ID(), err)
+	if err = wait(ctx, job); err != nil {
+		t.Errorf("extract failed: %v", err)
 	}
 
 	// Delete the model.
@@ -3661,13 +3654,13 @@ func wait(ctx context.Context, job *Job) error {
 		return fmt.Errorf("job %q status error: %#v", job.ID(), status.Err())
 	}
 	if status.Statistics == nil {
-		return errors.New("nil Statistics")
+		return fmt.Errorf("job %q nil Statistics", job.ID())
 	}
 	if status.Statistics.EndTime.IsZero() {
-		return errors.New("EndTime is zero")
+		return fmt.Errorf("job %q EndTime is zero", job.ID())
 	}
 	if status.Statistics.Details == nil {
-		return errors.New("nil Statistics.Details")
+		return fmt.Errorf("job %q nil Statistics.Details", job.ID())
 	}
 	return nil
 }
