@@ -3659,9 +3659,6 @@ func wait(ctx context.Context, job *Job) error {
 	if status.Statistics.EndTime.IsZero() {
 		return fmt.Errorf("job %q EndTime is zero", job.ID())
 	}
-	if status.Statistics.Details == nil {
-		return fmt.Errorf("job %q nil Statistics.Details", job.ID())
-	}
 	return nil
 }
 
