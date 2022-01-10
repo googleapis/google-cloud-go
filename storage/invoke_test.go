@@ -251,7 +251,7 @@ func TestShouldRetry(t *testing.T) {
 		{
 			desc:        "googleapi.Error{Code: 408}",
 			inputErr:    &googleapi.Error{Code: 408},
-			shouldRetry: false, // to be changed
+			shouldRetry: true,
 		},
 		{
 			desc:        "retryable gRPC error",
