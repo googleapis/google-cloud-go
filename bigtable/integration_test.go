@@ -1564,7 +1564,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("NewProdEnv: %v", err)
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 10 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -1619,9 +1619,9 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 
 	var encryptionKeyVersion string
 
-	// The encryption info can take 30-300s (currently about 120-190s) to
+	// The encryption info can take 30-500s (currently about 120-190s) to
 	// become ready.
-	for i := 0; i < 30; i++ {
+	for i := 0; i < 50; i++ {
 		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
@@ -1633,6 +1633,9 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		}
 
 		time.Sleep(time.Second * 10)
+	}
+	if encryptionKeyVersion == "" {
+		t.Fatalf("Encryption Key not created within alotted time limit")
 	}
 
 	// Validate Encryption Info under getTable
@@ -2265,10 +2268,11 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	// Ensure the profiles we require exist. profiles ⊂ allProfiles
 	verifyProfilesSubset := func(allProfiles []*btapb.AppProfile, profiles map[string]struct{}) {
 		for _, profile := range allProfiles {
-			delete(profiles, profile.Name)
+			segs := strings.Split(profile.Name, "/")
+			delete(profiles, segs[len(segs)-1])
 		}
 		if len(profiles) > 0 {
-			t.Fatalf("Initial app profile list missing profile: %v", profiles)
+			t.Fatalf("Initial app profile list missing profile: %v : %v", profiles, allProfiles)
 		}
 	}
 

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -464,9 +464,7 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/addAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetNetworkInterface() != "" {
-		params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
-	}
+	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -825,12 +823,8 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetAccessConfig() != "" {
-		params.Add("accessConfig", fmt.Sprintf("%v", req.GetAccessConfig()))
-	}
-	if req.GetNetworkInterface() != "" {
-		params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
-	}
+	params.Add("accessConfig", fmt.Sprintf("%v", req.GetAccessConfig()))
+	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -879,9 +873,7 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/detachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetDeviceName() != "" {
-		params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
-	}
+	params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -970,9 +962,7 @@ func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *co
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getEffectiveFirewalls", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetNetworkInterface() != "" {
-		params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
-	}
+	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1664,12 +1654,8 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDiskAutoDelete", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetAutoDelete() {
-		params.Add("autoDelete", fmt.Sprintf("%v", req.GetAutoDelete()))
-	}
-	if req.GetDeviceName() != "" {
-		params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
-	}
+	params.Add("autoDelete", fmt.Sprintf("%v", req.GetAutoDelete()))
+	params.Add("deviceName", fmt.Sprintf("%v", req.GetDeviceName()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2567,9 +2553,7 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetNetworkInterface() != "" {
-		params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
-	}
+	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -2680,9 +2664,7 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/updateNetworkInterface", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetNetworkInterface() != "" {
-		params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
-	}
+	params.Add("networkInterface", fmt.Sprintf("%v", req.GetNetworkInterface()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

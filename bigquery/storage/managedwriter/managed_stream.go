@@ -25,6 +25,7 @@ import (
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	grpcstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -177,7 +178,7 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 // getStream returns either a valid ARC client stream or permanent error.
 //
 // Calling getStream locks the mutex.
-func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
+func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, forceReconnect bool) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	ms.mu.Lock()
 	defer ms.mu.Unlock()
 	if ms.err != nil {
@@ -189,8 +190,15 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 	}
 
 	// Always return the retained ARC if the arg differs.
-	if arc != ms.arc {
+	if arc != ms.arc && !forceReconnect {
 		return ms.arc, ms.pending, nil
+	}
+	if arc != ms.arc && forceReconnect && ms.arc != nil {
+		// In this case, we're forcing a close to apply changes to the stream
+		// that currently can't be modified on an established connection.
+		//
+		// TODO: clean this up once internal issue 205756033 is resolved.
+		(*ms.arc).CloseSend()
 	}
 
 	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
@@ -247,13 +255,13 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 	var err error
 
 	for {
-		arc, ch, err = ms.getStream(arc)
+		arc, ch, err = ms.getStream(arc, pw.newSchema != nil)
 		if err != nil {
 			return err
 		}
 		var req *storagepb.AppendRowsRequest
 		ms.streamSetup.Do(func() {
-			reqCopy := *pw.request
+			reqCopy := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
 			reqCopy.WriteStream = ms.streamSettings.streamID
 			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 				ProtoDescriptor: ms.schemaDescriptor,
@@ -261,7 +269,7 @@ func (ms *ManagedStream) append(pw *pendingWrite, opts ...gax.CallOption) error 
 			if ms.streamSettings.TraceID != "" {
 				reqCopy.TraceId = ms.streamSettings.TraceID
 			}
-			req = &reqCopy
+			req = reqCopy
 		})
 
 		var err error
@@ -303,7 +311,7 @@ func (ms *ManagedStream) Close() error {
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 
-	arc, ch, err := ms.getStream(arc)
+	arc, ch, err := ms.getStream(arc, false)
 	if err != nil {
 		return err
 	}
@@ -327,14 +335,29 @@ func (ms *ManagedStream) Close() error {
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
 // the set of data.
 //
-// The format of the row data is binary serialized protocol buffer bytes, and and the message
-// must adhere to the format of the schema Descriptor passed in when creating the managed stream.
-func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, offset int64) (*AppendResult, error) {
-	pw := newPendingWrite(data, offset)
+// The format of the row data is binary serialized protocol buffer bytes.  The message must be compatible
+// with the schema currently set for the stream.
+//
+// Use the WithOffset() AppendOption to set an explicit offset for this append.  Setting an offset for
+// a default stream is unsupported.
+func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
+	pw := newPendingWrite(data)
+	// apply AppendOption opts
+	for _, opt := range opts {
+		opt(pw)
+	}
 	// check flow control
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
 		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
 		pw.markDone(NoStreamOffset, err, nil)
+	}
+	// if we've received an updated schema as part of a write, propagate it to both the cached schema and
+	// populate the schema in the request.
+	if pw.newSchema != nil {
+		ms.schemaDescriptor = pw.newSchema
+		pw.request.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+			ProtoDescriptor: pw.newSchema,
+		}
 	}
 	// proceed to call
 	if err := ms.append(pw); err != nil {
@@ -376,6 +399,11 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 				continue
 			}
 			recordStat(ctx, AppendResponses, 1)
+
+			// Retain the updated schema if present, for eventual presentation to the user.
+			if resp.GetUpdatedSchema() != nil {
+				nextWrite.result.updatedSchema = resp.GetUpdatedSchema()
+			}
 
 			if status := resp.GetError(); status != nil {
 				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))

@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	raw "google.golang.org/api/storage/v1"
@@ -782,6 +783,449 @@ func TestConditionErrors(t *testing.T) {
 		if err := conds.validate(""); err == nil {
 			t.Errorf("%+v: got nil, want error", conds)
 		}
+	}
+}
+
+// Test that ObjectHandle.Retryer correctly configures the retry configuration
+// in the ObjectHandle.
+func TestObjectRetryer(t *testing.T) {
+	testCases := []struct {
+		name string
+		call func(o *ObjectHandle) *ObjectHandle
+		want *retryConfig
+	}{
+		{
+			name: "all defaults",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer()
+			},
+			want: &retryConfig{},
+		},
+		{
+			name: "set all options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Initial:    2 * time.Second,
+						Max:        30 * time.Second,
+						Multiplier: 3,
+					}),
+					WithPolicy(RetryAlways),
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithBackoff(gax.Backoff{
+						Multiplier: 3,
+					}))
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(WithPolicy(RetryNever))
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			call: func(o *ObjectHandle) *ObjectHandle {
+				return o.Retryer(
+					WithErrorFunc(func(err error) bool { return false }))
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			o := tc.call(&ObjectHandle{})
+			if diff := cmp.Diff(
+				o.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+// Test that Client.SetRetry correctly configures the retry configuration
+// on the Client.
+func TestClientSetRetry(t *testing.T) {
+	testCases := []struct {
+		name          string
+		clientOptions []RetryOption
+		want          *retryConfig
+	}{
+		{
+			name:          "all defaults",
+			clientOptions: []RetryOption{},
+			want:          &retryConfig{},
+		},
+		{
+			name: "set all options",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(func(err error) bool { return false }),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    2 * time.Second,
+					Max:        30 * time.Second,
+					Multiplier: 3,
+				},
+				policy:      RetryAlways,
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+		{
+			name: "set some backoff options",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 3,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 3,
+				}},
+		},
+		{
+			name: "set policy only",
+			clientOptions: []RetryOption{
+				WithPolicy(RetryNever),
+			},
+			want: &retryConfig{
+				policy: RetryNever,
+			},
+		},
+		{
+			name: "set ErrorFunc only",
+			clientOptions: []RetryOption{
+				WithErrorFunc(func(err error) bool { return false }),
+			},
+			want: &retryConfig{
+				shouldRetry: func(err error) bool { return false },
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			c, err := NewClient(context.Background())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+			c.SetRetry(tc.clientOptions...)
+
+			if diff := cmp.Diff(
+				c.retry,
+				tc.want,
+				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+				// ErrorFunc cannot be compared directly, but we check if both are
+				// either nil or non-nil.
+				cmp.Comparer(func(a, b func(err error) bool) bool {
+					return (a == nil && b == nil) || (a != nil && b != nil)
+				}),
+			); diff != "" {
+				s.Fatalf("retry not configured correctly: %v", diff)
+			}
+		})
+	}
+}
+
+// Test the interactions between Client, ObjectHandle and BucketHandle Retryers,
+// and that they correctly configure the retry configuration for objects, ACLs, and HmacKeys
+func TestRetryer(t *testing.T) {
+	testCases := []struct {
+		name          string
+		clientOptions []RetryOption
+		bucketOptions []RetryOption
+		objectOptions []RetryOption
+		want          *retryConfig
+	}{
+		{
+			name: "no retries",
+			want: nil,
+		},
+		{
+			name: "object retryer configures retry",
+			objectOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
+			name: "bucket retryer configures retry",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				},
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
+			name: "client retryer configures retry",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				},
+				shouldRetry: shouldRetry,
+				policy:      RetryAlways,
+			},
+		},
+		{
+			name: "object retryer overrides bucket retryer",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+			},
+			objectOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+			},
+		},
+		{
+			name: "object retryer overrides client retryer",
+			clientOptions: []RetryOption{
+				WithPolicy(RetryAlways),
+			},
+			objectOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+			},
+		},
+		{
+			name: "bucket retryer overrides client retryer",
+			clientOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+				WithPolicy(RetryAlways),
+			},
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				}),
+				WithErrorFunc(shouldRetry),
+			},
+			want: &retryConfig{
+				policy:      RetryAlways,
+				shouldRetry: shouldRetry,
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				},
+			},
+		},
+		{
+			name: "object retryer overrides bucket retryer backoff options",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial:    time.Minute,
+					Max:        time.Hour,
+					Multiplier: 6,
+				}),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Microsecond,
+				},
+			},
+		},
+		{
+			name: "object retryer does not override bucket retryer if option is not set",
+			bucketOptions: []RetryOption{
+				WithPolicy(RetryNever),
+				WithErrorFunc(shouldRetry),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Second,
+				}),
+			},
+			want: &retryConfig{
+				policy:      RetryNever,
+				shouldRetry: shouldRetry,
+				backoff: &gax.Backoff{
+					Initial: time.Nanosecond,
+					Max:     time.Second,
+				},
+			},
+		},
+		{
+			name: "object's backoff completely overwrites bucket's backoff",
+			bucketOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Initial: time.Hour,
+				}),
+			},
+			objectOptions: []RetryOption{
+				WithBackoff(gax.Backoff{
+					Multiplier: 4,
+				}),
+			},
+			want: &retryConfig{
+				backoff: &gax.Backoff{
+					Multiplier: 4,
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(s *testing.T) {
+			ctx := context.Background()
+			c, err := NewClient(ctx)
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer c.Close()
+			if len(tc.clientOptions) > 0 {
+				c.SetRetry(tc.clientOptions...)
+			}
+			b := c.Bucket("buck")
+			if len(tc.bucketOptions) > 0 {
+				b = b.Retryer(tc.bucketOptions...)
+			}
+			o := b.Object("obj")
+			if len(tc.objectOptions) > 0 {
+				o = o.Retryer(tc.objectOptions...)
+			}
+
+			configHandleCases := []struct {
+				r    *retryConfig
+				name string
+				want *retryConfig
+			}{
+				{
+					name: "object.retry",
+					r:    o.retry,
+					want: tc.want,
+				},
+				{
+					name: "object.ACL()",
+					r:    o.ACL().retry,
+					want: tc.want,
+				},
+				{
+					name: "bucket.ACL()",
+					r:    b.ACL().retry,
+					want: b.retry,
+				},
+				{
+					name: "bucket.DefaultObjectACL()",
+					r:    b.DefaultObjectACL().retry,
+					want: b.retry,
+				},
+				{
+					name: "client.HMACKeyHandle()",
+					r:    c.HMACKeyHandle("pID", "accessID").retry,
+					want: c.retry,
+				},
+				{
+					name: "client.Buckets()",
+					r:    c.Buckets(ctx, "pID").client.retry,
+					want: c.retry,
+				},
+				{
+					name: "bucket.Objects()",
+					r:    b.Objects(ctx, nil).bucket.retry,
+					want: b.retry,
+				},
+			}
+			for _, ac := range configHandleCases {
+				s.Run(ac.name, func(ss *testing.T) {
+					if diff := cmp.Diff(
+						ac.want,
+						ac.r,
+						cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
+						// ErrorFunc cannot be compared directly, but we check if both are
+						// either nil or non-nil.
+						cmp.Comparer(func(a, b func(err error) bool) bool {
+							return (a == nil && b == nil) || (a != nil && b != nil)
+						}),
+					); diff != "" {
+						ss.Fatalf("retry not configured correctly: %v", diff)
+					}
+				})
+			}
+		})
 	}
 }
 
@@ -1702,5 +2146,86 @@ func TestOperationsWithEndpoint(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestSignedURLOptionsClone(t *testing.T) {
+	t.Parallel()
+
+	opts := &SignedURLOptions{
+		GoogleAccessID: "accessID",
+		PrivateKey:     []byte{},
+		SignBytes: func(b []byte) ([]byte, error) {
+			return b, nil
+		},
+		Method:          "GET",
+		Expires:         time.Now(),
+		ContentType:     "text/plain",
+		Headers:         []string{},
+		QueryParameters: map[string][]string{},
+		MD5:             "some-checksum",
+		Style:           VirtualHostedStyle(),
+		Insecure:        true,
+		Scheme:          SigningSchemeV2,
+	}
+
+	// Check that all fields are set to a non-zero value, so we can check that
+	// clone accurately clones all fields and catch newly added fields not cloned
+	reflectOpts := reflect.ValueOf(*opts)
+	for i := 0; i < reflectOpts.NumField(); i++ {
+		zero, err := isZeroValue(reflectOpts.Field(i))
+		if err != nil {
+			t.Errorf("IsZero: %v", err)
+		}
+		if zero {
+			t.Errorf("SignedURLOptions field %d not set", i)
+		}
+	}
+
+	// Check that fields are properly cloned
+	optsClone := opts.clone()
+
+	// We need a special comparer for functions
+	signBytesComp := func(a func([]byte) ([]byte, error), b func([]byte) ([]byte, error)) bool {
+		return reflect.ValueOf(a) == reflect.ValueOf(b)
+	}
+
+	if diff := cmp.Diff(opts, optsClone, cmp.Comparer(signBytesComp)); diff != "" {
+		t.Errorf("clone does not match (original: -, cloned: +):\n%s", diff)
+	}
+}
+
+// isZeroValue reports whether v is the zero value for its type
+// It errors if the argument is unknown
+func isZeroValue(v reflect.Value) (bool, error) {
+	switch v.Kind() {
+	case reflect.Bool:
+		return !v.Bool(), nil
+	case reflect.Int, reflect.Int64:
+		return v.Int() == 0, nil
+	case reflect.Uint, reflect.Uint64:
+		return v.Uint() == 0, nil
+	case reflect.Array:
+		for i := 0; i < v.Len(); i++ {
+			zero, err := isZeroValue(v.Index(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	case reflect.Func, reflect.Interface, reflect.Map, reflect.Slice, reflect.Ptr:
+		return v.IsNil(), nil
+	case reflect.String:
+		return v.Len() == 0, nil
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			zero, err := isZeroValue(v.Field(i))
+			if !zero || err != nil {
+				return false, err
+			}
+		}
+		return true, nil
+	default:
+		return false, fmt.Errorf("unable to check kind %s", v.Kind())
 	}
 }

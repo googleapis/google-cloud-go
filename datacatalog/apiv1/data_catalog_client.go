@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -77,7 +77,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -400,6 +399,10 @@ func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntry
 }
 
 // ListEntries lists entries.
+//
+// Note: Currently, this method can list only custom entries.
+// To get a list of both custom and automatically created entries, use
+// SearchCatalog.
 func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntriesRequest, opts ...gax.CallOption) *EntryIterator {
 	return c.internalClient.ListEntries(ctx, req, opts...)
 }

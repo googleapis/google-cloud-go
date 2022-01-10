@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -681,9 +681,7 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies")
 
 	params := url.Values{}
-	if req != nil && req.ParentId != nil {
-		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
-	}
+	params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
@@ -866,9 +864,7 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/firewallPolicies/%v/move", req.GetFirewallPolicy())
 
 	params := url.Values{}
-	if req != nil && req.ParentId != nil {
-		params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
-	}
+	params.Add("parentId", fmt.Sprintf("%v", req.GetParentId()))
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

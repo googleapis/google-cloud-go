@@ -1,5 +1,13 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.0.0...recaptchaenterprise/v1.1.0) (2022-01-04)
+
+
+### Features
+
+* **recaptchaenterprise:** add new reCAPTCHA Enterprise fraud annotations ([3dd34a2](https://www.github.com/googleapis/google-cloud-go/commit/3dd34a262edbff63b9aece8faddc2ff0d98ce42a))
+* **recaptchaenterprise:** add reCAPTCHA Enterprise account defender API methods ([88a1cdb](https://www.github.com/googleapis/google-cloud-go/commit/88a1cdbef3cc337354a61bc9276725bfb9a686d8))
+
 ## 1.0.0
 
 Stabilize GA surface.
@@ -15,4 +23,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out recaptchaenterprise as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
- 

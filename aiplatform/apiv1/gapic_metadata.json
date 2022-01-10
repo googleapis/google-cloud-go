@@ -266,6 +266,11 @@
                 "ListIndexEndpoints"
               ]
             },
+            "MutateDeployedIndex": {
+              "methods": [
+                "MutateDeployedIndex"
+              ]
+            },
             "UndeployIndex": {
               "methods": [
                 "UndeployIndex"
@@ -816,6 +821,155 @@
             "UpdateSpecialistPool": {
               "methods": [
                 "UpdateSpecialistPool"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TensorboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TensorboardClient",
+          "rpcs": {
+            "BatchCreateTensorboardRuns": {
+              "methods": [
+                "BatchCreateTensorboardRuns"
+              ]
+            },
+            "BatchCreateTensorboardTimeSeries": {
+              "methods": [
+                "BatchCreateTensorboardTimeSeries"
+              ]
+            },
+            "BatchReadTensorboardTimeSeriesData": {
+              "methods": [
+                "BatchReadTensorboardTimeSeriesData"
+              ]
+            },
+            "CreateTensorboard": {
+              "methods": [
+                "CreateTensorboard"
+              ]
+            },
+            "CreateTensorboardExperiment": {
+              "methods": [
+                "CreateTensorboardExperiment"
+              ]
+            },
+            "CreateTensorboardRun": {
+              "methods": [
+                "CreateTensorboardRun"
+              ]
+            },
+            "CreateTensorboardTimeSeries": {
+              "methods": [
+                "CreateTensorboardTimeSeries"
+              ]
+            },
+            "DeleteTensorboard": {
+              "methods": [
+                "DeleteTensorboard"
+              ]
+            },
+            "DeleteTensorboardExperiment": {
+              "methods": [
+                "DeleteTensorboardExperiment"
+              ]
+            },
+            "DeleteTensorboardRun": {
+              "methods": [
+                "DeleteTensorboardRun"
+              ]
+            },
+            "DeleteTensorboardTimeSeries": {
+              "methods": [
+                "DeleteTensorboardTimeSeries"
+              ]
+            },
+            "ExportTensorboardTimeSeriesData": {
+              "methods": [
+                "ExportTensorboardTimeSeriesData"
+              ]
+            },
+            "GetTensorboard": {
+              "methods": [
+                "GetTensorboard"
+              ]
+            },
+            "GetTensorboardExperiment": {
+              "methods": [
+                "GetTensorboardExperiment"
+              ]
+            },
+            "GetTensorboardRun": {
+              "methods": [
+                "GetTensorboardRun"
+              ]
+            },
+            "GetTensorboardTimeSeries": {
+              "methods": [
+                "GetTensorboardTimeSeries"
+              ]
+            },
+            "ListTensorboardExperiments": {
+              "methods": [
+                "ListTensorboardExperiments"
+              ]
+            },
+            "ListTensorboardRuns": {
+              "methods": [
+                "ListTensorboardRuns"
+              ]
+            },
+            "ListTensorboardTimeSeries": {
+              "methods": [
+                "ListTensorboardTimeSeries"
+              ]
+            },
+            "ListTensorboards": {
+              "methods": [
+                "ListTensorboards"
+              ]
+            },
+            "ReadTensorboardBlobData": {
+              "methods": [
+                "ReadTensorboardBlobData"
+              ]
+            },
+            "ReadTensorboardTimeSeriesData": {
+              "methods": [
+                "ReadTensorboardTimeSeriesData"
+              ]
+            },
+            "UpdateTensorboard": {
+              "methods": [
+                "UpdateTensorboard"
+              ]
+            },
+            "UpdateTensorboardExperiment": {
+              "methods": [
+                "UpdateTensorboardExperiment"
+              ]
+            },
+            "UpdateTensorboardRun": {
+              "methods": [
+                "UpdateTensorboardRun"
+              ]
+            },
+            "UpdateTensorboardTimeSeries": {
+              "methods": [
+                "UpdateTensorboardTimeSeries"
+              ]
+            },
+            "WriteTensorboardExperimentData": {
+              "methods": [
+                "WriteTensorboardExperimentData"
+              ]
+            },
+            "WriteTensorboardRunData": {
+              "methods": [
+                "WriteTensorboardRunData"
               ]
             }
           }

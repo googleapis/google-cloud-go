@@ -286,12 +286,17 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	payload, err := trimDoubleQuotes(payload)
-	if err != nil {
+	var s *string
+	if err := json.Unmarshal(payload, &s); err != nil {
 		return err
 	}
-	n.StringVal = string(payload)
-	n.Valid = true
+	if s != nil {
+		n.StringVal = *s
+		n.Valid = true
+	} else {
+		n.StringVal = ""
+		n.Valid = false
+	}
 	return nil
 }
 
@@ -2871,6 +2876,11 @@ func errNilSpannerStructType() error {
 	return spannerErrorf(codes.FailedPrecondition, "unexpected nil StructType in decoding Cloud Spanner STRUCT")
 }
 
+// errDupGoField returns error for duplicated Go STRUCT field names
+func errDupGoField(s interface{}, name string) error {
+	return spannerErrorf(codes.InvalidArgument, "Go struct %+v(type %T) has duplicate fields for GO STRUCT field %s", s, s, name)
+}
+
 // errUnnamedField returns error for decoding a Cloud Spanner STRUCT with
 // unnamed field into a Go struct.
 func errUnnamedField(ty *sppb.StructType, i int) error {
@@ -2905,7 +2915,7 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
 // ptr, according to
 // the structural information given in sppb.StructType ty.
-func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) error {
+func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
 	if reflect.ValueOf(ptr).IsNil() {
 		return errNilDst(ptr)
 	}
@@ -2921,6 +2931,15 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) er
 	if err != nil {
 		return ToSpannerError(err)
 	}
+	// return error if lenient is true and destination has duplicate exported columns
+	if lenient {
+		fieldNames := getAllFieldNames(v)
+		for _, f := range fieldNames {
+			if fields.Match(f) == nil {
+				return errDupGoField(ptr, f)
+			}
+		}
+	}
 	seen := map[string]bool{}
 	for i, f := range ty.Fields {
 		if f.Name == "" {
@@ -2928,6 +2947,9 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) er
 		}
 		sf := fields.Match(f.Name)
 		if sf == nil {
+			if lenient {
+				continue
+			}
 			return errNoOrDupGoField(ptr, f.Name)
 		}
 		if seen[f.Name] {
@@ -2986,13 +3008,44 @@ func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Decode proto3.ListValue l into struct referenced by s.Interface().
-		if err = decodeStruct(ty, l, s.Interface()); err != nil {
+		if err = decodeStruct(ty, l, s.Interface(), false); err != nil {
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Append the decoded struct back into the slice.
 		v.Set(reflect.Append(v, s))
 	}
 	return nil
+}
+
+func getAllFieldNames(v reflect.Value) []string {
+	var names []string
+	typeOfT := v.Type()
+	for i := 0; i < v.NumField(); i++ {
+		f := v.Field(i)
+		fieldType := typeOfT.Field(i)
+		exported := (fieldType.PkgPath == "")
+		// If a named field is unexported, ignore it. An anonymous
+		// unexported field is processed, because it may contain
+		// exported fields, which are visible.
+		if !exported && !fieldType.Anonymous {
+			continue
+		}
+		if f.Kind() == reflect.Struct {
+			if fieldType.Anonymous {
+				names = append(names, getAllFieldNames(reflect.ValueOf(f.Interface()))...)
+			}
+			continue
+		}
+		name, keep, _, _ := spannerTagParser(fieldType.Tag)
+		if !keep {
+			continue
+		}
+		if name == "" {
+			name = fieldType.Name
+		}
+		names = append(names, name)
+	}
+	return names
 }
 
 // errEncoderUnsupportedType returns error for not being able to encode a value

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://networksecurity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -124,6 +123,10 @@ type internalClient interface {
 
 // Client is a client for interacting with Network Security API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Network Security API provides resources to configure authentication and
+// authorization policies. Refer to per API resource documentation for more
+// information.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -315,6 +318,10 @@ type gRPCClient struct {
 
 // NewClient creates a new network security client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Network Security API provides resources to configure authentication and
+// authorization policies. Refer to per API resource documentation for more
+// information.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
