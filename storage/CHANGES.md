@@ -1,5 +1,24 @@
 # Changes
 
+## [1.19.0](https://www.github.com/googleapis/google-cloud-go/compare/storage/v1.18.2...storage/v1.19.0) (2022-01-10)
+
+
+### Features
+
+* **storage:** add retry config to ACL handle methods ([#5185](https://www.github.com/googleapis/google-cloud-go/issues/5185)) ([be07d8d](https://www.github.com/googleapis/google-cloud-go/commit/be07d8dbd63857d3fb7f8e1cd0a0048c89a02ebd))
+* **storage:** add retry config to BucketHandle ([#5170](https://www.github.com/googleapis/google-cloud-go/issues/5170)) ([b2b5476](https://www.github.com/googleapis/google-cloud-go/commit/b2b54767d45a2b00e005a2bce0d7c8b15ad3605e))
+* **storage:** add retry config to IAM handle and reader ([#5223](https://www.github.com/googleapis/google-cloud-go/issues/5223)) ([8365456](https://www.github.com/googleapis/google-cloud-go/commit/8365456ee14d7af0328ce75760df489d59bc6b86))
+* **storage:** add retry config to iterators ([4910cd4](https://www.github.com/googleapis/google-cloud-go/commit/4910cd4d8a1998d16a78b14393de78c634dba0c3))
+* **storage:** add retry config to notifications ([#5221](https://www.github.com/googleapis/google-cloud-go/issues/5221)) ([ba5d6cf](https://www.github.com/googleapis/google-cloud-go/commit/ba5d6cf3a946520749447f1942b20cbc76944c9d))
+* **storage:** add retry config to the Client and HmacKey operations ([#5193](https://www.github.com/googleapis/google-cloud-go/issues/5193)) ([ce6e7a0](https://www.github.com/googleapis/google-cloud-go/commit/ce6e7a022252362ecd04547d3cd6ec50eaf3eec3))
+* **storage:** add retry configurability ([#5159](https://www.github.com/googleapis/google-cloud-go/issues/5159)) ([a12641a](https://www.github.com/googleapis/google-cloud-go/commit/a12641a43de60ed123f9ac604e9017c83a9654df))
+* **storage:** add retry idempotency configs ([#5165](https://www.github.com/googleapis/google-cloud-go/issues/5165)) ([fa5e458](https://www.github.com/googleapis/google-cloud-go/commit/fa5e4587cd6677edaa7f501b1521b27fe6bef0bd))
+* **storage:** allow retry ErrorFunc configs ([#5166](https://www.github.com/googleapis/google-cloud-go/issues/5166)) ([c103ff6](https://www.github.com/googleapis/google-cloud-go/commit/c103ff6cb37aba3f326aff7e04c84dc2050d53f5))
+* **storage:** configurable retries for uploads ([#5210](https://www.github.com/googleapis/google-cloud-go/issues/5210)) ([ee4f600](https://www.github.com/googleapis/google-cloud-go/commit/ee4f600929df86d4c65db1abcc4bef2f1d6d23a5))
+* **storage:** GenerateSignedPostPolicyV4 can use existing creds to authenticate ([#5105](https://www.github.com/googleapis/google-cloud-go/issues/5105)) ([46489f4](https://www.github.com/googleapis/google-cloud-go/commit/46489f4c8a634068a3e7cf2fd5e5ca11b555c0a8))
+* **storage:** post policy can be signed with a fn that takes raw bytes ([#5079](https://www.github.com/googleapis/google-cloud-go/issues/5079)) ([25d1278](https://www.github.com/googleapis/google-cloud-go/commit/25d1278cab539fbfdd8563ed6b297e30d3fe555c))
+* **storage:** retry copy funcs on idempotent conds ([#5172](https://www.github.com/googleapis/google-cloud-go/issues/5172)) ([6d09687](https://www.github.com/googleapis/google-cloud-go/commit/6d0968722352895f2d8034e5c079bd406e3ca4b2))
+
 ### [1.18.2](https://www.github.com/googleapis/google-cloud-go/compare/storage/v1.18.1...storage/v1.18.2) (2021-10-18)
 
 
