@@ -60,8 +60,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:           "cloud.google.com/go/compute/apiv1",
 		apiServiceConfigPath: "compute_v1.yaml",
 		transports:           []string{"rest"},
-		// TODO: Change to "ga" when ready.
-		releaseLevel: "beta",
+		releaseLevel:         "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
