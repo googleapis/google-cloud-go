@@ -2912,8 +2912,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("get object attrs", err)
 			_, err = bucket.Object(objectName).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
 			checkforErrors("update object", err)
-			err = bucket.Object(objectName).Delete(ctx)
-			if err != nil {
+			if err = bucket.Object(objectName).Delete(ctx); err != nil {
 				// We still want to delete object if the test errors
 				h.mustDeleteObject(requesterPaysBucket.Object(objectName))
 			}
