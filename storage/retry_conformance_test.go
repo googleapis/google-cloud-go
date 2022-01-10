@@ -243,10 +243,11 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 
-			if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
-				return err
+			if !preconditions {
+				policy.InternalProto.Etag = nil
 			}
-			return fmt.Errorf("Etag preconditions not supported")
+
+			return bkt.IAM().SetPolicy(ctx, policy)
 		},
 	},
 	"storage.hmacKey.update": {

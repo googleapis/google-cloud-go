@@ -1900,7 +1900,7 @@ func (ws *withPolicy) apply(config *retryConfig) {
 // By default, the following errors are retried (see invoke.go for the default
 // shouldRetry function):
 //
-// - HTTP responses with codes 429, 502, 503, and 504.
+// - HTTP responses with codes 408, 429, 502, 503, and 504.
 //
 // - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
 //
