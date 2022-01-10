@@ -40,6 +40,11 @@
                 "CreatePhraseMatcher"
               ]
             },
+            "CreateView": {
+              "methods": [
+                "CreateView"
+              ]
+            },
             "DeleteAnalysis": {
               "methods": [
                 "DeleteAnalysis"
@@ -58,6 +63,11 @@
             "DeletePhraseMatcher": {
               "methods": [
                 "DeletePhraseMatcher"
+              ]
+            },
+            "DeleteView": {
+              "methods": [
+                "DeleteView"
               ]
             },
             "DeployIssueModel": {
@@ -100,6 +110,11 @@
                 "GetSettings"
               ]
             },
+            "GetView": {
+              "methods": [
+                "GetView"
+              ]
+            },
             "ListAnalyses": {
               "methods": [
                 "ListAnalyses"
@@ -123,6 +138,11 @@
             "ListPhraseMatchers": {
               "methods": [
                 "ListPhraseMatchers"
+              ]
+            },
+            "ListViews": {
+              "methods": [
+                "ListViews"
               ]
             },
             "UndeployIssueModel": {
@@ -153,6 +173,11 @@
             "UpdateSettings": {
               "methods": [
                 "UpdateSettings"
+              ]
+            },
+            "UpdateView": {
+              "methods": [
+                "UpdateView"
               ]
             }
           }

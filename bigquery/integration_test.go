@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -560,12 +559,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run snapshot: %v", err)
 	}
-	status, err := job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("polling snapshot failed: %v", err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("snapshot failed in error: %v", status.Err())
+		t.Fatalf("snapshot failed: %v", err)
 	}
 
 	// verify metadata on the snapshot
@@ -592,12 +588,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run restore: %v", err)
 	}
-	status, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("polling restore failed: %v", err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("restore failed in error: %v", status.Err())
+		t.Fatalf("restore failed: %v", err)
 	}
 
 	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
@@ -1979,7 +1972,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		t.Fatalf("job Wait failure: %v", err)
+		t.Fatalf("job %q: Wait failure: %v", job.ID(), err)
 	}
 	if status.Statistics == nil {
 		t.Fatal("expected job statistics, none found")
@@ -2143,9 +2136,12 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
-			return false, err
+			return false, fmt.Errorf("%q: %v", job.ID(), err)
 		}
 		status := job.LastStatus()
+		if status.Err() != nil {
+			return false, fmt.Errorf("job %q terminated in err: %v", job.ID(), status.Err())
+		}
 		if status.Statistics != nil {
 			jobStats = status.Statistics
 			if qStats, ok := status.Statistics.Details.(*QueryStatistics); ok {
@@ -2615,10 +2611,10 @@ func TestIntegration_Scripting(t *testing.T) {
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		t.Fatalf("failed to wait for completion: %v", err)
+		t.Fatalf("job %q failed to wait for completion: %v", job.ID(), err)
 	}
 	if status.Err() != nil {
-		t.Fatalf("job terminated with error: %v", err)
+		t.Fatalf("job %q terminated with error: %v", job.ID(), err)
 	}
 
 	queryStats, ok := status.Statistics.Details.(*QueryStatistics)
@@ -2928,9 +2924,9 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("job Run failure: %v", err)
 	}
-	_, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("job completion failure: %v", err)
+		t.Fatalf("job %q completion failure: %v", job.ID(), err)
 	}
 
 	if err := job.Delete(ctx); err != nil {
@@ -3338,8 +3334,8 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to extract model to GCS: %v", err)
 	}
-	if _, err := job.Wait(ctx); err != nil {
-		t.Errorf("failed to complete extract job (%s): %v", job.ID(), err)
+	if err = wait(ctx, job); err != nil {
+		t.Errorf("extract failed: %v", err)
 	}
 
 	// Delete the model.
@@ -3652,19 +3648,16 @@ func hasStatusCode(err error, code int) bool {
 func wait(ctx context.Context, job *Job) error {
 	status, err := job.Wait(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("job %q error: %v", job.ID(), err)
 	}
 	if status.Err() != nil {
-		return fmt.Errorf("job status error: %#v", status.Err())
+		return fmt.Errorf("job %q status error: %#v", job.ID(), status.Err())
 	}
 	if status.Statistics == nil {
-		return errors.New("nil Statistics")
+		return fmt.Errorf("job %q nil Statistics", job.ID())
 	}
 	if status.Statistics.EndTime.IsZero() {
-		return errors.New("EndTime is zero")
-	}
-	if status.Statistics.Details == nil {
-		return errors.New("nil Statistics.Details")
+		return fmt.Errorf("job %q EndTime is zero", job.ID())
 	}
 	return nil
 }
