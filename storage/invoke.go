@@ -55,21 +55,6 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	})
 }
 
-// runWithRetry calls the function until it returns nil or a non-retryable error, or
-// the context is done.
-func runWithRetry(ctx context.Context, call func() error) error {
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		err = call()
-		if err == nil {
-			return true, nil
-		}
-		if shouldRetry(err) {
-			return false, err
-		}
-		return true, err
-	})
-}
-
 func shouldRetry(err error) bool {
 	if err == nil {
 		return false
@@ -79,9 +64,9 @@ func shouldRetry(err error) bool {
 	}
 	switch e := err.(type) {
 	case *googleapi.Error:
-		// Retry on 429 and 5xx, according to
+		// Retry on 408, 429, and 5xx, according to
 		// https://cloud.google.com/storage/docs/exponential-backoff.
-		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
+		return e.Code == 408 || e.Code == 429 || (e.Code >= 500 && e.Code < 600)
 	case *url.Error:
 		// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
 		// Unfortunately the error type is unexported, so we resort to string
