@@ -159,6 +159,7 @@ var allFuncs = []string{
 
 	// Mathematical functions.
 	"ABS",
+	"MOD",
 
 	// Hash functions.
 	"FARM_FINGERPRINT",

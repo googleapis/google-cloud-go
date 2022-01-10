@@ -25,6 +25,11 @@
                 "ExportDocuments"
               ]
             },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
             "GetField": {
               "methods": [
                 "GetField"
@@ -40,6 +45,11 @@
                 "ImportDocuments"
               ]
             },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
             "ListFields": {
               "methods": [
                 "ListFields"
@@ -48,6 +58,11 @@
             "ListIndexes": {
               "methods": [
                 "ListIndexes"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
               ]
             },
             "UpdateField": {
