@@ -1,5 +1,17 @@
 # Changes
 
+## [1.7.0](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.6.1...firestore/v1.7.0) (2022-01-10)
+
+
+### Features
+
+* **firestore/apiv1:** update client libraries to support Database operations ([18092a0](https://www.github.com/googleapis/google-cloud-go/commit/18092a09c07f0b0e831d66f31fb47790a26e71d6))
+
+
+### Bug Fixes
+
+* **firestore:** DocumentIterator.GetAll: check iterator error ([#5247](https://www.github.com/googleapis/google-cloud-go/issues/5247)) ([ac99241](https://www.github.com/googleapis/google-cloud-go/commit/ac9924157f35a00ff9d1e6ece9a7e0f12fc60226))
+
 ### [1.6.1](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.6.0...firestore/v1.6.1) (2021-10-29)
 
 
