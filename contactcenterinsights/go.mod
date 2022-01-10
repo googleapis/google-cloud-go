@@ -3,7 +3,7 @@ module cloud.google.com/go/contactcenterinsights
 go 1.17
 
 require (
-	cloud.google.com/go v0.99.0
+	cloud.google.com/go v0.100.2
 	github.com/googleapis/gax-go/v2 v2.1.1
 	google.golang.org/api v0.64.0
 	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368
@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	cloud.google.com/go/compute v0.1.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
