@@ -19,7 +19,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"testing"
 
 	"cloud.google.com/go/internal/version"
 	"go.opencensus.io/stats"
@@ -274,17 +273,6 @@ func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod strin
 	}
 	recordStat(ctx, GFELatency, int64(gfeLatency))
 	return nil
-}
-
-func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
-	// We only check prefix because client ID increases if we create
-	// multiple clients for the same database.
-	if !strings.HasPrefix(m[tagKeyClientID], "client") {
-		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
-	}
-	if m[tagKeyLibVersion] != version.Repo {
-		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
-	}
 }
 
 func createContextAndCaptureGFELatencyMetrics(ctx context.Context, ct *commonTags, md metadata.MD, keyMethod string) error {
