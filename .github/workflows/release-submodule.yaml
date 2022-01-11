@@ -35,7 +35,7 @@ jobs:
       matrix:
         package: ${{fromJson(needs.changeFinder.outputs.submodules)}}
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - uses: GoogleCloudPlatform/release-please-action@v2
         id: release-please
         with:
            path: ${{ matrix.package }}
@@ -69,7 +69,7 @@ jobs:
       matrix:
         package: ${{fromJson(needs.changeFinder.outputs.submodules)}}
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v3
+      - uses: GoogleCloudPlatform/release-please-action@v2
         id: tag-release
         with:
           path: ${{ matrix.package }}
