@@ -37,9 +37,11 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/internal/version"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
@@ -3739,5 +3741,16 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
 		t.Logf(string(out))
+	}
+}
+
+func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
+	// We only check prefix because client ID increases if we create
+	// multiple clients for the same database.
+	if !strings.HasPrefix(m[tagKeyClientID], "client") {
+		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
+	}
+	if m[tagKeyLibVersion] != version.Repo {
+		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }
