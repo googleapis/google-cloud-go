@@ -1157,7 +1157,7 @@ type ClusterInfo struct {
 	KMSKeyName string
 
 	// AutoscalingConfig are the configured values for a cluster.
-	AutoscalingConfig AutoscalingConfig
+	AutoscalingConfig *AutoscalingConfig
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1270,7 +1270,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 		}
 		if cfg := c.GetClusterConfig(); cfg != nil {
 			if asc, ok := fromClusterConfigProto(cfg); ok {
-				ci.AutoscalingConfig = asc
+				ci.AutoscalingConfig = &asc
 			}
 		}
 		cis = append(cis, ci)
@@ -1316,7 +1316,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	// Use type assertion to handle protobuf oneof type
 	if cfg := c.GetClusterConfig(); cfg != nil {
 		if asc, ok := fromClusterConfigProto(cfg); ok {
-			ci.AutoscalingConfig = asc
+			ci.AutoscalingConfig = &asc
 		}
 	}
 	return ci, nil

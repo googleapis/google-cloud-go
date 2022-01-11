@@ -87,7 +87,7 @@ func setupClient(t *testing.T, ac btapb.BigtableInstanceAdminClient) *InstanceAd
 func TestInstanceAdmin_GetCluster(t *testing.T) {
 	tcs := []struct {
 		cluster    *btapb.Cluster
-		wantConfig AutoscalingConfig
+		wantConfig *AutoscalingConfig
 		desc       string
 	}{
 		{
@@ -98,7 +98,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
 			},
-			wantConfig: AutoscalingConfig{},
+			wantConfig: nil,
 		},
 		{
 			desc: "when autoscaling is enabled",
@@ -121,7 +121,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 					},
 				},
 			},
-			wantConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 		},
 	}
 
@@ -134,7 +134,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 				t.Fatalf("GetCluster failed: %v", err)
 			}
 
-			if gotConfig := info.AutoscalingConfig; gotConfig != tc.wantConfig {
+			if gotConfig := info.AutoscalingConfig; !cmp.Equal(gotConfig, tc.wantConfig) {
 				t.Fatalf("want autoscaling config = %v, got = %v", tc.wantConfig, gotConfig)
 			}
 		})
@@ -144,7 +144,7 @@ func TestInstanceAdmin_GetCluster(t *testing.T) {
 func TestInstanceAdmin_Clusters(t *testing.T) {
 	tcs := []struct {
 		cluster    *btapb.Cluster
-		wantConfig AutoscalingConfig
+		wantConfig *AutoscalingConfig
 		desc       string
 	}{
 		{
@@ -155,7 +155,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 				State:              btapb.Cluster_READY,
 				DefaultStorageType: btapb.StorageType_SSD,
 			},
-			wantConfig: AutoscalingConfig{},
+			wantConfig: nil,
 		},
 		{
 			desc: "when autoscaling is enabled",
@@ -178,7 +178,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 					},
 				},
 			},
-			wantConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+			wantConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 		},
 	}
 
@@ -195,7 +195,7 @@ func TestInstanceAdmin_Clusters(t *testing.T) {
 			}
 
 			info := infos[0]
-			if gotConfig := info.AutoscalingConfig; gotConfig != tc.wantConfig {
+			if gotConfig := info.AutoscalingConfig; !cmp.Equal(gotConfig, tc.wantConfig) {
 				t.Fatalf("want autoscaling config = %v, got = %v", tc.wantConfig, gotConfig)
 			}
 		})
