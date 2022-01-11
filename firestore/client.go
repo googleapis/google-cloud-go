@@ -101,6 +101,22 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return c, nil
 }
 
+// NewClientWithDatabase creates a new Firestore client that accesses the
+// specified database.
+func NewClientWithDatabase(ctx context.Context, projectID string, databaseID string, opts ...option.ClientOption) (*Client, error) {
+	if databaseID == "" {
+		return nil, errors.New("firestore: databaseName was empty")
+	}
+
+	clientPtr, err := NewClient(ctx, projectID, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	clientPtr.databaseID = databaseID
+	return clientPtr, nil
+}
+
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
 	creds, err := transport.Creds(ctx, opts...)
 	if err != nil {
