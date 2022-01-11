@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: release-pr # Open the release PR from a fork.
-        uses: GoogleCloudPlatform/release-please-action@v2
+        uses: GoogleCloudPlatform/release-please-action@v3
         with:
           # token: ${{ secrets.FORKING_TOKEN }}
           token: ${{ secrets.FORKING_TOKEN }}
@@ -38,7 +38,7 @@ jobs:
     if: github.repository == 'googleapis/google-cloud-go'
     runs-on: ubuntu-latest
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
+      - uses: GoogleCloudPlatform/release-please-action@v3
         id: tag-release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
