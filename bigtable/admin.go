@@ -811,7 +811,7 @@ type InstanceConf struct {
 
 	// AutoscalingConfig configures the autoscaling properties on the cluster
 	// created with the instance. It is optional.
-	AutoscalingConfig AutoscalingConfig
+	AutoscalingConfig *AutoscalingConfig
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -828,7 +828,7 @@ var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][
 // This method will return when the instance has been created or when an error occurs.
 func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *InstanceConf) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	newConfig := InstanceWithClustersConfig{
+	newConfig := &InstanceWithClustersConfig{
 		InstanceID:   conf.InstanceId,
 		DisplayName:  conf.DisplayName,
 		InstanceType: conf.InstanceType,
@@ -844,7 +844,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 			},
 		},
 	}
-	return iac.CreateInstanceWithClusters(ctx, &newConfig)
+	return iac.CreateInstanceWithClusters(ctx, newConfig)
 }
 
 // CreateInstanceWithClusters creates a new instance with configured clusters in the project.
@@ -949,8 +949,8 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 	// Update any clusters
 	for _, cluster := range conf.Clusters {
 		var clusterErr error
-		if !cluster.AutoscalingConfig.isZero() {
-			clusterErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID, cluster.AutoscalingConfig)
+		if cluster.AutoscalingConfig != nil {
+			clusterErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID, *cluster.AutoscalingConfig)
 		} else if cluster.NumNodes > 0 {
 			clusterErr = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID, cluster.NumNodes)
 		}
@@ -1048,34 +1048,28 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 // AutoscalingConfig contains autoscaling configuration for a cluster.
 // For details, see https://cloud.google.com/bigtable/docs/autoscaling.
 type AutoscalingConfig struct {
-	// MinNodes sets the minumum number of nodes in a cluster.
+	// MinNodes sets the minumum number of nodes in a cluster. MinNodes must
+	// be 1 or greater.
 	MinNodes int
-	// MaxNodes sets the maximum number of nodes in a cluster.
+	// MaxNodes sets the maximum number of nodes in a cluster. MaxNodes must be
+	// equal to or greater than MinNodes.
 	MaxNodes int
 	// CPUTargetPercent sets the CPU utilization target for your cluster's
 	// workload.
 	CPUTargetPercent int
 }
 
-func (a AutoscalingConfig) isZero() bool {
-	return a.MinNodes == 0 && a.MaxNodes == 0 && a.CPUTargetPercent == 0
-}
-
-func (a AutoscalingConfig) proto() *btapb.Cluster_ClusterConfig_ {
-	if a.isZero() {
+func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
+	if a == nil {
 		return nil
 	}
-	return &btapb.Cluster_ClusterConfig_{
-		ClusterConfig: &btapb.Cluster_ClusterConfig{
-			ClusterAutoscalingConfig: &btapb.Cluster_ClusterAutoscalingConfig{
-				AutoscalingLimits: &btapb.AutoscalingLimits{
-					MinServeNodes: int32(a.MinNodes),
-					MaxServeNodes: int32(a.MaxNodes),
-				},
-				AutoscalingTargets: &btapb.AutoscalingTargets{
-					CpuUtilizationPercent: int32(a.CPUTargetPercent),
-				},
-			},
+	return &btapb.Cluster_ClusterAutoscalingConfig{
+		AutoscalingLimits: &btapb.AutoscalingLimits{
+			MinServeNodes: int32(a.MinNodes),
+			MaxServeNodes: int32(a.MaxNodes),
+		},
+		AutoscalingTargets: &btapb.AutoscalingTargets{
+			CpuUtilizationPercent: int32(a.CPUTargetPercent),
 		},
 	}
 }
@@ -1119,19 +1113,27 @@ type ClusterConfig struct {
 
 	// AutoscalingConfig configures the autoscaling properties on a cluster.
 	// One of NumNodes or AutoscalingConfig is required.
-	AutoscalingConfig AutoscalingConfig
+	AutoscalingConfig *AutoscalingConfig
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
-	return &btapb.Cluster{
+	cl := &btapb.Cluster{
 		ServeNodes:         cc.NumNodes,
 		DefaultStorageType: cc.StorageType.proto(),
 		Location:           "projects/" + project + "/locations/" + cc.Zone,
 		EncryptionConfig: &btapb.Cluster_EncryptionConfig{
 			KmsKeyName: cc.KMSKeyName,
 		},
-		Config: cc.AutoscalingConfig.proto(),
 	}
+
+	if asc := cc.AutoscalingConfig.proto(); asc != nil {
+		cl.Config = &btapb.Cluster_ClusterConfig_{
+			ClusterConfig: &btapb.Cluster_ClusterConfig{
+				ClusterAutoscalingConfig: cc.AutoscalingConfig.proto(),
+			},
+		}
+	}
+	return cl
 }
 
 // ClusterInfo represents information about a cluster.
@@ -1186,12 +1188,16 @@ func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, c
 }
 
 // SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
-// UpdateCluster.
+// UpdateCluster. See AutoscalingConfig documentation for deatils.
 func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
-		Name:   "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
-		Config: conf.proto(),
+		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
+		Config: &btapb.Cluster_ClusterConfig_{
+			ClusterConfig: &btapb.Cluster_ClusterConfig{
+				ClusterAutoscalingConfig: conf.proto(),
+			},
+		},
 	}
 	lro, err := iac.iClient.PartialUpdateCluster(ctx, &btapb.PartialUpdateClusterRequest{
 		UpdateMask: &field_mask.FieldMask{
@@ -1262,9 +1268,8 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
 			KMSKeyName:  kmsKeyName,
 		}
-		// Use type assertion to handle protobuf oneof type
-		if cfg, ok := c.Config.(*btapb.Cluster_ClusterConfig_); ok {
-			if asc, ok := autoscalingConfig(cfg); ok {
+		if cfg := c.GetClusterConfig(); cfg != nil {
+			if asc, ok := fromClusterConfigProto(cfg); ok {
 				ci.AutoscalingConfig = asc
 			}
 		}
@@ -1309,22 +1314,22 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		KMSKeyName:  kmsKeyName,
 	}
 	// Use type assertion to handle protobuf oneof type
-	if cfg, ok := c.Config.(*btapb.Cluster_ClusterConfig_); ok {
-		if asc, ok := autoscalingConfig(cfg); ok {
+	if cfg := c.GetClusterConfig(); cfg != nil {
+		if asc, ok := fromClusterConfigProto(cfg); ok {
 			ci.AutoscalingConfig = asc
 		}
 	}
 	return ci, nil
 }
 
-func autoscalingConfig(c *btapb.Cluster_ClusterConfig_) (AutoscalingConfig, bool) {
-	if c.ClusterConfig == nil {
+func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) (AutoscalingConfig, bool) {
+	if c == nil {
 		return AutoscalingConfig{}, false
 	}
-	if c.ClusterConfig.ClusterAutoscalingConfig == nil {
+	if c.ClusterAutoscalingConfig == nil {
 		return AutoscalingConfig{}, false
 	}
-	got := c.ClusterConfig.ClusterAutoscalingConfig
+	got := c.ClusterAutoscalingConfig
 	if got.AutoscalingLimits == nil || got.AutoscalingTargets == nil {
 		return AutoscalingConfig{}, false
 	}
@@ -1643,7 +1648,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 		}
 		delete(existingClusterNames, cluster.ClusterID)
 
-		if cluster.NumNodes <= 0 && cluster.AutoscalingConfig.isZero() {
+		if cluster.NumNodes <= 0 && cluster.AutoscalingConfig == nil {
 			// We only synchronize clusters with a valid number of nodes
 			// or a valid autoscaling config.
 			continue
@@ -1652,9 +1657,9 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 		// We update teh clusters autoscaling config, or its number of serve
 		// nodes.
 		var updateErr error
-		if !cluster.AutoscalingConfig.isZero() {
+		if cluster.AutoscalingConfig != nil {
 			updateErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID,
-				cluster.AutoscalingConfig)
+				*cluster.AutoscalingConfig)
 		} else {
 			updateErr = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID,
 				cluster.NumNodes)

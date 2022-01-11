@@ -274,7 +274,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 		ClusterId:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 	})
 	if err != nil {
 		t.Fatalf("CreateInstance failed: %v", err)
@@ -314,7 +314,7 @@ func TestInstanceAdmin_CreateInstance_WithAutoscaling(t *testing.T) {
 
 	// omitting autoscaling config results in a nil config in the request
 	mycc = mock.createInstanceReq.Clusters["mycluster"]
-	if cc := mycc.Config.(*btapb.Cluster_ClusterConfig_); cc != nil {
+	if cc := mycc.GetClusterConfig(); cc != nil {
 		t.Fatalf("want config = nil, got = %v", gotConfig)
 	}
 }
@@ -332,7 +332,7 @@ func TestInstanceAdmin_CreateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
 				StorageType:       SSD,
-				AutoscalingConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 			},
 		},
 	})
@@ -368,7 +368,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 		ClusterID:         "mycluster",
 		Zone:              "us-central1-a",
 		StorageType:       SSD,
-		AutoscalingConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+		AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 	})
 	if err != nil {
 		t.Fatalf("CreateCluster failed: %v", err)
@@ -403,7 +403,7 @@ func TestInstanceAdmin_CreateCluster_WithAutoscaling(t *testing.T) {
 	}
 
 	// omitting autoscaling config results in a nil config in the request
-	if cc := mock.createClusterReq.Cluster.Config.(*btapb.Cluster_ClusterConfig_); cc != nil {
+	if cc := mock.createClusterReq.Cluster.GetClusterConfig(); cc != nil {
 		t.Fatalf("want config = nil, got = %v", gotConfig)
 	}
 }
@@ -445,7 +445,7 @@ func TestInstanceAdmin_UpdateInstanceWithClusters_WithAutoscaling(t *testing.T) 
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 			},
 		},
 	})
@@ -524,7 +524,7 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 			{
 				ClusterID:         "mycluster",
 				Zone:              "us-central1-a",
-				AutoscalingConfig: AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
+				AutoscalingConfig: &AutoscalingConfig{MinNodes: 1, MaxNodes: 2, CPUTargetPercent: 10},
 			},
 		},
 	})
