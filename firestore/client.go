@@ -108,13 +108,13 @@ func NewClientWithDatabase(ctx context.Context, projectID string, databaseID str
 		return nil, errors.New("firestore: databaseName was empty")
 	}
 
-	clientPtr, err := NewClient(ctx, projectID, opts...)
+	client, err := NewClient(ctx, projectID, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	clientPtr.databaseID = databaseID
-	return clientPtr, nil
+	client.databaseID = databaseID
+	return client, nil
 }
 
 func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
