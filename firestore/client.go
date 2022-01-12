@@ -96,7 +96,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	c := &Client{
 		c:          vc,
 		projectID:  projectID,
-		databaseID: "(default)", // always "(default)", for now
+		databaseID: "(default)", // Default value is `(default)`
 	}
 	return c, nil
 }
