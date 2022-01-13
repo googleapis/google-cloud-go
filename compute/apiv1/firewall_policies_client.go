@@ -242,7 +242,8 @@ func NewFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewGlobalOrganizationOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewGlobalOrganizationOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

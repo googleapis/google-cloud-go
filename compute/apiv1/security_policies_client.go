@@ -186,7 +186,8 @@ func NewSecurityPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewGlobalOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

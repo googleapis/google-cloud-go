@@ -180,7 +180,8 @@ func NewReservationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewZoneOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewZoneOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

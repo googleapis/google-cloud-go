@@ -165,7 +165,8 @@ func NewLicensesRESTClient(ctx context.Context, opts ...option.ClientOption) (*L
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewGlobalOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

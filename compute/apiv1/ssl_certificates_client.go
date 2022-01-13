@@ -152,7 +152,8 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewGlobalOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

@@ -165,7 +165,8 @@ func NewRegionUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewRegionOperationsRESTClient(ctx, opts...)
+	o := append(opts, option.WithHTTPClient(httpClient))
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
