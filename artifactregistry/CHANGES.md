@@ -1,5 +1,12 @@
 # Changes
 
+### [1.0.2](https://www.github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.0.1...artifactregistry/v1.0.2) (2022-01-13)
+
+
+### Bug Fixes
+
+* **artifactregistry:** add missing HTTP rules to service config ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+
 ### [1.0.1](https://www.github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.0.0...artifactregistry/v1.0.1) (2022-01-04)
 
 
