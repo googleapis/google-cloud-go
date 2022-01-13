@@ -151,8 +151,7 @@ func NewGlobalPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...opt
 	}
 	c.setGoogleClientInfo()
 
-	o := append(opts, option.WithHTTPClient(httpClient))
-	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	opC, err := NewGlobalOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}

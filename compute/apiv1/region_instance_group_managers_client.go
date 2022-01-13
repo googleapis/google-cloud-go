@@ -249,8 +249,7 @@ func NewRegionInstanceGroupManagersRESTClient(ctx context.Context, opts ...optio
 	}
 	c.setGoogleClientInfo()
 
-	o := append(opts, option.WithHTTPClient(httpClient))
-	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	opC, err := NewRegionOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}

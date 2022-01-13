@@ -166,8 +166,7 @@ func NewAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.setGoogleClientInfo()
 
-	o := append(opts, option.WithHTTPClient(httpClient))
-	opC, err := NewZoneOperationsRESTClient(ctx, o...)
+	opC, err := NewZoneOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, err
 	}
