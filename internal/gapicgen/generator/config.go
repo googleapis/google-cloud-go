@@ -1335,6 +1335,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/12/15
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/eventarc/publishing/v1",
+		pkg:                   "publishing",
+		importPath:            "cloud.google.com/go/eventarc/publishing/apiv1",
+		gRPCServiceConfigPath: "eventarcpublishing_grpc_service_config.json",
+		apiServiceConfigPath:  "eventarcpublishing_v1.yaml",
+		// GA after 2022/02/13
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
