@@ -5,7 +5,7 @@
       "description": "always_idempotent",
       "cases": [
         {
-          "instructions": ["return-503", "return-503"]
+          "instructions": ["return-408", "return-408"]
         },
         {
           "instructions": ["return-reset-connection", "return-reset-connection"]
@@ -46,7 +46,7 @@
       "description": "conditionally_idempotent_retries_when_precondition_is_present",
       "cases": [
         {
-          "instructions": ["return-503", "return-503"]
+          "instructions": ["return-408", "return-408"]
         },
         {
           "instructions": ["return-reset-connection", "return-reset-connection"]
