@@ -208,7 +208,11 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewZoneOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewZoneOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

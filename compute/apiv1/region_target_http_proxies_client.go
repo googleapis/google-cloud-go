@@ -151,7 +151,11 @@ func NewRegionTargetHttpProxiesRESTClient(ctx context.Context, opts ...option.Cl
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewRegionOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}

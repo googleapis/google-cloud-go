@@ -193,7 +193,11 @@ func NewImagesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ima
 	}
 	c.setGoogleClientInfo()
 
-	opC, err := NewGlobalOperationsRESTClient(ctx, option.WithHTTPClient(httpClient))
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
 	if err != nil {
 		return nil, err
 	}
