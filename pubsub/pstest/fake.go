@@ -988,6 +988,9 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 			s.publishToDeadletter(m)
 			continue
 		}
+		if s.proto.DeadLetterPolicy != nil {
+			m.proto.DeliveryAttempt = int32(*m.deliveries)
+		}
 		(*m.deliveries)++
 		m.ackDeadline = now.Add(s.ackTimeout)
 		msgs = append(msgs, m.proto)
