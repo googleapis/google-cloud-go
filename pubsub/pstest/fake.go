@@ -427,11 +427,11 @@ func (s *GServer) DeleteTopic(_ context.Context, req *pb.DeleteTopicRequest) (*e
 		return nil, status.Errorf(codes.NotFound, "topic %q", req.Topic)
 	}
 	for _, sub := range s.subs {
-		if sub.deadletterTopic == nil {
+		if sub.deadLetterTopic == nil {
 			continue
 		}
-		if req.Topic == sub.deadletterTopic.proto.Name {
-			return nil, status.Errorf(codes.FailedPrecondition, "topic %q used as deadletter for %s", req.Topic, sub.proto.Name)
+		if req.Topic == sub.deadLetterTopic.proto.Name {
+			return nil, status.Errorf(codes.FailedPrecondition, "topic %q used as deadLetter for %s", req.Topic, sub.proto.Name)
 		}
 	}
 	t.stop()
@@ -472,16 +472,16 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 	if ps.PushConfig == nil {
 		ps.PushConfig = &pb.PushConfig{}
 	}
-	var deadletterTopic *topic
+	var deadLetterTopic *topic
 	if ps.DeadLetterPolicy != nil {
 		dlTopic, ok := s.topics[ps.DeadLetterPolicy.DeadLetterTopic]
 		if !ok {
-			return nil, status.Errorf(codes.NotFound, "deadletter topic %q", ps.DeadLetterPolicy.DeadLetterTopic)
+			return nil, status.Errorf(codes.NotFound, "deadLetter topic %q", ps.DeadLetterPolicy.DeadLetterTopic)
 		}
-		deadletterTopic = dlTopic
+		deadLetterTopic = dlTopic
 	}
 
-	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadletterTopic, ps)
+	sub := newSubscription(top, &s.mu, s.timeNowFunc, deadLetterTopic, ps)
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -596,7 +596,7 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 				if !ok {
 					return nil, status.Errorf(codes.NotFound, "topic %q", sub.proto.DeadLetterPolicy.DeadLetterTopic)
 				}
-				sub.deadletterTopic = dlTopic
+				sub.deadLetterTopic = dlTopic
 			}
 
 		case "retry_policy":
@@ -758,7 +758,7 @@ func (t *topic) publish(pm *pb.PubsubMessage, m *Message) {
 
 type subscription struct {
 	topic           *topic
-	deadletterTopic *topic
+	deadLetterTopic *topic
 	mu              *sync.Mutex // the server mutex, here for convenience
 	proto           *pb.Subscription
 	ackTimeout      time.Duration
@@ -768,14 +768,14 @@ type subscription struct {
 	timeNowFunc     func() time.Time
 }
 
-func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadletterTopic *topic, ps *pb.Subscription) *subscription {
+func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
 	at := time.Duration(ps.AckDeadlineSeconds) * time.Second
 	if at == 0 {
 		at = 10 * time.Second
 	}
 	return &subscription{
 		topic:           t,
-		deadletterTopic: deadletterTopic,
+		deadLetterTopic: deadLetterTopic,
 		mu:              mu,
 		proto:           ps,
 		ackTimeout:      at,
@@ -983,9 +983,9 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 		if m.outstanding() {
 			continue
 		}
-		if s.deadletterCandidate(m) {
+		if s.deadLetterCandidate(m) {
 			s.ack(id)
-			s.publishToDeadletter(m)
+			s.publishToDeadLetter(m)
 			continue
 		}
 		if s.proto.DeadLetterPolicy != nil {
@@ -1013,9 +1013,9 @@ func (s *subscription) deliver() {
 		if m.outstanding() {
 			continue
 		}
-		if s.deadletterCandidate(m) {
+		if s.deadLetterCandidate(m) {
 			s.ack(id)
-			s.publishToDeadletter(m)
+			s.publishToDeadLetter(m)
 			continue
 		}
 		// If the message was never delivered before, start with the stream at
@@ -1079,7 +1079,7 @@ func (s *subscription) maintainMessages(now time.Time) {
 		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
-			s.publishToDeadletter(m)
+			s.publishToDeadLetter(m)
 			delete(s.msgs, id)
 		}
 	}
@@ -1114,7 +1114,7 @@ func (s *subscription) deleteStream(st *stream) {
 	}
 }
 
-func (s *subscription) deadletterCandidate(m *message) bool {
+func (s *subscription) deadLetterCandidate(m *message) bool {
 	if s.proto.DeadLetterPolicy == nil {
 		return false
 	}
@@ -1124,7 +1124,7 @@ func (s *subscription) deadletterCandidate(m *message) bool {
 	return false
 }
 
-func (s *subscription) publishToDeadletter(m *message) {
+func (s *subscription) publishToDeadLetter(m *message) {
 	acks := 0
 	if m.acks != nil {
 		acks = *m.acks
@@ -1133,7 +1133,7 @@ func (s *subscription) publishToDeadletter(m *message) {
 	if m.deliveries != nil {
 		deliveries = *m.deliveries
 	}
-	s.deadletterTopic.publish(m.proto.Message, &Message{
+	s.deadLetterTopic.publish(m.proto.Message, &Message{
 		PublishTime: m.publishTime,
 		Acks:        acks,
 		Deliveries:  deliveries,
