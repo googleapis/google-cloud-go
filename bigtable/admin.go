@@ -1060,9 +1060,6 @@ type AutoscalingConfig struct {
 }
 
 func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
-	if a == nil {
-		return nil
-	}
 	return &btapb.Cluster_ClusterAutoscalingConfig{
 		AutoscalingLimits: &btapb.AutoscalingLimits{
 			MinServeNodes: int32(a.MinNodes),
@@ -1089,7 +1086,8 @@ type ClusterConfig struct {
 
 	// NumNodes specifies the number of nodes allocated to this cluster. More
 	// nodes enable higher throughput and more consistent performance. One of
-	// NumNodes or AutoscalingConfig is required.
+	// NumNodes or AutoscalingConfig is required. If both are set,
+	// AutoscalingConfig takes precedence.
 	NumNodes int32
 
 	// StorageType specifies the type of storage used by this cluster to serve
@@ -1126,10 +1124,10 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 		},
 	}
 
-	if asc := cc.AutoscalingConfig.proto(); asc != nil {
+	if asc := cc.AutoscalingConfig; asc != nil {
 		cl.Config = &btapb.Cluster_ClusterConfig_{
 			ClusterConfig: &btapb.Cluster_ClusterConfig{
-				ClusterAutoscalingConfig: cc.AutoscalingConfig.proto(),
+				ClusterAutoscalingConfig: asc.proto(),
 			},
 		}
 	}
@@ -1269,8 +1267,8 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			KMSKeyName:  kmsKeyName,
 		}
 		if cfg := c.GetClusterConfig(); cfg != nil {
-			if asc, ok := fromClusterConfigProto(cfg); ok {
-				ci.AutoscalingConfig = &asc
+			if asc := fromClusterConfigProto(cfg); asc != nil {
+				ci.AutoscalingConfig = asc
 			}
 		}
 		cis = append(cis, ci)
@@ -1315,29 +1313,29 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	}
 	// Use type assertion to handle protobuf oneof type
 	if cfg := c.GetClusterConfig(); cfg != nil {
-		if asc, ok := fromClusterConfigProto(cfg); ok {
-			ci.AutoscalingConfig = &asc
+		if asc := fromClusterConfigProto(cfg); asc != nil {
+			ci.AutoscalingConfig = asc
 		}
 	}
 	return ci, nil
 }
 
-func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) (AutoscalingConfig, bool) {
+func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
 	if c == nil {
-		return AutoscalingConfig{}, false
+		return nil
 	}
 	if c.ClusterAutoscalingConfig == nil {
-		return AutoscalingConfig{}, false
+		return nil
 	}
 	got := c.ClusterAutoscalingConfig
 	if got.AutoscalingLimits == nil || got.AutoscalingTargets == nil {
-		return AutoscalingConfig{}, false
+		return nil
 	}
-	return AutoscalingConfig{
+	return &AutoscalingConfig{
 		MinNodes:         int(got.AutoscalingLimits.MinServeNodes),
 		MaxNodes:         int(got.AutoscalingLimits.MaxServeNodes),
 		CPUTargetPercent: int(got.AutoscalingTargets.CpuUtilizationPercent),
-	}, true
+	}
 }
 
 // InstanceIAM returns the instance's IAM handle.
