@@ -329,7 +329,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/compute/metadata": {
@@ -573,6 +573,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/eventarc/publishing/apiv1": {
+    "distribution_name": "cloud.google.com/go/eventarc/publishing/apiv1",
+    "description": "Eventarc Publishing API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/publishing/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/filestore/apiv1": {
