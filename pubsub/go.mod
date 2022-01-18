@@ -13,7 +13,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
 	google.golang.org/api v0.64.0
-	google.golang.org/genproto v0.0.0-20220106162220-2482ccee2e38
+	google.golang.org/genproto v0.0.0-20220111164026-67b88f271998
 	google.golang.org/grpc v1.40.1
 	google.golang.org/protobuf v1.27.1
 )
