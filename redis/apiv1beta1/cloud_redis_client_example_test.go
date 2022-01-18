@@ -82,6 +82,26 @@ func ExampleCloudRedisClient_GetInstance() {
 	_ = resp
 }
 
+func ExampleCloudRedisClient_GetInstanceAuthString() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.GetInstanceAuthStringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#GetInstanceAuthStringRequest.
+	}
+	resp, err := c.GetInstanceAuthString(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudRedisClient_CreateInstance() {
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
@@ -253,4 +273,29 @@ func ExampleCloudRedisClient_DeleteInstance() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleCloudRedisClient_RescheduleMaintenance() {
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.RescheduleMaintenanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#RescheduleMaintenanceRequest.
+	}
+	op, err := c.RescheduleMaintenance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
