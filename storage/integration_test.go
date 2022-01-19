@@ -2944,6 +2944,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
 			if err == nil {
+				// Delete created "copy" object if created successfully
 				defer func() {
 					if err := bucket.Object("copy").Delete(ctx); err != nil {
 						t.Fatalf("could not delete copy: %v", err)
@@ -2953,6 +2954,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
 			if err == nil {
+				// Delete created "compose" object if created successfully
 				defer func() {
 					if err := bucket.Object("compose").Delete(ctx); err != nil {
 						t.Fatalf("could not delete compose: %v", err)
