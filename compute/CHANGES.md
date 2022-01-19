@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v1.0.0...compute/v1.1.0) (2022-01-14)
+
+
+### Features
+
+* **compute:** remove BETA language on Compute V1 ([#697](https://www.github.com/googleapis/google-cloud-go/issues/697)) ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+
 ## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v0.1.0...compute/v1.0.0) (2022-01-11)
 
 
