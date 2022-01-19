@@ -2852,6 +2852,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			h := testHelper{t}
+			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			defer cancel()
+
 			printTestCase := func() string {
 				user := mainUserEmail
 				if test.client == otherUserClient {
