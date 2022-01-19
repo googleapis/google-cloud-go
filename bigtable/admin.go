@@ -1060,6 +1060,9 @@ type AutoscalingConfig struct {
 }
 
 func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
+	if a == nil {
+		return nil
+	}
 	return &btapb.Cluster_ClusterAutoscalingConfig{
 		AutoscalingLimits: &btapb.AutoscalingLimits{
 			MinServeNodes: int32(a.MinNodes),
