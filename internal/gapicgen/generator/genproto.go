@@ -39,11 +39,6 @@ var denylist = map[string]bool{
 	// TODO(codyoss): re-enable after issue is resolve -- https://github.com/googleapis/go-genproto/issues/357
 	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": true,
 
-	// These two container APIs are currently frozen. They should not be updated
-	// due to manual layer built on top of them.
-	"google.golang.org/genproto/googleapis/grafeas/v1":                    true,
-	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1": true,
-
 	// Temporarily stop generation of removed protos. Will be manually cleaned
 	// up with: https://github.com/googleapis/google-cloud-go/issues/4098
 	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2": true,

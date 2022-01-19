@@ -2799,6 +2799,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 	bucketName := uidSpace.New()
 	requesterPaysBucket := mainUserClient.Bucket(bucketName)
+	bucketName2 := uidSpace.New()
+	requesterPaysBucket2 := mainUserClient.Bucket(bucketName2)
 
 	// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
 	h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
@@ -2806,6 +2808,13 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		t.Fatalf("set ACL: %v", err)
 	}
 	defer h.mustDeleteBucket(requesterPaysBucket)
+
+	// Create a second requester-pays bucket to avoid rate limits.
+	h.mustCreate(requesterPaysBucket2, mainProjectID, &BucketAttrs{RequesterPays: true})
+	if err := requesterPaysBucket2.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
+		t.Fatalf("set ACL: %v", err)
+	}
+	defer h.mustDeleteBucket(requesterPaysBucket2)
 
 	for _, test := range []struct {
 		desc          string
@@ -2847,7 +2856,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
-
+			h := testHelper{t}
 			printTestCase := func() string {
 				user := mainUserEmail
 				if test.client == otherUserClient {
@@ -2885,6 +2894,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			if test.userProject != nil {
 				bucket = bucket.UserProject(*test.userProject)
 			}
+			// Create another bucket to avoid the per bucket update rate limit
+			bucket2 := test.client.Bucket(bucketName2)
+			if test.userProject != nil {
+				bucket2 = bucket2.UserProject(*test.userProject)
+			}
 
 			// Get bucket attrs
 			attrs, err := bucket.Attrs(ctx)
@@ -2895,7 +2909,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 				}
 			}
 
-			// Object operations
+			// Object operations (except for delete)
 			checkforErrors("write object", writeObject(ctx, bucket.Object(objectName), "text/plain", []byte("hello")))
 			_, err = readObject(ctx, bucket.Object(objectName))
 			checkforErrors("read object", err)
@@ -2905,33 +2919,26 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("update object", err)
 
 			// Bucket ACL operations
-			// Create another object for these to avoid object rate limits.
-			objectName2 := "acl-go-test" + uidSpace.New()
-			err = writeObject(ctx, bucket.Object(objectName2), "text/plain", []byte("hello"))
-			if err == nil {
-				// only delete the object if properly written to
-				defer h.mustDeleteObject(bucket.Object(objectName2))
-			}
-			checkforErrors("write object 2", err)
-
+			// We interleave buckets to get around the rate limit
 			entity := ACLEntity("domain-google.com")
 
-			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
+			checkforErrors("bucket acl set", bucket2.ACL().Set(ctx, entity, RoleReader))
 			_, err = bucket.ACL().List(ctx)
 			checkforErrors("bucket acl list", err)
-			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
-
-			// Default object ACL operations
-			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.DefaultObjectACL().List(ctx)
-			checkforErrors("default object acl list", err)
-			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
+			checkforErrors("bucket acl delete", bucket2.ACL().Delete(ctx, entity))
 
 			// Object ACL operations
-			checkforErrors("object acl set", bucket.Object(objectName2).ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.Object(objectName2).ACL().List(ctx)
+			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+			_, err = bucket.Object(objectName).ACL().List(ctx)
 			checkforErrors("object acl list", err)
-			checkforErrors("object acl list", bucket.Object(objectName2).ACL().Delete(ctx, entity))
+			checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+
+			// Default object ACL operations
+			// Once again, we interleave buckets to avoid rate limits
+			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
+			_, err = bucket2.DefaultObjectACL().List(ctx)
+			checkforErrors("default object acl list", err)
+			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
 			// Copy and compose
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
@@ -2940,9 +2947,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("compose", err)
 
 			// Delete object
-			err = bucket.Object(objectName).Delete(ctx)
-			if err != nil {
-				// test case may error, but we still want to delete the object
+			if err = bucket.Object(objectName).Delete(ctx); err != nil {
+				// We still want to delete object if the test errors
 				h.mustDeleteObject(requesterPaysBucket.Object(objectName))
 			}
 			checkforErrors("delete object", err)
@@ -2950,7 +2956,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 	}
 
-	// Clean up created objects
+	// Clean up created objects for copy and compose
 	for _, obj := range []string{"copy", "compose"} {
 		if err := requesterPaysBucket.UserProject(mainProjectID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)

@@ -246,7 +246,7 @@ type internalClient interface {
 // Currently the only supported location_id is “us-central1”.
 //
 // On any input that is documented to expect a string parameter in
-// snake_case or kebab-case, either of those cases is accepted.
+// snake_case or dash-case, either of those cases is accepted.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -409,7 +409,6 @@ func (c *Client) UpdateModel(ctx context.Context, req *automlpb.UpdateModelReque
 // DeployModel deploys a model. If a model is already deployed, deploying it with the
 // same parameters has no effect. Deploying with different parametrs
 // (as e.g. changing
-//
 // node_number)
 // will reset the deployment state without pausing the model’s availability.
 //
@@ -513,7 +512,7 @@ type gRPCClient struct {
 // Currently the only supported location_id is “us-central1”.
 //
 // On any input that is documented to expect a string parameter in
-// snake_case or kebab-case, either of those cases is accepted.
+// snake_case or dash-case, either of those cases is accepted.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
