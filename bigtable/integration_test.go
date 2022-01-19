@@ -1982,10 +1982,125 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 }
 
+func TestIntegration_Autoscaling(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+	instanceToCreate += "4"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+
+	t.Log("creating an instance with autoscaling ON (Min = 3, Max = 4)")
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterID,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: PRODUCTION,
+		AutoscalingConfig: &AutoscalingConfig{
+			MinNodes:         3,
+			MaxNodes:         4,
+			CPUTargetPercent: 60,
+		},
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	cluster, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes := 3
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	wantMin := 3
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax := 4
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU := 60
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	serveNodes := 1
+	t.Logf("setting autoscaling OFF and setting serve nodes to %v", serveNodes)
+	err = iAdminClient.UpdateCluster(ctx, instanceToCreate, clusterID, int32(serveNodes))
+	if err != nil {
+		t.Fatalf("UpdateCluster: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes = 1
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	if gotAsc := cluster.AutoscalingConfig; gotAsc != nil {
+		t.Fatalf("want cluster autoscaling = nil, got = %v", gotAsc)
+	}
+
+	ac := AutoscalingConfig{
+		MinNodes:         3,
+		MaxNodes:         4,
+		CPUTargetPercent: 80,
+	}
+	t.Logf("setting autoscaling ON (Min = %v, Max = %v)", ac.MinNodes, ac.MaxNodes)
+	err = iAdminClient.SetAutoscaling(ctx, instanceToCreate, clusterID, ac)
+	if err != nil {
+		t.Fatalf("SetAutoscaling: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantMin = ac.MinNodes
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax = ac.MaxNodes
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU = ac.CPUTargetPercent
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+}
+
 // instanceAdminClientMock is used to test FailedLocations field processing.
 type instanceAdminClientMock struct {
 	Clusters             []*btapb.Cluster
 	UnavailableLocations []string
+	// Imbedding the interface allows test writers to override just the methods
+	// that are interesting for a test and ignore the rest.
 	btapb.BigtableInstanceAdminClient
 }
 
