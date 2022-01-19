@@ -253,18 +253,18 @@ See https://pkg.go.dev/google.golang.org/api/googleapi#Error for more informatio
 
 Retrying failed requests
 
-Methods of this package may use exponential backoff to retry calls
-that fail with transient errors. Retrying continues indefinitely unless the
-controlling context is canceled, the client is closed, or a non-transient error
-is received. See context.WithTimeout and context.WithCancel.
+Methods in this package may retry calls that fail with transient errors.
+Retrying continues indefinitely unless the controlling context is canceled, the
+client is closed, or a non-transient error is received. To stop retries from
+continuing, use context timeouts or cancellation.
 
-Retry strategy in this library follows best practices for Cloud Storage. By
-default, only idempotent operations are retried, exponential backoff with jitter
-is employed, and only transient network errors and response codes defined as
-transient by the service and will be retried. See
+The retry strategy in this library follows best practices for Cloud Storage. By
+default, operations are retried only if they are idempotent, and exponential
+backoff with jitter is employed. In addition, errors are only retried if they
+are defined as transient by the service. See
 https://cloud.google.com/storage/docs/retry-strategy for more information.
 
-Users can configure non-default retry behavior for a particular operation (using
+Users can configure non-default retry behavior for a single library call (using
 BucketHandle.Retryer and ObjectHandle.Retryer) or for all calls made by a
 client (using Client.SetRetry). For example:
 
@@ -278,7 +278,7 @@ client (using Client.SetRetry). For example:
 		storage.WithPolicy(storage.RetryAlways),
 	)
 
-	// Use context timeouts to set an overall deadline on the call, including all
+	// Use a context timeout to set an overall deadline on the call, including all
 	// potential retries.
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
