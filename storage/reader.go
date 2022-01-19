@@ -541,8 +541,8 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	}
 
 	// Only support checksums when reading an entire object, not a range.
-	if msg.GetObjectChecksums().Crc32C != nil && offset == 0 && length == 0 {
-		r.wantCRC = msg.GetObjectChecksums().GetCrc32C()
+	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && offset == 0 && length == 0 {
+		r.wantCRC = checksums.GetCrc32C()
 		r.checkCRC = true
 	}
 
