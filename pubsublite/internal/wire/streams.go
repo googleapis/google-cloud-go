@@ -42,8 +42,13 @@ const (
 	streamTerminated
 )
 
-// Abort a stream initialization attempt after this duration to mitigate delays.
-const defaultInitTimeout = 2 * time.Minute
+const (
+	// Abort a stream initialization attempt after this duration to mitigate delays.
+	defaultStreamInitTimeout = time.Minute
+
+	// Reconnect a stream if it has been idle for this duration.
+	defaultStreamIdleTimeout = time.Minute
+)
 
 var errStreamInitTimeout = status.Error(codes.DeadlineExceeded, "pubsublite: stream initialization timed out")
 
@@ -107,6 +112,7 @@ type retryableStream struct {
 	responseType   reflect.Type
 	connectTimeout time.Duration
 	initTimeout    time.Duration
+	idleTimer      *streamIdleTimer
 
 	// Guards access to fields below.
 	mu sync.Mutex
@@ -119,21 +125,21 @@ type retryableStream struct {
 	finalErr     error
 }
 
-// newRetryableStream creates a new retryable stream wrapper. `timeout` is the
-// maximum duration for reconnection. `responseType` is the type of the response
-// proto received on the stream.
-func newRetryableStream(ctx context.Context, handler streamHandler, timeout time.Duration, responseType reflect.Type) *retryableStream {
-	initTimeout := defaultInitTimeout
-	if timeout < defaultInitTimeout {
-		initTimeout = timeout
-	}
-	return &retryableStream{
+// newRetryableStream creates a new retryable stream wrapper.
+// `connectTimeout` is the maximum duration for reconnection, after which the
+// stream will be terminated. Streams are reconnected if idle for `idleTimeout`.
+// `responseType` is the type of the response proto received on the stream.
+func newRetryableStream(ctx context.Context, handler streamHandler, connectTimeout, idleTimeout time.Duration, responseType reflect.Type) *retryableStream {
+	initTimeout := minDuration(connectTimeout, defaultStreamInitTimeout)
+	rs := &retryableStream{
 		ctx:            ctx,
 		handler:        handler,
 		responseType:   responseType,
-		connectTimeout: timeout,
+		connectTimeout: connectTimeout,
 		initTimeout:    initTimeout,
 	}
+	rs.idleTimer = newStreamIdleTimer(idleTimeout, rs.onStreamIdle)
+	return rs
 }
 
 // Start establishes a stream connection. It is a no-op if the stream has
@@ -211,6 +217,16 @@ func (rs *retryableStream) unsafeClearStream() {
 	}
 }
 
+func (rs *retryableStream) onStreamIdle() {
+	rs.mu.Lock()
+	defer rs.mu.Unlock()
+
+	// Invalidate the current stream handle so that subsequent messages and errors
+	// are discarded.
+	rs.unsafeClearStream()
+	go rs.connectStream(notifyReset(false))
+}
+
 func (rs *retryableStream) newStreamContext() (ctx context.Context, cancel context.CancelFunc) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -241,6 +257,7 @@ func (rs *retryableStream) connectStream(notifyReset notifyReset) {
 		}
 		rs.status = streamReconnecting
 		rs.unsafeClearStream()
+		rs.idleTimer.Stop()
 		return true
 	}
 	if !canReconnect() {
@@ -272,6 +289,7 @@ func (rs *retryableStream) connectStream(notifyReset notifyReset) {
 		}
 		rs.status = streamConnected
 		rs.stream = newStream
+		rs.idleTimer.Restart()
 		return true
 	}
 	if !connected() {
@@ -315,7 +333,6 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, err err
 				}
 				if err = rs.handler.validateInitialResponse(response); err != nil {
 					// An unexpected initial response from the server is a permanent error.
-					cancelFunc()
 					return 0, false
 				}
 			}
@@ -363,6 +380,7 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 		if rs.currentStream() != recvStream {
 			break
 		}
+		rs.idleTimer.Restart()
 		if err != nil {
 			if isRetryableRecvError(err) {
 				go rs.connectStream(notifyReset(isStreamResetSignal(err)))
@@ -389,6 +407,7 @@ func (rs *retryableStream) unsafeTerminate(err error) {
 	}
 	rs.status = streamTerminated
 	rs.finalErr = err
+	rs.idleTimer.Shutdown()
 	rs.unsafeClearStream()
 
 	// terminate can be called from within a streamHandler method with a lock
