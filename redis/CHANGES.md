@@ -1,5 +1,12 @@
 # Changes
 
+### [1.1.1](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.1.0...redis/v1.1.1) (2022-01-19)
+
+
+### Bug Fixes
+
+* **redis:** [Cloud Memorystore for Redis] Add missing fields for TLS and Maintenance Window features ([a811e30](https://www.github.com/googleapis/google-cloud-go/commit/a811e309e60091b15d0a7a3c12a61d5bd0c3b7a4))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.0.0...redis/v1.1.0) (2022-01-04)
 
 
