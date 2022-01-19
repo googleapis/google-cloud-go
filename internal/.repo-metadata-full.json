@@ -1039,7 +1039,7 @@
     "description": "Cloud Profiler",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/profiler",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
     "release_level": "ga",
     "library_type": "AGENT"
   },
