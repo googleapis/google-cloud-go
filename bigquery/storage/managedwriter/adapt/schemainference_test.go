@@ -28,6 +28,7 @@ func TestInferSchema(t *testing.T) {
 	testCases := []struct {
 		desc       string
 		proto      proto.Message
+		opts       []InferOption
 		wantSchema *storagepb.TableSchema
 		wantErr    bool
 	}{
@@ -37,8 +38,30 @@ func TestInferSchema(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			desc:  "SimpleMessageProto2",
+			desc:  "SimpleMessageProto2 default",
 			proto: &testdata.SimpleMessageProto2{},
+			wantSchema: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "name",
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Type: storagepb.TableFieldSchema_STRING,
+					},
+					{Name: "value",
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Type: storagepb.TableFieldSchema_INT64,
+					},
+				},
+			},
+		},
+		{
+			desc:    "SimpleMessageProto3 default",
+			proto:   &testdata.SimpleMessageProto3{},
+			wantErr: true,
+		},
+		{
+			desc:  "SimpleMessageProto3 w/wrappers",
+			proto: &testdata.SimpleMessageProto3{},
+			opts:  []InferOption{AllowWrapperTypes(true)},
 			wantSchema: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
 					{Name: "name",
@@ -61,7 +84,7 @@ func TestInferSchema(t *testing.T) {
 
 	for _, tc := range testCases {
 
-		gotSchema, err := InferSchemaFromProtoMessage(tc.proto)
+		gotSchema, err := InferSchemaFromProtoMessage(tc.proto, tc.opts...)
 		if err != nil {
 			if !tc.wantErr {
 				t.Errorf("case %s failed: %v", tc.desc, err)

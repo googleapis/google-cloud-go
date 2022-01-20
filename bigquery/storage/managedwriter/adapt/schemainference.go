@@ -16,6 +16,7 @@ package adapt
 
 import (
 	"fmt"
+	"log"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
@@ -41,19 +42,29 @@ var scalarTypeKindMap = map[protoreflect.Kind]storagepb.TableFieldSchema_Type{
 	protoreflect.EnumKind: storagepb.TableFieldSchema_INT64,
 }
 
-type InferredNameFormat string
+var bqWrapperToTypeMap = map[string]storagepb.TableFieldSchema_Type{
+	".google.protobuf.BoolValue":   storagepb.TableFieldSchema_BOOL,
+	".google.protobuf.BytesValue":  storagepb.TableFieldSchema_BYTES,
+	".google.protobuf.Int32Value":  storagepb.TableFieldSchema_INT64,
+	".google.protobuf.Int64Value":  storagepb.TableFieldSchema_INT64,
+	".google.protobuf.DoubleValue": storagepb.TableFieldSchema_DOUBLE,
+	".google.protobuf.StringValue": storagepb.TableFieldSchema_STRING,
+}
+
+type NameStyle string
 
 var (
-	GoNameFormat   InferredNameFormat = "GO"
-	TextNameFormat InferredNameFormat = "TEXT"
-	JSONNameFormat InferredNameFormat = "JSON"
+	DefaultNameStyle NameStyle = "DEFAULT"
+	TextNameStyle    NameStyle = "TEXT"
+	JSONNameStyle    NameStyle = "JSON"
 )
 
 type schemaInferer struct {
 	config struct {
-		nameFormat          InferredNameFormat
+		nameStyle           NameStyle
 		enumAsString        bool
 		relaxRequiredFields bool
+		allowWrapperTypes   bool
 	}
 }
 
@@ -62,6 +73,16 @@ func (s *schemaInferer) isScalarProtoKind(k protoreflect.Kind) bool {
 		return true
 	}
 	return false
+}
+
+func (s *schemaInferer) getFieldName(field protoreflect.FieldDescriptor) string {
+	if s.config.nameStyle == TextNameStyle {
+		return field.TextName()
+	}
+	if s.config.nameStyle == JSONNameStyle {
+		return field.JSONName()
+	}
+	return string(field.Name())
 }
 
 func (s *schemaInferer) protoKindToSchemaType(k protoreflect.Kind) storagepb.TableFieldSchema_Type {
@@ -89,18 +110,32 @@ func (s *schemaInferer) cardinalityToMode(c protoreflect.Cardinality) storagepb.
 }
 
 func (s *schemaInferer) isWellKnownWrapperType(fn protoreflect.FullName) bool {
-	for _, v := range bqTypeToWrapperMap {
-		if string(fn) == v {
-			return true
+	name := string(fn)
+	// TODO: determine if we should fully qualify refs in this way.
+	if name[0:1] != "." {
+		name = fmt.Sprintf(".%s", name)
+	}
+	log.Printf("type: %s", fn)
+	if s.config.allowWrapperTypes {
+		for _, v := range bqTypeToWrapperMap {
+			if name == v {
+				return true
+			}
 		}
 	}
 	return false
 }
 
 func (s *schemaInferer) wrapperNameToSchemaType(fn protoreflect.FullName) storagepb.TableFieldSchema_Type {
-	for t, name := range bqTypeToWrapperMap {
-		if string(fn) == name {
-			return t
+	name := string(fn)
+	// TODO: determine if we should fully qualify refs in this way.
+	if name[0:1] != "." {
+		name = fmt.Sprintf(".%s", name)
+	}
+	for wrap, typ := range bqWrapperToTypeMap {
+
+		if name == wrap {
+			return typ
 		}
 	}
 	return storagepb.TableFieldSchema_TYPE_UNSPECIFIED
@@ -141,7 +176,7 @@ func (s *schemaInferer) convertToTFS(field protoreflect.FieldDescriptor) (*stora
 	}
 	// TODO: normalize of field name needed?
 	tfs := &storagepb.TableFieldSchema{
-		Name: string(field.Name()),
+		Name: s.getFieldName(field),
 		Mode: s.cardinalityToMode(field.Cardinality()),
 	}
 
@@ -170,14 +205,33 @@ type inferOptions struct {
 // InferOption can be used to customize the behavior of InferSchema.
 type InferOption func(*schemaInferer)
 
-func InferEnumAsString(b bool) InferOption {
+// InferEnumAsString governs the behavior of how Enum fields are inferred.  By default, enums
+// are treated as INT64 values, but this option infers enums as a string (e.g. the enum nameß).
+func InferEnumAsString(val bool) InferOption {
 	return func(si *schemaInferer) {
-		si.config.enumAsString = true
+		si.config.enumAsString = val
 	}
 }
 
-func RelaxRequiredFields(b bool) InferOption {
+// RelaxRequiredFields relaxes all required fields to a nullable equivalent when inferring
+// schema.
+func RelaxRequiredFields(val bool) InferOption {
 	return func(si *schemaInferer) {
-		si.config.relaxRequiredFields = true
+		si.config.relaxRequiredFields = val
+	}
+}
+
+// UseNameStyle determines the naming style to use for inferred column/field names.
+func UseNameStyle(style NameStyle) InferOption {
+	return func(si *schemaInferer) {
+		si.config.nameStyle = style
+	}
+}
+
+// AllowWrapperTypes governs whether well-known wrapper types are simplifed to their
+// underlying wrapped types.
+func AllowWrapperTypes(val bool) InferOption {
+	return func(si *schemaInferer) {
+		si.config.allowWrapperTypes = val
 	}
 }
