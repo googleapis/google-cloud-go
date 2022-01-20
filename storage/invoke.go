@@ -17,11 +17,13 @@ package storage
 import (
 	"context"
 	"io"
+	"net"
 	"net/url"
 	"strings"
 
 	"cloud.google.com/go/internal"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -62,6 +64,11 @@ func shouldRetry(err error) bool {
 	if err == io.ErrUnexpectedEOF {
 		return true
 	}
+	if xerrors.Is(err, net.ErrClosed) {
+		// Retry use of closed network connection error
+		return true
+	}
+
 	switch e := err.(type) {
 	case *googleapi.Error:
 		// Retry on 408, 429, and 5xx, according to

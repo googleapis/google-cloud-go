@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"net"
 	"net/url"
 	"testing"
 
@@ -262,6 +263,11 @@ func TestShouldRetry(t *testing.T) {
 			desc:        "non-retryable gRPC error",
 			inputErr:    status.Error(codes.PermissionDenied, "non-retryable gRPC error"),
 			shouldRetry: false,
+		},
+		{
+			desc:        "wrapped ErrClosed",
+			inputErr:    xerrors.Errorf("Test unwrapping of closed network connection error: %w", net.ErrClosed),
+			shouldRetry: true,
 		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
