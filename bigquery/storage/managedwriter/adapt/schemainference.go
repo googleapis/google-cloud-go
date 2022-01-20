@@ -25,6 +25,7 @@ import (
 var scalarTypeKindMap = map[protoreflect.Kind]storagepb.TableFieldSchema_Type{
 	protoreflect.BoolKind:     storagepb.TableFieldSchema_BOOL,
 	protoreflect.Int32Kind:    storagepb.TableFieldSchema_INT64,
+	protoreflect.Int64Kind:    storagepb.TableFieldSchema_INT64,
 	protoreflect.Sint32Kind:   storagepb.TableFieldSchema_INT64,
 	protoreflect.Uint32Kind:   storagepb.TableFieldSchema_INT64,
 	protoreflect.Sfixed32Kind: storagepb.TableFieldSchema_INT64,
@@ -40,8 +41,17 @@ var scalarTypeKindMap = map[protoreflect.Kind]storagepb.TableFieldSchema_Type{
 	protoreflect.EnumKind: storagepb.TableFieldSchema_INT64,
 }
 
+type InferredNameFormat string
+
+var (
+	GoNameFormat   InferredNameFormat = "GO"
+	TextNameFormat InferredNameFormat = "TEXT"
+	JSONNameFormat InferredNameFormat = "JSON"
+)
+
 type schemaInferer struct {
 	config struct {
+		nameFormat          InferredNameFormat
 		enumAsString        bool
 		relaxRequiredFields bool
 	}
@@ -111,18 +121,17 @@ func (s *schemaInferer) inferSchemaFromProtoMessage(in proto.Message) (*storagep
 	if in == nil {
 		return nil, fmt.Errorf("no input message")
 	}
-	schema := storagepb.TableSchema{}
+	schema := &storagepb.TableSchema{}
 	md := in.ProtoReflect().Descriptor()
 	for i := 0; i < md.Fields().Len(); i++ {
 		tfs, err := s.convertToTFS(md.Fields().Get(i))
 		if err != nil {
-			return nil, fmt.Errorf("Error converting field %d in message %s: %v", i, md.FullName().Name(), err)
+			return nil, fmt.Errorf("Error converting field %d/%s in message %s: %v", i, md.Fields().Get(i).Name(), md.FullName().Name(), err)
 		}
 		schema.Fields = append(schema.Fields, tfs)
 	}
 
-	return nil, fmt.Errorf("unimplemented")
-
+	return schema, nil
 }
 
 // convertToTFS converts a protoreflect.FieldDescriptor to a schema.
@@ -143,11 +152,15 @@ func (s *schemaInferer) convertToTFS(field protoreflect.FieldDescriptor) (*stora
 	}
 
 	// We're now dealing with group/message types
-	if !resolved && s.isWellKnownWrapperType(field.Message().FullName()) {
-		tfs.Type = s.wrapperNameToSchemaType(field.Message().FullName())
+	if !resolved && field.Message() != nil {
+		if s.isWellKnownWrapperType(field.Message().FullName()) {
+			tfs.Type = s.wrapperNameToSchemaType(field.Message().FullName())
+		} else {
+			return nil, fmt.Errorf("TODO implement nested message parsing")
+		}
 	}
 
-	return nil, fmt.Errorf("unimplemented")
+	return tfs, nil
 }
 
 type inferOptions struct {

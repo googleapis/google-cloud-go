@@ -24,7 +24,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
-func TestSchemaInference(t *testing.T) {
+func TestInferSchema(t *testing.T) {
 	testCases := []struct {
 		desc       string
 		proto      proto.Message
@@ -37,9 +37,25 @@ func TestSchemaInference(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			desc:       "nil",
-			proto:      &testdata.SimpleMessageProto2{},
-			wantSchema: nil,
+			desc:  "SimpleMessageProto2",
+			proto: &testdata.SimpleMessageProto2{},
+			wantSchema: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "name",
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Type: storagepb.TableFieldSchema_STRING,
+					},
+					{Name: "value",
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Type: storagepb.TableFieldSchema_INT64,
+					},
+				},
+			},
+		},
+		{
+			desc:    "GithubArchiveMessageProto2",
+			proto:   &testdata.GithubArchiveMessageProto2{},
+			wantErr: true, // temporary until we do nested message parsing
 		},
 	}
 
@@ -56,7 +72,7 @@ func TestSchemaInference(t *testing.T) {
 			t.Errorf("case %s expected error, was success", tc.desc)
 			continue
 		}
-		if diff := cmp.Diff(gotSchema, tc.proto, protocmp.Transform()); diff != "" {
+		if diff := cmp.Diff(gotSchema, tc.wantSchema, protocmp.Transform()); diff != "" {
 			t.Errorf("conversion to proto diff (%s):\n%v", tc.desc, diff)
 		}
 	}
