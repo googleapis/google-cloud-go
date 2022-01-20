@@ -145,7 +145,23 @@ func testOnGCE() bool {
 			resc <- false
 			return
 		}
-		resc <- strsContains(addrs, metadataIP)
+
+		// If the host name cannot be resolved, send false and exit early.
+		if !strsContains(addrs, metadataIP) {
+			resc <- false
+			return
+		}
+
+		// Try to poke the metadata server to see if it can be reached.
+		req, _ := http.NewRequest("GET", "http://"+addrs[0], nil)
+		req.Header.Set("User-Agent", userAgent)
+		res, err := defaultClient.hc.Do(req.WithContext(ctx))
+		if err != nil {
+			resc <- false
+			return
+		}
+		defer res.Body.Close()
+		resc <- res.Header.Get("Metadata-Flavor") == "Google"
 	}()
 
 	tryHarder := systemInfoSuggestsGCE()
