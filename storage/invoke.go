@@ -75,7 +75,7 @@ func shouldRetry(err error) bool {
 		// https://cloud.google.com/storage/docs/exponential-backoff.
 		return e.Code == 408 || e.Code == 429 || (e.Code >= 500 && e.Code < 600)
 	case *url.Error:
-		// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
+		// Retry socket-level errors ECONNREFUSED and ECONNRESET (from syscall).
 		// Unfortunately the error type is unexported, so we resort to string
 		// matching.
 		retriable := []string{"connection refused", "connection reset"}
