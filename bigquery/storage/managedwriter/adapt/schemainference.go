@@ -16,7 +16,6 @@ package adapt
 
 import (
 	"fmt"
-	"log"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
@@ -115,7 +114,6 @@ func (s *schemaInferer) isWellKnownWrapperType(fn protoreflect.FullName) bool {
 	if name[0:1] != "." {
 		name = fmt.Sprintf(".%s", name)
 	}
-	log.Printf("type: %s", fn)
 	if s.config.allowWrapperTypes {
 		for _, v := range bqTypeToWrapperMap {
 			if name == v {
@@ -143,25 +141,26 @@ func (s *schemaInferer) wrapperNameToSchemaType(fn protoreflect.FullName) storag
 
 // InferSchemaFromProtoMessage infers a BigQuery table schema given an input message.
 func InferSchemaFromProtoMessage(in proto.Message, opts ...InferOption) (*storagepb.TableSchema, error) {
+	if in == nil {
+		return nil, fmt.Errorf("no input message")
+	}
 	si := &schemaInferer{}
 
 	for _, o := range opts {
 		o(si)
 	}
-
-	return si.inferSchemaFromProtoMessage(in)
+	return si.inferSchemaFromProtoMessage(in.ProtoReflect().Descriptor())
 }
 
-func (s *schemaInferer) inferSchemaFromProtoMessage(in proto.Message) (*storagepb.TableSchema, error) {
+func (s *schemaInferer) inferSchemaFromProtoMessage(in protoreflect.MessageDescriptor) (*storagepb.TableSchema, error) {
 	if in == nil {
-		return nil, fmt.Errorf("no input message")
+		return nil, fmt.Errorf("no input descriptor")
 	}
 	schema := &storagepb.TableSchema{}
-	md := in.ProtoReflect().Descriptor()
-	for i := 0; i < md.Fields().Len(); i++ {
-		tfs, err := s.convertToTFS(md.Fields().Get(i))
+	for i := 0; i < in.Fields().Len(); i++ {
+		tfs, err := s.convertToTFS(in.Fields().Get(i))
 		if err != nil {
-			return nil, fmt.Errorf("Error converting field %d/%s in message %s: %v", i, md.Fields().Get(i).Name(), md.FullName().Name(), err)
+			return nil, fmt.Errorf("Error converting field %d/%s in message %s: %v", i, in.Fields().Get(i).Name(), in.FullName().Name(), err)
 		}
 		schema.Fields = append(schema.Fields, tfs)
 	}
@@ -191,7 +190,12 @@ func (s *schemaInferer) convertToTFS(field protoreflect.FieldDescriptor) (*stora
 		if s.isWellKnownWrapperType(field.Message().FullName()) {
 			tfs.Type = s.wrapperNameToSchemaType(field.Message().FullName())
 		} else {
-			return nil, fmt.Errorf("TODO implement nested message parsing")
+			schema, err := s.inferSchemaFromProtoMessage(field.Message())
+			if err != nil {
+				return nil, fmt.Errorf("failed to process nested message: %v", err)
+			}
+			tfs.Type = storagepb.TableFieldSchema_STRUCT
+			tfs.Fields = schema.Fields
 		}
 	}
 
