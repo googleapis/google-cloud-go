@@ -44,10 +44,10 @@ const (
 
 const (
 	// Abort a stream initialization attempt after this duration to mitigate delays.
-	defaultStreamInitTimeout = time.Minute
+	defaultStreamInitTimeout = 2 * time.Minute
 
 	// Reconnect a stream if it has been idle for this duration.
-	defaultStreamIdleTimeout = time.Minute
+	defaultStreamIdleTimeout = 2 * time.Minute
 )
 
 var errStreamInitTimeout = status.Error(codes.DeadlineExceeded, "pubsublite: stream initialization timed out")
