@@ -265,8 +265,8 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: false,
 		},
 		{
-			desc:        "wrapped ErrClosed",
-			inputErr:    &net.OpError{Err: net.ErrClosed},
+			desc:        "wrapped ErrClosed text",
+			inputErr:    &net.OpError{Op: "write", Err: errors.New("use of closed network connection")},
 			shouldRetry: true,
 		},
 	} {
