@@ -266,7 +266,7 @@ func TestShouldRetry(t *testing.T) {
 		},
 		{
 			desc:        "wrapped ErrClosed",
-			inputErr:    xerrors.Errorf("Test unwrapping of closed network connection error: %w", net.ErrClosed),
+			inputErr:    &net.OpError{Err: net.ErrClosed},
 			shouldRetry: true,
 		},
 	} {

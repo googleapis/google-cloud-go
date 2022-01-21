@@ -61,15 +61,16 @@ func shouldRetry(err error) bool {
 	if err == nil {
 		return false
 	}
-	if err == io.ErrUnexpectedEOF {
-		return true
-	}
-	if xerrors.Is(err, net.ErrClosed) {
-		// Retry use of closed network connection error
+	if xerrors.Is(err, io.ErrUnexpectedEOF) {
 		return true
 	}
 
 	switch e := err.(type) {
+	case *net.OpError:
+		if strings.Contains(e.Error(), "use of closed network connection") {
+			// We resort to string matching as net.ErrClosed is only exported after go 1.16
+			return true
+		}
 	case *googleapi.Error:
 		// Retry on 408, 429, and 5xx, according to
 		// https://cloud.google.com/storage/docs/exponential-backoff.
