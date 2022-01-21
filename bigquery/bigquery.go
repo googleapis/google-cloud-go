@@ -248,7 +248,7 @@ func retryableError(err error, allowedReasons []string) bool {
 	}
 	// Unwrap is only supported in go1.13.x+
 	if e, ok := err.(interface{ Unwrap() error }); ok {
-		return retryableError(e.Unwrap())
+		return retryableError(e.Unwrap(), allowedReasons)
 	}
 	return false
 }
