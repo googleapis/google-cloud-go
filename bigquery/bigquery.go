@@ -127,7 +127,8 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	// have to read the contents and keep it in memory, and that could be expensive.
 	// TODO(jba): Look into retrying if media != nil.
 	if job.JobReference != nil && media == nil {
-		err = runWithRetry(ctx, invoke)
+		// We deviate from default retries due to BigQuery wanting to retry structured internal job errors.
+		err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
 	} else {
 		err = invoke()
 	}
@@ -152,7 +153,7 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 	}
 
 	// We control request ID, so we can always runWithRetry.
-	err = runWithRetry(ctx, invoke)
+	err = runWithRetryExplicit(ctx, invoke, jobRetryReasons)
 	if err != nil {
 		return nil, err
 	}
@@ -174,6 +175,10 @@ func unixMillisToTime(m int64) time.Time {
 // See the similar function in ../storage/invoke.go. The main difference is the
 // reason for retrying.
 func runWithRetry(ctx context.Context, call func() error) error {
+	return runWithRetryExplicit(ctx, call, defaultRetryReasons)
+}
+
+func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons []string) error {
 	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{
 		Initial:    1 * time.Second,
@@ -185,15 +190,20 @@ func runWithRetry(ctx context.Context, call func() error) error {
 		if err == nil {
 			return true, nil
 		}
-		return !retryableError(err), err
+		return !retryableError(err, allowedReasons), err
 	})
 }
+
+var (
+	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
+	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
+)
 
 // This is the correct definition of retryable according to the BigQuery team. It
 // also considers 502 ("Bad Gateway") and 503 ("Service Unavailable") errors
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
-func retryableError(err error) bool {
+func retryableError(err error, allowedReasons []string) bool {
 	if err == nil {
 		return false
 	}
@@ -215,8 +225,13 @@ func retryableError(err error) bool {
 		var reason string
 		if len(e.Errors) > 0 {
 			reason = e.Errors[0].Reason
+			for _, r := range allowedReasons {
+				if reason == r {
+					return true
+				}
+			}
 		}
-		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded" {
+		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway {
 			return true
 		}
 	case *url.Error:
