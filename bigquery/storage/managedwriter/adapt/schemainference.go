@@ -50,12 +50,16 @@ var bqWrapperToTypeMap = map[string]storagepb.TableFieldSchema_Type{
 	".google.protobuf.StringValue": storagepb.TableFieldSchema_STRING,
 }
 
+// NameStyle controls how schema inference determines column names.
 type NameStyle string
 
 var (
+	// DefaultNameStyle uses the default name rules.
 	DefaultNameStyle NameStyle = "DEFAULT"
-	TextNameStyle    NameStyle = "TEXT"
-	JSONNameStyle    NameStyle = "JSON"
+	// TextNameStyle uses the text proto name rules.
+	TextNameStyle NameStyle = "TEXT"
+	// JSONNameStyle uses the json field name rules.
+	JSONNameStyle NameStyle = "JSON"
 )
 
 type schemaInferer struct {
