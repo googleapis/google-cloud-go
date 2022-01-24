@@ -68,7 +68,7 @@ func shouldRetry(err error) bool {
 	switch e := err.(type) {
 	case *net.OpError:
 		if strings.Contains(e.Error(), "use of closed network connection") {
-			// We resort to string matching as net.ErrClosed is only exported after go 1.16
+			// TODO: check against net.ErrClosed (go 1.16+) instead of string
 			return true
 		}
 	case *googleapi.Error:

@@ -265,7 +265,8 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: false,
 		},
 		{
-			desc:        "wrapped ErrClosed text",
+			desc: "wrapped ErrClosed text",
+			// TODO: check directly against wrapped net.ErrClosed (go 1.16+)
 			inputErr:    &net.OpError{Op: "write", Err: errors.New("use of closed network connection")},
 			shouldRetry: true,
 		},
