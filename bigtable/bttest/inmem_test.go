@@ -214,6 +214,52 @@ func TestCreateTableWithFamily(t *testing.T) {
 	}
 }
 
+func TestGetPartitionsByTableName(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf1": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 123}}},
+			"cf2": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 456}}},
+		},
+	}
+	_, err1 := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t1", Table: &newTbl})
+	if err1 != nil {
+		t.Fatalf("Creating table: %v", err1)
+	}
+
+	newTbl = btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf3": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 567}}},
+			"cf4": {GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxNumVersions{MaxNumVersions: 890}}},
+		},
+	}
+	_, err2 := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t2", Table: &newTbl})
+	if err2 != nil {
+		t.Fatalf("Creating table: %v", err2)
+	}
+
+	tbl_name_prefix := "cluster" + "/tables/"
+
+	// A random table name doesn't return partitions.
+	partitions := s.GetPartitionsByTableName(tbl_name_prefix + "random")
+	if partitions != nil {
+		t.Fatalf("Getting partitions for table random")
+	}
+
+	partitions = s.GetPartitionsByTableName(tbl_name_prefix + "t1")
+	if len(partitions) != 10 {
+		t.Fatalf("Getting partitions for table t1")
+	}
+
+	partitions = s.GetPartitionsByTableName(tbl_name_prefix + "t2")
+	if len(partitions) != 10 {
+		t.Fatalf("Getting partitions for table t2")
+	}
+}
+
 type MockSampleRowKeysServer struct {
 	responses []*btpb.SampleRowKeysResponse
 	grpc.ServerStream
