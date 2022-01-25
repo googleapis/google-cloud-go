@@ -1338,6 +1338,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2022/02/13
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/video/livestream/v1",
+		pkg:                   "livestream",
+		importPath:            "cloud.google.com/go/video/livestream/apiv1",
+		gRPCServiceConfigPath: "livestream_grpc_service_config.json",
+		apiServiceConfigPath:  "livestream_v1.yaml",
+		// GA after 2022/02/25
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
