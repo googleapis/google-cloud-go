@@ -427,4 +427,11 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 	if !cfg.EnableMessageOrdering {
 		t.Fatalf("Expected EnableMessageOrdering to be true in %s", orderSub.String())
 	}
+
+	// Test cancellation works as intended with ordering enabled.
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	orderSub.Receive(ctx, func(ctx context.Context, msg *Message) {
+		msg.Ack()
+	})
 }

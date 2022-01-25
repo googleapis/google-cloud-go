@@ -109,6 +109,7 @@ type Client struct {
 	readHost string
 	// May be nil.
 	creds *google.Credentials
+	retry *retryConfig
 
 	// gc is an optional gRPC-based, GAPIC client.
 	//
@@ -1792,7 +1793,8 @@ func setConditionField(call reflect.Value, name string, value interface{}) bool 
 // on the new handle will use the customized retry configuration.
 // These retry options will merge with the bucket's retryer (if set) for the
 // returned handle. Options passed into this method will take precedence over
-// options on the bucket's retryer.
+// retry options on the bucket and client. Note that you must explicitly pass in
+// each option you want to override.
 func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2 := *o
 	var retry *retryConfig
@@ -1808,6 +1810,27 @@ func (o *ObjectHandle) Retryer(opts ...RetryOption) *ObjectHandle {
 	o2.retry = retry
 	o2.acl.retry = retry
 	return &o2
+}
+
+// SetRetry configures the client with custom retry behavior as specified by the
+// options that are passed to it. All operations using this client will use the
+// customized retry configuration.
+// This should be called once before using the client for network operations, as
+// there could be indeterminate behaviour with operations in progress.
+// Retry options set on a bucket or object handle will take precedence over
+// these options.
+func (c *Client) SetRetry(opts ...RetryOption) {
+	var retry *retryConfig
+	if c.retry != nil {
+		// merge the options with the existing retry
+		retry = c.retry
+	} else {
+		retry = &retryConfig{}
+	}
+	for _, opt := range opts {
+		opt.apply(retry)
+	}
+	c.retry = retry
 }
 
 // RetryOption allows users to configure non-default retry behavior for API
@@ -1877,7 +1900,7 @@ func (ws *withPolicy) apply(config *retryConfig) {
 // By default, the following errors are retried (see invoke.go for the default
 // shouldRetry function):
 //
-// - HTTP responses with codes 429, 502, 503, and 504.
+// - HTTP responses with codes 408, 429, 502, 503, and 504.
 //
 // - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
 //
@@ -1971,10 +1994,10 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	r := c.raw.Projects.ServiceAccount.Get(projectID)
 	var res *raw.ServiceAccount
 	var err error
-	err = runWithRetry(ctx, func() error {
+	err = run(ctx, func() error {
 		res, err = r.Context(ctx).Do()
 		return err
-	})
+	}, c.retry, true)
 	if err != nil {
 		return "", err
 	}
