@@ -5,23 +5,28 @@
 
 ### Features
 
-* **storage:** add net.ErrClosed to default retry ([#5384](https://www.github.com/googleapis/google-cloud-go/issues/5384)) ([a4801c7](https://www.github.com/googleapis/google-cloud-go/commit/a4801c70db3f8c920110881aa9a4d617aca39d1b))
-* **storage:** add retry config to ACL handle methods ([#5185](https://www.github.com/googleapis/google-cloud-go/issues/5185)) ([be07d8d](https://www.github.com/googleapis/google-cloud-go/commit/be07d8dbd63857d3fb7f8e1cd0a0048c89a02ebd))
-* **storage:** add retry config to BucketHandle ([#5170](https://www.github.com/googleapis/google-cloud-go/issues/5170)) ([b2b5476](https://www.github.com/googleapis/google-cloud-go/commit/b2b54767d45a2b00e005a2bce0d7c8b15ad3605e))
-* **storage:** add retry config to IAM handle and reader ([#5223](https://www.github.com/googleapis/google-cloud-go/issues/5223)) ([8365456](https://www.github.com/googleapis/google-cloud-go/commit/8365456ee14d7af0328ce75760df489d59bc6b86))
-* **storage:** add retry config to iterators ([4910cd4](https://www.github.com/googleapis/google-cloud-go/commit/4910cd4d8a1998d16a78b14393de78c634dba0c3))
-* **storage:** add retry config to notifications ([#5221](https://www.github.com/googleapis/google-cloud-go/issues/5221)) ([ba5d6cf](https://www.github.com/googleapis/google-cloud-go/commit/ba5d6cf3a946520749447f1942b20cbc76944c9d))
-* **storage:** add retry config to the Client and HmacKey operations ([#5193](https://www.github.com/googleapis/google-cloud-go/issues/5193)) ([ce6e7a0](https://www.github.com/googleapis/google-cloud-go/commit/ce6e7a022252362ecd04547d3cd6ec50eaf3eec3))
-* **storage:** add retry configurability ([#5159](https://www.github.com/googleapis/google-cloud-go/issues/5159)) ([a12641a](https://www.github.com/googleapis/google-cloud-go/commit/a12641a43de60ed123f9ac604e9017c83a9654df))
-* **storage:** add retry idempotency configs ([#5165](https://www.github.com/googleapis/google-cloud-go/issues/5165)) ([fa5e458](https://www.github.com/googleapis/google-cloud-go/commit/fa5e4587cd6677edaa7f501b1521b27fe6bef0bd))
-* **storage:** add rpo (turbo replication) support ([#5003](https://www.github.com/googleapis/google-cloud-go/issues/5003)) ([3bd5995](https://www.github.com/googleapis/google-cloud-go/commit/3bd59958e0c06d2655b67fcb5410668db3c52af0))
-* **storage:** allow retry ErrorFunc configs ([#5166](https://www.github.com/googleapis/google-cloud-go/issues/5166)) ([c103ff6](https://www.github.com/googleapis/google-cloud-go/commit/c103ff6cb37aba3f326aff7e04c84dc2050d53f5))
-* **storage:** configurable retries for uploads ([#5210](https://www.github.com/googleapis/google-cloud-go/issues/5210)) ([ee4f600](https://www.github.com/googleapis/google-cloud-go/commit/ee4f600929df86d4c65db1abcc4bef2f1d6d23a5))
+* **storage:** add fully configurable and idempotency-aware retry strategy ([#5384](https://www.github.com/googleapis/google-cloud-go/issues/5384), [#5185](https://www.github.com/googleapis/google-cloud-go/issues/5185), [#5170](https://www.github.com/googleapis/google-cloud-go/issues/5170), [#5223](https://www.github.com/googleapis/google-cloud-go/issues/5223), [#5221](https://www.github.com/googleapis/google-cloud-go/issues/5221), [#5193](https://www.github.com/googleapis/google-cloud-go/issues/5193), [#5159](https://www.github.com/googleapis/google-cloud-go/issues/5159), [#5165](https://www.github.com/googleapis/google-cloud-go/issues/5165), [#5166](https://www.github.com/googleapis/google-cloud-go/issues/5166), [#5210](https://www.github.com/googleapis/google-cloud-go/issues/5210), [#5172](https://www.github.com/googleapis/google-cloud-go/issues/5172), [#5314](https://www.github.com/googleapis/google-cloud-go/issues/5314))
+  * This release contains changes to fully align this library's retry strategy
+    with best practices as described in the
+    Cloud Storage [docs](https://cloud.google.com/storage/docs/retry-strategy).
+  * The library will now retry only idempotent operations by default. This means
+    that for certain operations, including object upload, compose, rewrite,
+    update, and delete, requests will not be retried by default unless
+    [idempotency conditions](https://cloud.google.com/storage/docs/retry-strategy#idempotency)
+    for the request have been met.
+  * The library now has methods to configure aspects of retry policy for
+    API calls, including which errors are retried, the timing of the
+    exponential backoff, and how idempotency is taken into account.
+  * If you wish to re-enable retries for a non-idempotent request, use the
+    [RetryAlways](https://pkg.go.dev/cloud.google.com/go/storage@main#RetryAlways)
+    policy.
+  * For full details on how to configure retries, see the
+    [package docs](https://pkg.go.dev/cloud.google.com/go/storage@main#hdr-Retrying_failed_requests)
+    and the
+    [Cloud Storage docs](https://cloud.google.com/storage/docs/retry-strategy)
 * **storage:** GenerateSignedPostPolicyV4 can use existing creds to authenticate ([#5105](https://www.github.com/googleapis/google-cloud-go/issues/5105)) ([46489f4](https://www.github.com/googleapis/google-cloud-go/commit/46489f4c8a634068a3e7cf2fd5e5ca11b555c0a8))
 * **storage:** post policy can be signed with a fn that takes raw bytes ([#5079](https://www.github.com/googleapis/google-cloud-go/issues/5079)) ([25d1278](https://www.github.com/googleapis/google-cloud-go/commit/25d1278cab539fbfdd8563ed6b297e30d3fe555c))
-* **storage:** retry copy funcs on idempotent conds ([#5172](https://www.github.com/googleapis/google-cloud-go/issues/5172)) ([6d09687](https://www.github.com/googleapis/google-cloud-go/commit/6d0968722352895f2d8034e5c079bd406e3ca4b2))
-* **storage:** retry on a HTTP 408 response code ([#5314](https://www.github.com/googleapis/google-cloud-go/issues/5314)) ([b5fe903](https://www.github.com/googleapis/google-cloud-go/commit/b5fe903c4390aa8fb62b632d7f87ecf5665b821c))
-
+* **storage:** add rpo (turbo replication) support ([#5003](https://www.github.com/googleapis/google-cloud-go/issues/5003)) ([3bd5995](https://www.github.com/googleapis/google-cloud-go/commit/3bd59958e0c06d2655b67fcb5410668db3c52af0))
 
 ### Bug Fixes
 
