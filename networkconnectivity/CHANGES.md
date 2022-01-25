@@ -7,6 +7,13 @@
 
 * **networkconnectivity:** to v1 ([#5141](https://www.github.com/googleapis/google-cloud-go/issues/5141)) ([09d692b](https://www.github.com/googleapis/google-cloud-go/commit/09d692bf0f30f6d0aa282e2ad9bc6923f51c31fa))
 
+## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/networkconnectivity/v0.2.0...networkconnectivity/v1.0.0) (2022-01-25)
+
+
+### Features
+
+* **networkconnectivity:** to v1 ([#5141](https://www.github.com/googleapis/google-cloud-go/issues/5141)) ([09d692b](https://www.github.com/googleapis/google-cloud-go/commit/09d692bf0f30f6d0aa282e2ad9bc6923f51c31fa))
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/networkconnectivity/v0.1.0...networkconnectivity/v0.2.0) (2021-09-16)
 
 ### Features
