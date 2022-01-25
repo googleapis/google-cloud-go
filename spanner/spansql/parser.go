@@ -1901,6 +1901,27 @@ func (p *parser) parseType() (Type, *parseError) {
 	return p.parseBaseOrParameterizedType(true)
 }
 
+var extractPartTypes = map[string]TypeBase{
+	"DAY":   Int64,
+	"MONTH": Int64,
+	"YEAR":  Int64,
+	"DATE":  Date,
+}
+
+func (p *parser) parseExtractType() (Type, string, *parseError) {
+	var t Type
+	tok := p.next()
+	if tok.err != nil {
+		return Type{}, "", tok.err
+	}
+	base, ok := extractPartTypes[strings.ToUpper(tok.value)] // valid part types for EXTRACT is keyed by upper case strings.
+	if !ok {
+		return Type{}, "", p.errorf("got %q, want valid EXTRACT types", tok.value)
+	}
+	t.Base = base
+	return t, strings.ToUpper(tok.value), nil
+}
+
 func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError) {
 	debugf("parseBaseOrParameterizedType: %v", p)
 
@@ -2479,6 +2500,34 @@ var typedArgParser = func(p *parser) (Expr, *parseError) {
 	return TypedExpr{
 		Expr: e,
 		Type: toType,
+	}, nil
+}
+
+// Special argument parser for EXTRACT
+var extractArgParser = func(p *parser) (Expr, *parseError) {
+	partType, part, err := p.parseExtractType()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect("FROM"); err != nil {
+		return nil, err
+	}
+	e, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+	// AT TIME ZONE is optional
+	if p.eat("AT", "TIME", "ZONE") {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+		return ExtractExpr{Part: part, Type: partType, Expr: AtTimeZoneExpr{Expr: e, Zone: tok.string, Type: Type{Base: Timestamp}}}, nil
+	}
+	return ExtractExpr{
+		Part: part,
+		Expr: e,
+		Type: partType,
 	}, nil
 }
 

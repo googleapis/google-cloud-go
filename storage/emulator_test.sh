@@ -19,6 +19,18 @@ set -eo pipefail
 # Display commands being run
 set -x
 
+# Only run on Go 1.17+
+min_minor_ver=17
+
+v=`go version | { read _ _ v _; echo ${v#go}; }`
+comps=(${v//./ })
+minor_ver=${comps[1]}
+
+if [ "$minor_ver" -lt "$min_minor_ver" ]; then
+    echo minor version $minor_ver, skipping
+    exit 0
+fi
+
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
 
 DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
@@ -47,7 +59,7 @@ then
     exit 1
 fi
 
-# Stop the testbench & clean the environment variables
+# Stop the testbench & cleanup environment variables
 function cleanup() {
     echo "Cleanup testbench"
     docker stop $CONTAINER_NAME
@@ -56,6 +68,4 @@ function cleanup() {
 trap cleanup EXIT
 
 # Run tests
-# the regex ^[^23] skips conformance tests with ids 2 and 3, which are non-idempotent and do not yet pass
-# TODO: remove regex to skip tests once retries are aligned
-go test -v -timeout 10m ./ -run=TestRetryConformance/^[^23] -short 2>&1 | tee -a sponge_log.log
+go test -v -timeout 10m ./ -run="TestRetryConformance" -short 2>&1 | tee -a sponge_log.log

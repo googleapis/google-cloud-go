@@ -3,10 +3,10 @@ module cloud.google.com/go/grafeas
 go 1.16
 
 require (
-	cloud.google.com/go v0.97.0
+	cloud.google.com/go v0.100.2
 	github.com/golang/protobuf v1.5.2
 	github.com/googleapis/gax-go/v2 v2.1.1
-	google.golang.org/api v0.60.0
-	google.golang.org/genproto v0.0.0-20211112145013-271947fe86fd
-	google.golang.org/grpc v1.40.0
+	google.golang.org/api v0.65.0
+	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
+	google.golang.org/grpc v1.40.1
 )

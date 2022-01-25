@@ -16,10 +16,11 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
+	"google.golang.org/protobuf/types/descriptorpb"
 )
 
 // NoStreamOffset is a sentinel value for signalling we're not tracking
@@ -38,6 +39,9 @@ type AppendResult struct {
 
 	// the stream offset
 	offset int64
+
+	// retains the updated schema from backend response.  Used for schema change notification.
+	updatedSchema *storagepb.TableSchema
 }
 
 func newAppendResult(data [][]byte) *AppendResult {
@@ -62,11 +66,24 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 	}
 }
 
+// UpdatedSchema returns the updated schema for a table if supplied by the backend as part
+// of the append response.  It blocks until the result is ready.
+func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
+	select {
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context done")
+	case <-ar.Ready():
+		return ar.updatedSchema, nil
+	}
+}
+
 // pendingWrite tracks state for a set of rows that are part of a single
 // append request.
 type pendingWrite struct {
 	request *storagepb.AppendRowsRequest
-	result  *AppendResult
+	// for schema evolution cases, accept a new schema
+	newSchema *descriptorpb.DescriptorProto
+	result    *AppendResult
 
 	// this is used by the flow controller.
 	reqSize int
@@ -77,7 +94,7 @@ type pendingWrite struct {
 // that in the future, we may want to allow row batching to be managed by
 // the server (e.g. for default/COMMITTED streams).  For BUFFERED/PENDING
 // streams, this should be managed by the user.
-func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
+func newPendingWrite(appends [][]byte) *pendingWrite {
 	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
@@ -89,9 +106,6 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 			},
 		},
 		result: newAppendResult(appends),
-	}
-	if offset > 0 {
-		pw.request.Offset = &wrapperspb.Int64Value{Value: offset}
 	}
 	// We compute the size now for flow controller purposes, though
 	// the actual request size may be slightly larger (e.g. the first

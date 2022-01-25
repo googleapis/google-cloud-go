@@ -119,7 +119,7 @@ func TestRetryableErrors(t *testing.T) {
 			true,
 		},
 	} {
-		got := retryableError(tc.in)
+		got := retryableError(tc.in, defaultRetryReasons)
 		if got != tc.want {
 			t.Errorf("case (%s) mismatch:  got %t want %t", tc.description, got, tc.want)
 		}
