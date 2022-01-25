@@ -50,7 +50,7 @@ require (
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
 	cloud.google.com/go/gsuiteaddons v1.0.0
-	cloud.google.com/go/iam v0.1.0
+	cloud.google.com/go/iam v0.1.1
 	cloud.google.com/go/iap v1.0.0
 	cloud.google.com/go/ids v0.1.0
 	cloud.google.com/go/iot v1.0.0
