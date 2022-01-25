@@ -420,8 +420,17 @@ var commands = []struct {
 			"  batch-size=<500>                      The max number of rows per batch write request\n" +
 			"  workers=<1>                           The number of worker threads\n\n" +
 			"  Import data from a csv file into an existing cbt table that has the required column families.\n" +
-			"  See <https://github.com/googleapis/google-cloud-go/blob/main/bigtable/exampledata/cbt-import-data.csv> for a sample .csv file and formatting.\n" +
-			"  If no column family row is present, use the column-family flag to specify an existing family.\n\n" +
+			"  The first row should have a blank cell (this column is for row keys), then hold the column names.\n"
+			"  Each subsequent row should be comprised of the rowkey cell, followed by the data cells for that row.\n"
+			"  See below for an example, if no column family row is provided, use the column-family flag to specify an existing family.\n\n" +
+			"    ,column-1,column-2,column-3,column-4    // Column names row (1st cell empty)\n"
+			"    a,TRUE,,,FALSE                          // Rowkey 'a' followed by data\n"
+			"    b,,,TRUE,FALSE                          // Rowkey 'b' followed by data\n"
+			"    c,,TRUE,,TRUE                           // Rowkey 'c' followed by data\n\n"
+			"  Optionally a column family row may be the first row, which allows for further control over the schema of the table.\n" +
+			"  The column family will apply to the column it is in, and all columns to the right until another column family is pupulated.\n" +
+			"  The below row could be placed directly above the column names row (as the first row) in the previous example and not require the additional flag.\n\n" +
+			"    ,column-family-1,,column-family-2,      // Optional column family row (1st cell empty)\n\n" +
 			"  Examples:\n" +
 			"    cbt import csv-import-table cbt-import-sample.csv\n" +
 			"    cbt import csv-import-table cbt-import-sample.csv app-profile=batch-write-profile column-family=my-family workers=5\n",
