@@ -224,6 +224,8 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
 	// local emulator, HTTP and gRPC must use different ports, so this is
 	// necessary).
+	// TODO: when full gRPC client is available, remove STORAGE_EMULATOR_HOST_GRPC
+	// and use STORAGE_EMULATOR_HOST for both the HTTP and gRPC based clients.
 	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
