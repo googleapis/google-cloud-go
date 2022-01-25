@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.1...video/v1.1.0) (2022-01-25)
+
+
+### Features
+
+* **video:** start generating livestream apiv1 ([#5404](https://www.github.com/googleapis/google-cloud-go/issues/5404)) ([2b6770d](https://www.github.com/googleapis/google-cloud-go/commit/2b6770d762897c84e653973e989d95c0371b89ad))
+
 ### [1.0.1](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.0...video/v1.0.1) (2021-10-18)
 
 
