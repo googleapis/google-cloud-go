@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1196,9 +1196,7 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
-	if req.GetSize() != 0 {
-		params.Add("size", fmt.Sprintf("%v", req.GetSize()))
-	}
+	params.Add("size", fmt.Sprintf("%v", req.GetSize()))
 
 	baseUrl.RawQuery = params.Encode()
 

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -702,7 +702,7 @@ func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.Li
 
 func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -723,7 +723,7 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 
 func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.DeleteReservationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -826,7 +826,7 @@ func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservati
 
 func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservationpb.GetCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -847,7 +847,7 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 
 func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservationpb.DeleteCapacityCommitmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -992,7 +992,7 @@ func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 
 func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.DeleteAssignmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1118,7 +1118,7 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 
 func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

@@ -441,8 +441,8 @@ func TestGeneratedColumn(t *testing.T) {
 	if err != nil {
 		t.Fatalf("%s: Bad DDL", err)
 	}
-	if st := db.ApplyDDL(ddl.List[0]); st.Code() == codes.OK {
-		t.Fatalf("Should have failed to add a generated column to non-empty table\n status: %v", st)
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Failed to add a generated column to non-empty table\n status: %v", st)
 	}
 
 }

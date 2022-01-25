@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -216,7 +216,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesRequest, opts ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -236,7 +236,7 @@ func (c *gRPCClient) ListVoices(ctx context.Context, req *texttospeechpb.ListVoi
 
 func (c *gRPCClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

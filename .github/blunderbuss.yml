@@ -4,7 +4,7 @@ assign_issues_by:
   - 'api: datastore'
   - 'api: firestore'
   to:
-  - dmahugh
+  - telpirion
 - labels:
   - 'api: storage'
   to:
@@ -20,7 +20,7 @@ assign_issues_by:
 - labels:
   - 'api: spanner'
   to:
-  - hengfengli
+  - rahul2393
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
