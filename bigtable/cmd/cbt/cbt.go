@@ -420,7 +420,7 @@ var commands = []struct {
 			"  batch-size=<500>                      The max number of rows per batch write request\n" +
 			"  workers=<1>                           The number of worker threads\n\n" +
 			"  Import data from a csv file into an existing cbt table that has the required column families.\n" +
-			"  See <example.csv.github.com/cbt-import-sample.csv> for a sample .csv file and formatting.\n" +
+			"  See <https://github.com/googleapis/google-cloud-go/blob/main/bigtable/exampledata/cbt-import-data.csv> for a sample .csv file and formatting.\n" +
 			"  If no column family row is present, use the column-family flag to specify an existing family.\n\n" +
 			"  Examples:\n" +
 			"    cbt import csv-import-table cbt-import-sample.csv\n" +
