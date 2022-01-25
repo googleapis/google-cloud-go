@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -188,6 +188,31 @@ func ExampleIndexEndpointClient_UndeployIndex() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UndeployIndexRequest.
 	}
 	op, err := c.UndeployIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIndexEndpointClient_MutateDeployedIndex() {
+	ctx := context.Background()
+	c, err := aiplatform.NewIndexEndpointClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.MutateDeployedIndexRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#MutateDeployedIndexRequest.
+	}
+	op, err := c.MutateDeployedIndex(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

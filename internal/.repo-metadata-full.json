@@ -328,8 +328,8 @@
     "description": "Google Compute Engine API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1",
-    "release_level": "beta",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/apiv1",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/compute/metadata": {
@@ -575,6 +575,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/eventarc/publishing/apiv1": {
+    "distribution_name": "cloud.google.com/go/eventarc/publishing/apiv1",
+    "description": "Eventarc Publishing API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/eventarc/latest/publishing/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/filestore/apiv1": {
     "distribution_name": "cloud.google.com/go/filestore/apiv1",
     "description": "Cloud Filestore API",
@@ -688,7 +697,7 @@
     "description": "IAM Service Account Credentials API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/iam/credentials/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest/credentials/apiv1",
     "release_level": "ga",
     "library_type": ""
   },
@@ -699,6 +708,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iap/latest/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/ids/apiv1": {
+    "distribution_name": "cloud.google.com/go/ids/apiv1",
+    "description": "Cloud IDS API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/ids/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/iot/apiv1": {
@@ -860,7 +878,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/monitoring/latest/metricsscope/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/networkconnectivity/apiv1": {
@@ -1021,7 +1039,7 @@
     "description": "Cloud Profiler",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/profiler",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
     "release_level": "ga",
     "library_type": "AGENT"
   },
@@ -1508,6 +1526,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vision/latest/apiv1p1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
+  "cloud.google.com/go/vmmigration/apiv1": {
+    "distribution_name": "cloud.google.com/go/vmmigration/apiv1",
+    "description": "VM Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/vmmigration/latest/apiv1",
     "release_level": "beta",
     "library_type": ""
   },
