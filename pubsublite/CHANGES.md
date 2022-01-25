@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.1...pubsublite/v1.3.0) (2022-01-25)
+
+
+### Features
+
+* **pubsublite:** add C++ rules for Pub/Sub Lite ([3e7185c](https://www.github.com/googleapis/google-cloud-go/commit/3e7185c241d97ee342f132ae04bc93bb79a8e897))
+
 ### [1.2.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.0...pubsublite/v1.2.1) (2021-10-26)
 
 
