@@ -442,7 +442,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Cloud Profiler",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/profiler",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
 		ReleaseLevel:      "ga",
 		LibraryType:       AgentLibraryType,
 	},

@@ -37,8 +37,11 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/internal/version"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
@@ -282,6 +285,7 @@ func initIntegrationTests() (cleanup func()) {
 		}
 		configName = config.Name
 	}
+	log.Printf("Running test by using the instance config: %s\n", configName)
 
 	// First clean up any old test instances before we start the actual testing
 	// as these might cause this test run to fail.
@@ -3263,6 +3267,85 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func TestIntegration_GFE_Latency(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
+	setGFELatencyMetricsFlag(true)
+
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	_, err := client.Apply(ctx, ms)
+	if err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId", "FirstName", "LastName"})
+	if err != nil {
+		t.Fatalf("Could not read row. Got error %v", err)
+	}
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	var viewMap = map[string]bool{statsPrefix + "gfe_latency": false,
+		statsPrefix + "gfe_header_missing_count": false,
+	}
+
+	for {
+		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"] {
+			break
+		}
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) == 0 {
+				t.Fatal("No metrics are exported")
+			}
+			if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
+				t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_latency or "+statsPrefix+"gfe_header_missing_count")
+			} else {
+				viewMap[stat.View.Measure.Name()] = true
+			}
+			for _, row := range stat.Rows {
+				m := getTagMap(row.Tags)
+				checkCommonTagsGFELatency(t, m)
+				var data string
+				switch row.Data.(type) {
+				default:
+					data = fmt.Sprintf("%v", row.Data)
+				case *view.CountData:
+					data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
+				case *view.LastValueData:
+					data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+				case *view.DistributionData:
+					data = fmt.Sprintf("%v", row.Data.(*view.DistributionData).Count)
+				}
+				if got, want := fmt.Sprintf("%v", data), "0"; got <= want {
+					t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
+				}
+			}
+		case <-time.After(10 * time.Second):
+			if !viewMap[statsPrefix+"gfe_latency"] && !viewMap[statsPrefix+"gfe_header_missing_count"] {
+				t.Fatal("no stats were exported before timeout")
+			}
+		}
+	}
+	DisableGfeLatencyAndHeaderMissingCountViews()
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -3658,5 +3741,16 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
 		t.Logf(string(out))
+	}
+}
+
+func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
+	// We only check prefix because client ID increases if we create
+	// multiple clients for the same database.
+	if !strings.HasPrefix(m[tagKeyClientID], "client") {
+		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
+	}
+	if m[tagKeyLibVersion] != version.Repo {
+		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }
