@@ -51,6 +51,7 @@ import (
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -216,6 +217,27 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	c, err := NewClient(ctx, opts.HTTPOpts...)
 	if err != nil {
 		return nil, err
+	}
+
+	// Set emulator options for gRPC if an emulator was specified. Note that in a
+	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
+	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
+	// local emulator, HTTP and gRPC must use different ports, so this is
+	// necessary).
+	// TODO: when full gRPC client is available, remove STORAGE_EMULATOR_HOST_GRPC
+	// and use STORAGE_EMULATOR_HOST for both the HTTP and gRPC based clients.
+	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
+		// Strip the scheme from the emulator host. WithEndpoint does not take a
+		// scheme for gRPC.
+		if strings.Contains(host, "://") {
+			host = strings.SplitN(host, "://", 2)[1]
+		}
+
+		opts.GRPCOpts = append(opts.GRPCOpts,
+			option.WithEndpoint(host),
+			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithoutAuthentication(),
+		)
 	}
 
 	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
