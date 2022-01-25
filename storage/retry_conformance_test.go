@@ -109,7 +109,8 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.buckets.insert": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
-			return c.Bucket("bucket").Create(ctx, projectID, nil)
+			b := bucketIDs.New()
+			return c.Bucket(b).Create(ctx, projectID, nil)
 		},
 	},
 	"storage.buckets.list": {
@@ -243,21 +244,24 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 
-			if err := bkt.IAM().SetPolicy(ctx, policy); err != nil {
-				return err
+			if !preconditions {
+				policy.InternalProto.Etag = nil
 			}
-			return fmt.Errorf("Etag preconditions not supported")
+
+			return bkt.IAM().SetPolicy(ctx, policy)
 		},
 	},
 	"storage.hmacKey.update": {
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			key := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID)
+			uattrs := HMACKeyAttrsToUpdate{State: "INACTIVE"}
 
-			_, err := key.Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
-			if err != nil {
-				return err
+			if preconditions {
+				uattrs.Etag = fs.hmacKey.Etag
 			}
-			return fmt.Errorf("Etag preconditions not supported")
+
+			_, err := key.Update(ctx, uattrs)
+			return err
 		},
 	},
 	"storage.objects.compose": {

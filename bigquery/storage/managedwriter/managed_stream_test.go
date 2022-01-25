@@ -127,7 +127,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	wantReqs := 3
 
 	for i := 0; i < wantReqs; i++ {
-		_, err := ms.AppendRows(ctx, fakeData, NoStreamOffset)
+		_, err := ms.AppendRows(ctx, fakeData, WithOffset(int64(i)))
 		if err != nil {
 			t.Errorf("AppendRows; %v", err)
 		}
@@ -144,6 +144,14 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	for k, v := range testARC.requests {
 		if v == nil {
 			t.Errorf("request %d was nil", k)
+		}
+		if v.GetOffset() == nil {
+			t.Errorf("request %d had no offset", k)
+		} else {
+			gotOffset := v.GetOffset().GetValue()
+			if gotOffset != int64(k) {
+				t.Errorf("request %d wanted offset %d, got %d", k, k, gotOffset)
+			}
 		}
 		if k == 0 {
 			if v.GetTraceId() == "" {

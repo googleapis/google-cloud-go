@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.2.0...assuredworkloads/v0.3.0) (2022-01-04)
+
+
+### Features
+
+* **assuredworkloads:** EU Regions and Support With Sovereign Controls ([5444809](https://www.github.com/googleapis/google-cloud-go/commit/5444809e0b7cf9f5416645ea2df6fec96f8b9023))
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/assuredworkloads/v0.1.0...assuredworkloads/v0.2.0) (2021-08-30)
 
 
