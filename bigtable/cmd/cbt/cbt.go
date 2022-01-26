@@ -432,8 +432,8 @@ var commands = []struct {
 			"    b,,,TRUE,FALSE                          // Rowkey 'b' followed by data\n"
 			"    c,,TRUE,,TRUE                           // Rowkey 'c' followed by data\n\n"
 			"  Examples:\n" +
-			"    cbt import csv-import-table cbt-import-sample.csv\n" +
-			"    cbt import csv-import-table cbt-import-sample.csv app-profile=batch-write-profile column-family=my-family workers=5\n",
+			"    cbt import csv-import-table data.csv\n" +
+			"    cbt import csv-import-table data-no-families.csv app-profile=batch-write-profile column-family=my-family workers=5\n",
 		Required: cbtconfig.ProjectAndInstanceRequired,
 	},
 	{
