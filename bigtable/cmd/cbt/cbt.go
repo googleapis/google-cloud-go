@@ -418,14 +418,15 @@ var commands = []struct {
 			"  app-profile=<app-profile-id>          The app profile ID to use for the request\n" +
 			"  column-family=<family-name>           The column family label to use\n" +
 			"  batch-size=<500>                      The max number of rows per batch write request\n" +
-			"  workers=<1>                           The number of worker threads\n\n" +
-			"  Import data from a CSV file into an existing Bigtable table with the column families you intend to write your data.\n" +
-			"  The CSV file can support two rows of headers: the first for column families (optional) and the second for column qualifiers.\n" +
-			"  The first column will be used for the rowkey, so it should be left blank for the header rows. Each column family only needs\n" +
-			"  to be included once and will apply to the column it is in, and all columns to the right until another column family is found.\n" +
-			"  The remaining rows of the CSV should contain a rowkey and its data cells.\n"
-			"  See below for an example, if no column family row is provided, use the column-family flag to specify an existing family and\n" +
-			"  the column qualifiers row must then be the first row.\n\n" +
+			"  workers=<1>                           The number of worker threads\n" +
+			"  Import data from a CSV file into an existing Cloud Bigtable table that already has the column families your data requires.\n\n" +
+			"  The CSV file can support two rows of headers:\n" +
+			"      - (Optional) column families\n" +
+			"      - Column qualifiers\n" +
+			"  Because the first column is reserved for row keys, leave it empty in the header rows.\n" +
+			"  In the column family header, provide each column family once; it applies to the column it is in and every column to the right until another column family is found.\n" +
+			"  Each row after the header rows should contain a row key in the first column, followed by the data cells for the row.\n" +
+			"  See the example below. If you don't provide a column family header row, the column header is your first row and your import command must include the `column-family` flag to specify an existing column family. \n\n" +
 			"    ,column-family-1,,column-family-2,      // Optional column family row (1st cell empty)\n" +
 			"    ,column-1,column-2,column-3,column-4    // Column qualifiers row (1st cell empty)\n"
 			"    a,TRUE,,,FALSE                          // Rowkey 'a' followed by data\n"
