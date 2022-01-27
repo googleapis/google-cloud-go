@@ -418,7 +418,7 @@ var commands = []struct {
 			"  app-profile=<app-profile-id>          The app profile ID to use for the request\n" +
 			"  column-family=<family-name>           The column family label to use\n" +
 			"  batch-size=<500>                      The max number of rows per batch write request\n" +
-			"  workers=<1>                           The number of worker threads\n" +
+			"  workers=<1>                           The number of worker threads\n\n" +
 			"  Import data from a CSV file into an existing Cloud Bigtable table that already has the column families your data requires.\n\n" +
 			"  The CSV file can support two rows of headers:\n" +
 			"      - (Optional) column families\n" +
