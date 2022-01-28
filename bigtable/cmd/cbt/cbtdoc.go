@@ -284,13 +284,25 @@ Usage:
 	  batch-size=<500>                      The max number of rows per batch write request
 	  workers=<1>                           The number of worker threads
 
-	  Import data from a csv file into an existing cbt table that has the required column families.
-	  See <example.csv.github.com/cbt-import-sample.csv> for a sample .csv file and formatting.
-	  If no column family row is present, use the column-family flag to specify an existing family.
+	  Import data from a CSV file into an existing Cloud Bigtable table that already has the column families your data requires.
+
+	  The CSV file can support two rows of headers:
+	      - (Optional) column families
+	      - Column qualifiers
+	  Because the first column is reserved for row keys, leave it empty in the header rows.
+	  In the column family header, provide each column family once; it applies to the column it is in and every column to the right until another column family is found.
+	  Each row after the header rows should contain a row key in the first column, followed by the data cells for the row.
+	  See the example below. If you don't provide a column family header row, the column header is your first row and your import command must include the `column-family` flag to specify an existing column family.
+
+	    ,column-family-1,,column-family-2,      // Optional column family row (1st cell empty)
+	    ,column-1,column-2,column-3,column-4    // Column qualifiers row (1st cell empty)
+	    a,TRUE,,,FALSE                          // Rowkey 'a' followed by data
+	    b,,,TRUE,FALSE                          // Rowkey 'b' followed by data
+	    c,,TRUE,,TRUE                           // Rowkey 'c' followed by data
 
 	  Examples:
-	    cbt import csv-import-table cbt-import-sample.csv
-	    cbt import csv-import-table cbt-import-sample.csv app-profile=batch-write-profile column-family=my-family workers=5
+	    cbt import csv-import-table data.csv
+	    cbt import csv-import-table data-no-families.csv app-profile=batch-write-profile column-family=my-family workers=5
 
 
 

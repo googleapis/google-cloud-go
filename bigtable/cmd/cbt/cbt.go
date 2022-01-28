@@ -428,10 +428,10 @@ var commands = []struct {
 			"  Each row after the header rows should contain a row key in the first column, followed by the data cells for the row.\n" +
 			"  See the example below. If you don't provide a column family header row, the column header is your first row and your import command must include the `column-family` flag to specify an existing column family. \n\n" +
 			"    ,column-family-1,,column-family-2,      // Optional column family row (1st cell empty)\n" +
-			"    ,column-1,column-2,column-3,column-4    // Column qualifiers row (1st cell empty)\n"
-			"    a,TRUE,,,FALSE                          // Rowkey 'a' followed by data\n"
-			"    b,,,TRUE,FALSE                          // Rowkey 'b' followed by data\n"
-			"    c,,TRUE,,TRUE                           // Rowkey 'c' followed by data\n\n"
+			"    ,column-1,column-2,column-3,column-4    // Column qualifiers row (1st cell empty)\n" +
+			"    a,TRUE,,,FALSE                          // Rowkey 'a' followed by data\n" +
+			"    b,,,TRUE,FALSE                          // Rowkey 'b' followed by data\n" +
+			"    c,,TRUE,,TRUE                           // Rowkey 'c' followed by data\n\n" +
 			"  Examples:\n" +
 			"    cbt import csv-import-table data.csv\n" +
 			"    cbt import csv-import-table data-no-families.csv app-profile=batch-write-profile column-family=my-family workers=5\n",
