@@ -308,7 +308,11 @@ type bucketBoundHostname struct {
 }
 
 func (s pathStyle) host(bucket string) string {
-	return "storage.googleapis.com"
+	if os.Getenv("STORAGE_EMULATOR_HOST") {
+		return os.Getenv("STORAGE_EMULATOR_HOST")
+	} else {
+		return "storage.googleapis.com"
+	}
 }
 
 func (s virtualHostedStyle) host(bucket string) string {
