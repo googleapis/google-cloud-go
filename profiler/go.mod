@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/compute v0.1.0
+	cloud.google.com/go/compute v1.1.0
 	cloud.google.com/go/iam v0.1.1 // indirect
 	cloud.google.com/go/storage v1.18.2
 	github.com/golang/mock v1.6.0

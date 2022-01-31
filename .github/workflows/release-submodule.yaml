@@ -35,7 +35,7 @@ jobs:
       matrix:
         package: ${{fromJson(needs.changeFinder.outputs.submodules)}}
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
+      - uses: GoogleCloudPlatform/release-please-action@v3
         id: release-please
         with:
            path: ${{ matrix.package }}
@@ -46,7 +46,7 @@ jobs:
            package-name: ${{ matrix.package }}
            monorepo-tags: true
            command: release-pr
-      - uses: actions/github-script@v4
+      - uses: actions/github-script@v5
         id: label # Adds the "autorelease: pending" label.
         if: ${{steps.release-please.outputs.pr}}
         with:
@@ -69,7 +69,7 @@ jobs:
       matrix:
         package: ${{fromJson(needs.changeFinder.outputs.submodules)}}
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
+      - uses: GoogleCloudPlatform/release-please-action@v3
         id: tag-release
         with:
           path: ${{ matrix.package }}
@@ -81,7 +81,7 @@ jobs:
           command: github-release
       # Add the "autorelease: published" and remove tagged, this allows
       # monitoring to be enabled that detects failed releases:
-      - uses: actions/github-script@v4
+      - uses: actions/github-script@v5
         id: untag-release
         if: ${{steps.tag-release.outputs.pr}}
         with:
