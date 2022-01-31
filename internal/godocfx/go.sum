@@ -1,7 +1,8 @@
 cloud.google.com/go/bigquery v1.26.0 h1:/q4uEmgogEwNOgB9VnJT/vAugY1jahD/BrZSMYl1XUM=
 cloud.google.com/go/bigquery v1.26.0/go.mod h1:zB9gvHgECb8KMHiAIVI8uwvlWVF4QDzVnUQP/CdPaQc=
-cloud.google.com/go/compute v0.1.0 h1:rSUBvAyVwNJ5uQCKNJFMwPtTvJkfN38b6Pvb9zZoqJ8=
 cloud.google.com/go/compute v0.1.0/go.mod h1:GAesmwr110a34z04OlxYkATPBEfVhkymfTBXtfbBFow=
+cloud.google.com/go/compute v1.1.0 h1:pyPhehLfZ6pVzRgJmXGYvCY4K7WSWRhVw0AwhgVvS84=
+cloud.google.com/go/compute v1.1.0/go.mod h1:2NIffxgWfORSI7EOYMFatGTfjMLnqrOKBEyYb6NoRgA=
 cloud.google.com/go/datacatalog v1.0.0 h1:KHjIs525XbESSGHxwEKHTzkwfvj7xxYrCy4gcvvlHBY=
 cloud.google.com/go/datacatalog v1.0.0/go.mod h1:cz8rXsZV278v0nXPhnp5eXRnZtqx2Mtv96W8r7a7Oxs=
 cloud.google.com/go/datastore v1.6.0 h1:wZaHIqu1tebvGRYhVgcfNX6jN2q638OGO23JyJckxuI=
@@ -188,6 +189,7 @@ google.golang.org/genproto v0.0.0-20211016002631-37fc39342514/go.mod h1:5CzLGKJ6
 google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20211221195035-429b39de9b1c/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
+google.golang.org/genproto v0.0.0-20220111164026-67b88f271998/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 h1:zzNejm+EgrbLfDZ6lu9Uud2IVvHySPl8vQzf04laR5Q=
 google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5/go.mod h1:5CzLGKJ67TSI2B9POpiiyGha0AjJvZIUgRMt1dSmuhc=
 google.golang.org/grpc v1.19.0/go.mod h1:mqu4LbDTu4XGKhr4mRzUsmM4RtVoemTSY81AxZiDr8c=

@@ -3,6 +3,7 @@ module cloud.google.com/go/video
 go 1.16
 
 require (
+	cloud.google.com/go v0.100.2
 	github.com/googleapis/gax-go/v2 v2.1.1
 	google.golang.org/api v0.65.0
 	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
