@@ -467,7 +467,9 @@ func (c *ClusterManagerClient) CompleteIPRotation(ctx context.Context, req *cont
 	return c.internalClient.CompleteIPRotation(ctx, req, opts...)
 }
 
-// SetNodePoolSize sets the size for a specific node pool.
+// SetNodePoolSize sets the size for a specific node pool. The new size will be used for all
+// replicas, including future replicas created by modifying
+// NodePool.locations.
 func (c *ClusterManagerClient) SetNodePoolSize(ctx context.Context, req *containerpb.SetNodePoolSizeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
 	return c.internalClient.SetNodePoolSize(ctx, req, opts...)
 }
