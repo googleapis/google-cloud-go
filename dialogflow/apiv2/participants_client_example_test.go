@@ -181,3 +181,23 @@ func ExampleParticipantsClient_SuggestFaqAnswers() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleParticipantsClient_SuggestSmartReplies() {
+	ctx := context.Background()
+	c, err := dialogflow.NewParticipantsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.SuggestSmartRepliesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SuggestSmartRepliesRequest.
+	}
+	resp, err := c.SuggestSmartReplies(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

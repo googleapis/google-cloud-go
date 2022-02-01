@@ -15,9 +15,19 @@
                 "GetInsight"
               ]
             },
+            "GetInsightTypeConfig": {
+              "methods": [
+                "GetInsightTypeConfig"
+              ]
+            },
             "GetRecommendation": {
               "methods": [
                 "GetRecommendation"
+              ]
+            },
+            "GetRecommenderConfig": {
+              "methods": [
+                "GetRecommenderConfig"
               ]
             },
             "ListInsights": {
@@ -48,6 +58,16 @@
             "MarkRecommendationSucceeded": {
               "methods": [
                 "MarkRecommendationSucceeded"
+              ]
+            },
+            "UpdateInsightTypeConfig": {
+              "methods": [
+                "UpdateInsightTypeConfig"
+              ]
+            },
+            "UpdateRecommenderConfig": {
+              "methods": [
+                "UpdateRecommenderConfig"
               ]
             }
           }
