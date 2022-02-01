@@ -1347,6 +1347,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2022/02/25
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/dataplex/v1",
+		pkg:                   "dataplex",
+		importPath:            "cloud.google.com/go/dataplex/apiv1",
+		gRPCServiceConfigPath: "dataplex_grpc_service_config.json",
+		apiServiceConfigPath:  "dataplex_v1.yaml",
+		// GA after 2022/02/28
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
