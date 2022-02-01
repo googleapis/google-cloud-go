@@ -1067,7 +1067,7 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1084,11 +1084,11 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
@@ -1124,7 +1124,7 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		// As insurance attempt to delete the object, ignore the error if it
 		// doesn't exist, because it wasn't made.
@@ -1140,7 +1140,7 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	content := make([]byte, w.ChunkSize)
 	_, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Cancel the Writer context before flushing.
 	// TODO: Add a test that writes at least a chunk before canceling part way through.
@@ -1174,7 +1174,7 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1193,11 +1193,11 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
@@ -1234,7 +1234,7 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1255,11 +1255,11 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	}
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
