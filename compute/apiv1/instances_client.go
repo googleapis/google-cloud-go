@@ -395,6 +395,9 @@ type instancesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *ZoneOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -414,6 +417,16 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewZoneOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &InstancesClient{internalClient: c, CallOptions: &InstancesCallOptions{}}, nil
 }
@@ -441,6 +454,9 @@ func (c *instancesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *instancesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -507,7 +523,14 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -566,7 +589,14 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -728,7 +758,14 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -787,7 +824,14 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -839,7 +883,14 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -893,7 +944,14 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -946,7 +1004,14 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1348,7 +1413,14 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1587,7 +1659,14 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1639,7 +1718,14 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1738,7 +1824,14 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1792,7 +1885,14 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1902,7 +2002,14 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -1961,7 +2068,14 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2020,7 +2134,14 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2079,7 +2200,14 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2138,7 +2266,14 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2197,7 +2332,14 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2256,7 +2398,14 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2315,7 +2464,14 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2374,7 +2530,14 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2419,7 +2582,14 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2471,7 +2641,14 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2530,7 +2707,14 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2582,7 +2766,14 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2698,7 +2889,14 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2758,7 +2956,14 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2817,7 +3022,14 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2877,7 +3089,14 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -2936,7 +3155,14 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 

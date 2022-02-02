@@ -157,6 +157,9 @@ type reservationsRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *ZoneOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -176,6 +179,16 @@ func NewReservationsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewZoneOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &ReservationsClient{internalClient: c, CallOptions: &ReservationsCallOptions{}}, nil
 }
@@ -203,6 +216,9 @@ func (c *reservationsRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *reservationsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -361,7 +377,14 @@ func (c *reservationsRESTClient) Delete(ctx context.Context, req *computepb.Dele
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -515,7 +538,14 @@ func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.Inse
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
@@ -664,7 +694,14 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
 	return op, nil
 }
 
