@@ -507,13 +507,3 @@ func (it *AcceleratorTypesScopedListPairIterator) takeBuf() interface{} {
 	it.items = nil
 	return b
 }
-
-// Operation represents a long running operation for this API.
-type Operation struct {
-	proto *computepb.Operation
-}
-
-// Proto returns the raw type this wraps.
-func (o *Operation) Proto() *computepb.Operation {
-	return o.proto
-}
