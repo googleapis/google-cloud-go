@@ -142,6 +142,9 @@ type globalForwardingRulesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -161,6 +164,16 @@ func NewGlobalForwardingRulesRESTClient(ctx context.Context, opts ...option.Clie
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &GlobalForwardingRulesClient{internalClient: c, CallOptions: &GlobalForwardingRulesCallOptions{}}, nil
 }
@@ -188,6 +201,9 @@ func (c *globalForwardingRulesRESTClient) setGoogleClientInfo(keyval ...string) 
 func (c *globalForwardingRulesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -246,7 +262,13 @@ func (c *globalForwardingRulesRESTClient) Delete(ctx context.Context, req *compu
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -349,7 +371,13 @@ func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *compu
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -498,7 +526,13 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -550,7 +584,13 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -609,6 +649,12 @@ func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }

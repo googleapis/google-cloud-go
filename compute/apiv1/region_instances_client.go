@@ -97,6 +97,9 @@ type regionInstancesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -116,6 +119,16 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &RegionInstancesClient{internalClient: c, CallOptions: &RegionInstancesCallOptions{}}, nil
 }
@@ -143,6 +156,9 @@ func (c *regionInstancesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *regionInstancesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -208,6 +224,13 @@ func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *compute
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }

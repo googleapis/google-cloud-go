@@ -136,6 +136,9 @@ type interconnectAttachmentsRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -155,6 +158,16 @@ func NewInterconnectAttachmentsRESTClient(ctx context.Context, opts ...option.Cl
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &InterconnectAttachmentsClient{internalClient: c, CallOptions: &InterconnectAttachmentsCallOptions{}}, nil
 }
@@ -182,6 +195,9 @@ func (c *interconnectAttachmentsRESTClient) setGoogleClientInfo(keyval ...string
 func (c *interconnectAttachmentsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -340,7 +356,14 @@ func (c *interconnectAttachmentsRESTClient) Delete(ctx context.Context, req *com
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -446,7 +469,14 @@ func (c *interconnectAttachmentsRESTClient) Insert(ctx context.Context, req *com
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -595,7 +625,14 @@ func (c *interconnectAttachmentsRESTClient) Patch(ctx context.Context, req *comp
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
