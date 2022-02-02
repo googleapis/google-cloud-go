@@ -1,0 +1,145 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package storage
+
+import (
+	"context"
+
+	gax "github.com/googleapis/gax-go/v2"
+)
+
+// storageClient is an internal-only interface designed to separate the
+// transport-specific logic of making Storage API calls from the logic of the
+// client library.
+//
+// Implementation requirements beyond implementing the interface include:
+// * factory method(s) must accept a `userProject string` param
+// * `settings` must be retained per instance
+// * `storageOption`s must be resolved in the order they are received
+// * all API errors must be wrapped in the gax-go APIError type
+// * any unimplemented interface methods must return a StorageUnimplementedErr
+type storageClient interface {
+
+	// Bucket methods.
+
+	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
+	DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
+	GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
+	UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
+	LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
+
+	// Object metadata methods.
+
+	DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error
+	GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error)
+	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+
+	// Default Object ACL methods.
+
+	DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
+	ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
+	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (ACLRule, error)
+
+	// Bucket ACL methods.
+
+	DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
+	ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
+	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+
+	// Object ACL Methods.
+
+	DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error
+	ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error)
+	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+
+	// Media operations.
+
+	ComposeObject(ctx context.Context, req composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
+	RewriteObject(ctx context.Context, req rewriteObjectRequest, opts ...storageOption) (rewriteObjectResponse, error)
+
+	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
+	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
+}
+
+type settings struct {
+	retry      *retryConfig
+	gax        []gax.CallOption
+	idempotent bool
+}
+
+type storageOption interface {
+	Apply(s *settings)
+}
+
+func withGAXOptions(opts ...gax.CallOption) storageOption {
+	return &gaxOption{opts}
+}
+
+type gaxOption struct {
+	opts []gax.CallOption
+}
+
+func (o *gaxOption) Apply(s *settings) { s.gax = o.opts }
+
+func withRetryConfig(rc *retryConfig) storageOption {
+	return &retryOption{rc}
+}
+
+type retryOption struct {
+	rc *retryConfig
+}
+
+func (o *retryOption) Apply(s *settings) { s.retry = o.rc }
+
+func idempotent(i bool) storageOption {
+	return &idempotentOption{i}
+}
+
+type idempotentOption struct {
+	idempotency bool
+}
+
+func (o *idempotentOption) Apply(s *settings) { s.idempotent = o.idempotency }
+
+type composeObjectRequest struct {
+	dstBucket     string
+	dstObject     string
+	srcs          []string
+	gen           int64
+	conds         *Conditions
+	predefinedACL string
+}
+
+type rewriteObjectRequest struct {
+	srcBucket     string
+	srcObject     string
+	dstBucket     string
+	dstObject     string
+	dstKeyName    string
+	attrs         *ObjectAttrs
+	gen           int64
+	conds         *Conditions
+	predefinedACL string
+	token         string
+}
+
+type rewriteObjectResponse struct {
+	resource *ObjectAttrs
+	done     bool
+	written  int64
+	token    string
+}
