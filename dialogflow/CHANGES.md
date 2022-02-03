@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/dialogflow/v1.3.0...dialogflow/v1.4.0) (2022-02-03)
+
+
+### Features
+
+* **dialogflow:** added conversation process config, ImportDocument and SuggestSmartReplies API ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+
 ## [1.3.0](https://www.github.com/googleapis/google-cloud-go/compare/dialogflow/v1.2.0...dialogflow/v1.3.0) (2022-01-04)
 
 
