@@ -1,5 +1,17 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v1.1.0...compute/v1.2.0) (2022-02-03)
+
+
+### Features
+
+* **compute:** regen compute for LRO helpers ([#5431](https://www.github.com/googleapis/google-cloud-go/issues/5431)) ([95d3609](https://www.github.com/googleapis/google-cloud-go/commit/95d3609b7b9ec917e48b8dfbc18875dfed378c1b))
+
+
+### Bug Fixes
+
+* **compute/metadata:** init a HTTP client in OnGCE check ([#5439](https://www.github.com/googleapis/google-cloud-go/issues/5439)) ([76c6e40](https://www.github.com/googleapis/google-cloud-go/commit/76c6e40171b2f032913549c95396cd8d44fbd7f5)), refs [#5430](https://www.github.com/googleapis/google-cloud-go/issues/5430)
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/compute/v1.0.0...compute/v1.1.0) (2022-01-14)
 
 
