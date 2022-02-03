@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.0.2...artifactregistry/v1.1.0) (2022-02-03)
+
+
+### Features
+
+* **artifactregistry:** add APIs for importing and uploading Apt and Yum artifacts feat: add version policy support for Maven repositories feat: add order_by support for listing versions fix!: mark a few resource name fields as required ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+
 ### [1.0.2](https://www.github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.0.1...artifactregistry/v1.0.2) (2022-01-13)
 
 
