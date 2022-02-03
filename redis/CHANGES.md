@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.1.1...redis/v1.2.0) (2022-02-03)
+
+
+### Features
+
+* **redis:** Add automated RDB (AKA persistence) ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+
 ### [1.1.1](https://www.github.com/googleapis/google-cloud-go/compare/redis/v1.1.0...redis/v1.1.1) (2022-01-19)
 
 
