@@ -31,9 +31,10 @@ var (
 )
 
 // AdminClient provides admin operations for Pub/Sub Lite resources within a
-// Google Cloud region. The zone component of resource paths must be within this
-// region. See https://cloud.google.com/pubsub/lite/docs/locations for the list
-// of zones where Pub/Sub Lite is available.
+// Google Cloud region. The location (region or zone) component of resource
+// paths must be within this region.
+// See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+// regions and zones where Pub/Sub Lite is available.
 //
 // An AdminClient may be shared by multiple goroutines.
 type AdminClient struct {
@@ -90,7 +91,7 @@ func (ac *AdminClient) UpdateTopic(ctx context.Context, config TopicConfigToUpda
 }
 
 // DeleteTopic deletes a topic. A valid topic path has the format:
-// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
 func (ac *AdminClient) DeleteTopic(ctx context.Context, topic string) error {
 	if _, err := wire.ParseTopicPath(topic); err != nil {
 		return err
@@ -99,7 +100,7 @@ func (ac *AdminClient) DeleteTopic(ctx context.Context, topic string) error {
 }
 
 // Topic retrieves the configuration of a topic. A valid topic path has the
-// format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// format: "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
 func (ac *AdminClient) Topic(ctx context.Context, topic string) (*TopicConfig, error) {
 	if _, err := wire.ParseTopicPath(topic); err != nil {
 		return nil, err
@@ -113,7 +114,7 @@ func (ac *AdminClient) Topic(ctx context.Context, topic string) (*TopicConfig, e
 
 // TopicPartitionCount returns the number of partitions for a topic. A valid
 // topic path has the format:
-// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
 func (ac *AdminClient) TopicPartitionCount(ctx context.Context, topic string) (int, error) {
 	if _, err := wire.ParseTopicPath(topic); err != nil {
 		return 0, err
@@ -127,7 +128,7 @@ func (ac *AdminClient) TopicPartitionCount(ctx context.Context, topic string) (i
 
 // TopicSubscriptions retrieves the list of subscription paths for a topic.
 // A valid topic path has the format:
-// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
 func (ac *AdminClient) TopicSubscriptions(ctx context.Context, topic string) *SubscriptionPathIterator {
 	if _, err := wire.ParseTopicPath(topic); err != nil {
 		return &SubscriptionPathIterator{err: err}
@@ -137,8 +138,9 @@ func (ac *AdminClient) TopicSubscriptions(ctx context.Context, topic string) *Su
 	}
 }
 
-// Topics retrieves the list of topic configs for a given project and zone.
-// A valid parent path has the format: "projects/PROJECT_ID/locations/ZONE".
+// Topics retrieves the list of topic configs for a given project and location
+// (region or zone). A valid parent path has the format:
+// "projects/PROJECT_ID/locations/LOCATION".
 func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator {
 	if _, err := wire.ParseLocationPath(parent); err != nil {
 		return &TopicIterator{err: err}
@@ -223,7 +225,7 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 // SeekSubscription initiates an out-of-band seek for a subscription to a
 // specified target, which may be timestamps or named positions within the
 // message backlog. A valid subscription path has the format:
-// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 //
 // See https://cloud.google.com/pubsub/lite/docs/seek for more information.
 func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget, opts ...SeekSubscriptionOption) (*SeekSubscriptionOperation, error) {
@@ -240,7 +242,7 @@ func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string
 }
 
 // DeleteSubscription deletes a subscription. A valid subscription path has the
-// format: "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+// format: "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 func (ac *AdminClient) DeleteSubscription(ctx context.Context, subscription string) error {
 	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
 		return err
@@ -250,7 +252,7 @@ func (ac *AdminClient) DeleteSubscription(ctx context.Context, subscription stri
 
 // Subscription retrieves the configuration of a subscription. A valid
 // subscription name has the format:
-// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 func (ac *AdminClient) Subscription(ctx context.Context, subscription string) (*SubscriptionConfig, error) {
 	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
 		return nil, err
@@ -263,8 +265,8 @@ func (ac *AdminClient) Subscription(ctx context.Context, subscription string) (*
 }
 
 // Subscriptions retrieves the list of subscription configs for a given project
-// and zone. A valid parent path has the format:
-// "projects/PROJECT_ID/locations/ZONE".
+// and location (region or zone). A valid parent path has the format:
+// "projects/PROJECT_ID/locations/LOCATION".
 func (ac *AdminClient) Subscriptions(ctx context.Context, parent string) *SubscriptionIterator {
 	if _, err := wire.ParseLocationPath(parent); err != nil {
 		return &SubscriptionIterator{err: err}
@@ -411,8 +413,8 @@ type TopicPathIterator struct {
 }
 
 // Next returns the next topic path, which has format:
-// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". The
-// second return value will be iterator.Done if there are no more topic paths.
+// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID". The second return
+// value will be iterator.Done if there are no more topic paths.
 func (sp *TopicPathIterator) Next() (string, error) {
 	if sp.err != nil {
 		return "", sp.err
@@ -432,7 +434,7 @@ type SubscriptionPathIterator struct {
 }
 
 // Next returns the next subscription path, which has format:
-// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID". The
+// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID". The
 // second return value will be iterator.Done if there are no more subscription
 // paths.
 func (sp *SubscriptionPathIterator) Next() (string, error) {
