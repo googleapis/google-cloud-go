@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/googleapis/gax-go/v2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
@@ -192,4 +193,36 @@ func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
 
 func (tarc *testAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
 	return tarc.recvF()
+}
+
+func TestManagedStream_FlowControllerFailure(t *testing.T) {
+
+	ctx := context.Background()
+
+	// create a flowcontroller with 1 inflight message allowed, and exhaust it.
+	fc := newFlowController(1, 0)
+	fc.acquire(ctx, 0)
+
+	// Construct a skeleton ManagedStream.  This doesn't include an ARC or open func
+	// because this test should never invoke it.
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             fc,
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+		[]byte("bar"),
+	}
+
+	// Create a context that will expire during the append.
+	// This is expected to surface a flowcontroller error, as there's no
+	// capacity.
+	expireCtx, _ := context.WithTimeout(ctx, 100*time.Millisecond)
+	_, err := ms.AppendRows(expireCtx, fakeData)
+	if err == nil {
+		t.Errorf("expected AppendRows to error, but it succeeded")
+	}
+
 }

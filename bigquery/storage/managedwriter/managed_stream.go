@@ -350,6 +350,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
 		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
 		pw.markDone(NoStreamOffset, err, nil)
+		return nil, err
 	}
 	// if we've received an updated schema as part of a write, propagate it to both the cached schema and
 	// populate the schema in the request.
