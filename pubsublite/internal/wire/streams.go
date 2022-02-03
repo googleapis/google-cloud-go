@@ -130,7 +130,8 @@ type retryableStream struct {
 // stream will be terminated. Streams are reconnected if idle for `idleTimeout`.
 // `responseType` is the type of the response proto received on the stream.
 func newRetryableStream(ctx context.Context, handler streamHandler, connectTimeout, idleTimeout time.Duration, responseType reflect.Type) *retryableStream {
-	initTimeout := minDuration(connectTimeout, defaultStreamInitTimeout)
+	// Retry initialization before the reconnection timeout.
+	initTimeout := minDuration(connectTimeout/2, defaultStreamInitTimeout)
 	rs := &retryableStream{
 		ctx:            ctx,
 		handler:        handler,
