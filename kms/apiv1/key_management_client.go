@@ -490,20 +490,24 @@ func (c *KeyManagementClient) GetKeyRing(ctx context.Context, req *kmspb.GetKeyR
 	return c.internalClient.GetKeyRing(ctx, req, opts...)
 }
 
-// GetCryptoKey returns metadata for a given CryptoKey, as well as its
-// primary CryptoKeyVersion.
+// GetCryptoKey returns metadata for a given CryptoKey, as
+// well as its primary
+// CryptoKeyVersion.
 func (c *KeyManagementClient) GetCryptoKey(ctx context.Context, req *kmspb.GetCryptoKeyRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
 	return c.internalClient.GetCryptoKey(ctx, req, opts...)
 }
 
-// GetCryptoKeyVersion returns metadata for a given CryptoKeyVersion.
+// GetCryptoKeyVersion returns metadata for a given
+// CryptoKeyVersion.
 func (c *KeyManagementClient) GetCryptoKeyVersion(ctx context.Context, req *kmspb.GetCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.GetCryptoKeyVersion(ctx, req, opts...)
 }
 
-// GetPublicKey returns the public key for the given CryptoKeyVersion. The
+// GetPublicKey returns the public key for the given
+// CryptoKeyVersion. The
 // CryptoKey.purpose must be
-// ASYMMETRIC_SIGN or
+// ASYMMETRIC_SIGN
+// or
 // ASYMMETRIC_DECRYPT.
 func (c *KeyManagementClient) GetPublicKey(ctx context.Context, req *kmspb.GetPublicKeyRequest, opts ...gax.CallOption) (*kmspb.PublicKey, error) {
 	return c.internalClient.GetPublicKey(ctx, req, opts...)
@@ -514,12 +518,14 @@ func (c *KeyManagementClient) GetImportJob(ctx context.Context, req *kmspb.GetIm
 	return c.internalClient.GetImportJob(ctx, req, opts...)
 }
 
-// CreateKeyRing create a new KeyRing in a given Project and Location.
+// CreateKeyRing create a new KeyRing in a given Project and
+// Location.
 func (c *KeyManagementClient) CreateKeyRing(ctx context.Context, req *kmspb.CreateKeyRingRequest, opts ...gax.CallOption) (*kmspb.KeyRing, error) {
 	return c.internalClient.CreateKeyRing(ctx, req, opts...)
 }
 
-// CreateCryptoKey create a new CryptoKey within a KeyRing.
+// CreateCryptoKey create a new CryptoKey within a
+// KeyRing.
 //
 // CryptoKey.purpose and
 // CryptoKey.version_template.algorithm
@@ -528,7 +534,8 @@ func (c *KeyManagementClient) CreateCryptoKey(ctx context.Context, req *kmspb.Cr
 	return c.internalClient.CreateCryptoKey(ctx, req, opts...)
 }
 
-// CreateCryptoKeyVersion create a new CryptoKeyVersion in a CryptoKey.
+// CreateCryptoKeyVersion create a new CryptoKeyVersion in a
+// CryptoKey.
 //
 // The server will assign the next sequential id. If unset,
 // state will be set to
@@ -537,19 +544,23 @@ func (c *KeyManagementClient) CreateCryptoKeyVersion(ctx context.Context, req *k
 	return c.internalClient.CreateCryptoKeyVersion(ctx, req, opts...)
 }
 
-// ImportCryptoKeyVersion import wrapped key material into a CryptoKeyVersion.
+// ImportCryptoKeyVersion import wrapped key material into a
+// CryptoKeyVersion.
 //
-// All requests must specify a CryptoKey. If a CryptoKeyVersion is
-// additionally specified in the request, key material will be reimported into
-// that version. Otherwise, a new version will be created, and will be
-// assigned the next sequential id within the CryptoKey.
+// All requests must specify a CryptoKey. If
+// a CryptoKeyVersion is additionally
+// specified in the request, key material will be reimported into that
+// version. Otherwise, a new version will be created, and will be assigned the
+// next sequential id within the CryptoKey.
 func (c *KeyManagementClient) ImportCryptoKeyVersion(ctx context.Context, req *kmspb.ImportCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.ImportCryptoKeyVersion(ctx, req, opts...)
 }
 
-// CreateImportJob create a new ImportJob within a KeyRing.
+// CreateImportJob create a new ImportJob within a
+// KeyRing.
 //
-// ImportJob.import_method is required.
+// ImportJob.import_method is
+// required.
 func (c *KeyManagementClient) CreateImportJob(ctx context.Context, req *kmspb.CreateImportJobRequest, opts ...gax.CallOption) (*kmspb.ImportJob, error) {
 	return c.internalClient.CreateImportJob(ctx, req, opts...)
 }
@@ -559,18 +570,25 @@ func (c *KeyManagementClient) UpdateCryptoKey(ctx context.Context, req *kmspb.Up
 	return c.internalClient.UpdateCryptoKey(ctx, req, opts...)
 }
 
-// UpdateCryptoKeyVersion update a CryptoKeyVersion's metadata.
+// UpdateCryptoKeyVersion update a CryptoKeyVersion's
+// metadata.
 //
 // state may be changed between
-// ENABLED and
-// DISABLED using this
-// method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to
-// move between other states.
+// ENABLED
+// and
+// DISABLED
+// using this method. See
+// DestroyCryptoKeyVersion
+// and
+// RestoreCryptoKeyVersion
+// to move between other states.
 func (c *KeyManagementClient) UpdateCryptoKeyVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.UpdateCryptoKeyVersion(ctx, req, opts...)
 }
 
-// UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that will be used in Encrypt.
+// UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that
+// will be used in
+// Encrypt.
 //
 // Returns an error if called on a key whose purpose is not
 // ENCRYPT_DECRYPT.
@@ -578,19 +596,27 @@ func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context,
 	return c.internalClient.UpdateCryptoKeyPrimaryVersion(ctx, req, opts...)
 }
 
-// DestroyCryptoKeyVersion schedule a CryptoKeyVersion for destruction.
+// DestroyCryptoKeyVersion schedule a CryptoKeyVersion for
+// destruction.
 //
-// Upon calling this method, CryptoKeyVersion.state will be set to
+// Upon calling this method,
+// CryptoKeyVersion.state will
+// be set to
 // DESTROY_SCHEDULED,
-// and destroy_time will be set to the time
-// destroy_scheduled_duration in the
-// future. At that time, the state will
-// automatically change to
-// DESTROYED, and the key
-// material will be irrevocably destroyed.
+// and destroy_time will
+// be set to the time
+// destroy_scheduled_duration
+// in the future. At that time, the
+// state will automatically
+// change to
+// DESTROYED,
+// and the key material will be irrevocably destroyed.
 //
-// Before the destroy_time is reached,
-// RestoreCryptoKeyVersion may be called to reverse the process.
+// Before the
+// destroy_time is
+// reached,
+// RestoreCryptoKeyVersion
+// may be called to reverse the process.
 func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *kmspb.DestroyCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.DestroyCryptoKeyVersion(ctx, req, opts...)
 }
@@ -599,50 +625,60 @@ func (c *KeyManagementClient) DestroyCryptoKeyVersion(ctx context.Context, req *
 // DESTROY_SCHEDULED
 // state.
 //
-// Upon restoration of the CryptoKeyVersion, state
-// will be set to DISABLED,
-// and destroy_time will be cleared.
+// Upon restoration of the CryptoKeyVersion,
+// state will be set to
+// DISABLED,
+// and destroy_time will
+// be cleared.
 func (c *KeyManagementClient) RestoreCryptoKeyVersion(ctx context.Context, req *kmspb.RestoreCryptoKeyVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKeyVersion, error) {
 	return c.internalClient.RestoreCryptoKeyVersion(ctx, req, opts...)
 }
 
-// Encrypt encrypts data, so that it can only be recovered by a call to Decrypt.
-// The CryptoKey.purpose must be
+// Encrypt encrypts data, so that it can only be recovered by a call to
+// Decrypt. The
+// CryptoKey.purpose must be
 // ENCRYPT_DECRYPT.
 func (c *KeyManagementClient) Encrypt(ctx context.Context, req *kmspb.EncryptRequest, opts ...gax.CallOption) (*kmspb.EncryptResponse, error) {
 	return c.internalClient.Encrypt(ctx, req, opts...)
 }
 
-// Decrypt decrypts data that was protected by Encrypt. The CryptoKey.purpose
-// must be ENCRYPT_DECRYPT.
+// Decrypt decrypts data that was protected by
+// Encrypt. The
+// CryptoKey.purpose must be
+// ENCRYPT_DECRYPT.
 func (c *KeyManagementClient) Decrypt(ctx context.Context, req *kmspb.DecryptRequest, opts ...gax.CallOption) (*kmspb.DecryptResponse, error) {
 	return c.internalClient.Decrypt(ctx, req, opts...)
 }
 
-// AsymmetricSign signs data using a CryptoKeyVersion with CryptoKey.purpose
+// AsymmetricSign signs data using a CryptoKeyVersion
+// with CryptoKey.purpose
 // ASYMMETRIC_SIGN, producing a signature that can be verified with the public
-// key retrieved from GetPublicKey.
+// key retrieved from
+// GetPublicKey.
 func (c *KeyManagementClient) AsymmetricSign(ctx context.Context, req *kmspb.AsymmetricSignRequest, opts ...gax.CallOption) (*kmspb.AsymmetricSignResponse, error) {
 	return c.internalClient.AsymmetricSign(ctx, req, opts...)
 }
 
 // AsymmetricDecrypt decrypts data that was encrypted with a public key retrieved from
-// GetPublicKey corresponding to a CryptoKeyVersion with
-// CryptoKey.purpose ASYMMETRIC_DECRYPT.
+// GetPublicKey
+// corresponding to a CryptoKeyVersion
+// with CryptoKey.purpose
+// ASYMMETRIC_DECRYPT.
 func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.AsymmetricDecryptRequest, opts ...gax.CallOption) (*kmspb.AsymmetricDecryptResponse, error) {
 	return c.internalClient.AsymmetricDecrypt(ctx, req, opts...)
 }
 
-// MacSign signs data using a CryptoKeyVersion with CryptoKey.purpose
-// MAC, producing a tag that can be verified by another source with the
-// same key.
+// MacSign signs data using a CryptoKeyVersion
+// with CryptoKey.purpose MAC,
+// producing a tag that can be verified by another source with the same key.
 func (c *KeyManagementClient) MacSign(ctx context.Context, req *kmspb.MacSignRequest, opts ...gax.CallOption) (*kmspb.MacSignResponse, error) {
 	return c.internalClient.MacSign(ctx, req, opts...)
 }
 
-// MacVerify verifies MAC tag using a CryptoKeyVersion with CryptoKey.purpose
-// MAC, and returns a response that indicates whether or not the verification
-// was successful.
+// MacVerify verifies MAC tag using a
+// CryptoKeyVersion with
+// CryptoKey.purpose MAC, and returns
+// a response that indicates whether or not the verification was successful.
 func (c *KeyManagementClient) MacVerify(ctx context.Context, req *kmspb.MacVerifyRequest, opts ...gax.CallOption) (*kmspb.MacVerifyResponse, error) {
 	return c.internalClient.MacVerify(ctx, req, opts...)
 }
