@@ -37,12 +37,15 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsInstanceGroupRequest.
 	}
-	resp, err := c.SetNamedPorts(ctx, req)
+	op, err := c.SetNamedPorts(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 // [END compute_v1_generated_InstanceGroups_SetNamedPorts_sync]
