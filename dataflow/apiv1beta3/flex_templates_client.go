@@ -18,7 +18,9 @@ package dataflow
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -182,7 +184,8 @@ func (c *flexTemplatesGRPCClient) Close() error {
 }
 
 func (c *flexTemplatesGRPCClient) LaunchFlexTemplate(ctx context.Context, req *dataflowpb.LaunchFlexTemplateRequest, opts ...gax.CallOption) (*dataflowpb.LaunchFlexTemplateResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LaunchFlexTemplate[0:len((*c.CallOptions).LaunchFlexTemplate):len((*c.CallOptions).LaunchFlexTemplate)], opts...)
 	var resp *dataflowpb.LaunchFlexTemplateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
