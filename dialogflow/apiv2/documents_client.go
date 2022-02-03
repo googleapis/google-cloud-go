@@ -42,13 +42,14 @@ var newDocumentsClientHook clientHook
 
 // DocumentsCallOptions contains the retry settings for each method of DocumentsClient.
 type DocumentsCallOptions struct {
-	ListDocuments  []gax.CallOption
-	GetDocument    []gax.CallOption
-	CreateDocument []gax.CallOption
-	DeleteDocument []gax.CallOption
-	UpdateDocument []gax.CallOption
-	ReloadDocument []gax.CallOption
-	ExportDocument []gax.CallOption
+	ListDocuments   []gax.CallOption
+	GetDocument     []gax.CallOption
+	CreateDocument  []gax.CallOption
+	ImportDocuments []gax.CallOption
+	DeleteDocument  []gax.CallOption
+	UpdateDocument  []gax.CallOption
+	ReloadDocument  []gax.CallOption
+	ExportDocument  []gax.CallOption
 }
 
 func defaultDocumentsGRPCClientOptions() []option.ClientOption {
@@ -88,6 +89,17 @@ func defaultDocumentsCallOptions() *DocumentsCallOptions {
 			}),
 		},
 		CreateDocument: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportDocuments: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -154,6 +166,8 @@ type internalDocumentsClient interface {
 	GetDocument(context.Context, *dialogflowpb.GetDocumentRequest, ...gax.CallOption) (*dialogflowpb.Document, error)
 	CreateDocument(context.Context, *dialogflowpb.CreateDocumentRequest, ...gax.CallOption) (*CreateDocumentOperation, error)
 	CreateDocumentOperation(name string) *CreateDocumentOperation
+	ImportDocuments(context.Context, *dialogflowpb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
+	ImportDocumentsOperation(name string) *ImportDocumentsOperation
 	DeleteDocument(context.Context, *dialogflowpb.DeleteDocumentRequest, ...gax.CallOption) (*DeleteDocumentOperation, error)
 	DeleteDocumentOperation(name string) *DeleteDocumentOperation
 	UpdateDocument(context.Context, *dialogflowpb.UpdateDocumentRequest, ...gax.CallOption) (*UpdateDocumentOperation, error)
@@ -230,6 +244,27 @@ func (c *DocumentsClient) CreateDocument(ctx context.Context, req *dialogflowpb.
 // The name must be that of a previously created CreateDocumentOperation, possibly from a different process.
 func (c *DocumentsClient) CreateDocumentOperation(name string) *CreateDocumentOperation {
 	return c.internalClient.CreateDocumentOperation(name)
+}
+
+// ImportDocuments creates documents by importing data from external sources.
+// Dialogflow supports up to 350 documents in each request. If you try to
+// import more, Dialogflow will return an error.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: KnowledgeOperationMetadata
+//
+//   response: ImportDocumentsResponse
+func (c *DocumentsClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+	return c.internalClient.ImportDocuments(ctx, req, opts...)
+}
+
+// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
+// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
+func (c *DocumentsClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
+	return c.internalClient.ImportDocumentsOperation(name)
 }
 
 // DeleteDocument deletes the specified document.
@@ -496,6 +531,29 @@ func (c *documentsGRPCClient) CreateDocument(ctx context.Context, req *dialogflo
 		return nil, err
 	}
 	return &CreateDocumentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *documentsGRPCClient) ImportDocuments(ctx context.Context, req *dialogflowpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportDocuments[0:len((*c.CallOptions).ImportDocuments):len((*c.CallOptions).ImportDocuments)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.documentsClient.ImportDocuments(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportDocumentsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -785,6 +843,75 @@ func (op *ExportDocumentOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportDocumentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
+type ImportDocumentsOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
+// The name must be that of a previously created ImportDocumentsOperation, possibly from a different process.
+func (c *documentsGRPCClient) ImportDocumentsOperation(name string) *ImportDocumentsOperation {
+	return &ImportDocumentsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
+	var resp dialogflowpb.ImportDocumentsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ImportDocumentsResponse, error) {
+	var resp dialogflowpb.ImportDocumentsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportDocumentsOperation) Metadata() (*dialogflowpb.KnowledgeOperationMetadata, error) {
+	var meta dialogflowpb.KnowledgeOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportDocumentsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportDocumentsOperation) Name() string {
 	return op.lro.Name()
 }
 

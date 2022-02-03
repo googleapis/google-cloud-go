@@ -1,0 +1,177 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.dataplex.v1",
+  "libraryPackage": "cloud.google.com/go/dataplex/apiv1",
+  "services": {
+    "DataplexService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelJob": {
+              "methods": [
+                "CancelJob"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateLake": {
+              "methods": [
+                "CreateLake"
+              ]
+            },
+            "CreateTask": {
+              "methods": [
+                "CreateTask"
+              ]
+            },
+            "CreateZone": {
+              "methods": [
+                "CreateZone"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteLake": {
+              "methods": [
+                "DeleteLake"
+              ]
+            },
+            "DeleteTask": {
+              "methods": [
+                "DeleteTask"
+              ]
+            },
+            "DeleteZone": {
+              "methods": [
+                "DeleteZone"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "GetLake": {
+              "methods": [
+                "GetLake"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "GetZone": {
+              "methods": [
+                "GetZone"
+              ]
+            },
+            "ListAssetActions": {
+              "methods": [
+                "ListAssetActions"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "ListLakeActions": {
+              "methods": [
+                "ListLakeActions"
+              ]
+            },
+            "ListLakes": {
+              "methods": [
+                "ListLakes"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            },
+            "ListZoneActions": {
+              "methods": [
+                "ListZoneActions"
+              ]
+            },
+            "ListZones": {
+              "methods": [
+                "ListZones"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateLake": {
+              "methods": [
+                "UpdateLake"
+              ]
+            },
+            "UpdateTask": {
+              "methods": [
+                "UpdateTask"
+              ]
+            },
+            "UpdateZone": {
+              "methods": [
+                "UpdateZone"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "MetadataService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MetadataClient",
+          "rpcs": {
+            "GetEntity": {
+              "methods": [
+                "GetEntity"
+              ]
+            },
+            "GetPartition": {
+              "methods": [
+                "GetPartition"
+              ]
+            },
+            "ListEntities": {
+              "methods": [
+                "ListEntities"
+              ]
+            },
+            "ListPartitions": {
+              "methods": [
+                "ListPartitions"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
