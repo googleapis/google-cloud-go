@@ -37,12 +37,15 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPerInstanceConfigsInstanceGroupManagerRequest.
 	}
-	resp, err := c.PatchPerInstanceConfigs(ctx, req)
+	op, err := c.PatchPerInstanceConfigs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 // [END compute_v1_generated_InstanceGroupManagers_PatchPerInstanceConfigs_sync]
