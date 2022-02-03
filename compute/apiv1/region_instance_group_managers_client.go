@@ -226,6 +226,9 @@ type regionInstanceGroupManagersRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -245,6 +248,16 @@ func NewRegionInstanceGroupManagersRESTClient(ctx context.Context, opts ...optio
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &RegionInstanceGroupManagersClient{internalClient: c, CallOptions: &RegionInstanceGroupManagersCallOptions{}}, nil
 }
@@ -272,6 +285,9 @@ func (c *regionInstanceGroupManagersRESTClient) setGoogleClientInfo(keyval ...st
 func (c *regionInstanceGroupManagersRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -337,7 +353,14 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -389,7 +412,14 @@ func (c *regionInstanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx cont
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -448,7 +478,14 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -500,7 +537,14 @@ func (c *regionInstanceGroupManagersRESTClient) Delete(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -559,7 +603,14 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -611,7 +662,14 @@ func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx con
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -714,7 +772,14 @@ func (c *regionInstanceGroupManagersRESTClient) Insert(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1133,7 +1198,14 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1192,7 +1264,14 @@ func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx cont
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1251,7 +1330,14 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1304,7 +1390,14 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1363,7 +1456,14 @@ func (c *regionInstanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1422,7 +1522,14 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -1481,6 +1588,13 @@ func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx con
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }

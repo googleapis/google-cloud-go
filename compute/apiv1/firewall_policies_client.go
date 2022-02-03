@@ -219,6 +219,9 @@ type firewallPoliciesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOrganizationOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -238,6 +241,16 @@ func NewFirewallPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOrganizationOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &FirewallPoliciesClient{internalClient: c, CallOptions: &FirewallPoliciesCallOptions{}}, nil
 }
@@ -265,6 +278,9 @@ func (c *firewallPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *firewallPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -333,7 +349,12 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -392,7 +413,12 @@ func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -447,7 +473,12 @@ func (c *firewallPoliciesRESTClient) CloneRules(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -499,7 +530,12 @@ func (c *firewallPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -756,7 +792,12 @@ func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -953,7 +994,12 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -1012,7 +1058,12 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -1074,7 +1125,12 @@ func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -1129,7 +1185,12 @@ func (c *firewallPoliciesRESTClient) RemoveAssociation(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 
@@ -1184,7 +1245,12 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOrganizationOperationsHandle{
+			c:     c.operationClient,
+			proto: resp,
+		},
+	}
 	return op, nil
 }
 

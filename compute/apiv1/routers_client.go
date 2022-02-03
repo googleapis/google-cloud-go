@@ -164,6 +164,9 @@ type routersRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -183,6 +186,16 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &RoutersClient{internalClient: c, CallOptions: &RoutersCallOptions{}}, nil
 }
@@ -210,6 +223,9 @@ func (c *routersRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *routersRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -368,7 +384,14 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -605,7 +628,14 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -754,7 +784,14 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -864,7 +901,14 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 

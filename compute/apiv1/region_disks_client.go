@@ -177,6 +177,9 @@ type regionDisksRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -196,6 +199,16 @@ func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &RegionDisksClient{internalClient: c, CallOptions: &RegionDisksCallOptions{}}, nil
 }
@@ -223,6 +236,9 @@ func (c *regionDisksRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *regionDisksRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -288,7 +304,14 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -347,7 +370,14 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -399,7 +429,14 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -556,7 +593,14 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -705,7 +749,14 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -764,7 +815,14 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -874,7 +932,14 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 

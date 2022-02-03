@@ -163,6 +163,9 @@ type securityPoliciesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -182,6 +185,16 @@ func NewSecurityPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &SecurityPoliciesClient{internalClient: c, CallOptions: &SecurityPoliciesCallOptions{}}, nil
 }
@@ -209,6 +222,9 @@ func (c *securityPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *securityPoliciesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -267,7 +283,13 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -319,7 +341,13 @@ func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -473,7 +501,13 @@ func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -685,7 +719,13 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -744,7 +784,13 @@ func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -796,7 +842,13 @@ func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 

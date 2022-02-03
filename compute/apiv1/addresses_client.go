@@ -129,6 +129,9 @@ type addressesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *RegionOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -148,6 +151,16 @@ func NewAddressesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewRegionOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &AddressesClient{internalClient: c, CallOptions: &AddressesCallOptions{}}, nil
 }
@@ -175,6 +188,9 @@ func (c *addressesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *addressesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -333,7 +349,14 @@ func (c *addressesRESTClient) Delete(ctx context.Context, req *computepb.DeleteA
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 
@@ -436,7 +459,14 @@ func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertA
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
 	return op, nil
 }
 

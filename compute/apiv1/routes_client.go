@@ -121,6 +121,9 @@ type routesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -140,6 +143,16 @@ func NewRoutesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Rou
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &RoutesClient{internalClient: c, CallOptions: &RoutesCallOptions{}}, nil
 }
@@ -167,6 +180,9 @@ func (c *routesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *routesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -225,7 +241,13 @@ func (c *routesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRout
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -328,7 +350,13 @@ func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRout
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 

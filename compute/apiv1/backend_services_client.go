@@ -171,6 +171,9 @@ type backendServicesRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
+	// operationClient is used to call the operation-specific management service.
+	operationClient *GlobalOperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -190,6 +193,16 @@ func NewBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOpti
 		httpClient: httpClient,
 	}
 	c.setGoogleClientInfo()
+
+	o := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opC, err := NewGlobalOperationsRESTClient(ctx, o...)
+	if err != nil {
+		return nil, err
+	}
+	c.operationClient = opC
 
 	return &BackendServicesClient{internalClient: c, CallOptions: &BackendServicesCallOptions{}}, nil
 }
@@ -217,6 +230,9 @@ func (c *backendServicesRESTClient) setGoogleClientInfo(keyval ...string) {
 func (c *backendServicesRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
+	if err := c.operationClient.Close(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -282,7 +298,13 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -434,7 +456,13 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -487,7 +515,13 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -641,7 +675,13 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -790,7 +830,13 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -849,7 +895,13 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 
@@ -908,7 +960,13 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	if e != nil {
 		return nil, e
 	}
-	op := &Operation{proto: resp}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
 	return op, nil
 }
 

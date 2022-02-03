@@ -22,14 +22,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// This example demonstrates how to create a new topic.
-// See https://cloud.google.com/pubsub/lite/docs/topics for more information
-// about how Pub/Sub Lite topics are configured.
-// See https://cloud.google.com/pubsub/lite/docs/locations for the list of zones
-// where Pub/Sub Lite is available.
+// This example demonstrates how to create a new topic. Topics may be regional
+// or zonal. See https://cloud.google.com/pubsub/lite/docs/topics for more
+// information about how Pub/Sub Lite topics are configured.
+// See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+// regions and zones where Pub/Sub Lite is available.
 func ExampleAdminClient_CreateTopic() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the topic.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -37,7 +37,7 @@ func ExampleAdminClient_CreateTopic() {
 
 	const gib = 1 << 30
 	topicConfig := pubsublite.TopicConfig{
-		Name:                       "projects/my-project/locations/zone/topics/my-topic",
+		Name:                       "projects/my-project/locations/region-or-zone/topics/my-topic",
 		PartitionCount:             2,        // Must be at least 1.
 		PublishCapacityMiBPerSec:   4,        // Must be 4-16 MiB/s.
 		SubscribeCapacityMiBPerSec: 8,        // Must be 4-32 MiB/s.
@@ -53,14 +53,14 @@ func ExampleAdminClient_CreateTopic() {
 
 func ExampleAdminClient_UpdateTopic() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the topic.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	updateConfig := pubsublite.TopicConfigToUpdate{
-		Name:                       "projects/my-project/locations/zone/topics/my-topic",
+		Name:                       "projects/my-project/locations/region-or-zone/topics/my-topic",
 		PartitionCount:             3, // Only increases currently supported.
 		PublishCapacityMiBPerSec:   8,
 		SubscribeCapacityMiBPerSec: 16,
@@ -74,13 +74,13 @@ func ExampleAdminClient_UpdateTopic() {
 
 func ExampleAdminClient_DeleteTopic() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the topic.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	if err := admin.DeleteTopic(ctx, topic); err != nil {
 		// TODO: Handle error.
 	}
@@ -88,14 +88,14 @@ func ExampleAdminClient_DeleteTopic() {
 
 func ExampleAdminClient_Topics() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone below.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	// List the configs of all topics in the given zone for the project.
-	it := admin.Topics(ctx, "projects/my-project/locations/zone")
+	// List the configs of all topics in the given region or zone for the project.
+	it := admin.Topics(ctx, "projects/my-project/locations/region-or-zone")
 	for {
 		topicConfig, err := it.Next()
 		if err == iterator.Done {
@@ -110,14 +110,14 @@ func ExampleAdminClient_Topics() {
 
 func ExampleAdminClient_TopicSubscriptions() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the topic.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	// List the paths of all subscriptions of a topic.
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	it := admin.TopicSubscriptions(ctx, topic)
 	for {
 		subscriptionPath, err := it.Next()
@@ -136,15 +136,15 @@ func ExampleAdminClient_TopicSubscriptions() {
 // information about how subscriptions are configured.
 func ExampleAdminClient_CreateSubscription() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the topic and subscription.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	subscriptionConfig := pubsublite.SubscriptionConfig{
-		Name:  "projects/my-project/locations/zone/subscriptions/my-subscription",
-		Topic: "projects/my-project/locations/zone/topics/my-topic",
+		Name:  "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
+		Topic: "projects/my-project/locations/region-or-zone/topics/my-topic",
 		// Do not wait for a published message to be successfully written to storage
 		// before delivering it to subscribers.
 		DeliveryRequirement: pubsublite.DeliverImmediately,
@@ -157,14 +157,14 @@ func ExampleAdminClient_CreateSubscription() {
 
 func ExampleAdminClient_UpdateSubscription() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the subscription.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	updateConfig := pubsublite.SubscriptionConfigToUpdate{
-		Name: "projects/my-project/locations/zone/subscriptions/my-subscription",
+		Name: "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
 		// Deliver a published message to subscribers after it has been successfully
 		// written to storage.
 		DeliveryRequirement: pubsublite.DeliverAfterStored,
@@ -177,13 +177,13 @@ func ExampleAdminClient_UpdateSubscription() {
 
 func ExampleAdminClient_SeekSubscription() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the subscription.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	seekOp, err := admin.SeekSubscription(ctx, subscription, pubsublite.Beginning)
 	if err != nil {
 		// TODO: Handle error.
@@ -204,13 +204,13 @@ func ExampleAdminClient_SeekSubscription() {
 
 func ExampleAdminClient_DeleteSubscription() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone of the subscription.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	if err := admin.DeleteSubscription(ctx, subscription); err != nil {
 		// TODO: Handle error.
 	}
@@ -218,14 +218,14 @@ func ExampleAdminClient_DeleteSubscription() {
 
 func ExampleAdminClient_Subscriptions() {
 	ctx := context.Background()
-	// NOTE: region must correspond to the zone below.
+	// NOTE: resources must be located within this region.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	// List the configs of all subscriptions in the given zone for the project.
-	it := admin.Subscriptions(ctx, "projects/my-project/locations/zone")
+	// List the configs of all subscriptions in the given region or zone for the project.
+	it := admin.Subscriptions(ctx, "projects/my-project/locations/region-or-zone")
 	for {
 		subscriptionConfig, err := it.Next()
 		if err == iterator.Done {
