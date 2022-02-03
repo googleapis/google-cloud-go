@@ -39,13 +39,14 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant []gax.CallOption
-	GetParticipant    []gax.CallOption
-	ListParticipants  []gax.CallOption
-	UpdateParticipant []gax.CallOption
-	AnalyzeContent    []gax.CallOption
-	SuggestArticles   []gax.CallOption
-	SuggestFaqAnswers []gax.CallOption
+	CreateParticipant   []gax.CallOption
+	GetParticipant      []gax.CallOption
+	ListParticipants    []gax.CallOption
+	UpdateParticipant   []gax.CallOption
+	AnalyzeContent      []gax.CallOption
+	SuggestArticles     []gax.CallOption
+	SuggestFaqAnswers   []gax.CallOption
+	SuggestSmartReplies []gax.CallOption
 }
 
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
@@ -139,6 +140,17 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
+		SuggestSmartReplies: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -154,6 +166,7 @@ type internalParticipantsClient interface {
 	AnalyzeContent(context.Context, *dialogflowpb.AnalyzeContentRequest, ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error)
 	SuggestArticles(context.Context, *dialogflowpb.SuggestArticlesRequest, ...gax.CallOption) (*dialogflowpb.SuggestArticlesResponse, error)
 	SuggestFaqAnswers(context.Context, *dialogflowpb.SuggestFaqAnswersRequest, ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error)
+	SuggestSmartReplies(context.Context, *dialogflowpb.SuggestSmartRepliesRequest, ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error)
 }
 
 // ParticipantsClient is a client for interacting with Dialogflow API.
@@ -230,6 +243,12 @@ func (c *ParticipantsClient) SuggestArticles(ctx context.Context, req *dialogflo
 // messages.
 func (c *ParticipantsClient) SuggestFaqAnswers(ctx context.Context, req *dialogflowpb.SuggestFaqAnswersRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestFaqAnswersResponse, error) {
 	return c.internalClient.SuggestFaqAnswers(ctx, req, opts...)
+}
+
+// SuggestSmartReplies gets smart replies for a participant based on specific historical
+// messages.
+func (c *ParticipantsClient) SuggestSmartReplies(ctx context.Context, req *dialogflowpb.SuggestSmartRepliesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error) {
+	return c.internalClient.SuggestSmartReplies(ctx, req, opts...)
 }
 
 // participantsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
@@ -474,6 +493,27 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.participantsClient.SuggestFaqAnswers(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *dialogflowpb.SuggestSmartRepliesRequest, opts ...gax.CallOption) (*dialogflowpb.SuggestSmartRepliesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SuggestSmartReplies[0:len((*c.CallOptions).SuggestSmartReplies):len((*c.CallOptions).SuggestSmartReplies)], opts...)
+	var resp *dialogflowpb.SuggestSmartRepliesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.participantsClient.SuggestSmartReplies(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

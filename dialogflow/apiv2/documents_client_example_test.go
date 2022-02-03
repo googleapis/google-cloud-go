@@ -107,6 +107,31 @@ func ExampleDocumentsClient_CreateDocument() {
 	_ = resp
 }
 
+func ExampleDocumentsClient_ImportDocuments() {
+	ctx := context.Background()
+	c, err := dialogflow.NewDocumentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.ImportDocumentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ImportDocumentsRequest.
+	}
+	op, err := c.ImportDocuments(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDocumentsClient_DeleteDocument() {
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)

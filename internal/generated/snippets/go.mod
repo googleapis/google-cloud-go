@@ -31,6 +31,7 @@ require (
 	cloud.google.com/go/dataflow v0.1.0
 	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
+	cloud.google.com/go/dataplex v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dataproc v1.2.0
 	cloud.google.com/go/dataqna v0.1.0
 	cloud.google.com/go/datastore v1.6.0
@@ -110,10 +111,8 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
-	golang.org/x/sys v0.0.0-20220111092808-5a964db01320 // indirect
-	google.golang.org/api v0.65.0
-	google.golang.org/genproto v0.0.0-20220114172242-44263ffb69e1
-	google.golang.org/grpc v1.43.0 // indirect
+	google.golang.org/api v0.66.0
+	google.golang.org/genproto v0.0.0-20220202230416-2a053f022f0d
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -333,3 +332,5 @@ replace cloud.google.com/go/pubsublite => ../../../pubsublite
 replace cloud.google.com/go/spanner => ../../../spanner
 
 replace cloud.google.com/go/storage => ../../../storage
+
+replace cloud.google.com/go/dataplex => ../../../dataplex

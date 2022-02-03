@@ -210,6 +210,11 @@
                 "GetDocument"
               ]
             },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
             "ListDocuments": {
               "methods": [
                 "ListDocuments"
@@ -457,6 +462,11 @@
             "SuggestFaqAnswers": {
               "methods": [
                 "SuggestFaqAnswers"
+              ]
+            },
+            "SuggestSmartReplies": {
+              "methods": [
+                "SuggestSmartReplies"
               ]
             },
             "UpdateParticipant": {
