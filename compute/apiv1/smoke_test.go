@@ -91,8 +91,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	err = insert.Wait(ctx)
 	defer ForceDeleteInstance(ctx, name, c)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 
 	getRequest := &computepb.GetInstanceRequest{
@@ -102,8 +101,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	}
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	if get.GetName() != name {
 		t.Fatalf("expected instance name: %s, got: %s", name, get.GetName())
@@ -129,8 +127,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 
 	err = updateOp.Wait(ctx)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 
 	patchReq := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
@@ -148,14 +145,12 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 
 	err = patchOp.Wait(ctx)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 
 	fetched, err := c.Get(ctx, getRequest)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	if fetched.GetDescription() != "updated" {
 		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
@@ -170,8 +165,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 
 	itr := c.List(ctx, listRequest)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	found := false
 	element, err := itr.Next()
@@ -258,8 +252,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	err = insert.Wait(ctx)
 	defer ForceDeleteSecurityPolicy(ctx, name, c)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
@@ -274,8 +267,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	}
 	err = rule.Wait(ctx)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 
 	getRequest := &computepb.GetSecurityPolicyRequest{
@@ -481,8 +473,7 @@ func TestCapitalLetter(t *testing.T) {
 	}
 	err = insert.Wait(ctx)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer func() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
