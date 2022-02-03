@@ -54,10 +54,6 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	zonesClient, err := NewZoneOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	createRequest := &computepb.InsertInstanceRequest{
 		Project: projectId,
 		Zone:    defaultZone,
@@ -92,16 +88,12 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	waitZonalRequest := &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: insert.Proto().GetName(),
-	}
-	_, err = zonesClient.Wait(ctx, waitZonalRequest)
+	err = insert.Wait(ctx)
+	defer ForceDeleteInstance(ctx, name, c)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
-	defer ForceDeleteInstance(ctx, name, c)
 
 	getRequest := &computepb.GetInstanceRequest{
 		Project:  projectId,
@@ -111,6 +103,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 	if get.GetName() != name {
 		t.Fatalf("expected instance name: %s, got: %s", name, get.GetName())
@@ -133,13 +126,11 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: updateOp.Proto().GetName(),
-	})
+
+	err = updateOp.Wait(ctx)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 
 	patchReq := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
@@ -154,18 +145,17 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if err != nil {
 		return
 	}
-	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: patchOp.Proto().GetName(),
-	})
+
+	err = patchOp.Wait(ctx)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 
 	fetched, err := c.Get(ctx, getRequest)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 	if fetched.GetDescription() != "updated" {
 		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
@@ -181,6 +171,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	itr := c.List(ctx, listRequest)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 	found := false
 	element, err := itr.Next()
@@ -228,10 +219,6 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	globalCLient, err := NewGlobalOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	action := "allow"
 	matcher := &computepb.SecurityPolicyRuleMatcher{
 		Config: &computepb.SecurityPolicyRuleMatcherConfig{
@@ -268,15 +255,12 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	waitGlobalRequest := &computepb.WaitGlobalOperationRequest{
-		Project:   projectId,
-		Operation: insert.Proto().GetName(),
-	}
-	_, err = globalCLient.Wait(ctx, waitGlobalRequest)
+	err = insert.Wait(ctx)
+	defer ForceDeleteSecurityPolicy(ctx, name, c)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
-	defer ForceDeleteSecurityPolicy(ctx, name, c)
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
 		Priority:       proto.Int32(0),
@@ -288,13 +272,10 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	waitGlobalRequestRemove := &computepb.WaitGlobalOperationRequest{
-		Project:   projectId,
-		Operation: rule.Proto().GetName(),
-	}
-	_, err = globalCLient.Wait(ctx, waitGlobalRequestRemove)
+	err = rule.Wait(ctx)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 
 	getRequest := &computepb.GetSecurityPolicyRequest{
@@ -306,7 +287,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		t.Error(err)
 	}
 	if len(get.GetRules()) != 1 {
-		t.Fatal(fmt.Sprintf("expected count for rules: %d, got: %d", 1, len(get.GetRules())))
+		t.Fatalf("expected count for rules: %d, got: %d", 1, len(get.GetRules()))
 	}
 
 	deleteRequest := &computepb.DeleteSecurityPolicyRequest{
@@ -498,17 +479,10 @@ func TestCapitalLetter(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	globalClient, err := NewGlobalOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = globalClient.Wait(ctx,
-		&computepb.WaitGlobalOperationRequest{
-			Project:   projectId,
-			Operation: insert.Proto().GetName(),
-		})
+	err = insert.Wait(ctx)
 	if err != nil {
 		t.Error(err)
+		t.FailNow()
 	}
 	defer func() {
 		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
@@ -575,14 +549,6 @@ func TestInstanceGroupResize(t *testing.T) {
 		t.Skip("skipping smoke test in short mode")
 	}
 	ctx := context.Background()
-	globalClient, err := NewGlobalOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	zonesClient, err := NewZoneOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	instanceTemplatesClient, err := NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -629,10 +595,7 @@ func TestInstanceGroupResize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = globalClient.Wait(ctx, &computepb.WaitGlobalOperationRequest{
-		Project:   projectId,
-		Operation: insertOp.Proto().GetName(),
-	})
+	err = insertOp.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -666,11 +629,7 @@ func TestInstanceGroupResize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: insertOp.Proto().GetName(),
-	})
+	err = insertOp.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -688,14 +647,8 @@ func TestInstanceGroupResize(t *testing.T) {
 			t.Error(err)
 		}
 		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			waitOperation, err := zonesClient.Wait(
-				ctx,
-				&computepb.WaitZoneOperationRequest{
-					Project:   projectId,
-					Zone:      defaultZone,
-					Operation: deleteOp.Proto().GetName(),
-				})
-			return waitOperation.GetStatus() == computepb.Operation_DONE, err
+			err = deleteOp.Wait(ctx)
+			return deleteOp.Done(), err
 		})
 		if err != nil {
 			t.Error(err)
@@ -725,13 +678,7 @@ func TestInstanceGroupResize(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = zonesClient.Wait(
-		ctx,
-		&computepb.WaitZoneOperationRequest{
-			Project:   projectId,
-			Zone:      defaultZone,
-			Operation: resizeOperation.Proto().GetName(),
-		})
+	err = resizeOperation.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
