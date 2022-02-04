@@ -1,0 +1,8 @@
+{
+  "release-type": "go-yoshi",
+  "separate-pull-requests": false,
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {}
+  }
+}

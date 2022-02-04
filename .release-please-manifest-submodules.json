@@ -1,0 +1,7 @@
+{
+  "accessapproval": "1.0.1",
+  "automl": "1.1.0",
+  "bigquery": "1.27.0",
+  "pubsublite": "1.2.1",
+  "storage": "1.20.0"
+}
