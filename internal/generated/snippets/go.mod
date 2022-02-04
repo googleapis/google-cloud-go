@@ -112,7 +112,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
 	google.golang.org/api v0.67.0
-	google.golang.org/genproto v0.0.0-20220203182621-f4ae394cde3f
+	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
