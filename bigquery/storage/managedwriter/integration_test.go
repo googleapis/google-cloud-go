@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
+	"log"
 	"math"
 	"testing"
 	"time"
@@ -542,18 +543,20 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
+	initialSchema := ms.LatestSchema()
+	if initialSchema == nil {
+		t.Errorf("initial schema was nil")
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
 		withExactRowCount(0))
 
 	var result *AppendResult
 	var curOffset int64
-	var latestRow []byte
 	for k, mesg := range testSimpleData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
-		latestRow = b
 		data := [][]byte{b}
 		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
 		if err != nil {
@@ -576,29 +579,21 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		t.Errorf("failed to evolve table schema: %v", err)
 	}
 
-	// Resend latest row until we get a new schema notification.
-	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
-	// Internal issue: b/211899346
+	// Wait for schema to be present on the stream before proceeding.
+	// Another technique would be b/211899346, but it's not supported.
+	//
+	// currently not working either, due to b/217954572
 	for {
-		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		curSchema, err := ms.RefreshSchema(ctx)
 		if err != nil {
-			t.Errorf("got error on dupe append: %v", err)
+			t.Errorf("got error refreshing schema: %v", err)
+		}
+		log.Printf("initial: %s", initialSchema.String())
+		log.Printf("cur: %s", curSchema.String())
+		if !proto.Equal(initialSchema, curSchema) {
 			break
 		}
-		curOffset = curOffset + 1
-		if err != nil {
-			t.Errorf("got error on offset %d: %v", curOffset, err)
-			break
-		}
-		s, err := resp.UpdatedSchema(ctx)
-		if err != nil {
-			t.Errorf("getting schema error: %v", err)
-			break
-		}
-		if s != nil {
-			break
-		}
-
+		time.Sleep(time.Second)
 	}
 
 	// ready descriptor, send an additional append

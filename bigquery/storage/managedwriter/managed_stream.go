@@ -85,6 +85,12 @@ type ManagedStream struct {
 	callOptions []gax.CallOption                                                                                // options passed when opening an append client
 	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
 
+	// latestSchema retains the most recent schema we received on the schemaCh.
+	// Due to ambiguities about update ordering (schema has no generation/version),
+	// latest may not end up being latest.
+	latestSchema *storagepb.TableSchema
+	schemaCh     chan *storagepb.TableSchema
+
 	mu          sync.Mutex
 	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
 	err         error                                     // terminal error
@@ -230,7 +236,7 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new chan
 			// and fire up the associated receive processor.
 			ch := make(chan *pendingWrite)
-			go recvProcessor(ms.ctx, arc, ms.fc, ch)
+			go recvProcessor(ms.ctx, arc, ms.fc, ch, ms.schemaCh)
 			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
 			// for every new connection.
 			ms.streamSetup = new(sync.Once)
@@ -325,11 +331,39 @@ func (ms *ManagedStream) Close() error {
 	ms.mu.Lock()
 	ms.err = io.EOF
 	ms.mu.Unlock()
+	// shutdown schema channel.
+	if ms.schemaCh != nil {
+		close(ms.schemaCh)
+	}
 	// Propagate cancellation.
 	if ms.cancel != nil {
 		ms.cancel()
 	}
 	return err
+}
+
+// LatestSchema returns the latest schema associated with the stream.
+//
+// Schema updates may get picked up through either append results including
+// updated schema, or manually by invoking RefreshSchema().  In cases where
+// a table is receiving frequent schema updates, ordering of schema updates
+// is not guaranteed.
+func (ms *ManagedStream) LatestSchema() *storagepb.TableSchema {
+	return ms.latestSchema
+}
+
+// RefreshSchema explicitly re-reads the stream metadata to fetch the latest
+// schema information.
+func (ms *ManagedStream) RefreshSchema(ctx context.Context) (*storagepb.TableSchema, error) {
+	resp, err := ms.c.getWriteStream(ctx, ms.StreamName())
+	if err != nil {
+		return nil, err
+	}
+	schema := resp.GetTableSchema()
+	if ms.schemaCh != nil && schema != nil {
+		ms.schemaCh <- schema
+	}
+	return schema, nil
 }
 
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
@@ -373,7 +407,7 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 //
 // The receive processor only deals with a single instance of a connection/channel, and thus should never interact
 // with the mutex lock.
-func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, fc *flowController, ch <-chan *pendingWrite) {
+func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, fc *flowController, ch <-chan *pendingWrite, schemaCh chan<- *storagepb.TableSchema) {
 	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
 	// ensure that pending writes get acknowledged with a terminal state.
 	for {
@@ -404,6 +438,9 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			// Retain the updated schema if present, for eventual presentation to the user.
 			if resp.GetUpdatedSchema() != nil {
 				nextWrite.result.updatedSchema = resp.GetUpdatedSchema()
+				if schemaCh != nil {
+					schemaCh <- resp.GetUpdatedSchema()
+				}
 			}
 
 			if status := resp.GetError(); status != nil {

@@ -110,7 +110,15 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 			}
 			return arc, nil
 		},
+		schemaCh: make(chan *storagepb.TableSchema),
 	}
+
+	// Start schema receiver.
+	go func() {
+		for schema := range ms.schemaCh {
+			ms.latestSchema = schema
+		}
+	}()
 
 	// apply writer options
 	for _, opt := range opts {
@@ -138,6 +146,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 					return nil, fmt.Errorf("couldn't create write stream: %v", err)
 				}
 				streamName = resp.GetName()
+				ms.latestSchema = resp.GetTableSchema()
 			}
 			ms.streamSettings.streamID = streamName
 		}
@@ -168,6 +177,7 @@ func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
 		// update type and destination based on stream metadata
 		ms.streamSettings.streamType = StreamType(info.Type.String())
 		ms.destinationTable = TableParentFromStreamName(ms.streamSettings.streamID)
+		ms.latestSchema = info.GetTableSchema()
 	}
 	if ms.destinationTable == "" {
 		return fmt.Errorf("no destination table specified")
