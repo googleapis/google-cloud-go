@@ -25,7 +25,7 @@ echo "Running the Cloud Spanner emulator: $SPANNER_EMULATOR_HOST";
 
 # Download the emulator
 # TODO: Find a way to use 'latest' here.
-EMULATOR_VERSION=1.4.0
+EMULATOR_VERSION=1.4.1
 wget https://storage.googleapis.com/cloud-spanner-emulator/releases/${EMULATOR_VERSION}/cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 tar zxvf cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 chmod u+x emulator_main
