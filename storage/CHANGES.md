@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.19.0](https://www.github.com/googleapis/google-cloud-go/compare/storage/v1.18.2...storage/v1.19.0) (2022-01-25)
 
 
