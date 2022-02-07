@@ -55,6 +55,10 @@ var errStreamInitTimeout = status.Error(codes.DeadlineExceeded, "pubsublite: str
 type initialResponseRequired bool
 type notifyReset bool
 
+func streamIdleTimeout(userTimeout time.Duration) time.Duration {
+	return minDuration(userTimeout/2, defaultStreamIdleTimeout)
+}
+
 // streamHandler provides hooks for different Pub/Sub Lite streaming APIs
 // (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
 // All Pub/Sub Lite streaming APIs implement a similar handshaking protocol,
