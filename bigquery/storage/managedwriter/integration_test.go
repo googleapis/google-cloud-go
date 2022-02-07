@@ -211,7 +211,14 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	}
 	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
-	result.Ready()
+	// wait for the result to indicate ready, then validate.
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after second send round",
 		withExactRowCount(int64(2*len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))),
@@ -267,7 +274,13 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	}
 
 	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleJSONData))),
 		withDistinctValues("name", int64(len(sampleJSONData))),

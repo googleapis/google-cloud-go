@@ -229,7 +229,13 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 		if err == nil {
 			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new chan
 			// and fire up the associated receive processor.
-			ch := make(chan *pendingWrite)
+			depth := 1000 // default backend queue limit
+			if ms.streamSettings != nil {
+				if ms.streamSettings.MaxInflightRequests > 0 {
+					depth = ms.streamSettings.MaxInflightRequests
+				}
+			}
+			ch := make(chan *pendingWrite, depth)
 			go recvProcessor(ms.ctx, arc, ms.fc, ch)
 			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
 			// for every new connection.
@@ -360,11 +366,29 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 			ProtoDescriptor: pw.newSchema,
 		}
 	}
-	// proceed to call
-	if err := ms.append(pw); err != nil {
-		// pending write is DOA.
-		pw.markDone(NoStreamOffset, err, ms.fc)
-		return nil, err
+	// Call the underlying append.  The stream has it's own retained context and will surface expiry on
+	// it's own, but we also need to respect any deadline for the provided context.
+	errCh := make(chan error)
+	var appendErr error
+	go func() {
+		err := ms.append(pw)
+		errCh <- err
+		close(errCh)
+	}()
+	select {
+	case <-ctx.Done():
+		// It is incorrect to simply mark the request done, as it's potentially in flight in the bidi stream
+		// where we can't propagate a cancellation.  Our options are to return the pending write even though
+		// it's in an ambiguous state, or to return the error and simply drop the pending write on the floor.
+		//
+		// This API expresses request idempotency through offset management, so users who care to use offsets
+		// can deal with the dropped request.
+		return nil, ctx.Err()
+	case appendErr = <-errCh:
+		if appendErr != nil {
+			pw.markDone(NoStreamOffset, appendErr, ms.fc)
+			return nil, appendErr
+		}
 	}
 	return pw.result, nil
 }
