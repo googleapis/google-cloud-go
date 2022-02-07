@@ -37,12 +37,15 @@ func main() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
 	}
-	resp, err := c.Deprecate(ctx, req)
+	op, err := c.Deprecate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 // [END compute_v1_generated_Images_Deprecate_sync]
