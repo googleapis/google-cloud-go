@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://recommender.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -171,8 +170,8 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListInsights lists insights for a Cloud project. Requires the recommender.*.list IAM
-// permission for the specified insight type.
+// ListInsights lists insights for the specified Cloud Resource. Requires the
+// recommender.*.list IAM permission for the specified insight type.
 func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
 	return c.internalClient.ListInsights(ctx, req, opts...)
 }
@@ -193,8 +192,8 @@ func (c *Client) MarkInsightAccepted(ctx context.Context, req *recommenderpb.Mar
 	return c.internalClient.MarkInsightAccepted(ctx, req, opts...)
 }
 
-// ListRecommendations lists recommendations for a Cloud project. Requires the recommender.*.list
-// IAM permission for the specified recommender.
+// ListRecommendations lists recommendations for the specified Cloud Resource. Requires the
+// recommender.*.list IAM permission for the specified recommender.
 func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
 	return c.internalClient.ListRecommendations(ctx, req, opts...)
 }

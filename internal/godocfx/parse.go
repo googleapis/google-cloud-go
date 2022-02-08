@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.15
 // +build go1.15
 
 // TODO:
@@ -542,9 +543,23 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfContents {
 	toc := tableOfContents{}
 
+	// If all of the packages have the same status, only put the status on
+	// the module instead of all of the individual packages.
+	uniqueStatuses := map[string]struct{}{}
+	for _, pi := range pis {
+		uniqueStatuses[pi.Status] = struct{}{}
+	}
+	modStatus := ""
+	if len(uniqueStatuses) == 1 {
+		for status := range uniqueStatuses {
+			modStatus = status
+		}
+	}
+
 	modTOC := &tocItem{
-		UID:  mod,
-		Name: mod,
+		UID:    mod,
+		Name:   mod,
+		Status: modStatus,
 	}
 
 	for _, ef := range extraFiles {
@@ -562,10 +577,14 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		importPath := pi.Doc.ImportPath
 		if importPath == mod {
 			// Add the module root package immediately with the full name.
+			rootPkgStatus := pi.Status
+			if modStatus != "" {
+				rootPkgStatus = ""
+			}
 			modTOC.addItem(&tocItem{
 				UID:    mod,
 				Name:   mod,
-				Status: pi.Status,
+				Status: rootPkgStatus,
 			})
 			continue
 		}
@@ -574,7 +593,9 @@ func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfCon
 		}
 		trimmed := strings.TrimPrefix(importPath, mod+"/")
 		trimmedPkgs = append(trimmedPkgs, trimmed)
-		statuses[trimmed] = pi.Status
+		if modStatus == "" {
+			statuses[trimmed] = pi.Status
+		}
 	}
 
 	sort.Strings(trimmedPkgs)
@@ -604,7 +625,11 @@ func toHTML(s string) string {
 		panic(err)
 	}
 
-	return mdBuf.String()
+	// Replace * with &#42; to avoid confusing the DocFX Markdown processor,
+	// which sometimes interprets * as <em>.
+	result := string(bytes.ReplaceAll(mdBuf.Bytes(), []byte("*"), []byte("&#42;")))
+
+	return result
 }
 
 func hasPrefix(s string, prefixes []string) bool {

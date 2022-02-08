@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ func defaultSessionsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -122,6 +121,13 @@ func (c *SessionsClient) Connection() *grpc.ClientConn {
 // and session entity types to be updated, which in turn might affect
 // results of future queries.
 //
+// If you might use
+// Agent Assist (at https://cloud.google.com/dialogflow/docs/#aa)
+// or other CCAI products now or in the future, consider using
+// AnalyzeContent
+// instead of DetectIntent. AnalyzeContent has additional
+// functionality for Agent Assist and other CCAI products.
+//
 // Note: Always use agent versions for production traffic.
 // See Versions and
 // environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
@@ -132,6 +138,13 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.Det
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
+//
+// If you might use
+// Agent Assist (at https://cloud.google.com/dialogflow/docs/#aa)
+// or other CCAI products now or in the future, consider using
+// StreamingAnalyzeContent
+// instead of StreamingDetectIntent. StreamingAnalyzeContent has
+// additional functionality for Agent Assist and other CCAI products.
 //
 // Note: Always use agent versions for production traffic.
 // See Versions and

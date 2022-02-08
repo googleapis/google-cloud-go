@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,12 +74,15 @@ func ExampleAutoscalersClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAutoscalerRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleAutoscalersClient_Get() {
@@ -114,12 +117,15 @@ func ExampleAutoscalersClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertAutoscalerRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleAutoscalersClient_List() {
@@ -160,12 +166,15 @@ func ExampleAutoscalersClient_Patch() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchAutoscalerRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleAutoscalersClient_Update() {
@@ -180,10 +189,13 @@ func ExampleAutoscalersClient_Update() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAutoscalerRequest.
 	}
-	resp, err := c.Update(ctx, req)
+	op, err := c.Update(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

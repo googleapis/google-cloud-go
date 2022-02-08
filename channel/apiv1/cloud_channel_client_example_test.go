@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -158,6 +158,26 @@ func ExampleCloudChannelClient_DeleteCustomer() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleCloudChannelClient_ImportCustomer() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.ImportCustomerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/channel/v1#ImportCustomerRequest.
+	}
+	resp, err := c.ImportCustomer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleCloudChannelClient_ProvisionCloudIdentity() {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ func defaultClusterControllerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -219,6 +218,8 @@ func (c *ClusterControllerClient) CreateClusterOperation(name string) *CreateClu
 // UpdateCluster updates a cluster in a project. The returned
 // Operation.metadata will be
 // ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#clusteroperationmetadata).
+// The cluster must be in a [RUNNING][google.cloud.dataproc.v1.ClusterStatus.State] state or an error
+// is returned.
 func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
 	return c.internalClient.UpdateCluster(ctx, req, opts...)
 }

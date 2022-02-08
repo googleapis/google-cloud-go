@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -752,46 +752,6 @@ func ExampleAnalyticsAdminClient_ListAndroidAppDataStreams() {
 	}
 }
 
-func ExampleAnalyticsAdminClient_GetEnhancedMeasurementSettings() {
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &adminpb.GetEnhancedMeasurementSettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetEnhancedMeasurementSettingsRequest.
-	}
-	resp, err := c.GetEnhancedMeasurementSettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAnalyticsAdminClient_UpdateEnhancedMeasurementSettings() {
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &adminpb.UpdateEnhancedMeasurementSettingsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateEnhancedMeasurementSettingsRequest.
-	}
-	resp, err := c.UpdateEnhancedMeasurementSettings(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
@@ -805,26 +765,6 @@ func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateFirebaseLinkRequest.
 	}
 	resp, err := c.CreateFirebaseLink(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAnalyticsAdminClient_UpdateFirebaseLink() {
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &adminpb.UpdateFirebaseLinkRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateFirebaseLinkRequest.
-	}
-	resp, err := c.UpdateFirebaseLink(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1104,6 +1044,26 @@ func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
 	_ = resp
 }
 
+func ExampleAnalyticsAdminClient_AcknowledgeUserDataCollection() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.AcknowledgeUserDataCollectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#AcknowledgeUserDataCollectionRequest.
+	}
+	resp, err := c.AcknowledgeUserDataCollection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
@@ -1252,6 +1212,234 @@ func ExampleAnalyticsAdminClient_ListConversionEvents() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.GetDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListDisplayVideo360AdvertiserLinksRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinksRequest.
+	}
+	it := c.ListDisplayVideo360AdvertiserLinks(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.CreateDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkRequest.
+	}
+	err = c.DeleteDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateDisplayVideo360AdvertiserLink() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateDisplayVideo360AdvertiserLinkRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDisplayVideo360AdvertiserLinkRequest.
+	}
+	resp, err := c.UpdateDisplayVideo360AdvertiserLink(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.GetDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDisplayVideo360AdvertiserLinkProposalsRequest.
+	}
+	it := c.ListDisplayVideo360AdvertiserLinkProposals(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.CreateDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	err = c.DeleteDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_ApproveDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ApproveDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.ApproveDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CancelDisplayVideo360AdvertiserLinkProposal() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CancelDisplayVideo360AdvertiserLinkProposalRequest.
+	}
+	resp, err := c.CancelDisplayVideo360AdvertiserLinkProposal(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAnalyticsAdminClient_CreateCustomDimension() {
@@ -1455,6 +1643,150 @@ func ExampleAnalyticsAdminClient_GetCustomMetric() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetCustomMetricRequest.
 	}
 	resp, err := c.GetCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetDataRetentionSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDataRetentionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataRetentionSettingsRequest.
+	}
+	resp, err := c.GetDataRetentionSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateDataRetentionSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateDataRetentionSettingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDataRetentionSettingsRequest.
+	}
+	resp, err := c.UpdateDataRetentionSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateDataStream() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateDataStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#CreateDataStreamRequest.
+	}
+	resp, err := c.CreateDataStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteDataStream() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteDataStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#DeleteDataStreamRequest.
+	}
+	err = c.DeleteDataStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateDataStream() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateDataStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#UpdateDataStreamRequest.
+	}
+	resp, err := c.UpdateDataStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListDataStreams() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListDataStreamsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#ListDataStreamsRequest.
+	}
+	it := c.ListDataStreams(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetDataStream() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetDataStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/analytics/admin/v1alpha#GetDataStreamRequest.
+	}
+	resp, err := c.GetDataStream(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

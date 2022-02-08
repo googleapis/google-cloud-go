@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -247,7 +246,7 @@ type internalClient interface {
 // Currently the only supported location_id is “us-central1”.
 //
 // On any input that is documented to expect a string parameter in
-// snake_case or kebab-case, either of those cases is accepted.
+// snake_case or dash-case, either of those cases is accepted.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -410,7 +409,6 @@ func (c *Client) UpdateModel(ctx context.Context, req *automlpb.UpdateModelReque
 // DeployModel deploys a model. If a model is already deployed, deploying it with the
 // same parameters has no effect. Deploying with different parametrs
 // (as e.g. changing
-//
 // node_number)
 // will reset the deployment state without pausing the model’s availability.
 //
@@ -514,7 +512,7 @@ type gRPCClient struct {
 // Currently the only supported location_id is “us-central1”.
 //
 // On any input that is documented to expect a string parameter in
-// snake_case or kebab-case, either of those cases is accepted.
+// snake_case or dash-case, either of those cases is accepted.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {

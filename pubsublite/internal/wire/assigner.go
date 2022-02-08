@@ -18,6 +18,8 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"sort"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -26,26 +28,45 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-// partitionSet is a set of partition numbers.
-type partitionSet map[int]struct{}
+// PartitionSet is a set of partition numbers.
+type PartitionSet map[int]struct{}
 
-func newPartitionSet(assignmentpb *pb.PartitionAssignment) partitionSet {
+// NewPartitionSet creates a partition set initialized from the given partition
+// numbers.
+func NewPartitionSet(partitions []int) PartitionSet {
 	var void struct{}
-	partitions := make(map[int]struct{})
-	for _, p := range assignmentpb.GetPartitions() {
-		partitions[int(p)] = void
+	partitionSet := make(map[int]struct{})
+	for _, p := range partitions {
+		partitionSet[p] = void
 	}
-	return partitionSet(partitions)
+	return partitionSet
 }
 
-func (ps partitionSet) Ints() (partitions []int) {
+func newPartitionSet(assignmentpb *pb.PartitionAssignment) PartitionSet {
+	var partitions []int
+	for _, p := range assignmentpb.GetPartitions() {
+		partitions = append(partitions, int(p))
+	}
+	return NewPartitionSet(partitions)
+}
+
+// Ints returns the partitions contained in this set as an unsorted slice.
+func (ps PartitionSet) Ints() (partitions []int) {
 	for p := range ps {
 		partitions = append(partitions, p)
 	}
 	return
 }
 
-func (ps partitionSet) Contains(partition int) bool {
+// SortedInts returns the partitions contained in this set as a sorted slice.
+func (ps PartitionSet) SortedInts() (partitions []int) {
+	partitions = ps.Ints()
+	sort.Ints(partitions)
+	return
+}
+
+// Contains returns true if this set contains the specified partition.
+func (ps PartitionSet) Contains(partition int) bool {
 	_, exists := ps[partition]
 	return exists
 }
@@ -54,9 +75,8 @@ func (ps partitionSet) Contains(partition int) bool {
 type generateUUIDFunc func() (uuid.UUID, error)
 
 // partitionAssignmentReceiver must enact the received partition assignment from
-// the server, or otherwise return an error, which will break the stream. The
-// receiver must not call the assigner, as this would result in a deadlock.
-type partitionAssignmentReceiver func(partitionSet) error
+// the server, or otherwise return an error, which will break the stream.
+type partitionAssignmentReceiver func(PartitionSet) error
 
 // assigner wraps the partition assignment stream and notifies a receiver when
 // the server sends a new set of partition assignments for a subscriber.
@@ -94,7 +114,7 @@ func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignment
 		receiveAssignment: receiver,
 		metadata:          newPubsubMetadata(),
 	}
-	a.stream = newRetryableStream(ctx, a, settings.Timeout, reflect.TypeOf(pb.PartitionAssignment{}))
+	a.stream = newRetryableStream(ctx, a, settings.Timeout, 10*time.Minute, reflect.TypeOf(pb.PartitionAssignment{}))
 	a.metadata.AddClientInfo(settings.Framework)
 	return a, nil
 }

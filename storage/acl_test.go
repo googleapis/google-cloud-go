@@ -20,6 +20,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 func TestSetACL(t *testing.T) {
@@ -60,6 +61,54 @@ func TestSetACL(t *testing.T) {
 		got := mt.gotJSONBody()
 		if diff := testutil.Diff(got, test.want); diff != "" {
 			t.Errorf("%s: %s", test.desc, diff)
+		}
+	}
+}
+
+func TestToProtoObjectACL(t *testing.T) {
+	for i, tst := range []struct {
+		rules []ACLRule
+		want  []*storagepb.ObjectAccessControl
+	}{
+		{nil, nil},
+		{
+			rules: []ACLRule{
+				{Entity: "foo", Role: "bar", Domain: "do not copy me!", Email: "donotcopy@"},
+				{Entity: "bar", Role: "foo", ProjectTeam: &ProjectTeam{ProjectNumber: "1234", Team: "donotcopy"}},
+			},
+			want: []*storagepb.ObjectAccessControl{
+				{Entity: "foo", Role: "bar"},
+				{Entity: "bar", Role: "foo"},
+			},
+		},
+	} {
+		got := toProtoObjectACL(tst.rules)
+		if diff := testutil.Diff(got, tst.want); diff != "" {
+			t.Errorf("#%d: got(-),want(+):\n%s", i, diff)
+		}
+	}
+}
+
+func TestFromProtoToObjectACLRules(t *testing.T) {
+	for i, tst := range []struct {
+		want []ACLRule
+		acls []*storagepb.ObjectAccessControl
+	}{
+		{nil, nil},
+		{
+			want: []ACLRule{
+				{Entity: "foo", Role: "bar", ProjectTeam: &ProjectTeam{ProjectNumber: "1234", Team: "foo"}},
+				{Entity: "bar", Role: "foo", EntityID: "baz", Domain: "domain"},
+			},
+			acls: []*storagepb.ObjectAccessControl{
+				{Entity: "foo", Role: "bar", ProjectTeam: &storagepb.ProjectTeam{ProjectNumber: "1234", Team: "foo"}},
+				{Entity: "bar", Role: "foo", EntityId: "baz", Domain: "domain"},
+			},
+		},
+	} {
+		got := fromProtoToObjectACLRules(tst.acls)
+		if diff := testutil.Diff(got, tst.want); diff != "" {
+			t.Errorf("#%d: got(-),want(+):\n%s", i, diff)
 		}
 	}
 }

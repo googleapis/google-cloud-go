@@ -33,6 +33,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+
+	vkit "cloud.google.com/go/pubsub/apiv1"
 )
 
 // Subscription is a reference to a PubSub subscription.
@@ -85,7 +87,8 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 		Project: c.fullyQualifiedProjectName(),
 	})
 	return &SubscriptionIterator{
-		c: c,
+		c:  c,
+		it: it,
 		next: func() (string, error) {
 			sub, err := it.Next()
 			if err != nil {
@@ -99,6 +102,7 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
 	c    *Client
+	it   *vkit.SubscriptionIterator
 	next func() (string, error)
 }
 
@@ -109,6 +113,22 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 		return nil, err
 	}
 	return &Subscription{c: subs.c, name: subName}, nil
+}
+
+// NextConfig returns the next subscription config. If there are no more subscriptions,
+// iterator.Done will be returned.
+// This call shares the underlying iterator with calls to `SubscriptionIterator.Next`.
+// If you wish to use mix calls, create separate iterator instances for both.
+func (subs *SubscriptionIterator) NextConfig() (*SubscriptionConfig, error) {
+	spb, err := subs.it.Next()
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := protoToSubscriptionConfig(spb, subs.c)
+	if err != nil {
+		return nil, err
+	}
+	return &cfg, nil
 }
 
 // PushConfig contains configuration for subscriptions that operate in push mode.
@@ -192,6 +212,9 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
+	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
+	name string
+
 	Topic      *Topic
 	PushConfig PushConfig
 
@@ -256,6 +279,37 @@ type SubscriptionConfig struct {
 	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
 	// the endpoint will not be made.
 	Detached bool
+
+	// TopicMessageRetentionDuration indicates the minimum duration for which a message is
+	// retained after it is published to the subscription's topic. If this field is
+	// set, messages published to the subscription's topic in the last
+	// `TopicMessageRetentionDuration` are always available to subscribers.
+	// You can enable both topic and subscription retention for the same topic.
+	// In this situation, the maximum of the retention durations takes effect.
+	//
+	// This is an output only field, meaning it will only appear in responses from the backend
+	// and will be ignored if sent in a request.
+	TopicMessageRetentionDuration time.Duration
+}
+
+// String returns the globally unique printable name of the subscription config.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) String() string {
+	return s.name
+}
+
+// ID returns the unique identifier of the subscription within its project.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) ID() string {
+	slash := strings.LastIndex(s.name, "/")
+	if slash == -1 {
+		return ""
+	}
+	return s.name[slash+1:]
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -304,17 +358,19 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:                 newTopic(c, pbSub.Topic),
-		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages:   pbSub.RetainAckedMessages,
-		RetentionDuration:     rd,
-		Labels:                pbSub.Labels,
-		ExpirationPolicy:      expirationPolicy,
-		EnableMessageOrdering: pbSub.EnableMessageOrdering,
-		DeadLetterPolicy:      dlp,
-		Filter:                pbSub.Filter,
-		RetryPolicy:           rp,
-		Detached:              pbSub.Detached,
+		name:                          pbSub.Name,
+		Topic:                         newTopic(c, pbSub.Topic),
+		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:           pbSub.RetainAckedMessages,
+		RetentionDuration:             rd,
+		Labels:                        pbSub.Labels,
+		ExpirationPolicy:              expirationPolicy,
+		EnableMessageOrdering:         pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:              dlp,
+		Filter:                        pbSub.Filter,
+		RetryPolicy:                   rp,
+		Detached:                      pbSub.Detached,
+		TopicMessageRetentionDuration: pbSub.TopicMessageRetentionDuration.AsDuration(),
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -784,7 +840,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkOrdering()
+	s.checkOrdering(ctx)
 
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -825,7 +881,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(maxCount, maxBytes)
+	fc := newFlowController(FlowControlSettings{
+		MaxOutstandingMessages: maxCount,
+		MaxOutstandingBytes:    maxBytes,
+		LimitExceededBehavior:  FlowControlBlock,
+	})
 
 	sched := scheduler.NewReceiveScheduler(maxCount)
 
@@ -889,12 +949,28 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						}
 					}
 				}
+				// If the context is done, don't pull more messages.
+				select {
+				case <-ctx.Done():
+					return nil
+				default:
+				}
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
 				}
 				if err != nil {
 					return err
+				}
+				// If context is done and messages have been pulled,
+				// nack them.
+				select {
+				case <-ctx.Done():
+					for _, m := range msgs {
+						m.Nack()
+					}
+					return nil
+				default:
 				}
 				for i, msg := range msgs {
 					msg := msg
@@ -957,8 +1033,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering() {
-	ctx := context.Background()
+func (s *Subscription) checkOrdering(ctx context.Context) {
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true
@@ -970,7 +1045,7 @@ func (s *Subscription) checkOrdering() {
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
-	maxPrefetch        int32
+	maxPrefetch        int32         // the max number of outstanding messages, used to calculate maxToPull
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool

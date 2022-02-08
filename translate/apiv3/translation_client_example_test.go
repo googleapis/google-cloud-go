@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -96,6 +96,26 @@ func ExampleTranslationClient_GetSupportedLanguages() {
 	_ = resp
 }
 
+func ExampleTranslationClient_TranslateDocument() {
+	ctx := context.Background()
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.TranslateDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#TranslateDocumentRequest.
+	}
+	resp, err := c.TranslateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleTranslationClient_BatchTranslateText() {
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
@@ -109,6 +129,31 @@ func ExampleTranslationClient_BatchTranslateText() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#BatchTranslateTextRequest.
 	}
 	op, err := c.BatchTranslateText(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_BatchTranslateDocument() {
+	ctx := context.Background()
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &translatepb.BatchTranslateDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#BatchTranslateDocumentRequest.
+	}
+	op, err := c.BatchTranslateDocument(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

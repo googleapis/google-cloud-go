@@ -28,6 +28,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // evalContext represents the context for evaluating an expression.
@@ -72,7 +74,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 	case spansql.BoolLiteral:
 		b := bool(be)
 		return &b, nil
-	case spansql.ID, spansql.Param, spansql.Paren, spansql.InOp: // InOp is a bit weird.
+	case spansql.ID, spansql.Param, spansql.Paren, spansql.Func, spansql.InOp: // InOp is a bit weird.
 		e, err := ec.evalExpr(be)
 		if err != nil {
 			return nil, err
@@ -235,11 +237,15 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 }
 
 func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
+	// TODO: Better NULL handling
 	switch e.Op {
 	case spansql.Neg:
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case float64:
@@ -252,6 +258,9 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		switch rhs := rhs.(type) {
 		case int64:
@@ -283,9 +292,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -320,9 +335,15 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
+		if lhs == nil {
+			return nil, nil
+		}
 		rhs, err := ec.evalExpr(e.RHS)
 		if err != nil {
 			return nil, err
+		}
+		if rhs == nil {
+			return nil, nil
 		}
 		i1, ok1 := lhs.(int64)
 		i2, ok2 := rhs.(int64)
@@ -361,6 +382,24 @@ func (ec evalContext) evalArithOp(e spansql.ArithOp) (interface{}, error) {
 	}
 	// TODO: Concat, BitShl, BitShr
 	return nil, fmt.Errorf("TODO: evalArithOp(%s %v)", e.SQL(), e.Op)
+}
+
+func (ec evalContext) evalFunc(e spansql.Func) (interface{}, spansql.Type, error) {
+	var err error
+	if f, ok := functions[e.Name]; ok {
+		args := make([]interface{}, len(e.Args))
+		types := make([]spansql.Type, len(e.Args))
+		for i, arg := range e.Args {
+			if args[i], err = ec.evalExpr(arg); err != nil {
+				return nil, spansql.Type{}, err
+			}
+			if te, ok := arg.(spansql.TypedExpr); ok {
+				types[i] = te.Type
+			}
+		}
+		return f.Eval(args, types)
+	}
+	return nil, spansql.Type{}, status.Errorf(codes.Unimplemented, "function %q is not implemented", e.Name)
 }
 
 // evalFloat64 evaluates an expression and returns its FLOAT64 value.
@@ -428,6 +467,18 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return bool(e), nil
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
+	case spansql.TypedExpr:
+		return ec.evalTypedExpr(e)
+	case spansql.ExtractExpr:
+		return ec.evalExtractExpr(e)
+	case spansql.AtTimeZoneExpr:
+		return ec.evalAtTimeZoneExpr(e)
+	case spansql.Func:
+		v, _, err := ec.evalFunc(e)
+		if err != nil {
+			return nil, err
+		}
+		return v, nil
 	case spansql.Array:
 		var arr []interface{}
 		for _, elt := range e {
@@ -620,6 +671,69 @@ func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiter
 	return nil, fmt.Errorf("unable to coerce string literal %q to match %v", slit, ci.Type)
 }
 
+func (ec evalContext) evalTypedExpr(expr spansql.TypedExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	return convert(val, expr.Type)
+}
+
+func (ec evalContext) evalExtractExpr(expr spansql.ExtractExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	switch expr.Part {
+	case "DATE":
+		switch v := val.(type) {
+		case time.Time:
+			return civil.DateOf(v), nil
+		case civil.Date:
+			return v, nil
+		}
+	case "DAY":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Day()), nil
+		case civil.Date:
+			return int64(v.Day), nil
+		}
+	case "MONTH":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Month()), nil
+		case civil.Date:
+			return int64(v.Month), nil
+		}
+	case "YEAR":
+		switch v := val.(type) {
+		case time.Time:
+			return int64(v.Year()), nil
+		case civil.Date:
+			return int64(v.Year), nil
+		}
+	}
+	return nil, fmt.Errorf("Extract with part %v not supported", expr.Part)
+}
+
+func (ec evalContext) evalAtTimeZoneExpr(expr spansql.AtTimeZoneExpr) (result interface{}, err error) {
+	val, err := ec.evalExpr(expr.Expr)
+	if err != nil {
+		return nil, err
+	}
+	switch v := val.(type) {
+	case time.Time:
+		loc, err := time.LoadLocation(expr.Zone)
+		if err != nil {
+			return nil, fmt.Errorf("AtTimeZone with %T not supported", v)
+		}
+		return v.In(loc), nil
+	default:
+		return nil, fmt.Errorf("AtTimeZone with %T not supported", val)
+	}
+}
+
 func evalLiteralOrParam(lop spansql.LiteralOrParam, params queryParams) (int64, error) {
 	switch v := lop.(type) {
 	case spansql.IntegerLiteral:
@@ -785,6 +899,12 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: qp.Type}, nil
 	case spansql.Paren:
 		return ec.colInfo(e.Expr)
+	case spansql.Func:
+		_, t, err := ec.evalFunc(e)
+		if err != nil {
+			return colInfo{}, err
+		}
+		return colInfo{Type: t}, nil
 	case spansql.Array:
 		// Assume all element of an array literal have the same type.
 		if len(e) == 0 {

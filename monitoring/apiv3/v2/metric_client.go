@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ type MetricCallOptions struct {
 	DeleteMetricDescriptor           []gax.CallOption
 	ListTimeSeries                   []gax.CallOption
 	CreateTimeSeries                 []gax.CallOption
+	CreateServiceTimeSeries          []gax.CallOption
 }
 
 func defaultMetricGRPCClientOptions() []option.ClientOption {
@@ -58,7 +59,6 @@ func defaultMetricGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -69,7 +69,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListMonitoredResourceDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -81,7 +80,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		GetMonitoredResourceDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -93,7 +91,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListMetricDescriptors: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -105,7 +102,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		GetMetricDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -118,7 +114,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		DeleteMetricDescriptor: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -130,7 +125,6 @@ func defaultMetricCallOptions() *MetricCallOptions {
 		ListTimeSeries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -139,7 +133,8 @@ func defaultMetricCallOptions() *MetricCallOptions {
 				})
 			}),
 		},
-		CreateTimeSeries: []gax.CallOption{},
+		CreateTimeSeries:        []gax.CallOption{},
+		CreateServiceTimeSeries: []gax.CallOption{},
 	}
 }
 
@@ -156,6 +151,7 @@ type internalMetricClient interface {
 	DeleteMetricDescriptor(context.Context, *monitoringpb.DeleteMetricDescriptorRequest, ...gax.CallOption) error
 	ListTimeSeries(context.Context, *monitoringpb.ListTimeSeriesRequest, ...gax.CallOption) *TimeSeriesIterator
 	CreateTimeSeries(context.Context, *monitoringpb.CreateTimeSeriesRequest, ...gax.CallOption) error
+	CreateServiceTimeSeries(context.Context, *monitoringpb.CreateTimeSeriesRequest, ...gax.CallOption) error
 }
 
 // MetricClient is a client for interacting with Cloud Monitoring API.
@@ -214,6 +210,8 @@ func (c *MetricClient) GetMetricDescriptor(ctx context.Context, req *monitoringp
 }
 
 // CreateMetricDescriptor creates a new metric descriptor.
+// The creation is executed asynchronously and callers may check the returned
+// operation to track its progress.
 // User-created metric descriptors define
 // custom metrics (at https://cloud.google.com/monitoring/custom-metrics).
 func (c *MetricClient) CreateMetricDescriptor(ctx context.Context, req *monitoringpb.CreateMetricDescriptorRequest, opts ...gax.CallOption) (*metricpb.MetricDescriptor, error) {
@@ -238,6 +236,19 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 // included in the error response.
 func (c *MetricClient) CreateTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CreateTimeSeries(ctx, req, opts...)
+}
+
+// CreateServiceTimeSeries creates or adds data to one or more service time series. A service time
+// series is a time series for a metric from a Google Cloud service. The
+// response is empty if all time series in the request were written. If any
+// time series could not be written, a corresponding failure message is
+// included in the error response. This endpoint rejects writes to
+// user-defined metrics.
+// This method is only for use by Google Cloud services. Use
+// projects.timeSeries.create
+// instead.
+func (c *MetricClient) CreateServiceTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CreateServiceTimeSeries(ctx, req, opts...)
 }
 
 // metricGRPCClient is a client for interacting with Cloud Monitoring API over gRPC transport.
@@ -545,6 +556,18 @@ func (c *metricGRPCClient) CreateTimeSeries(ctx context.Context, req *monitoring
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.metricClient.CreateTimeSeries(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *metricGRPCClient) CreateServiceTimeSeries(ctx context.Context, req *monitoringpb.CreateTimeSeriesRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateServiceTimeSeries[0:len((*c.CallOptions).CreateServiceTimeSeries):len((*c.CallOptions).CreateServiceTimeSeries)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.metricClient.CreateServiceTimeSeries(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err

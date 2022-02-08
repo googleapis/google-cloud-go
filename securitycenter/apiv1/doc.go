@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,11 +45,16 @@
 //  }
 //  defer c.Close()
 //
-//  req := &securitycenterpb.CreateSourceRequest{
+//  req := &securitycenterpb.BulkMuteFindingsRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateSourceRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#BulkMuteFindingsRequest.
 //  }
-//  resp, err := c.CreateSource(ctx, req)
+//  op, err := c.BulkMuteFindings(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//
+//  resp, err := op.Wait(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -85,7 +90,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210820"
+const versionClient = "20220205"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

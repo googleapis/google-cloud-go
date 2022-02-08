@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,6 @@ func defaultIntentsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -241,6 +240,15 @@ func (c *IntentsClient) DeleteIntent(ctx context.Context, req *dialogflowpb.Dele
 
 // BatchUpdateIntents updates/Creates multiple intents in the specified agent.
 //
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: BatchUpdateIntentsResponse
+//
 // Note: You should always train an agent prior to sending it queries. See the
 // training
 // documentation (at https://cloud.google.com/dialogflow/es/docs/training).
@@ -255,6 +263,16 @@ func (c *IntentsClient) BatchUpdateIntentsOperation(name string) *BatchUpdateInt
 }
 
 // BatchDeleteIntents deletes intents in the specified agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
 //
 // Note: You should always train an agent prior to sending it queries. See the
 // training

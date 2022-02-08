@@ -1,5 +1,37 @@
 # Changes
 
+### [1.2.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.1...pubsublite/v1.2.2) (2022-02-08)
+
+
+### Features
+
+* **pubsublite:** add C++ rules for Pub/Sub Lite ([3e7185c](https://www.github.com/googleapis/google-cloud-go/commit/3e7185c241d97ee342f132ae04bc93bb79a8e897))
+
+
+### Bug Fixes
+
+* **pubsublite:** mitigate gRPC stream connection issues ([#5382](https://www.github.com/googleapis/google-cloud-go/issues/5382)) ([8763ef3](https://www.github.com/googleapis/google-cloud-go/commit/8763ef3d2da18e8fed6e350aef76d26a135246c2))
+
+
+### Documentation
+
+* **pubsublite:** update comments for regional topics ([#5202](https://www.github.com/googleapis/google-cloud-go/issues/5202)) ([7805468](https://www.github.com/googleapis/google-cloud-go/commit/78054682770af3b35cb0002c3c34006ec36590ef))
+
+### [1.2.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.0...pubsublite/v1.2.1) (2021-10-26)
+
+
+### Bug Fixes
+
+* **pubsublite:** disable grpc stream retries ([#5019](https://www.github.com/googleapis/google-cloud-go/issues/5019)) ([74f9c11](https://www.github.com/googleapis/google-cloud-go/commit/74f9c112eadb83fea7b759f37ddb8ced9317f238))
+
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.1.0...pubsublite/v1.2.0) (2021-10-01)
+
+
+### Features
+
+* **pubsublite:** notify subscriber clients on partition reassignment ([#4777](https://www.github.com/googleapis/google-cloud-go/issues/4777)) ([393b0a3](https://www.github.com/googleapis/google-cloud-go/commit/393b0a39bf917a5bade854dddeb278aa95f9d3f0))
+* **pubsublite:** support reservations in AdminClient ([#4294](https://www.github.com/googleapis/google-cloud-go/issues/4294)) ([65b0f88](https://www.github.com/googleapis/google-cloud-go/commit/65b0f88a78d8833bcaaf8fc59401ec0a1527db1d))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.0.0...pubsublite/v1.1.0) (2021-08-09)
 
 

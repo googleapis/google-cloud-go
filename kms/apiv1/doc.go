@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@
 //
 // To get started with this package, create a client.
 //  ctx := context.Background()
-//  c, err := kms.NewKeyManagementClient(ctx)
+//  c, err := kms.NewEkmClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -39,17 +39,17 @@
 // The following is an example of making an API call with the newly created client.
 //
 //  ctx := context.Background()
-//  c, err := kms.NewKeyManagementClient(ctx)
+//  c, err := kms.NewEkmClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
 //  defer c.Close()
 //
-//  req := &kmspb.ListKeyRingsRequest{
+//  req := &kmspb.ListEkmConnectionsRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListKeyRingsRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/kms/v1#ListEkmConnectionsRequest.
 //  }
-//  it := c.ListKeyRings(ctx, req)
+//  it := c.ListEkmConnections(ctx, req)
 //  for {
 //  	resp, err := it.Next()
 //  	if err == iterator.Done {
@@ -91,7 +91,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210820"
+const versionClient = "20220205"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

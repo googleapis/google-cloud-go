@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 // Package channel is an auto-generated package for the
 // Cloud Channel API.
+//
+// The Cloud Channel API enables Google Cloud partners to have a single
+// unified resale platform and APIs across all of Google Cloud including GCP,
+// Workspace, Maps and Chrome.
 //
 // Example usage
 //
@@ -88,7 +92,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210820"
+const versionClient = "20220205"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,12 +74,15 @@ func ExampleReservationsClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteReservationRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleReservationsClient_Get() {
@@ -134,12 +137,15 @@ func ExampleReservationsClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertReservationRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleReservationsClient_List() {
@@ -180,12 +186,15 @@ func ExampleReservationsClient_Resize() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeReservationRequest.
 	}
-	resp, err := c.Resize(ctx, req)
+	op, err := c.Resize(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleReservationsClient_SetIamPolicy() {

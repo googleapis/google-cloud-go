@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -459,6 +459,182 @@ func ExampleJobClient_CancelBatchPredictionJob() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CancelBatchPredictionJobRequest.
 	}
 	err = c.CancelBatchPredictionJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleJobClient_CreateModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CreateModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#CreateModelDeploymentMonitoringJobRequest.
+	}
+	resp, err := c.CreateModelDeploymentMonitoringJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleJobClient_SearchModelDeploymentMonitoringStatsAnomalies() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.SearchModelDeploymentMonitoringStatsAnomaliesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#SearchModelDeploymentMonitoringStatsAnomaliesRequest.
+	}
+	it := c.SearchModelDeploymentMonitoringStatsAnomalies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleJobClient_GetModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.GetModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#GetModelDeploymentMonitoringJobRequest.
+	}
+	resp, err := c.GetModelDeploymentMonitoringJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleJobClient_ListModelDeploymentMonitoringJobs() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListModelDeploymentMonitoringJobsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ListModelDeploymentMonitoringJobsRequest.
+	}
+	it := c.ListModelDeploymentMonitoringJobs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleJobClient_UpdateModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpdateModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#UpdateModelDeploymentMonitoringJobRequest.
+	}
+	op, err := c.UpdateModelDeploymentMonitoringJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleJobClient_DeleteModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeleteModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#DeleteModelDeploymentMonitoringJobRequest.
+	}
+	op, err := c.DeleteModelDeploymentMonitoringJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleJobClient_PauseModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.PauseModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#PauseModelDeploymentMonitoringJobRequest.
+	}
+	err = c.PauseModelDeploymentMonitoringJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleJobClient_ResumeModelDeploymentMonitoringJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewJobClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ResumeModelDeploymentMonitoringJobRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1#ResumeModelDeploymentMonitoringJobRequest.
+	}
+	err = c.ResumeModelDeploymentMonitoringJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

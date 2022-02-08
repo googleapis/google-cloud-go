@@ -15,6 +15,7 @@ package pubsublite
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -22,8 +23,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
@@ -34,48 +34,7 @@ const gibi = 1 << 30
 
 var (
 	resourceIDs = uid.NewSpace("go-admin-test", nil)
-
-	// The server returns topic and subscription configs with project numbers in
-	// resource paths. These will not match a project id specified for integration
-	// tests.
-	pathCmpOptions = []cmp.Option{
-		cmpopts.IgnoreFields(wire.TopicPath{}, "Project"),
-		cmpopts.IgnoreFields(wire.SubscriptionPath{}, "Project"),
-	}
-	configCmpOptions = []cmp.Option{
-		cmp.Comparer(func(t1, t2 *TopicConfig) bool {
-			return cmp.Equal(t1, t2, cmpopts.IgnoreFields(TopicConfig{}, "Name")) && TopicPathsEqual(t1.Name, t2.Name)
-		}),
-		cmp.Comparer(func(s1, s2 *SubscriptionConfig) bool {
-			return cmp.Equal(s1, s2, cmpopts.IgnoreFields(SubscriptionConfig{}, "Name", "Topic")) &&
-				TopicPathsEqual(s1.Topic, s2.Topic) && SubscriptionPathsEqual(s1.Name, s2.Name)
-		}),
-	}
 )
-
-func TopicPathsEqual(topic1, topic2 string) bool {
-	tp1, err := wire.ParseTopicPath(topic1)
-	if err != nil {
-		return false
-	}
-	tp2, err := wire.ParseTopicPath(topic2)
-	if err != nil {
-		return false
-	}
-	return cmp.Equal(tp1, tp2, pathCmpOptions...)
-}
-
-func SubscriptionPathsEqual(subscription1, subscription2 string) bool {
-	sp1, err := wire.ParseSubscriptionPath(subscription1)
-	if err != nil {
-		return false
-	}
-	sp2, err := wire.ParseSubscriptionPath(subscription2)
-	if err != nil {
-		return false
-	}
-	return cmp.Equal(sp1, sp2, pathCmpOptions...)
-}
 
 func initIntegrationTest(t *testing.T) {
 	if testing.Short() {
@@ -84,6 +43,24 @@ func initIntegrationTest(t *testing.T) {
 	if testutil.ProjID() == "" {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
+}
+
+func projectNumber(t *testing.T) string {
+	projID := testutil.ProjID()
+	if projID == "" {
+		return ""
+	}
+	// Pub/Sub Lite returns project numbers in resource paths, so we need to
+	// convert from project id to numbers for simpler comparisons in tests.
+	crm, err := cloudresourcemanager.NewService(context.Background())
+	if err != nil {
+		t.Fatalf("Failed to create cloudresourcemanager: %v", err)
+	}
+	project, err := crm.Projects.Get(projID).Do()
+	if err != nil {
+		t.Fatalf("Failed to retrieve project %q: %v", projID, err)
+	}
+	return fmt.Sprintf("%d", project.ProjectNumber)
 }
 
 func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []option.ClientOption {
@@ -107,6 +84,12 @@ func adminClient(ctx context.Context, t *testing.T, region string, opts ...optio
 		t.Fatalf("Failed to create admin client: %v", err)
 	}
 	return admin
+}
+
+func cleanUpReservation(ctx context.Context, t *testing.T, admin *AdminClient, name string) {
+	if err := admin.DeleteReservation(ctx, name); err != nil {
+		t.Errorf("Failed to delete reservation %s: %v", name, err)
+	}
 }
 
 func cleanUpTopic(ctx context.Context, t *testing.T, admin *AdminClient, name string) {
@@ -136,7 +119,7 @@ func validateNewSeekOperation(t *testing.T, subscription string, seekOp *SeekSub
 		t.Errorf("Operation.Metadata() got err: %v", err)
 		return
 	}
-	if got, want := m.Target, subscription; !SubscriptionPathsEqual(got, want) {
+	if got, want := m.Target, subscription; got != want {
 		t.Errorf("Metadata.Target got: %v, want: %v", got, want)
 	}
 	if len(m.Verb) == 0 {
@@ -151,18 +134,72 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	initIntegrationTest(t)
 
 	ctx := context.Background()
-	proj := testutil.ProjID()
+	proj := projectNumber(t)
 	zone := test.RandomLiteZone()
-	region, _ := wire.ZoneToRegion(zone)
+	region, _ := wire.LocationToRegion(zone)
 	resourceID := resourceIDs.New()
 
 	locationPath := wire.LocationPath{Project: proj, Location: zone}.String()
-	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}.String()
-	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}.String()
+	topicPath := wire.TopicPath{Project: proj, Location: zone, TopicID: resourceID}.String()
+	subscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID}.String()
+	reservationPath := wire.ReservationPath{Project: proj, Region: region, ReservationID: resourceID}.String()
 	t.Logf("Topic path: %s", topicPath)
 
 	admin := adminClient(ctx, t, region)
 	defer admin.Close()
+
+	// Reservation admin operations.
+	newResConfig := &ReservationConfig{
+		Name:               reservationPath,
+		ThroughputCapacity: 3,
+	}
+
+	gotResConfig, err := admin.CreateReservation(ctx, *newResConfig)
+	if err != nil {
+		t.Fatalf("Failed to create reservation: %v", err)
+	}
+	defer cleanUpReservation(ctx, t, admin, reservationPath)
+	if diff := testutil.Diff(gotResConfig, newResConfig); diff != "" {
+		t.Errorf("CreateReservation() got: -, want: +\n%s", diff)
+	}
+
+	if gotResConfig, err := admin.Reservation(ctx, reservationPath); err != nil {
+		t.Errorf("Failed to get reservation: %v", err)
+	} else if diff := testutil.Diff(gotResConfig, newResConfig); diff != "" {
+		t.Errorf("Reservation() got: -, want: +\n%s", diff)
+	}
+
+	resIt := admin.Reservations(ctx, wire.LocationPath{proj, region}.String())
+	var foundRes *ReservationConfig
+	for {
+		res, err := resIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if res.Name == reservationPath {
+			foundRes = res
+			break
+		}
+	}
+	if foundRes == nil {
+		t.Error("Reservations() did not return reservation config")
+	} else if diff := testutil.Diff(foundRes, newResConfig); diff != "" {
+		t.Errorf("Reservations() found config: -, want: +\n%s", diff)
+	}
+
+	resUpdate := ReservationConfigToUpdate{
+		Name:               reservationPath,
+		ThroughputCapacity: 4,
+	}
+	wantUpdatedResConfig := &ReservationConfig{
+		Name:               reservationPath,
+		ThroughputCapacity: 4,
+	}
+	if gotResConfig, err := admin.UpdateReservation(ctx, resUpdate); err != nil {
+		t.Errorf("Failed to update reservation: %v", err)
+	} else if diff := testutil.Diff(gotResConfig, wantUpdatedResConfig); diff != "" {
+		t.Errorf("UpdateReservation() got: -, want: +\n%s", diff)
+	}
 
 	// Topic admin operations.
 	newTopicConfig := &TopicConfig{
@@ -172,6 +209,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 4,
 		PerPartitionBytes:          30 * gibi,
 		RetentionDuration:          24 * time.Hour,
+		ThroughputReservation:      reservationPath,
 	}
 
 	gotTopicConfig, err := admin.CreateTopic(ctx, *newTopicConfig)
@@ -179,13 +217,13 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Fatalf("Failed to create topic: %v", err)
 	}
 	defer cleanUpTopic(ctx, t, admin, topicPath)
-	if diff := testutil.Diff(gotTopicConfig, newTopicConfig, configCmpOptions...); diff != "" {
+	if diff := testutil.Diff(gotTopicConfig, newTopicConfig); diff != "" {
 		t.Errorf("CreateTopic() got: -, want: +\n%s", diff)
 	}
 
 	if gotTopicConfig, err := admin.Topic(ctx, topicPath); err != nil {
 		t.Errorf("Failed to get topic: %v", err)
-	} else if diff := testutil.Diff(gotTopicConfig, newTopicConfig, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(gotTopicConfig, newTopicConfig); diff != "" {
 		t.Errorf("Topic() got: -, want: +\n%s", diff)
 	}
 
@@ -202,15 +240,31 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		if err == iterator.Done {
 			break
 		}
-		if TopicPathsEqual(topic.Name, topicPath) {
+		if topic.Name == topicPath {
 			foundTopic = topic
 			break
 		}
 	}
 	if foundTopic == nil {
 		t.Error("Topics() did not return topic config")
-	} else if diff := testutil.Diff(foundTopic, newTopicConfig, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(foundTopic, newTopicConfig); diff != "" {
 		t.Errorf("Topics() found config: -, want: +\n%s", diff)
+	}
+
+	topicPathIt := admin.ReservationTopics(ctx, reservationPath)
+	foundTopicPath := false
+	for {
+		path, err := topicPathIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		if topicPath == path {
+			foundTopicPath = true
+			break
+		}
+	}
+	if !foundTopicPath {
+		t.Error("ReservationTopics() did not return topic path")
 	}
 
 	topicUpdate1 := TopicConfigToUpdate{
@@ -218,6 +272,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		PartitionCount:             2,
 		PublishCapacityMiBPerSec:   6,
 		SubscribeCapacityMiBPerSec: 8,
+		ThroughputReservation:      "",
 	}
 	wantUpdatedTopicConfig1 := &TopicConfig{
 		Name:                       topicPath,
@@ -229,14 +284,15 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	}
 	if gotTopicConfig, err := admin.UpdateTopic(ctx, topicUpdate1); err != nil {
 		t.Errorf("Failed to update topic: %v", err)
-	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig1, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig1); diff != "" {
 		t.Errorf("UpdateTopic() got: -, want: +\n%s", diff)
 	}
 
 	topicUpdate2 := TopicConfigToUpdate{
-		Name:              topicPath,
-		PerPartitionBytes: 35 * gibi,
-		RetentionDuration: InfiniteRetention,
+		Name:                  topicPath,
+		PerPartitionBytes:     35 * gibi,
+		RetentionDuration:     InfiniteRetention,
+		ThroughputReservation: reservationPath,
 	}
 	wantUpdatedTopicConfig2 := &TopicConfig{
 		Name:                       topicPath,
@@ -245,10 +301,11 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          35 * gibi,
 		RetentionDuration:          InfiniteRetention,
+		ThroughputReservation:      reservationPath,
 	}
 	if gotTopicConfig, err := admin.UpdateTopic(ctx, topicUpdate2); err != nil {
 		t.Errorf("Failed to update topic: %v", err)
-	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig2, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig2); diff != "" {
 		t.Errorf("UpdateTopic() got: -, want: +\n%s", diff)
 	}
 
@@ -264,13 +321,13 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Fatalf("Failed to create subscription: %v", err)
 	}
 	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
-	if diff := testutil.Diff(gotSubsConfig, newSubsConfig, configCmpOptions...); diff != "" {
+	if diff := testutil.Diff(gotSubsConfig, newSubsConfig); diff != "" {
 		t.Errorf("CreateSubscription() got: -, want: +\n%s", diff)
 	}
 
 	if gotSubsConfig, err := admin.Subscription(ctx, subscriptionPath); err != nil {
 		t.Errorf("Failed to get subscription: %v", err)
-	} else if diff := testutil.Diff(gotSubsConfig, newSubsConfig, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(gotSubsConfig, newSubsConfig); diff != "" {
 		t.Errorf("Subscription() got: -, want: +\n%s", diff)
 	}
 
@@ -281,14 +338,14 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		if err == iterator.Done {
 			break
 		}
-		if SubscriptionPathsEqual(subs.Name, subscriptionPath) {
+		if subs.Name == subscriptionPath {
 			foundSubs = subs
 			break
 		}
 	}
 	if foundSubs == nil {
 		t.Error("Subscriptions() did not return subscription config")
-	} else if diff := testutil.Diff(foundSubs, gotSubsConfig, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(foundSubs, gotSubsConfig); diff != "" {
 		t.Errorf("Subscriptions() found config: -, want: +\n%s", diff)
 	}
 
@@ -299,7 +356,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		if err == iterator.Done {
 			break
 		}
-		if SubscriptionPathsEqual(subsPath, subscriptionPath) {
+		if subsPath == subscriptionPath {
 			foundSubsPath = true
 			break
 		}
@@ -319,7 +376,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	}
 	if gotSubsConfig, err := admin.UpdateSubscription(ctx, subsUpdate); err != nil {
 		t.Errorf("Failed to update subscription: %v", err)
-	} else if diff := testutil.Diff(gotSubsConfig, wantUpdatedSubsConfig, configCmpOptions...); diff != "" {
+	} else if diff := testutil.Diff(gotSubsConfig, wantUpdatedSubsConfig); diff != "" {
 		t.Errorf("UpdateSubscription() got: -, want: +\n%s", diff)
 	}
 

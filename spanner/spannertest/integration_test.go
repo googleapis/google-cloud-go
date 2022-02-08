@@ -652,12 +652,12 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		) PRIMARY KEY (LastName, OpponentID)`, // TODO: is this right?
 		// JoinFoo are from https://cloud.google.com/spanner/docs/query-syntax#join_types.
 		// They aren't consistently named in the docs.
-		`CREATE TABLE JoinA ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
-		`CREATE TABLE JoinB ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
-		`CREATE TABLE JoinC ( x INT64, y STRING(MAX) ) PRIMARY KEY (x, y)`,
-		`CREATE TABLE JoinD ( x INT64, z STRING(MAX) ) PRIMARY KEY (x, z)`,
-		`CREATE TABLE JoinE ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
-		`CREATE TABLE JoinF ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
+		`CREATE TABLE JoinA ( w INT64, x STRING(MAX), a STRING(MAX) ) PRIMARY KEY (w, x)`,
+		`CREATE TABLE JoinB ( y INT64, z STRING(MAX), b STRING(MAX) ) PRIMARY KEY (y, z)`,
+		`CREATE TABLE JoinC ( x INT64, y STRING(MAX), c STRING(MAX) ) PRIMARY KEY (x, y)`,
+		`CREATE TABLE JoinD ( x INT64, z STRING(MAX), d STRING(MAX) ) PRIMARY KEY (x, z)`,
+		`CREATE TABLE JoinE ( w INT64, x STRING(MAX), e STRING(MAX) ) PRIMARY KEY (w, x)`,
+		`CREATE TABLE JoinF ( y INT64, z STRING(MAX), f STRING(MAX) ) PRIMARY KEY (y, z)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
 		`CREATE TABLE Updateable (
@@ -676,33 +676,33 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Adams", 52, 4}),
 		spanner.Insert("PlayerStats", []string{"LastName", "OpponentID", "PointsScored"}, []interface{}{"Buchanan", 50, 13}),
 
-		spanner.Insert("JoinA", []string{"w", "x"}, []interface{}{1, "a"}),
-		spanner.Insert("JoinA", []string{"w", "x"}, []interface{}{2, "b"}),
-		spanner.Insert("JoinA", []string{"w", "x"}, []interface{}{3, "c"}),
-		spanner.Insert("JoinA", []string{"w", "x"}, []interface{}{3, "d"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{1, "a", "a1"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{2, "b", "a2"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{3, "c", "a3"}),
+		spanner.Insert("JoinA", []string{"w", "x", "a"}, []interface{}{3, "d", "a4"}),
 
-		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{2, "k"}),
-		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "m"}),
-		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "n"}),
-		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{4, "p"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{2, "k", "b1"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{3, "m", "b2"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{3, "n", "b3"}),
+		spanner.Insert("JoinB", []string{"y", "z", "b"}, []interface{}{4, "p", "b4"}),
 
 		// JoinC and JoinD have the same contents as JoinA and JoinB; they have different column names.
-		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{1, "a"}),
-		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{2, "b"}),
-		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{3, "c"}),
-		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{3, "d"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{1, "a", "c1"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{2, "b", "c2"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{3, "c", "c3"}),
+		spanner.Insert("JoinC", []string{"x", "y", "c"}, []interface{}{3, "d", "c4"}),
 
-		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{2, "k"}),
-		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "m"}),
-		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "n"}),
-		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{4, "p"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{2, "k", "d1"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{3, "m", "d2"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{3, "n", "d3"}),
+		spanner.Insert("JoinD", []string{"x", "z", "d"}, []interface{}{4, "p", "d4"}),
 
 		// JoinE and JoinF are used in the CROSS JOIN test.
-		spanner.Insert("JoinE", []string{"w", "x"}, []interface{}{1, "a"}),
-		spanner.Insert("JoinE", []string{"w", "x"}, []interface{}{2, "b"}),
+		spanner.Insert("JoinE", []string{"w", "x", "e"}, []interface{}{1, "a", "e1"}),
+		spanner.Insert("JoinE", []string{"w", "x", "e"}, []interface{}{2, "b", "e2"}),
 
-		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{2, "c"}),
-		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{3, "d"}),
+		spanner.Insert("JoinF", []string{"y", "z", "f"}, []interface{}{2, "c", "f1"}),
+		spanner.Insert("JoinF", []string{"y", "z", "f"}, []interface{}{3, "d", "f2"}),
 
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
@@ -741,6 +741,20 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Errorf("Updating with DML affected %d rows, want 3", n)
 	}
 
+	rows := client.Single().Query(ctx, spanner.NewStatement("SELECT CAST('Foo' AS INT64)"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid CAST\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
+	rows = client.Single().Query(ctx, spanner.NewStatement("SELECT EXTRACT(INVALID_PART FROM TIMESTAMP('2008-12-25T05:30:00Z')"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid part from EXTRACT\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -748,9 +762,10 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello"`,
+
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64), EXTRACT(DATE FROM TIMESTAMP('2008-12-25T05:30:00Z') AT TIME ZONE 'Europe/Amsterdam'), EXTRACT(YEAR FROM TIMESTAMP('2008-12-25T05:30:00Z')), FARM_FINGERPRINT('test'), MOD(5, 10)`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello")}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil, civil.Date{Year: 2008, Month: 12, Day: 25}, int64(2008), int64(1), int64(5)}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
@@ -837,6 +852,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				{"Jack"},
 				{"Sam"},
+			},
+		},
+		{
+			`SELECT Name FROM Staff WHERE STARTS_WITH(Name, 'Ja')`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
 			},
 		},
 		{
@@ -1004,7 +1026,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		// Joins.
 		{
-			`SELECT * FROM JoinA INNER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w, x, y, z`,
+			`SELECT w, x, y, z FROM JoinA INNER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(2), "b", int64(2), "k"},
@@ -1015,7 +1037,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			`SELECT * FROM JoinE CROSS JOIN JoinF ORDER BY w, x, y, z`,
+			`SELECT w, x, y, z FROM JoinE CROSS JOIN JoinF ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", int64(2), "c"},
@@ -1026,7 +1048,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
-			`SELECT * FROM JoinA FULL OUTER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w IS NULL, w, x, y, z`,
+			`SELECT w, x, y, z FROM JoinA FULL OUTER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w IS NULL, w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", nil, nil},
@@ -1040,7 +1062,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			// Same as the previous, but using a USING clause instead of an ON clause.
-			`SELECT * FROM JoinC FULL OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			`SELECT x, y, z FROM JoinC FULL OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", nil},
@@ -1053,7 +1075,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
+			`SELECT w, x, y, z FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", nil, nil},
@@ -1066,7 +1088,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			// Same as the previous, but using a USING clause instead of an ON clause.
-			`SELECT * FROM JoinC LEFT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			`SELECT x, y, z FROM JoinC LEFT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", nil},
@@ -1079,7 +1101,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
-			`SELECT * FROM JoinA RIGHT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w IS NULL, w, x, y, z`,
+			`SELECT w, x, y, z FROM JoinA RIGHT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w IS NULL, w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(2), "b", int64(2), "k"},
@@ -1091,7 +1113,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			`SELECT * FROM JoinC RIGHT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			`SELECT x, y, z FROM JoinC RIGHT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(2), "b", "k"},
@@ -1100,6 +1122,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(3), "d", "m"},
 				{int64(3), "d", "n"},
 				{int64(4), nil, "p"},
+			},
+		},
+		{
+			`SELECT a, b, c FROM JoinA JOIN JoinB ON JoinA.w = JoinB.y JOIN JoinC ON JoinA.w = JoinC.x WHERE JoinA.w = 2 ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{"a2", "b1", "c2"},
+			},
+		},
+		{
+			`SELECT a, b, c FROM JoinA LEFT JOIN JoinB ON JoinA.w = JoinB.y JOIN JoinC ON JoinC.x = JoinA.w WHERE JoinA.w = 1 OR JoinA.w = 2 ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{"a1", nil, "c1"},
+				{"a2", "b1", "c2"},
 			},
 		},
 		// Check the output of the UPDATE DML.
@@ -1237,6 +1274,202 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	if failures > 0 {
 		t.Logf("%d queries failed", failures)
+	}
+}
+
+func TestIntegration_GeneratedColumns(t *testing.T) {
+	client, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	tableName := "SongWriters"
+	err := updateDDL(t, adminClient,
+		`CREATE TABLE `+tableName+` (
+			Name STRING(50) NOT NULL,
+			NumSongs INT64,
+			CreatedAT TIMESTAMP,
+			CreatedDate DATE,
+			EstimatedSales INT64 NOT NULL,
+			CanonicalName STRING(50) AS (LOWER(Name)) STORED,
+			GeneratedCreatedDate DATE AS (EXTRACT(DATE FROM CreatedAT AT TIME ZONE "CET")) STORED,
+			GeneratedCreatedDay INT64 AS (EXTRACT(DAY FROM CreatedDate)) STORED,
+		) PRIMARY KEY (Name)`)
+	if err != nil {
+		t.Fatalf("Setting up fresh table: %v", err)
+	}
+	err = updateDDL(t, adminClient,
+		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales INT64 AS (NumSongs * EstimatedSales) STORED`)
+	if err != nil {
+		t.Fatalf("Adding new column: %v", err)
+	}
+
+	// Insert some data.
+	d1, _ := civil.ParseDate("2016-11-15")
+	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Average Writer", 10, 10, t1, d1}),
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Great Writer", 100, t1, d1}),
+		spanner.Insert(tableName,
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Poor Writer", 1, 50, t1, d1}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	err = updateDDL(t, adminClient,
+		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales2 INT64 AS (NumSongs * EstimatedSales) STORED`)
+	if err != nil {
+		t.Fatalf("Failed to add a generated column to a non-empty table: %v", err)
+	}
+
+	ri := client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales, GeneratedCreatedDate, GeneratedCreatedDay FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err := slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// Great writer has nil because NumSongs is nil
+	want := [][]interface{}{
+		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+
+	// Test modifying the generated values and nulling one
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Average Writer", 50}),
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Great Writer", 10}),
+		spanner.Update(tableName,
+			[]string{"Name", "NumSongs"},
+			[]interface{}{"Poor Writer", nil}),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	ri = client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err = slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// poor writer has nil because NumSongs is nil
+	want = [][]interface{}{
+		{"average writer", int64(500)},
+		{"great writer", int64(1000)},
+		{"poor writer", nil},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+
+	// Delete Poor Writer.
+	_, err = client.Apply(ctx, []*spanner.Mutation{
+		spanner.Delete(tableName, spanner.KeySetFromKeys(spanner.Key{"Poor Writer"})),
+	})
+	if err != nil {
+		t.Fatalf("Applying mutations: %v", err)
+	}
+
+	ri = client.Single().Query(ctx, spanner.NewStatement(
+		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+	))
+	all, err = slurpRows(t, ri)
+	if err != nil {
+		t.Errorf("Read rows failed: %v", err)
+	}
+
+	// Poor Writer should no longer be in the result.
+	want = [][]interface{}{
+		{"average writer", int64(500)},
+		{"great writer", int64(1000)},
+	}
+	if !reflect.DeepEqual(all, want) {
+		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+}
+
+func TestIntegration_Views(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	err := updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers`)
+	if err != nil {
+		t.Fatalf("Creating view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if g, w := spanner.ErrCode(err), codes.AlreadyExists; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+	err = updateDDL(t, adminClient, `CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if err != nil {
+		t.Fatalf("Replacing view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if err != nil {
+		t.Fatalf("Dropping view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if g, w := spanner.ErrCode(err), codes.NotFound; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestIntegration_RowDeletionPolicy(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE WithRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id), ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`,
+		`CREATE TABLE WithoutRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id)`); err != nil {
+		t.Fatalf("Create tables: %v", err)
+	}
+	// These should succeed.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Replacing row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY`); err != nil {
+		t.Fatalf("Dropping row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Adding row deletion policy: %v", err)
+	}
+
+	// These should fail.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for replacing row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy DROP ROW DELETION POLICY`); err == nil {
+		t.Fatalf("Missing error for dropping row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for adding row deletion policy")
 	}
 }
 

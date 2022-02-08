@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux && go1.10
 // +build linux,go1.10
 
 package dwarf_test

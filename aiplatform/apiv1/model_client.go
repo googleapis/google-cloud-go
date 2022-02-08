@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ func defaultModelGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -167,8 +166,10 @@ func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateM
 }
 
 // DeleteModel deletes a Model.
-// Note: Model can only be deleted if there are no DeployedModels created
-// from it.
+//
+// A model cannot be deleted if any Endpoint resource has a
+// DeployedModel based on the model in its
+// deployed_models field.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -179,7 +180,7 @@ func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return c.internalClient.DeleteModelOperation(name)
 }
 
-// ExportModel exports a trained, exportable, Model to a location specified by the
+// ExportModel exports a trained, exportable Model to a location specified by the
 // user. A Model is considered to be exportable if it has at least one
 // [supported export format][google.cloud.aiplatform.v1.Model.supported_export_formats].
 func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
@@ -309,11 +310,6 @@ func (c *modelGRPCClient) Close() error {
 }
 
 func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.UploadModelRequest, opts ...gax.CallOption) (*UploadModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UploadModel[0:len((*c.CallOptions).UploadModel):len((*c.CallOptions).UploadModel)], opts...)
@@ -332,11 +328,6 @@ func (c *modelGRPCClient) UploadModel(ctx context.Context, req *aiplatformpb.Upl
 }
 
 func (c *modelGRPCClient) GetModel(ctx context.Context, req *aiplatformpb.GetModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
@@ -397,11 +388,6 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *aiplatformpb.List
 }
 
 func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
@@ -418,11 +404,6 @@ func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.Upd
 }
 
 func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
@@ -441,11 +422,6 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.Del
 }
 
 func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportModel[0:len((*c.CallOptions).ExportModel):len((*c.CallOptions).ExportModel)], opts...)
@@ -464,11 +440,6 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 }
 
 func (c *modelGRPCClient) GetModelEvaluation(ctx context.Context, req *aiplatformpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetModelEvaluation[0:len((*c.CallOptions).GetModelEvaluation):len((*c.CallOptions).GetModelEvaluation)], opts...)
@@ -529,11 +500,6 @@ func (c *modelGRPCClient) ListModelEvaluations(ctx context.Context, req *aiplatf
 }
 
 func (c *modelGRPCClient) GetModelEvaluationSlice(ctx context.Context, req *aiplatformpb.GetModelEvaluationSliceRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetModelEvaluationSlice[0:len((*c.CallOptions).GetModelEvaluationSlice):len((*c.CallOptions).GetModelEvaluationSlice)], opts...)

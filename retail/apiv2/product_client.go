@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ func defaultProductGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -75,7 +74,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -87,7 +86,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -99,7 +98,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -111,7 +110,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -123,7 +122,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -135,7 +134,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        300000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -147,7 +146,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -159,7 +158,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -171,7 +170,7 @@ func defaultProductCallOptions() *ProductCallOptions {
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -480,7 +479,7 @@ func (c *productGRPCClient) Close() error {
 
 func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -501,7 +500,7 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 
 func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -566,7 +565,7 @@ func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.List
 
 func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -587,7 +586,7 @@ func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.Upd
 
 func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -604,7 +603,7 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 
 func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -627,7 +626,7 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 
 func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetInventoryRequest, opts ...gax.CallOption) (*SetInventoryOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -650,7 +649,7 @@ func (c *productGRPCClient) SetInventory(ctx context.Context, req *retailpb.SetI
 
 func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retailpb.AddFulfillmentPlacesRequest, opts ...gax.CallOption) (*AddFulfillmentPlacesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -673,7 +672,7 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 
 func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *retailpb.RemoveFulfillmentPlacesRequest, opts ...gax.CallOption) (*RemoveFulfillmentPlacesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

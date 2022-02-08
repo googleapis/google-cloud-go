@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,15 @@ func ExampleImagesClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteImageRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleImagesClient_Deprecate() {
@@ -68,12 +71,15 @@ func ExampleImagesClient_Deprecate() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeprecateImageRequest.
 	}
-	resp, err := c.Deprecate(ctx, req)
+	op, err := c.Deprecate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleImagesClient_Get() {
@@ -148,12 +154,15 @@ func ExampleImagesClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertImageRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleImagesClient_List() {
@@ -194,12 +203,15 @@ func ExampleImagesClient_Patch() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchImageRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleImagesClient_SetIamPolicy() {
@@ -234,12 +246,15 @@ func ExampleImagesClient_SetLabels() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsImageRequest.
 	}
-	resp, err := c.SetLabels(ctx, req)
+	op, err := c.SetLabels(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleImagesClient_TestIamPermissions() {

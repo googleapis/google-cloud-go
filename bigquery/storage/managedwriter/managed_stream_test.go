@@ -17,8 +17,10 @@ package managedwriter
 import (
 	"context"
 	"testing"
+	"time"
 
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"github.com/googleapis/gax-go/v2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -55,7 +57,7 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		ms := &ManagedStream{
 			ctx: context.Background(),
-			open: func(s string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -107,7 +109,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 
 	ms := &ManagedStream{
 		ctx: ctx,
-		open: func(s string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		open: func(s string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			testARC.openCount = testARC.openCount + 1
 			return testARC, nil
 		},
@@ -126,7 +128,7 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	wantReqs := 3
 
 	for i := 0; i < wantReqs; i++ {
-		_, err := ms.AppendRows(ctx, fakeData, NoStreamOffset)
+		_, err := ms.AppendRows(ctx, fakeData, WithOffset(int64(i)))
 		if err != nil {
 			t.Errorf("AppendRows; %v", err)
 		}
@@ -143,6 +145,14 @@ func TestManagedStream_FirstAppendBehavior(t *testing.T) {
 	for k, v := range testARC.requests {
 		if v == nil {
 			t.Errorf("request %d was nil", k)
+		}
+		if v.GetOffset() == nil {
+			t.Errorf("request %d had no offset", k)
+		} else {
+			gotOffset := v.GetOffset().GetValue()
+			if gotOffset != int64(k) {
+				t.Errorf("request %d wanted offset %d, got %d", k, k, gotOffset)
+			}
 		}
 		if k == 0 {
 			if v.GetTraceId() == "" {
@@ -183,4 +193,36 @@ func (tarc *testAppendRowsClient) Send(req *storagepb.AppendRowsRequest) error {
 
 func (tarc *testAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
 	return tarc.recvF()
+}
+
+func TestManagedStream_FlowControllerFailure(t *testing.T) {
+
+	ctx := context.Background()
+
+	// create a flowcontroller with 1 inflight message allowed, and exhaust it.
+	fc := newFlowController(1, 0)
+	fc.acquire(ctx, 0)
+
+	// Construct a skeleton ManagedStream.  This doesn't include an ARC or open func
+	// because this test should never invoke it.
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             fc,
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+		[]byte("bar"),
+	}
+
+	// Create a context that will expire during the append.
+	// This is expected to surface a flowcontroller error, as there's no
+	// capacity.
+	expireCtx, _ := context.WithTimeout(ctx, 100*time.Millisecond)
+	_, err := ms.AppendRows(expireCtx, fakeData)
+	if err == nil {
+		t.Errorf("expected AppendRows to error, but it succeeded")
+	}
+
 }

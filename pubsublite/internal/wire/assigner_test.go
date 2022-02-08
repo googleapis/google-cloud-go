@@ -16,7 +16,6 @@ package wire
 import (
 	"context"
 	"errors"
-	"sort"
 	"testing"
 	"time"
 
@@ -46,9 +45,7 @@ func TestPartitionSet(t *testing.T) {
 		}
 	}
 
-	gotPartitions := partitions.Ints()
-	sort.Ints(gotPartitions)
-	if !testutil.Equal(gotPartitions, wantPartitions) {
+	if gotPartitions := partitions.SortedInts(); !testutil.Equal(gotPartitions, wantPartitions) {
 		t.Errorf("Ints() got %v, want %v", gotPartitions, wantPartitions)
 	}
 }
@@ -91,9 +88,8 @@ func newTestAssigner(t *testing.T, subscription string, recvErr error) *testAssi
 	return ta
 }
 
-func (ta *testAssigner) receiveAssignment(partitions partitionSet) error {
-	p := partitions.Ints()
-	sort.Ints(p)
+func (ta *testAssigner) receiveAssignment(partitions PartitionSet) error {
+	p := partitions.SortedInts()
 	ta.partitions <- p
 
 	if ta.recvError != nil {

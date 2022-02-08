@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,6 +55,7 @@ type CallOptions struct {
 	ListAssignments          []gax.CallOption
 	DeleteAssignment         []gax.CallOption
 	SearchAssignments        []gax.CallOption
+	SearchAllAssignments     []gax.CallOption
 	MoveAssignment           []gax.CallOption
 	GetBiReservation         []gax.CallOption
 	UpdateBiReservation      []gax.CallOption
@@ -67,7 +68,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigqueryreservation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -190,7 +190,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		MoveAssignment: []gax.CallOption{},
+		SearchAllAssignments: []gax.CallOption{},
+		MoveAssignment:       []gax.CallOption{},
 		GetBiReservation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -228,6 +229,7 @@ type internalClient interface {
 	ListAssignments(context.Context, *reservationpb.ListAssignmentsRequest, ...gax.CallOption) *AssignmentIterator
 	DeleteAssignment(context.Context, *reservationpb.DeleteAssignmentRequest, ...gax.CallOption) error
 	SearchAssignments(context.Context, *reservationpb.SearchAssignmentsRequest, ...gax.CallOption) *AssignmentIterator
+	SearchAllAssignments(context.Context, *reservationpb.SearchAllAssignmentsRequest, ...gax.CallOption) *AssignmentIterator
 	MoveAssignment(context.Context, *reservationpb.MoveAssignmentRequest, ...gax.CallOption) (*reservationpb.Assignment, error)
 	GetBiReservation(context.Context, *reservationpb.GetBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
 	UpdateBiReservation(context.Context, *reservationpb.UpdateBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
@@ -389,6 +391,11 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 //   project2) could all be created and mapped to the same or different
 //   reservations.
 //
+// “None” assignments represent an absence of the assignment. Projects
+// assigned to None use on-demand pricing. To create a “None” assignment, use
+// “none” as a reservation_id in the parent. Example parent:
+// projects/myproject/locations/US/reservations/none.
+//
 // Returns google.rpc.Code.PERMISSION_DENIED if user does not have
 // ‘bigquery.admin’ permissions on the project using the reservation
 // and the project that owns this reservation.
@@ -447,7 +454,7 @@ func (c *Client) DeleteAssignment(ctx context.Context, req *reservationpb.Delete
 	return c.internalClient.DeleteAssignment(ctx, req, opts...)
 }
 
-// SearchAssignments looks up assignments for a specified resource for a particular region.
+// SearchAssignments deprecated: Looks up assignments for a specified resource for a particular region.
 // If the request is about a project:
 //
 // Assignments created on the project will be returned if they exist.
@@ -474,8 +481,38 @@ func (c *Client) DeleteAssignment(ctx context.Context, req *reservationpb.Delete
 //
 // Note "-" cannot be used for projects
 // nor locations.
+//
+// Deprecated: SearchAssignments may be removed in a future version.
 func (c *Client) SearchAssignments(ctx context.Context, req *reservationpb.SearchAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
 	return c.internalClient.SearchAssignments(ctx, req, opts...)
+}
+
+// SearchAllAssignments looks up assignments for a specified resource for a particular region.
+// If the request is about a project:
+//
+// Assignments created on the project will be returned if they exist.
+//
+// Otherwise assignments created on the closest ancestor will be
+// returned.
+//
+// Assignments for different JobTypes will all be returned.
+//
+// The same logic applies if the request is about a folder.
+//
+// If the request is about an organization, then assignments created on the
+// organization will be returned (organization doesn’t have ancestors).
+//
+// Comparing to ListAssignments, there are some behavior
+// differences:
+//
+// permission on the assignee will be verified in this API.
+//
+// Hierarchy lookup (project->folder->organization) happens in this API.
+//
+// Parent here is projects/*/locations/*, instead of
+// projects/*/locations/*reservations/*.
+func (c *Client) SearchAllAssignments(ctx context.Context, req *reservationpb.SearchAllAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
+	return c.internalClient.SearchAllAssignments(ctx, req, opts...)
 }
 
 // MoveAssignment moves an assignment under a new reservation.
@@ -600,7 +637,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) CreateReservation(ctx context.Context, req *reservationpb.CreateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -665,7 +702,7 @@ func (c *gRPCClient) ListReservations(ctx context.Context, req *reservationpb.Li
 
 func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -686,7 +723,7 @@ func (c *gRPCClient) GetReservation(ctx context.Context, req *reservationpb.GetR
 
 func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.DeleteReservationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -703,7 +740,7 @@ func (c *gRPCClient) DeleteReservation(ctx context.Context, req *reservationpb.D
 
 func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.UpdateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -724,7 +761,7 @@ func (c *gRPCClient) UpdateReservation(ctx context.Context, req *reservationpb.U
 
 func (c *gRPCClient) CreateCapacityCommitment(ctx context.Context, req *reservationpb.CreateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -789,7 +826,7 @@ func (c *gRPCClient) ListCapacityCommitments(ctx context.Context, req *reservati
 
 func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservationpb.GetCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -810,7 +847,7 @@ func (c *gRPCClient) GetCapacityCommitment(ctx context.Context, req *reservation
 
 func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservationpb.DeleteCapacityCommitmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -827,7 +864,7 @@ func (c *gRPCClient) DeleteCapacityCommitment(ctx context.Context, req *reservat
 
 func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservationpb.UpdateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -848,7 +885,7 @@ func (c *gRPCClient) UpdateCapacityCommitment(ctx context.Context, req *reservat
 
 func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservationpb.SplitCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.SplitCapacityCommitmentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -869,7 +906,7 @@ func (c *gRPCClient) SplitCapacityCommitment(ctx context.Context, req *reservati
 
 func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservationpb.MergeCapacityCommitmentsRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -890,7 +927,7 @@ func (c *gRPCClient) MergeCapacityCommitments(ctx context.Context, req *reservat
 
 func (c *gRPCClient) CreateAssignment(ctx context.Context, req *reservationpb.CreateAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -955,7 +992,7 @@ func (c *gRPCClient) ListAssignments(ctx context.Context, req *reservationpb.Lis
 
 func (c *gRPCClient) DeleteAssignment(ctx context.Context, req *reservationpb.DeleteAssignmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1014,9 +1051,53 @@ func (c *gRPCClient) SearchAssignments(ctx context.Context, req *reservationpb.S
 	return it
 }
 
+func (c *gRPCClient) SearchAllAssignments(ctx context.Context, req *reservationpb.SearchAllAssignmentsRequest, opts ...gax.CallOption) *AssignmentIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SearchAllAssignments[0:len((*c.CallOptions).SearchAllAssignments):len((*c.CallOptions).SearchAllAssignments)], opts...)
+	it := &AssignmentIterator{}
+	req = proto.Clone(req).(*reservationpb.SearchAllAssignmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*reservationpb.Assignment, string, error) {
+		resp := &reservationpb.SearchAllAssignmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.SearchAllAssignments(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAssignments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1037,7 +1118,7 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 
 func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1058,7 +1139,7 @@ func (c *gRPCClient) GetBiReservation(ctx context.Context, req *reservationpb.Ge
 
 func (c *gRPCClient) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
