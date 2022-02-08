@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/documentai/v1.1.0...documentai/v1.2.0) (2022-02-08)
+
+
+### Features
+
+* **documentai:** add question_id field in ReviewDocumentOperationMetadata ([2fae584](https://www.github.com/googleapis/google-cloud-go/commit/2fae584d01fad2f693b165a95c18d4fb8bf062bf))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/documentai/v1.0.1...documentai/v1.1.0) (2022-02-03)
 
 
