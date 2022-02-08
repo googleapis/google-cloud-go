@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.1.0...video/v1.2.0) (2022-02-08)
+
+
+### Features
+
+* **video/transcoder:** remove apiv1beta1, turned down ([#5467](https://www.github.com/googleapis/google-cloud-go/issues/5467)) ([917d8d2](https://www.github.com/googleapis/google-cloud-go/commit/917d8d255906ea505cb674302870e031e5eff517))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.1...video/v1.1.0) (2022-01-25)
 
 
