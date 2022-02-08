@@ -1,5 +1,17 @@
 # Changes
 
+## [1.28.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.27.0...bigquery/v1.28.0) (2022-02-08)
+
+
+### Features
+
+* **bigquery/datatransfer:** add owner email to TransferConfig message feat: allow customer to enroll a datasource programmatically docs: improvements to various message and field descriptions ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** address possible panic due to flow ([#5436](https://www.github.com/googleapis/google-cloud-go/issues/5436)) ([50c6e38](https://www.github.com/googleapis/google-cloud-go/commit/50c6e38c2798b3d4f2a9560239753ecd04502273))
+
 ## [1.27.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.26.0...bigquery/v1.27.0) (2022-01-24)
 
 
