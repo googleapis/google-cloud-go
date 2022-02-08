@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.6.0...datastore/v1.7.0) (2022-02-08)
+
+
+### Features
+
+* **datastore/admin:** define Datastore -> Firestore in Datastore mode migration long running operation metadata ([d9a0634](https://www.github.com/googleapis/google-cloud-go/commit/d9a0634042265f8c247e7dcbd8b85323a83c7235))
+
 ## [1.6.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.5.0...datastore/v1.6.0) (2021-09-17)
 
 
