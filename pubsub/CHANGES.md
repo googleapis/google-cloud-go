@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.1...pubsub/v1.18.0) (2022-02-08)
+
+
+### Features
+
+* **pubsub:** add exactly once delivery flag ([f71dc3d](https://www.github.com/googleapis/google-cloud-go/commit/f71dc3dfefa54ab41861aea15971108850a9f98b))
+* **pubsub:** add exactly once delivery flag ([f71dc3d](https://www.github.com/googleapis/google-cloud-go/commit/f71dc3dfefa54ab41861aea15971108850a9f98b))
+
+
+### Bug Fixes
+
+* **pubsub:** add deadletter and retries handling in the fake pubsub ([#5320](https://www.github.com/googleapis/google-cloud-go/issues/5320)) ([116a610](https://www.github.com/googleapis/google-cloud-go/commit/116a61008e174e5d49b9485d78bc13f64461322f))
+* **pubsub:** pass context into checkOrdering to allow cancel ([#5316](https://www.github.com/googleapis/google-cloud-go/issues/5316)) ([fc08c49](https://www.github.com/googleapis/google-cloud-go/commit/fc08c49fc013cbad00642bbba317e02f0ba15a6d))
+
 ### [1.17.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.0...pubsub/v1.17.1) (2021-10-25)
 
 
