@@ -1,5 +1,22 @@
 # Changes
 
+## [2.0.0](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.2...logging/v2.0.0) (2022-02-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* **logging:** increase DefaultEntryByteThreshold to 8Mb (#4247)
+
+### Features
+
+* **logging:** increase DefaultEntryByteThreshold to 8Mb ([#4247](https://www.github.com/googleapis/google-cloud-go/issues/4247)) ([f32dd72](https://www.github.com/googleapis/google-cloud-go/commit/f32dd72ec6af8ac7fbdce68f7913baa552fb0d2d))
+
+
+### Bug Fixes
+
+* **logging:** remove instance_name resource label ([#5461](https://www.github.com/googleapis/google-cloud-go/issues/5461)) ([115385f](https://www.github.com/googleapis/google-cloud-go/commit/115385f066ee54cf35a093749bc2673a17b3fa08))
+* **logging:** Support numbers when unmarshaling Severity ([#4216](https://www.github.com/googleapis/google-cloud-go/issues/4216)) ([a08b97d](https://www.github.com/googleapis/google-cloud-go/commit/a08b97df5de0ae14c1d7e2653ecf219956919857))
+
 ### [1.4.2](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.1...logging/v1.4.2) (2021-05-20)
 
 
