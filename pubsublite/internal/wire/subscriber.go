@@ -166,7 +166,7 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
 		metadata:     newPubsubMetadata(),
 	}
-	s.stream = newRetryableStream(ctx, s, settings.Timeout, reflect.TypeOf(pb.SubscribeResponse{}))
+	s.stream = newRetryableStream(ctx, s, settings.Timeout, streamIdleTimeout(settings.Timeout), reflect.TypeOf(pb.SubscribeResponse{}))
 	s.metadata.AddSubscriptionRoutingMetadata(s.subscription)
 	s.metadata.AddClientInfo(settings.Framework)
 
