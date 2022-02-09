@@ -1,5 +1,58 @@
 # Changes
 
+## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.100.0...v1.0.0) (2022-02-09)
+
+
+### Features
+
+* **accesscontextmanager:** to v1 ([#5136](https://www.github.com/googleapis/google-cloud-go/issues/5136)) ([d1497e0](https://www.github.com/googleapis/google-cloud-go/commit/d1497e03746301530bfec1ce389c0ad34c7db3b4))
+* **aiplatform:** add dedicated_resources to DeployedIndex message in aiplatform v1 index_endpoint.proto chore: sort imports ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+* **artifactregistry:** add APIs for importing and uploading Apt and Yum artifacts feat: add version policy support for Maven repositories feat: add order_by support for listing versions fix!: mark a few resource name fields as required ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+* **automl:** publish updated protos for cloud/automl/v1 service fix!: One of the fields now have field_behavior as REQUIRED in cloud/automl/v1 service definition. ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **channel:** Change description for enum default value ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+* **channel:** Change description for GCP ProvisionedService.provisioning_id value feat: Update year from 2021 to 2022 ([2fae584](https://www.github.com/googleapis/google-cloud-go/commit/2fae584d01fad2f693b165a95c18d4fb8bf062bf))
+* **compute:** regen compute for LRO helpers ([#5431](https://www.github.com/googleapis/google-cloud-go/issues/5431)) ([95d3609](https://www.github.com/googleapis/google-cloud-go/commit/95d3609b7b9ec917e48b8dfbc18875dfed378c1b))
+* **compute:** release 1.0.0 ([#5328](https://www.github.com/googleapis/google-cloud-go/issues/5328)) ([5437c12](https://www.github.com/googleapis/google-cloud-go/commit/5437c12945595325f7df098f707b2691cc8011be))
+* **compute:** remove BETA language on Compute V1 ([#697](https://www.github.com/googleapis/google-cloud-go/issues/697)) ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **contactcenterinsights:** to v1 ([#5137](https://www.github.com/googleapis/google-cloud-go/issues/5137)) ([7618f2a](https://www.github.com/googleapis/google-cloud-go/commit/7618f2af910bc32e293c5b80f6d897adfd6f0ad5))
+* **datafusion:** publish updated definitions for cloud/datafusion/v1 and cloud/datafusion/v1beta1 fix!: multiple fields now have field_behavior REQUIRED in cloud/datafusion/v1 service definition fix!: multiple fields now have field_behavior REQUIRED in cloud/datafusion/v1beta1 service definition ([a811e30](https://www.github.com/googleapis/google-cloud-go/commit/a811e309e60091b15d0a7a3c12a61d5bd0c3b7a4))
+* **dataplex:** start generating apiv1 ([#5409](https://www.github.com/googleapis/google-cloud-go/issues/5409)) ([2a2d572](https://www.github.com/googleapis/google-cloud-go/commit/2a2d572743e71d5381f6a67467782fe6416d855c))
+* **deploy:** to v1 ([#5140](https://www.github.com/googleapis/google-cloud-go/issues/5140)) ([74c389e](https://www.github.com/googleapis/google-cloud-go/commit/74c389e26c1ce8b0ce9ede7b298c6a8a9d106094))
+* **dialogflow:** added conversation process config, ImportDocument and SuggestSmartReplies API ([f560b1e](https://www.github.com/googleapis/google-cloud-go/commit/f560b1ed0263956ef84fbf2fbf34bdc66dbc0a88))
+* **documentai:** add question_id field in ReviewDocumentOperationMetadata ([2fae584](https://www.github.com/googleapis/google-cloud-go/commit/2fae584d01fad2f693b165a95c18d4fb8bf062bf))
+* **documentai:** add question_id field in ReviewDocumentOperationMetadata ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+* **eventarc/publishing:** start generating apiv1 ([#5358](https://www.github.com/googleapis/google-cloud-go/issues/5358)) ([0da1a9d](https://www.github.com/googleapis/google-cloud-go/commit/0da1a9d4e2d3dd0fab07c3ed09eaeeb3f9711900))
+* **eventarc:** Add Channel and ChannelConnection resources ([7f48e6b](https://www.github.com/googleapis/google-cloud-go/commit/7f48e6b68e59812208ea87b7861fad60169dc63a))
+* **filestore:** to v1 ([#5139](https://www.github.com/googleapis/google-cloud-go/issues/5139)) ([6b879a0](https://www.github.com/googleapis/google-cloud-go/commit/6b879a0c3ffad7bdcfc158b7ce5806fc3284ad30))
+* **kms:** add a new EkmService API ([7f48e6b](https://www.github.com/googleapis/google-cloud-go/commit/7f48e6b68e59812208ea87b7861fad60169dc63a))
+* **networkconnectivity:** to v1 ([#5141](https://www.github.com/googleapis/google-cloud-go/issues/5141)) ([09d692b](https://www.github.com/googleapis/google-cloud-go/commit/09d692bf0f30f6d0aa282e2ad9bc6923f51c31fa))
+* **orchestration/airflow/service:** to v1 ([#5138](https://www.github.com/googleapis/google-cloud-go/issues/5138)) ([5fda0bc](https://www.github.com/googleapis/google-cloud-go/commit/5fda0bccc5b68a5bc00c71bad6b032bd0708ae96))
+* **redis:** Add automated RDB (AKA persistence) ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+* **secretmanager:** Checksums in Secret Manager ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+* **video/transcoder:** remove apiv1beta1, turned down ([#5467](https://www.github.com/googleapis/google-cloud-go/issues/5467)) ([917d8d2](https://www.github.com/googleapis/google-cloud-go/commit/917d8d255906ea505cb674302870e031e5eff517))
+* **video:** start generating livestream apiv1 ([#5404](https://www.github.com/googleapis/google-cloud-go/issues/5404)) ([2b6770d](https://www.github.com/googleapis/google-cloud-go/commit/2b6770d762897c84e653973e989d95c0371b89ad))
+
+
+### Bug Fixes
+
+* **apigateway:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **artifactregistry:** add missing HTTP rules to service config ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **asset:** add service_yaml to php_gapic_library targets ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **automl:** proto field markdown comment for the display_name field in annotation_payload.proto to point the correct public v1/ version fix: Add back java_multiple_files option to the text_sentiment.proto to match with the previous published version of text_sentiment proto ([5255bbb](https://www.github.com/googleapis/google-cloud-go/commit/5255bbbb92c45453e9446e03f1d4acb14ac07f12))
+* **compute/metadata:** init a HTTP client in OnGCE check ([#5439](https://www.github.com/googleapis/google-cloud-go/issues/5439)) ([76c6e40](https://www.github.com/googleapis/google-cloud-go/commit/76c6e40171b2f032913549c95396cd8d44fbd7f5)), refs [#5430](https://www.github.com/googleapis/google-cloud-go/issues/5430)
+* **containeranalysis:** fix docs and closing of client. ([#5220](https://www.github.com/googleapis/google-cloud-go/issues/5220)) ([e6d4b8d](https://www.github.com/googleapis/google-cloud-go/commit/e6d4b8dd29a514bae202c66abd77817db9eb52c8)), refs [#5217](https://www.github.com/googleapis/google-cloud-go/issues/5217)
+* **datalabeling:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **documentai:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **iam:** run formatter ([#5277](https://www.github.com/googleapis/google-cloud-go/issues/5277)) ([8682e4e](https://www.github.com/googleapis/google-cloud-go/commit/8682e4ed57a4428a659fbc225f56c91767e2a4a9))
+* **iap:** remove unpublished service from service config ([6e56077](https://www.github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+* **internal/gapicgen:** move breaking change indicator if present ([#5452](https://www.github.com/googleapis/google-cloud-go/issues/5452)) ([e712df5](https://www.github.com/googleapis/google-cloud-go/commit/e712df5ebb45598a1653081d7e11e578bad22ff8))
+* **internal/godocfx:** prevent errors for filtered mods ([#5485](https://www.github.com/googleapis/google-cloud-go/issues/5485)) ([6cb9b89](https://www.github.com/googleapis/google-cloud-go/commit/6cb9b89b2d654c695eab00d8fb375cce0cd6e059))
+* **managedidentities:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **redis:** [Cloud Memorystore for Redis] Add missing fields for TLS and Maintenance Window features ([a811e30](https://www.github.com/googleapis/google-cloud-go/commit/a811e309e60091b15d0a7a3c12a61d5bd0c3b7a4))
+* **talent:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **workflows:** add ancillary service bindings to service_yaml ([3bbe8c0](https://www.github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **workflows:** add service_yaml and grpc_service_config to php_gapic_library target for workflows ([a811e30](https://www.github.com/googleapis/google-cloud-go/commit/a811e309e60091b15d0a7a3c12a61d5bd0c3b7a4))
+
 ## [0.100.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.99.0...v0.100.0) (2022-01-04)
 
 
