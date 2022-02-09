@@ -1,8 +1,10 @@
 {
   "release-type": "go-yoshi",
-  "separate-pull-requests": false,
+  "separate-pull-requests": true,
   "include-component-in-tag": false,
   "packages": {
-    ".": {}
+    ".": {
+      "component": "main"
+    }
   }
 }
