@@ -849,14 +849,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/video/transcoder/v1beta1",
-		pkg:                   "transcoder",
-		importPath:            "cloud.google.com/go/video/transcoder/apiv1beta1",
-		gRPCServiceConfigPath: "transcoder_grpc_service_config.json",
-		apiServiceConfigPath:  "transcoder_v1beta1.yaml",
-		releaseLevel:          "beta",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/workflows/v1beta",
 		pkg:                   "workflows",
 		importPath:            "cloud.google.com/go/workflows/apiv1beta",
