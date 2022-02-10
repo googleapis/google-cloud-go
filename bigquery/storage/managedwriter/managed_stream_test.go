@@ -321,7 +321,7 @@ func TestManagedStream_LeakingGoroutines(t *testing.T) {
 		ms.AppendRows(expireCtx, fakeData)
 		if i%50 == 0 {
 			if current := runtime.NumGoroutine(); current > threshold {
-				t.Errorf("potential goroutine line at append %d: current %d, threshold %d", i, current, threshold)
+				t.Errorf("potential goroutine leak, append %d: current %d, threshold %d", i, current, threshold)
 			}
 		}
 	}
