@@ -15,14 +15,66 @@
 package metadata
 
 import (
+	"bufio"
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"testing"
 )
+
+type testHTTPClient struct {
+	rsp *http.Response
+	err error
+}
+
+func (c *testHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return c.rsp, c.err
+}
+
+func TestSetHTTPClient(t *testing.T) {
+	rawRsp := "HTTP/1.0 200 OK\r\n" + "Connection: close\r\n" + "\r\n" + "YOU GOT IT RIGHT\n"
+	resp, err := http.ReadResponse(bufio.NewReader(strings.NewReader(rawRsp)), &http.Request{Method: "GET"})
+	if err != nil {
+		t.Errorf("TestSetHTTPClient got unexpected error when reading raw data to response :%v", err)
+		return
+	}
+
+	tests := []struct {
+		desc    string
+		rsp     *http.Response
+		err     error
+		want    string
+		wantErr string
+	}{
+		{
+			desc: "Respond correctly",
+			rsp:  resp,
+			err:  nil,
+			want: "YOU GOT IT RIGHT",
+		},
+		{
+			desc:    "Got an error",
+			err:     fmt.Errorf("Can't connect to endpoint"),
+			wantErr: "Can't connect to endpoint",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.desc, func(t *testing.T) {
+			client := &testHTTPClient{rsp: tc.rsp, err: tc.err}
+			SetHTTPClient(client)
+			if got, err := Get("anything"); got != tc.want || err.Error() != tc.wantErr {
+				t.Errorf("TestSetHTTPClient got unexpected result, got:%s, want:%s, err:%v, wantErr:%s", got, tc.want, err, tc.wantErr)
+			}
+		})
+	}
+	ResetToDefaultHTTPClient()
+}
 
 func TestOnGCE_Stress(t *testing.T) {
 	if testing.Short() {
