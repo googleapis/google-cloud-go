@@ -291,6 +291,46 @@ func ExampleClient_ListEntries() {
 	}
 }
 
+func ExampleClient_ModifyEntryOverview() {
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datacatalogpb.ModifyEntryOverviewRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ModifyEntryOverviewRequest.
+	}
+	resp, err := c.ModifyEntryOverview(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ModifyEntryContacts() {
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datacatalogpb.ModifyEntryContactsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#ModifyEntryContactsRequest.
+	}
+	resp, err := c.ModifyEntryContacts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateTagTemplate() {
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
@@ -549,6 +589,46 @@ func ExampleClient_ListTags() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleClient_StarEntry() {
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datacatalogpb.StarEntryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#StarEntryRequest.
+	}
+	resp, err := c.StarEntry(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UnstarEntry() {
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datacatalogpb.UnstarEntryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/datacatalog/v1#UnstarEntryRequest.
+	}
+	resp, err := c.UnstarEntry(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_SetIamPolicy() {
