@@ -1,6 +1,6 @@
 module cloud.google.com/go/pubsub
 
-go 1.11
+go 1.15
 
 require (
 	cloud.google.com/go v0.100.2
@@ -14,7 +14,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/time v0.0.0-20211116232009-f0f3c7e86c11
 	google.golang.org/api v0.67.0
-	google.golang.org/genproto v0.0.0-20220207164111-0872dc986b00
-	google.golang.org/grpc v1.40.1
+	google.golang.org/genproto v0.0.0-20220208230804-65c12eb4c068
+	google.golang.org/grpc v1.44.0
 	google.golang.org/protobuf v1.27.1
 )
