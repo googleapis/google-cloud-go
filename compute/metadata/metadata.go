@@ -61,7 +61,8 @@ var (
 	instID  = &cachedValue{k: "instance/id", trim: true}
 )
 
-var defaultClient = &Client{hc: newDefaultHTTPClient()}
+var defaultHTTPClient = newDefaultHTTPClient()
+var defaultClient = &Client{hc: defaultHTTPClient}
 
 func newDefaultHTTPClient() *http.Client {
 	return &http.Client{
@@ -72,6 +73,21 @@ func newDefaultHTTPClient() *http.Client {
 			}).Dial,
 		},
 	}
+}
+
+// HTTPClient defines metadata client used http client interface.
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+// SetHTTPClient sets metadata client used HTTP client
+func SetHTTPClient(hc HTTPClient) {
+	defaultClient.hc = hc
+}
+
+// ResetToDefaultHTTPClient resets metadata used HTTP client to the default one
+func ResetToDefaultHTTPClient() {
+	defaultClient.hc = defaultHTTPClient
 }
 
 // NotDefinedError is returned when requested metadata is not defined.
@@ -270,7 +286,7 @@ func strsContains(ss []string, s string) bool {
 
 // A Client provides metadata.
 type Client struct {
-	hc *http.Client
+	hc HTTPClient
 }
 
 // NewClient returns a Client that can be used to fetch metadata.
