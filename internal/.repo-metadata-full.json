@@ -1502,15 +1502,6 @@
     "release_level": "ga",
     "library_type": ""
   },
-  "cloud.google.com/go/video/transcoder/apiv1beta1": {
-    "distribution_name": "cloud.google.com/go/video/transcoder/apiv1beta1",
-    "description": "Transcoder API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/transcoder/apiv1beta1",
-    "release_level": "beta",
-    "library_type": ""
-  },
   "cloud.google.com/go/videointelligence/apiv1": {
     "distribution_name": "cloud.google.com/go/videointelligence/apiv1",
     "description": "Cloud Video Intelligence API",
