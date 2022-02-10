@@ -247,9 +247,9 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 }
 
 // append handles the details of adding sending an append request on a stream.  Appends are sent on a long
-// lived bidirectional network stream, with it's own managed context.  otherCtx is checked here for faster
-// failure of the request.
-func (ms *ManagedStream) append(otherCtx context.Context, pw *pendingWrite, opts ...gax.CallOption) error {
+// lived bidirectional network stream, with it's own managed context (ms.ctx).  requestCtx is checked
+// for expiry to enable faster failures, it is not propagated more deeply.
+func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, opts ...gax.CallOption) error {
 	var settings gax.CallSettings
 	for _, opt := range opts {
 		opt.Resolve(&settings)
@@ -265,7 +265,7 @@ func (ms *ManagedStream) append(otherCtx context.Context, pw *pendingWrite, opts
 
 	for {
 		// Don't both calling/retrying if this append's context is already expired.
-		if err = otherCtx.Err(); err != nil {
+		if err = requestCtx.Err(); err != nil {
 			return err
 		}
 
