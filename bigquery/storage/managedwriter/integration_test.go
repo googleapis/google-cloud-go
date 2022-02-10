@@ -191,7 +191,13 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		}
 	}
 	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after first send round",
 		withExactRowCount(int64(len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))))
@@ -212,7 +218,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
 	// wait for the result to indicate ready, then validate.
-	o, err := result.GetResult(ctx)
+	o, err = result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("result error for last send: %v", err)
 	}
@@ -381,7 +387,14 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 	}
 	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	wantOffset := int64(len(testSimpleData) - 1)
+	if o != wantOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, wantOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
 }

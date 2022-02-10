@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"runtime"
 	"testing"
 	"time"
 
@@ -247,7 +248,7 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 		open: openTestArc(&testAppendRowsClient{},
 			func(req *storagepb.AppendRowsRequest) error {
 				// Append is intentionally slow.
-				time.Sleep(time.Second)
+				time.Sleep(200 * time.Millisecond)
 				return nil
 			}, nil),
 	}
@@ -259,6 +260,11 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 		[]byte("foo"),
 	}
 
+	wantCount := 0
+	if ct := ms.fc.count(); ct != wantCount {
+		t.Errorf("flowcontroller count mismatch, got %d want %d", ct, wantCount)
+	}
+
 	// Create a context that will expire during the append, to verify the passed in
 	// context expires.
 	expireCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
@@ -268,5 +274,55 @@ func TestManagedStream_AppendWithDeadline(t *testing.T) {
 	if err == nil {
 		t.Errorf("expected AppendRows to error, but it succeeded")
 	}
-	time.Sleep(time.Second)
+
+	// We expect the flowcontroller count to still be occupied, as the Send is slow.
+	wantCount = 1
+	if ct := ms.fc.count(); ct != wantCount {
+		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
+	}
+
+	// Wait for the append to finish, then check again.
+	time.Sleep(300 * time.Millisecond)
+	wantCount = 0
+	if ct := ms.fc.count(); ct != wantCount {
+		t.Errorf("flowcontroller post-append count mismatch, got %d want %d", ct, wantCount)
+	}
+
+}
+
+func TestManagedStream_LeakingGoroutines(t *testing.T) {
+	ctx := context.Background()
+
+	ms := &ManagedStream{
+		ctx:            ctx,
+		streamSettings: defaultStreamSettings(),
+		fc:             newFlowController(10, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append is intentionally slower than context to cause pressure.
+				time.Sleep(40 * time.Millisecond)
+				return nil
+			}, nil),
+	}
+	ms.schemaDescriptor = &descriptorpb.DescriptorProto{
+		Name: proto.String("testDescriptor"),
+	}
+
+	fakeData := [][]byte{
+		[]byte("foo"),
+	}
+
+	threshold := runtime.NumGoroutine() + 20
+
+	// Send a bunch of appends that expire quicker than response, and monitor that
+	// goroutine growth stays within bounded threshold.
+	for i := 0; i < 500; i++ {
+		expireCtx, _ := context.WithTimeout(ctx, 25*time.Millisecond)
+		ms.AppendRows(expireCtx, fakeData)
+		if i%50 == 0 {
+			if current := runtime.NumGoroutine(); current > threshold {
+				t.Errorf("potential goroutine line at append %d: current %d, threshold %d", i, current, threshold)
+			}
+		}
+	}
 }
