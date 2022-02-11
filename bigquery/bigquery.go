@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery/internal"
-	"cloud.google.com/go/internal"
+	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
@@ -186,7 +186,7 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
-	return internal.Retry(ctx, backoff, func() (stop bool, err error) {
+	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
 		err = call()
 		if err == nil {
 			return true, nil
