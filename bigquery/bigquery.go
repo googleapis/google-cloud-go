@@ -23,7 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal"
+	"cloud.google.com/go/bigquery/internal"
+	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/detect"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
@@ -40,7 +41,7 @@ const (
 	userAgentPrefix = "gcloud-golang-bigquery"
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
@@ -74,7 +75,7 @@ const DetectProjectID = "*detect-project-id*"
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
-		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, version.Repo)),
+		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
@@ -185,7 +186,7 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 		Max:        32 * time.Second,
 		Multiplier: 2,
 	}
-	return internal.Retry(ctx, backoff, func() (stop bool, err error) {
+	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
 		err = call()
 		if err == nil {
 			return true, nil
