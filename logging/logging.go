@@ -39,7 +39,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/logging/apiv2"
 	"cloud.google.com/go/logging/internal"
 	"github.com/golang/protobuf/proto"
@@ -143,7 +142,7 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	if err != nil {
 		return nil, err
 	}
-	c.SetGoogleClientInfo("gccl", version.Repo)
+	c.SetGoogleClientInfo("gccl", internal.Version)
 	client := &Client{
 		client:  c,
 		parent:  parent,
