@@ -1025,7 +1025,26 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		sched.Shutdown()
 	}()
 
-	return group.Wait()
+	err := group.Wait()
+	st, ok := status.FromError(err)
+	if !ok {
+		return err
+	}
+	switch st.Code() {
+	case codes.Unauthenticated:
+		// When using workload identity, users can encounter UNAUTHENTICATED errors
+		// which are not retried and shut down the subscriber client. Although we
+		// could retry these errors, a better solution is to follow the instructions
+		// provided in the GKE docs, and the following makes this solution more visible.
+		isMetadataTimeout := strings.Contains(st.Message(), "transport: compute") &&
+			strings.Contains(st.Message(), "Failed to generate federated token using STS")
+		if isMetadataTimeout {
+			return errors.New(`encountered GKE metadata server timeout. Add initContainer to manifest as described.
+			https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity#troubleshoot-timeout`)
+		}
+	default:
+	}
+	return err
 }
 
 // checkOrdering calls Config to check theEnableMessageOrdering field.
