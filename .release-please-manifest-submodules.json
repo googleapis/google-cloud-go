@@ -80,7 +80,7 @@
   "recommender": "1.0.0",
   "redis": "1.2.0",
   "resourcemanager": "1.0.0",
-  "resourcesettings": "1.0.0",
+  "resourcesettings": "1.1.0",
   "retail": "1.0.0",
   "scheduler": "1.1.0",
   "secretmanager": "1.1.0",
