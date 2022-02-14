@@ -1,5 +1,15 @@
 # Changes
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity-v1.1.0...networkconnectivity/v1.0.0) (2022-02-14)
+
+
+### Features
+
+* **networkconnectivity:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **networkconnectivity:** Add LocationMetadata message feat: Add RoutingVPC.required_for_new_site_to_site_data_transfer_spokes field docs: Update comments to reflect that spokes can now be created with data transfer disabled ([0a64624](https://github.com/googleapis/google-cloud-go/commit/0a646248a89b50d19d30f1b19bbe9d27c7d8caf5))
+* **networkconnectivity:** start generating apiv1 ([8d45b5d](https://github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
+* **networkconnectivity:** to v1 ([#5141](https://github.com/googleapis/google-cloud-go/issues/5141)) ([09d692b](https://github.com/googleapis/google-cloud-go/commit/09d692bf0f30f6d0aa282e2ad9bc6923f51c31fa))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.0.0...networkconnectivity/v1.1.0) (2022-02-11)
 
 
