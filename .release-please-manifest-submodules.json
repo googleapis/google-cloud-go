@@ -65,7 +65,7 @@
   "networkmanagement": "1.0.0",
   "networksecurity": "0.1.0",
   "notebooks": "0.1.0",
-  "orchestration": "1.0.0",
+  "orchestration": "1.1.0",
   "orgpolicy": "1.0.0",
   "osconfig": "1.2.0",
   "oslogin": "1.0.0",
