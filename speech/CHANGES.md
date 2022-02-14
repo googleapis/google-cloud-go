@@ -1,5 +1,14 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/speech-v1.2.0...speech/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **speech:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **speech:** add result_end_time to SpeechRecognitionResult ([a2c0bef](https://github.com/googleapis/google-cloud-go/commit/a2c0bef551489c9f1d0d12b973d3bf095354841e))
+* **speech:** added alternative_language_codes to RecognitionConfig feat: WEBM_OPUS codec feat: SpeechAdaptation configuration feat: word confidence feat: spoken punctuation and spoken emojis feat: hint boost in SpeechContext ([a2c0bef](https://github.com/googleapis/google-cloud-go/commit/a2c0bef551489c9f1d0d12b973d3bf095354841e))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.1.0...speech/v1.2.0) (2022-02-14)
 
 
