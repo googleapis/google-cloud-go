@@ -278,7 +278,7 @@ func TestListLogEntriesRequestDefaults(t *testing.T) {
 
 	// Default is client's project ID, 24 hour lookback, and no orderBy.
 	if !testutil.Equal(got.ResourceNames, []string{"projects/PROJECT_ID"}) || got.OrderBy != "" || timeDiff.Hours() < 24 {
-		t.Errorf("got %v; resource_names:\"projects/PROJECT_ID\" filter: %v - 24 hours order_by:\"\"", got, filterTime)
+		t.Errorf("got %v; want resource_names:\"projects/PROJECT_ID\" filter: %v - 24 hours order_by:\"\"", got, filterTime)
 	}
 }
 
