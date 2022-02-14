@@ -1,5 +1,19 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/documentai-v1.2.0...documentai/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **documentai:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **documentai:** add question_id field in ReviewDocumentOperationMetadata ([2fae584](https://github.com/googleapis/google-cloud-go/commit/2fae584d01fad2f693b165a95c18d4fb8bf062bf))
+* **documentai:** add question_id field in ReviewDocumentOperationMetadata ([6e56077](https://github.com/googleapis/google-cloud-go/commit/6e560776fd6e574320ce2dbad1f9eb9e22999185))
+
+
+### Bug Fixes
+
+* **documentai:** add ancillary service bindings to service_yaml ([3bbe8c0](https://github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.1.0...documentai/v1.2.0) (2022-02-11)
 
 
