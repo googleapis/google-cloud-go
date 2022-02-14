@@ -272,13 +272,13 @@ func TestListLogEntriesRequestDefaults(t *testing.T) {
 	}
 	filterTime, err := time.Parse(time.RFC3339, strings.Trim(got.Filter[len(timeFilterPrefix):], "\""))
 	if err != nil {
-		t.Errorf("%v: expect default filter to have time in RFC3339; got %v", err, got.Filter)
+		t.Errorf("got %v; want %v in RFC3339", err, got.Filter)
 	}
 	timeDiff := time.Now().UTC().Sub(filterTime)
 
 	// Default is client's project ID, 24 hour lookback, and no orderBy.
 	if !testutil.Equal(got.ResourceNames, []string{"projects/PROJECT_ID"}) || got.OrderBy != "" || timeDiff.Hours() < 24 {
-		t.Errorf("expect {\"projects/PROJECT_ID\"} resource names, 24 hour look back filter and native order\ngot %v", got)
+		t.Errorf("got %v; resource_names:\"projects/PROJECT_ID\" filter: %v - 24 hours order_by:\"\"", got, filterTime)
 	}
 }
 
