@@ -15,7 +15,7 @@
   "bigtable": "1.13.0",
   "billing": "1.1.0",
   "binaryauthorization": "0.3.0",
-  "channel": "1.3.0",
+  "channel": "1.4.0",
   "cloudbuild": "1.1.0",
   "clouddms": "1.0.0",
   "cloudtasks": "1.2.0",
