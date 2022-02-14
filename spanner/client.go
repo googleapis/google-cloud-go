@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -217,7 +218,7 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
-		option.WithUserAgent(clientUserAgent),
+		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)

@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
@@ -369,7 +369,7 @@ func checkCommonTags(t *testing.T, m map[tag.Key]string) {
 	if m[tagKeyDatabase] != "[DATABASE]" {
 		t.Fatalf("Incorrect database ID: %v", m[tagKeyDatabase])
 	}
-	if m[tagKeyLibVersion] != version.Repo {
+	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }
