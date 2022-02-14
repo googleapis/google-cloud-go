@@ -36,7 +36,7 @@
   "dialogflow": "1.4.0",
   "dlp": "1.1.0",
   "documentai": "1.2.0",
-  "domains": "0.2.0",
+  "domains": "0.3.0",
   "errorreporting": "0.1.0",
   "essentialcontacts": "1.0.0",
   "eventarc": "1.2.0",
