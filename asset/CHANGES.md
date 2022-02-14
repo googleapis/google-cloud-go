@@ -1,5 +1,18 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/asset-v1.1.0...asset/v1.2.0) (2022-02-14)
+
+
+### Features
+
+* **asset:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
+
+### Bug Fixes
+
+* **asset:** add service_yaml to php_gapic_library targets ([3bbe8c0](https://github.com/googleapis/google-cloud-go/commit/3bbe8c0c558c06ef5865bb79eb228b6da667ddb3))
+* **asset:** depend on the existing access_context_manager and os_config clients rather than copying their classes into the asset client ([bddab08](https://github.com/googleapis/google-cloud-go/commit/bddab08dfd0b9a0a79b113a46a0dd84dba1f3d3b))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.0.2...asset/v1.1.0) (2022-02-14)
 
 
