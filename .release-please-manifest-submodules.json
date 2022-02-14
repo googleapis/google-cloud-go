@@ -88,7 +88,7 @@
   "securitycenter": "1.2.0",
   "servicecontrol": "1.2.0",
   "servicedirectory": "1.0.0",
-  "servicemanagement": "1.0.0",
+  "servicemanagement": "1.1.0",
   "serviceusage": "1.0.0",
   "shell": "1.0.0",
   "spanner": "1.29.0",
