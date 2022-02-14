@@ -7,6 +7,13 @@
 
 * **profiler:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/profiler/v0.1.2...profiler/v0.2.0) (2022-02-14)
+
+
+### Features
+
+* **profiler:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+
 ### [0.1.2](https://www.github.com/googleapis/google-cloud-go/compare/profiler/v0.1.1...profiler/v0.1.2) (2022-01-04)
 
 
