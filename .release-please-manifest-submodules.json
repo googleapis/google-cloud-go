@@ -122,6 +122,6 @@
   "vmmigration": "0.2.0",
   "vpcaccess": "1.1.0",
   "webrisk": "1.1.0",
-  "websecurityscanner": "1.0.0",
+  "websecurityscanner": "1.1.0",
   "workflows": "1.2.0"
 }
