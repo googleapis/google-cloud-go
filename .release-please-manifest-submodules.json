@@ -83,7 +83,7 @@
   "resourcesettings": "1.0.0",
   "retail": "1.0.0",
   "scheduler": "1.0.0",
-  "secretmanager": "1.1.0",
+  "secretmanager": "1.2.0",
   "security": "1.1.1",
   "securitycenter": "1.2.0",
   "servicecontrol": "1.1.0",
