@@ -23,7 +23,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.0.0
+	cloud.google.com/go/compute v1.2.0
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
@@ -111,8 +111,8 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
-	google.golang.org/api v0.67.0
-	google.golang.org/genproto v0.0.0-20220208230804-65c12eb4c068
+	google.golang.org/api v0.68.0
+	google.golang.org/genproto v0.0.0-20220210181026-6fee9acbd336
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
