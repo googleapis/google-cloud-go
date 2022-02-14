@@ -337,7 +337,7 @@
     "description": "Service Metadata API",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/metadata",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata",
     "release_level": "ga",
     "library_type": "CORE"
   },
@@ -553,7 +553,7 @@
     "description": "Cloud Error Reporting API",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/errorreporting",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest",
     "release_level": "beta",
     "library_type": "GAPIC_MANUAL"
   },
@@ -643,7 +643,7 @@
     "description": "Cloud Functions",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/functions/metadata",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
     "release_level": "alpha",
     "library_type": "CORE"
   },
@@ -697,7 +697,7 @@
     "description": "Cloud IAM",
     "language": "Go",
     "client_library_type": "manual",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/iam",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
     "release_level": "ga",
     "library_type": "CORE"
   },
@@ -991,7 +991,7 @@
   },
   "cloud.google.com/go/osconfig/apiv1beta": {
     "distribution_name": "cloud.google.com/go/osconfig/apiv1beta",
-    "description": "Cloud OS Config API",
+    "description": "OS Config API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/osconfig/latest/apiv1beta",
@@ -1500,15 +1500,6 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/transcoder/apiv1",
     "release_level": "ga",
-    "library_type": ""
-  },
-  "cloud.google.com/go/video/transcoder/apiv1beta1": {
-    "distribution_name": "cloud.google.com/go/video/transcoder/apiv1beta1",
-    "description": "Transcoder API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/transcoder/apiv1beta1",
-    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/videointelligence/apiv1": {

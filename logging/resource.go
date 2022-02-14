@@ -193,17 +193,12 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	name, err := metadata.InstanceName()
-	if err != nil {
-		return nil
-	}
 	return &mrpb.MonitoredResource{
 		Type: "gce_instance",
 		Labels: map[string]string{
-			"project_id":    projectID,
-			"instance_id":   id,
-			"instance_name": name,
-			"zone":          zone,
+			"project_id":  projectID,
+			"instance_id": id,
+			"zone":        zone,
 		},
 	}
 }

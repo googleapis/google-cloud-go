@@ -19,7 +19,8 @@ import (
 	"fmt"
 	"time"
 
-	"cloud.google.com/go/internal"
+	"cloud.google.com/go/datastore/internal"
+	cloudinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
 	gax "github.com/googleapis/gax-go/v2"
@@ -46,7 +47,7 @@ func newDatastoreClient(conn grpc.ClientConnInterface, projectID string) pb.Data
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
 			resourcePrefixHeader, "projects/"+projectID,
-			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), version.Repo)),
+			"x-goog-api-client", fmt.Sprintf("gl-go/%s gccl/%s grpc/", version.Go(), internal.Version)),
 	}
 }
 
@@ -118,7 +119,7 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 
 func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
 	ctx = metadata.NewOutgoingContext(ctx, dc.md)
-	return internal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
+	return cloudinternal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
 		err = f(ctx)
 		return !shouldRetry(err), err
 	})
