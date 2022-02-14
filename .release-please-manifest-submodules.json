@@ -90,7 +90,7 @@
   "servicedirectory": "1.1.0",
   "servicemanagement": "1.1.0",
   "serviceusage": "1.0.0",
-  "shell": "1.1.0",
+  "shell": "1.2.0",
   "spanner": "1.29.0",
   "speech": "1.2.0",
   "storage": "1.20.0",
