@@ -190,7 +190,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready, then validate.
+	// Wait for the result to indicate ready, then validate.
 	o, err := result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("result error for last send: %v", err)
@@ -215,9 +215,8 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	if err != nil {
 		t.Errorf("grouped-row append failed: %v", err)
 	}
-	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
+	// Wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
-	// wait for the result to indicate ready, then validate.
 	o, err = result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("result error for last send: %v", err)
@@ -279,7 +278,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		}
 	}
 
-	// wait for the result to indicate ready, then validate.
+	// Wait for the result to indicate ready, then validate.
 	o, err := result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("result error for last send: %v", err)
@@ -332,7 +331,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
-		// wait for ack
+		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
 			t.Errorf("got error from pending result %d: %v", k, err)
@@ -386,7 +385,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready, then validate.
+	// Wait for the result to indicate ready, then validate.
 	o, err := result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("result error for last send: %v", err)
@@ -431,7 +430,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
-		// be explicit about waiting/checking each response.
+		// Be explicit about waiting/checking each response.
 		off, err := result.GetResult(ctx)
 		if err != nil {
 			t.Errorf("response %d error: %v", k, err)
@@ -510,7 +509,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready.
+	// Wait for the result to indicate ready.
 	result.Ready()
 	// Ick.  Stats reporting can't force flushing, and there's a race here.  Sleep to give the recv goroutine a chance
 	// to report.
@@ -587,7 +586,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 		}
 		curOffset = curOffset + int64(len(data))
 	}
-	// wait for the result to indicate ready, then validate.
+	// Wait for the result to indicate ready, then validate.
 	_, err = result.GetResult(ctx)
 	if err != nil {
 		t.Errorf("error on append: %v", err)
