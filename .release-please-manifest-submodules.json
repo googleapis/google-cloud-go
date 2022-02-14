@@ -25,7 +25,7 @@
   "containeranalysis": "0.2.0",
   "datacatalog": "1.2.0",
   "dataflow": "0.1.0",
-  "datafusion": "1.1.0",
+  "datafusion": "1.2.0",
   "datalabeling": "0.1.1",
   "dataplex": "0.2.0",
   "dataproc": "1.2.0",
