@@ -79,7 +79,7 @@
   "recommendationengine": "0.1.0",
   "recommender": "1.1.0",
   "redis": "1.3.0",
-  "resourcemanager": "1.0.0",
+  "resourcemanager": "1.1.0",
   "resourcesettings": "1.1.0",
   "retail": "1.1.0",
   "scheduler": "1.1.0",
