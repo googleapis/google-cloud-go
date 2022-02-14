@@ -23,7 +23,7 @@
   "contactcenterinsights": "1.0.0",
   "container": "1.0.0",
   "containeranalysis": "0.1.1",
-  "datacatalog": "1.1.0",
+  "datacatalog": "1.2.0",
   "dataflow": "0.1.0",
   "datafusion": "1.1.0",
   "datalabeling": "0.1.1",
