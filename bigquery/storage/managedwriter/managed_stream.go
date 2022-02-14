@@ -227,8 +227,9 @@ func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClie
 			continue
 		}
 		if err == nil {
-			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new chan
-			// and fire up the associated receive processor.
+			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
+			// write channel and fire up the associated receive processor.  The channel ensures that
+			// responses for a connection are processed in the same order that appends were sent.
 			depth := 1000 // default backend queue limit
 			if ms.streamSettings != nil {
 				if ms.streamSettings.MaxInflightRequests > 0 {
