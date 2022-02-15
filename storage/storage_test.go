@@ -375,8 +375,9 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				Method:         "POST",
 				Expires:        expires,
 				Scheme:         SigningSchemeV4,
+				Insecure:       true,
 			},
-			want: "https://localhost:9000/" + bucketName + "/" + objectName +
+			want: "http://localhost:9000/" + bucketName + "/" + objectName +
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
@@ -410,8 +411,9 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				Expires:        expires,
 				Scheme:         SigningSchemeV4,
 				Style:          VirtualHostedStyle(),
+				Insecure:       true,
 			},
-			want: "https://" + bucketName + ".localhost:8000/" + objectName +
+			want: "http://" + bucketName + ".localhost:8000/" + objectName +
 				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
 				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
@@ -436,6 +438,41 @@ func TestSignedURL_EmulatorHost(t *testing.T) {
 				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
 				"&X-Goog-Signature=15fe19f6c61bcbdbd6473c32f2bec29caa8a5fa3b2ce32cfb5329a71edaa0d4e5ffe6469f32ed4c23ca2fbed3882fdf1ed107c6a98c2c4995dda6036c64bae51e6cb542c353618f483832aa1f3ef85342ddadd69c13ad4c69fd3f573ea5cf325a58056e3d5a37005217662af63b49fef8688de3c5c7a2f7b43651a030edd0813eb7f7713989a4c29a8add65133ce652895fea9de7dbc6248ee11b4d7c6c1e152df87700100e896e544ba8eeea96584078f56e699665140b750e90550b9b79633f4e7c8409efa807be5670d6e987eeee04a4180be9b9e30bb8557597beaf390a3805cc602c87a3e34800f8bc01449c3dd10ac2f2263e55e55b91e445052548d5e" +
 				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "emulator host specifies scheme",
+			emulatorHost: "https://localhost:6000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV4,
+				Insecure:       true,
+			},
+			want: "http://localhost:6000/" + bucketName + "/" + objectName +
+				"?X-Goog-Algorithm=GOOG4-RSA-SHA256" +
+				"&X-Goog-Credential=xxx%40clientid%2F20021001%2Fauto%2Fstorage%2Fgoog4_request" +
+				"&X-Goog-Date=20021001T100000Z&X-Goog-Expires=86400" +
+				"&X-Goog-Signature=249c53142e57adf594b4f523a8a1f9c15f29b071e9abc0cf6665dbc5f692fc96fac4ab98bbea4c2397384367bc970a2e1771f2c86624475f3273970ecde8ff6df39d647e5c3f3263bf67a743e211c1958a96775edf53ece1f69ed337f0ab7fdc081c6c2b84e57b0922280d27f1da1bff47e77e3822fb1756e4c5cece9d220e6d0824ab9528e97e54f0cb09b352193b0e895344d894de11b3f5f9a2ec7d8fd6d0a4c487afd1896385a3ab9e8c3fcb3862ec0cad6ec10af1b574078eb7c79b558bcd85449a67079a0ee6da97fcbad074f1bf9fdfbdca12945336a8bd0a3b70b4c7708918cb83d10c7c4ff1f8b73275e9d1ba5d3db91069dffdf81eb7badf4e3c80" +
+				"&X-Goog-SignedHeaders=host",
+		},
+		{
+			desc:         "emulator host specifies scheme using SigningSchemeV2",
+			emulatorHost: "https://localhost:8000",
+			now:          expires.Add(-24 * time.Hour),
+			opts: &SignedURLOptions{
+				GoogleAccessID: "xxx@clientid",
+				PrivateKey:     dummyKey("rsa"),
+				Method:         "POST",
+				Expires:        expires,
+				Scheme:         SigningSchemeV2,
+			},
+			want: "https://localhost:8000/" + bucketName + "/" + objectName +
+				"?Expires=1033570800" +
+				"&GoogleAccessId=xxx%40clientid" +
+				"&Signature=oRi3y2tBTmoDto7FezNx4AjC0RXA6fpJjTBa0hINeVroZ%2ByOeRU8MRwJbKg1IkBbV0IjtlPaGwv5YoUH16UYdipBjCXOS%2B1qgRWyzl8AnzvU%2BfwSXSlCk9zPtHHoBkFT7G4cZQOdDTLRrSG%2FmRJ3K09KEHYg%2Fc6R5Dd92inD1tLE2tiFMyHFs5uQHRMsepY4wrWiIQ4u53tPvk%2Fwiq1%2B9yL6x3QGblhdWwjX0BTVBOxexyKTlwczJW0XlWX8wpcTFfzQnJZuujbhanf2g9MGzSmkv3ylyuQdHMJDYp4Bzq%2FmnkNUg0Vp6iEvh9tyVdRNkwXeg3D8qn%2BFSOxcF%2B9vJw%3D%3D",
 		},
 	}
 	oldUTCNow := utcNow
