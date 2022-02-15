@@ -114,7 +114,7 @@ func (c *RegionDisksClient) AddResourcePolicies(ctx context.Context, req *comput
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// CreateSnapshot creates a snapshot of this regional disk.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 func (c *RegionDisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
@@ -315,7 +315,7 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 	return op, nil
 }
 
-// CreateSnapshot creates a snapshot of this regional disk.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()

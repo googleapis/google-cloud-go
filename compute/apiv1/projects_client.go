@@ -131,7 +131,7 @@ func (c *ProjectsClient) EnableXpnResource(ctx context.Context, req *computepb.E
 	return c.internalClient.EnableXpnResource(ctx, req, opts...)
 }
 
-// Get returns the specified Project resource.
+// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
 func (c *ProjectsClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -156,7 +156,7 @@ func (c *ProjectsClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskPr
 	return c.internalClient.MoveDisk(ctx, req, opts...)
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another.
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
 func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
@@ -502,7 +502,7 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 	return op, nil
 }
 
-// Get returns the specified Project resource.
+// Get returns the specified Project resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the quotas field). To exclude one or more fields, set your request’s fields query parameter to only include the fields you need. For example, to only include the id and selfLink fields, add the query parameter ?fields=id,selfLink to your request.
 func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v", req.GetProject())
@@ -841,7 +841,7 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 	return op, nil
 }
 
-// MoveInstance moves an instance and its attached persistent disks from one zone to another.
+// MoveInstance moves an instance and its attached persistent disks from one zone to another. Note: Moving VMs or disks by using this method might cause unexpected behavior. For more information, see the known issue (at /compute/docs/troubleshooting/known-issues#moving_vms_or_disks_using_the_moveinstance_api_or_the_causes_unexpected_behavior).
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
