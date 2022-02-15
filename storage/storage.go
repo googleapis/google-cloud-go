@@ -308,14 +308,26 @@ type bucketBoundHostname struct {
 }
 
 func (s pathStyle) host(bucket string) string {
-	if os.Getenv("STORAGE_EMULATOR_HOST") {
-		return os.Getenv("STORAGE_EMULATOR_HOST")
-	} else {
-		return "storage.googleapis.com"
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		// Strip the scheme from the emulator host
+		if strings.Contains(host, "://") {
+			host = strings.SplitN(host, "://", 2)[1]
+		}
+		return host
 	}
+
+	return "storage.googleapis.com"
 }
 
 func (s virtualHostedStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		// Strip the scheme from the emulator host
+		if strings.Contains(host, "://") {
+			host = strings.SplitN(host, "://", 2)[1]
+		}
+		return bucket + "." + host
+	}
+
 	return bucket + ".storage.googleapis.com"
 }
 
@@ -341,12 +353,16 @@ func (s bucketBoundHostname) path(bucket, object string) string {
 
 // PathStyle is the default style, and will generate a URL of the form
 // "storage.googleapis.com/<bucket-name>/<object-name>".
+// If STORAGE_EMULATOR_HOST is set, will generate a URL of the form
+// "STORAGE_EMULATOR_HOST/<bucket-name>/<object-name>".
 func PathStyle() URLStyle {
 	return pathStyle{}
 }
 
 // VirtualHostedStyle generates a URL relative to the bucket's virtual
 // hostname, e.g. "<bucket-name>.storage.googleapis.com/<object-name>".
+// If STORAGE_EMULATOR_HOST is set, will generate a URL of the form
+// "<bucket-name>.STORAGE_EMULATOR_HOST/<object-name>".
 func VirtualHostedStyle() URLStyle {
 	return virtualHostedStyle{}
 }
@@ -859,7 +875,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = "storage.googleapis.com"
+	u.Host = PathStyle().host(bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
