@@ -37,9 +37,9 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"cloud.google.com/go/internal/version"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -3737,7 +3737,7 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	if !strings.HasPrefix(m[tagKeyClientID], "client") {
 		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
 	}
-	if m[tagKeyLibVersion] != version.Repo {
+	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }

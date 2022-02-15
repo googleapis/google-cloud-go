@@ -21,9 +21,9 @@ messages to a topic and other applications can subscribe to that topic to
 receive the messages. By decoupling senders and receivers, Google Pub/Sub allows
 developers to communicate between independently written applications.
 
-Compared to Cloud Pub/Sub, Pub/Sub Lite provides partitioned zonal data storage
-with predefined throughput and storage capacity. Guidance on how to choose
-between Cloud Pub/Sub and Pub/Sub Lite is available at
+Compared to Cloud Pub/Sub, Pub/Sub Lite provides partitioned data storage with
+predefined throughput and storage capacity. Guidance on how to choose between
+Cloud Pub/Sub and Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
 
 More information about Pub/Sub Lite is available at
@@ -85,8 +85,8 @@ Messages are published to topics. Pub/Sub Lite topics may be created like so:
 See https://cloud.google.com/pubsub/lite/docs/topics for more information about
 how Pub/Sub Lite topics are configured.
 
-See https://cloud.google.com/pubsub/lite/docs/locations for the list of zones
-where Pub/Sub Lite is available.
+See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+locations where Pub/Sub Lite is available.
 
 
 Publishing
