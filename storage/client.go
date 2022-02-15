@@ -30,22 +30,27 @@ import (
 // * `storageOption`s must be resolved in the order they are received
 // * all API errors must be wrapped in the gax-go APIError type
 // * any unimplemented interface methods must return a StorageUnimplementedErr
+//
+// TODO(noahdietz): This interface is currently not used in the production code
+// paths.
 type storageClient interface {
+
+	// Top-level methods.
+	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
 
 	// Bucket methods.
 
-	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
 	DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
 	GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
-	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
 	UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
 	LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
+	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error)
 
 	// Object metadata methods.
 
 	DeleteObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) error
 	GetObject(ctx context.Context, bucket, object string, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
-	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error)
 	UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
@@ -75,12 +80,25 @@ type storageClient interface {
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
 }
 
+// settings contains transport-agnostic configuration for API calls made via
+// the storageClient inteface. All implementations must utilize settings
+// and respect those that are applicable.
 type settings struct {
-	retry      *retryConfig
-	gax        []gax.CallOption
+	// retry is the complete retry configuration to use when evaluating if an
+	// API call should be retried.
+	retry *retryConfig
+
+	// gax is a set of gax.CallOption to be conveyed to gax.Invoke.
+	// Note: Not all storageClient interfaces will must use gax.Invoke.
+	gax []gax.CallOption
+
+	// idempotent indicates if the call is idempotent or not when considering
+	// if the call should be retired or not.
 	idempotent bool
 }
 
+// storageOption is the transport-agnostic call option for the storageClient
+// interface.
 type storageOption interface {
 	Apply(s *settings)
 }
