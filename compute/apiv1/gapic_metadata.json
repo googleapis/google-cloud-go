@@ -147,6 +147,11 @@
                 "Patch"
               ]
             },
+            "SetEdgeSecurityPolicy": {
+              "methods": [
+                "SetEdgeSecurityPolicy"
+              ]
+            },
             "Update": {
               "methods": [
                 "Update"
@@ -204,6 +209,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "SetEdgeSecurityPolicy": {
+              "methods": [
+                "SetEdgeSecurityPolicy"
               ]
             },
             "SetSecurityPolicy": {
@@ -1187,6 +1197,11 @@
                 "Reset"
               ]
             },
+            "Resume": {
+              "methods": [
+                "Resume"
+              ]
+            },
             "SendDiagnosticInterrupt": {
               "methods": [
                 "SendDiagnosticInterrupt"
@@ -1270,6 +1285,11 @@
             "Stop": {
               "methods": [
                 "Stop"
+              ]
+            },
+            "Suspend": {
+              "methods": [
+                "Suspend"
               ]
             },
             "TestIamPermissions": {
@@ -1426,6 +1446,50 @@
       "clients": {
         "rest": {
           "libraryClient": "LicensesClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "MachineImages": {
+      "clients": {
+        "rest": {
+          "libraryClient": "MachineImagesClient",
           "rpcs": {
             "Delete": {
               "methods": [
@@ -2053,6 +2117,11 @@
               "methods": [
                 "List"
               ]
+            },
+            "Update": {
+              "methods": [
+                "Update"
+              ]
             }
           }
         }
@@ -2667,6 +2736,11 @@
               "methods": [
                 "TestIamPermissions"
               ]
+            },
+            "Update": {
+              "methods": [
+                "Update"
+              ]
             }
           }
         }
@@ -2940,6 +3014,11 @@
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
               ]
             },
             "List": {

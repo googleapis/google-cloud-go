@@ -45,6 +45,7 @@ type SnapshotsCallOptions struct {
 	Delete             []gax.CallOption
 	Get                []gax.CallOption
 	GetIamPolicy       []gax.CallOption
+	Insert             []gax.CallOption
 	List               []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	SetLabels          []gax.CallOption
@@ -59,6 +60,7 @@ type internalSnapshotsClient interface {
 	Delete(context.Context, *computepb.DeleteSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSnapshotRequest, ...gax.CallOption) (*computepb.Snapshot, error)
 	GetIamPolicy(context.Context, *computepb.GetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
+	Insert(context.Context, *computepb.InsertSnapshotRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
 	SetIamPolicy(context.Context, *computepb.SetIamPolicySnapshotRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsSnapshotRequest, ...gax.CallOption) (*Operation, error)
@@ -112,6 +114,11 @@ func (c *SnapshotsClient) Get(ctx context.Context, req *computepb.GetSnapshotReq
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *SnapshotsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+func (c *SnapshotsClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Insert(ctx, req, opts...)
 }
 
 // List retrieves the list of Snapshot resources contained within the specified project.
@@ -365,6 +372,71 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Insert creates a snapshot in the specified project using the data included in the request. For regular snapshot creation, consider using this method instead of disks.createSnapshot, as this method supports more features, such as creating snapshots in a project different from the source disk project.
+func (c *snapshotsRESTClient) Insert(ctx context.Context, req *computepb.InsertSnapshotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetSnapshotResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots", req.GetProject())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
 }
 
 // List retrieves the list of Snapshot resources contained within the specified project.
