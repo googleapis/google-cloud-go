@@ -18,6 +18,7 @@ import (
 	"context"
 
 	gax "github.com/googleapis/gax-go/v2"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 // TODO(noahdietz): Move existing factory methods to this file.
@@ -38,6 +39,8 @@ import (
 type storageClient interface {
 
 	// Top-level methods.
+
+	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
 	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
 	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
 
@@ -67,7 +70,7 @@ type storageClient interface {
 	ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
 	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
 
-	// Object ACL Methods.
+	// Object ACL methods.
 
 	DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error
 	ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error)
@@ -80,6 +83,21 @@ type storageClient interface {
 
 	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
+
+	// IAM methods.
+
+	GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error)
+	SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error
+	TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error)
+
+	// HMAC Key methods.
+	// TODO(noahdietz): Determine how to work with HMACKeyOptions.
+
+	GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error)
+	ListHMACKey(ctx context.Context, project string, opts ...storageOption) *HMACKeysIterator
+	UpdateHMACKey(ctx context.Context, project, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
+	CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error)
+	DeleteHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) error
 }
 
 // settings contains transport-agnostic configuration for API calls made via
