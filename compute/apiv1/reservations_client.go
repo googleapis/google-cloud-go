@@ -52,6 +52,7 @@ type ReservationsCallOptions struct {
 	Resize             []gax.CallOption
 	SetIamPolicy       []gax.CallOption
 	TestIamPermissions []gax.CallOption
+	Update             []gax.CallOption
 }
 
 // internalReservationsClient is an interface that defines the methods availaible from Google Compute Engine API.
@@ -68,6 +69,7 @@ type internalReservationsClient interface {
 	Resize(context.Context, *computepb.ResizeReservationRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyReservationRequest, ...gax.CallOption) (*computepb.Policy, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsReservationRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	Update(context.Context, *computepb.UpdateReservationRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // ReservationsClient is a client for interacting with Google Compute Engine API.
@@ -147,6 +149,11 @@ func (c *ReservationsClient) SetIamPolicy(ctx context.Context, req *computepb.Se
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *ReservationsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsReservationRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// Update update share settings of the reservation.
+func (c *ReservationsClient) Update(ctx context.Context, req *computepb.UpdateReservationRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -805,6 +812,78 @@ func (c *reservationsRESTClient) TestIamPermissions(ctx context.Context, req *co
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Update update share settings of the reservation.
+func (c *reservationsRESTClient) Update(ctx context.Context, req *computepb.UpdateReservationRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/reservations/%v", req.GetProject(), req.GetZone(), req.GetReservation())
+
+	params := url.Values{}
+	if req != nil && req.Paths != nil {
+		params.Add("paths", fmt.Sprintf("%v", req.GetPaths()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
 }
 
 // ReservationIterator manages a stream of *computepb.Reservation.
