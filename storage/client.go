@@ -20,6 +20,8 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 )
 
+// TODO(noahdietz): Move existing factory methods to this file.
+
 // storageClient is an internal-only interface designed to separate the
 // transport-specific logic of making Storage API calls from the logic of the
 // client library.
@@ -32,7 +34,7 @@ import (
 // * any unimplemented interface methods must return a StorageUnimplementedErr
 //
 // TODO(noahdietz): This interface is currently not used in the production code
-// paths.
+// paths
 type storageClient interface {
 
 	// Top-level methods.
