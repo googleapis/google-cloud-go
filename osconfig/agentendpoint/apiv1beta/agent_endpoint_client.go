@@ -130,7 +130,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud OS Config API.
+// internalClient is an interface that defines the methods availaible from OS Config API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -143,7 +143,7 @@ type internalClient interface {
 	RegisterAgent(context.Context, *agentendpointpb.RegisterAgentRequest, ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error)
 }
 
-// Client is a client for interacting with Cloud OS Config API.
+// Client is a client for interacting with OS Config API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // OS Config agent endpoint API.
@@ -209,7 +209,7 @@ func (c *Client) RegisterAgent(ctx context.Context, req *agentendpointpb.Registe
 	return c.internalClient.RegisterAgent(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Cloud OS Config API over gRPC transport.
+// gRPCClient is a client for interacting with OS Config API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {

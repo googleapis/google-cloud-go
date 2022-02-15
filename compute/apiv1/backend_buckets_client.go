@@ -42,14 +42,15 @@ var newBackendBucketsClientHook clientHook
 
 // BackendBucketsCallOptions contains the retry settings for each method of BackendBucketsClient.
 type BackendBucketsCallOptions struct {
-	AddSignedUrlKey    []gax.CallOption
-	Delete             []gax.CallOption
-	DeleteSignedUrlKey []gax.CallOption
-	Get                []gax.CallOption
-	Insert             []gax.CallOption
-	List               []gax.CallOption
-	Patch              []gax.CallOption
-	Update             []gax.CallOption
+	AddSignedUrlKey       []gax.CallOption
+	Delete                []gax.CallOption
+	DeleteSignedUrlKey    []gax.CallOption
+	Get                   []gax.CallOption
+	Insert                []gax.CallOption
+	List                  []gax.CallOption
+	Patch                 []gax.CallOption
+	SetEdgeSecurityPolicy []gax.CallOption
+	Update                []gax.CallOption
 }
 
 // internalBackendBucketsClient is an interface that defines the methods availaible from Google Compute Engine API.
@@ -64,6 +65,7 @@ type internalBackendBucketsClient interface {
 	Insert(context.Context, *computepb.InsertBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListBackendBucketsRequest, ...gax.CallOption) *BackendBucketIterator
 	Patch(context.Context, *computepb.PatchBackendBucketRequest, ...gax.CallOption) (*Operation, error)
+	SetEdgeSecurityPolicy(context.Context, *computepb.SetEdgeSecurityPolicyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	Update(context.Context, *computepb.UpdateBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -134,6 +136,11 @@ func (c *BackendBucketsClient) List(ctx context.Context, req *computepb.ListBack
 // Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *BackendBucketsClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// SetEdgeSecurityPolicy sets the edge security policy for the specified backend bucket.
+func (c *BackendBucketsClient) SetEdgeSecurityPolicy(ctx context.Context, req *computepb.SetEdgeSecurityPolicyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetEdgeSecurityPolicy(ctx, req, opts...)
 }
 
 // Update updates the specified BackendBucket resource with the data included in the request.
@@ -627,6 +634,71 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// SetEdgeSecurityPolicy sets the edge security policy for the specified backend bucket.
+func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, req *computepb.SetEdgeSecurityPolicyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetSecurityPolicyReferenceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/setEdgeSecurityPolicy", req.GetProject(), req.GetBackendBucket())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

@@ -99,6 +99,29 @@ func ExampleSnapshotsClient_GetIamPolicy() {
 	_ = resp
 }
 
+func ExampleSnapshotsClient_Insert() {
+	ctx := context.Background()
+	c, err := compute.NewSnapshotsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.InsertSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSnapshotRequest.
+	}
+	op, err := c.Insert(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleSnapshotsClient_List() {
 	ctx := context.Background()
 	c, err := compute.NewSnapshotsRESTClient(ctx)

@@ -964,7 +964,7 @@
   },
   "cloud.google.com/go/osconfig/agentendpoint/apiv1beta": {
     "distribution_name": "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
-    "description": "Cloud OS Config API",
+    "description": "OS Config API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/osconfig/latest/agentendpoint/apiv1beta",
