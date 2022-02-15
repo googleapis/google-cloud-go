@@ -243,6 +243,29 @@ func ExampleBackendServicesClient_Patch() {
 	}
 }
 
+func ExampleBackendServicesClient_SetEdgeSecurityPolicy() {
+	ctx := context.Background()
+	c, err := compute.NewBackendServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetEdgeSecurityPolicyBackendServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetEdgeSecurityPolicyBackendServiceRequest.
+	}
+	op, err := c.SetEdgeSecurityPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleBackendServicesClient_SetSecurityPolicy() {
 	ctx := context.Background()
 	c, err := compute.NewBackendServicesRESTClient(ctx)
