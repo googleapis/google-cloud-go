@@ -484,6 +484,29 @@ func ExampleInstancesClient_Reset() {
 	}
 }
 
+func ExampleInstancesClient_Resume() {
+	ctx := context.Background()
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ResumeInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResumeInstanceRequest.
+	}
+	op, err := c.Resume(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleInstancesClient_SendDiagnosticInterrupt() {
 	ctx := context.Background()
 	c, err := compute.NewInstancesRESTClient(ctx)
@@ -859,6 +882,29 @@ func ExampleInstancesClient_Stop() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StopInstanceRequest.
 	}
 	op, err := c.Stop(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInstancesClient_Suspend() {
+	ctx := context.Background()
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SuspendInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SuspendInstanceRequest.
+	}
+	op, err := c.Suspend(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
