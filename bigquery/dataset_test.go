@@ -329,7 +329,7 @@ func TestDatasetToBQ(t *testing.T) {
 			Labels:   map[string]string{"x": "y"},
 			Access: []*AccessEntry{
 				{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity},
-				{Role: ReaderRole,
+				{
 					EntityType: DatasetEntity,
 					Dataset: &DatasetAccessEntry{
 						Dataset:     testClient.Dataset("otherdataset"),
@@ -348,7 +348,7 @@ func TestDatasetToBQ(t *testing.T) {
 			Labels:   map[string]string{"x": "y"},
 			Access: []*bq.DatasetAccess{
 				{Role: "OWNER", Domain: "example.com"},
-				{Role: "READER",
+				{
 					Dataset: &bq.DatasetAccessEntry{
 						Dataset: &bq.DatasetReference{
 							ProjectId: "p",
@@ -403,7 +403,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
 			{Role: "WRITER", GroupByEmail: "users@example.com"},
-			{Role: "READER",
+			{
 				Dataset: &bq.DatasetAccessEntry{
 					Dataset: &bq.DatasetReference{
 						ProjectId: "p",
@@ -429,7 +429,7 @@ func TestBQToDatasetMetadata(t *testing.T) {
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
-			{Role: ReaderRole,
+			{
 				EntityType: DatasetEntity,
 				Dataset: &DatasetAccessEntry{
 					Dataset:     testClient.Dataset("otherdataset"),
