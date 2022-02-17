@@ -5,6 +5,40 @@
   "protoPackage": "google.cloud.dataplex.v1",
   "libraryPackage": "cloud.google.com/go/dataplex/apiv1",
   "services": {
+    "ContentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ContentClient",
+          "rpcs": {
+            "CreateContent": {
+              "methods": [
+                "CreateContent"
+              ]
+            },
+            "DeleteContent": {
+              "methods": [
+                "DeleteContent"
+              ]
+            },
+            "GetContent": {
+              "methods": [
+                "GetContent"
+              ]
+            },
+            "ListContent": {
+              "methods": [
+                "ListContent"
+              ]
+            },
+            "UpdateContent": {
+              "methods": [
+                "UpdateContent"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataplexService": {
       "clients": {
         "grpc": {
@@ -18,6 +52,11 @@
             "CreateAsset": {
               "methods": [
                 "CreateAsset"
+              ]
+            },
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
               ]
             },
             "CreateLake": {
@@ -40,6 +79,11 @@
                 "DeleteAsset"
               ]
             },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
             "DeleteLake": {
               "methods": [
                 "DeleteLake"
@@ -58,6 +102,11 @@
             "GetAsset": {
               "methods": [
                 "GetAsset"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
               ]
             },
             "GetJob": {
@@ -90,6 +139,11 @@
                 "ListAssets"
               ]
             },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
@@ -103,6 +157,11 @@
             "ListLakes": {
               "methods": [
                 "ListLakes"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
               ]
             },
             "ListTasks": {
@@ -123,6 +182,11 @@
             "UpdateAsset": {
               "methods": [
                 "UpdateAsset"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
               ]
             },
             "UpdateLake": {
@@ -149,6 +213,26 @@
         "grpc": {
           "libraryClient": "MetadataClient",
           "rpcs": {
+            "CreateEntity": {
+              "methods": [
+                "CreateEntity"
+              ]
+            },
+            "CreatePartition": {
+              "methods": [
+                "CreatePartition"
+              ]
+            },
+            "DeleteEntity": {
+              "methods": [
+                "DeleteEntity"
+              ]
+            },
+            "DeletePartition": {
+              "methods": [
+                "DeletePartition"
+              ]
+            },
             "GetEntity": {
               "methods": [
                 "GetEntity"
@@ -167,6 +251,11 @@
             "ListPartitions": {
               "methods": [
                 "ListPartitions"
+              ]
+            },
+            "UpdateEntity": {
+              "methods": [
+                "UpdateEntity"
               ]
             }
           }
