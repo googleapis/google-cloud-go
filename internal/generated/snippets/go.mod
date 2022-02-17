@@ -110,9 +110,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
-	google.golang.org/api v0.68.0
-	google.golang.org/genproto v0.0.0-20220215190005-e57b466719ef
+	google.golang.org/api v0.69.0
+	google.golang.org/genproto v0.0.0-20220216160803-4663080d8bc8
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
