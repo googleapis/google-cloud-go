@@ -2,7 +2,6 @@
 
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.0.0...servicemanagement/v1.1.0) (2022-02-14)
 
-
 ### Features
 
 * **servicemanagement:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))

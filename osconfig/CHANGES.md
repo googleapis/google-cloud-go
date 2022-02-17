@@ -30,7 +30,6 @@ Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/osconfig/v0.1.0...osconfig/v0.2.0) (2021-09-11)
 
-
 ### Features
 
 * **osconfig:** add OSConfigZonalService API Committer: [@jaiminsh](https://www.github.com/jaiminsh) ([d9ce9d0](https://www.github.com/googleapis/google-cloud-go/commit/d9ce9d0ee64f59c4e07ce4752bfd721051a95ac7))
