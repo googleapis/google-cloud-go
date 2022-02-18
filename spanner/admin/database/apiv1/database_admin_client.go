@@ -261,10 +261,15 @@ type internalDatabaseAdminClient interface {
 //
 // Cloud Spanner Database Admin API
 //
-// The Cloud Spanner Database Admin API can be used to create, drop, and
-// list databases. It also enables updating the schema of pre-existing
-// databases. It can be also used to create, delete and list backups for a
-// database and to restore from an existing backup.
+// The Cloud Spanner Database Admin API can be used to:
+//
+//   create, drop, and list databases
+//
+//   update the schema of pre-existing databases
+//
+//   create, delete and list backups for a database
+//
+//   restore a database from an existing backup
 type DatabaseAdminClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatabaseAdminClient
@@ -348,6 +353,8 @@ func (c *DatabaseAdminClient) UpdateDatabaseDdlOperation(name string) *UpdateDat
 // DropDatabase drops (aka deletes) a Cloud Spanner database.
 // Completed backups for the database will be retained according to their
 // expire_time.
+// Note: Cloud Spanner might continue to accept requests for a few seconds
+// after the database has been deleted.
 func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DropDatabase(ctx, req, opts...)
 }
@@ -523,10 +530,15 @@ type databaseAdminGRPCClient struct {
 //
 // Cloud Spanner Database Admin API
 //
-// The Cloud Spanner Database Admin API can be used to create, drop, and
-// list databases. It also enables updating the schema of pre-existing
-// databases. It can be also used to create, delete and list backups for a
-// database and to restore from an existing backup.
+// The Cloud Spanner Database Admin API can be used to:
+//
+//   create, drop, and list databases
+//
+//   update the schema of pre-existing databases
+//
+//   create, delete and list backups for a database
+//
+//   restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
 	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {

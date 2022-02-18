@@ -42,32 +42,38 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateLake       []gax.CallOption
-	UpdateLake       []gax.CallOption
-	DeleteLake       []gax.CallOption
-	ListLakes        []gax.CallOption
-	GetLake          []gax.CallOption
-	ListLakeActions  []gax.CallOption
-	CreateZone       []gax.CallOption
-	UpdateZone       []gax.CallOption
-	DeleteZone       []gax.CallOption
-	ListZones        []gax.CallOption
-	GetZone          []gax.CallOption
-	ListZoneActions  []gax.CallOption
-	CreateAsset      []gax.CallOption
-	UpdateAsset      []gax.CallOption
-	DeleteAsset      []gax.CallOption
-	ListAssets       []gax.CallOption
-	GetAsset         []gax.CallOption
-	ListAssetActions []gax.CallOption
-	CreateTask       []gax.CallOption
-	UpdateTask       []gax.CallOption
-	DeleteTask       []gax.CallOption
-	ListTasks        []gax.CallOption
-	GetTask          []gax.CallOption
-	ListJobs         []gax.CallOption
-	GetJob           []gax.CallOption
-	CancelJob        []gax.CallOption
+	CreateLake        []gax.CallOption
+	UpdateLake        []gax.CallOption
+	DeleteLake        []gax.CallOption
+	ListLakes         []gax.CallOption
+	GetLake           []gax.CallOption
+	ListLakeActions   []gax.CallOption
+	CreateZone        []gax.CallOption
+	UpdateZone        []gax.CallOption
+	DeleteZone        []gax.CallOption
+	ListZones         []gax.CallOption
+	GetZone           []gax.CallOption
+	ListZoneActions   []gax.CallOption
+	CreateAsset       []gax.CallOption
+	UpdateAsset       []gax.CallOption
+	DeleteAsset       []gax.CallOption
+	ListAssets        []gax.CallOption
+	GetAsset          []gax.CallOption
+	ListAssetActions  []gax.CallOption
+	CreateTask        []gax.CallOption
+	UpdateTask        []gax.CallOption
+	DeleteTask        []gax.CallOption
+	ListTasks         []gax.CallOption
+	GetTask           []gax.CallOption
+	ListJobs          []gax.CallOption
+	GetJob            []gax.CallOption
+	CancelJob         []gax.CallOption
+	CreateEnvironment []gax.CallOption
+	UpdateEnvironment []gax.CallOption
+	DeleteEnvironment []gax.CallOption
+	ListEnvironments  []gax.CallOption
+	GetEnvironment    []gax.CallOption
+	ListSessions      []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -239,7 +245,13 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CancelJob: []gax.CallOption{},
+		CancelJob:         []gax.CallOption{},
+		CreateEnvironment: []gax.CallOption{},
+		UpdateEnvironment: []gax.CallOption{},
+		DeleteEnvironment: []gax.CallOption{},
+		ListEnvironments:  []gax.CallOption{},
+		GetEnvironment:    []gax.CallOption{},
+		ListSessions:      []gax.CallOption{},
 	}
 }
 
@@ -286,6 +298,15 @@ type internalClient interface {
 	ListJobs(context.Context, *dataplexpb.ListJobsRequest, ...gax.CallOption) *JobIterator
 	GetJob(context.Context, *dataplexpb.GetJobRequest, ...gax.CallOption) (*dataplexpb.Job, error)
 	CancelJob(context.Context, *dataplexpb.CancelJobRequest, ...gax.CallOption) error
+	CreateEnvironment(context.Context, *dataplexpb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
+	CreateEnvironmentOperation(name string) *CreateEnvironmentOperation
+	UpdateEnvironment(context.Context, *dataplexpb.UpdateEnvironmentRequest, ...gax.CallOption) (*UpdateEnvironmentOperation, error)
+	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
+	DeleteEnvironment(context.Context, *dataplexpb.DeleteEnvironmentRequest, ...gax.CallOption) (*DeleteEnvironmentOperation, error)
+	DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation
+	ListEnvironments(context.Context, *dataplexpb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
+	GetEnvironment(context.Context, *dataplexpb.GetEnvironmentRequest, ...gax.CallOption) (*dataplexpb.Environment, error)
+	ListSessions(context.Context, *dataplexpb.ListSessionsRequest, ...gax.CallOption) *SessionIterator
 }
 
 // Client is a client for interacting with Cloud Dataplex API.
@@ -534,6 +555,55 @@ func (c *Client) GetJob(ctx context.Context, req *dataplexpb.GetJobRequest, opts
 // CancelJob cancel jobs running for the task resource.
 func (c *Client) CancelJob(ctx context.Context, req *dataplexpb.CancelJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelJob(ctx, req, opts...)
+}
+
+// CreateEnvironment create an environment resource.
+func (c *Client) CreateEnvironment(ctx context.Context, req *dataplexpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	return c.internalClient.CreateEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *Client) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	return c.internalClient.CreateEnvironmentOperation(name)
+}
+
+// UpdateEnvironment update the environment resource.
+func (c *Client) UpdateEnvironment(ctx context.Context, req *dataplexpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
+}
+
+// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
+// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
+func (c *Client) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+	return c.internalClient.UpdateEnvironmentOperation(name)
+}
+
+// DeleteEnvironment delete the environment resource. All the child resources must have been
+// deleted before environment deletion can be initiated.
+func (c *Client) DeleteEnvironment(ctx context.Context, req *dataplexpb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
+	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
+}
+
+// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
+// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
+func (c *Client) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
+	return c.internalClient.DeleteEnvironmentOperation(name)
+}
+
+// ListEnvironments lists environments under the given lake.
+func (c *Client) ListEnvironments(ctx context.Context, req *dataplexpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.ListEnvironments(ctx, req, opts...)
+}
+
+// GetEnvironment get environment resource.
+func (c *Client) GetEnvironment(ctx context.Context, req *dataplexpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	return c.internalClient.GetEnvironment(ctx, req, opts...)
+}
+
+// ListSessions lists session resources in an environment.
+func (c *Client) ListSessions(ctx context.Context, req *dataplexpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
+	return c.internalClient.ListSessions(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Cloud Dataplex API over gRPC transport.
@@ -1386,6 +1456,164 @@ func (c *gRPCClient) CancelJob(ctx context.Context, req *dataplexpb.CancelJobReq
 	return err
 }
 
+func (c *gRPCClient) CreateEnvironment(ctx context.Context, req *dataplexpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateEnvironment(ctx context.Context, req *dataplexpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteEnvironment(ctx context.Context, req *dataplexpb.DeleteEnvironmentRequest, opts ...gax.CallOption) (*DeleteEnvironmentOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListEnvironments(ctx context.Context, req *dataplexpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
+	it := &EnvironmentIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListEnvironmentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Environment, string, error) {
+		resp := &dataplexpb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListEnvironments(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetEnvironment(ctx context.Context, req *dataplexpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
+	var resp *dataplexpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSessions(ctx context.Context, req *dataplexpb.ListSessionsRequest, opts ...gax.CallOption) *SessionIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListSessions[0:len((*c.CallOptions).ListSessions):len((*c.CallOptions).ListSessions)], opts...)
+	it := &SessionIterator{}
+	req = proto.Clone(req).(*dataplexpb.ListSessionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataplexpb.Session, string, error) {
+		resp := &dataplexpb.ListSessionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSessions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSessions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // CreateAssetOperation manages a long-running operation from CreateAsset.
 type CreateAssetOperation struct {
 	lro *longrunning.Operation
@@ -1452,6 +1680,75 @@ func (op *CreateAssetOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateAssetOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
+type CreateEnvironmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *gRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	return &CreateEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	var resp dataplexpb.Environment
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	var resp dataplexpb.Environment
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateEnvironmentOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
+	var meta dataplexpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateEnvironmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1720,6 +2017,64 @@ func (op *DeleteAssetOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteEnvironmentOperation manages a long-running operation from DeleteEnvironment.
+type DeleteEnvironmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
+// The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
+func (c *gRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
+	return &DeleteEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteEnvironmentOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
+	var meta dataplexpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteEnvironmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteEnvironmentOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteLakeOperation manages a long-running operation from DeleteLake.
 type DeleteLakeOperation struct {
 	lro *longrunning.Operation
@@ -1960,6 +2315,75 @@ func (op *UpdateAssetOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateAssetOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateEnvironmentOperation manages a long-running operation from UpdateEnvironment.
+type UpdateEnvironmentOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
+// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
+func (c *gRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+	return &UpdateEnvironmentOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	var resp dataplexpb.Environment
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataplexpb.Environment, error) {
+	var resp dataplexpb.Environment
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateEnvironmentOperation) Metadata() (*dataplexpb.OperationMetadata, error) {
+	var meta dataplexpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateEnvironmentOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -2264,6 +2688,53 @@ func (it *AssetIterator) takeBuf() interface{} {
 	return b
 }
 
+// EnvironmentIterator manages a stream of *dataplexpb.Environment.
+type EnvironmentIterator struct {
+	items    []*dataplexpb.Environment
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.Environment, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EnvironmentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EnvironmentIterator) Next() (*dataplexpb.Environment, error) {
+	var item *dataplexpb.Environment
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EnvironmentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EnvironmentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // JobIterator manages a stream of *dataplexpb.Job.
 type JobIterator struct {
 	items    []*dataplexpb.Job
@@ -2353,6 +2824,53 @@ func (it *LakeIterator) bufLen() int {
 }
 
 func (it *LakeIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// SessionIterator manages a stream of *dataplexpb.Session.
+type SessionIterator struct {
+	items    []*dataplexpb.Session
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dataplexpb.Session, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *SessionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *SessionIterator) Next() (*dataplexpb.Session, error) {
+	var item *dataplexpb.Session
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *SessionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *SessionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

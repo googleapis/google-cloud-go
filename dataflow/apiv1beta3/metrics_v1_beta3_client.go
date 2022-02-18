@@ -18,7 +18,9 @@ package dataflow
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -219,7 +221,8 @@ func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataf
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "job_id", url.QueryEscape(req.GetJobId()), "location", url.QueryEscape(req.GetLocation())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetJobMetrics[0:len((*c.CallOptions).GetJobMetrics):len((*c.CallOptions).GetJobMetrics)], opts...)
 	var resp *dataflowpb.JobMetrics
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -234,7 +237,8 @@ func (c *metricsV1Beta3GRPCClient) GetJobMetrics(ctx context.Context, req *dataf
 }
 
 func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, req *dataflowpb.GetJobExecutionDetailsRequest, opts ...gax.CallOption) *StageSummaryIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetJobExecutionDetails[0:len((*c.CallOptions).GetJobExecutionDetails):len((*c.CallOptions).GetJobExecutionDetails)], opts...)
 	it := &StageSummaryIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetJobExecutionDetailsRequest)
@@ -277,7 +281,8 @@ func (c *metricsV1Beta3GRPCClient) GetJobExecutionDetails(ctx context.Context, r
 }
 
 func (c *metricsV1Beta3GRPCClient) GetStageExecutionDetails(ctx context.Context, req *dataflowpb.GetStageExecutionDetailsRequest, opts ...gax.CallOption) *WorkerDetailsIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation()), "job_id", url.QueryEscape(req.GetJobId()), "stage_id", url.QueryEscape(req.GetStageId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetStageExecutionDetails[0:len((*c.CallOptions).GetStageExecutionDetails):len((*c.CallOptions).GetStageExecutionDetails)], opts...)
 	it := &WorkerDetailsIterator{}
 	req = proto.Clone(req).(*dataflowpb.GetStageExecutionDetailsRequest)

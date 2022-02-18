@@ -20,7 +20,7 @@ import (
 	"strings"
 	"sync"
 
-	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
@@ -297,7 +297,7 @@ func getCommonTags(sc *sessionClient) *commonTags {
 		clientID:   sc.id,
 		database:   database,
 		instance:   instance,
-		libVersion: version.Repo,
+		libVersion: internal.Version,
 	}
 }
 
