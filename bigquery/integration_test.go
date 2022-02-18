@@ -523,7 +523,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
-func TestIntegration_SnapshotAndRestore(t *testing.T) {
+func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -603,6 +603,37 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	}
 	if meta.NumRows != restoreMeta.NumRows {
 		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
+	}
+	if restoreMeta.Type != RegularTable {
+		t.Errorf("table type mismatch, got %s want %s", restoreMeta.Type, RegularTable)
+	}
+
+	// Create a clone of the snapshot.
+	cloneID := tableIDs.New()
+	cloner := dataset.Table(cloneID).CopierFrom(dataset.Table(snapshotID))
+	cloner.OperationType = CloneOperation
+
+	job, err = cloner.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run restore: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("restore failed: %v", err)
+	}
+
+	cloneMeta, err := dataset.Table(cloneID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get restored table metadata: %v", err)
+	}
+	if meta.NumBytes != cloneMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, cloneMeta.NumBytes)
+	}
+	if meta.NumRows != cloneMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, cloneMeta.NumRows)
+	}
+	if cloneMeta.Type != Clone {
+		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, Clone)
 	}
 
 }

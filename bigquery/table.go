@@ -184,6 +184,9 @@ const (
 	// Snapshot represents an immutable point in time snapshot of some other
 	// table.
 	Snapshot TableType = "SNAPSHOT"
+	// Clone represents a mutable copy of a base table.  Billing is based
+	// on differences between the base table and the clone.
+	Clone TableType = "CLONE"
 )
 
 // MaterializedViewDefinition contains information for materialized views.

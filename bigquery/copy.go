@@ -27,10 +27,14 @@ type TableCopyOperationType string
 var (
 	// CopyOperation indicates normal table to table copying.
 	CopyOperation TableCopyOperationType = "COPY"
-	// SnapshotOperation indicates creating a snapshot from a regular table.
+	// SnapshotOperation indicates creating a snapshot from a regular table, which
+	// operates as an immutable copy.
 	SnapshotOperation TableCopyOperationType = "SNAPSHOT"
 	// RestoreOperation indicates creating/restoring a table from a snapshot.
 	RestoreOperation TableCopyOperationType = "RESTORE"
+	// CloneOperation indicates creating a table clone, which creates a writeable
+	// copy of a base table that is billed based on difference from the base table.
+	CloneOperation TableCopyOperationType = "CLONE"
 )
 
 // CopyConfig holds the configuration for a copy job.
