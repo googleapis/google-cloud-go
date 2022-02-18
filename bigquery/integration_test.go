@@ -632,9 +632,10 @@ func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 	if meta.NumRows != cloneMeta.NumRows {
 		t.Errorf("row counts mismatch.  snap had %d rows, clone had %d rows", meta.NumRows, cloneMeta.NumRows)
 	}
-	if cloneMeta.Type != Clone {
-		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, Clone)
+	if cloneMeta.Type != RegularTable {
+		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, RegularTable)
 	}
+	// TODO: validate CloneDefinition when it's exposed.
 
 }
 
