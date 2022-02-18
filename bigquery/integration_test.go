@@ -627,10 +627,10 @@ func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 		t.Fatalf("couldn't get restored table metadata: %v", err)
 	}
 	if meta.NumBytes != cloneMeta.NumBytes {
-		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, cloneMeta.NumBytes)
+		t.Errorf("bytes mismatch.  snap had %d bytes, clone had %d bytes", meta.NumBytes, cloneMeta.NumBytes)
 	}
 	if meta.NumRows != cloneMeta.NumRows {
-		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, cloneMeta.NumRows)
+		t.Errorf("row counts mismatch.  snap had %d rows, clone had %d rows", meta.NumRows, cloneMeta.NumRows)
 	}
 	if cloneMeta.Type != Clone {
 		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, Clone)
