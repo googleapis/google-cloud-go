@@ -190,10 +190,10 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// DeleteLog deletes all the log entries in a log. The log reappears if it receives new
-// entries. Log entries written shortly before the delete operation might not
-// be deleted. Entries received after the delete operation with a timestamp
-// before the operation will be deleted.
+// DeleteLog deletes all the log entries in a log for the _Default Log Bucket. The log
+// reappears if it receives new entries. Log entries written shortly before
+// the delete operation might not be deleted. Entries received after the
+// delete operation with a timestamp before the operation will be deleted.
 func (c *Client) DeleteLog(ctx context.Context, req *loggingpb.DeleteLogRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteLog(ctx, req, opts...)
 }
