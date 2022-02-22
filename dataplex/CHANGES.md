@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.2.0...dataplex/v0.3.0) (2022-02-22)
+
+
+### Features
+
+* **dataplex:** added client side library for the followings: 1. Content APIs. 2. Create|Update|Delete Metadata APIs (e.g. Entity and/or Partition). ([7d6b0e5](https://github.com/googleapis/google-cloud-go/commit/7d6b0e5891b50cccdf77cd17ddd3644f31ef6dfc))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v0.1.0...dataplex/v0.2.0) (2022-02-14)
 
 

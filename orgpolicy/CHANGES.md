@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.1.0...orgpolicy/v1.2.0) (2022-02-22)
+
+
+### Features
+
+* **orgpolicy:** Deprecates AlternativePolicySpec ([f9fe0f2](https://github.com/googleapis/google-cloud-go/commit/f9fe0f2bf152c3855d3c6a2c54f9b7adba54f626))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.0.0...orgpolicy/v1.1.0) (2022-02-14)
 
 
