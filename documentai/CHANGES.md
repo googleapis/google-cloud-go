@@ -1,5 +1,13 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.2.0...documentai/v1.3.0) (2022-02-22)
+
+
+### Features
+
+* **documentai:** add `symbols` field, and auto-format comments ([f9fe0f2](https://github.com/googleapis/google-cloud-go/commit/f9fe0f2bf152c3855d3c6a2c54f9b7adba54f626))
+* **documentai:** add `symbols` field, and auto-format comments ([f9fe0f2](https://github.com/googleapis/google-cloud-go/commit/f9fe0f2bf152c3855d3c6a2c54f9b7adba54f626))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.1.0...documentai/v1.2.0) (2022-02-11)
 
 

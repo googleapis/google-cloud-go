@@ -1,5 +1,17 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.3.0...compute/v1.4.0) (2022-02-22)
+
+
+### Features
+
+* **compute:** update compute API to revision 20220112 ([#700](https://github.com/googleapis/google-cloud-go/issues/700)) ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
+
+### Bug Fixes
+
+* **compute:** fix breaking changes in Compute API ([#701](https://github.com/googleapis/google-cloud-go/issues/701)) ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.2.0...compute/v1.3.0) (2022-02-14)
 
 
