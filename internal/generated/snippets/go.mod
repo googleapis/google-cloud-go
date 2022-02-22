@@ -51,7 +51,7 @@ require (
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
 	cloud.google.com/go/gsuiteaddons v1.0.0
-	cloud.google.com/go/iam v0.1.1
+	cloud.google.com/go/iam v0.2.0
 	cloud.google.com/go/iap v1.0.0
 	cloud.google.com/go/ids v0.1.0
 	cloud.google.com/go/iot v1.0.0
@@ -111,7 +111,7 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.69.0
-	google.golang.org/genproto v0.0.0-20220218161850-94dd64e39d7c
+	google.golang.org/genproto v0.0.0-20220222154240-daf995802d7b
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
