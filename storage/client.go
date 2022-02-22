@@ -91,13 +91,12 @@ type storageClient interface {
 	TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error)
 
 	// HMAC Key methods.
-	// TODO(noahdietz): Determine how to work with HMACKeyOptions.
 
-	GetHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) (*HMACKey, error)
-	ListHMACKey(ctx context.Context, project string, opts ...storageOption) *HMACKeysIterator
-	UpdateHMACKey(ctx context.Context, project, accessID string, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
-	CreateHMACKey(ctx context.Context, project, serviceAccountEmail string, opts ...storageOption) (*HMACKey, error)
-	DeleteHMACKey(ctx context.Context, project, accessID string, opts ...storageOption) error
+	GetHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
+	ListHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) *HMACKeysIterator
+	UpdateHMACKey(ctx context.Context, desc *hmacKeyDesc, attrs *HMACKeyAttrsToUpdate, opts ...storageOption) (*HMACKey, error)
+	CreateHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) (*HMACKey, error)
+	DeleteHMACKey(ctx context.Context, desc *hmacKeyDesc, opts ...storageOption) error
 }
 
 // settings contains transport-agnostic configuration for API calls made via
