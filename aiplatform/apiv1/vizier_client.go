@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,6 @@ func defaultVizierGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -118,9 +117,9 @@ type internalVizierClient interface {
 // VizierClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Vertex Vizier API.
+// Vertex AI Vizier API.
 //
-// Vizier service is a GCP service to solve blackbox optimization problems,
+// Vertex AI Vizier is a service to solve blackbox optimization problems,
 // such as tuning machine learning hyperparameters and searching over deep
 // learning architectures.
 type VizierClient struct {
@@ -186,7 +185,7 @@ func (c *VizierClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lookup
 }
 
 // SuggestTrials adds one or more Trials to a Study, with parameter values
-// suggested by Vertex Vizier. Returns a long-running
+// suggested by Vertex AI Vizier. Returns a long-running
 // operation associated with the generation of Trial suggestions.
 // When this long-running operation succeeds, it will contain
 // a SuggestTrialsResponse.
@@ -286,9 +285,9 @@ type vizierGRPCClient struct {
 // NewVizierClient creates a new vizier service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Vertex Vizier API.
+// Vertex AI Vizier API.
 //
-// Vizier service is a GCP service to solve blackbox optimization problems,
+// Vertex AI Vizier is a service to solve blackbox optimization problems,
 // such as tuning machine learning hyperparameters and searching over deep
 // learning architectures.
 func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierClient, error) {

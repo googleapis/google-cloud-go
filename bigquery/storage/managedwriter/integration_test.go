@@ -144,6 +144,10 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			t.Parallel()
 			testPendingStream(ctx, t, mwClient, bqClient, dataset)
 		})
+		t.Run("SchemaEvolution", func(t *testing.T) {
+			t.Parallel()
+			testSchemaEvolution(ctx, t, mwClient, bqClient, dataset)
+		})
 		t.Run("Instrumentation", func(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
@@ -163,7 +167,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -181,13 +185,19 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	// Wait for the result to indicate ready, then validate.
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after first send round",
 		withExactRowCount(int64(len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))))
@@ -201,13 +211,19 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 		}
 		data = append(data, b)
 	}
-	result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+	result, err = ms.AppendRows(ctx, data)
 	if err != nil {
 		t.Errorf("grouped-row append failed: %v", err)
 	}
-	// wait for the result to indicate ready, then validate again.  Our total rows have increased, but
+	// Wait for the result to indicate ready, then validate again.  Our total rows have increased, but
 	// cardinality should not.
-	result.Ready()
+	o, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after second send round",
 		withExactRowCount(int64(2*len(testSimpleData))),
 		withDistinctValues("name", int64(len(testSimpleData))),
@@ -224,7 +240,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	md, descriptorProto := setupDynamicDescriptors(t, testdata.SimpleMessageSchema)
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -256,14 +272,20 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		if err != nil {
 			t.Fatalf("failed to marshal proto bytes for row %d: %v", k, err)
 		}
-		result, err = ms.AppendRows(ctx, [][]byte{b}, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, [][]byte{b})
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
 
-	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	// Wait for the result to indicate ready, then validate.
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	if o != NoStreamOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, NoStreamOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(sampleJSONData))),
 		withDistinctValues("name", int64(len(sampleJSONData))),
@@ -280,7 +302,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(BufferedStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -305,11 +327,11 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		results, err := ms.AppendRows(ctx, data, NoStreamOffset)
+		results, err := ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
-		// wait for ack
+		// Wait for acknowledgement.
 		offset, err := results.GetResult(ctx)
 		if err != nil {
 			t.Errorf("got error from pending result %d: %v", k, err)
@@ -341,7 +363,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -358,13 +380,20 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, WithOffset(int64(k)))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready, then validate.
-	result.Ready()
+	// Wait for the result to indicate ready, then validate.
+	o, err := result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("result error for last send: %v", err)
+	}
+	wantOffset := int64(len(testSimpleData) - 1)
+	if o != wantOffset {
+		t.Errorf("offset mismatch, got %d want %d", o, wantOffset)
+	}
 	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
 		withExactRowCount(int64(len(testSimpleData))))
 }
@@ -379,7 +408,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(PendingStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -397,12 +426,19 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data, WithOffset(int64(k)))
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
+		// Be explicit about waiting/checking each response.
+		off, err := result.GetResult(ctx)
+		if err != nil {
+			t.Errorf("response %d error: %v", k, err)
+		}
+		if off != int64(k) {
+			t.Errorf("offset mismatch, got %d want %d", off, k)
+		}
 	}
-	result.Ready()
 	wantRows := int64(len(testSimpleData))
 
 	// Mark stream complete.
@@ -453,7 +489,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -468,12 +504,12 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		result, err = ms.AppendRows(ctx, data, NoStreamOffset)
+		result, err = ms.AppendRows(ctx, data)
 		if err != nil {
 			t.Errorf("single-row append %d failed: %v", k, err)
 		}
 	}
-	// wait for the result to indicate ready.
+	// Wait for the result to indicate ready.
 	result.Ready()
 	// Ick.  Stats reporting can't force flushing, and there's a race here.  Sleep to give the recv goroutine a chance
 	// to report.
@@ -511,6 +547,110 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 			t.Errorf("%q: metric mismatch, got %f want %d", tv.Name, got, want)
 		}
 	}
+}
+
+func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
+	testTable := dataset.Table(tableIDs.New())
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: testdata.SimpleMessageSchema}); err != nil {
+		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	m := &testdata.SimpleMessageProto2{}
+	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
+
+	// setup a new stream.
+	ms, err := mwClient.NewManagedStream(ctx,
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithType(CommittedStream),
+		WithSchemaDescriptor(descriptorProto),
+	)
+	if err != nil {
+		t.Fatalf("NewManagedStream: %v", err)
+	}
+	validateTableConstraints(ctx, t, bqClient, testTable, "before send",
+		withExactRowCount(0))
+
+	var result *AppendResult
+	var curOffset int64
+	var latestRow []byte
+	for k, mesg := range testSimpleData {
+		b, err := proto.Marshal(mesg)
+		if err != nil {
+			t.Errorf("failed to marshal message %d: %v", k, err)
+		}
+		latestRow = b
+		data := [][]byte{b}
+		result, err = ms.AppendRows(ctx, data, WithOffset(curOffset))
+		if err != nil {
+			t.Errorf("single-row append %d failed: %v", k, err)
+		}
+		curOffset = curOffset + int64(len(data))
+	}
+	// Wait for the result to indicate ready, then validate.
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(len(testSimpleData))))
+
+	// Now, evolve the underlying table schema.
+	_, err = testTable.Update(ctx, bigquery.TableMetadataToUpdate{Schema: testdata.SimpleMessageEvolvedSchema}, "")
+	if err != nil {
+		t.Errorf("failed to evolve table schema: %v", err)
+	}
+
+	// Resend latest row until we get a new schema notification.
+	// It _should_ be possible to send duplicates, but this currently will not propagate the schema error.
+	// Internal issue: b/211899346
+	for {
+		resp, err := ms.AppendRows(ctx, [][]byte{latestRow}, WithOffset(curOffset))
+		if err != nil {
+			t.Errorf("got error on dupe append: %v", err)
+			break
+		}
+		curOffset = curOffset + 1
+		if err != nil {
+			t.Errorf("got error on offset %d: %v", curOffset, err)
+			break
+		}
+		s, err := resp.UpdatedSchema(ctx)
+		if err != nil {
+			t.Errorf("getting schema error: %v", err)
+			break
+		}
+		if s != nil {
+			break
+		}
+
+	}
+
+	// ready descriptor, send an additional append
+	m2 := &testdata.SimpleMessageEvolvedProto2{
+		Name:  proto.String("evolved"),
+		Value: proto.Int64(180),
+		Other: proto.String("hello evolution"),
+	}
+	descriptorProto = protodesc.ToDescriptorProto(m2.ProtoReflect().Descriptor())
+	b, err := proto.Marshal(m2)
+	if err != nil {
+		t.Errorf("failed to marshal evolved message: %v", err)
+	}
+	result, err = ms.AppendRows(ctx, [][]byte{b}, UpdateSchemaDescriptor(descriptorProto), WithOffset(curOffset))
+	if err != nil {
+		t.Errorf("failed evolved append: %v", err)
+	}
+	_, err = result.GetResult(ctx)
+	if err != nil {
+		t.Errorf("error on evolved append: %v", err)
+	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "after send",
+		withExactRowCount(int64(curOffset+1)),
+		withNullCount("name", 0),
+		withNonNullCount("other", 1),
+	)
 }
 
 func TestIntegration_DetectProjectID(t *testing.T) {
@@ -606,14 +746,14 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(dp),
 	)
 	if err != nil {
 		t.Fatalf("NewManagedStream: %v", err)
 	}
-	result, err := ms.AppendRows(ctx, [][]byte{sampleRow}, NoStreamOffset)
+	result, err := ms.AppendRows(ctx, [][]byte{sampleRow})
 	if err != nil {
 		t.Errorf("append failed: %v", err)
 	}

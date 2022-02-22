@@ -86,7 +86,7 @@ type SeekSubscriptionResult struct{}
 type OperationMetadata struct {
 	// The target of the operation. For example, targets of seeks are
 	// subscriptions, structured like:
-	// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID"
+	// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID"
 	Target string
 
 	// The verb describing the kind of operation.

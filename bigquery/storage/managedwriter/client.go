@@ -98,11 +98,13 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		c:              c,
 		ctx:            ctx,
 		cancel:         cancel,
-		open: func(streamID string) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		callOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
+		},
+		open: func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			arc, err := streamFunc(
 				// Bidi Streaming doesn't append stream ID as request metadata, so we must inject it manually.
-				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)),
-				gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
+				metadata.AppendToOutgoingContext(ctx, "x-goog-request-params", fmt.Sprintf("write_stream=%s", streamID)))
 			if err != nil {
 				return nil, err
 			}
@@ -123,7 +125,7 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 
 		if ms.streamSettings.streamID == "" {
 			// not instantiated with a stream, construct one.
-			streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
+			streamName := fmt.Sprintf("%s/streams/_default", ms.destinationTable)
 			if ms.streamSettings.streamType != DefaultStream {
 				// For everything but a default stream, we create a new stream on behalf of the user.
 				req := &storagepb.CreateWriteStreamRequest{
@@ -219,4 +221,10 @@ func TableParentFromStreamName(streamName string) string {
 		return streamName
 	}
 	return strings.Join(parts[:6], "/")
+}
+
+// TableParentFromParts constructs a table identifier using individual identifiers and
+// returns a string in the form "projects/{project}/datasets/{dataset}/tables/{table}".
+func TableParentFromParts(projectID, datasetID, tableID string) string {
+	return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", projectID, datasetID, tableID)
 }

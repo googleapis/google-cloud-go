@@ -1,5 +1,12 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.0.0...translate/v1.1.0) (2022-02-14)
+
+
+### Features
+
+* **translate:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+
 ## 1.0.0
 
 Stabilize GA surface.
@@ -15,4 +22,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out translate as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
- 

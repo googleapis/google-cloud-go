@@ -200,9 +200,19 @@
                 "DeleteDocument"
               ]
             },
+            "ExportDocument": {
+              "methods": [
+                "ExportDocument"
+              ]
+            },
             "GetDocument": {
               "methods": [
                 "GetDocument"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
               ]
             },
             "ListDocuments": {
@@ -452,6 +462,11 @@
             "SuggestFaqAnswers": {
               "methods": [
                 "SuggestFaqAnswers"
+              ]
+            },
+            "SuggestSmartReplies": {
+              "methods": [
+                "SuggestSmartReplies"
               ]
             },
             "UpdateParticipant": {

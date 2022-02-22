@@ -19,6 +19,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -28,8 +30,8 @@ import (
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -50,11 +52,331 @@ type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions
 // wrap library methods that implement these calls. There may be multiple values
 // because multiple library methods may use the same call (e.g. get could be a
 // read or just a metadata get).
+//
+// There may be missing methods with respect to the json API as not all methods
+// are used in the client library. The following are not used:
+// storage.bucket_acl.get
+// storage.bucket_acl.insert
+// storage.bucket_acl.patch
+// storage.buckets.update
+// storage.default_object_acl.get
+// storage.default_object_acl.insert
+// storage.default_object_acl.patch
+// storage.notifications.get
+// storage.object_acl.get
+// storage.object_acl.insert
+// storage.object_acl.patch
+// storage.objects.copy
+// storage.objects.update
 var methods = map[string][]retryFunc{
+	// Idempotent operations
+	"storage.bucket_acl.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).ACL().List(ctx)
+			return err
+		},
+	},
+	"storage.buckets.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Delete files from bucket before deleting bucket
+			it := c.Bucket(fs.bucket.Name).Objects(ctx, nil)
+			for {
+				attrs, err := it.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					return err
+				}
+				if err := c.Bucket(fs.bucket.Name).Object(attrs.Name).Delete(ctx); err != nil {
+					return err
+				}
+			}
+			return c.Bucket(fs.bucket.Name).Delete(ctx)
+		},
+	},
 	"storage.buckets.get": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			_, err := c.Bucket(fs.bucket.Name).Attrs(ctx)
 			return err
+		},
+	},
+	"storage.buckets.getIamPolicy": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).IAM().Policy(ctx)
+			return err
+		},
+	},
+	"storage.buckets.insert": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			b := bucketIDs.New()
+			return c.Bucket(b).Create(ctx, projectID, nil)
+		},
+	},
+	"storage.buckets.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			it := c.Buckets(ctx, projectID)
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+			}
+		},
+	},
+	"storage.buckets.lockRetentionPolicy": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// buckets.lockRetentionPolicy is always idempotent, but is a special case because IfMetagenerationMatch is always required
+			return c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration}).LockRetentionPolicy(ctx)
+		},
+	},
+	"storage.buckets.testIamPermissions": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).IAM().TestPermissions(ctx, nil)
+			return err
+		},
+	},
+	"storage.default_object_acl.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).DefaultObjectACL().List(ctx)
+			return err
+		},
+	},
+	"storage.hmacKey.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// key must be inactive to delete:
+			c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Update(ctx, HMACKeyAttrsToUpdate{State: "INACTIVE"})
+			return c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Delete(ctx)
+		},
+	},
+	"storage.hmacKey.get": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID).Get(ctx)
+			return err
+		},
+	},
+	"storage.hmacKey.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			it := c.ListHMACKeys(ctx, projectID)
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+			}
+		},
+	},
+	"storage.notifications.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DeleteNotification(ctx, fs.notification.ID)
+		},
+	},
+	"storage.notifications.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).Notifications(ctx)
+			return err
+		},
+	},
+	"storage.object_acl.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).ACL().List(ctx)
+			return err
+		},
+	},
+	"storage.objects.get": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
+			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(ioutil.Discard, r)
+			return err
+		},
+	},
+	"storage.objects.list": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			it := c.Bucket(fs.bucket.Name).Objects(ctx, nil)
+			for {
+				_, err := it.Next()
+				if err == iterator.Done {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+			}
+		},
+	},
+	"storage.serviceaccount.get": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.ServiceAccount(ctx, projectID)
+			return err
+		},
+	},
+	// Conditionally idempotent operations
+	// (all conditionally idempotent operations currently fail)
+	"storage.buckets.patch": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
+			bkt := c.Bucket(fs.bucket.Name)
+			if preconditions {
+				bkt = c.Bucket(fs.bucket.Name).If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration})
+			}
+			_, err := bkt.Update(ctx, uattrs)
+			return err
+		},
+	},
+	"storage.buckets.setIamPolicy": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			bkt := c.Bucket(fs.bucket.Name)
+			policy, err := bkt.IAM().Policy(ctx)
+			if err != nil {
+				return err
+			}
+
+			if !preconditions {
+				policy.InternalProto.Etag = nil
+			}
+
+			return bkt.IAM().SetPolicy(ctx, policy)
+		},
+	},
+	"storage.hmacKey.update": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			key := c.HMACKeyHandle(projectID, fs.hmacKey.AccessID)
+			uattrs := HMACKeyAttrsToUpdate{State: "INACTIVE"}
+
+			if preconditions {
+				uattrs.Etag = fs.hmacKey.Etag
+			}
+
+			_, err := key.Update(ctx, uattrs)
+			return err
+		},
+	},
+	"storage.objects.compose": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			dstName := "new-object"
+			src := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
+			dst := c.Bucket(fs.bucket.Name).Object(dstName)
+
+			if preconditions {
+				dst = c.Bucket(fs.bucket.Name).Object(dstName).If(Conditions{DoesNotExist: true})
+			}
+
+			_, err := dst.ComposerFrom(src).Run(ctx)
+			return err
+		},
+	},
+	"storage.objects.delete": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
+
+			if preconditions {
+				obj = c.Bucket(fs.bucket.Name).Object(fs.object.Name).If(Conditions{GenerationMatch: fs.object.Generation})
+			}
+			return obj.Delete(ctx)
+		},
+	},
+	"storage.objects.insert": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
+
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			if _, err := io.Copy(objW, strings.NewReader("object body")); err != nil {
+				return fmt.Errorf("io.Copy: %v", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+	},
+	"storage.objects.patch": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
+			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
+			if preconditions {
+				obj = obj.If(Conditions{MetagenerationMatch: fs.object.Metageneration})
+			}
+			_, err := obj.Update(ctx, uattrs)
+			return err
+		},
+	},
+	"storage.objects.rewrite": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			dstName := "new-object"
+			src := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
+			dst := c.Bucket(fs.bucket.Name).Object(dstName)
+
+			if preconditions {
+				dst = c.Bucket(fs.bucket.Name).Object(dstName).If(Conditions{DoesNotExist: true})
+			}
+
+			_, err := dst.CopierFrom(src).Run(ctx)
+			return err
+		},
+	},
+	// Non-idempotent operations
+	"storage.bucket_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).ACL().Delete(ctx, AllUsers)
+		},
+	},
+	"storage.bucket_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).ACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
+		},
+	},
+	"storage.default_object_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DefaultObjectACL().Delete(ctx, AllAuthenticatedUsers)
+		},
+	},
+	"storage.default_object_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).DefaultObjectACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
+		},
+	},
+	"storage.hmacKey.create": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+			return err
+		},
+	},
+	"storage.notifications.insert": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			notification := Notification{
+				TopicID:        "my-topic",
+				TopicProjectID: projectID,
+				PayloadFormat:  "json",
+			}
+			_, err := c.Bucket(fs.bucket.Name).AddNotification(ctx, &notification)
+			return err
+		},
+	},
+	"storage.object_acl.delete": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).Object(fs.object.Name).ACL().Delete(ctx, AllAuthenticatedUsers)
+		},
+	},
+	"storage.object_acl.update": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			return c.Bucket(fs.bucket.Name).Object(fs.object.Name).ACL().Set(ctx, AllAuthenticatedUsers, RoleOwner)
 		},
 	},
 }
@@ -62,8 +384,6 @@ var methods = map[string][]retryFunc{
 func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
-		// This test is currently skipped in CI as the env variable is not set
-		// TODO: Add test to CI
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
 	endpoint, err := url.Parse(host)
@@ -228,7 +548,7 @@ func (et *emulatorTest) create(instructions map[string][]string) {
 
 	// Create wrapped client which will send emulator instructions
 	et.host.Path = ""
-	client, err := wrappedClient(et.T, et.host.String(), et.id)
+	client, err := wrappedClient(et.T, et.id)
 	if err != nil {
 		et.Fatalf("creating wrapped client: %v", err)
 	}
@@ -298,14 +618,15 @@ func (wt *retryTestRoundTripper) RoundTrip(r *http.Request) (*http.Response, err
 }
 
 // Create custom client that sends instructions to the storage testbench Retry Test API
-func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
+func wrappedClient(t *testing.T, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
-	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
-		option.WithUserAgent("custom-user-agent"))
+
+	trans, err := htransport.NewTransport(ctx, base, option.WithoutAuthentication(), option.WithUserAgent("custom-user-agent"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http client: %v", err)
 	}
+
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client
@@ -313,6 +634,7 @@ func wrappedClient(t *testing.T, host, testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host+"/storage/v1/"))
+	// STORAGE_EMULATOR_HOST takes care of setting the correct endpoint
+	client, err := NewClient(ctx, option.WithHTTPClient(&c))
 	return client, err
 }

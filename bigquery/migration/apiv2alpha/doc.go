@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 // Package migration is an auto-generated package for the
 // BigQuery Migration API.
 //
-// The BigQuery migration service, exposing apis for migration jobs
-// operations, and agent management.
+// The migration service, exposing apis for migration jobs operations, and
+// agent management.
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
@@ -87,7 +87,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20211022"
+const versionClient = "20220219"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

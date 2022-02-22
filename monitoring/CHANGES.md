@@ -1,12 +1,25 @@
 # Changes
 
-## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v1.0.0...monitoring/v1.1.0) (2021-10-18)
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.2.0...monitoring/v1.3.0) (2022-02-14)
 
 
 ### Features
 
-* **monitoring/apiv3:** add CreateServiceTimeSeries RPC ([9e41088](https://www.github.com/googleapis/google-cloud-go/commit/9e41088bb395fbae0e757738277d5c95fa2749c8))
+* **monitoring:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
 
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v1.1.0...monitoring/v1.2.0) (2022-01-04)
+
+
+### Features
+
+* **monitoring/dashboard:** Added support for auto-close configurations ([90e2868](https://www.github.com/googleapis/google-cloud-go/commit/90e2868a3d220aa7f897438f4917013fda7a7c59))
+* **monitoring/metricsscope:** promote apiv1 to GA ([#5135](https://www.github.com/googleapis/google-cloud-go/issues/5135)) ([33c0f63](https://www.github.com/googleapis/google-cloud-go/commit/33c0f63e0e0ce69d9ef6e57b04d1b8cc10ed2b78))
+
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v1.0.0...monitoring/v1.1.0) (2021-10-18)
+
+### Features
+
+* **monitoring/apiv3:** add CreateServiceTimeSeries RPC ([9e41088](https://www.github.com/googleapis/google-cloud-go/commit/9e41088bb395fbae0e757738277d5c95fa2749c8))
 
 ### Bug Fixes
 
@@ -18,13 +31,11 @@ Stabilize GA surface.
 
 ## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v0.2.0...monitoring/v0.3.0) (2021-09-21)
 
-
 ### Features
 
 * **monitoring/metricsscope:** start generating apiv1 ([8d45b5d](https://www.github.com/googleapis/google-cloud-go/commit/8d45b5d802b5da2e82f9f8fbe00c01b0c54a6b33))
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/monitoring/v0.1.0...monitoring/v0.2.0) (2021-08-30)
-
 
 ### Features
 

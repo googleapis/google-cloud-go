@@ -1893,8 +1893,37 @@ var baseTypes = map[string]TypeBase{
 	"JSON":      JSON,
 }
 
+func (p *parser) parseBaseType() (Type, *parseError) {
+	return p.parseBaseOrParameterizedType(false)
+}
+
 func (p *parser) parseType() (Type, *parseError) {
-	debugf("parseType: %v", p)
+	return p.parseBaseOrParameterizedType(true)
+}
+
+var extractPartTypes = map[string]TypeBase{
+	"DAY":   Int64,
+	"MONTH": Int64,
+	"YEAR":  Int64,
+	"DATE":  Date,
+}
+
+func (p *parser) parseExtractType() (Type, string, *parseError) {
+	var t Type
+	tok := p.next()
+	if tok.err != nil {
+		return Type{}, "", tok.err
+	}
+	base, ok := extractPartTypes[strings.ToUpper(tok.value)] // valid part types for EXTRACT is keyed by upper case strings.
+	if !ok {
+		return Type{}, "", p.errorf("got %q, want valid EXTRACT types", tok.value)
+	}
+	t.Base = base
+	return t, strings.ToUpper(tok.value), nil
+}
+
+func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError) {
+	debugf("parseBaseOrParameterizedType: %v", p)
 
 	/*
 		array_type:
@@ -1928,7 +1957,7 @@ func (p *parser) parseType() (Type, *parseError) {
 	}
 	t.Base = base
 
-	if t.Base == String || t.Base == Bytes {
+	if withParam && (t.Base == String || t.Base == Bytes) {
 		if err := p.expect("("); err != nil {
 			return Type{}, err
 		}
@@ -2436,9 +2465,15 @@ func (p *parser) parseExprList() ([]Expr, *parseError) {
 }
 
 func (p *parser) parseParenExprList() ([]Expr, *parseError) {
+	return p.parseParenExprListWithParseFunc(func(p *parser) (Expr, *parseError) {
+		return p.parseExpr()
+	})
+}
+
+func (p *parser) parseParenExprListWithParseFunc(f func(*parser) (Expr, *parseError)) ([]Expr, *parseError) {
 	var list []Expr
 	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
-		e, err := p.parseExpr()
+		e, err := f(p)
 		if err != nil {
 			return err
 		}
@@ -2446,6 +2481,54 @@ func (p *parser) parseParenExprList() ([]Expr, *parseError) {
 		return nil
 	})
 	return list, err
+}
+
+// Special argument parser for CAST and SAFE_CAST
+var typedArgParser = func(p *parser) (Expr, *parseError) {
+	e, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect("AS"); err != nil {
+		return nil, err
+	}
+	// typename in cast function must not be parameterized types
+	toType, err := p.parseBaseType()
+	if err != nil {
+		return nil, err
+	}
+	return TypedExpr{
+		Expr: e,
+		Type: toType,
+	}, nil
+}
+
+// Special argument parser for EXTRACT
+var extractArgParser = func(p *parser) (Expr, *parseError) {
+	partType, part, err := p.parseExtractType()
+	if err != nil {
+		return nil, err
+	}
+	if err := p.expect("FROM"); err != nil {
+		return nil, err
+	}
+	e, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+	// AT TIME ZONE is optional
+	if p.eat("AT", "TIME", "ZONE") {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+		return ExtractExpr{Part: part, Type: partType, Expr: AtTimeZoneExpr{Expr: e, Zone: tok.string, Type: Type{Base: Timestamp}}}, nil
+	}
+	return ExtractExpr{
+		Part: part,
+		Expr: e,
+		Type: partType,
+	}, nil
 }
 
 /*
@@ -2800,7 +2883,13 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	// this is a function invocation.
 	// The `funcs` map is keyed by upper case strings.
 	if name := strings.ToUpper(tok.value); funcs[name] && p.sniff("(") {
-		list, err := p.parseParenExprList()
+		var list []Expr
+		var err *parseError
+		if f, ok := funcArgParsers[name]; ok {
+			list, err = p.parseParenExprListWithParseFunc(f)
+		} else {
+			list, err = p.parseParenExprList()
+		}
 		if err != nil {
 			return nil, err
 		}

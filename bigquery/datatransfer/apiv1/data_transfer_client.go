@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ type CallOptions struct {
 	ListTransferRuns        []gax.CallOption
 	ListTransferLogs        []gax.CallOption
 	CheckValidCreds         []gax.CallOption
+	EnrollDataSources       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -62,7 +63,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -194,6 +194,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		EnrollDataSources: []gax.CallOption{},
 	}
 }
 
@@ -216,15 +217,13 @@ type internalClient interface {
 	ListTransferRuns(context.Context, *datatransferpb.ListTransferRunsRequest, ...gax.CallOption) *TransferRunIterator
 	ListTransferLogs(context.Context, *datatransferpb.ListTransferLogsRequest, ...gax.CallOption) *TransferMessageIterator
 	CheckValidCreds(context.Context, *datatransferpb.CheckValidCredsRequest, ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error)
+	EnrollDataSources(context.Context, *datatransferpb.EnrollDataSourcesRequest, ...gax.CallOption) error
 }
 
 // Client is a client for interacting with BigQuery Data Transfer API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Google BigQuery Data Transfer Service API enables BigQuery users to
-// configure the transfer of their data from other Google Products into
-// BigQuery. This service contains methods that are end user exposed. It backs
-// up the frontend.
+// This API allows users to manage their data transfers into BigQuery.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -255,14 +254,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetDataSource retrieves a supported data source and returns its settings,
-// which can be used for UI rendering.
+// GetDataSource retrieves a supported data source and returns its settings.
 func (c *Client) GetDataSource(ctx context.Context, req *datatransferpb.GetDataSourceRequest, opts ...gax.CallOption) (*datatransferpb.DataSource, error) {
 	return c.internalClient.GetDataSource(ctx, req, opts...)
 }
 
-// ListDataSources lists supported data sources and returns their settings,
-// which can be used for UI rendering.
+// ListDataSources lists supported data sources and returns their settings.
 func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	return c.internalClient.ListDataSources(ctx, req, opts...)
 }
@@ -278,8 +275,8 @@ func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.U
 	return c.internalClient.UpdateTransferConfig(ctx, req, opts...)
 }
 
-// DeleteTransferConfig deletes a data transfer configuration,
-// including any associated transfer runs and logs.
+// DeleteTransferConfig deletes a data transfer configuration, including any associated transfer
+// runs and logs.
 func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.DeleteTransferConfigRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTransferConfig(ctx, req, opts...)
 }
@@ -324,24 +321,30 @@ func (c *Client) DeleteTransferRun(ctx context.Context, req *datatransferpb.Dele
 	return c.internalClient.DeleteTransferRun(ctx, req, opts...)
 }
 
-// ListTransferRuns returns information about running and completed jobs.
+// ListTransferRuns returns information about running and completed transfer runs.
 func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListTransferRunsRequest, opts ...gax.CallOption) *TransferRunIterator {
 	return c.internalClient.ListTransferRuns(ctx, req, opts...)
 }
 
-// ListTransferLogs returns user facing log messages for the data transfer run.
+// ListTransferLogs returns log messages for the transfer run.
 func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListTransferLogsRequest, opts ...gax.CallOption) *TransferMessageIterator {
 	return c.internalClient.ListTransferLogs(ctx, req, opts...)
 }
 
 // CheckValidCreds returns true if valid credentials exist for the given data source and
 // requesting user.
-// Some data sources doesn’t support service account, so we need to talk to
-// them on behalf of the end user. This API just checks whether we have OAuth
-// token for the particular user, which is a pre-requisite before user can
-// create a transfer config.
 func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckValidCredsRequest, opts ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error) {
 	return c.internalClient.CheckValidCreds(ctx, req, opts...)
+}
+
+// EnrollDataSources enroll data sources in a user project. This allows users to create transfer
+// configurations for these data sources. They will also appear in the
+// ListDataSources RPC and as such, will appear in the BigQuery UI
+// ‘https://bigquery.cloud.google.com (at https://bigquery.cloud.google.com)’ (and the documents can be found at
+// https://cloud.google.com/bigquery/bigquery-web-ui (at https://cloud.google.com/bigquery/bigquery-web-ui) and
+// https://cloud.google.com/bigquery/docs/working-with-transfers (at https://cloud.google.com/bigquery/docs/working-with-transfers)).
+func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.EnrollDataSources(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with BigQuery Data Transfer API over gRPC transport.
@@ -367,10 +370,7 @@ type gRPCClient struct {
 // NewClient creates a new data transfer service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Google BigQuery Data Transfer Service API enables BigQuery users to
-// configure the transfer of their data from other Google Products into
-// BigQuery. This service contains methods that are end user exposed. It backs
-// up the frontend.
+// This API allows users to manage their data transfers into BigQuery.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -798,6 +798,18 @@ func (c *gRPCClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).EnrollDataSources[0:len((*c.CallOptions).EnrollDataSources):len((*c.CallOptions).EnrollDataSources)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.EnrollDataSources(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // DataSourceIterator manages a stream of *datatransferpb.DataSource.

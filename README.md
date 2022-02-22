@@ -32,7 +32,12 @@ For an updated list of all of our released APIs please see our
 
 ## [Go Versions Supported](#supported-versions)
 
-We currently support Go versions 1.11 and newer.
+Our libraries are compatible with at least the three most recent, major Go
+releases. They are currently compatible with:
+
+- Go 1.17
+- Go 1.16
+- Go 1.15
 
 ## Authorization
 
@@ -70,12 +75,12 @@ client, err := storage.NewClient(ctx, option.WithTokenSource(tokenSource))
 ## Contributing
 
 Contributions are welcome. Please, see the
-[CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CONTRIBUTING.md)
+[CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md)
 document for details.
 
 Please note that this project is released with a Contributor Code of Conduct.
 By participating in this project you agree to abide by its terms.
-See [Contributor Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CONTRIBUTING.md#contributor-code-of-conduct)
+See [Contributor Code of Conduct](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/main/CONTRIBUTING.md#contributor-code-of-conduct)
 for more information.
 
 [cloud-asset]: https://cloud.google.com/security-command-center/docs/how-to-asset-inventory

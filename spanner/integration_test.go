@@ -39,6 +39,9 @@ import (
 	"cloud.google.com/go/internal/uid"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"cloud.google.com/go/spanner/internal"
+	"go.opencensus.io/stats/view"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
@@ -282,6 +285,7 @@ func initIntegrationTests() (cleanup func()) {
 		}
 		configName = config.Name
 	}
+	log.Printf("Running test by using the instance config: %s\n", configName)
 
 	// First clean up any old test instances before we start the actual testing
 	// as these might cause this test run to fail.
@@ -1565,23 +1569,21 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	stmts := singerDBStatements
-	if !isEmulatorEnvSet() {
-		stmts = []string{
-			`CREATE TABLE Singers (
+	stmts := []string{
+		`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1602,7 +1604,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					JSON		JSON,
 					JSONArray	ARRAY<JSON>
 				) PRIMARY KEY (RowID)`,
-		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1643,7 +1644,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "String", val: "foo", want: NullString{"foo", true}},
 		{col: "String", val: NullString{"bar", true}, want: "bar"},
 		{col: "String", val: NullString{"bar", false}, want: NullString{"", false}},
-		{col: "String", val: nil, want: NullString{}},
 		{col: "StringArray", val: []string(nil), want: []NullString(nil)},
 		{col: "StringArray", val: []string{}, want: []NullString{}},
 		{col: "StringArray", val: []string{"foo", "bar"}, want: []NullString{{"foo", true}, {"bar", true}}},
@@ -1664,7 +1664,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Int64a", val: NullInt64{5, true}, want: int64(5)},
 		{col: "Int64a", val: NullInt64{6, true}, want: int64(6)},
 		{col: "Int64a", val: NullInt64{7, false}, want: NullInt64{0, false}},
-		{col: "Int64a", val: nil, want: NullInt64{}},
 		{col: "Int64Array", val: []int(nil), want: []NullInt64(nil)},
 		{col: "Int64Array", val: []int{}, want: []NullInt64{}},
 		{col: "Int64Array", val: []int{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
@@ -1680,7 +1679,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Bool", val: true, want: NullBool{true, true}},
 		{col: "Bool", val: NullBool{true, true}},
 		{col: "Bool", val: NullBool{false, false}},
-		{col: "Bool", val: nil, want: NullBool{}},
 		{col: "BoolArray", val: []bool(nil), want: []NullBool(nil)},
 		{col: "BoolArray", val: []bool{}, want: []NullBool{}},
 		{col: "BoolArray", val: []bool{true, false}, want: []NullBool{{true, true}, {false, true}}},
@@ -1696,7 +1694,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Float64", val: NullFloat64{2.71, true}, want: 2.71},
 		{col: "Float64", val: NullFloat64{1.41, true}, want: NullFloat64{1.41, true}},
 		{col: "Float64", val: NullFloat64{0, false}},
-		{col: "Float64", val: nil, want: NullFloat64{}},
 		{col: "Float64Array", val: []float64(nil), want: []NullFloat64(nil)},
 		{col: "Float64Array", val: []float64{}, want: []NullFloat64{}},
 		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, want: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
@@ -1716,7 +1713,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Timestamp", val: NullTime{t1, true}},
 		{col: "Timestamp", val: NullTime{t1, true}, want: t1},
 		{col: "Timestamp", val: NullTime{}},
-		{col: "Timestamp", val: nil, want: NullTime{}},
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
@@ -1727,13 +1723,17 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
 		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
 		{col: "Numeric", val: NullNumeric{n0, false}},
-		{col: "Numeric", val: nil, want: NullNumeric{}},
 		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
 		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
 		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
 		{col: "NumericArray", val: []NullNumeric(nil)},
 		{col: "NumericArray", val: []NullNumeric{}},
 		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
+		{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+		{col: "JSONArray", val: []NullJSON(nil)},
+		{col: "JSONArray", val: []NullJSON{}},
+		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
 		{col: "String", val: nil, want: NullString{}},
 		{col: "StringArray", val: nil, want: []NullString(nil)},
 		{col: "Bytes", val: nil, want: []byte(nil)},
@@ -1744,65 +1744,56 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "BoolArray", val: nil, want: []NullBool(nil)},
 		{col: "Float64", val: nil, want: NullFloat64{}},
 		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
-		{col: "Date", val: nil, want: NullDate{}},
-		{col: "DateArray", val: nil, want: []NullDate(nil)},
-		{col: "Timestamp", val: nil, want: NullTime{}},
-		{col: "TimestampArray", val: nil, want: []NullTime(nil)},
 		{col: "Numeric", val: nil, want: NullNumeric{}},
 		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
+		{col: "JSON", val: nil, want: NullJSON{}},
+		{col: "JSONArray", val: nil, want: []NullJSON(nil)},
 	}
 
-	// Write rows into table first using DML. Only do this on real Spanner
-	// as the emulator does not support untyped parameters.
-	// TODO: Remove when the emulator supports untyped parameters.
-	if !isEmulatorEnvSet() {
-		statements := make([]Statement, 0)
-		for i, test := range tests {
-			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-			// Note: We are not setting the parameter type here to ensure that it
-			// can be automatically recognized when it is actually needed.
-			stmt.Params["id"] = i
-			stmt.Params["value"] = test.val
-			statements = append(statements, stmt)
-		}
-		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-			rowCounts, err := tx.BatchUpdate(ctx, statements)
-			if err != nil {
-				return err
-			}
-			if len(rowCounts) != len(tests) {
-				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
-			}
-			for i, c := range rowCounts {
-				if c != 1 {
-					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
-				}
-			}
-			return nil
-		})
-		if err != nil {
-			t.Fatalf("failed to insert values using DML: %v", err)
-		}
-		// Delete all the rows so we can insert them using mutations as well.
-		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		if err != nil {
-			t.Fatalf("failed to delete all rows: %v", err)
-		}
-	}
-
+	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
 	if !isEmulatorEnvSet() {
 		tests = append(tests, []struct {
 			col  string
 			val  interface{}
 			want interface{}
 		}{
-			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
-			{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
-			{col: "JSON", val: nil, want: NullJSON{}},
-			{col: "JSONArray", val: []NullJSON(nil)},
-			{col: "JSONArray", val: []NullJSON{}},
-			{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
+			{col: "Date", val: nil, want: NullDate{}},
+			{col: "Timestamp", val: nil, want: NullTime{}},
 		}...)
+	}
+
+	// Write rows into table first using DML.
+	statements := make([]Statement, 0)
+	for i, test := range tests {
+		stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+		// Note: We are not setting the parameter type here to ensure that it
+		// can be automatically recognized when it is actually needed.
+		stmt.Params["id"] = i
+		stmt.Params["value"] = test.val
+		statements = append(statements, stmt)
+	}
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		rowCounts, err := tx.BatchUpdate(ctx, statements)
+		if err != nil {
+			return err
+		}
+		if len(rowCounts) != len(tests) {
+			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+		}
+		for i, c := range rowCounts {
+			if c != 1 {
+				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to insert values using DML: %v", err)
+	}
+	// Delete all the rows so we can insert them using mutations as well.
+	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
 	}
 
 	// Verify that we can insert the rows using mutations.
@@ -3263,6 +3254,85 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func TestIntegration_GFE_Latency(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
+	setGFELatencyMetricsFlag(true)
+
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	_, err := client.Apply(ctx, ms)
+	if err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	_, err = client.Single().ReadRow(ctx, "Singers", Key{1}, []string{"SingerId", "FirstName", "LastName"})
+	if err != nil {
+		t.Fatalf("Could not read row. Got error %v", err)
+	}
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
+
+	var viewMap = map[string]bool{statsPrefix + "gfe_latency": false,
+		statsPrefix + "gfe_header_missing_count": false,
+	}
+
+	for {
+		if viewMap[statsPrefix+"gfe_latency"] || viewMap[statsPrefix+"gfe_header_missing_count"] {
+			break
+		}
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) == 0 {
+				t.Fatal("No metrics are exported")
+			}
+			if stat.View.Measure.Name() != statsPrefix+"gfe_latency" && stat.View.Measure.Name() != statsPrefix+"gfe_header_missing_count" {
+				t.Fatalf("Incorrect measure: got %v, want %v", stat.View.Measure.Name(), statsPrefix+"gfe_latency or "+statsPrefix+"gfe_header_missing_count")
+			} else {
+				viewMap[stat.View.Measure.Name()] = true
+			}
+			for _, row := range stat.Rows {
+				m := getTagMap(row.Tags)
+				checkCommonTagsGFELatency(t, m)
+				var data string
+				switch row.Data.(type) {
+				default:
+					data = fmt.Sprintf("%v", row.Data)
+				case *view.CountData:
+					data = fmt.Sprintf("%v", row.Data.(*view.CountData).Value)
+				case *view.LastValueData:
+					data = fmt.Sprintf("%v", row.Data.(*view.LastValueData).Value)
+				case *view.DistributionData:
+					data = fmt.Sprintf("%v", row.Data.(*view.DistributionData).Count)
+				}
+				if got, want := fmt.Sprintf("%v", data), "0"; got <= want {
+					t.Fatalf("Incorrect data: got %v, wanted more than %v for metric %v", got, want, stat.View.Measure.Name())
+				}
+			}
+		case <-time.After(10 * time.Second):
+			if !viewMap[statsPrefix+"gfe_latency"] && !viewMap[statsPrefix+"gfe_header_missing_count"] {
+				t.Fatal("no stats were exported before timeout")
+			}
+		}
+	}
+	DisableGfeLatencyAndHeaderMissingCountViews()
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -3658,5 +3728,16 @@ func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
 		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
 		out, _ = cmdRes.CombinedOutput()
 		t.Logf(string(out))
+	}
+}
+
+func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
+	// We only check prefix because client ID increases if we create
+	// multiple clients for the same database.
+	if !strings.HasPrefix(m[tagKeyClientID], "client") {
+		t.Fatalf("Incorrect client ID: %v", m[tagKeyClientID])
+	}
+	if m[tagKeyLibVersion] != internal.Version {
+		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
 	}
 }

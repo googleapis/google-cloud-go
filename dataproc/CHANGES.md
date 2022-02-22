@@ -1,5 +1,26 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v1.3.0...dataproc/v1.4.0) (2022-02-22)
+
+
+### Features
+
+* **dataproc:** add support for Virtual Dataproc cluster running on GKE cluster ([7d6b0e5](https://github.com/googleapis/google-cloud-go/commit/7d6b0e5891b50cccdf77cd17ddd3644f31ef6dfc))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v1.2.0...dataproc/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **dataproc:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/dataproc/v1.1.0...dataproc/v1.2.0) (2021-11-02)
+
+
+### Features
+
+* **dataproc:** Add support for dataproc BatchController service ([8519b94](https://www.github.com/googleapis/google-cloud-go/commit/8519b948fee5dc82d39300c4d96e92c85fe78fe6))
+
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/dataproc/v1.0.0...dataproc/v1.1.0) (2021-10-18)
 
 

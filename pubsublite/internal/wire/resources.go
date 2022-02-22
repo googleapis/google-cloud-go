@@ -63,7 +63,7 @@ func ParseLocationPath(input string) (LocationPath, error) {
 	parts := locPathRE.FindStringSubmatch(input)
 	if len(parts) < 3 {
 		return LocationPath{}, fmt.Errorf("pubsublite: invalid location path %q. valid format is %q",
-			input, "projects/PROJECT_ID/locations/ZONE")
+			input, "projects/PROJECT_ID/locations/LOCATION")
 	}
 	return LocationPath{Project: parts[1], Location: parts[2]}, nil
 }

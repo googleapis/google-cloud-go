@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,8 +55,6 @@ type ServiceManagerCallOptions struct {
 	GetServiceRollout    []gax.CallOption
 	CreateServiceRollout []gax.CallOption
 	GenerateConfigReport []gax.CallOption
-	EnableService        []gax.CallOption
-	DisableService       []gax.CallOption
 }
 
 func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
@@ -66,7 +64,6 @@ func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -87,8 +84,6 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 		GetServiceRollout:    []gax.CallOption{},
 		CreateServiceRollout: []gax.CallOption{},
 		GenerateConfigReport: []gax.CallOption{},
-		EnableService:        []gax.CallOption{},
-		DisableService:       []gax.CallOption{},
 	}
 }
 
@@ -115,16 +110,12 @@ type internalServiceManagerClient interface {
 	CreateServiceRollout(context.Context, *servicemanagementpb.CreateServiceRolloutRequest, ...gax.CallOption) (*CreateServiceRolloutOperation, error)
 	CreateServiceRolloutOperation(name string) *CreateServiceRolloutOperation
 	GenerateConfigReport(context.Context, *servicemanagementpb.GenerateConfigReportRequest, ...gax.CallOption) (*servicemanagementpb.GenerateConfigReportResponse, error)
-	EnableService(context.Context, *servicemanagementpb.EnableServiceRequest, ...gax.CallOption) (*EnableServiceOperation, error)
-	EnableServiceOperation(name string) *EnableServiceOperation
-	DisableService(context.Context, *servicemanagementpb.DisableServiceRequest, ...gax.CallOption) (*DisableServiceOperation, error)
-	DisableServiceOperation(name string) *DisableServiceOperation
 }
 
 // ServiceManagerClient is a client for interacting with Service Management API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Service Management API (at https://cloud.google.com/service-management/overview)
+// Google Service Management API (at /service-management/overview)
 type ServiceManagerClient struct {
 	// The internal transport-dependent client.
 	internalClient internalServiceManagerClient
@@ -165,10 +156,6 @@ func (c *ServiceManagerClient) Connection() *grpc.ClientConn {
 // Returns all public services. For authenticated users, also returns all
 // services the calling user has “servicemanagement.services.get” permission
 // for.
-//
-// BETA: If the caller specifies the consumer_id, it returns only the
-// services enabled on the consumer. The consumer_id must have the format
-// of “project:{PROJECT-ID}”.
 func (c *ServiceManagerClient) ListServices(ctx context.Context, req *servicemanagementpb.ListServicesRequest, opts ...gax.CallOption) *ManagedServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -180,7 +167,14 @@ func (c *ServiceManagerClient) GetService(ctx context.Context, req *servicemanag
 }
 
 // CreateService creates a new managed service.
-// Please note one producer project can own no more than 20 services.
+//
+// A managed service is immutable, and is subject to mandatory 30-day
+// data retention. You cannot move a service or recreate it within 30 days
+// after deletion.
+//
+// One producer project can own no more than 500 services. For security and
+// reliability purposes, a production service should be hosted in a
+// dedicated producer project.
 //
 // Operation<response: ManagedService>
 func (c *ServiceManagerClient) CreateService(ctx context.Context, req *servicemanagementpb.CreateServiceRequest, opts ...gax.CallOption) (*CreateServiceOperation, error) {
@@ -321,41 +315,6 @@ func (c *ServiceManagerClient) GenerateConfigReport(ctx context.Context, req *se
 	return c.internalClient.GenerateConfigReport(ctx, req, opts...)
 }
 
-// EnableService enables a service for a project, so it can be used
-// for the project. See
-// Cloud Auth Guide (at https://cloud.google.com/docs/authentication) for
-// more information.
-//
-// Operation<response: EnableServiceResponse>
-//
-// Deprecated: EnableService may be removed in a future version.
-func (c *ServiceManagerClient) EnableService(ctx context.Context, req *servicemanagementpb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
-	return c.internalClient.EnableService(ctx, req, opts...)
-}
-
-// EnableServiceOperation returns a new EnableServiceOperation from a given name.
-// The name must be that of a previously created EnableServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) EnableServiceOperation(name string) *EnableServiceOperation {
-	return c.internalClient.EnableServiceOperation(name)
-}
-
-// DisableService disables a service for a project, so it can no longer be
-// be used for the project. It prevents accidental usage that may cause
-// unexpected billing charges or security leaks.
-//
-// Operation<response: DisableServiceResponse>
-//
-// Deprecated: DisableService may be removed in a future version.
-func (c *ServiceManagerClient) DisableService(ctx context.Context, req *servicemanagementpb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
-	return c.internalClient.DisableService(ctx, req, opts...)
-}
-
-// DisableServiceOperation returns a new DisableServiceOperation from a given name.
-// The name must be that of a previously created DisableServiceOperation, possibly from a different process.
-func (c *ServiceManagerClient) DisableServiceOperation(name string) *DisableServiceOperation {
-	return c.internalClient.DisableServiceOperation(name)
-}
-
 // serviceManagerGRPCClient is a client for interacting with Service Management API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -384,7 +343,7 @@ type serviceManagerGRPCClient struct {
 // NewServiceManagerClient creates a new service manager client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Service Management API (at https://cloud.google.com/service-management/overview)
+// Google Service Management API (at /service-management/overview)
 func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
 	clientOpts := defaultServiceManagerGRPCClientOptions()
 	if newServiceManagerClientHook != nil {
@@ -801,52 +760,6 @@ func (c *serviceManagerGRPCClient) GenerateConfigReport(ctx context.Context, req
 	return resp, nil
 }
 
-func (c *serviceManagerGRPCClient) EnableService(ctx context.Context, req *servicemanagementpb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).EnableService[0:len((*c.CallOptions).EnableService):len((*c.CallOptions).EnableService)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.serviceManagerClient.EnableService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
-func (c *serviceManagerGRPCClient) DisableService(ctx context.Context, req *servicemanagementpb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DisableService[0:len((*c.CallOptions).DisableService):len((*c.CallOptions).DisableService)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.serviceManagerClient.DisableService(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
-	}, nil
-}
-
 // CreateServiceOperation manages a long-running operation from CreateService.
 type CreateServiceOperation struct {
 	lro *longrunning.Operation
@@ -1040,144 +953,6 @@ func (op *DeleteServiceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DisableServiceOperation manages a long-running operation from DisableService.
-type DisableServiceOperation struct {
-	lro *longrunning.Operation
-}
-
-// DisableServiceOperation returns a new DisableServiceOperation from a given name.
-// The name must be that of a previously created DisableServiceOperation, possibly from a different process.
-func (c *serviceManagerGRPCClient) DisableServiceOperation(name string) *DisableServiceOperation {
-	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DisableServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.DisableServiceResponse, error) {
-	var resp servicemanagementpb.DisableServiceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DisableServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.DisableServiceResponse, error) {
-	var resp servicemanagementpb.DisableServiceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DisableServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DisableServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DisableServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EnableServiceOperation manages a long-running operation from EnableService.
-type EnableServiceOperation struct {
-	lro *longrunning.Operation
-}
-
-// EnableServiceOperation returns a new EnableServiceOperation from a given name.
-// The name must be that of a previously created EnableServiceOperation, possibly from a different process.
-func (c *serviceManagerGRPCClient) EnableServiceOperation(name string) *EnableServiceOperation {
-	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *EnableServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.EnableServiceResponse, error) {
-	var resp servicemanagementpb.EnableServiceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *EnableServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.EnableServiceResponse, error) {
-	var resp servicemanagementpb.EnableServiceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *EnableServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *EnableServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *EnableServiceOperation) Name() string {
 	return op.lro.Name()
 }
 

@@ -2198,6 +2198,7 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	defer iter.Stop()
 
 	var results []typesTable
+	var lenientResults []typesTable
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
@@ -2212,9 +2213,15 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 			t.Fatalf("failed to convert a row to a struct: %v", err)
 		}
 		results = append(results, d)
+
+		var d2 typesTable
+		if err := row.ToStructLenient(&d2); err != nil {
+			t.Fatalf("failed to convert a row to a struct: %v", err)
+		}
+		lenientResults = append(lenientResults, d2)
 	}
 
-	if len(results) > 1 {
+	if len(results) > 1 || len(lenientResults) > 1 {
 		t.Fatalf("mismatch length of array: got %v, want 1", results)
 	}
 
@@ -2228,7 +2235,11 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	}
 	got := results[0]
 	if !testEqual(got, want) {
-		t.Fatalf("mismatch result: got %v, want %v", got, want)
+		t.Fatalf("mismatch result from ToStruct: got %v, want %v", got, want)
+	}
+	got = lenientResults[0]
+	if !testEqual(got, want) {
+		t.Fatalf("mismatch result from ToStructLenient: got %v, want %v", got, want)
 	}
 }
 
@@ -2846,6 +2857,21 @@ func TestClient_Single_Read_WithNumericKey(t *testing.T) {
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
 		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_ReadRowWithOptions(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	row, err := client.Single().ReadRowWithOptions(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{RequestTag: "foo/bar"})
+	if err != nil {
+		t.Fatalf("Unexpected error for read row with options: %v", err)
+	}
+	if row == nil {
+		t.Fatal("ReadRowWithOptions did not return a row")
 	}
 }
 

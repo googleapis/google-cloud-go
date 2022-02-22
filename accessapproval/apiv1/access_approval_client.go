@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://accessapproval.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -125,7 +124,7 @@ type internalClient interface {
 //
 //   The API has a collection of
 //   ApprovalRequest
-//   resources, named approvalRequests/{approval_request_id}
+//   resources, named approvalRequests/{approval_request}
 //
 //   The API has top-level settings per Project/Folder/Organization, named
 //   accessApprovalSettings
@@ -133,10 +132,10 @@ type internalClient interface {
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
 // is a pending ApprovalRequest for them to act on. The ApprovalRequests can
-// also optionally be published to a Cloud Pub/Sub topic owned by the customer
-// (for Beta, the Pub/Sub setup is managed manually).
+// also optionally be published to a Pub/Sub topic owned by the customer
+// (contact support if you would like to enable Pub/Sub notifications).
 //
-// ApprovalRequests can be approved or dismissed. Google personel can only
+// ApprovalRequests can be approved or dismissed. Google personnel can only
 // access the indicated resource or resources if the request is approved
 // (subject to some exclusions:
 // https://cloud.google.com/access-approval/docs/overview#exclusions (at https://cloud.google.com/access-approval/docs/overview#exclusions)).
@@ -267,7 +266,7 @@ type gRPCClient struct {
 //
 //   The API has a collection of
 //   ApprovalRequest
-//   resources, named approvalRequests/{approval_request_id}
+//   resources, named approvalRequests/{approval_request}
 //
 //   The API has top-level settings per Project/Folder/Organization, named
 //   accessApprovalSettings
@@ -275,10 +274,10 @@ type gRPCClient struct {
 // The service also periodically emails a list of recipients, defined at the
 // Project/Folder/Organization level in the accessApprovalSettings, when there
 // is a pending ApprovalRequest for them to act on. The ApprovalRequests can
-// also optionally be published to a Cloud Pub/Sub topic owned by the customer
-// (for Beta, the Pub/Sub setup is managed manually).
+// also optionally be published to a Pub/Sub topic owned by the customer
+// (contact support if you would like to enable Pub/Sub notifications).
 //
-// ApprovalRequests can be approved or dismissed. Google personel can only
+// ApprovalRequests can be approved or dismissed. Google personnel can only
 // access the indicated resource or resources if the request is approved
 // (subject to some exclusions:
 // https://cloud.google.com/access-approval/docs/overview#exclusions (at https://cloud.google.com/access-approval/docs/overview#exclusions)).

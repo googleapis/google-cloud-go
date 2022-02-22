@@ -26,6 +26,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -80,6 +81,7 @@ type Client struct {
 	idleSessions *sessionPool
 	logger       *log.Logger
 	qo           QueryOptions
+	ct           *commonTags
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -204,6 +206,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		idleSessions: sp,
 		logger:       config.logger,
 		qo:           getQueryOptions(config.QueryOptions),
+		ct:           getCommonTags(sc),
 	}
 	return c, nil
 }
@@ -215,7 +218,7 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 	generatedDefaultOpts := vkit.DefaultClientOptions()
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
-		option.WithUserAgent(clientUserAgent),
+		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
@@ -280,6 +283,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.sh = sh
 		return nil
 	}
+	t.ct = c.ct
 	return t
 }
 
@@ -300,6 +304,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t
 }
 
@@ -368,6 +373,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t, nil
 }
 
@@ -395,6 +401,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.ct = c.ct
 	return t
 }
 
@@ -480,6 +487,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
 		t.txOpts = options
+		t.ct = c.ct
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")

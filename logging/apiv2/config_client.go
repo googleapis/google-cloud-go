@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,12 +23,15 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -62,6 +65,9 @@ type ConfigCallOptions struct {
 	DeleteExclusion    []gax.CallOption
 	GetCmekSettings    []gax.CallOption
 	UpdateCmekSettings []gax.CallOption
+	GetSettings        []gax.CallOption
+	UpdateSettings     []gax.CallOption
+	CopyLogEntries     []gax.CallOption
 }
 
 func defaultConfigGRPCClientOptions() []option.ClientOption {
@@ -71,7 +77,6 @@ func defaultConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -186,6 +191,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		},
 		GetCmekSettings:    []gax.CallOption{},
 		UpdateCmekSettings: []gax.CallOption{},
+		GetSettings:        []gax.CallOption{},
+		UpdateSettings:     []gax.CallOption{},
+		CopyLogEntries:     []gax.CallOption{},
 	}
 }
 
@@ -217,6 +225,10 @@ type internalConfigClient interface {
 	DeleteExclusion(context.Context, *loggingpb.DeleteExclusionRequest, ...gax.CallOption) error
 	GetCmekSettings(context.Context, *loggingpb.GetCmekSettingsRequest, ...gax.CallOption) (*loggingpb.CmekSettings, error)
 	UpdateCmekSettings(context.Context, *loggingpb.UpdateCmekSettingsRequest, ...gax.CallOption) (*loggingpb.CmekSettings, error)
+	GetSettings(context.Context, *loggingpb.GetSettingsRequest, ...gax.CallOption) (*loggingpb.Settings, error)
+	UpdateSettings(context.Context, *loggingpb.UpdateSettingsRequest, ...gax.CallOption) (*loggingpb.Settings, error)
+	CopyLogEntries(context.Context, *loggingpb.CopyLogEntriesRequest, ...gax.CallOption) (*CopyLogEntriesOperation, error)
+	CopyLogEntriesOperation(name string) *CopyLogEntriesOperation
 }
 
 // ConfigClient is a client for interacting with Cloud Logging API.
@@ -229,6 +241,11 @@ type ConfigClient struct {
 
 	// The call options for this service.
 	CallOptions *ConfigCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -253,73 +270,80 @@ func (c *ConfigClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// ListBuckets lists buckets.
+// ListBuckets lists log buckets.
 func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
 	return c.internalClient.ListBuckets(ctx, req, opts...)
 }
 
-// GetBucket gets a bucket.
+// GetBucket gets a log bucket.
 func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	return c.internalClient.GetBucket(ctx, req, opts...)
 }
 
-// CreateBucket creates a bucket that can be used to store log entries. Once a bucket has
-// been created, the region cannot be changed.
+// CreateBucket creates a log bucket that can be used to store log entries. After a bucket
+// has been created, the bucket’s location cannot be changed.
 func (c *ConfigClient) CreateBucket(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	return c.internalClient.CreateBucket(ctx, req, opts...)
 }
 
-// UpdateBucket updates a bucket. This method replaces the following fields in the
+// UpdateBucket updates a log bucket. This method replaces the following fields in the
 // existing bucket with values from the new bucket: retention_period
 //
 // If the retention period is decreased and the bucket is locked,
 // FAILED_PRECONDITION will be returned.
 //
-// If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION
-// will be returned.
+// If the bucket has a lifecycle_state of DELETE_REQUESTED, then
+// FAILED_PRECONDITION will be returned.
 //
-// A buckets region may not be modified after it is created.
+// After a bucket has been created, the bucket’s location cannot be changed.
 func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	return c.internalClient.UpdateBucket(ctx, req, opts...)
 }
 
-// DeleteBucket deletes a bucket.
-// Moves the bucket to the DELETE_REQUESTED state. After 7 days, the
-// bucket will be purged and all logs in the bucket will be permanently
-// deleted.
+// DeleteBucket deletes a log bucket.
+//
+// Changes the bucket’s lifecycle_state to the DELETE_REQUESTED state.
+// After 7 days, the bucket will be purged and all log entries in the bucket
+// will be permanently deleted.
 func (c *ConfigClient) DeleteBucket(ctx context.Context, req *loggingpb.DeleteBucketRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBucket(ctx, req, opts...)
 }
 
-// UndeleteBucket undeletes a bucket. A bucket that has been deleted may be undeleted within
-// the grace period of 7 days.
+// UndeleteBucket undeletes a log bucket. A bucket that has been deleted can be undeleted
+// within the grace period of 7 days.
 func (c *ConfigClient) UndeleteBucket(ctx context.Context, req *loggingpb.UndeleteBucketRequest, opts ...gax.CallOption) error {
 	return c.internalClient.UndeleteBucket(ctx, req, opts...)
 }
 
-// ListViews lists views on a bucket.
+// ListViews lists views on a log bucket.
 func (c *ConfigClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
 	return c.internalClient.ListViews(ctx, req, opts...)
 }
 
-// GetView gets a view.
+// GetView gets a view on a log bucket…
 func (c *ConfigClient) GetView(ctx context.Context, req *loggingpb.GetViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	return c.internalClient.GetView(ctx, req, opts...)
 }
 
-// CreateView creates a view over logs in a bucket. A bucket may contain a maximum of
-// 50 views.
+// CreateView creates a view over log entries in a log bucket. A bucket may contain a
+// maximum of 30 views.
 func (c *ConfigClient) CreateView(ctx context.Context, req *loggingpb.CreateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	return c.internalClient.CreateView(ctx, req, opts...)
 }
 
-// UpdateView updates a view. This method replaces the following fields in the existing
-// view with values from the new view: filter.
+// UpdateView updates a view on a log bucket. This method replaces the following fields
+// in the existing view with values from the new view: filter.
+// If an UNAVAILABLE error is returned, this indicates that system is not in
+// a state where it can update the view. If this occurs, please try again in a
+// few minutes.
 func (c *ConfigClient) UpdateView(ctx context.Context, req *loggingpb.UpdateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	return c.internalClient.UpdateView(ctx, req, opts...)
 }
 
-// DeleteView deletes a view from a bucket.
+// DeleteView deletes a view on a log bucket.
+// If an UNAVAILABLE error is returned, this indicates that system is not in
+// a state where it can delete the view. If this occurs, please try again in a
+// few minutes.
 func (c *ConfigClient) DeleteView(ctx context.Context, req *loggingpb.DeleteViewRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteView(ctx, req, opts...)
 }
@@ -357,51 +381,53 @@ func (c *ConfigClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSink
 	return c.internalClient.DeleteSink(ctx, req, opts...)
 }
 
-// ListExclusions lists all the exclusions in a parent resource.
+// ListExclusions lists all the exclusions on the _Default sink in a parent resource.
 func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListExclusionsRequest, opts ...gax.CallOption) *LogExclusionIterator {
 	return c.internalClient.ListExclusions(ctx, req, opts...)
 }
 
-// GetExclusion gets the description of an exclusion.
+// GetExclusion gets the description of an exclusion in the _Default sink.
 func (c *ConfigClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
 	return c.internalClient.GetExclusion(ctx, req, opts...)
 }
 
-// CreateExclusion creates a new exclusion in a specified parent resource.
-// Only log entries belonging to that resource can be excluded.
-// You can have up to 10 exclusions in a resource.
+// CreateExclusion creates a new exclusion in the _Default sink in a specified parent
+// resource. Only log entries belonging to that resource can be excluded. You
+// can have up to 10 exclusions in a resource.
 func (c *ConfigClient) CreateExclusion(ctx context.Context, req *loggingpb.CreateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
 	return c.internalClient.CreateExclusion(ctx, req, opts...)
 }
 
-// UpdateExclusion changes one or more properties of an existing exclusion.
+// UpdateExclusion changes one or more properties of an existing exclusion in the _Default
+// sink.
 func (c *ConfigClient) UpdateExclusion(ctx context.Context, req *loggingpb.UpdateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
 	return c.internalClient.UpdateExclusion(ctx, req, opts...)
 }
 
-// DeleteExclusion deletes an exclusion.
+// DeleteExclusion deletes an exclusion in the _Default sink.
 func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.DeleteExclusionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteExclusion(ctx, req, opts...)
 }
 
-// GetCmekSettings gets the Logs Router CMEK settings for the given resource.
+// GetCmekSettings gets the Logging CMEK settings for the given resource.
 //
-// Note: CMEK for the Logs Router can currently only be configured for GCP
-// organizations. Once configured, it applies to all projects and folders in
-// the GCP organization.
+// Note: CMEK for the Log Router can be configured for Google Cloud projects,
+// folders, organizations and billing accounts. Once configured for an
+// organization, it applies to all projects and folders in the Google Cloud
+// organization.
 //
-// See Enabling CMEK for Logs
+// See Enabling CMEK for Log
 // Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
 // for more information.
 func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	return c.internalClient.GetCmekSettings(ctx, req, opts...)
 }
 
-// UpdateCmekSettings updates the Logs Router CMEK settings for the given resource.
+// UpdateCmekSettings updates the Log Router CMEK settings for the given resource.
 //
-// Note: CMEK for the Logs Router can currently only be configured for GCP
-// organizations. Once configured, it applies to all projects and folders in
-// the GCP organization.
+// Note: CMEK for the Log Router can currently only be configured for Google
+// Cloud organizations. Once configured, it applies to all projects and
+// folders in the Google Cloud organization.
 //
 // UpdateCmekSettings
 // will fail if 1) kms_key_name is invalid, or 2) the associated service
@@ -409,11 +435,56 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or
 // 3) access to the key is disabled.
 //
-// See Enabling CMEK for Logs
+// See Enabling CMEK for Log
 // Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
 // for more information.
 func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	return c.internalClient.UpdateCmekSettings(ctx, req, opts...)
+}
+
+// GetSettings gets the Log Router settings for the given resource.
+//
+// Note: Settings for the Log Router can be get for Google Cloud projects,
+// folders, organizations and billing accounts. Currently it can only be
+// configured for organizations. Once configured for an organization, it
+// applies to all projects and folders in the Google Cloud organization.
+//
+// See Enabling CMEK for Log
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
+func (c *ConfigClient) GetSettings(ctx context.Context, req *loggingpb.GetSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
+	return c.internalClient.GetSettings(ctx, req, opts...)
+}
+
+// UpdateSettings updates the Log Router settings for the given resource.
+//
+// Note: Settings for the Log Router can currently only be configured for
+// Google Cloud organizations. Once configured, it applies to all projects and
+// folders in the Google Cloud organization.
+//
+// UpdateSettings
+// will fail if 1) kms_key_name is invalid, or 2) the associated service
+// account does not have the required
+// roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or
+// 3) access to the key is disabled. 4) location_id is not supported by
+// Logging. 5) location_id violate OrgPolicy.
+//
+// See Enabling CMEK for Log
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
+func (c *ConfigClient) UpdateSettings(ctx context.Context, req *loggingpb.UpdateSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
+	return c.internalClient.UpdateSettings(ctx, req, opts...)
+}
+
+// CopyLogEntries copies a set of log entries from a log bucket to a Cloud Storage bucket.
+func (c *ConfigClient) CopyLogEntries(ctx context.Context, req *loggingpb.CopyLogEntriesRequest, opts ...gax.CallOption) (*CopyLogEntriesOperation, error) {
+	return c.internalClient.CopyLogEntries(ctx, req, opts...)
+}
+
+// CopyLogEntriesOperation returns a new CopyLogEntriesOperation from a given name.
+// The name must be that of a previously created CopyLogEntriesOperation, possibly from a different process.
+func (c *ConfigClient) CopyLogEntriesOperation(name string) *CopyLogEntriesOperation {
+	return c.internalClient.CopyLogEntriesOperation(name)
 }
 
 // configGRPCClient is a client for interacting with Cloud Logging API over gRPC transport.
@@ -431,6 +502,11 @@ type configGRPCClient struct {
 
 	// The gRPC API client.
 	configClient loggingpb.ConfigServiceV2Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -471,6 +547,17 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -994,6 +1081,124 @@ func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingp
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
+	var resp *loggingpb.Settings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.GetSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *configGRPCClient) UpdateSettings(ctx context.Context, req *loggingpb.UpdateSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
+	var resp *loggingpb.Settings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.UpdateSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *configGRPCClient) CopyLogEntries(ctx context.Context, req *loggingpb.CopyLogEntriesRequest, opts ...gax.CallOption) (*CopyLogEntriesOperation, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).CopyLogEntries[0:len((*c.CallOptions).CopyLogEntries):len((*c.CallOptions).CopyLogEntries)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.CopyLogEntries(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CopyLogEntriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+// CopyLogEntriesOperation manages a long-running operation from CopyLogEntries.
+type CopyLogEntriesOperation struct {
+	lro *longrunning.Operation
+}
+
+// CopyLogEntriesOperation returns a new CopyLogEntriesOperation from a given name.
+// The name must be that of a previously created CopyLogEntriesOperation, possibly from a different process.
+func (c *configGRPCClient) CopyLogEntriesOperation(name string) *CopyLogEntriesOperation {
+	return &CopyLogEntriesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CopyLogEntriesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*loggingpb.CopyLogEntriesResponse, error) {
+	var resp loggingpb.CopyLogEntriesResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CopyLogEntriesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*loggingpb.CopyLogEntriesResponse, error) {
+	var resp loggingpb.CopyLogEntriesResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CopyLogEntriesOperation) Metadata() (*loggingpb.CopyLogEntriesMetadata, error) {
+	var meta loggingpb.CopyLogEntriesMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CopyLogEntriesOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CopyLogEntriesOperation) Name() string {
+	return op.lro.Name()
 }
 
 // LogBucketIterator manages a stream of *loggingpb.LogBucket.

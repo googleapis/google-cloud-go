@@ -4,7 +4,7 @@
 - [Client library documentation](https://cloud.google.com/pubsub/lite/docs/reference/libraries)
 - [API documentation](https://cloud.google.com/pubsub/lite/docs/apis)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsublite)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/pubsublite)
 
 
 ### Example Usage
@@ -22,7 +22,8 @@ To publish messages to a topic:
 [snip]:# (publish)
 ```go
 // Create a PublisherClient for topic1 in zone us-central1-b.
-// See https://cloud.google.com/pubsub/lite/docs/locations for available zones.
+// See https://cloud.google.com/pubsub/lite/docs/locations for available regions
+// and zones.
 const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
 publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {

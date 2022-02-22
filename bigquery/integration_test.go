@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -200,6 +199,9 @@ func initIntegrationTest() func() {
 			log.Fatalf("storage.NewClient: %v", err)
 		}
 		policyTagManagerClient, err = datacatalog.NewPolicyTagManagerClient(ctx, ptmOpts...)
+		if err != nil {
+			log.Fatalf("datacatalog.NewPolicyTagManagerClient: %v", err)
+		}
 		c := initTestState(client, now)
 		return func() { c(); cleanup() }
 	}
@@ -245,6 +247,70 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
 		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.Project())
 	}
+}
+
+func TestIntegration_JobFrom(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a job we can use for referencing.
+	q := client.Query("SELECT 123 as foo")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("failed to run test query: %v", err)
+	}
+	want := it.SourceJob()
+
+	// establish a new client that's pointed at an invalid project/location.
+	otherClient, err := NewClient(ctx, "bad-project-id")
+	if err != nil {
+		t.Fatalf("failed to create other client: %v", err)
+	}
+	otherClient.Location = "badloc"
+
+	for _, tc := range []struct {
+		description string
+		f           func(*Client) (*Job, error)
+		wantErr     bool
+	}{
+		{
+			description: "JobFromID",
+			f:           func(c *Client) (*Job, error) { return c.JobFromID(ctx, want.jobID) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromIDLocation",
+			f:           func(c *Client) (*Job, error) { return c.JobFromIDLocation(ctx, want.jobID, want.location) },
+			wantErr:     true,
+		},
+		{
+			description: "JobFromProject",
+			f:           func(c *Client) (*Job, error) { return c.JobFromProject(ctx, want.projectID, want.jobID, want.location) },
+		},
+	} {
+		got, err := tc.f(otherClient)
+		if err != nil {
+			if !tc.wantErr {
+				t.Errorf("case %q errored: %v", tc.description, err)
+			}
+			continue
+		}
+		if tc.wantErr {
+			t.Errorf("case %q got success, expected error", tc.description)
+		}
+		if got.projectID != want.projectID {
+			t.Errorf("case %q projectID mismatch, got %s want %s", tc.description, got.projectID, want.projectID)
+		}
+		if got.location != want.location {
+			t.Errorf("case %q location mismatch, got %s want %s", tc.description, got.location, want.location)
+		}
+		if got.jobID != want.jobID {
+			t.Errorf("case %q jobID mismatch, got %s want %s", tc.description, got.jobID, want.jobID)
+		}
+	}
+
 }
 
 func TestIntegration_TableCreate(t *testing.T) {
@@ -304,12 +370,12 @@ func TestIntegration_TableCreateView(t *testing.T) {
 	}
 	ctx := context.Background()
 	table := newTable(t, schema)
+	tableIdentifier, _ := table.Identifier(StandardSQLID)
 	defer table.Delete(ctx)
 
 	// Test that standard SQL views work.
 	view := dataset.Table("t_view_standardsql")
-	query := fmt.Sprintf("SELECT APPROX_COUNT_DISTINCT(name) FROM `%s.%s.%s`",
-		dataset.ProjectID, dataset.DatasetID, table.TableID)
+	query := fmt.Sprintf("SELECT APPROX_COUNT_DISTINCT(name) FROM %s", tableIdentifier)
 	err := view.Create(context.Background(), &TableMetadata{
 		ViewQuery:      query,
 		UseStandardSQL: true,
@@ -493,12 +559,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run snapshot: %v", err)
 	}
-	status, err := job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("polling snapshot failed: %v", err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("snapshot failed in error: %v", status.Err())
+		t.Fatalf("snapshot failed: %v", err)
 	}
 
 	// verify metadata on the snapshot
@@ -525,12 +588,9 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if err != nil {
 		t.Fatalf("couldn't run restore: %v", err)
 	}
-	status, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("polling restore failed: %v", err)
-	}
-	if status.Err() != nil {
-		t.Fatalf("restore failed in error: %v", status.Err())
+		t.Fatalf("restore failed: %v", err)
 	}
 
 	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
@@ -869,10 +929,11 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	// Create a sample UDF so we can verify adding authorized UDFs
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
-		routine.FullyQualifiedName())
+			CREATE FUNCTION %s(x INT64) AS (x * 3);`,
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -1281,13 +1342,14 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 	// Define a simple stored procedure via DDL.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 	sql := fmt.Sprintf(`
-		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		CREATE OR REPLACE PROCEDURE %s(val INT64)
 		BEGIN
 			SELECT CURRENT_TIMESTAMP() as ts;
 			SELECT val * 2 as f2;
 		END`,
-		routine.FullyQualifiedName())
+		routineSQLID)
 
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
@@ -1296,8 +1358,8 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 
 	// Invoke the stored procedure.
 	sql = fmt.Sprintf(`
-	CALL `+"`%s`"+`(5)`,
-		routine.FullyQualifiedName())
+	CALL %s(5)`,
+		routineSQLID)
 
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
@@ -1910,7 +1972,7 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		t.Fatalf("job Wait failure: %v", err)
+		t.Fatalf("job %q: Wait failure: %v", job.ID(), err)
 	}
 	if status.Statistics == nil {
 		t.Fatal("expected job statistics, none found")
@@ -1947,6 +2009,18 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 
 	if len(qStats.Timeline) == 0 {
 		t.Error("expected query timeline, none present")
+	}
+
+	if qStats.BIEngineStatistics != nil {
+		expectedMode := false
+		for _, m := range []string{"FULL", "PARTIAL", "DISABLED"} {
+			if qStats.BIEngineStatistics.BIEngineMode == m {
+				expectedMode = true
+			}
+		}
+		if !expectedMode {
+			t.Errorf("unexpected BIEngineMode for BI Engine statistics, got %s", qStats.BIEngineStatistics.BIEngineMode)
+		}
 	}
 }
 
@@ -2047,8 +2121,7 @@ func runQuerySQL(ctx context.Context, sql string) (*JobStatistics, *QueryStatist
 func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistics, error) {
 	var jobStats *JobStatistics
 	var queryStats *QueryStatistics
-	var err error
-	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+	var err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
 		job, err := q.Run(ctx)
 		if err != nil {
 			var e *googleapi.Error
@@ -2063,9 +2136,12 @@ func runQueryJob(ctx context.Context, q *Query) (*JobStatistics, *QueryStatistic
 			if ok := xerrors.As(err, &e); ok && e.Code < 500 {
 				return true, err // fail on 4xx
 			}
-			return false, err
+			return false, fmt.Errorf("%q: %v", job.ID(), err)
 		}
 		status := job.LastStatus()
+		if status.Err() != nil {
+			return false, fmt.Errorf("job %q terminated in err: %v", job.ID(), status.Err())
+		}
 		if status.Statistics != nil {
 			jobStats = status.Statistics
 			if qStats, ok := status.Statistics.Details.(*QueryStatistics); ok {
@@ -2276,8 +2352,10 @@ func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 	}
 	defer customTable.Delete(ctx)
 
+	customTableSQLID, _ := customTable.Identifier(StandardSQLID)
+
 	// Issue a test query that prunes based on the custom hive partitioning key, and verify the result is as expected.
-	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM `%s`.%s.%s WHERE pkey=\"foo\"", customTable.ProjectID, customTable.DatasetID, customTable.TableID)
+	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM %s WHERE pkey=\"foo\"", customTableSQLID)
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -2533,10 +2611,10 @@ func TestIntegration_Scripting(t *testing.T) {
 	}
 	status, err := job.Wait(ctx)
 	if err != nil {
-		t.Fatalf("failed to wait for completion: %v", err)
+		t.Fatalf("job %q failed to wait for completion: %v", job.ID(), err)
 	}
 	if status.Err() != nil {
-		t.Fatalf("job terminated with error: %v", err)
+		t.Fatalf("job %q terminated with error: %v", job.ID(), err)
 	}
 
 	queryStats, ok := status.Statistics.Details.(*QueryStatistics)
@@ -2846,9 +2924,9 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	if err != nil {
 		t.Fatalf("job Run failure: %v", err)
 	}
-	_, err = job.Wait(ctx)
+	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("job completion failure: %v", err)
+		t.Fatalf("job %q completion failure: %v", job.ID(), err)
 	}
 
 	if err := job.Delete(ctx); err != nil {
@@ -3149,10 +3227,10 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	// Create a model via a CREATE MODEL query
 	modelID := modelIDs.New()
 	model := dataset.Model(modelID)
-	modelRef := fmt.Sprintf("%s.%s.%s", dataset.ProjectID, dataset.DatasetID, modelID)
+	modelSQLID, _ := model.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-		CREATE MODEL `+"`%s`"+`
+		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
 			max_iteration=1,
@@ -3162,7 +3240,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 			SELECT 'a' AS f1, 2.0 AS label
 			UNION ALL
 			SELECT 'b' AS f1, 3.8 AS label
-		)`, modelRef)
+		)`, modelSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -3256,8 +3334,8 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to extract model to GCS: %v", err)
 	}
-	if _, err := job.Wait(ctx); err != nil {
-		t.Errorf("failed to complete extract job (%s): %v", job.ID(), err)
+	if err = wait(ctx, job); err != nil {
+		t.Errorf("extract failed: %v", err)
 	}
 
 	// Delete the model.
@@ -3339,13 +3417,14 @@ func TestIntegration_RoutineComplexTypes(t *testing.T) {
 
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 	sql := fmt.Sprintf(`
-		CREATE FUNCTION `+"`%s`("+`
+		CREATE FUNCTION %s(
 			arr ARRAY<STRUCT<name STRING, val INT64>>
 		  ) AS (
 			  (SELECT SUM(IF(elem.name = "foo",elem.val,null)) FROM UNNEST(arr) AS elem)
 		  )`,
-		routine.FullyQualifiedName())
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -3402,10 +3481,11 @@ func TestIntegration_RoutineLifecycle(t *testing.T) {
 	// Create a scalar UDF routine via a CREATE FUNCTION query
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
+	routineSQLID, _ := routine.Identifier(StandardSQLID)
 
 	sql := fmt.Sprintf(`
-		CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
-		routine.FullyQualifiedName())
+		CREATE FUNCTION %s(x INT64) AS (x * 3);`,
+		routineSQLID)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatal(err)
 	}
@@ -3568,19 +3648,16 @@ func hasStatusCode(err error, code int) bool {
 func wait(ctx context.Context, job *Job) error {
 	status, err := job.Wait(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("job %q error: %v", job.ID(), err)
 	}
 	if status.Err() != nil {
-		return fmt.Errorf("job status error: %#v", status.Err())
+		return fmt.Errorf("job %q status error: %#v", job.ID(), status.Err())
 	}
 	if status.Statistics == nil {
-		return errors.New("nil Statistics")
+		return fmt.Errorf("job %q nil Statistics", job.ID())
 	}
 	if status.Statistics.EndTime.IsZero() {
-		return errors.New("EndTime is zero")
-	}
-	if status.Statistics.Details == nil {
-		return errors.New("nil Statistics.Details")
+		return fmt.Errorf("job %q EndTime is zero", job.ID())
 	}
 	return nil
 }

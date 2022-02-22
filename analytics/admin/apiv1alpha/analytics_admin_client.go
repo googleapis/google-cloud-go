@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -73,8 +73,6 @@ type AnalyticsAdminCallOptions struct {
 	DeleteAndroidAppDataStream                   []gax.CallOption
 	UpdateAndroidAppDataStream                   []gax.CallOption
 	ListAndroidAppDataStreams                    []gax.CallOption
-	GetEnhancedMeasurementSettings               []gax.CallOption
-	UpdateEnhancedMeasurementSettings            []gax.CallOption
 	CreateFirebaseLink                           []gax.CallOption
 	DeleteFirebaseLink                           []gax.CallOption
 	ListFirebaseLinks                            []gax.CallOption
@@ -89,6 +87,7 @@ type AnalyticsAdminCallOptions struct {
 	CreateMeasurementProtocolSecret              []gax.CallOption
 	DeleteMeasurementProtocolSecret              []gax.CallOption
 	UpdateMeasurementProtocolSecret              []gax.CallOption
+	AcknowledgeUserDataCollection                []gax.CallOption
 	SearchChangeHistoryEvents                    []gax.CallOption
 	GetGoogleSignalsSettings                     []gax.CallOption
 	UpdateGoogleSignalsSettings                  []gax.CallOption
@@ -119,6 +118,11 @@ type AnalyticsAdminCallOptions struct {
 	GetCustomMetric                              []gax.CallOption
 	GetDataRetentionSettings                     []gax.CallOption
 	UpdateDataRetentionSettings                  []gax.CallOption
+	CreateDataStream                             []gax.CallOption
+	DeleteDataStream                             []gax.CallOption
+	UpdateDataStream                             []gax.CallOption
+	ListDataStreams                              []gax.CallOption
+	GetDataStream                                []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -128,7 +132,6 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -181,27 +184,25 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		UpdateWebDataStream:               []gax.CallOption{},
-		CreateWebDataStream:               []gax.CallOption{},
-		ListWebDataStreams:                []gax.CallOption{},
-		GetIosAppDataStream:               []gax.CallOption{},
-		DeleteIosAppDataStream:            []gax.CallOption{},
-		UpdateIosAppDataStream:            []gax.CallOption{},
-		ListIosAppDataStreams:             []gax.CallOption{},
-		GetAndroidAppDataStream:           []gax.CallOption{},
-		DeleteAndroidAppDataStream:        []gax.CallOption{},
-		UpdateAndroidAppDataStream:        []gax.CallOption{},
-		ListAndroidAppDataStreams:         []gax.CallOption{},
-		GetEnhancedMeasurementSettings:    []gax.CallOption{},
-		UpdateEnhancedMeasurementSettings: []gax.CallOption{},
-		CreateFirebaseLink:                []gax.CallOption{},
-		DeleteFirebaseLink:                []gax.CallOption{},
-		ListFirebaseLinks:                 []gax.CallOption{},
-		GetGlobalSiteTag:                  []gax.CallOption{},
-		CreateGoogleAdsLink:               []gax.CallOption{},
-		UpdateGoogleAdsLink:               []gax.CallOption{},
-		DeleteGoogleAdsLink:               []gax.CallOption{},
-		ListGoogleAdsLinks:                []gax.CallOption{},
+		UpdateWebDataStream:        []gax.CallOption{},
+		CreateWebDataStream:        []gax.CallOption{},
+		ListWebDataStreams:         []gax.CallOption{},
+		GetIosAppDataStream:        []gax.CallOption{},
+		DeleteIosAppDataStream:     []gax.CallOption{},
+		UpdateIosAppDataStream:     []gax.CallOption{},
+		ListIosAppDataStreams:      []gax.CallOption{},
+		GetAndroidAppDataStream:    []gax.CallOption{},
+		DeleteAndroidAppDataStream: []gax.CallOption{},
+		UpdateAndroidAppDataStream: []gax.CallOption{},
+		ListAndroidAppDataStreams:  []gax.CallOption{},
+		CreateFirebaseLink:         []gax.CallOption{},
+		DeleteFirebaseLink:         []gax.CallOption{},
+		ListFirebaseLinks:          []gax.CallOption{},
+		GetGlobalSiteTag:           []gax.CallOption{},
+		CreateGoogleAdsLink:        []gax.CallOption{},
+		UpdateGoogleAdsLink:        []gax.CallOption{},
+		DeleteGoogleAdsLink:        []gax.CallOption{},
+		ListGoogleAdsLinks:         []gax.CallOption{},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -263,6 +264,18 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 			}),
 		},
 		UpdateMeasurementProtocolSecret: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AcknowledgeUserDataCollection: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -634,6 +647,66 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		CreateDataStream: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDataStream: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateDataStream: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDataStreams: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetDataStream: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -676,8 +749,6 @@ type internalAnalyticsAdminClient interface {
 	DeleteAndroidAppDataStream(context.Context, *adminpb.DeleteAndroidAppDataStreamRequest, ...gax.CallOption) error
 	UpdateAndroidAppDataStream(context.Context, *adminpb.UpdateAndroidAppDataStreamRequest, ...gax.CallOption) (*adminpb.AndroidAppDataStream, error)
 	ListAndroidAppDataStreams(context.Context, *adminpb.ListAndroidAppDataStreamsRequest, ...gax.CallOption) *AndroidAppDataStreamIterator
-	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
-	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
 	CreateFirebaseLink(context.Context, *adminpb.CreateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
 	DeleteFirebaseLink(context.Context, *adminpb.DeleteFirebaseLinkRequest, ...gax.CallOption) error
 	ListFirebaseLinks(context.Context, *adminpb.ListFirebaseLinksRequest, ...gax.CallOption) *FirebaseLinkIterator
@@ -692,6 +763,7 @@ type internalAnalyticsAdminClient interface {
 	CreateMeasurementProtocolSecret(context.Context, *adminpb.CreateMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
 	DeleteMeasurementProtocolSecret(context.Context, *adminpb.DeleteMeasurementProtocolSecretRequest, ...gax.CallOption) error
 	UpdateMeasurementProtocolSecret(context.Context, *adminpb.UpdateMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
+	AcknowledgeUserDataCollection(context.Context, *adminpb.AcknowledgeUserDataCollectionRequest, ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error)
 	SearchChangeHistoryEvents(context.Context, *adminpb.SearchChangeHistoryEventsRequest, ...gax.CallOption) *ChangeHistoryEventIterator
 	GetGoogleSignalsSettings(context.Context, *adminpb.GetGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
 	UpdateGoogleSignalsSettings(context.Context, *adminpb.UpdateGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
@@ -722,6 +794,11 @@ type internalAnalyticsAdminClient interface {
 	GetCustomMetric(context.Context, *adminpb.GetCustomMetricRequest, ...gax.CallOption) (*adminpb.CustomMetric, error)
 	GetDataRetentionSettings(context.Context, *adminpb.GetDataRetentionSettingsRequest, ...gax.CallOption) (*adminpb.DataRetentionSettings, error)
 	UpdateDataRetentionSettings(context.Context, *adminpb.UpdateDataRetentionSettingsRequest, ...gax.CallOption) (*adminpb.DataRetentionSettings, error)
+	CreateDataStream(context.Context, *adminpb.CreateDataStreamRequest, ...gax.CallOption) (*adminpb.DataStream, error)
+	DeleteDataStream(context.Context, *adminpb.DeleteDataStreamRequest, ...gax.CallOption) error
+	UpdateDataStream(context.Context, *adminpb.UpdateDataStreamRequest, ...gax.CallOption) (*adminpb.DataStream, error)
+	ListDataStreams(context.Context, *adminpb.ListDataStreamsRequest, ...gax.CallOption) *DataStreamIterator
+	GetDataStream(context.Context, *adminpb.GetDataStreamRequest, ...gax.CallOption) (*adminpb.DataStream, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -981,20 +1058,6 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 	return c.internalClient.ListAndroidAppDataStreams(ctx, req, opts...)
 }
 
-// GetEnhancedMeasurementSettings returns the singleton enhanced measurement settings for this web stream.
-// Note that the stream must enable enhanced measurement for these settings to
-// take effect.
-func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
-	return c.internalClient.GetEnhancedMeasurementSettings(ctx, req, opts...)
-}
-
-// UpdateEnhancedMeasurementSettings updates the singleton enhanced measurement settings for this web stream.
-// Note that the stream must enable enhanced measurement for these settings to
-// take effect.
-func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
-	return c.internalClient.UpdateEnhancedMeasurementSettings(ctx, req, opts...)
-}
-
 // CreateFirebaseLink creates a FirebaseLink.
 //
 // Properties can have at most one FirebaseLink.
@@ -1069,6 +1132,14 @@ func (c *AnalyticsAdminClient) DeleteMeasurementProtocolSecret(ctx context.Conte
 // UpdateMeasurementProtocolSecret updates a measurement protocol secret.
 func (c *AnalyticsAdminClient) UpdateMeasurementProtocolSecret(ctx context.Context, req *adminpb.UpdateMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
 	return c.internalClient.UpdateMeasurementProtocolSecret(ctx, req, opts...)
+}
+
+// AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.
+//
+// This acknowledgement must be completed (either in the Google Analytics UI
+// or via this API) before MeasurementProtocolSecret resources may be created.
+func (c *AnalyticsAdminClient) AcknowledgeUserDataCollection(ctx context.Context, req *adminpb.AcknowledgeUserDataCollectionRequest, opts ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error) {
+	return c.internalClient.AcknowledgeUserDataCollection(ctx, req, opts...)
 }
 
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
@@ -1235,6 +1306,31 @@ func (c *AnalyticsAdminClient) GetDataRetentionSettings(ctx context.Context, req
 // UpdateDataRetentionSettings updates the singleton data retention settings for this property.
 func (c *AnalyticsAdminClient) UpdateDataRetentionSettings(ctx context.Context, req *adminpb.UpdateDataRetentionSettingsRequest, opts ...gax.CallOption) (*adminpb.DataRetentionSettings, error) {
 	return c.internalClient.UpdateDataRetentionSettings(ctx, req, opts...)
+}
+
+// CreateDataStream creates a DataStream.
+func (c *AnalyticsAdminClient) CreateDataStream(ctx context.Context, req *adminpb.CreateDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	return c.internalClient.CreateDataStream(ctx, req, opts...)
+}
+
+// DeleteDataStream deletes a DataStream on a property.
+func (c *AnalyticsAdminClient) DeleteDataStream(ctx context.Context, req *adminpb.DeleteDataStreamRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDataStream(ctx, req, opts...)
+}
+
+// UpdateDataStream updates a DataStream on a property.
+func (c *AnalyticsAdminClient) UpdateDataStream(ctx context.Context, req *adminpb.UpdateDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	return c.internalClient.UpdateDataStream(ctx, req, opts...)
+}
+
+// ListDataStreams lists DataStreams on a property.
+func (c *AnalyticsAdminClient) ListDataStreams(ctx context.Context, req *adminpb.ListDataStreamsRequest, opts ...gax.CallOption) *DataStreamIterator {
+	return c.internalClient.ListDataStreams(ctx, req, opts...)
+}
+
+// GetDataStream lookup for a single DataStream.
+func (c *AnalyticsAdminClient) GetDataStream(ctx context.Context, req *adminpb.GetDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	return c.internalClient.GetDataStream(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -2186,48 +2282,6 @@ func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context
 	return it
 }
 
-func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
-	var resp *adminpb.EnhancedMeasurementSettings
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.GetEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "enhanced_measurement_settings.name", url.QueryEscape(req.GetEnhancedMeasurementSettings().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
-	var resp *adminpb.EnhancedMeasurementSettings
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateEnhancedMeasurementSettings(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -2571,6 +2625,27 @@ func (c *analyticsAdminGRPCClient) UpdateMeasurementProtocolSecret(ctx context.C
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.analyticsAdminClient.UpdateMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) AcknowledgeUserDataCollection(ctx context.Context, req *adminpb.AcknowledgeUserDataCollectionRequest, opts ...gax.CallOption) (*adminpb.AcknowledgeUserDataCollectionResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property", url.QueryEscape(req.GetProperty())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).AcknowledgeUserDataCollection[0:len((*c.CallOptions).AcknowledgeUserDataCollection):len((*c.CallOptions).AcknowledgeUserDataCollection)], opts...)
+	var resp *adminpb.AcknowledgeUserDataCollectionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.AcknowledgeUserDataCollection(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3327,6 +3402,130 @@ func (c *analyticsAdminGRPCClient) UpdateDataRetentionSettings(ctx context.Conte
 	return resp, nil
 }
 
+func (c *analyticsAdminGRPCClient) CreateDataStream(ctx context.Context, req *adminpb.CreateDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateDataStream[0:len((*c.CallOptions).CreateDataStream):len((*c.CallOptions).CreateDataStream)], opts...)
+	var resp *adminpb.DataStream
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateDataStream(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteDataStream(ctx context.Context, req *adminpb.DeleteDataStreamRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteDataStream[0:len((*c.CallOptions).DeleteDataStream):len((*c.CallOptions).DeleteDataStream)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteDataStream(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateDataStream(ctx context.Context, req *adminpb.UpdateDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "data_stream.name", url.QueryEscape(req.GetDataStream().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateDataStream[0:len((*c.CallOptions).UpdateDataStream):len((*c.CallOptions).UpdateDataStream)], opts...)
+	var resp *adminpb.DataStream
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateDataStream(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListDataStreams(ctx context.Context, req *adminpb.ListDataStreamsRequest, opts ...gax.CallOption) *DataStreamIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListDataStreams[0:len((*c.CallOptions).ListDataStreams):len((*c.CallOptions).ListDataStreams)], opts...)
+	it := &DataStreamIterator{}
+	req = proto.Clone(req).(*adminpb.ListDataStreamsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.DataStream, string, error) {
+		resp := &adminpb.ListDataStreamsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListDataStreams(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataStreams(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) GetDataStream(ctx context.Context, req *adminpb.GetDataStreamRequest, opts ...gax.CallOption) (*adminpb.DataStream, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetDataStream[0:len((*c.CallOptions).GetDataStream):len((*c.CallOptions).GetDataStream)], opts...)
+	var resp *adminpb.DataStream
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetDataStream(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // AccountIterator manages a stream of *adminpb.Account.
 type AccountIterator struct {
 	items    []*adminpb.Account
@@ -3698,6 +3897,53 @@ func (it *CustomMetricIterator) bufLen() int {
 }
 
 func (it *CustomMetricIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// DataStreamIterator manages a stream of *adminpb.DataStream.
+type DataStreamIterator struct {
+	items    []*adminpb.DataStream
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.DataStream, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *DataStreamIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *DataStreamIterator) Next() (*adminpb.DataStream, error) {
+	var item *adminpb.DataStream
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *DataStreamIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *DataStreamIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

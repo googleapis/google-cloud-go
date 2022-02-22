@@ -41,31 +41,29 @@ var (
 
 // GapicGenerator is used to regenerate gapic libraries.
 type GapicGenerator struct {
-	googleapisDir      string
-	googleapisDiscoDir string
-	protoDir           string
-	googleCloudDir     string
-	genprotoDir        string
-	gapicToGenerate    string
-	regenOnly          bool
-	onlyGenerateGapic  bool
-	genModule          bool
-	modifiedPkgs       []string
+	googleapisDir     string
+	protoDir          string
+	googleCloudDir    string
+	genprotoDir       string
+	gapicToGenerate   string
+	regenOnly         bool
+	onlyGenerateGapic bool
+	genModule         bool
+	modifiedPkgs      []string
 }
 
 // NewGapicGenerator creates a GapicGenerator.
 func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:      c.GoogleapisDir,
-		googleapisDiscoDir: c.GoogleapisDiscoDir,
-		protoDir:           c.ProtoDir,
-		googleCloudDir:     c.GapicDir,
-		genprotoDir:        c.GenprotoDir,
-		gapicToGenerate:    c.GapicToGenerate,
-		regenOnly:          c.RegenOnly,
-		onlyGenerateGapic:  c.OnlyGenerateGapic,
-		genModule:          c.GenModule,
-		modifiedPkgs:       modifiedPkgs,
+		googleapisDir:     c.GoogleapisDir,
+		protoDir:          c.ProtoDir,
+		googleCloudDir:    c.GapicDir,
+		genprotoDir:       c.GenprotoDir,
+		gapicToGenerate:   c.GapicToGenerate,
+		regenOnly:         c.RegenOnly,
+		onlyGenerateGapic: c.OnlyGenerateGapic,
+		genModule:         c.GenModule,
+		modifiedPkgs:      modifiedPkgs,
 	}
 }
 
@@ -315,13 +313,9 @@ find . -name '*.backup' -delete
 // microgen runs the microgenerator on a single microgen config.
 func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	log.Println("microgen generating", conf.pkg)
-	dir := g.googleapisDir
-	if conf.googleapisDiscovery {
-		dir = g.googleapisDiscoDir
-	}
 
 	var protoFiles []string
-	if err := filepath.Walk(dir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(g.googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -337,7 +331,6 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	}
 
 	args := []string{"-I", g.googleapisDir,
-		"-I", g.googleapisDiscoDir,
 		"--experimental_allow_proto3_optional",
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
@@ -356,12 +349,13 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	if len(conf.transports) > 0 {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.transports, "+")))
 	}
-	if conf.googleapisDiscovery {
+	// This is a bummer way of toggling diregapic generation, but it compute is the only one for the near term.
+	if conf.pkg == "compute" {
 		args = append(args, "--go_gapic_opt", "diregapic")
 	}
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
-	c.Dir = dir
+	c.Dir = g.googleapisDir
 	return c.Run()
 }
 
@@ -421,7 +415,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Cloud IAM",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/iam",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iam/latest",
 		ReleaseLevel:      "ga",
 		LibraryType:       CoreLibraryType,
 	},
@@ -448,7 +442,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Cloud Profiler",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/profiler",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/profiler/latest",
 		ReleaseLevel:      "ga",
 		LibraryType:       AgentLibraryType,
 	},
@@ -457,7 +451,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Service Metadata API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/metadata",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/compute/latest/metadata",
 		ReleaseLevel:      "ga",
 		LibraryType:       CoreLibraryType,
 	},
@@ -466,7 +460,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Cloud Functions",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/functions/metadata",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/functions/latest/metadata",
 		ReleaseLevel:      "alpha",
 		LibraryType:       CoreLibraryType,
 	},
@@ -476,7 +470,7 @@ var manualEntries = []manifestEntry{
 		Description:       "Cloud Error Reporting API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
-		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/errorreporting",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/errorreporting/latest",
 		ReleaseLevel:      "beta",
 		LibraryType:       GapicManualLibraryType,
 	},
@@ -540,11 +534,7 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) (map[string]manifestE
 		entries[manual.DistributionName] = manual
 	}
 	for _, conf := range confs {
-		dir := g.googleapisDir
-		if conf.googleapisDiscovery {
-			dir = g.googleapisDiscoDir
-		}
-		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
+		yamlPath := filepath.Join(g.googleapisDir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
@@ -592,11 +582,7 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntries []manifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
-		dir := g.googleapisDir
-		if conf.googleapisDiscovery {
-			dir = g.googleapisDiscoDir
-		}
-		yamlPath := filepath.Join(dir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
+		yamlPath := filepath.Join(g.googleapisDir, conf.inputDirectoryPath, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
