@@ -78,8 +78,8 @@ type storageClient interface {
 
 	// Media operations.
 
-	ComposeObject(ctx context.Context, req composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
-	RewriteObject(ctx context.Context, req rewriteObjectRequest, opts ...storageOption) (rewriteObjectResponse, error)
+	ComposeObject(ctx context.Context, req *composeObjectRequest, opts ...storageOption) (*ObjectAttrs, error)
+	RewriteObject(ctx context.Context, req *rewriteObjectRequest, opts ...storageOption) (*rewriteObjectResponse, error)
 
 	OpenReader(ctx context.Context, r *Reader, opts ...storageOption) error
 	OpenWriter(ctx context.Context, w *Writer, opts ...storageOption) error
