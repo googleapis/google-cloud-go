@@ -259,7 +259,7 @@ func (c *profileGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *profileGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -271,6 +271,7 @@ func (c *profileGRPCClient) Close() error {
 
 func (c *profileGRPCClient) ListProfiles(ctx context.Context, req *talentpb.ListProfilesRequest, opts ...gax.CallOption) *ProfileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProfiles[0:len((*c.CallOptions).ListProfiles):len((*c.CallOptions).ListProfiles)], opts...)
 	it := &ProfileIterator{}
@@ -320,6 +321,7 @@ func (c *profileGRPCClient) CreateProfile(ctx context.Context, req *talentpb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateProfile[0:len((*c.CallOptions).CreateProfile):len((*c.CallOptions).CreateProfile)], opts...)
 	var resp *talentpb.Profile
@@ -341,6 +343,7 @@ func (c *profileGRPCClient) GetProfile(ctx context.Context, req *talentpb.GetPro
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetProfile[0:len((*c.CallOptions).GetProfile):len((*c.CallOptions).GetProfile)], opts...)
 	var resp *talentpb.Profile
@@ -362,6 +365,7 @@ func (c *profileGRPCClient) UpdateProfile(ctx context.Context, req *talentpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "profile.name", url.QueryEscape(req.GetProfile().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateProfile[0:len((*c.CallOptions).UpdateProfile):len((*c.CallOptions).UpdateProfile)], opts...)
 	var resp *talentpb.Profile
@@ -383,6 +387,7 @@ func (c *profileGRPCClient) DeleteProfile(ctx context.Context, req *talentpb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProfile[0:len((*c.CallOptions).DeleteProfile):len((*c.CallOptions).DeleteProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -400,6 +405,7 @@ func (c *profileGRPCClient) SearchProfiles(ctx context.Context, req *talentpb.Se
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchProfiles[0:len((*c.CallOptions).SearchProfiles):len((*c.CallOptions).SearchProfiles)], opts...)
 	var resp *talentpb.SearchProfilesResponse
