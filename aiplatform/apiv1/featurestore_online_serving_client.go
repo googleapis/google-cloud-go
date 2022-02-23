@@ -185,7 +185,7 @@ func (c *featurestoreOnlineServingGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *featurestoreOnlineServingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -197,6 +197,7 @@ func (c *featurestoreOnlineServingGRPCClient) Close() error {
 
 func (c *featurestoreOnlineServingGRPCClient) ReadFeatureValues(ctx context.Context, req *aiplatformpb.ReadFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.ReadFeatureValuesResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReadFeatureValues[0:len((*c.CallOptions).ReadFeatureValues):len((*c.CallOptions).ReadFeatureValues)], opts...)
 	var resp *aiplatformpb.ReadFeatureValuesResponse
@@ -213,6 +214,7 @@ func (c *featurestoreOnlineServingGRPCClient) ReadFeatureValues(ctx context.Cont
 
 func (c *featurestoreOnlineServingGRPCClient) StreamingReadFeatureValues(ctx context.Context, req *aiplatformpb.StreamingReadFeatureValuesRequest, opts ...gax.CallOption) (aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	var resp aiplatformpb.FeaturestoreOnlineServingService_StreamingReadFeatureValuesClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

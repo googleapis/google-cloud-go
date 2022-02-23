@@ -321,7 +321,7 @@ func (c *participantsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *participantsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -338,6 +338,7 @@ func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dia
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateParticipant[0:len((*c.CallOptions).CreateParticipant):len((*c.CallOptions).CreateParticipant)], opts...)
 	var resp *dialogflowpb.Participant
@@ -359,6 +360,7 @@ func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialog
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetParticipant[0:len((*c.CallOptions).GetParticipant):len((*c.CallOptions).GetParticipant)], opts...)
 	var resp *dialogflowpb.Participant
@@ -375,6 +377,7 @@ func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialog
 
 func (c *participantsGRPCClient) ListParticipants(ctx context.Context, req *dialogflowpb.ListParticipantsRequest, opts ...gax.CallOption) *ParticipantIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListParticipants[0:len((*c.CallOptions).ListParticipants):len((*c.CallOptions).ListParticipants)], opts...)
 	it := &ParticipantIterator{}
@@ -424,6 +427,7 @@ func (c *participantsGRPCClient) UpdateParticipant(ctx context.Context, req *dia
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "participant.name", url.QueryEscape(req.GetParticipant().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateParticipant[0:len((*c.CallOptions).UpdateParticipant):len((*c.CallOptions).UpdateParticipant)], opts...)
 	var resp *dialogflowpb.Participant
@@ -445,6 +449,7 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "participant", url.QueryEscape(req.GetParticipant())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AnalyzeContent[0:len((*c.CallOptions).AnalyzeContent):len((*c.CallOptions).AnalyzeContent)], opts...)
 	var resp *dialogflowpb.AnalyzeContentResponse
@@ -466,6 +471,7 @@ func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SuggestArticles[0:len((*c.CallOptions).SuggestArticles):len((*c.CallOptions).SuggestArticles)], opts...)
 	var resp *dialogflowpb.SuggestArticlesResponse
@@ -487,6 +493,7 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SuggestFaqAnswers[0:len((*c.CallOptions).SuggestFaqAnswers):len((*c.CallOptions).SuggestFaqAnswers)], opts...)
 	var resp *dialogflowpb.SuggestFaqAnswersResponse
@@ -508,6 +515,7 @@ func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *d
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SuggestSmartReplies[0:len((*c.CallOptions).SuggestSmartReplies):len((*c.CallOptions).SuggestSmartReplies)], opts...)
 	var resp *dialogflowpb.SuggestSmartRepliesResponse

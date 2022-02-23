@@ -259,7 +259,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -271,6 +271,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListEndpoints(ctx context.Context, req *idspb.ListEndpointsRequest, opts ...gax.CallOption) *EndpointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEndpoints[0:len((*c.CallOptions).ListEndpoints):len((*c.CallOptions).ListEndpoints)], opts...)
 	it := &EndpointIterator{}
@@ -320,6 +321,7 @@ func (c *gRPCClient) GetEndpoint(ctx context.Context, req *idspb.GetEndpointRequ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEndpoint[0:len((*c.CallOptions).GetEndpoint):len((*c.CallOptions).GetEndpoint)], opts...)
 	var resp *idspb.Endpoint
@@ -341,6 +343,7 @@ func (c *gRPCClient) CreateEndpoint(ctx context.Context, req *idspb.CreateEndpoi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEndpoint[0:len((*c.CallOptions).CreateEndpoint):len((*c.CallOptions).CreateEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -364,6 +367,7 @@ func (c *gRPCClient) DeleteEndpoint(ctx context.Context, req *idspb.DeleteEndpoi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEndpoint[0:len((*c.CallOptions).DeleteEndpoint):len((*c.CallOptions).DeleteEndpoint)], opts...)
 	var resp *longrunningpb.Operation

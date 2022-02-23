@@ -190,7 +190,7 @@ func (c *templatesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *templatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -207,6 +207,7 @@ func (c *templatesGRPCClient) CreateJobFromTemplate(ctx context.Context, req *da
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateJobFromTemplate[0:len((*c.CallOptions).CreateJobFromTemplate):len((*c.CallOptions).CreateJobFromTemplate)], opts...)
 	var resp *dataflowpb.Job
@@ -228,6 +229,7 @@ func (c *templatesGRPCClient) LaunchTemplate(ctx context.Context, req *dataflowp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LaunchTemplate[0:len((*c.CallOptions).LaunchTemplate):len((*c.CallOptions).LaunchTemplate)], opts...)
 	var resp *dataflowpb.LaunchTemplateResponse
@@ -249,6 +251,7 @@ func (c *templatesGRPCClient) GetTemplate(ctx context.Context, req *dataflowpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTemplate[0:len((*c.CallOptions).GetTemplate):len((*c.CallOptions).GetTemplate)], opts...)
 	var resp *dataflowpb.GetTemplateResponse

@@ -173,7 +173,7 @@ func (c *flexTemplatesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *flexTemplatesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -185,6 +185,7 @@ func (c *flexTemplatesGRPCClient) Close() error {
 
 func (c *flexTemplatesGRPCClient) LaunchFlexTemplate(ctx context.Context, req *dataflowpb.LaunchFlexTemplateRequest, opts ...gax.CallOption) (*dataflowpb.LaunchFlexTemplateResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LaunchFlexTemplate[0:len((*c.CallOptions).LaunchFlexTemplate):len((*c.CallOptions).LaunchFlexTemplate)], opts...)
 	var resp *dataflowpb.LaunchFlexTemplateResponse

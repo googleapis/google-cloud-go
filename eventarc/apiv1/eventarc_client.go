@@ -362,7 +362,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -374,6 +374,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerRequest, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTrigger[0:len((*c.CallOptions).GetTrigger):len((*c.CallOptions).GetTrigger)], opts...)
 	var resp *eventarcpb.Trigger
@@ -390,6 +391,7 @@ func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 
 func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTriggersRequest, opts ...gax.CallOption) *TriggerIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTriggers[0:len((*c.CallOptions).ListTriggers):len((*c.CallOptions).ListTriggers)], opts...)
 	it := &TriggerIterator{}
@@ -434,6 +436,7 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 
 func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTriggerRequest, opts ...gax.CallOption) (*CreateTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTrigger[0:len((*c.CallOptions).CreateTrigger):len((*c.CallOptions).CreateTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -452,6 +455,7 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 
 func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTriggerRequest, opts ...gax.CallOption) (*UpdateTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trigger.name", url.QueryEscape(req.GetTrigger().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTrigger[0:len((*c.CallOptions).UpdateTrigger):len((*c.CallOptions).UpdateTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -470,6 +474,7 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 
 func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTriggerRequest, opts ...gax.CallOption) (*DeleteTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTrigger[0:len((*c.CallOptions).DeleteTrigger):len((*c.CallOptions).DeleteTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -488,6 +493,7 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 
 func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelRequest, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
 	var resp *eventarcpb.Channel
@@ -504,6 +510,7 @@ func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelR
 
 func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
 	it := &ChannelIterator{}
@@ -548,6 +555,7 @@ func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChann
 
 func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateChannelRequest, opts ...gax.CallOption) (*CreateChannelOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateChannel[0:len((*c.CallOptions).CreateChannel):len((*c.CallOptions).CreateChannel)], opts...)
 	var resp *longrunningpb.Operation
@@ -566,6 +574,7 @@ func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateCh
 
 func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateChannelRequest, opts ...gax.CallOption) (*UpdateChannelOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel.name", url.QueryEscape(req.GetChannel().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateChannel[0:len((*c.CallOptions).UpdateChannel):len((*c.CallOptions).UpdateChannel)], opts...)
 	var resp *longrunningpb.Operation
@@ -584,6 +593,7 @@ func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateCh
 
 func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteChannelRequest, opts ...gax.CallOption) (*DeleteChannelOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteChannel[0:len((*c.CallOptions).DeleteChannel):len((*c.CallOptions).DeleteChannel)], opts...)
 	var resp *longrunningpb.Operation
@@ -602,6 +612,7 @@ func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteCh
 
 func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.GetChannelConnectionRequest, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetChannelConnection[0:len((*c.CallOptions).GetChannelConnection):len((*c.CallOptions).GetChannelConnection)], opts...)
 	var resp *eventarcpb.ChannelConnection
@@ -618,6 +629,7 @@ func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.G
 
 func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb.ListChannelConnectionsRequest, opts ...gax.CallOption) *ChannelConnectionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListChannelConnections[0:len((*c.CallOptions).ListChannelConnections):len((*c.CallOptions).ListChannelConnections)], opts...)
 	it := &ChannelConnectionIterator{}
@@ -662,6 +674,7 @@ func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb
 
 func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcpb.CreateChannelConnectionRequest, opts ...gax.CallOption) (*CreateChannelConnectionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateChannelConnection[0:len((*c.CallOptions).CreateChannelConnection):len((*c.CallOptions).CreateChannelConnection)], opts...)
 	var resp *longrunningpb.Operation
@@ -680,6 +693,7 @@ func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcp
 
 func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcpb.DeleteChannelConnectionRequest, opts ...gax.CallOption) (*DeleteChannelConnectionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteChannelConnection[0:len((*c.CallOptions).DeleteChannelConnection):len((*c.CallOptions).DeleteChannelConnection)], opts...)
 	var resp *longrunningpb.Operation

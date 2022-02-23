@@ -279,7 +279,7 @@ func (c *contextsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *contextsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -291,6 +291,7 @@ func (c *contextsGRPCClient) Close() error {
 
 func (c *contextsGRPCClient) ListContexts(ctx context.Context, req *dialogflowpb.ListContextsRequest, opts ...gax.CallOption) *ContextIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	it := &ContextIterator{}
@@ -340,6 +341,7 @@ func (c *contextsGRPCClient) GetContext(ctx context.Context, req *dialogflowpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	var resp *dialogflowpb.Context
@@ -361,6 +363,7 @@ func (c *contextsGRPCClient) CreateContext(ctx context.Context, req *dialogflowp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateContext[0:len((*c.CallOptions).CreateContext):len((*c.CallOptions).CreateContext)], opts...)
 	var resp *dialogflowpb.Context
@@ -382,6 +385,7 @@ func (c *contextsGRPCClient) UpdateContext(ctx context.Context, req *dialogflowp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context.name", url.QueryEscape(req.GetContext().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateContext[0:len((*c.CallOptions).UpdateContext):len((*c.CallOptions).UpdateContext)], opts...)
 	var resp *dialogflowpb.Context
@@ -403,6 +407,7 @@ func (c *contextsGRPCClient) DeleteContext(ctx context.Context, req *dialogflowp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteContext[0:len((*c.CallOptions).DeleteContext):len((*c.CallOptions).DeleteContext)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -420,6 +425,7 @@ func (c *contextsGRPCClient) DeleteAllContexts(ctx context.Context, req *dialogf
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAllContexts[0:len((*c.CallOptions).DeleteAllContexts):len((*c.CallOptions).DeleteAllContexts)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
