@@ -451,7 +451,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -463,6 +463,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDomainsRequest, opts ...gax.CallOption) (*domainspb.SearchDomainsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	var resp *domainspb.SearchDomainsResponse
@@ -479,6 +480,7 @@ func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 
 func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domainspb.RetrieveRegisterParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	var resp *domainspb.RetrieveRegisterParametersResponse
@@ -495,6 +497,7 @@ func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 
 func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.RegisterDomainRequest, opts ...gax.CallOption) (*RegisterDomainOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RegisterDomain[0:len((*c.CallOptions).RegisterDomain):len((*c.CallOptions).RegisterDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -513,6 +516,7 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 
 func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
 	var resp *domainspb.RetrieveTransferParametersResponse
@@ -529,6 +533,7 @@ func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domain
 
 func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TransferDomain[0:len((*c.CallOptions).TransferDomain):len((*c.CallOptions).TransferDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -547,6 +552,7 @@ func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 
 func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRegistrations[0:len((*c.CallOptions).ListRegistrations):len((*c.CallOptions).ListRegistrations)], opts...)
 	it := &RegistrationIterator{}
@@ -591,6 +597,7 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 
 func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegistrationRequest, opts ...gax.CallOption) (*domainspb.Registration, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	var resp *domainspb.Registration
@@ -607,6 +614,7 @@ func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 
 func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateRegistration[0:len((*c.CallOptions).UpdateRegistration):len((*c.CallOptions).UpdateRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -625,6 +633,7 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 
 func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domainspb.ConfigureManagementSettingsRequest, opts ...gax.CallOption) (*ConfigureManagementSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureManagementSettings[0:len((*c.CallOptions).ConfigureManagementSettings):len((*c.CallOptions).ConfigureManagementSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -643,6 +652,7 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 
 func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.ConfigureDnsSettingsRequest, opts ...gax.CallOption) (*ConfigureDnsSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureDnsSettings[0:len((*c.CallOptions).ConfigureDnsSettings):len((*c.CallOptions).ConfigureDnsSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -661,6 +671,7 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 
 func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainspb.ConfigureContactSettingsRequest, opts ...gax.CallOption) (*ConfigureContactSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureContactSettings[0:len((*c.CallOptions).ConfigureContactSettings):len((*c.CallOptions).ConfigureContactSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -679,6 +690,7 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 
 func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.ExportRegistrationRequest, opts ...gax.CallOption) (*ExportRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportRegistration[0:len((*c.CallOptions).ExportRegistration):len((*c.CallOptions).ExportRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -697,6 +709,7 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 
 func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.DeleteRegistrationRequest, opts ...gax.CallOption) (*DeleteRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteRegistration[0:len((*c.CallOptions).DeleteRegistration):len((*c.CallOptions).DeleteRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -715,6 +728,7 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 
 func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domainspb.RetrieveAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
@@ -731,6 +745,7 @@ func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 
 func (c *gRPCClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.ResetAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode

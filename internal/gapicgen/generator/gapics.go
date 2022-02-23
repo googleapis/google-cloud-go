@@ -136,10 +136,6 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		}
 	}
 
-	if err := g.setVersion(); err != nil {
-		return err
-	}
-
 	if !g.onlyGenerateGapic {
 		if err := g.regenSnippets(ctx); err != nil {
 			return err
@@ -268,29 +264,6 @@ go mod edit -dropreplace "google.golang.org/genproto"
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
 	return c.Run()
-}
-
-// setVersion updates the versionClient constant in all .go files. It may create
-// .backup files on certain systems (darwin), and so should be followed by a
-// clean-up of .backup files.
-func (g *GapicGenerator) setVersion() error {
-	dirs, err := g.findModifiedDirs()
-	if err != nil {
-		return err
-	}
-	log.Println("updating client version")
-	for _, dir := range dirs {
-		c := execv.Command("bash", "-c", `
-ver=$(date +%Y%m%d)
-find . -path "*/doc.go" -exec sed -i.backup -e "s/^const versionClient.*/const versionClient = \"$ver\"/" '{}' +;
-find . -name '*.backup' -delete
-`)
-		c.Dir = dir
-		if err := c.Run(); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // microgen runs the microgenerator on a single microgen config.

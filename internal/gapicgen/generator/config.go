@@ -685,7 +685,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "logging",
 		importPath:            "cloud.google.com/go/logging/apiv2",
 		gRPCServiceConfigPath: "logging_grpc_service_config.json",
-		apiServiceConfigPath:  "logging.yaml",
+		apiServiceConfigPath:  "logging_v2.yaml",
 		releaseLevel:          "ga",
 	},
 	{

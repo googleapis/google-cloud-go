@@ -758,7 +758,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -775,6 +775,7 @@ func (c *gRPCClient) CreateDataset(ctx context.Context, req *datalabelingpb.Crea
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *datalabelingpb.Dataset
@@ -796,6 +797,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *datalabelingpb.Dataset
@@ -812,6 +814,7 @@ func (c *gRPCClient) GetDataset(ctx context.Context, req *datalabelingpb.GetData
 
 func (c *gRPCClient) ListDatasets(ctx context.Context, req *datalabelingpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
@@ -861,6 +864,7 @@ func (c *gRPCClient) DeleteDataset(ctx context.Context, req *datalabelingpb.Dele
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -878,6 +882,7 @@ func (c *gRPCClient) ImportData(ctx context.Context, req *datalabelingpb.ImportD
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
@@ -901,6 +906,7 @@ func (c *gRPCClient) ExportData(ctx context.Context, req *datalabelingpb.ExportD
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
@@ -924,6 +930,7 @@ func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDataItem[0:len((*c.CallOptions).GetDataItem):len((*c.CallOptions).GetDataItem)], opts...)
 	var resp *datalabelingpb.DataItem
@@ -940,6 +947,7 @@ func (c *gRPCClient) GetDataItem(ctx context.Context, req *datalabelingpb.GetDat
 
 func (c *gRPCClient) ListDataItems(ctx context.Context, req *datalabelingpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDataItems[0:len((*c.CallOptions).ListDataItems):len((*c.CallOptions).ListDataItems)], opts...)
 	it := &DataItemIterator{}
@@ -989,6 +997,7 @@ func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAnnotatedDataset[0:len((*c.CallOptions).GetAnnotatedDataset):len((*c.CallOptions).GetAnnotatedDataset)], opts...)
 	var resp *datalabelingpb.AnnotatedDataset
@@ -1005,6 +1014,7 @@ func (c *gRPCClient) GetAnnotatedDataset(ctx context.Context, req *datalabelingp
 
 func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelingpb.ListAnnotatedDatasetsRequest, opts ...gax.CallOption) *AnnotatedDatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAnnotatedDatasets[0:len((*c.CallOptions).ListAnnotatedDatasets):len((*c.CallOptions).ListAnnotatedDatasets)], opts...)
 	it := &AnnotatedDatasetIterator{}
@@ -1049,6 +1059,7 @@ func (c *gRPCClient) ListAnnotatedDatasets(ctx context.Context, req *datalabelin
 
 func (c *gRPCClient) DeleteAnnotatedDataset(ctx context.Context, req *datalabelingpb.DeleteAnnotatedDatasetRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAnnotatedDataset[0:len((*c.CallOptions).DeleteAnnotatedDataset):len((*c.CallOptions).DeleteAnnotatedDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1066,6 +1077,7 @@ func (c *gRPCClient) LabelImage(ctx context.Context, req *datalabelingpb.LabelIm
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LabelImage[0:len((*c.CallOptions).LabelImage):len((*c.CallOptions).LabelImage)], opts...)
 	var resp *longrunningpb.Operation
@@ -1089,6 +1101,7 @@ func (c *gRPCClient) LabelVideo(ctx context.Context, req *datalabelingpb.LabelVi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LabelVideo[0:len((*c.CallOptions).LabelVideo):len((*c.CallOptions).LabelVideo)], opts...)
 	var resp *longrunningpb.Operation
@@ -1112,6 +1125,7 @@ func (c *gRPCClient) LabelText(ctx context.Context, req *datalabelingpb.LabelTex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LabelText[0:len((*c.CallOptions).LabelText):len((*c.CallOptions).LabelText)], opts...)
 	var resp *longrunningpb.Operation
@@ -1135,6 +1149,7 @@ func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetExample[0:len((*c.CallOptions).GetExample):len((*c.CallOptions).GetExample)], opts...)
 	var resp *datalabelingpb.Example
@@ -1151,6 +1166,7 @@ func (c *gRPCClient) GetExample(ctx context.Context, req *datalabelingpb.GetExam
 
 func (c *gRPCClient) ListExamples(ctx context.Context, req *datalabelingpb.ListExamplesRequest, opts ...gax.CallOption) *ExampleIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListExamples[0:len((*c.CallOptions).ListExamples):len((*c.CallOptions).ListExamples)], opts...)
 	it := &ExampleIterator{}
@@ -1200,6 +1216,7 @@ func (c *gRPCClient) CreateAnnotationSpecSet(ctx context.Context, req *datalabel
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAnnotationSpecSet[0:len((*c.CallOptions).CreateAnnotationSpecSet):len((*c.CallOptions).CreateAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
@@ -1221,6 +1238,7 @@ func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAnnotationSpecSet[0:len((*c.CallOptions).GetAnnotationSpecSet):len((*c.CallOptions).GetAnnotationSpecSet)], opts...)
 	var resp *datalabelingpb.AnnotationSpecSet
@@ -1237,6 +1255,7 @@ func (c *gRPCClient) GetAnnotationSpecSet(ctx context.Context, req *datalabeling
 
 func (c *gRPCClient) ListAnnotationSpecSets(ctx context.Context, req *datalabelingpb.ListAnnotationSpecSetsRequest, opts ...gax.CallOption) *AnnotationSpecSetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAnnotationSpecSets[0:len((*c.CallOptions).ListAnnotationSpecSets):len((*c.CallOptions).ListAnnotationSpecSets)], opts...)
 	it := &AnnotationSpecSetIterator{}
@@ -1286,6 +1305,7 @@ func (c *gRPCClient) DeleteAnnotationSpecSet(ctx context.Context, req *datalabel
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAnnotationSpecSet[0:len((*c.CallOptions).DeleteAnnotationSpecSet):len((*c.CallOptions).DeleteAnnotationSpecSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1303,6 +1323,7 @@ func (c *gRPCClient) CreateInstruction(ctx context.Context, req *datalabelingpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateInstruction[0:len((*c.CallOptions).CreateInstruction):len((*c.CallOptions).CreateInstruction)], opts...)
 	var resp *longrunningpb.Operation
@@ -1326,6 +1347,7 @@ func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInstruction[0:len((*c.CallOptions).GetInstruction):len((*c.CallOptions).GetInstruction)], opts...)
 	var resp *datalabelingpb.Instruction
@@ -1342,6 +1364,7 @@ func (c *gRPCClient) GetInstruction(ctx context.Context, req *datalabelingpb.Get
 
 func (c *gRPCClient) ListInstructions(ctx context.Context, req *datalabelingpb.ListInstructionsRequest, opts ...gax.CallOption) *InstructionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInstructions[0:len((*c.CallOptions).ListInstructions):len((*c.CallOptions).ListInstructions)], opts...)
 	it := &InstructionIterator{}
@@ -1391,6 +1414,7 @@ func (c *gRPCClient) DeleteInstruction(ctx context.Context, req *datalabelingpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteInstruction[0:len((*c.CallOptions).DeleteInstruction):len((*c.CallOptions).DeleteInstruction)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1408,6 +1432,7 @@ func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEvaluation[0:len((*c.CallOptions).GetEvaluation):len((*c.CallOptions).GetEvaluation)], opts...)
 	var resp *datalabelingpb.Evaluation
@@ -1424,6 +1449,7 @@ func (c *gRPCClient) GetEvaluation(ctx context.Context, req *datalabelingpb.GetE
 
 func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.SearchEvaluationsRequest, opts ...gax.CallOption) *EvaluationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchEvaluations[0:len((*c.CallOptions).SearchEvaluations):len((*c.CallOptions).SearchEvaluations)], opts...)
 	it := &EvaluationIterator{}
@@ -1468,6 +1494,7 @@ func (c *gRPCClient) SearchEvaluations(ctx context.Context, req *datalabelingpb.
 
 func (c *gRPCClient) SearchExampleComparisons(ctx context.Context, req *datalabelingpb.SearchExampleComparisonsRequest, opts ...gax.CallOption) *SearchExampleComparisonsResponse_ExampleComparisonIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchExampleComparisons[0:len((*c.CallOptions).SearchExampleComparisons):len((*c.CallOptions).SearchExampleComparisons)], opts...)
 	it := &SearchExampleComparisonsResponse_ExampleComparisonIterator{}
@@ -1517,6 +1544,7 @@ func (c *gRPCClient) CreateEvaluationJob(ctx context.Context, req *datalabelingp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEvaluationJob[0:len((*c.CallOptions).CreateEvaluationJob):len((*c.CallOptions).CreateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
@@ -1538,6 +1566,7 @@ func (c *gRPCClient) UpdateEvaluationJob(ctx context.Context, req *datalabelingp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "evaluation_job.name", url.QueryEscape(req.GetEvaluationJob().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEvaluationJob[0:len((*c.CallOptions).UpdateEvaluationJob):len((*c.CallOptions).UpdateEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
@@ -1559,6 +1588,7 @@ func (c *gRPCClient) GetEvaluationJob(ctx context.Context, req *datalabelingpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEvaluationJob[0:len((*c.CallOptions).GetEvaluationJob):len((*c.CallOptions).GetEvaluationJob)], opts...)
 	var resp *datalabelingpb.EvaluationJob
@@ -1580,6 +1610,7 @@ func (c *gRPCClient) PauseEvaluationJob(ctx context.Context, req *datalabelingpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PauseEvaluationJob[0:len((*c.CallOptions).PauseEvaluationJob):len((*c.CallOptions).PauseEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1597,6 +1628,7 @@ func (c *gRPCClient) ResumeEvaluationJob(ctx context.Context, req *datalabelingp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResumeEvaluationJob[0:len((*c.CallOptions).ResumeEvaluationJob):len((*c.CallOptions).ResumeEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1614,6 +1646,7 @@ func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEvaluationJob[0:len((*c.CallOptions).DeleteEvaluationJob):len((*c.CallOptions).DeleteEvaluationJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1626,6 +1659,7 @@ func (c *gRPCClient) DeleteEvaluationJob(ctx context.Context, req *datalabelingp
 
 func (c *gRPCClient) ListEvaluationJobs(ctx context.Context, req *datalabelingpb.ListEvaluationJobsRequest, opts ...gax.CallOption) *EvaluationJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEvaluationJobs[0:len((*c.CallOptions).ListEvaluationJobs):len((*c.CallOptions).ListEvaluationJobs)], opts...)
 	it := &EvaluationJobIterator{}
