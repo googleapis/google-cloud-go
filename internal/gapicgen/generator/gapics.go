@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
@@ -37,6 +38,8 @@ var (
 	changesTmpl string
 	//go:embed _README.md.txt
 	readmeTmpl string
+	//go:embed _version.go.txt
+	versionTmpl string
 )
 
 // GapicGenerator is used to regenerate gapic libraries.
@@ -106,6 +109,9 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 				return nil
 			}
 		}
+		if err := g.genVersionFile(c); err != nil {
+			return err
+		}
 	}
 
 	if err := g.copyMicrogenFiles(); err != nil {
@@ -114,10 +120,6 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 
 	// Get rid of diffs related to bad formatting.
 	if err := gocmd.Vet(g.googleCloudDir); err != nil {
-		return err
-	}
-
-	if err := g.resetUnknownVersion(); err != nil {
 		return err
 	}
 
@@ -254,39 +256,6 @@ go mod edit -dropreplace "google.golang.org/genproto"
 	return c.Run()
 }
 
-// resetUnknownVersion resets doc.go files that have only had their version
-// changed to UNKNOWN by the generator.
-func (g *GapicGenerator) resetUnknownVersion() error {
-	files, err := git.FindModifiedFiles(g.googleCloudDir)
-	if err != nil {
-		return err
-	}
-
-	for _, file := range files {
-		if !strings.HasSuffix(file, "doc.go") {
-			continue
-		}
-		diff, err := git.FileDiff(g.googleCloudDir, file)
-		if err != nil {
-			return err
-		}
-		// More than one diff, don't reset.
-		if strings.Count(diff, "@@") != 2 {
-			log.Println(diff)
-			continue
-		}
-		// Not related to version, don't reset.
-		if !strings.Contains(diff, "+const versionClient = \"UNKNOWN\"") {
-			continue
-		}
-
-		if err := git.ResetFile(g.googleCloudDir, file); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // setVersion updates the versionClient constant in all .go files. It may create
 // .backup files on certain systems (darwin), and so should be followed by a
 // clean-up of .backup files.
@@ -357,6 +326,33 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	c := execv.Command("protoc", args...)
 	c.Dir = g.googleapisDir
 	return c.Run()
+}
+
+func (g *GapicGenerator) genVersionFile(conf *microgenConfig) error {
+	relDir := strings.TrimPrefix(conf.importPath, "cloud.google.com/go/")
+	rootPackage := strings.Split(relDir, "/")[0]
+	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
+
+	f, err := os.Create(filepath.Join(g.googleCloudDir, relDir, "version.go"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	t := template.Must(template.New("version").Parse(versionTmpl))
+	versionData := struct {
+		Year               int
+		Package            string
+		ModuleRootInternal string
+	}{
+		Year:               time.Now().Year(),
+		Package:            conf.pkg,
+		ModuleRootInternal: rootModInternal,
+	}
+	if err := t.Execute(f, versionData); err != nil {
+		return err
+	}
+	return nil
 }
 
 // manifestEntry is used for JSON marshaling in manifest.
