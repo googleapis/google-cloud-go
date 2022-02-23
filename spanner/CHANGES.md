@@ -1,5 +1,24 @@
 # Changes
 
+## [2.0.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.29.0...spanner/v2.0.0) (2022-02-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **spanner/admin/instance:** annotating some fields as REQUIRED
+
+### Features
+
+* **spanner:** add better version metadata to calls ([#5515](https://github.com/googleapis/google-cloud-go/issues/5515)) ([dcab7c4](https://github.com/googleapis/google-cloud-go/commit/dcab7c4a98ebecfef1f75ec5bddfd7782b28a7c5)), refs [#2749](https://github.com/googleapis/google-cloud-go/issues/2749)
+* **spanner:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+* **spanner:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+* **spanner:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+
+### Bug Fixes
+
+* **spanner/admin/instance:** annotating some fields as REQUIRED ([7d6b0e5](https://github.com/googleapis/google-cloud-go/commit/7d6b0e5891b50cccdf77cd17ddd3644f31ef6dfc))
+
 ## [1.29.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.28.0...spanner/v1.29.0) (2022-01-06)
 
 

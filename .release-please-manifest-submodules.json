@@ -91,7 +91,7 @@
   "servicemanagement": "1.2.0",
   "serviceusage": "1.1.0",
   "shell": "1.1.0",
-  "spanner": "1.29.0",
+  "spanner": "2.0.0",
   "speech": "1.2.0",
   "storage": "1.21.0",
   "storagetransfer": "1.1.0",
