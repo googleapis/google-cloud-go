@@ -291,7 +291,8 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 // and not the namespaces when decoding, this is sufficient for the needs of the API's representation.
 //
 // In addition to nesting messages, this method also handles some encapsulation of enum types to avoid possible
-// conflicts due to ambiguities.
+// conflicts due to ambiguities, and clears oneof indices as oneof isn't a concept that maps into BigQuery
+// schemas.
 func NormalizeDescriptor(in protoreflect.MessageDescriptor) (*descriptorpb.DescriptorProto, error) {
 	return normalizeDescriptorInternal(in, newStringSet(), newStringSet(), newStringSet(), nil)
 }
@@ -310,6 +311,9 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 	for i := 0; i < in.Fields().Len(); i++ {
 		inField := in.Fields().Get(i)
 		resultFDP := protodesc.ToFieldDescriptorProto(inField)
+		if resultFDP.OneofIndex != nil {
+			resultFDP.OneofIndex = nil
+		}
 		if inField.Kind() == protoreflect.MessageKind || inField.Kind() == protoreflect.GroupKind {
 			// Handle fields that reference messages.
 			// Groups are a proto2-ism which predated nested messages.

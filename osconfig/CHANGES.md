@@ -1,5 +1,19 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.3.0...osconfig/v1.4.0) (2022-02-22)
+
+
+### Features
+
+* **osconfig/agentendpoint:** Add field to PatchConfig message:   - mig_instances_allowed fix: Add NONE Interpreter enum value that should be used over INTERPRETER_UNSPECIFIED in ExecStepConfig message ([7d6b0e5](https://github.com/googleapis/google-cloud-go/commit/7d6b0e5891b50cccdf77cd17ddd3644f31ef6dfc))
+* **osconfig/agentendpoint:** Add fields to RegisterAgentRequest:   - supported_capabilities   - os_long_name   - os_short_name   - os_version   - os_architecture feat: Add field to PatchConfig message:   - mig_instances_allowed fix: Add NONE Interpreter enum value that should be used over INTERPRETER_UNSPECIFIED in ExecStepConfig message ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
+
+### Bug Fixes
+
+* **osconfig/agentendpoint:** Fix description of an interpreter field, validate if the field is not unspecified ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+* **osconfig/agentendpoint:** update third_party protos to the most actual version: - Add item that is affected by vulnerability - Add GetOsPolicyAssignmentReport and analogous List rpc method - Add Inventory to InstanceFilter - Add existing os_policy_assignment_reports.proto fixing the build - Mark methods as deprecated ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/osconfig/v1.2.0...osconfig/v1.3.0) (2022-02-14)
 
 
@@ -29,7 +43,6 @@
 Stabilize GA surface.
 
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/osconfig/v0.1.0...osconfig/v0.2.0) (2021-09-11)
-
 
 ### Features
 

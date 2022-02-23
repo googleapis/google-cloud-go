@@ -1,5 +1,12 @@
 # Changes
 
+### [1.2.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.2.0...security/v1.2.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* **security/privateca:** Add google-cloud-location as a dependency for the privateca client ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.1.1...security/v1.2.0) (2022-02-14)
 
 
@@ -16,7 +23,6 @@
 * **security/privateca:** repair service config to enable mixins ([83b941c](https://www.github.com/googleapis/google-cloud-go/commit/83b941c0983e44fdd18ceee8c6f3e91219d72ad1))
 
 ## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/security/v1.0.0...security/v1.1.0) (2021-10-11)
-
 
 ### Features
 

@@ -1,5 +1,12 @@
 # Changes
 
+### [1.4.1](https://github.com/googleapis/google-cloud-go/compare/channel/v1.4.0...channel/v1.4.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* **channel:** clarify language ([f9fe0f2](https://github.com/googleapis/google-cloud-go/commit/f9fe0f2bf152c3855d3c6a2c54f9b7adba54f626))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/channel/v1.3.0...channel/v1.4.0) (2022-02-14)
 
 
