@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	cloud.google.com/go/compute v1.3.0
+	cloud.google.com/go/iam v0.2.0 // indirect
+	cloud.google.com/go/storage v1.10.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.7
 	github.com/google/martian/v3 v3.2.1
