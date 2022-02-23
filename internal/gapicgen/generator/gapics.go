@@ -53,6 +53,7 @@ type GapicGenerator struct {
 	onlyGenerateGapic bool
 	genModule         bool
 	modifiedPkgs      []string
+	forceAll          bool
 }
 
 // NewGapicGenerator creates a GapicGenerator.
@@ -67,6 +68,7 @@ func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 		onlyGenerateGapic: c.OnlyGenerateGapic,
 		genModule:         c.GenModule,
 		modifiedPkgs:      modifiedPkgs,
+		forceAll:          c.ForceAll,
 	}
 }
 
@@ -81,11 +83,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating gapics")
 	var newMods []modInfo
 	for _, c := range microgenGapicConfigs {
-		// Skip generation if generating all of the gapics and the associated
-		// config has a block on it. Or if generating a single gapic and it does
-		// not match the specified import path.
-		if (c.stopGeneration && g.gapicToGenerate == "") ||
-			(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.importPath)) {
+		if !g.shouldGenerateConfig(c) {
 			continue
 		}
 
@@ -169,6 +167,22 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func (g *GapicGenerator) shouldGenerateConfig(c *microgenConfig) bool {
+	if g.forceAll && !c.stopGeneration {
+		return true
+	}
+
+	// Skip generation if generating all of the gapics and the associated
+	// config has a block on it. Or if generating a single gapic and it does
+	// not match the specified import path.
+	if (c.stopGeneration && g.gapicToGenerate == "") ||
+		(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.importPath)) ||
+		(g.forceAll && !c.stopGeneration) {
+		return false
+	}
+	return true
 }
 
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
