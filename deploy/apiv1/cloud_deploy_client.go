@@ -485,7 +485,7 @@ func (c *cloudDeployGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cloudDeployGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -497,6 +497,7 @@ func (c *cloudDeployGRPCClient) Close() error {
 
 func (c *cloudDeployGRPCClient) ListDeliveryPipelines(ctx context.Context, req *deploypb.ListDeliveryPipelinesRequest, opts ...gax.CallOption) *DeliveryPipelineIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDeliveryPipelines[0:len((*c.CallOptions).ListDeliveryPipelines):len((*c.CallOptions).ListDeliveryPipelines)], opts...)
 	it := &DeliveryPipelineIterator{}
@@ -546,6 +547,7 @@ func (c *cloudDeployGRPCClient) GetDeliveryPipeline(ctx context.Context, req *de
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDeliveryPipeline[0:len((*c.CallOptions).GetDeliveryPipeline):len((*c.CallOptions).GetDeliveryPipeline)], opts...)
 	var resp *deploypb.DeliveryPipeline
@@ -567,6 +569,7 @@ func (c *cloudDeployGRPCClient) CreateDeliveryPipeline(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDeliveryPipeline[0:len((*c.CallOptions).CreateDeliveryPipeline):len((*c.CallOptions).CreateDeliveryPipeline)], opts...)
 	var resp *longrunningpb.Operation
@@ -590,6 +593,7 @@ func (c *cloudDeployGRPCClient) UpdateDeliveryPipeline(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "delivery_pipeline.name", url.QueryEscape(req.GetDeliveryPipeline().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateDeliveryPipeline[0:len((*c.CallOptions).UpdateDeliveryPipeline):len((*c.CallOptions).UpdateDeliveryPipeline)], opts...)
 	var resp *longrunningpb.Operation
@@ -613,6 +617,7 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDeliveryPipeline[0:len((*c.CallOptions).DeleteDeliveryPipeline):len((*c.CallOptions).DeleteDeliveryPipeline)], opts...)
 	var resp *longrunningpb.Operation
@@ -631,6 +636,7 @@ func (c *cloudDeployGRPCClient) DeleteDeliveryPipeline(ctx context.Context, req 
 
 func (c *cloudDeployGRPCClient) ListTargets(ctx context.Context, req *deploypb.ListTargetsRequest, opts ...gax.CallOption) *TargetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTargets[0:len((*c.CallOptions).ListTargets):len((*c.CallOptions).ListTargets)], opts...)
 	it := &TargetIterator{}
@@ -680,6 +686,7 @@ func (c *cloudDeployGRPCClient) GetTarget(ctx context.Context, req *deploypb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTarget[0:len((*c.CallOptions).GetTarget):len((*c.CallOptions).GetTarget)], opts...)
 	var resp *deploypb.Target
@@ -701,6 +708,7 @@ func (c *cloudDeployGRPCClient) CreateTarget(ctx context.Context, req *deploypb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTarget[0:len((*c.CallOptions).CreateTarget):len((*c.CallOptions).CreateTarget)], opts...)
 	var resp *longrunningpb.Operation
@@ -724,6 +732,7 @@ func (c *cloudDeployGRPCClient) UpdateTarget(ctx context.Context, req *deploypb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "target.name", url.QueryEscape(req.GetTarget().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTarget[0:len((*c.CallOptions).UpdateTarget):len((*c.CallOptions).UpdateTarget)], opts...)
 	var resp *longrunningpb.Operation
@@ -747,6 +756,7 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTarget[0:len((*c.CallOptions).DeleteTarget):len((*c.CallOptions).DeleteTarget)], opts...)
 	var resp *longrunningpb.Operation
@@ -765,6 +775,7 @@ func (c *cloudDeployGRPCClient) DeleteTarget(ctx context.Context, req *deploypb.
 
 func (c *cloudDeployGRPCClient) ListReleases(ctx context.Context, req *deploypb.ListReleasesRequest, opts ...gax.CallOption) *ReleaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReleases[0:len((*c.CallOptions).ListReleases):len((*c.CallOptions).ListReleases)], opts...)
 	it := &ReleaseIterator{}
@@ -814,6 +825,7 @@ func (c *cloudDeployGRPCClient) GetRelease(ctx context.Context, req *deploypb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRelease[0:len((*c.CallOptions).GetRelease):len((*c.CallOptions).GetRelease)], opts...)
 	var resp *deploypb.Release
@@ -835,6 +847,7 @@ func (c *cloudDeployGRPCClient) CreateRelease(ctx context.Context, req *deploypb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateRelease[0:len((*c.CallOptions).CreateRelease):len((*c.CallOptions).CreateRelease)], opts...)
 	var resp *longrunningpb.Operation
@@ -858,6 +871,7 @@ func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deployp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ApproveRollout[0:len((*c.CallOptions).ApproveRollout):len((*c.CallOptions).ApproveRollout)], opts...)
 	var resp *deploypb.ApproveRolloutResponse
@@ -874,6 +888,7 @@ func (c *cloudDeployGRPCClient) ApproveRollout(ctx context.Context, req *deployp
 
 func (c *cloudDeployGRPCClient) ListRollouts(ctx context.Context, req *deploypb.ListRolloutsRequest, opts ...gax.CallOption) *RolloutIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRollouts[0:len((*c.CallOptions).ListRollouts):len((*c.CallOptions).ListRollouts)], opts...)
 	it := &RolloutIterator{}
@@ -923,6 +938,7 @@ func (c *cloudDeployGRPCClient) GetRollout(ctx context.Context, req *deploypb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRollout[0:len((*c.CallOptions).GetRollout):len((*c.CallOptions).GetRollout)], opts...)
 	var resp *deploypb.Rollout
@@ -944,6 +960,7 @@ func (c *cloudDeployGRPCClient) CreateRollout(ctx context.Context, req *deploypb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateRollout[0:len((*c.CallOptions).CreateRollout):len((*c.CallOptions).CreateRollout)], opts...)
 	var resp *longrunningpb.Operation
@@ -967,6 +984,7 @@ func (c *cloudDeployGRPCClient) GetConfig(ctx context.Context, req *deploypb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	var resp *deploypb.Config

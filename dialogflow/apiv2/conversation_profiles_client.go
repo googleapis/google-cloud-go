@@ -267,7 +267,7 @@ func (c *conversationProfilesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *conversationProfilesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -279,6 +279,7 @@ func (c *conversationProfilesGRPCClient) Close() error {
 
 func (c *conversationProfilesGRPCClient) ListConversationProfiles(ctx context.Context, req *dialogflowpb.ListConversationProfilesRequest, opts ...gax.CallOption) *ConversationProfileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListConversationProfiles[0:len((*c.CallOptions).ListConversationProfiles):len((*c.CallOptions).ListConversationProfiles)], opts...)
 	it := &ConversationProfileIterator{}
@@ -328,6 +329,7 @@ func (c *conversationProfilesGRPCClient) GetConversationProfile(ctx context.Cont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetConversationProfile[0:len((*c.CallOptions).GetConversationProfile):len((*c.CallOptions).GetConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -349,6 +351,7 @@ func (c *conversationProfilesGRPCClient) CreateConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateConversationProfile[0:len((*c.CallOptions).CreateConversationProfile):len((*c.CallOptions).CreateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -370,6 +373,7 @@ func (c *conversationProfilesGRPCClient) UpdateConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile.name", url.QueryEscape(req.GetConversationProfile().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateConversationProfile[0:len((*c.CallOptions).UpdateConversationProfile):len((*c.CallOptions).UpdateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -391,6 +395,7 @@ func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteConversationProfile[0:len((*c.CallOptions).DeleteConversationProfile):len((*c.CallOptions).DeleteConversationProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

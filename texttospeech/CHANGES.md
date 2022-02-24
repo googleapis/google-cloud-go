@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.2.0...texttospeech/v1.3.0) (2022-02-23)
+
+
+### Features
+
+* **texttospeech:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.1.0...texttospeech/v1.2.0) (2022-02-14)
 
 
