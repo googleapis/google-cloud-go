@@ -230,9 +230,7 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
-		if strings.Contains(host, "://") {
-			host = strings.SplitN(host, "://", 2)[1]
-		}
+		host = stripScheme(host)
 
 		opts.GRPCOpts = append(opts.GRPCOpts,
 			option.WithEndpoint(host),
@@ -310,11 +308,7 @@ type bucketBoundHostname struct {
 
 func (s pathStyle) host(bucket string) string {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
-		// Strip the scheme from the emulator host
-		if strings.Contains(host, "://") {
-			host = strings.SplitN(host, "://", 2)[1]
-		}
-		return host
+		return stripScheme(host)
 	}
 
 	return "storage.googleapis.com"
@@ -322,11 +316,7 @@ func (s pathStyle) host(bucket string) string {
 
 func (s virtualHostedStyle) host(bucket string) string {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
-		// Strip the scheme from the emulator host
-		if strings.Contains(host, "://") {
-			host = strings.SplitN(host, "://", 2)[1]
-		}
-		return bucket + "." + host
+		return bucket + "." + stripScheme(host)
 	}
 
 	return bucket + ".storage.googleapis.com"
@@ -354,16 +344,12 @@ func (s bucketBoundHostname) path(bucket, object string) string {
 
 // PathStyle is the default style, and will generate a URL of the form
 // "storage.googleapis.com/<bucket-name>/<object-name>".
-// If STORAGE_EMULATOR_HOST is set, will generate a URL of the form
-// "STORAGE_EMULATOR_HOST/<bucket-name>/<object-name>".
 func PathStyle() URLStyle {
 	return pathStyle{}
 }
 
 // VirtualHostedStyle generates a URL relative to the bucket's virtual
 // hostname, e.g. "<bucket-name>.storage.googleapis.com/<object-name>".
-// If STORAGE_EMULATOR_HOST is set, will generate a URL of the form
-// "<bucket-name>.STORAGE_EMULATOR_HOST/<object-name>".
 func VirtualHostedStyle() URLStyle {
 	return virtualHostedStyle{}
 }
@@ -378,6 +364,14 @@ func VirtualHostedStyle() URLStyle {
 // be set to true.
 func BucketBoundHostname(hostname string) URLStyle {
 	return bucketBoundHostname{hostname: hostname}
+}
+
+// Strips the scheme from a host if it contains it
+func stripScheme(host string) string {
+	if strings.Contains(host, "://") {
+		host = strings.SplitN(host, "://", 2)[1]
+	}
+	return host
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
