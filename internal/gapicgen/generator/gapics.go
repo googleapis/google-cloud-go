@@ -316,6 +316,12 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 }
 
 func (g *GapicGenerator) genVersionFile(conf *microgenConfig) error {
+	// These directories are not modules on purpose, don't generate a version
+	// file for them.
+	if conf.importPath == "cloud.google.com/go/longrunning/autogen" ||
+		conf.importPath == "cloud.google.com/go/debugger/apiv2" {
+		return nil
+	}
 	relDir := strings.TrimPrefix(conf.importPath, "cloud.google.com/go/")
 	rootPackage := strings.Split(relDir, "/")[0]
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
