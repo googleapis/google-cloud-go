@@ -16,8 +16,8 @@
 Package managedwriter provides an EXPERIMENTAL thick client around the BigQuery storage API's BigQueryWriteClient.
 More information about this new write client may also be found in the public documentation: https://cloud.google.com/bigquery/docs/write-api
 
-It is EXPERIMENTAL and subject to change or removal without notice.  This library is in a pre-alpha
-state, and breaking changes are frequent.
+It is EXPERIMENTAL and subject to change or removal without notice.  This is primarily to signal that this
+package may still make breaking changes to existing methods and functionality.
 
 Currently, this client targets the BigQueryWriteClient present in the v1 endpoint, and is intended as a more
 feature-rich successor to the classic BigQuery streaming interface, which is presented as the Inserter abstraction
