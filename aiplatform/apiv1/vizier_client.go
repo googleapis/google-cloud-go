@@ -347,7 +347,7 @@ func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *vizierGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -359,6 +359,7 @@ func (c *vizierGRPCClient) Close() error {
 
 func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.CreateStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateStudy[0:len((*c.CallOptions).CreateStudy):len((*c.CallOptions).CreateStudy)], opts...)
 	var resp *aiplatformpb.Study
@@ -375,6 +376,7 @@ func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 
 func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetStudy[0:len((*c.CallOptions).GetStudy):len((*c.CallOptions).GetStudy)], opts...)
 	var resp *aiplatformpb.Study
@@ -391,6 +393,7 @@ func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetSt
 
 func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.ListStudiesRequest, opts ...gax.CallOption) *StudyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListStudies[0:len((*c.CallOptions).ListStudies):len((*c.CallOptions).ListStudies)], opts...)
 	it := &StudyIterator{}
@@ -435,6 +438,7 @@ func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 
 func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.DeleteStudyRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteStudy[0:len((*c.CallOptions).DeleteStudy):len((*c.CallOptions).DeleteStudy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -447,6 +451,7 @@ func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.De
 
 func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.LookupStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LookupStudy[0:len((*c.CallOptions).LookupStudy):len((*c.CallOptions).LookupStudy)], opts...)
 	var resp *aiplatformpb.Study
@@ -463,6 +468,7 @@ func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 
 func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SuggestTrials[0:len((*c.CallOptions).SuggestTrials):len((*c.CallOptions).SuggestTrials)], opts...)
 	var resp *longrunningpb.Operation
@@ -481,6 +487,7 @@ func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 
 func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.CreateTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTrial[0:len((*c.CallOptions).CreateTrial):len((*c.CallOptions).CreateTrial)], opts...)
 	var resp *aiplatformpb.Trial
@@ -497,6 +504,7 @@ func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 
 func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTrial[0:len((*c.CallOptions).GetTrial):len((*c.CallOptions).GetTrial)], opts...)
 	var resp *aiplatformpb.Trial
@@ -513,6 +521,7 @@ func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTr
 
 func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.ListTrialsRequest, opts ...gax.CallOption) *TrialIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTrials[0:len((*c.CallOptions).ListTrials):len((*c.CallOptions).ListTrials)], opts...)
 	it := &TrialIterator{}
@@ -557,6 +566,7 @@ func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 
 func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatformpb.AddTrialMeasurementRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddTrialMeasurement[0:len((*c.CallOptions).AddTrialMeasurement):len((*c.CallOptions).AddTrialMeasurement)], opts...)
 	var resp *aiplatformpb.Trial
@@ -573,6 +583,7 @@ func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 
 func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.CompleteTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CompleteTrial[0:len((*c.CallOptions).CompleteTrial):len((*c.CallOptions).CompleteTrial)], opts...)
 	var resp *aiplatformpb.Trial
@@ -589,6 +600,7 @@ func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 
 func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.DeleteTrialRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTrial[0:len((*c.CallOptions).DeleteTrial):len((*c.CallOptions).DeleteTrial)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,6 +613,7 @@ func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.De
 
 func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req *aiplatformpb.CheckTrialEarlyStoppingStateRequest, opts ...gax.CallOption) (*CheckTrialEarlyStoppingStateOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CheckTrialEarlyStoppingState[0:len((*c.CallOptions).CheckTrialEarlyStoppingState):len((*c.CallOptions).CheckTrialEarlyStoppingState)], opts...)
 	var resp *longrunningpb.Operation
@@ -619,6 +632,7 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 
 func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.StopTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StopTrial[0:len((*c.CallOptions).StopTrial):len((*c.CallOptions).StopTrial)], opts...)
 	var resp *aiplatformpb.Trial
@@ -635,6 +649,7 @@ func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 
 func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatformpb.ListOptimalTrialsRequest, opts ...gax.CallOption) (*aiplatformpb.ListOptimalTrialsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOptimalTrials[0:len((*c.CallOptions).ListOptimalTrials):len((*c.CallOptions).ListOptimalTrials)], opts...)
 	var resp *aiplatformpb.ListOptimalTrialsResponse

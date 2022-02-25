@@ -74,12 +74,15 @@ func ExampleNetworkEndpointGroupsClient_AttachNetworkEndpoints() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
-	resp, err := c.AttachNetworkEndpoints(ctx, req)
+	op, err := c.AttachNetworkEndpoints(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworkEndpointGroupsClient_Delete() {
@@ -94,12 +97,15 @@ func ExampleNetworkEndpointGroupsClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkEndpointGroupRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
@@ -114,12 +120,15 @@ func ExampleNetworkEndpointGroupsClient_DetachNetworkEndpoints() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachNetworkEndpointsNetworkEndpointGroupRequest.
 	}
-	resp, err := c.DetachNetworkEndpoints(ctx, req)
+	op, err := c.DetachNetworkEndpoints(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworkEndpointGroupsClient_Get() {
@@ -154,12 +163,15 @@ func ExampleNetworkEndpointGroupsClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkEndpointGroupRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleNetworkEndpointGroupsClient_List() {

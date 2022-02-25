@@ -19,8 +19,6 @@
 //
 // Manages Apache Airflow environments on Google Cloud Platform.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Example usage
 //
 // To get started with this package, create a client.
@@ -91,7 +89,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220114"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

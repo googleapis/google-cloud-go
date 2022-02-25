@@ -379,7 +379,7 @@ func (c *clusterControllerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *clusterControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -396,6 +396,7 @@ func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *da
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -419,6 +420,7 @@ func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *da
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -437,6 +439,7 @@ func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *da
 
 func (c *clusterControllerGRPCClient) StopCluster(ctx context.Context, req *dataprocpb.StopClusterRequest, opts ...gax.CallOption) (*StopClusterOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StopCluster[0:len((*c.CallOptions).StopCluster):len((*c.CallOptions).StopCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -455,6 +458,7 @@ func (c *clusterControllerGRPCClient) StopCluster(ctx context.Context, req *data
 
 func (c *clusterControllerGRPCClient) StartCluster(ctx context.Context, req *dataprocpb.StartClusterRequest, opts ...gax.CallOption) (*StartClusterOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartCluster[0:len((*c.CallOptions).StartCluster):len((*c.CallOptions).StartCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -478,6 +482,7 @@ func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *da
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -501,6 +506,7 @@ func (c *clusterControllerGRPCClient) GetCluster(ctx context.Context, req *datap
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *dataprocpb.Cluster
@@ -517,6 +523,7 @@ func (c *clusterControllerGRPCClient) GetCluster(ctx context.Context, req *datap
 
 func (c *clusterControllerGRPCClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
@@ -566,6 +573,7 @@ func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DiagnoseCluster[0:len((*c.CallOptions).DiagnoseCluster):len((*c.CallOptions).DiagnoseCluster)], opts...)
 	var resp *longrunningpb.Operation

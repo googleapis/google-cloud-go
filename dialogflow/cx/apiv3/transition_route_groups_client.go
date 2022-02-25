@@ -271,7 +271,7 @@ func (c *transitionRouteGroupsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *transitionRouteGroupsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -283,6 +283,7 @@ func (c *transitionRouteGroupsGRPCClient) Close() error {
 
 func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.Context, req *cxpb.ListTransitionRouteGroupsRequest, opts ...gax.CallOption) *TransitionRouteGroupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransitionRouteGroups[0:len((*c.CallOptions).ListTransitionRouteGroups):len((*c.CallOptions).ListTransitionRouteGroups)], opts...)
 	it := &TransitionRouteGroupIterator{}
@@ -332,6 +333,7 @@ func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTransitionRouteGroup[0:len((*c.CallOptions).GetTransitionRouteGroup):len((*c.CallOptions).GetTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
@@ -353,6 +355,7 @@ func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTransitionRouteGroup[0:len((*c.CallOptions).CreateTransitionRouteGroup):len((*c.CallOptions).CreateTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
@@ -374,6 +377,7 @@ func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transition_route_group.name", url.QueryEscape(req.GetTransitionRouteGroup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTransitionRouteGroup[0:len((*c.CallOptions).UpdateTransitionRouteGroup):len((*c.CallOptions).UpdateTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
@@ -395,6 +399,7 @@ func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTransitionRouteGroup[0:len((*c.CallOptions).DeleteTransitionRouteGroup):len((*c.CallOptions).DeleteTransitionRouteGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

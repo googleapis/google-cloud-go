@@ -18,7 +18,8 @@
 // Binary Authorization API.
 //
 // The management interface for Binary Authorization, a system providing
-// policy control for images deployed to Kubernetes Engine clusters.
+// policy control for images deployed to Kubernetes Engine clusters, Anthos
+// clusters on VMware, and Cloud Run.
 //
 //   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
@@ -87,7 +88,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220114"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

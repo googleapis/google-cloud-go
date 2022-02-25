@@ -310,14 +310,15 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 	// Use a timeout to ensure that Pull does not block indefinitely if there are
 	// unexpectedly few messages available.
 	now := time.Now()
-	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+	timeout := 3 * time.Minute
+	timeoutCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Since(now) >= time.Minute {
+			if time.Since(now) >= timeout {
 				t.Fatal("pullN took too long")
 			}
 		} else {

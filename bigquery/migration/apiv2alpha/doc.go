@@ -17,8 +17,8 @@
 // Package migration is an auto-generated package for the
 // BigQuery Migration API.
 //
-// The BigQuery migration service, exposing apis for migration jobs
-// operations, and agent management.
+// The migration service, exposing apis for migration jobs operations, and
+// agent management.
 //
 //   NOTE: This package is in alpha. It is not stable, and is likely to change.
 //
@@ -87,7 +87,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220114"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

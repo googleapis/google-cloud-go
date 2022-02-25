@@ -1,5 +1,34 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.2...pubsublite/v1.3.0) (2022-02-15)
+
+
+### Features
+
+* **pubsublite:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
+
+### Bug Fixes
+
+* **pubsublite:** use pubsublite internal version ([#5618](https://github.com/googleapis/google-cloud-go/issues/5618)) ([0156450](https://github.com/googleapis/google-cloud-go/commit/01564507f57829e7b68f5db3d94acc1ca2ddc90a))
+
+### [1.2.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.1...pubsublite/v1.2.2) (2022-02-08)
+
+
+### Features
+
+* **pubsublite:** add C++ rules for Pub/Sub Lite ([3e7185c](https://www.github.com/googleapis/google-cloud-go/commit/3e7185c241d97ee342f132ae04bc93bb79a8e897))
+
+
+### Bug Fixes
+
+* **pubsublite:** mitigate gRPC stream connection issues ([#5382](https://www.github.com/googleapis/google-cloud-go/issues/5382)) ([8763ef3](https://www.github.com/googleapis/google-cloud-go/commit/8763ef3d2da18e8fed6e350aef76d26a135246c2))
+
+
+### Documentation
+
+* **pubsublite:** update comments for regional topics ([#5202](https://www.github.com/googleapis/google-cloud-go/issues/5202)) ([7805468](https://www.github.com/googleapis/google-cloud-go/commit/78054682770af3b35cb0002c3c34006ec36590ef))
+
 ### [1.2.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.0...pubsublite/v1.2.1) (2021-10-26)
 
 
