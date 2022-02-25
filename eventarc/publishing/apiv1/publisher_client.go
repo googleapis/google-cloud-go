@@ -220,7 +220,7 @@ func (c *publisherGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *publisherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -237,6 +237,7 @@ func (c *publisherGRPCClient) PublishChannelConnectionEvents(ctx context.Context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel_connection", url.QueryEscape(req.GetChannelConnection())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PublishChannelConnectionEvents[0:len((*c.CallOptions).PublishChannelConnectionEvents):len((*c.CallOptions).PublishChannelConnectionEvents)], opts...)
 	var resp *publisherpb.PublishChannelConnectionEventsResponse

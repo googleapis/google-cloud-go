@@ -63,6 +63,7 @@ type InstancesCallOptions struct {
 	ListReferrers                      []gax.CallOption
 	RemoveResourcePolicies             []gax.CallOption
 	Reset                              []gax.CallOption
+	Resume                             []gax.CallOption
 	SendDiagnosticInterrupt            []gax.CallOption
 	SetDeletionProtection              []gax.CallOption
 	SetDiskAutoDelete                  []gax.CallOption
@@ -80,6 +81,7 @@ type InstancesCallOptions struct {
 	Start                              []gax.CallOption
 	StartWithEncryptionKey             []gax.CallOption
 	Stop                               []gax.CallOption
+	Suspend                            []gax.CallOption
 	TestIamPermissions                 []gax.CallOption
 	Update                             []gax.CallOption
 	UpdateAccessConfig                 []gax.CallOption
@@ -113,6 +115,7 @@ type internalInstancesClient interface {
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Resume(context.Context, *computepb.ResumeInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SendDiagnosticInterrupt(context.Context, *computepb.SendDiagnosticInterruptInstanceRequest, ...gax.CallOption) (*computepb.SendDiagnosticInterruptInstanceResponse, error)
 	SetDeletionProtection(context.Context, *computepb.SetDeletionProtectionInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetDiskAutoDelete(context.Context, *computepb.SetDiskAutoDeleteInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -130,6 +133,7 @@ type internalInstancesClient interface {
 	Start(context.Context, *computepb.StartInstanceRequest, ...gax.CallOption) (*Operation, error)
 	StartWithEncryptionKey(context.Context, *computepb.StartWithEncryptionKeyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Stop(context.Context, *computepb.StopInstanceRequest, ...gax.CallOption) (*Operation, error)
+	Suspend(context.Context, *computepb.SuspendInstanceRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateInstanceRequest, ...gax.CallOption) (*Operation, error)
 	UpdateAccessConfig(context.Context, *computepb.UpdateAccessConfigInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -272,6 +276,11 @@ func (c *InstancesClient) Reset(ctx context.Context, req *computepb.ResetInstanc
 	return c.internalClient.Reset(ctx, req, opts...)
 }
 
+// Resume resumes an instance that was suspended using the instances().suspend method.
+func (c *InstancesClient) Resume(ctx context.Context, req *computepb.ResumeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Resume(ctx, req, opts...)
+}
+
 // SendDiagnosticInterrupt sends diagnostic interrupt to the instance.
 func (c *InstancesClient) SendDiagnosticInterrupt(ctx context.Context, req *computepb.SendDiagnosticInterruptInstanceRequest, opts ...gax.CallOption) (*computepb.SendDiagnosticInterruptInstanceResponse, error) {
 	return c.internalClient.SendDiagnosticInterrupt(ctx, req, opts...)
@@ -317,7 +326,7 @@ func (c *InstancesClient) SetMinCpuPlatform(ctx context.Context, req *computepb.
 	return c.internalClient.SetMinCpuPlatform(ctx, req, opts...)
 }
 
-// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states.
+// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.
 func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetScheduling(ctx, req, opts...)
 }
@@ -337,7 +346,7 @@ func (c *InstancesClient) SetTags(ctx context.Context, req *computepb.SetTagsIns
 	return c.internalClient.SetTags(ctx, req, opts...)
 }
 
-// SimulateMaintenanceEvent simulates a maintenance event on the instance.
+// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
 func (c *InstancesClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SimulateMaintenanceEvent(ctx, req, opts...)
 }
@@ -355,6 +364,11 @@ func (c *InstancesClient) StartWithEncryptionKey(ctx context.Context, req *compu
 // Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 func (c *InstancesClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Stop(ctx, req, opts...)
+}
+
+// Suspend this method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
+func (c *InstancesClient) Suspend(ctx context.Context, req *computepb.SuspendInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Suspend(ctx, req, opts...)
 }
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
@@ -445,7 +459,7 @@ func defaultInstancesRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *instancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -1374,6 +1388,9 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 	if req != nil && req.SourceInstanceTemplate != nil {
 		params.Add("sourceInstanceTemplate", fmt.Sprintf("%v", req.GetSourceInstanceTemplate()))
 	}
+	if req != nil && req.SourceMachineImage != nil {
+		params.Add("sourceMachineImage", fmt.Sprintf("%v", req.GetSourceMachineImage()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1674,6 +1691,65 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reset", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// Resume resumes an instance that was suspended using the instances().suspend method.
+func (c *instancesRESTClient) Resume(ctx context.Context, req *computepb.ResumeInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/resume", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {
@@ -2277,7 +2353,7 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states.
+// SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM availability policies.
 func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSchedulingResource()
@@ -2541,7 +2617,7 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 	return op, nil
 }
 
-// SimulateMaintenanceEvent simulates a maintenance event on the instance.
+// SimulateMaintenanceEvent simulates a host maintenance event on a VM. For more information, see Simulate a host maintenance event.
 func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetInstance())
@@ -2722,6 +2798,65 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// Suspend this method suspends a running instance, saving its state to persistent storage, and allows you to resume the instance at a later time. Suspended instances have no compute costs (cores or RAM), and incur only storage charges for the saved VM memory and localSSD data. Any charged resources the virtual machine was using, such as persistent disks and static IP addresses, will continue to be charged while the instance is suspended. For more information, see Suspending and resuming an instance.
+func (c *instancesRESTClient) Suspend(ctx context.Context, req *computepb.SuspendInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/suspend", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {

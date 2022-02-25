@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.4.0...talent/v0.5.0) (2022-02-23)
+
+
+### Features
+
+* **talent:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/talent/v0.3.1...talent/v0.4.0) (2022-02-14)
 
 

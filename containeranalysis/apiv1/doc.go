@@ -98,4 +98,4 @@ func versionGo() string {
 	return "UNKNOWN"
 }
 
-const versionClient = "20220207"
+const versionClient = "20220222"

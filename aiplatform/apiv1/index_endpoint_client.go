@@ -294,7 +294,7 @@ func (c *indexEndpointGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *indexEndpointGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -306,6 +306,7 @@ func (c *indexEndpointGRPCClient) Close() error {
 
 func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *aiplatformpb.CreateIndexEndpointRequest, opts ...gax.CallOption) (*CreateIndexEndpointOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIndexEndpoint[0:len((*c.CallOptions).CreateIndexEndpoint):len((*c.CallOptions).CreateIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -324,6 +325,7 @@ func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aiplatformpb.GetIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIndexEndpoint[0:len((*c.CallOptions).GetIndexEndpoint):len((*c.CallOptions).GetIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
@@ -340,6 +342,7 @@ func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aip
 
 func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *aiplatformpb.ListIndexEndpointsRequest, opts ...gax.CallOption) *IndexEndpointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIndexEndpoints[0:len((*c.CallOptions).ListIndexEndpoints):len((*c.CallOptions).ListIndexEndpoints)], opts...)
 	it := &IndexEndpointIterator{}
@@ -384,6 +387,7 @@ func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *a
 
 func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *aiplatformpb.UpdateIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint.name", url.QueryEscape(req.GetIndexEndpoint().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateIndexEndpoint[0:len((*c.CallOptions).UpdateIndexEndpoint):len((*c.CallOptions).UpdateIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
@@ -400,6 +404,7 @@ func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *aiplatformpb.DeleteIndexEndpointRequest, opts ...gax.CallOption) (*DeleteIndexEndpointOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIndexEndpoint[0:len((*c.CallOptions).DeleteIndexEndpoint):len((*c.CallOptions).DeleteIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -418,6 +423,7 @@ func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatformpb.DeployIndexRequest, opts ...gax.CallOption) (*DeployIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeployIndex[0:len((*c.CallOptions).DeployIndex):len((*c.CallOptions).DeployIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -436,6 +442,7 @@ func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatfo
 
 func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplatformpb.UndeployIndexRequest, opts ...gax.CallOption) (*UndeployIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeployIndex[0:len((*c.CallOptions).UndeployIndex):len((*c.CallOptions).UndeployIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -454,6 +461,7 @@ func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplat
 
 func (c *indexEndpointGRPCClient) MutateDeployedIndex(ctx context.Context, req *aiplatformpb.MutateDeployedIndexRequest, opts ...gax.CallOption) (*MutateDeployedIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).MutateDeployedIndex[0:len((*c.CallOptions).MutateDeployedIndex):len((*c.CallOptions).MutateDeployedIndex)], opts...)
 	var resp *longrunningpb.Operation

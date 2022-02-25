@@ -167,7 +167,7 @@ func testDefaultStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -240,7 +240,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	md, descriptorProto := setupDynamicDescriptors(t, testdata.SimpleMessageSchema)
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -302,7 +302,7 @@ func testBufferedStream(ctx context.Context, t *testing.T, mwClient *Client, bqC
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(BufferedStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -363,7 +363,7 @@ func testCommittedStream(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -408,7 +408,7 @@ func testPendingStream(ctx context.Context, t *testing.T, mwClient *Client, bqCl
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(PendingStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -489,7 +489,7 @@ func testInstrumentation(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -560,7 +560,7 @@ func testSchemaEvolution(ctx context.Context, t *testing.T, mwClient *Client, bq
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(CommittedStream),
 		WithSchemaDescriptor(descriptorProto),
 	)
@@ -746,7 +746,7 @@ func testProtoNormalization(ctx context.Context, t *testing.T, mwClient *Client,
 
 	// setup a new stream.
 	ms, err := mwClient.NewManagedStream(ctx,
-		WithDestinationTable(fmt.Sprintf("projects/%s/datasets/%s/tables/%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
+		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
 		WithType(DefaultStream),
 		WithSchemaDescriptor(dp),
 	)

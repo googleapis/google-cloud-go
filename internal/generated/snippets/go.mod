@@ -23,7 +23,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.2.0
+	cloud.google.com/go/compute v1.3.0
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
@@ -51,7 +51,7 @@ require (
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
 	cloud.google.com/go/gsuiteaddons v1.0.0
-	cloud.google.com/go/iam v0.1.1
+	cloud.google.com/go/iam v0.2.0
 	cloud.google.com/go/iap v1.0.0
 	cloud.google.com/go/ids v0.1.0
 	cloud.google.com/go/iot v1.0.0
@@ -110,9 +110,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
-	google.golang.org/api v0.68.0
-	google.golang.org/genproto v0.0.0-20220210181026-6fee9acbd336
+	google.golang.org/api v0.70.0
+	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer

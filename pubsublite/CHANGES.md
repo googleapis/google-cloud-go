@@ -1,5 +1,17 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.2...pubsublite/v1.3.0) (2022-02-15)
+
+
+### Features
+
+* **pubsublite:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
+
+### Bug Fixes
+
+* **pubsublite:** use pubsublite internal version ([#5618](https://github.com/googleapis/google-cloud-go/issues/5618)) ([0156450](https://github.com/googleapis/google-cloud-go/commit/01564507f57829e7b68f5db3d94acc1ca2ddc90a))
+
 ### [1.2.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v1.2.1...pubsublite/v1.2.2) (2022-02-08)
 
 
