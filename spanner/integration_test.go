@@ -1081,7 +1081,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Set up two accounts
@@ -2567,7 +2567,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
 	t.Parallel()
-
+	// skipping PG test because of rpc error: code = InvalidArgument desc = [ERROR] syntax error at or near "." in PartitionRead
+	skipUnsupportedPGTest(t)
 	// Set up testing environment.
 	var (
 		client2 *Client
@@ -2652,7 +2653,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
 	t.Parallel()
-
+	// skipping PG test because of rpc error: code = InvalidArgument desc = [ERROR] syntax error at or near "." in PartitionRead
+	skipUnsupportedPGTest(t)
 	// Set up testing environment and create txn.
 	var (
 		txn *BatchReadOnlyTransaction
@@ -2762,7 +2764,7 @@ func TestIntegration_DML(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	// Function that reads a single row's first name from within a transaction.
@@ -3583,7 +3585,7 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	te := testutil.NewTestExporter(GFEHeaderMissingCountView, GFELatencyView)
 	setGFELatencyMetricsFlag(true)
 
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
 	defer cleanup()
 
 	singerColumns := []string{"SingerId", "FirstName", "LastName"}
