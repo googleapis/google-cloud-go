@@ -1778,6 +1778,7 @@ func createSession(client *vkit.Client) (*sppb.Session, error) {
 	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
 	var request = &sppb.CreateSessionRequest{
 		Database: formattedDatabase,
+		Session:  &sppb.Session{},
 	}
 	return client.CreateSession(context.Background(), request)
 }

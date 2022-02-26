@@ -2292,6 +2292,366 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryWithRoles(t *testing.T) {
+	t.Parallel()
+
+	// Set up testing environment.
+	var (
+		row                 *Row
+		client, client2     *Client
+		iter                *RowIterator
+		err                 error
+		id                  int64
+		firstName, lastName string
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE TABLE Singers (
+				SingerId	INT64 NOT NULL,
+				FirstName	STRING(1024),
+				LastName	STRING(1024),
+				SingerInfo	BYTES(MAX)
+			) PRIMARY KEY (SingerId)`,
+		`CREATE ROLE singers_reader`,
+		`CREATE ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
+		`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	queryStmt := Statement{SQL: `SELECT SingerId, FirstName, LastName FROM Singers`}
+
+	// A request with sufficient privileges should return all rows
+	for _, dbRole := range []string{
+		"",
+		"singers_reader",
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		iter = client2.Single().Query(ctx, queryStmt)
+		defer iter.Stop()
+
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("Could not read row. Got error %v", err)
+		}
+		if err = row.Columns(&id, &firstName, &lastName); err != nil {
+			t.Fatalf("failed to parse row %v", err)
+		}
+		if id != 1 || firstName != "Marc" || lastName != "Richards" {
+			t.Fatalf("execution didn't return expected values")
+		}
+
+		_, err = iter.Next()
+		if err != iterator.Done {
+			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		iter = client2.Single().Query(ctx, queryStmt)
+		defer iter.Stop()
+
+		_, err = iter.Next()
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+func TestIntegration_ReadWithRoles(t *testing.T) {
+	t.Parallel()
+
+	// Set up testing environment.
+	var (
+		row                 *Row
+		client, client2     *Client
+		iter                *RowIterator
+		err                 error
+		id                  int64
+		firstName, lastName string
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE TABLE Singers (
+				SingerId	INT64 NOT NULL,
+				FirstName	STRING(1024),
+				LastName	STRING(1024),
+				SingerInfo	BYTES(MAX)
+			) PRIMARY KEY (SingerId)`,
+		`CREATE ROLE singers_reader`,
+		`CREATE ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
+		`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+
+	// A request with sufficient privileges should return all rows
+	for _, dbRole := range []string{
+		"",
+		"singers_reader",
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		iter = client2.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer iter.Stop()
+
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("Could not read row. Got error %v", err)
+		}
+		if err = row.Columns(&id, &firstName, &lastName); err != nil {
+			t.Fatalf("failed to parse row %v", err)
+		}
+		if id != 1 || firstName != "Marc" || lastName != "Richards" {
+			t.Fatalf("execution didn't return expected values")
+		}
+
+		_, err = iter.Next()
+		if err != iterator.Done {
+			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		iter = client2.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer iter.Stop()
+
+		_, err = iter.Next()
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+func TestIntegration_DMLWithRoles(t *testing.T) {
+	t.Parallel()
+
+	// Set up testing environment.
+	var (
+		client, client2 *Client
+		err             error
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE TABLE Singers (
+				SingerId	INT64 NOT NULL,
+				FirstName	STRING(1024),
+				LastName	STRING(1024),
+				SingerInfo	BYTES(MAX)
+			) PRIMARY KEY (SingerId)`,
+		`CREATE ROLE singers_writer`,
+		`CREATE ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId), UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
+		`GRANT SELECT(SingerId), UPDATE(FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+	updateStmt := Statement{SQL: `UPDATE Singers SET FirstName = "Mark", LastName = "Richards" WHERE SingerId = 1`}
+
+	// A request with sufficient privileges should update the row
+	for _, dbRole := range []string{
+		"",
+		"singers_writer",
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		_, err = client2.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, updateStmt)
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not update row. Got error %v", err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		_, err = client2.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, updateStmt)
+			return err
+		})
+
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+func TestIntegration_MutationWithRoles(t *testing.T) {
+	t.Parallel()
+
+	// Set up testing environment.
+	var (
+		client, client2 *Client
+		err             error
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE TABLE Singers (
+				SingerId	INT64 NOT NULL,
+				FirstName	STRING(1024),
+				LastName	STRING(1024),
+				SingerInfo	BYTES(MAX)
+			) PRIMARY KEY (SingerId)`,
+		`CREATE ROLE singers_writer`,
+		`CREATE ROLE singers_unauthorized`,
+		`GRANT UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
+		`GRANT UPDATE(FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+	}
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
+	defer cleanup()
+
+	singerColumns := []string{"SingerId", "FirstName", "LastName"}
+	var ms = []*Mutation{
+		InsertOrUpdate("Singers", singerColumns, []interface{}{1, "Marc", "Richards"}),
+	}
+	if _, err := client.Apply(ctx, ms, ApplyAtLeastOnce()); err != nil {
+		t.Fatalf("Could not insert rows to table. Got error %v", err)
+	}
+
+	// A request with sufficient privileges should update the row
+	for _, dbRole := range []string{
+		"",
+		"singers_writer",
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		_, err = client2.Apply(ctx, []*Mutation{
+			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+		})
+		if err != nil {
+			t.Fatalf("Could not update row. Got error %v", err)
+		}
+	}
+
+	// A request with insufficient privileges should return permission denied
+	for _, test := range []struct {
+		dbRole string
+		errMsg string
+	}{
+		{
+			"singers_unauthorized",
+			"Role singers_unauthorized does not have required privileges on table Singers.",
+		},
+		{
+			"nonexistent",
+			"Role not found: nonexistent.",
+		},
+	} {
+		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer client2.Close()
+		_, err = client2.Apply(ctx, []*Mutation{
+			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
+		})
+
+		if err == nil {
+			t.Fatal("expected err, got nil")
+		}
+		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
 // Test PartitionQuery of BatchReadOnlyTransaction, create partitions then
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
@@ -3533,6 +3893,21 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, nil
+}
+
+func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
