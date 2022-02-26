@@ -91,6 +91,7 @@ type sessionClient struct {
 	database      string
 	id            string
 	sessionLabels map[string]string
+	databaseRole  string
 	md            metadata.MD
 	batchTimeout  time.Duration
 	logger        *log.Logger
@@ -98,12 +99,13 @@ type sessionClient struct {
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, databaseRole string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
 		connPool:      connPool,
 		database:      database,
 		id:            cidGen.nextID(database),
 		sessionLabels: sessionLabels,
+		databaseRole:  databaseRole,
 		md:            md,
 		batchTimeout:  time.Minute,
 		logger:        logger,
@@ -135,7 +137,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 	var md metadata.MD
 	sid, err := client.CreateSession(ctx, &sppb.CreateSessionRequest{
 		Database: sc.database,
-		Session:  &sppb.Session{Labels: sc.sessionLabels},
+		Session:  &sppb.Session{Labels: sc.sessionLabels, CreatorRole: sc.databaseRole},
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 	if getGFELatencyMetricsFlag() && md != nil {
@@ -257,7 +259,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
 			SessionCount:    remainingCreateCount,
 			Database:        sc.database,
-			SessionTemplate: &sppb.Session{Labels: labels},
+			SessionTemplate: &sppb.Session{Labels: labels, CreatorRole: sc.databaseRole},
 		}, gax.WithGRPCOptions(grpc.Header(&mdForGFELatency)))
 
 		if getGFELatencyMetricsFlag() && mdForGFELatency != nil {

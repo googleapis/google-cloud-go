@@ -116,6 +116,8 @@ type ClientConfig struct {
 	// override the default values.
 	CallOptions *vkit.CallOptions
 
+	DatabaseRole string
+
 	// logger is the logger to use for this client. If it is nil, all logging
 	// will be directed to the standard logger.
 	logger *log.Logger
@@ -193,7 +195,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		config.incStep = DefaultSessionPoolConfig.incStep
 	}
 	// Create a session client.
-	sc := newSessionClient(pool, database, sessionLabels, metadata.Pairs(resourcePrefixHeader, database), config.logger, config.CallOptions)
+	sc := newSessionClient(pool, database, sessionLabels, config.DatabaseRole, metadata.Pairs(resourcePrefixHeader, database), config.logger, config.CallOptions)
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
 	sp, err := newSessionPool(sc, config.SessionPoolConfig)
