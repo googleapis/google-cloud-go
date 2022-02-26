@@ -47,6 +47,7 @@ func (k customKeyToError) EncodeSpanner() (interface{}, error) {
 
 // Test Key.String() and Key.proto().
 func TestKey(t *testing.T) {
+	skipUnsupportedPGTest(t)
 	tm, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	dt, _ := civil.ParseDate("2016-11-15")
 	for _, test := range []struct {
