@@ -573,7 +573,7 @@ func (c *configGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *configGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -585,6 +585,7 @@ func (c *configGRPCClient) Close() error {
 
 func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
 	it := &LogBucketIterator{}
@@ -629,6 +630,7 @@ func (c *configGRPCClient) ListBuckets(ctx context.Context, req *loggingpb.ListB
 
 func (c *configGRPCClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBucket[0:len((*c.CallOptions).GetBucket):len((*c.CallOptions).GetBucket)], opts...)
 	var resp *loggingpb.LogBucket
@@ -645,6 +647,7 @@ func (c *configGRPCClient) GetBucket(ctx context.Context, req *loggingpb.GetBuck
 
 func (c *configGRPCClient) CreateBucket(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBucket[0:len((*c.CallOptions).CreateBucket):len((*c.CallOptions).CreateBucket)], opts...)
 	var resp *loggingpb.LogBucket
@@ -661,6 +664,7 @@ func (c *configGRPCClient) CreateBucket(ctx context.Context, req *loggingpb.Crea
 
 func (c *configGRPCClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateBucket[0:len((*c.CallOptions).UpdateBucket):len((*c.CallOptions).UpdateBucket)], opts...)
 	var resp *loggingpb.LogBucket
@@ -677,6 +681,7 @@ func (c *configGRPCClient) UpdateBucket(ctx context.Context, req *loggingpb.Upda
 
 func (c *configGRPCClient) DeleteBucket(ctx context.Context, req *loggingpb.DeleteBucketRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -689,6 +694,7 @@ func (c *configGRPCClient) DeleteBucket(ctx context.Context, req *loggingpb.Dele
 
 func (c *configGRPCClient) UndeleteBucket(ctx context.Context, req *loggingpb.UndeleteBucketRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeleteBucket[0:len((*c.CallOptions).UndeleteBucket):len((*c.CallOptions).UndeleteBucket)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -701,6 +707,7 @@ func (c *configGRPCClient) UndeleteBucket(ctx context.Context, req *loggingpb.Un
 
 func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListViews[0:len((*c.CallOptions).ListViews):len((*c.CallOptions).ListViews)], opts...)
 	it := &LogViewIterator{}
@@ -745,6 +752,7 @@ func (c *configGRPCClient) ListViews(ctx context.Context, req *loggingpb.ListVie
 
 func (c *configGRPCClient) GetView(ctx context.Context, req *loggingpb.GetViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetView[0:len((*c.CallOptions).GetView):len((*c.CallOptions).GetView)], opts...)
 	var resp *loggingpb.LogView
@@ -761,6 +769,7 @@ func (c *configGRPCClient) GetView(ctx context.Context, req *loggingpb.GetViewRe
 
 func (c *configGRPCClient) CreateView(ctx context.Context, req *loggingpb.CreateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateView[0:len((*c.CallOptions).CreateView):len((*c.CallOptions).CreateView)], opts...)
 	var resp *loggingpb.LogView
@@ -777,6 +786,7 @@ func (c *configGRPCClient) CreateView(ctx context.Context, req *loggingpb.Create
 
 func (c *configGRPCClient) UpdateView(ctx context.Context, req *loggingpb.UpdateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateView[0:len((*c.CallOptions).UpdateView):len((*c.CallOptions).UpdateView)], opts...)
 	var resp *loggingpb.LogView
@@ -793,6 +803,7 @@ func (c *configGRPCClient) UpdateView(ctx context.Context, req *loggingpb.Update
 
 func (c *configGRPCClient) DeleteView(ctx context.Context, req *loggingpb.DeleteViewRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteView[0:len((*c.CallOptions).DeleteView):len((*c.CallOptions).DeleteView)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -805,6 +816,7 @@ func (c *configGRPCClient) DeleteView(ctx context.Context, req *loggingpb.Delete
 
 func (c *configGRPCClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRequest, opts ...gax.CallOption) *LogSinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSinks[0:len((*c.CallOptions).ListSinks):len((*c.CallOptions).ListSinks)], opts...)
 	it := &LogSinkIterator{}
@@ -854,6 +866,7 @@ func (c *configGRPCClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSink[0:len((*c.CallOptions).GetSink):len((*c.CallOptions).GetSink)], opts...)
 	var resp *loggingpb.LogSink
@@ -875,6 +888,7 @@ func (c *configGRPCClient) CreateSink(ctx context.Context, req *loggingpb.Create
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSink[0:len((*c.CallOptions).CreateSink):len((*c.CallOptions).CreateSink)], opts...)
 	var resp *loggingpb.LogSink
@@ -896,6 +910,7 @@ func (c *configGRPCClient) UpdateSink(ctx context.Context, req *loggingpb.Update
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSink[0:len((*c.CallOptions).UpdateSink):len((*c.CallOptions).UpdateSink)], opts...)
 	var resp *loggingpb.LogSink
@@ -917,6 +932,7 @@ func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.Delete
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSink[0:len((*c.CallOptions).DeleteSink):len((*c.CallOptions).DeleteSink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -929,6 +945,7 @@ func (c *configGRPCClient) DeleteSink(ctx context.Context, req *loggingpb.Delete
 
 func (c *configGRPCClient) ListExclusions(ctx context.Context, req *loggingpb.ListExclusionsRequest, opts ...gax.CallOption) *LogExclusionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListExclusions[0:len((*c.CallOptions).ListExclusions):len((*c.CallOptions).ListExclusions)], opts...)
 	it := &LogExclusionIterator{}
@@ -978,6 +995,7 @@ func (c *configGRPCClient) GetExclusion(ctx context.Context, req *loggingpb.GetE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetExclusion[0:len((*c.CallOptions).GetExclusion):len((*c.CallOptions).GetExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
@@ -999,6 +1017,7 @@ func (c *configGRPCClient) CreateExclusion(ctx context.Context, req *loggingpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateExclusion[0:len((*c.CallOptions).CreateExclusion):len((*c.CallOptions).CreateExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
@@ -1020,6 +1039,7 @@ func (c *configGRPCClient) UpdateExclusion(ctx context.Context, req *loggingpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateExclusion[0:len((*c.CallOptions).UpdateExclusion):len((*c.CallOptions).UpdateExclusion)], opts...)
 	var resp *loggingpb.LogExclusion
@@ -1041,6 +1061,7 @@ func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteExclusion[0:len((*c.CallOptions).DeleteExclusion):len((*c.CallOptions).DeleteExclusion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1053,6 +1074,7 @@ func (c *configGRPCClient) DeleteExclusion(ctx context.Context, req *loggingpb.D
 
 func (c *configGRPCClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCmekSettings[0:len((*c.CallOptions).GetCmekSettings):len((*c.CallOptions).GetCmekSettings)], opts...)
 	var resp *loggingpb.CmekSettings
@@ -1069,6 +1091,7 @@ func (c *configGRPCClient) GetCmekSettings(ctx context.Context, req *loggingpb.G
 
 func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCmekSettings[0:len((*c.CallOptions).UpdateCmekSettings):len((*c.CallOptions).UpdateCmekSettings)], opts...)
 	var resp *loggingpb.CmekSettings
@@ -1085,6 +1108,7 @@ func (c *configGRPCClient) UpdateCmekSettings(ctx context.Context, req *loggingp
 
 func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSettings[0:len((*c.CallOptions).GetSettings):len((*c.CallOptions).GetSettings)], opts...)
 	var resp *loggingpb.Settings
@@ -1101,6 +1125,7 @@ func (c *configGRPCClient) GetSettings(ctx context.Context, req *loggingpb.GetSe
 
 func (c *configGRPCClient) UpdateSettings(ctx context.Context, req *loggingpb.UpdateSettingsRequest, opts ...gax.CallOption) (*loggingpb.Settings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSettings[0:len((*c.CallOptions).UpdateSettings):len((*c.CallOptions).UpdateSettings)], opts...)
 	var resp *loggingpb.Settings

@@ -473,7 +473,7 @@ func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *osConfigZonalGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -490,6 +490,7 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateOSPolicyAssignment[0:len((*c.CallOptions).CreateOSPolicyAssignment):len((*c.CallOptions).CreateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -513,6 +514,7 @@ func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateOSPolicyAssignment[0:len((*c.CallOptions).UpdateOSPolicyAssignment):len((*c.CallOptions).UpdateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -536,6 +538,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOSPolicyAssignment[0:len((*c.CallOptions).GetOSPolicyAssignment):len((*c.CallOptions).GetOSPolicyAssignment)], opts...)
 	var resp *osconfigpb.OSPolicyAssignment
@@ -552,6 +555,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 
 func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOSPolicyAssignments[0:len((*c.CallOptions).ListOSPolicyAssignments):len((*c.CallOptions).ListOSPolicyAssignments)], opts...)
 	it := &OSPolicyAssignmentIterator{}
@@ -596,6 +600,7 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 
 func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOSPolicyAssignmentRevisions[0:len((*c.CallOptions).ListOSPolicyAssignmentRevisions):len((*c.CallOptions).ListOSPolicyAssignmentRevisions)], opts...)
 	it := &OSPolicyAssignmentIterator{}
@@ -645,6 +650,7 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteOSPolicyAssignment[0:len((*c.CallOptions).DeleteOSPolicyAssignment):len((*c.CallOptions).DeleteOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
@@ -668,6 +674,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOSPolicyAssignmentReport[0:len((*c.CallOptions).GetOSPolicyAssignmentReport):len((*c.CallOptions).GetOSPolicyAssignmentReport)], opts...)
 	var resp *osconfigpb.OSPolicyAssignmentReport
@@ -684,6 +691,7 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Contex
 
 func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentReportsRequest, opts ...gax.CallOption) *OSPolicyAssignmentReportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOSPolicyAssignmentReports[0:len((*c.CallOptions).ListOSPolicyAssignmentReports):len((*c.CallOptions).ListOSPolicyAssignmentReports)], opts...)
 	it := &OSPolicyAssignmentReportIterator{}
@@ -733,6 +741,7 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInventory[0:len((*c.CallOptions).GetInventory):len((*c.CallOptions).GetInventory)], opts...)
 	var resp *osconfigpb.Inventory
@@ -749,6 +758,7 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 
 func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInventories[0:len((*c.CallOptions).ListInventories):len((*c.CallOptions).ListInventories)], opts...)
 	it := &InventoryIterator{}
@@ -798,6 +808,7 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVulnerabilityReport[0:len((*c.CallOptions).GetVulnerabilityReport):len((*c.CallOptions).GetVulnerabilityReport)], opts...)
 	var resp *osconfigpb.VulnerabilityReport
@@ -814,6 +825,7 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 
 func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVulnerabilityReports[0:len((*c.CallOptions).ListVulnerabilityReports):len((*c.CallOptions).ListVulnerabilityReports)], opts...)
 	it := &VulnerabilityReportIterator{}
