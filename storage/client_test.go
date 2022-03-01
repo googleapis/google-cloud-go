@@ -28,11 +28,11 @@ func TestNewGRPCStorageClient(t *testing.T) {
 	}
 }
 
-func TestNewJSONStorageClient(t *testing.T) {
+func TestnewHTTPStorageClient(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
-	if _, err := newJSONStorageClient(context.Background()); err != nil {
+	if _, err := newHTTPStorageClient(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 }
