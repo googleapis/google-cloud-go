@@ -1,5 +1,19 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.3.0...eventarc/v1.4.0) (2022-02-23)
+
+
+### Features
+
+* **eventarc:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.2.0...eventarc/v1.3.0) (2022-02-14)
+
+
+### Features
+
+* **eventarc:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/eventarc/v1.1.0...eventarc/v1.2.0) (2022-02-03)
 
 

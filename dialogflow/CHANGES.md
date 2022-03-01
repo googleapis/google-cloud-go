@@ -1,5 +1,19 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.5.0...dialogflow/v1.6.0) (2022-02-23)
+
+
+### Features
+
+* **dialogflow:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.4.0...dialogflow/v1.5.0) (2022-02-14)
+
+
+### Features
+
+* **dialogflow:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
 ## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/dialogflow/v1.3.0...dialogflow/v1.4.0) (2022-02-03)
 
 

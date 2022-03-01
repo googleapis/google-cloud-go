@@ -122,7 +122,7 @@ func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.Aggrega
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 func (c *DisksClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
@@ -235,7 +235,7 @@ func defaultDisksRESTClientOptions() []option.ClientOption {
 // use by Google-written clients.
 func (c *disksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "rest", "UNKNOWN")
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -423,7 +423,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 	return it
 }
 
-// CreateSnapshot creates a snapshot of a specified persistent disk.
+// CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
 func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.CreateSnapshotDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSnapshotResource()

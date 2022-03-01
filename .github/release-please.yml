@@ -7,3 +7,8 @@ branches:
     manifest: true
     manifestFile: .release-please-manifest-submodules.json
     manifestConfig: release-please-config-submodules.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: .release-please-manifest-submodules.json
+    manifestConfig: release-please-config-yoshi-submodules.json

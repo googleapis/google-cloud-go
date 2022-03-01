@@ -66,3 +66,11 @@ message RecursiveType {
 message RecursiveTypeTopMessage {
   optional RecursiveTypeTopMessage field = 2;
 }
+
+message WithOneOf {
+  optional int32 int32_value = 1;
+  oneof oneof_value {
+    string string_value = 2;
+    double double_value = 3;
+  }
+}

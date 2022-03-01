@@ -25,7 +25,7 @@
 //
 // To get started with this package, create a client.
 //  ctx := context.Background()
-//  c, err := dataplex.NewMetadataClient(ctx)
+//  c, err := dataplex.NewContentClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -40,17 +40,17 @@
 // The following is an example of making an API call with the newly created client.
 //
 //  ctx := context.Background()
-//  c, err := dataplex.NewMetadataClient(ctx)
+//  c, err := dataplex.NewContentClient(ctx)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
 //  defer c.Close()
 //
-//  req := &dataplexpb.GetEntityRequest{
+//  req := &dataplexpb.CreateContentRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#GetEntityRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataplex/v1#CreateContentRequest.
 //  }
-//  resp, err := c.GetEntity(ctx, req)
+//  resp, err := c.CreateContent(ctx, req)
 //  if err != nil {
 //  	// TODO: Handle error.
 //  }
@@ -86,7 +86,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220207"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
