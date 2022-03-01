@@ -1543,6 +1543,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	req.StartOffset(it.query.StartOffset)
 	req.EndOffset(it.query.EndOffset)
 	req.Versions(it.query.Versions)
+	req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
 	if len(it.query.fieldSelection) > 0 {
 		req.Fields("nextPageToken", googleapi.Field(it.query.fieldSelection))
 	}
