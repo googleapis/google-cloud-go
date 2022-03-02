@@ -853,11 +853,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-<<<<<<< HEAD
 	s.checkSubConfig()
-=======
-	s.checkOrdering(ctx)
->>>>>>> 102e459ce6a6305171087f725d5a46e1106cbdbc
 
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -1070,12 +1066,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-<<<<<<< HEAD
 func (s *Subscription) checkSubConfig() {
 	ctx := context.Background()
-=======
-func (s *Subscription) checkOrdering(ctx context.Context) {
->>>>>>> 102e459ce6a6305171087f725d5a46e1106cbdbc
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true

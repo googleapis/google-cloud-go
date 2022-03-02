@@ -608,11 +608,13 @@ func (t *Topic) Flush() {
 }
 
 type bundledMessage struct {
-	ctx       context.Context
-	msg       *Message
-	res       *PublishResult
-	size      int
-	pubSpan   trace.Span
+	ctx  context.Context
+	msg  *Message
+	res  *PublishResult
+	size int
+	// pubSpan is the entire publish span (from user calling Publish to the publish RPC resolving).
+	pubSpan trace.Span
+	// batchSpan tracks how long a message is waiting to be published.
 	batchSpan trace.Span
 }
 
