@@ -50,6 +50,7 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
 		view    *view.View
@@ -144,6 +145,7 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
 
@@ -216,6 +218,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
