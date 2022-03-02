@@ -481,6 +481,11 @@ func TestEncodeInvalidValues(t *testing.T) {
 	invalidNumPtr2, _ := (&big.Rat{}).SetString("199999999999999999999999999999.999999999")
 
 	// Enable error mode.
+	oldValue := LossOfPrecisionHandling
+	defer func() {
+		// Reset the value to pre-test value
+		LossOfPrecisionHandling = oldValue
+	}()
 	LossOfPrecisionHandling = NumericError
 
 	for i, test := range []struct {
