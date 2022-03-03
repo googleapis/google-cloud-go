@@ -1,0 +1,23 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.policytroubleshooter.v1",
+  "libraryPackage": "cloud.google.com/go/policytroubleshooter/apiv1",
+  "services": {
+    "IamChecker": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "IamCheckerClient",
+          "rpcs": {
+            "TroubleshootIamPolicy": {
+              "methods": [
+                "TroubleshootIamPolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

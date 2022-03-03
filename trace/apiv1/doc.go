@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,6 +23,48 @@
 // interact with the Trace API directly. If you are looking to instrument
 // your application for Stackdriver Trace, we recommend using OpenCensus.
 //
+// Example usage
+//
+// To get started with this package, create a client.
+//  ctx := context.Background()
+//  c, err := trace.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+// The client will use your default application credentials. Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
+// The returned client must be Closed when it is done being used.
+//
+// Using the Client
+//
+// The following is an example of making an API call with the newly created client.
+//
+//  ctx := context.Background()
+//  c, err := trace.NewClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+//  req := &cloudtracepb.ListTracesRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v1#ListTracesRequest.
+//  }
+//  it := c.ListTraces(ctx, req)
+//  for {
+//  	resp, err := it.Next()
+//  	if err == iterator.Done {
+//  		break
+//  	}
+//  	if err != nil {
+//  		// TODO: Handle error.
+//  	}
+//  	// TODO: Use resp.
+//  	_ = resp
+//  }
+//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -32,7 +74,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package trace // import "cloud.google.com/go/trace/apiv1"
 
 import (
@@ -52,7 +94,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201211"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewReportErrorsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleReportErrorsClient_ReportErrorEvent() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewReportErrorsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ReportErrorEventRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1#ReportErrorEventRequest.
 	}
 	resp, err := c.ReportErrorEvent(ctx, req)
 	if err != nil {

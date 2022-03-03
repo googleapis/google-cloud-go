@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewSecurityCenterSettingsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetServiceAccountRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#GetServiceAccountRequest.
 	}
 	resp, err := c.GetServiceAccount(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#GetSettingsRequest.
 	}
 	resp, err := c.GetSettings(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleSecurityCenterSettingsClient_GetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#UpdateSettingsRequest.
 	}
 	resp, err := c.UpdateSettings(ctx, req)
 	if err != nil {
@@ -100,9 +102,11 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#ResetSettingsRequest.
 	}
 	err = c.ResetSettings(ctx, req)
 	if err != nil {
@@ -111,16 +115,16 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchGetSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#BatchGetSettingsRequest.
 	}
 	resp, err := c.BatchGetSettings(ctx, req)
 	if err != nil {
@@ -131,16 +135,16 @@ func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#CalculateEffectiveSettingsRequest.
 	}
 	resp, err := c.CalculateEffectiveSettings(ctx, req)
 	if err != nil {
@@ -151,16 +155,16 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#BatchCalculateEffectiveSettingsRequest.
 	}
 	resp, err := c.BatchCalculateEffectiveSettings(ctx, req)
 	if err != nil {
@@ -171,16 +175,16 @@ func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#GetComponentSettingsRequest.
 	}
 	resp, err := c.GetComponentSettings(ctx, req)
 	if err != nil {
@@ -191,16 +195,16 @@ func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#UpdateComponentSettingsRequest.
 	}
 	resp, err := c.UpdateComponentSettings(ctx, req)
 	if err != nil {
@@ -216,9 +220,11 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#ResetComponentSettingsRequest.
 	}
 	err = c.ResetComponentSettings(ctx, req)
 	if err != nil {
@@ -227,16 +233,16 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveComponentSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#CalculateEffectiveComponentSettingsRequest.
 	}
 	resp, err := c.CalculateEffectiveComponentSettings(ctx, req)
 	if err != nil {
@@ -247,17 +253,16 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListDetectors() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListDetectorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#ListDetectorsRequest.
 	}
 	it := c.ListDetectors(ctx, req)
 	for {
@@ -274,17 +279,16 @@ func ExampleSecurityCenterSettingsClient_ListDetectors() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListComponents() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListComponentsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1#ListComponentsRequest.
 	}
 	it := c.ListComponents(ctx, req)
 	for {

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewSessionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSessionsClient_DetectIntent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DetectIntentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#DetectIntentRequest.
 	}
 	resp, err := c.DetectIntent(ctx, req)
 	if err != nil {
@@ -55,13 +57,12 @@ func ExampleSessionsClient_DetectIntent() {
 }
 
 func ExampleSessionsClient_StreamingDetectIntent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingDetectIntent(ctx)
 	if err != nil {
 		// TODO: Handle error.

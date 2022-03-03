@@ -62,6 +62,13 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 			return r.bo.Pause(), true
 		}
 		return 0, false
+	case codes.Unknown:
+		// Retry GOAWAY, see https://github.com/googleapis/google-cloud-go/issues/4257.
+		isGoaway := strings.Contains(s.Message(), "received prior goaway: code: NO_ERROR")
+		if isGoaway {
+			return r.bo.Pause(), true
+		}
+		return 0, false
 	default:
 		return 0, false
 	}

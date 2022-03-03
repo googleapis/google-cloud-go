@@ -22,6 +22,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"runtime"
 	"strconv"
@@ -31,7 +32,6 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	pb "cloud.google.com/go/pubsub/loadtest/pb"
-	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/time/rate"
 )
 
@@ -39,6 +39,7 @@ type pubServerConfig struct {
 	topic     *pubsub.Topic
 	msgData   []byte
 	batchSize int32
+	ordered   bool
 }
 
 // PubServer is a dummy Pub/Sub server for load testing.
@@ -56,27 +57,27 @@ func (l *PubServer) Start(ctx context.Context, req *pb.StartRequest) (*pb.StartR
 	if err != nil {
 		return nil, err
 	}
-	dur, err := ptypes.Duration(req.PublishBatchDuration)
-	if err != nil {
-		return nil, err
-	}
-	l.init(c, req.Topic, req.MessageSize, req.PublishBatchSize, dur)
+	dur := req.PublishBatchDuration.AsDuration()
+	l.init(c, req.Topic, req.MessageSize, req.PublishBatchSize, dur, false)
 	log.Println("started")
 	return &pb.StartResponse{}, nil
 }
 
-func (l *PubServer) init(c *pubsub.Client, topicName string, msgSize, batchSize int32, batchDur time.Duration) {
+func (l *PubServer) init(c *pubsub.Client, topicName string, msgSize, batchSize int32, batchDur time.Duration, ordered bool) {
 	topic := c.Topic(topicName)
 	topic.PublishSettings = pubsub.PublishSettings{
-		DelayThreshold: batchDur,
-		CountThreshold: 950,
-		ByteThreshold:  9500000,
+		DelayThreshold:    batchDur,
+		CountThreshold:    950,
+		ByteThreshold:     9500000,
+		BufferedByteLimit: 2e9,
 	}
+	topic.EnableMessageOrdering = ordered
 
 	l.cfg.Store(pubServerConfig{
 		topic:     topic,
 		msgData:   bytes.Repeat([]byte{'A'}, int(msgSize)),
 		batchSize: batchSize,
+		ordered:   ordered,
 	})
 }
 
@@ -105,14 +106,18 @@ func (l *PubServer) publishBatch() ([]int64, error) {
 
 	rs := make([]*pubsub.PublishResult, cfg.batchSize)
 	for i := int32(0); i < cfg.batchSize; i++ {
-		rs[i] = cfg.topic.Publish(context.TODO(), &pubsub.Message{
+		msg := &pubsub.Message{
 			Data: cfg.msgData,
 			Attributes: map[string]string{
 				"sendTime":       startStr,
 				"clientId":       l.ID,
 				"sequenceNumber": strconv.Itoa(int(seqNum + i)),
 			},
-		})
+		}
+		if cfg.ordered {
+			msg.OrderingKey = fmt.Sprintf("key-%d", seqNum+i)
+		}
+		rs[i] = cfg.topic.Publish(context.TODO(), msg)
 	}
 	for i, r := range rs {
 		_, err := r.Get(context.Background())

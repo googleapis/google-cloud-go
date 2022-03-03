@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTransitionRouteGroupsClientHook clientHook
@@ -46,13 +46,13 @@ type TransitionRouteGroupsCallOptions struct {
 	DeleteTransitionRouteGroup []gax.CallOption
 }
 
-func defaultTransitionRouteGroupsClientOptions() []option.ClientOption {
+func defaultTransitionRouteGroupsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -118,32 +118,115 @@ func defaultTransitionRouteGroupsCallOptions() *TransitionRouteGroupsCallOptions
 	}
 }
 
+// internalTransitionRouteGroupsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalTransitionRouteGroupsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListTransitionRouteGroups(context.Context, *cxpb.ListTransitionRouteGroupsRequest, ...gax.CallOption) *TransitionRouteGroupIterator
+	GetTransitionRouteGroup(context.Context, *cxpb.GetTransitionRouteGroupRequest, ...gax.CallOption) (*cxpb.TransitionRouteGroup, error)
+	CreateTransitionRouteGroup(context.Context, *cxpb.CreateTransitionRouteGroupRequest, ...gax.CallOption) (*cxpb.TransitionRouteGroup, error)
+	UpdateTransitionRouteGroup(context.Context, *cxpb.UpdateTransitionRouteGroupRequest, ...gax.CallOption) (*cxpb.TransitionRouteGroup, error)
+	DeleteTransitionRouteGroup(context.Context, *cxpb.DeleteTransitionRouteGroupRequest, ...gax.CallOption) error
+}
+
 // TransitionRouteGroupsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing TransitionRouteGroups.
+type TransitionRouteGroupsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalTransitionRouteGroupsClient
+
+	// The call options for this service.
+	CallOptions *TransitionRouteGroupsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *TransitionRouteGroupsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *TransitionRouteGroupsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *TransitionRouteGroupsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListTransitionRouteGroups returns the list of all transition route groups in the specified flow.
+func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Context, req *cxpb.ListTransitionRouteGroupsRequest, opts ...gax.CallOption) *TransitionRouteGroupIterator {
+	return c.internalClient.ListTransitionRouteGroups(ctx, req, opts...)
+}
+
+// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
+func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	return c.internalClient.GetTransitionRouteGroup(ctx, req, opts...)
+}
+
+// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
+func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
+}
+
+// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
+func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
+}
+
+// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
+func (c *TransitionRouteGroupsClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTransitionRouteGroup(ctx, req, opts...)
+}
+
+// transitionRouteGroupsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type TransitionRouteGroupsClient struct {
+type transitionRouteGroupsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing TransitionRouteGroupsClient
+	CallOptions **TransitionRouteGroupsCallOptions
+
 	// The gRPC API client.
 	transitionRouteGroupsClient cxpb.TransitionRouteGroupsClient
-
-	// The call options for this service.
-	CallOptions *TransitionRouteGroupsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewTransitionRouteGroupsClient creates a new transition route groups client.
+// NewTransitionRouteGroupsClient creates a new transition route groups client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing TransitionRouteGroups.
 func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOption) (*TransitionRouteGroupsClient, error) {
-	clientOpts := defaultTransitionRouteGroupsClientOptions()
-
+	clientOpts := defaultTransitionRouteGroupsGRPCClientOptions()
 	if newTransitionRouteGroupsClientHook != nil {
 		hookOpts, err := newTransitionRouteGroupsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,53 +244,58 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 	if err != nil {
 		return nil, err
 	}
-	c := &TransitionRouteGroupsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultTransitionRouteGroupsCallOptions(),
+	client := TransitionRouteGroupsClient{CallOptions: defaultTransitionRouteGroupsCallOptions()}
 
+	c := &transitionRouteGroupsGRPCClient{
+		connPool:                    connPool,
+		disableDeadlines:            disableDeadlines,
 		transitionRouteGroupsClient: cxpb.NewTransitionRouteGroupsClient(connPool),
+		CallOptions:                 &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *TransitionRouteGroupsClient) Connection() *grpc.ClientConn {
+func (c *transitionRouteGroupsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *TransitionRouteGroupsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *TransitionRouteGroupsClient) setGoogleClientInfo(keyval ...string) {
+func (c *transitionRouteGroupsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListTransitionRouteGroups returns the list of all transition route groups in the specified flow.
-func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Context, req *cxpb.ListTransitionRouteGroupsRequest, opts ...gax.CallOption) *TransitionRouteGroupIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *transitionRouteGroupsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *transitionRouteGroupsGRPCClient) ListTransitionRouteGroups(ctx context.Context, req *cxpb.ListTransitionRouteGroupsRequest, opts ...gax.CallOption) *TransitionRouteGroupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTransitionRouteGroups[0:len(c.CallOptions.ListTransitionRouteGroups):len(c.CallOptions.ListTransitionRouteGroups)], opts...)
+	opts = append((*c.CallOptions).ListTransitionRouteGroups[0:len((*c.CallOptions).ListTransitionRouteGroups):len((*c.CallOptions).ListTransitionRouteGroups)], opts...)
 	it := &TransitionRouteGroupIterator{}
 	req = proto.Clone(req).(*cxpb.ListTransitionRouteGroupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.TransitionRouteGroup, string, error) {
-		var resp *cxpb.ListTransitionRouteGroupsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListTransitionRouteGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -230,22 +318,24 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
-func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+func (c *transitionRouteGroupsGRPCClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTransitionRouteGroup[0:len(c.CallOptions.GetTransitionRouteGroup):len(c.CallOptions.GetTransitionRouteGroup)], opts...)
+	opts = append((*c.CallOptions).GetTransitionRouteGroup[0:len((*c.CallOptions).GetTransitionRouteGroup):len((*c.CallOptions).GetTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -258,16 +348,16 @@ func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Contex
 	return resp, nil
 }
 
-// CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
-func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+func (c *transitionRouteGroupsGRPCClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTransitionRouteGroup[0:len(c.CallOptions.CreateTransitionRouteGroup):len(c.CallOptions.CreateTransitionRouteGroup)], opts...)
+	opts = append((*c.CallOptions).CreateTransitionRouteGroup[0:len((*c.CallOptions).CreateTransitionRouteGroup):len((*c.CallOptions).CreateTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,16 +370,16 @@ func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Con
 	return resp, nil
 }
 
-// UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
-func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+func (c *transitionRouteGroupsGRPCClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transition_route_group.name", url.QueryEscape(req.GetTransitionRouteGroup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTransitionRouteGroup[0:len(c.CallOptions.UpdateTransitionRouteGroup):len(c.CallOptions.UpdateTransitionRouteGroup)], opts...)
+	opts = append((*c.CallOptions).UpdateTransitionRouteGroup[0:len((*c.CallOptions).UpdateTransitionRouteGroup):len((*c.CallOptions).UpdateTransitionRouteGroup)], opts...)
 	var resp *cxpb.TransitionRouteGroup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -302,16 +392,16 @@ func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Con
 	return resp, nil
 }
 
-// DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
-func (c *TransitionRouteGroupsClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
+func (c *transitionRouteGroupsGRPCClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTransitionRouteGroup[0:len(c.CallOptions.DeleteTransitionRouteGroup):len(c.CallOptions.DeleteTransitionRouteGroup)], opts...)
+	opts = append((*c.CallOptions).DeleteTransitionRouteGroup[0:len((*c.CallOptions).DeleteTransitionRouteGroup):len((*c.CallOptions).DeleteTransitionRouteGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.transitionRouteGroupsClient.DeleteTransitionRouteGroup(ctx, req, settings.GRPC...)

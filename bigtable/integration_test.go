@@ -20,10 +20,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
+	"os"
+	"os/exec"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -38,22 +42,29 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	grpc "google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
+	directPathIPV6Prefix      = "[2001:4860:8040"
+	directPathIPV4Prefix      = "34.126"
+	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
+	prefixOfInstanceResources = "bt-it-"
 )
 
 var (
 	presidentsSocialGraph = map[string][]string{
 		"wmckinley":   {"tjefferson"},
-		"gwashington": {"jadams"},
-		"tjefferson":  {"gwashington", "jadams"},
-		"jadams":      {"gwashington", "tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams"},
+		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
-	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
+	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -71,17 +82,66 @@ func populatePresidentsGraph(table *Table) error {
 }
 
 var instanceToCreate string
-var instanceToCreateZone string
-var instanceToCreateZone2 string
 
 func init() {
-	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
-	flag.StringVar(&instanceToCreate, "it.instance-to-create", "",
-		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
-	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
-		"The zone in which to create the new test instance.")
-	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
-		"The zone in which to create a second cluster in the test instance.")
+	if runCreateInstanceTests {
+		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
+	}
+}
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	env, err := NewIntegrationEnv()
+	if err != nil {
+		panic(fmt.Sprintf("there was an issue creating an integration env: %v", err))
+	}
+	c := env.Config()
+	if c.UseProd {
+		fmt.Printf(
+			"Note: when using prod, you must first create an instance:\n"+
+				"cbt createinstance %s %s %s %s %s SSD\n",
+			c.Instance, c.Instance,
+			c.Cluster, "us-central1-b", "1",
+		)
+	}
+	exit := m.Run()
+	if err := cleanup(c); err != nil {
+		log.Printf("Post-test cleanup failed: %v", err)
+	}
+	os.Exit(exit)
+}
+
+func cleanup(c IntegrationTestConfig) error {
+	// Cleanup resources marked with bt-it- after a time delay
+	if !c.UseProd {
+		return nil
+	}
+	ctx := context.Background()
+	iac, err := NewInstanceAdminClient(ctx, c.Project)
+	if err != nil {
+		return err
+	}
+	instances, err := iac.Instances(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, info := range instances {
+		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
+			timestamp := info.Name[len(prefixOfInstanceResources):]
+			t, err := strconv.ParseInt(timestamp, 10, 64)
+			if err != nil {
+				return err
+			}
+			uT := time.Unix(t, 0)
+			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
+				iac.DeleteInstance(ctx, info.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -117,15 +177,15 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	verifyDirectPathRemoteAddress(testEnv, t)
 
 	// Fetch a row.
-	row, err := table.ReadRow(ctx, "jadams")
+	row, err := table.ReadRow(ctx, "j§adams")
 	if err != nil {
 		t.Fatalf("Reading a row: %v", err)
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{
 		"follows": []ReadItem{
-			{Row: "jadams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
-			{Row: "jadams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
+			{Row: "j§adams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
+			{Row: "j§adams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
 		},
 	}
 	if !testutil.Equal(row, wantRow) {
@@ -178,8 +238,8 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 	// Read a RowList
 	var elt []string
-	keys := RowList{"wmckinley", "gwashington", "jadams"}
-	want := "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,wmckinley-tjefferson-1"
+	keys := RowList{"wmckinley", "gwashington", "j§adams"}
+	want := "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,wmckinley-tjefferson-1"
 	err = table.ReadRows(ctx, keys, func(r Row) bool {
 		for _, ris := range r {
 			for _, ri := range ris {
@@ -794,9 +854,9 @@ func TestIntegration_Read(t *testing.T) {
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley":   {"tjefferson"},
-		"gwashington": {"jadams"},
-		"tjefferson":  {"gwashington", "jadams", "wmckinley"},
-		"jadams":      {"gwashington", "tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
+		"j§adams":     {"gwashington", "tjefferson"},
 	}
 	for row, ss := range initialData {
 		mut := NewMutation()
@@ -823,22 +883,22 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc: "read all, unfiltered",
 			rr:   RowRange{},
-			want: "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want: "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc: "read with InfiniteRange, unfiltered",
 			rr:   InfiniteRange("tjefferson"),
-			want: "tjefferson-gwashington-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want: "tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc: "read with NewRange, unfiltered",
 			rr:   NewRange("gargamel", "hubbard"),
-			want: "gwashington-jadams-1",
+			want: "gwashington-j§adams-1",
 		},
 		{
 			desc: "read with PrefixRange, unfiltered",
-			rr:   PrefixRange("jad"),
-			want: "jadams-gwashington-1,jadams-tjefferson-1",
+			rr:   PrefixRange("j§ad"),
+			want: "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc: "read with SingleRow, unfiltered",
@@ -848,8 +908,8 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:   "read all, with ColumnFilter",
 			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
-			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read all, with ColumnFilter, prefix",
@@ -861,25 +921,37 @@ func TestIntegration_Read(t *testing.T) {
 			desc:   "read range, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "h", "k"),
-			want:   "gwashington-jadams-1,tjefferson-jadams-1",
+			want:   "gwashington-j§adams-1,tjefferson-j§adams-1",
 		},
 		{
 			desc:   "read range from empty, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "", "u"),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read range from start to empty, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "h", ""),
-			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter",
 			rr:     RowRange{},
 			filter: RowKeyFilter(".*wash.*"),
-			want:   "gwashington-jadams-1",
+			want:   "gwashington-j§adams-1",
+		},
+		{
+			desc:   "read with RowKeyFilter unicode",
+			rr:     RowRange{},
+			filter: RowKeyFilter(".*j§.*"),
+			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
+		},
+		{
+			desc:   "read with RowKeyFilter escaped",
+			rr:     RowRange{},
+			filter: RowKeyFilter(`.*j\xC2\xA7.*`),
+			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter, prefix",
@@ -902,49 +974,49 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:   "read with ColumnFilter + row limit",
 			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
+			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:       "apply labels to the result rows",
 			rr:         RowRange{},
 			filter:     LabelFilter("test-label"),
 			limit:      LimitRows(2),
-			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			want:       "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
 			wantLabels: []string{"test-label", "test-label", "test-label"},
 		},
 		{
 			desc:   "read all, strip values",
 			rr:     RowRange{},
 			filter: StripValueFilter(),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with ColumnFilter + row limit + strip values",
 			rr:     RowRange{},
-			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "jadams" and "tjefferson"
+			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-,jadams-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on true",
 			rr:     RowRange{},
 			filter: ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on false",
 			rr:     RowRange{},
 			filter: ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with ValueRangeFilter + row limit",
 			rr:     RowRange{},
 			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with ValueRangeFilter, no match on exclusive end",
@@ -968,18 +1040,18 @@ func TestIntegration_Read(t *testing.T) {
 			desc:   "read with InterleaveFilter, no duplicate cells",
 			rr:     RowRange{},
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with InterleaveFilter, with duplicate cells",
 			rr:     RowRange{},
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
-			want:   "jadams-gwashington-1,jadams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
+			want:   "j§adams-gwashington-1,j§adams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
 		},
 		{
 			desc: "read with a RowRangeList and no filter",
 			rr:   RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley")},
-			want: "gwashington-jadams-1,wmckinley-tjefferson-1",
+			want: "gwashington-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "chain that excludes rows and matches nothing, in a condition",
@@ -1028,17 +1100,29 @@ func TestIntegration_Read(t *testing.T) {
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
+	presplitTable := fmt.Sprintf("presplit-table-%d", time.Now().Unix())
+	if err := adminClient.CreatePresplitTable(ctx, presplitTable, []string{"follows"}); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteTable(ctx, presplitTable)
+
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+		t.Fatal(err)
+	}
+
+	table := client.Open(presplitTable)
+
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley11":   {"tjefferson11"},
-		"gwashington77": {"jadams77"},
-		"tjefferson0":   {"gwashington0", "jadams0"},
+		"gwashington77": {"j§adams77"},
+		"tjefferson0":   {"gwashington0", "j§adams0"},
 	}
 
 	for row, ss := range initialData {
@@ -1085,7 +1169,6 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	if iAdminClient != nil {
 		defer iAdminClient.Close()
-
 		iInfo, err := iAdminClient.InstanceInfo(ctx, adminClient.instance)
 		if err != nil {
 			t.Errorf("InstanceInfo: %v", err)
@@ -1117,37 +1200,41 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
+	defer deleteTable(ctx, t, adminClient, myTableName)
 
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	defer deleteTable(ctx, t, adminClient, "myothertable")
+	defer deleteTable(ctx, t, adminClient, myOtherTableName)
 
-	if err := adminClient.CreateTable(ctx, "myothertable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myOtherTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	if got, want := list(), []string{"myothertable", "mytable"}; !containsAll(got, want) {
+	if got, want := list(), []string{myOtherTableName, myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
 
-	must(adminClient.WaitForReplication(ctx, "mytable"))
+	must(adminClient.WaitForReplication(ctx, myTableName))
 
-	if err := adminClient.DeleteTable(ctx, "myothertable"); err != nil {
+	if err := adminClient.DeleteTable(ctx, myOtherTableName); err != nil {
 		t.Fatalf("Deleting table: %v", err)
 	}
 	tables := list()
-	if got, want := tables, []string{"mytable"}; !containsAll(got, want) {
+	if got, want := tables, []string{myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
-	if got, unwanted := tables, []string{"myothertable"}; containsAll(got, unwanted) {
+	if got, unwanted := tables, []string{myOtherTableName}; containsAll(got, unwanted) {
 		t.Errorf("adminClient.Tables return %#v. unwanted %#v", got, unwanted)
 	}
 
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	tableID := fmt.Sprintf("conftable%x", uniqueID)
+
 	tblConf := TableConf{
-		TableID: "conftable",
+		TableID: tableID,
 		Families: map[string]GCPolicy{
 			"fam1": MaxVersionsPolicy(1),
 			"fam2": MaxVersionsPolicy(2),
@@ -1169,7 +1256,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	// Populate mytable and drop row ranges
-	if err = adminClient.CreateColumnFamily(ctx, "mytable", "cf"); err != nil {
+	if err = adminClient.CreateColumnFamily(ctx, myTableName, "cf"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -1179,7 +1266,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	defer client.Close()
 
-	tbl := client.Open("mytable")
+	tbl := client.Open(myTableName)
 
 	prefixes := []string{"a", "b", "c"}
 	for _, prefix := range prefixes {
@@ -1192,13 +1279,13 @@ func TestIntegration_Admin(t *testing.T) {
 		}
 	}
 
-	if err = adminClient.DropRowRange(ctx, "mytable", "a"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "a"); err != nil {
 		t.Errorf("DropRowRange a: %v", err)
 	}
-	if err = adminClient.DropRowRange(ctx, "mytable", "c"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "c"); err != nil {
 		t.Errorf("DropRowRange c: %v", err)
 	}
-	if err = adminClient.DropRowRange(ctx, "mytable", "x"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "x"); err != nil {
 		t.Errorf("DropRowRange x: %v", err)
 	}
 
@@ -1214,7 +1301,7 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Invalid row count after dropping range: got %v, want %v", gotRowCount, 5)
 	}
 
-	if err = adminClient.DropAllRows(ctx, "mytable"); err != nil {
+	if err = adminClient.DropAllRows(ctx, myTableName); err != nil {
 		t.Errorf("DropAllRows mytable: %v", err)
 	}
 
@@ -1226,6 +1313,26 @@ func TestIntegration_Admin(t *testing.T) {
 	if gotRowCount != 0 {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
 	}
+
+	// Validate Encryption Info configured to default. (not supported by emulator)
+	if testEnv.Config().UseProd {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, myTableName)
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+		}
+
+		clusterEncryptionInfo := encryptionInfo[testEnv.Config().Cluster][0]
+		if clusterEncryptionInfo.KMSKeyVersion != "" {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.KMSKeyVersion, 0)
+		}
+		if clusterEncryptionInfo.Type != GoogleDefaultEncryption {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.Type, GoogleDefaultEncryption)
+		}
+	}
+
 }
 
 func TestIntegration_TableIam(t *testing.T) {
@@ -1248,16 +1355,16 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	defer deleteTable(ctx, t, adminClient, myTableName)
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
 	// Verify that the IAM Controls work for Tables.
-	iamHandle := adminClient.TableIAM("mytable")
+	iamHandle := adminClient.TableIAM(myTableName)
 	p, err := iamHandle.Policy(ctx)
 	if err != nil {
-		t.Errorf("Iam GetPolicy mytable: %v", err)
+		t.Fatalf("Iam GetPolicy mytable: %v", err)
 	}
 	if err = iamHandle.SetPolicy(ctx, p); err != nil {
 		t.Errorf("Iam SetPolicy mytable: %v", err)
@@ -1335,6 +1442,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
+	instanceToCreate += "0"
 
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1369,6 +1477,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
@@ -1391,7 +1500,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5},
+		},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1421,14 +1531,200 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
 	}
+
+	if cInfo.KMSKeyName != "" {
+		t.Fatalf("KMSKeyName: %v, want: %v", cInfo.KMSKeyName, "")
+	}
+}
+
+func TestIntegration_AdminEncryptionInfo(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+	instanceToCreate += "1"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	// adjust test environment to use our cluster to create
+	c := testEnv.Config()
+	c.Instance = instanceToCreate
+	testEnv, err = NewProdEnv(c)
+	if err != nil {
+		t.Fatalf("NewProdEnv: %v", err)
+	}
+
+	timeout := 10 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := instanceToCreate + "-table"
+	clusterID := instanceToCreate + "-cluster"
+
+	keyRingName := os.Getenv("GCLOUD_TESTS_BIGTABLE_KEYRING")
+	if keyRingName == "" {
+		// try to fall back on GOLANG keyring
+		keyRingName = os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_BIGTABLE_KEYRING or GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+	}
+	kmsKeyName := keyRingName + "/cryptoKeys/key1"
+
+	conf := &InstanceWithClustersConfig{
+		InstanceID:  instanceToCreate,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:  clusterID,
+				KMSKeyName: kmsKeyName,
+				Zone:       instanceToCreateZone,
+				NumNodes:   1,
+			},
+		},
+	}
+	if err := iAdminClient.CreateInstanceWithClusters(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	var encryptionKeyVersion string
+
+	// The encryption info can take 30-500s (currently about 120-190s) to
+	// become ready.
+	for i := 0; i < 50; i++ {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+
+		encryptionKeyVersion = encryptionInfo[clusterID][0].KMSKeyVersion
+		if encryptionKeyVersion != "" {
+			break
+		}
+
+		time.Sleep(time.Second * 10)
+	}
+	if encryptionKeyVersion == "" {
+		t.Fatalf("Encryption Key not created within alotted time limit")
+	}
+
+	// Validate Encryption Info under getTable
+	table2, err := adminClient.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
+	if err != nil {
+		t.Fatalf("Getting Table: %v", err)
+	}
+	if got, want := len(table2.ClusterStates), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Cluster States %v, want: %v", got, want)
+	}
+	clusterState := table2.ClusterStates[clusterID]
+	if got, want := len(clusterState.EncryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Encryption Info Length: %v, want: %v", got, want)
+	}
+	tableEncInfo := clusterState.EncryptionInfo[0]
+	if got, want := int(tableEncInfo.EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is btapb.EncryptionInfo_EncryptionType
+	if got, want := tableEncInfo.EncryptionType, btapb.EncryptionInfo_CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := tableEncInfo.KmsKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate Encyrption Info retrieved via EncryptionInfo
+	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+	if err != nil {
+		t.Fatalf("EncryptionInfo: %v", err)
+	}
+	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+	}
+	encryptionInfos := encryptionInfo[clusterID]
+	if got, want := len(encryptionInfos), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Encryption Info Length: %v, want: %v", got, want)
+	}
+	if len(encryptionInfos) != 1 {
+		t.Fatalf("Expected Single EncryptionInfo")
+	}
+	v := encryptionInfos[0]
+	if got, want := int(v.Status.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is EncryptionType
+	if got, want := v.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := v.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate CMEK on Cluster Info
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if got, want := cInfo.KMSKeyName, kmsKeyName; !cmp.Equal(got, want) {
+		t.Fatalf("KMSKeyName: %v, want: %v", got, want)
+	}
+
+	// Create a backup with CMEK enabled, verify backup encryption info
+	backupName := "backupCMEK"
+	defer adminClient.DeleteBackup(ctx, clusterID, backupName)
+	if err = adminClient.CreateBackup(ctx, table, clusterID, backupName, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	backup, err := adminClient.BackupInfo(ctx, clusterID, backupName)
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+
+	if got, want := backup.EncryptionInfo.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := backup.EncryptionInfo.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption KMSKeyVersion: %v, want: %v", got, want)
+	}
+	if got, want := int(backup.EncryptionInfo.Status.Code), 2; !cmp.Equal(got, want) {
+		t.Fatalf("Backup EncryptionStatus: %v, want: %v", got, want)
+	}
 }
 
 func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
-
 	// Check the environments
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
 	}
+	instanceToCreate += "2"
+
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1520,6 +1816,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance update testing")
 	}
+	instanceToCreate += "3"
 
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1576,7 +1873,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5},
+		},
 	}
 
 	results, err := UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1623,7 +1921,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID},
-			{ClusterID: clusterID2, NumNodes: 3, StorageType: SSD, Zone: instanceToCreateZone2}},
+			{ClusterID: clusterID2, NumNodes: 3, StorageType: SSD, Zone: instanceToCreateZone2},
+		},
 	}
 
 	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1643,7 +1942,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 4}},
+			{ClusterID: clusterID, NumNodes: 4},
+		},
 	}
 
 	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1682,7 +1982,137 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 }
 
-func TestIntegration_AdminSnapshot(t *testing.T) {
+func TestIntegration_Autoscaling(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+	instanceToCreate += "4"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+
+	t.Log("creating an instance with autoscaling ON (Min = 3, Max = 4)")
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterID,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: PRODUCTION,
+		AutoscalingConfig: &AutoscalingConfig{
+			MinNodes:         3,
+			MaxNodes:         4,
+			CPUTargetPercent: 60,
+		},
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	cluster, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes := 3
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	wantMin := 3
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax := 4
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU := 60
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	serveNodes := 1
+	t.Logf("setting autoscaling OFF and setting serve nodes to %v", serveNodes)
+	err = iAdminClient.UpdateCluster(ctx, instanceToCreate, clusterID, int32(serveNodes))
+	if err != nil {
+		t.Fatalf("UpdateCluster: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes = 1
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	if gotAsc := cluster.AutoscalingConfig; gotAsc != nil {
+		t.Fatalf("want cluster autoscaling = nil, got = %v", gotAsc)
+	}
+
+	ac := AutoscalingConfig{
+		MinNodes:         3,
+		MaxNodes:         4,
+		CPUTargetPercent: 80,
+	}
+	t.Logf("setting autoscaling ON (Min = %v, Max = %v)", ac.MinNodes, ac.MaxNodes)
+	err = iAdminClient.SetAutoscaling(ctx, instanceToCreate, clusterID, ac)
+	if err != nil {
+		t.Fatalf("SetAutoscaling: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantMin = ac.MinNodes
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax = ac.MaxNodes
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU = ac.CPUTargetPercent
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+}
+
+// instanceAdminClientMock is used to test FailedLocations field processing.
+type instanceAdminClientMock struct {
+	Clusters             []*btapb.Cluster
+	UnavailableLocations []string
+	// Imbedding the interface allows test writers to override just the methods
+	// that are interesting for a test and ignore the rest.
+	btapb.BigtableInstanceAdminClient
+}
+
+func (iacm *instanceAdminClientMock) ListClusters(ctx context.Context, req *btapb.ListClustersRequest, opts ...grpc.CallOption) (*btapb.ListClustersResponse, error) {
+	res := btapb.ListClustersResponse{
+		Clusters:        iacm.Clusters,
+		FailedLocations: iacm.UnavailableLocations,
+	}
+	return &res, nil
+}
+
+func TestIntegration_InstanceAdminClient_Clusters_WithFailedLocations(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1693,109 +2123,36 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 		t.Skip("emulator doesn't support snapshots")
 	}
 
-	timeout := 2 * time.Second
-	if testEnv.Config().UseProd {
-		timeout = 5 * time.Minute
-	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	adminClient, err := testEnv.NewAdminClient()
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
+		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
-	defer adminClient.Close()
+	defer iAdminClient.Close()
 
-	table := testEnv.Config().Table
-	cluster := testEnv.Config().Cluster
+	cluster1 := btapb.Cluster{Name: "cluster1"}
+	failedLoc := "euro1"
 
-	list := func(cluster string) ([]*SnapshotInfo, error) {
-		infos := []*SnapshotInfo(nil)
-
-		it := adminClient.Snapshots(ctx, cluster)
-		for {
-			s, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return nil, err
-			}
-			infos = append(infos, s)
-		}
-		return infos, err
+	iAdminClient.iClient = &instanceAdminClientMock{
+		Clusters:             []*btapb.Cluster{&cluster1},
+		UnavailableLocations: []string{failedLoc},
 	}
 
-	// Delete the table at the end of the test. Schedule ahead of time
-	// in case the client fails
-	defer deleteTable(ctx, t, adminClient, table)
-
-	if err := adminClient.CreateTable(ctx, table); err != nil {
-		t.Fatalf("Creating table: %v", err)
+	cis, err := iAdminClient.Clusters(context.Background(), "instance-id")
+	convertedErr, ok := err.(ErrPartiallyUnavailable)
+	if !ok {
+		t.Fatalf("want error ErrPartiallyUnavailable, got other")
 	}
-
-	// Precondition: no snapshots
-	snapshots, err := list(cluster)
-	if err != nil {
-		t.Fatalf("Initial snapshot list: %v", err)
+	if got, want := len(convertedErr.Locations), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
 	}
-	if got, want := len(snapshots), 0; got != want {
-		t.Fatalf("Initial snapshot list len: %d, want: %d", got, want)
+	if got, want := convertedErr.Locations[0], failedLoc; got != want {
+		t.Fatalf("want failed location %v, got %v", want, got)
 	}
-
-	// Create snapshot
-	defer adminClient.DeleteSnapshot(ctx, cluster, "mysnapshot")
-
-	if err = adminClient.SnapshotTable(ctx, table, cluster, "mysnapshot", 5*time.Hour); err != nil {
-		t.Fatalf("Creating snaphot: %v", err)
+	if got, want := len(cis), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
 	}
-
-	// List snapshot
-	snapshots, err = list(cluster)
-	if err != nil {
-		t.Fatalf("Listing snapshots: %v", err)
-	}
-	if got, want := len(snapshots), 1; got != want {
-		t.Fatalf("Listing snapshot count: %d, want: %d", got, want)
-	}
-	if got, want := snapshots[0].Name, "mysnapshot"; got != want {
-		t.Fatalf("Snapshot name: %s, want: %s", got, want)
-	}
-	if got, want := snapshots[0].SourceTable, table; got != want {
-		t.Fatalf("Snapshot SourceTable: %s, want: %s", got, want)
-	}
-	if got, want := snapshots[0].DeleteTime, snapshots[0].CreateTime.Add(5*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Fatalf("Snapshot DeleteTime: %s, want: %s", got, want)
-	}
-
-	// Get snapshot
-	snapshot, err := adminClient.SnapshotInfo(ctx, cluster, "mysnapshot")
-	if err != nil {
-		t.Fatalf("SnapshotInfo: %v", snapshot)
-	}
-	if got, want := *snapshot, *snapshots[0]; got != want {
-		t.Fatalf("SnapshotInfo: %v, want: %v", got, want)
-	}
-
-	// Restore
-	restoredTable := table + "-restored"
-	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.CreateTableFromSnapshot(ctx, restoredTable, cluster, "mysnapshot"); err != nil {
-		t.Fatalf("CreateTableFromSnapshot: %v", err)
-	}
-	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
-		t.Fatalf("Restored TableInfo: %v", err)
-	}
-
-	// Delete snapshot
-	if err = adminClient.DeleteSnapshot(ctx, cluster, "mysnapshot"); err != nil {
-		t.Fatalf("DeleteSnapshot: %v", err)
-	}
-	snapshots, err = list(cluster)
-	if err != nil {
-		t.Fatalf("List after Delete: %v", err)
-	}
-	if got, want := len(snapshots), 0; got != want {
-		t.Fatalf("List after delete len: %d, want: %d", got, want)
+	if got, want := cis[0].Name, cluster1.Name; got != want {
+		t.Fatalf("want cluster %v, got %v", want, got)
 	}
 }
 
@@ -1840,21 +2197,21 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
+	defer deleteTable(ctx, t, adminClient, myTableName)
 
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
 	tables := list()
-	if got, want := tables, []string{"mytable"}; !containsAll(got, want) {
+	if got, want := tables, []string{myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
 
 	// calling ModifyColumnFamilies to check the granularity of table
 	prefix := adminClient.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
-		Name: prefix + "/tables/" + "mytable",
+		Name: prefix + "/tables/" + myTableName,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  "cf",
 			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
@@ -1898,9 +2255,15 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		return
 	}
 
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	profileID := fmt.Sprintf("app_profile%x", uniqueID)
+
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
+
 	defer iAdminClient.Close()
 	profile := ProfileConf{
-		ProfileID:     "app_profile1",
+		ProfileID:     profileID,
 		InstanceID:    adminClient.instance,
 		ClusterID:     testEnv.Config().Cluster,
 		Description:   "creating new app profile 1",
@@ -1910,18 +2273,15 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
 	if err != nil {
 		t.Fatalf("Creating app profile: %v", err)
-
 	}
 
-	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
-
+	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
 	}
 
 	if !proto.Equal(createdProfile, gotProfile) {
 		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
-
 	}
 
 	list := func(instanceID string) ([]*btapb.AppProfile, error) {
@@ -1946,9 +2306,20 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
-	if got, want := len(profiles), 1; got != want {
-		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
+	// Ensure the profiles we require exist. profiles ⊂ allProfiles
+	verifyProfilesSubset := func(allProfiles []*btapb.AppProfile, profiles map[string]struct{}) {
+		for _, profile := range allProfiles {
+			segs := strings.Split(profile.Name, "/")
+			delete(profiles, segs[len(segs)-1])
+		}
+		if len(profiles) > 0 {
+			t.Fatalf("Initial app profile list missing profile: %v : %v", profiles, allProfiles)
+		}
 	}
+
+	// App Profile list should contain default, app_profile1
+	wantProfiles := map[string]struct{}{"default": {}, profileID: {}}
+	verifyProfilesSubset(profiles, wantProfiles)
 
 	for _, test := range []struct {
 		desc   string
@@ -1968,7 +2339,8 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Name:          gotProfile.Name,
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
-				Etag:          gotProfile.Etag},
+				Etag:          gotProfile.Etag,
+			},
 		},
 		{
 			desc: "routing update",
@@ -1983,11 +2355,12 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
 					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
 						ClusterId: testEnv.Config().Cluster,
-					}},
+					},
+				},
 			},
 		},
 	} {
-		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, "app_profile1", test.uattrs)
+		err = iAdminClient.UpdateAppProfile(ctx, adminClient.instance, profileID, test.uattrs)
 		if err != nil {
 			if test.want != nil {
 				t.Errorf("%s: %v", test.desc, err)
@@ -1999,7 +2372,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 			continue
 		}
 
-		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
+		got, _ := iAdminClient.GetAppProfile(ctx, adminClient.instance, profileID)
 
 		if !proto.Equal(got, test.want) {
 			t.Fatalf("%s : got profile : %v, want profile: %v", test.desc, gotProfile, test.want)
@@ -2007,11 +2380,10 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 
 	}
 
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, profileID)
 	if err != nil {
 		t.Fatalf("Delete app profile: %v", err)
 	}
-
 }
 
 func TestIntegration_InstanceUpdate(t *testing.T) {
@@ -2050,13 +2422,12 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	if err != nil {
 		t.Errorf("InstanceInfo: %v", err)
 	}
-
 	if iInfo.Name != adminClient.instance {
 		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
 	}
 
 	if iInfo.DisplayName != adminClient.instance {
-		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
+		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.DisplayName, adminClient.instance)
 	}
 
 	const numNodes = 4
@@ -2086,7 +2457,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	timeout := 5 * time.Minute
+	timeout := 10 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
 
 	adminClient, err := testEnv.NewAdminClient()
@@ -2095,12 +2466,45 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	table := testEnv.Config().Table
-	cluster := testEnv.Config().Cluster
-
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer deleteTable(ctx, t, adminClient, table)
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	sourceInstance := testEnv.Config().Instance
+	sourceCluster := testEnv.Config().Cluster
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+	uniqueID := make([]byte, 4)
+	rand.Read(uniqueID)
+	diffInstance := fmt.Sprintf("%s-d-%x", testEnv.Config().Instance, uniqueID)
+	diffCluster := sourceCluster + "-d"
+	conf := &InstanceConf{
+		InstanceId:   diffInstance,
+		ClusterId:    diffCluster,
+		DisplayName:  "different test sourceInstance",
+		Zone:         instanceToCreateZone2,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+	// Create different instance to restore table.
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Errorf("CreateInstance: %v", err)
+	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
@@ -2119,93 +2523,223 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		return infos, err
 	}
 
-	if err := adminClient.CreateTable(ctx, table); err != nil {
-		t.Fatalf("Creating table: %v", err)
-	}
-
-	// Precondition: no backups
-	backups, err := list(cluster)
-	if err != nil {
-		t.Fatalf("Initial backup list: %v", err)
-	}
-	if got, want := len(backups), 0; got != want {
-		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
-	}
-
 	// Create backup
-	backupName := "mybackup"
-	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("Failed to generate a unique ID: %v", err)
+	}
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
+	backupName := fmt.Sprintf("mybackup-%x", uniqueID)
+	defer adminClient.DeleteBackup(ctx, sourceCluster, backupName)
+
+	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err = list(cluster)
+	backups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
-	if got, want := len(backups), 1; got != want {
-		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	if got, want := len(backups), 1; got < want {
+		t.Fatalf("Listing backup count: %d, want: >= %d", got, want)
 	}
-	if got, want := backups[0].Name, backupName; got != want {
-		t.Fatalf("Backup name: %s, want: %s", got, want)
+
+	foundBackup := false
+	for _, backup := range backups {
+		if backup.Name == backupName {
+			foundBackup = true
+
+			if got, want := backup.SourceTable, tblConf.TableID; got != want {
+				t.Errorf("Backup SourceTable: %s, want: %s", got, want)
+			}
+			if got, want := backup.ExpireTime, backup.StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+				t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
+			}
+
+			break
+		}
 	}
-	if got, want := backups[0].SourceTable, table; got != want {
-		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
-	}
-	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+
+	if !foundBackup {
+		t.Errorf("Backup not found: %v", backupName)
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	backup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
-	if got, want := *backup, *backups[0]; got != want {
-		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	if got, want := *backup, *backups[0]; cmp.Equal(got, &want) {
+		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
+	err = adminClient.UpdateBackup(ctx, sourceCluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	updatedBackup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
 	backup.ExpireTime = newExpireTime
 	// Server clock and local clock may not be perfectly sync'ed.
 	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
-		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Restore backup
-	restoredTable := table + "-restored"
+	restoredTable := tblConf.TableID + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, sourceCluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
 	}
+	// Restore backup to different instance
+	restoreTableName := tblConf.TableID + "-diff-restored"
+	diffConf := IntegrationTestConfig{
+		Project:  testEnv.Config().Project,
+		Instance: diffInstance,
+		Cluster:  diffCluster,
+		Table:    restoreTableName,
+	}
+	env := &ProdEnv{
+		config: diffConf,
+	}
+	dAdminClient, err := env.NewAdminClient()
+	if err != nil {
+		t.Errorf("NewAdminClient: %v", err)
+	}
+	defer dAdminClient.Close()
+
+	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, backupName); err != nil {
+		t.Fatalf("RestoreTableFrom: %v", err)
+	}
+	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
+	if err != nil {
+		t.Fatalf("Restored to different sourceInstance failed, TableInfo: %v", err)
+	}
+	families := tblInfo.Families
+	sort.Strings(tblInfo.Families)
+	wantFams := []string{"fam1", "fam2"}
+	if !testutil.Equal(families, wantFams) {
+		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
+	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
+	if err = adminClient.DeleteBackup(ctx, sourceCluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
-	backups, err = list(cluster)
+	backups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("List after Delete: %v", err)
 	}
-	if got, want := len(backups), 0; got != want {
-		t.Fatalf("List after delete len: %d, want: %d", got, want)
+
+	// Verify the backup was deleted.
+	for _, backup := range backups {
+		if backup.Name == backupName {
+			t.Errorf("Backup '%v' was not deleted", backup.Name)
+			break
+		}
 	}
+}
+
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().AttemptDirectPath {
+		t.Skip()
+	}
+
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	dpEnabled := examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeDirectPath(testEnv, t)
+	dpDisabled := examineTraffic(ctx, testEnv, table, true)
+	if !dpDisabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	allowDirectPath(testEnv, t)
+	dpEnabled = examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+// examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
+func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
+	numCount := 0
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+
+	start := time.Now()
+	for time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = table.ReadRow(ctx, "j§adams")
+			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != blackholeDP {
+				numCount++
+				if numCount >= minCompleteRPC {
+					return true
+				}
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+	return false
+}
+
+// Retries a function if it has an unavailable code for up to 30s using a backoff
+func retryOnUnavailable(ctx context.Context, inner func() error) error {
+	err := internal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
+		err = inner()
+		if err == nil {
+			return true, nil
+		}
+		s, ok := status.FromError(err)
+		if !ok {
+			return false, err
+		}
+		// Retry on Unavailable
+		return s.Code() != codes.Unavailable, err
+	})
+	return err
 }
 
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
@@ -2226,11 +2760,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	client, err := testEnv.NewClient()
 	if err != nil {
+		t.Logf("Error creating client: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
+		t.Logf("Error creating admin client: %v", err)
+
 		return nil, nil, nil, nil, "", nil, err
 	}
 
@@ -2244,10 +2781,16 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
+		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
+
+	err = retryOnUnavailable(ctx, func() error {
+		return adminClient.CreateColumnFamily(ctx, tableName, "follows")
+	})
+	if err != nil {
 		cancel()
+		t.Logf("Error creating column family: %v", err)
 		return nil, nil, nil, nil, "", nil, err
 	}
 
@@ -2293,9 +2836,9 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)
 		if err != nil {
-			return true, err
+			return false, err
 		}
-		return false, nil
+		return true, nil
 	})
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
@@ -2324,4 +2867,28 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	}
 	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
 	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+func blackholeDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
+}
+
+func allowDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newBudgetClientHook clientHook
@@ -46,13 +46,13 @@ type BudgetCallOptions struct {
 	DeleteBudget []gax.CallOption
 }
 
-func defaultBudgetClientOptions() []option.ClientOption {
+func defaultBudgetGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("billingbudgets.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("billingbudgets.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://billingbudgets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -112,33 +112,121 @@ func defaultBudgetCallOptions() *BudgetCallOptions {
 	}
 }
 
+// internalBudgetClient is an interface that defines the methods availaible from Cloud Billing Budget API.
+type internalBudgetClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateBudget(context.Context, *budgetspb.CreateBudgetRequest, ...gax.CallOption) (*budgetspb.Budget, error)
+	UpdateBudget(context.Context, *budgetspb.UpdateBudgetRequest, ...gax.CallOption) (*budgetspb.Budget, error)
+	GetBudget(context.Context, *budgetspb.GetBudgetRequest, ...gax.CallOption) (*budgetspb.Budget, error)
+	ListBudgets(context.Context, *budgetspb.ListBudgetsRequest, ...gax.CallOption) *BudgetIterator
+	DeleteBudget(context.Context, *budgetspb.DeleteBudgetRequest, ...gax.CallOption) error
+}
+
 // BudgetClient is a client for interacting with Cloud Billing Budget API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// BudgetService stores Cloud Billing budgets, which define a
+// budget plan and rules to execute as we track spend against that plan.
+type BudgetClient struct {
+	// The internal transport-dependent client.
+	internalClient internalBudgetClient
+
+	// The call options for this service.
+	CallOptions *BudgetCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *BudgetClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *BudgetClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *BudgetClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateBudget creates a new budget. See
+// Quotas and limits (at https://cloud.google.com/billing/quotas)
+// for more information on the limits of the number of budgets you can create.
+func (c *BudgetClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	return c.internalClient.CreateBudget(ctx, req, opts...)
+}
+
+// UpdateBudget updates a budget and returns the updated budget.
+//
+// WARNING: There are some fields exposed on the Google Cloud Console that
+// aren’t available on this API. Budget fields that are not exposed in
+// this API will not be changed by this method.
+func (c *BudgetClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	return c.internalClient.UpdateBudget(ctx, req, opts...)
+}
+
+// GetBudget returns a budget.
+//
+// WARNING: There are some fields exposed on the Google Cloud Console that
+// aren’t available on this API. When reading from the API, you will not
+// see these fields in the return value, though they may have been set
+// in the Cloud Console.
+func (c *BudgetClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	return c.internalClient.GetBudget(ctx, req, opts...)
+}
+
+// ListBudgets returns a list of budgets for a billing account.
+//
+// WARNING: There are some fields exposed on the Google Cloud Console that
+// aren’t available on this API. When reading from the API, you will not
+// see these fields in the return value, though they may have been set
+// in the Cloud Console.
+func (c *BudgetClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudgetsRequest, opts ...gax.CallOption) *BudgetIterator {
+	return c.internalClient.ListBudgets(ctx, req, opts...)
+}
+
+// DeleteBudget deletes a budget. Returns successfully if already deleted.
+func (c *BudgetClient) DeleteBudget(ctx context.Context, req *budgetspb.DeleteBudgetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBudget(ctx, req, opts...)
+}
+
+// budgetGRPCClient is a client for interacting with Cloud Billing Budget API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type BudgetClient struct {
+type budgetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing BudgetClient
+	CallOptions **BudgetCallOptions
+
 	// The gRPC API client.
 	budgetClient budgetspb.BudgetServiceClient
-
-	// The call options for this service.
-	CallOptions *BudgetCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewBudgetClient creates a new budget service client.
+// NewBudgetClient creates a new budget service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // BudgetService stores Cloud Billing budgets, which define a
 // budget plan and rules to execute as we track spend against that plan.
 func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetClient, error) {
-	clientOpts := defaultBudgetClientOptions()
-
+	clientOpts := defaultBudgetGRPCClientOptions()
 	if newBudgetClientHook != nil {
 		hookOpts, err := newBudgetClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -156,52 +244,53 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 	if err != nil {
 		return nil, err
 	}
-	c := &BudgetClient{
+	client := BudgetClient{CallOptions: defaultBudgetCallOptions()}
+
+	c := &budgetGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultBudgetCallOptions(),
-
-		budgetClient: budgetspb.NewBudgetServiceClient(connPool),
+		budgetClient:     budgetspb.NewBudgetServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *BudgetClient) Connection() *grpc.ClientConn {
+func (c *budgetGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *BudgetClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *BudgetClient) setGoogleClientInfo(keyval ...string) {
+func (c *budgetGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateBudget creates a new budget. See
-// Quotas and limits (at https://cloud.google.com/billing/quotas)
-// for more information on the limits of the number of budgets you can create.
-func (c *BudgetClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *budgetGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *budgetGRPCClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateBudget[0:len(c.CallOptions.CreateBudget):len(c.CallOptions.CreateBudget)], opts...)
+	opts = append((*c.CallOptions).CreateBudget[0:len((*c.CallOptions).CreateBudget):len((*c.CallOptions).CreateBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -214,20 +303,16 @@ func (c *BudgetClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBu
 	return resp, nil
 }
 
-// UpdateBudget updates a budget and returns the updated budget.
-//
-// WARNING: There are some fields exposed on the Google Cloud Console that
-// aren’t available on this API. Budget fields that are not exposed in
-// this API will not be changed by this method.
-func (c *BudgetClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+func (c *budgetGRPCClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "budget.name", url.QueryEscape(req.GetBudget().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateBudget[0:len(c.CallOptions.UpdateBudget):len(c.CallOptions.UpdateBudget)], opts...)
+	opts = append((*c.CallOptions).UpdateBudget[0:len((*c.CallOptions).UpdateBudget):len((*c.CallOptions).UpdateBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,21 +325,16 @@ func (c *BudgetClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBu
 	return resp, nil
 }
 
-// GetBudget returns a budget.
-//
-// WARNING: There are some fields exposed on the Google Cloud Console that
-// aren’t available on this API. When reading from the API, you will not
-// see these fields in the return value, though they may have been set
-// in the Cloud Console.
-func (c *BudgetClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+func (c *budgetGRPCClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetBudget[0:len(c.CallOptions.GetBudget):len(c.CallOptions.GetBudget)], opts...)
+	opts = append((*c.CallOptions).GetBudget[0:len((*c.CallOptions).GetBudget):len((*c.CallOptions).GetBudget)], opts...)
 	var resp *budgetspb.Budget
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -267,24 +347,21 @@ func (c *BudgetClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRe
 	return resp, nil
 }
 
-// ListBudgets returns a list of budgets for a billing account.
-//
-// WARNING: There are some fields exposed on the Google Cloud Console that
-// aren’t available on this API. When reading from the API, you will not
-// see these fields in the return value, though they may have been set
-// in the Cloud Console.
-func (c *BudgetClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudgetsRequest, opts ...gax.CallOption) *BudgetIterator {
+func (c *budgetGRPCClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudgetsRequest, opts ...gax.CallOption) *BudgetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListBudgets[0:len(c.CallOptions.ListBudgets):len(c.CallOptions.ListBudgets)], opts...)
+	opts = append((*c.CallOptions).ListBudgets[0:len((*c.CallOptions).ListBudgets):len((*c.CallOptions).ListBudgets)], opts...)
 	it := &BudgetIterator{}
 	req = proto.Clone(req).(*budgetspb.ListBudgetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*budgetspb.Budget, string, error) {
-		var resp *budgetspb.ListBudgetsResponse
-		req.PageToken = pageToken
+		resp := &budgetspb.ListBudgetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -307,22 +384,24 @@ func (c *BudgetClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudge
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteBudget deletes a budget. Returns successfully if already deleted.
-func (c *BudgetClient) DeleteBudget(ctx context.Context, req *budgetspb.DeleteBudgetRequest, opts ...gax.CallOption) error {
+func (c *budgetGRPCClient) DeleteBudget(ctx context.Context, req *budgetspb.DeleteBudgetRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteBudget[0:len(c.CallOptions.DeleteBudget):len(c.CallOptions.DeleteBudget)], opts...)
+	opts = append((*c.CallOptions).DeleteBudget[0:len((*c.CallOptions).DeleteBudget):len((*c.CallOptions).DeleteBudget)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.budgetClient.DeleteBudget(ctx, req, settings.GRPC...)

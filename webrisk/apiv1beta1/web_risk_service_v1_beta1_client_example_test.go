@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewWebRiskServiceV1Beta1Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#ComputeThreatListDiffRequest.
 	}
 	resp, err := c.ComputeThreatListDiff(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 }
 
 func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchUrisRequest.
 	}
 	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 }
 
 func ExampleWebRiskServiceV1Beta1Client_SearchHashes() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1#SearchHashesRequest.
 	}
 	resp, err := c.SearchHashes(ctx, req)
 	if err != nil {

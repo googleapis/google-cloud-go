@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/btree"
+	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -446,8 +447,11 @@ func (s *watchStream) stop() {
 		return
 	}
 	if err != nil {
+		// if an error occurs while closing the stream
 		s.err = err
+		return
 	}
+	// if we close successfully,
 	s.err = io.EOF // normal shutdown
 }
 
@@ -489,9 +493,12 @@ func (s *watchStream) recv() (*pb.ListenResponse, error) {
 	}
 }
 
-func (s *watchStream) open() (pb.Firestore_ListenClient, error) {
+func (s *watchStream) open() (lc pb.Firestore_ListenClient, err error) {
+	s.ctx = trace.StartSpan(s.ctx, "cloud.google.com/go/firestore.watchStream.Listen")
+	defer func() { trace.EndSpan(s.ctx, err) }()
+
 	dbPath := s.c.path()
-	lc, err := s.c.c.Listen(withResourceHeader(s.ctx, dbPath))
+	lc, err = s.c.c.Listen(withResourceHeader(s.ctx, dbPath))
 	if err == nil {
 		err = lc.Send(&pb.ListenRequest{
 			Database:     dbPath,

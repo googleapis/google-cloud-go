@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import (
 	"math"
 	"net/url"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -31,6 +30,7 @@ import (
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCloudCatalogClientHook clientHook
@@ -41,13 +41,13 @@ type CloudCatalogCallOptions struct {
 	ListSkus     []gax.CallOption
 }
 
-func defaultCloudCatalogClientOptions() []option.ClientOption {
+func defaultCloudCatalogGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudbilling.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -60,34 +60,89 @@ func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 	}
 }
 
+// internalCloudCatalogClient is an interface that defines the methods availaible from Cloud Billing API.
+type internalCloudCatalogClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListServices(context.Context, *billingpb.ListServicesRequest, ...gax.CallOption) *ServiceIterator
+	ListSkus(context.Context, *billingpb.ListSkusRequest, ...gax.CallOption) *SkuIterator
+}
+
 // CloudCatalogClient is a client for interacting with Cloud Billing API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A catalog of Google Cloud Platform services and SKUs.
+// Provides pricing information and metadata on Google Cloud Platform services
+// and SKUs.
+type CloudCatalogClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCloudCatalogClient
+
+	// The call options for this service.
+	CallOptions *CloudCatalogCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CloudCatalogClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CloudCatalogClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CloudCatalogClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListServices lists all public cloud services.
+func (c *CloudCatalogClient) ListServices(ctx context.Context, req *billingpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+	return c.internalClient.ListServices(ctx, req, opts...)
+}
+
+// ListSkus lists all publicly available SKUs for a given cloud service.
+func (c *CloudCatalogClient) ListSkus(ctx context.Context, req *billingpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
+	return c.internalClient.ListSkus(ctx, req, opts...)
+}
+
+// cloudCatalogGRPCClient is a client for interacting with Cloud Billing API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CloudCatalogClient struct {
+type cloudCatalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CloudCatalogClient
+	CallOptions **CloudCatalogCallOptions
+
 	// The gRPC API client.
 	cloudCatalogClient billingpb.CloudCatalogClient
-
-	// The call options for this service.
-	CallOptions *CloudCatalogCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCloudCatalogClient creates a new cloud catalog client.
+// NewCloudCatalogClient creates a new cloud catalog client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A catalog of Google Cloud Platform services and SKUs.
 // Provides pricing information and metadata on Google Cloud Platform services
 // and SKUs.
 func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CloudCatalogClient, error) {
-	clientOpts := defaultCloudCatalogClientOptions()
-
+	clientOpts := defaultCloudCatalogGRPCClientOptions()
 	if newCloudCatalogClientHook != nil {
 		hookOpts, err := newCloudCatalogClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -105,52 +160,56 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 	if err != nil {
 		return nil, err
 	}
-	c := &CloudCatalogClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCloudCatalogCallOptions(),
+	client := CloudCatalogClient{CallOptions: defaultCloudCatalogCallOptions()}
 
+	c := &cloudCatalogGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		cloudCatalogClient: billingpb.NewCloudCatalogClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CloudCatalogClient) Connection() *grpc.ClientConn {
+func (c *cloudCatalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CloudCatalogClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CloudCatalogClient) setGoogleClientInfo(keyval ...string) {
+func (c *cloudCatalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListServices lists all public cloud services.
-func (c *CloudCatalogClient) ListServices(ctx context.Context, req *billingpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *cloudCatalogGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *cloudCatalogGRPCClient) ListServices(ctx context.Context, req *billingpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListServices[0:len(c.CallOptions.ListServices):len(c.CallOptions.ListServices)], opts...)
+	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*billingpb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Service, string, error) {
-		var resp *billingpb.ListServicesResponse
-		req.PageToken = pageToken
+		resp := &billingpb.ListServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -173,25 +232,29 @@ func (c *CloudCatalogClient) ListServices(ctx context.Context, req *billingpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// ListSkus lists all publicly available SKUs for a given cloud service.
-func (c *CloudCatalogClient) ListSkus(ctx context.Context, req *billingpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
+func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSkus[0:len(c.CallOptions.ListSkus):len(c.CallOptions.ListSkus)], opts...)
+	opts = append((*c.CallOptions).ListSkus[0:len((*c.CallOptions).ListSkus):len((*c.CallOptions).ListSkus)], opts...)
 	it := &SkuIterator{}
 	req = proto.Clone(req).(*billingpb.ListSkusRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*billingpb.Sku, string, error) {
-		var resp *billingpb.ListSkusResponse
-		req.PageToken = pageToken
+		resp := &billingpb.ListSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -214,9 +277,11 @@ func (c *CloudCatalogClient) ListSkus(ctx context.Context, req *billingpb.ListSk
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newGroupClientHook clientHook
@@ -48,13 +48,13 @@ type GroupCallOptions struct {
 	ListGroupMembers []gax.CallOption
 }
 
-func defaultGroupClientOptions() []option.ClientOption {
+func defaultGroupGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -65,7 +65,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 		ListGroups: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -77,7 +76,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 		GetGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -90,7 +88,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 		UpdateGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -102,7 +99,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 		DeleteGroup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -114,7 +110,6 @@ func defaultGroupCallOptions() *GroupCallOptions {
 		ListGroupMembers: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -126,27 +121,117 @@ func defaultGroupCallOptions() *GroupCallOptions {
 	}
 }
 
+// internalGroupClient is an interface that defines the methods availaible from Cloud Monitoring API.
+type internalGroupClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListGroups(context.Context, *monitoringpb.ListGroupsRequest, ...gax.CallOption) *GroupIterator
+	GetGroup(context.Context, *monitoringpb.GetGroupRequest, ...gax.CallOption) (*monitoringpb.Group, error)
+	CreateGroup(context.Context, *monitoringpb.CreateGroupRequest, ...gax.CallOption) (*monitoringpb.Group, error)
+	UpdateGroup(context.Context, *monitoringpb.UpdateGroupRequest, ...gax.CallOption) (*monitoringpb.Group, error)
+	DeleteGroup(context.Context, *monitoringpb.DeleteGroupRequest, ...gax.CallOption) error
+	ListGroupMembers(context.Context, *monitoringpb.ListGroupMembersRequest, ...gax.CallOption) *MonitoredResourceIterator
+}
+
 // GroupClient is a client for interacting with Cloud Monitoring API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Group API lets you inspect and manage your
+// groups (at #google.monitoring.v3.Group).
+//
+// A group is a named filter that is used to identify
+// a collection of monitored resources. Groups are typically used to
+// mirror the physical and/or logical topology of the environment.
+// Because group membership is computed dynamically, monitored
+// resources that are started in the future are automatically placed
+// in matching groups. By using a group to name monitored resources in,
+// for example, an alert policy, the target of that alert policy is
+// updated automatically as monitored resources are added and removed
+// from the infrastructure.
+type GroupClient struct {
+	// The internal transport-dependent client.
+	internalClient internalGroupClient
+
+	// The call options for this service.
+	CallOptions *GroupCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *GroupClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *GroupClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *GroupClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListGroups lists the existing groups.
+func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
+	return c.internalClient.ListGroups(ctx, req, opts...)
+}
+
+// GetGroup gets a single group.
+func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+	return c.internalClient.GetGroup(ctx, req, opts...)
+}
+
+// CreateGroup creates a new group.
+func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+	return c.internalClient.CreateGroup(ctx, req, opts...)
+}
+
+// UpdateGroup updates an existing group.
+// You can change any group attributes except name.
+func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+	return c.internalClient.UpdateGroup(ctx, req, opts...)
+}
+
+// DeleteGroup deletes an existing group.
+func (c *GroupClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteGroupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteGroup(ctx, req, opts...)
+}
+
+// ListGroupMembers lists the monitored resources that are members of a group.
+func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.ListGroupMembersRequest, opts ...gax.CallOption) *MonitoredResourceIterator {
+	return c.internalClient.ListGroupMembers(ctx, req, opts...)
+}
+
+// groupGRPCClient is a client for interacting with Cloud Monitoring API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GroupClient struct {
+type groupGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing GroupClient
+	CallOptions **GroupCallOptions
+
 	// The gRPC API client.
 	groupClient monitoringpb.GroupServiceClient
-
-	// The call options for this service.
-	CallOptions *GroupCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewGroupClient creates a new group service client.
+// NewGroupClient creates a new group service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Group API lets you inspect and manage your
 // groups (at #google.monitoring.v3.Group).
@@ -161,8 +246,7 @@ type GroupClient struct {
 // updated automatically as monitored resources are added and removed
 // from the infrastructure.
 func NewGroupClient(ctx context.Context, opts ...option.ClientOption) (*GroupClient, error) {
-	clientOpts := defaultGroupClientOptions()
-
+	clientOpts := defaultGroupGRPCClientOptions()
 	if newGroupClientHook != nil {
 		hookOpts, err := newGroupClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -180,53 +264,58 @@ func NewGroupClient(ctx context.Context, opts ...option.ClientOption) (*GroupCli
 	if err != nil {
 		return nil, err
 	}
-	c := &GroupClient{
+	client := GroupClient{CallOptions: defaultGroupCallOptions()}
+
+	c := &groupGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultGroupCallOptions(),
-
-		groupClient: monitoringpb.NewGroupServiceClient(connPool),
+		groupClient:      monitoringpb.NewGroupServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *GroupClient) Connection() *grpc.ClientConn {
+func (c *groupGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GroupClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GroupClient) setGoogleClientInfo(keyval ...string) {
+func (c *groupGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListGroups lists the existing groups.
-func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *groupGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *groupGRPCClient) ListGroups(ctx context.Context, req *monitoringpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGroups[0:len(c.CallOptions.ListGroups):len(c.CallOptions.ListGroups)], opts...)
+	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
 	it := &GroupIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListGroupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.Group, string, error) {
-		var resp *monitoringpb.ListGroupsResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -249,22 +338,24 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetGroup gets a single group.
-func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+func (c *groupGRPCClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGroup[0:len(c.CallOptions.GetGroup):len(c.CallOptions.GetGroup)], opts...)
+	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -277,16 +368,16 @@ func (c *GroupClient) GetGroup(ctx context.Context, req *monitoringpb.GetGroupRe
 	return resp, nil
 }
 
-// CreateGroup creates a new group.
-func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+func (c *groupGRPCClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGroup[0:len(c.CallOptions.CreateGroup):len(c.CallOptions.CreateGroup)], opts...)
+	opts = append((*c.CallOptions).CreateGroup[0:len((*c.CallOptions).CreateGroup):len((*c.CallOptions).CreateGroup)], opts...)
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -299,17 +390,16 @@ func (c *GroupClient) CreateGroup(ctx context.Context, req *monitoringpb.CreateG
 	return resp, nil
 }
 
-// UpdateGroup updates an existing group.
-// You can change any group attributes except name.
-func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
+func (c *groupGRPCClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateGroupRequest, opts ...gax.CallOption) (*monitoringpb.Group, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 180000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGroup[0:len(c.CallOptions.UpdateGroup):len(c.CallOptions.UpdateGroup)], opts...)
+	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
 	var resp *monitoringpb.Group
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -322,16 +412,16 @@ func (c *GroupClient) UpdateGroup(ctx context.Context, req *monitoringpb.UpdateG
 	return resp, nil
 }
 
-// DeleteGroup deletes an existing group.
-func (c *GroupClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteGroupRequest, opts ...gax.CallOption) error {
+func (c *groupGRPCClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteGroupRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGroup[0:len(c.CallOptions.DeleteGroup):len(c.CallOptions.DeleteGroup)], opts...)
+	opts = append((*c.CallOptions).DeleteGroup[0:len((*c.CallOptions).DeleteGroup):len((*c.CallOptions).DeleteGroup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.groupClient.DeleteGroup(ctx, req, settings.GRPC...)
@@ -340,19 +430,21 @@ func (c *GroupClient) DeleteGroup(ctx context.Context, req *monitoringpb.DeleteG
 	return err
 }
 
-// ListGroupMembers lists the monitored resources that are members of a group.
-func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.ListGroupMembersRequest, opts ...gax.CallOption) *MonitoredResourceIterator {
+func (c *groupGRPCClient) ListGroupMembers(ctx context.Context, req *monitoringpb.ListGroupMembersRequest, opts ...gax.CallOption) *MonitoredResourceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGroupMembers[0:len(c.CallOptions.ListGroupMembers):len(c.CallOptions.ListGroupMembers)], opts...)
+	opts = append((*c.CallOptions).ListGroupMembers[0:len((*c.CallOptions).ListGroupMembers):len((*c.CallOptions).ListGroupMembers)], opts...)
 	it := &MonitoredResourceIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListGroupMembersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoredrespb.MonitoredResource, string, error) {
-		var resp *monitoringpb.ListGroupMembersResponse
-		req.PageToken = pageToken
+		resp := &monitoringpb.ListGroupMembersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -375,9 +467,11 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

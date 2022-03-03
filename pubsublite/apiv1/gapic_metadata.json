@@ -1,0 +1,203 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.pubsublite.v1",
+  "libraryPackage": "cloud.google.com/go/pubsublite/apiv1",
+  "services": {
+    "AdminService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AdminClient",
+          "rpcs": {
+            "CreateReservation": {
+              "methods": [
+                "CreateReservation"
+              ]
+            },
+            "CreateSubscription": {
+              "methods": [
+                "CreateSubscription"
+              ]
+            },
+            "CreateTopic": {
+              "methods": [
+                "CreateTopic"
+              ]
+            },
+            "DeleteReservation": {
+              "methods": [
+                "DeleteReservation"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "DeleteTopic": {
+              "methods": [
+                "DeleteTopic"
+              ]
+            },
+            "GetReservation": {
+              "methods": [
+                "GetReservation"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "GetTopic": {
+              "methods": [
+                "GetTopic"
+              ]
+            },
+            "GetTopicPartitions": {
+              "methods": [
+                "GetTopicPartitions"
+              ]
+            },
+            "ListReservationTopics": {
+              "methods": [
+                "ListReservationTopics"
+              ]
+            },
+            "ListReservations": {
+              "methods": [
+                "ListReservations"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "ListTopicSubscriptions": {
+              "methods": [
+                "ListTopicSubscriptions"
+              ]
+            },
+            "ListTopics": {
+              "methods": [
+                "ListTopics"
+              ]
+            },
+            "SeekSubscription": {
+              "methods": [
+                "SeekSubscription"
+              ]
+            },
+            "UpdateReservation": {
+              "methods": [
+                "UpdateReservation"
+              ]
+            },
+            "UpdateSubscription": {
+              "methods": [
+                "UpdateSubscription"
+              ]
+            },
+            "UpdateTopic": {
+              "methods": [
+                "UpdateTopic"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CursorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CursorClient",
+          "rpcs": {
+            "CommitCursor": {
+              "methods": [
+                "CommitCursor"
+              ]
+            },
+            "ListPartitionCursors": {
+              "methods": [
+                "ListPartitionCursors"
+              ]
+            },
+            "StreamingCommitCursor": {
+              "methods": [
+                "StreamingCommitCursor"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PartitionAssignmentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PartitionAssignmentClient",
+          "rpcs": {
+            "AssignPartitions": {
+              "methods": [
+                "AssignPartitions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PublisherService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PublisherClient",
+          "rpcs": {
+            "Publish": {
+              "methods": [
+                "Publish"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SubscriberService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SubscriberClient",
+          "rpcs": {
+            "Subscribe": {
+              "methods": [
+                "Subscribe"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TopicStatsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TopicStatsClient",
+          "rpcs": {
+            "ComputeHeadCursor": {
+              "methods": [
+                "ComputeHeadCursor"
+              ]
+            },
+            "ComputeMessageStats": {
+              "methods": [
+                "ComputeMessageStats"
+              ]
+            },
+            "ComputeTimeCursor": {
+              "methods": [
+                "ComputeTimeCursor"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

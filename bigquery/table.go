@@ -120,6 +120,10 @@ type TableMetadata struct {
 	// This does not include data that is being buffered during a streaming insert.
 	NumRows uint64
 
+	// SnapshotDefinition contains additional information about the provenance of a
+	// given snapshot table.
+	SnapshotDefinition *SnapshotDefinition
+
 	// Contains information regarding this table's streaming buffer, if one is
 	// present. This field will be nil if the table is not being streamed to or if
 	// there is no data in the streaming buffer.
@@ -177,6 +181,9 @@ const (
 	// MaterializedView represents a managed storage table that's derived from
 	// a base table.
 	MaterializedView TableType = "MATERIALIZED_VIEW"
+	// Snapshot represents an immutable point in time snapshot of some other
+	// table.
+	Snapshot TableType = "SNAPSHOT"
 )
 
 // MaterializedViewDefinition contains information for materialized views.
@@ -221,6 +228,42 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
 		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
 	}
+}
+
+// SnapshotDefinition provides metadata related to the origin of a snapshot.
+type SnapshotDefinition struct {
+
+	// BaseTableReference describes the ID of the table that this snapshot
+	// came from.
+	BaseTableReference *Table
+
+	// SnapshotTime indicates when the base table was snapshot.
+	SnapshotTime time.Time
+}
+
+func (sd *SnapshotDefinition) toBQ() *bq.SnapshotDefinition {
+	if sd == nil {
+		return nil
+	}
+	return &bq.SnapshotDefinition{
+		BaseTableReference: sd.BaseTableReference.toBQ(),
+		SnapshotTime:       sd.SnapshotTime.Format(time.RFC3339),
+	}
+}
+
+func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefinition {
+	if q == nil {
+		return nil
+	}
+	sd := &SnapshotDefinition{
+		BaseTableReference: bqToTable(q.BaseTableReference, c),
+	}
+	// It's possible we could fail to populate SnapshotTime if we fail to parse
+	// the backend representation.
+	if t, err := time.Parse(time.RFC3339, q.SnapshotTime); err == nil {
+		sd.SnapshotTime = t
+	}
+	return sd
 }
 
 // TimePartitioningType defines the interval used to partition managed data.
@@ -356,7 +399,7 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 	}
 }
 
-// Clustering governs the organization of data within a partitioned table.
+// Clustering governs the organization of data within a managed table.
 // For more information, see https://cloud.google.com/bigquery/docs/clustered-tables
 type Clustering struct {
 	Fields []string
@@ -428,9 +471,46 @@ func (t *Table) toBQ() *bq.TableReference {
 	}
 }
 
+// IdentifierFormat represents a how certain resource identifiers such as table references
+// are formatted.
+type IdentifierFormat string
+
+var (
+	// StandardSQLID returns an identifier suitable for use with Standard SQL.
+	StandardSQLID IdentifierFormat = "SQL"
+
+	// LegacySQLID returns an identifier suitable for use with Legacy SQL.
+	LegacySQLID IdentifierFormat = "LEGACY_SQL"
+
+	// StorageAPIResourceID returns an identifier suitable for use with the Storage API.  Namely, it's for formatting
+	// a table resource for invoking read and write functionality.
+	StorageAPIResourceID IdentifierFormat = "STORAGE_API_RESOURCE"
+
+	// ErrUnknownIdentifierFormat is indicative of requesting an identifier in a format that is
+	// not supported.
+	ErrUnknownIdentifierFormat = errors.New("unknown identifier format")
+)
+
+// Identifier returns the ID of the table in the requested format.
+func (t *Table) Identifier(f IdentifierFormat) (string, error) {
+	switch f {
+	case LegacySQLID:
+		return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StorageAPIResourceID:
+		return fmt.Sprintf("projects/%s/datasets/%s/tables/%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	case StandardSQLID:
+		// Note we don't need to quote the project ID here, as StandardSQL has special rules to allow
+		// dash identifiers for projects without issue in table identifiers.
+		return fmt.Sprintf("%s.%s.%s", t.ProjectID, t.DatasetID, t.TableID), nil
+	default:
+		return "", ErrUnknownIdentifierFormat
+	}
+}
+
 // FullyQualifiedName returns the ID of the table in projectID:datasetID.tableID format.
 func (t *Table) FullyQualifiedName() string {
-	return fmt.Sprintf("%s:%s.%s", t.ProjectID, t.DatasetID, t.TableID)
+	s, _ := t.Identifier(LegacySQLID)
+	return s
 }
 
 // implicitTable reports whether Table is an empty placeholder, which signifies that a new table should be created with an auto-generated Table ID.
@@ -496,6 +576,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.RangePartitioning = tm.RangePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
+	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -554,10 +635,10 @@ func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
 	if err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(table)
+	return bqToTableMetadata(table, t.c)
 }
 
-func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
+func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 	md := &TableMetadata{
 		Description:            t.Description,
 		Name:                   t.FriendlyName,
@@ -574,6 +655,7 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		ETag:                   t.Etag,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
+		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
@@ -652,7 +734,7 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(res)
+	return bqToTableMetadata(res, t.c)
 }
 
 func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
@@ -679,6 +761,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
+	}
+
+	if tm.Clustering != nil {
+		t.Clustering = tm.Clustering.toBQ()
 	}
 
 	if !validExpiration(tm.ExpirationTime) {
@@ -749,6 +835,11 @@ type TableMetadataToUpdate struct {
 	// The table's schema.
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
+
+	// The table's clustering configuration.
+	// For more information on how modifying clustering affects the table, see:
+	// https://cloud.google.com/bigquery/docs/creating-clustered-tables#modifying-cluster-spec
+	Clustering *Clustering
 
 	// The table's encryption configuration.
 	EncryptionConfig *EncryptionConfig

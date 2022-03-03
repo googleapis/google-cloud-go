@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -35,6 +34,7 @@ import (
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newCloudRedisClientHook clientHook
@@ -52,13 +52,13 @@ type CloudRedisCallOptions struct {
 	DeleteInstance   []gax.CallOption
 }
 
-func defaultCloudRedisClientOptions() []option.ClientOption {
+func defaultCloudRedisGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("redis.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("redis.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -78,32 +78,239 @@ func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 	}
 }
 
+// internalCloudRedisClient is an interface that defines the methods availaible from Google Cloud Memorystore for Redis API.
+type internalCloudRedisClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListInstances(context.Context, *redispb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
+	GetInstance(context.Context, *redispb.GetInstanceRequest, ...gax.CallOption) (*redispb.Instance, error)
+	CreateInstance(context.Context, *redispb.CreateInstanceRequest, ...gax.CallOption) (*CreateInstanceOperation, error)
+	CreateInstanceOperation(name string) *CreateInstanceOperation
+	UpdateInstance(context.Context, *redispb.UpdateInstanceRequest, ...gax.CallOption) (*UpdateInstanceOperation, error)
+	UpdateInstanceOperation(name string) *UpdateInstanceOperation
+	UpgradeInstance(context.Context, *redispb.UpgradeInstanceRequest, ...gax.CallOption) (*UpgradeInstanceOperation, error)
+	UpgradeInstanceOperation(name string) *UpgradeInstanceOperation
+	ImportInstance(context.Context, *redispb.ImportInstanceRequest, ...gax.CallOption) (*ImportInstanceOperation, error)
+	ImportInstanceOperation(name string) *ImportInstanceOperation
+	ExportInstance(context.Context, *redispb.ExportInstanceRequest, ...gax.CallOption) (*ExportInstanceOperation, error)
+	ExportInstanceOperation(name string) *ExportInstanceOperation
+	FailoverInstance(context.Context, *redispb.FailoverInstanceRequest, ...gax.CallOption) (*FailoverInstanceOperation, error)
+	FailoverInstanceOperation(name string) *FailoverInstanceOperation
+	DeleteInstance(context.Context, *redispb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
+	DeleteInstanceOperation(name string) *DeleteInstanceOperation
+}
+
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Configures and manages Cloud Memorystore for Redis instances
+//
+// Google Cloud Memorystore for Redis v1
+//
+// The redis.googleapis.com service implements the Google Cloud Memorystore
+// for Redis API and defines the following resource model for managing Redis
+// instances:
+//
+//   The service works with a collection of cloud projects, named: /projects/*
+//
+//   Each project has a collection of available locations, named: /locations/*
+//
+//   Each location has a collection of Redis instances, named: /instances/*
+//
+//   As such, Redis instances are resources of the form:
+//   /projects/{project_id}/locations/{location_id}/instances/{instance_id}
+//
+// Note that location_id must be referring to a GCP region; for example:
+//
+//   projects/redpepper-1290/locations/us-central1/instances/my-redis
+type CloudRedisClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCloudRedisClient
+
+	// The call options for this service.
+	CallOptions *CloudRedisCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CloudRedisClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CloudRedisClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListInstances lists all Redis instances owned by a project in either the specified
+// location (region) or all locations.
+//
+// The location should have the following format:
+//
+//   projects/{project_id}/locations/{location_id}
+//
+// If location_id is specified as - (wildcard), then all regions
+// available to the project are queried, and the results are aggregated.
+func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+	return c.internalClient.ListInstances(ctx, req, opts...)
+}
+
+// GetInstance gets the details of a specific Redis instance.
+func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
+	return c.internalClient.GetInstance(ctx, req, opts...)
+}
+
+// CreateInstance creates a Redis instance based on the specified tier and memory size.
+//
+// By default, the instance is accessible from the project’s
+// default network (at https://cloud.google.com/vpc/docs/vpc).
+//
+// The creation is executed asynchronously and callers may check the returned
+// operation to track its progress. Once the operation is completed the Redis
+// instance will be fully functional. Completed longrunning.Operation will
+// contain the new instance object in the response field.
+//
+// The returned operation is automatically deleted after a few hours, so there
+// is no need to call DeleteOperation.
+func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	return c.internalClient.CreateInstance(ctx, req, opts...)
+}
+
+// CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
+// The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
+	return c.internalClient.CreateInstanceOperation(name)
+}
+
+// UpdateInstance updates the metadata and configuration of a specific Redis instance.
+//
+// Completed longrunning.Operation will contain the new instance object
+// in the response field. The returned operation is automatically deleted
+// after a few hours, so there is no need to call DeleteOperation.
+func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	return c.internalClient.UpdateInstance(ctx, req, opts...)
+}
+
+// UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
+// The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
+	return c.internalClient.UpdateInstanceOperation(name)
+}
+
+// UpgradeInstance upgrades Redis instance to the newer Redis version specified in the
+// request.
+func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+	return c.internalClient.UpgradeInstance(ctx, req, opts...)
+}
+
+// UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
+// The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+	return c.internalClient.UpgradeInstanceOperation(name)
+}
+
+// ImportInstance import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
+//
+// Redis may stop serving during this operation. Instance state will be
+// IMPORTING for entire operation. When complete, the instance will contain
+// only data from the imported file.
+//
+// The returned operation is automatically deleted after a few hours, so
+// there is no need to call DeleteOperation.
+func (c *CloudRedisClient) ImportInstance(ctx context.Context, req *redispb.ImportInstanceRequest, opts ...gax.CallOption) (*ImportInstanceOperation, error) {
+	return c.internalClient.ImportInstance(ctx, req, opts...)
+}
+
+// ImportInstanceOperation returns a new ImportInstanceOperation from a given name.
+// The name must be that of a previously created ImportInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) ImportInstanceOperation(name string) *ImportInstanceOperation {
+	return c.internalClient.ImportInstanceOperation(name)
+}
+
+// ExportInstance export Redis instance data into a Redis RDB format file in Cloud Storage.
+//
+// Redis will continue serving during this operation.
+//
+// The returned operation is automatically deleted after a few hours, so
+// there is no need to call DeleteOperation.
+func (c *CloudRedisClient) ExportInstance(ctx context.Context, req *redispb.ExportInstanceRequest, opts ...gax.CallOption) (*ExportInstanceOperation, error) {
+	return c.internalClient.ExportInstance(ctx, req, opts...)
+}
+
+// ExportInstanceOperation returns a new ExportInstanceOperation from a given name.
+// The name must be that of a previously created ExportInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) ExportInstanceOperation(name string) *ExportInstanceOperation {
+	return c.internalClient.ExportInstanceOperation(name)
+}
+
+// FailoverInstance initiates a failover of the primary node to current replica node for a
+// specific STANDARD tier Cloud Memorystore for Redis instance.
+func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
+	return c.internalClient.FailoverInstance(ctx, req, opts...)
+}
+
+// FailoverInstanceOperation returns a new FailoverInstanceOperation from a given name.
+// The name must be that of a previously created FailoverInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
+	return c.internalClient.FailoverInstanceOperation(name)
+}
+
+// DeleteInstance deletes a specific Redis instance.  Instance stops serving and data is
+// deleted.
+func (c *CloudRedisClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	return c.internalClient.DeleteInstance(ctx, req, opts...)
+}
+
+// DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
+// The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
+func (c *CloudRedisClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+	return c.internalClient.DeleteInstanceOperation(name)
+}
+
+// cloudRedisGRPCClient is a client for interacting with Google Cloud Memorystore for Redis API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CloudRedisClient struct {
+type cloudRedisGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CloudRedisClient
+	CallOptions **CloudRedisCallOptions
+
 	// The gRPC API client.
 	cloudRedisClient redispb.CloudRedisClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CloudRedisCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCloudRedisClient creates a new cloud redis client.
+// NewCloudRedisClient creates a new cloud redis client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Configures and manages Cloud Memorystore for Redis instances
 //
@@ -126,8 +333,7 @@ type CloudRedisClient struct {
 //
 //   projects/redpepper-1290/locations/us-central1/instances/my-redis
 func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*CloudRedisClient, error) {
-	clientOpts := defaultCloudRedisClientOptions()
-
+	clientOpts := defaultCloudRedisGRPCClientOptions()
 	if newCloudRedisClientHook != nil {
 		hookOpts, err := newCloudRedisClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -145,16 +351,19 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 	if err != nil {
 		return nil, err
 	}
-	c := &CloudRedisClient{
+	client := CloudRedisClient{CallOptions: defaultCloudRedisCallOptions()}
+
+	c := &cloudRedisGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCloudRedisCallOptions(),
-
 		cloudRedisClient: redispb.NewCloudRedisClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -164,52 +373,47 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CloudRedisClient) Connection() *grpc.ClientConn {
+func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CloudRedisClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CloudRedisClient) setGoogleClientInfo(keyval ...string) {
+func (c *cloudRedisGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListInstances lists all Redis instances owned by a project in either the specified
-// location (region) or all locations.
-//
-// The location should have the following format:
-//
-//   projects/{project_id}/locations/{location_id}
-//
-// If location_id is specified as - (wildcard), then all regions
-// available to the project are queried, and the results are aggregated.
-func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *cloudRedisGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *cloudRedisGRPCClient) ListInstances(ctx context.Context, req *redispb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInstances[0:len(c.CallOptions.ListInstances):len(c.CallOptions.ListInstances)], opts...)
+	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
 	req = proto.Clone(req).(*redispb.ListInstancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*redispb.Instance, string, error) {
-		var resp *redispb.ListInstancesResponse
-		req.PageToken = pageToken
+		resp := &redispb.ListInstancesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -232,22 +436,24 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetInstance gets the details of a specific Redis instance.
-func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
+func (c *cloudRedisGRPCClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInstance[0:len(c.CallOptions.GetInstance):len(c.CallOptions.GetInstance)], opts...)
+	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *redispb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -260,27 +466,16 @@ func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInst
 	return resp, nil
 }
 
-// CreateInstance creates a Redis instance based on the specified tier and memory size.
-//
-// By default, the instance is accessible from the project’s
-// default network (at https://cloud.google.com/vpc/docs/vpc).
-//
-// The creation is executed asynchronously and callers may check the returned
-// operation to track its progress. Once the operation is completed the Redis
-// instance will be fully functional. Completed longrunning.Operation will
-// contain the new instance object in the response field.
-//
-// The returned operation is automatically deleted after a few hours, so there
-// is no need to call DeleteOperation.
-func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
+	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -291,24 +486,20 @@ func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.Crea
 		return nil, err
 	}
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateInstance updates the metadata and configuration of a specific Redis instance.
-//
-// Completed longrunning.Operation will contain the new instance object
-// in the response field. The returned operation is automatically deleted
-// after a few hours, so there is no need to call DeleteOperation.
-func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateInstance[0:len(c.CallOptions.UpdateInstance):len(c.CallOptions.UpdateInstance)], opts...)
+	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -319,21 +510,20 @@ func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.Upda
 		return nil, err
 	}
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpgradeInstance upgrades Redis instance to the newer Redis version specified in the
-// request.
-func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpgradeInstance[0:len(c.CallOptions.UpgradeInstance):len(c.CallOptions.UpgradeInstance)], opts...)
+	opts = append((*c.CallOptions).UpgradeInstance[0:len((*c.CallOptions).UpgradeInstance):len((*c.CallOptions).UpgradeInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -344,27 +534,20 @@ func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.Upg
 		return nil, err
 	}
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ImportInstance import a Redis RDB snapshot file from Cloud Storage into a Redis instance.
-//
-// Redis may stop serving during this operation. Instance state will be
-// IMPORTING for entire operation. When complete, the instance will contain
-// only data from the imported file.
-//
-// The returned operation is automatically deleted after a few hours, so
-// there is no need to call DeleteOperation.
-func (c *CloudRedisClient) ImportInstance(ctx context.Context, req *redispb.ImportInstanceRequest, opts ...gax.CallOption) (*ImportInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) ImportInstance(ctx context.Context, req *redispb.ImportInstanceRequest, opts ...gax.CallOption) (*ImportInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportInstance[0:len(c.CallOptions.ImportInstance):len(c.CallOptions.ImportInstance)], opts...)
+	opts = append((*c.CallOptions).ImportInstance[0:len((*c.CallOptions).ImportInstance):len((*c.CallOptions).ImportInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -375,25 +558,20 @@ func (c *CloudRedisClient) ImportInstance(ctx context.Context, req *redispb.Impo
 		return nil, err
 	}
 	return &ImportInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportInstance export Redis instance data into a Redis RDB format file in Cloud Storage.
-//
-// Redis will continue serving during this operation.
-//
-// The returned operation is automatically deleted after a few hours, so
-// there is no need to call DeleteOperation.
-func (c *CloudRedisClient) ExportInstance(ctx context.Context, req *redispb.ExportInstanceRequest, opts ...gax.CallOption) (*ExportInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) ExportInstance(ctx context.Context, req *redispb.ExportInstanceRequest, opts ...gax.CallOption) (*ExportInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportInstance[0:len(c.CallOptions.ExportInstance):len(c.CallOptions.ExportInstance)], opts...)
+	opts = append((*c.CallOptions).ExportInstance[0:len((*c.CallOptions).ExportInstance):len((*c.CallOptions).ExportInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -404,21 +582,20 @@ func (c *CloudRedisClient) ExportInstance(ctx context.Context, req *redispb.Expo
 		return nil, err
 	}
 	return &ExportInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// FailoverInstance initiates a failover of the master node to current replica node for a
-// specific STANDARD tier Cloud Memorystore for Redis instance.
-func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.FailoverInstance[0:len(c.CallOptions.FailoverInstance):len(c.CallOptions.FailoverInstance)], opts...)
+	opts = append((*c.CallOptions).FailoverInstance[0:len((*c.CallOptions).FailoverInstance):len((*c.CallOptions).FailoverInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -429,21 +606,20 @@ func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.Fa
 		return nil, err
 	}
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteInstance deletes a specific Redis instance.  Instance stops serving and data is
-// deleted.
-func (c *CloudRedisClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteInstance[0:len(c.CallOptions.DeleteInstance):len(c.CallOptions.DeleteInstance)], opts...)
+	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -454,7 +630,7 @@ func (c *CloudRedisClient) DeleteInstance(ctx context.Context, req *redispb.Dele
 		return nil, err
 	}
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -465,9 +641,9 @@ type CreateInstanceOperation struct {
 
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
 // The name must be that of a previously created CreateInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
+func (c *cloudRedisGRPCClient) CreateInstanceOperation(name string) *CreateInstanceOperation {
 	return &CreateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -534,9 +710,9 @@ type DeleteInstanceOperation struct {
 
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
+func (c *cloudRedisGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
 	return &DeleteInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -592,9 +768,9 @@ type ExportInstanceOperation struct {
 
 // ExportInstanceOperation returns a new ExportInstanceOperation from a given name.
 // The name must be that of a previously created ExportInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) ExportInstanceOperation(name string) *ExportInstanceOperation {
+func (c *cloudRedisGRPCClient) ExportInstanceOperation(name string) *ExportInstanceOperation {
 	return &ExportInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -661,9 +837,9 @@ type FailoverInstanceOperation struct {
 
 // FailoverInstanceOperation returns a new FailoverInstanceOperation from a given name.
 // The name must be that of a previously created FailoverInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
+func (c *cloudRedisGRPCClient) FailoverInstanceOperation(name string) *FailoverInstanceOperation {
 	return &FailoverInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -730,9 +906,9 @@ type ImportInstanceOperation struct {
 
 // ImportInstanceOperation returns a new ImportInstanceOperation from a given name.
 // The name must be that of a previously created ImportInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) ImportInstanceOperation(name string) *ImportInstanceOperation {
+func (c *cloudRedisGRPCClient) ImportInstanceOperation(name string) *ImportInstanceOperation {
 	return &ImportInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -799,9 +975,9 @@ type UpdateInstanceOperation struct {
 
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
+func (c *cloudRedisGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
 	return &UpdateInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -868,9 +1044,9 @@ type UpgradeInstanceOperation struct {
 
 // UpgradeInstanceOperation returns a new UpgradeInstanceOperation from a given name.
 // The name must be that of a previously created UpgradeInstanceOperation, possibly from a different process.
-func (c *CloudRedisClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
+func (c *cloudRedisGRPCClient) UpgradeInstanceOperation(name string) *UpgradeInstanceOperation {
 	return &UpgradeInstanceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

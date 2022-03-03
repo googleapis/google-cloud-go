@@ -569,6 +569,38 @@ func TestLoadToInterface(t *testing.T) {
 	}
 }
 
+// Expect Local times to be represented in UTC
+func TestTimezone(t *testing.T) {
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+		},
+	}
+
+	dst := &struct{ Time time.Time }{
+		Time: time.Time{},
+	}
+	want := &struct{ Time time.Time }{
+		Time: time.Unix(1605504600, 0).In(time.UTC),
+	}
+
+	err := loadEntityProto(dst, src)
+	if err != nil {
+		t.Fatalf("loadEntityProto: %v", err)
+	}
+
+	if diff := testutil.Diff(dst, want); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+	// Also, the Zones need to be compared as comparing times will not detect this difference.
+	dstZone, _ := dst.Time.Zone()
+	wantZone, _ := want.Time.Zone()
+	if diff := testutil.Diff(dstZone, wantZone); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+}
+
 func TestAlreadyPopulatedDst(t *testing.T) {
 	testCases := []struct {
 		desc string

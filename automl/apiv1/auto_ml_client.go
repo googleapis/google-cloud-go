@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -62,13 +62,13 @@ type CallOptions struct {
 	ListModelEvaluations []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("automl.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("automl.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -196,32 +196,42 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with Cloud AutoML API.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	client automlpb.AutoMlClient
-
-	// LROClient is used internally to handle longrunning operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+// internalClient is an interface that defines the methods availaible from Cloud AutoML API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateDataset(context.Context, *automlpb.CreateDatasetRequest, ...gax.CallOption) (*CreateDatasetOperation, error)
+	CreateDatasetOperation(name string) *CreateDatasetOperation
+	GetDataset(context.Context, *automlpb.GetDatasetRequest, ...gax.CallOption) (*automlpb.Dataset, error)
+	ListDatasets(context.Context, *automlpb.ListDatasetsRequest, ...gax.CallOption) *DatasetIterator
+	UpdateDataset(context.Context, *automlpb.UpdateDatasetRequest, ...gax.CallOption) (*automlpb.Dataset, error)
+	DeleteDataset(context.Context, *automlpb.DeleteDatasetRequest, ...gax.CallOption) (*DeleteDatasetOperation, error)
+	DeleteDatasetOperation(name string) *DeleteDatasetOperation
+	ImportData(context.Context, *automlpb.ImportDataRequest, ...gax.CallOption) (*ImportDataOperation, error)
+	ImportDataOperation(name string) *ImportDataOperation
+	ExportData(context.Context, *automlpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
+	ExportDataOperation(name string) *ExportDataOperation
+	GetAnnotationSpec(context.Context, *automlpb.GetAnnotationSpecRequest, ...gax.CallOption) (*automlpb.AnnotationSpec, error)
+	CreateModel(context.Context, *automlpb.CreateModelRequest, ...gax.CallOption) (*CreateModelOperation, error)
+	CreateModelOperation(name string) *CreateModelOperation
+	GetModel(context.Context, *automlpb.GetModelRequest, ...gax.CallOption) (*automlpb.Model, error)
+	ListModels(context.Context, *automlpb.ListModelsRequest, ...gax.CallOption) *ModelIterator
+	DeleteModel(context.Context, *automlpb.DeleteModelRequest, ...gax.CallOption) (*DeleteModelOperation, error)
+	DeleteModelOperation(name string) *DeleteModelOperation
+	UpdateModel(context.Context, *automlpb.UpdateModelRequest, ...gax.CallOption) (*automlpb.Model, error)
+	DeployModel(context.Context, *automlpb.DeployModelRequest, ...gax.CallOption) (*DeployModelOperation, error)
+	DeployModelOperation(name string) *DeployModelOperation
+	UndeployModel(context.Context, *automlpb.UndeployModelRequest, ...gax.CallOption) (*UndeployModelOperation, error)
+	UndeployModelOperation(name string) *UndeployModelOperation
+	ExportModel(context.Context, *automlpb.ExportModelRequest, ...gax.CallOption) (*ExportModelOperation, error)
+	ExportModelOperation(name string) *ExportModelOperation
+	GetModelEvaluation(context.Context, *automlpb.GetModelEvaluationRequest, ...gax.CallOption) (*automlpb.ModelEvaluation, error)
+	ListModelEvaluations(context.Context, *automlpb.ListModelEvaluationsRequest, ...gax.CallOption) *ModelEvaluationIterator
 }
 
-// NewClient creates a new auto ml client.
+// Client is a client for interacting with Cloud AutoML API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // AutoML Server API.
 //
@@ -236,10 +246,275 @@ type Client struct {
 // Currently the only supported location_id is “us-central1”.
 //
 // On any input that is documented to expect a string parameter in
-// snake_case or kebab-case, either of those cases is accepted.
-func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
+// snake_case or dash-case, either of those cases is accepted.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
 
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateDataset creates a dataset.
+func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
+	return c.internalClient.CreateDataset(ctx, req, opts...)
+}
+
+// CreateDatasetOperation returns a new CreateDatasetOperation from a given name.
+// The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
+func (c *Client) CreateDatasetOperation(name string) *CreateDatasetOperation {
+	return c.internalClient.CreateDatasetOperation(name)
+}
+
+// GetDataset gets a dataset.
+func (c *Client) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	return c.internalClient.GetDataset(ctx, req, opts...)
+}
+
+// ListDatasets lists datasets in a project.
+func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
+	return c.internalClient.ListDatasets(ctx, req, opts...)
+}
+
+// UpdateDataset updates a dataset.
+func (c *Client) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	return c.internalClient.UpdateDataset(ctx, req, opts...)
+}
+
+// DeleteDataset deletes a dataset and all of its contents.
+// Returns empty response in the
+// response field when it completes,
+// and delete_details in the
+// metadata field.
+func (c *Client) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
+	return c.internalClient.DeleteDataset(ctx, req, opts...)
+}
+
+// DeleteDatasetOperation returns a new DeleteDatasetOperation from a given name.
+// The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
+func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
+	return c.internalClient.DeleteDatasetOperation(name)
+}
+
+// ImportData imports data into a dataset.
+// For Tables this method can only be called on an empty Dataset.
+//
+// For Tables:
+//
+//   A
+//   schema_inference_version
+//   parameter must be explicitly set.
+//   Returns an empty response in the
+//   response field when it completes.
+func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
+	return c.internalClient.ImportData(ctx, req, opts...)
+}
+
+// ImportDataOperation returns a new ImportDataOperation from a given name.
+// The name must be that of a previously created ImportDataOperation, possibly from a different process.
+func (c *Client) ImportDataOperation(name string) *ImportDataOperation {
+	return c.internalClient.ImportDataOperation(name)
+}
+
+// ExportData exports dataset’s data to the provided output location.
+// Returns an empty response in the
+// response field when it completes.
+func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
+	return c.internalClient.ExportData(ctx, req, opts...)
+}
+
+// ExportDataOperation returns a new ExportDataOperation from a given name.
+// The name must be that of a previously created ExportDataOperation, possibly from a different process.
+func (c *Client) ExportDataOperation(name string) *ExportDataOperation {
+	return c.internalClient.ExportDataOperation(name)
+}
+
+// GetAnnotationSpec gets an annotation spec.
+func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*automlpb.AnnotationSpec, error) {
+	return c.internalClient.GetAnnotationSpec(ctx, req, opts...)
+}
+
+// CreateModel creates a model.
+// Returns a Model in the response
+// field when it completes.
+// When you create a model, several model evaluations are created for it:
+// a global evaluation, and one evaluation for each annotation spec.
+func (c *Client) CreateModel(ctx context.Context, req *automlpb.CreateModelRequest, opts ...gax.CallOption) (*CreateModelOperation, error) {
+	return c.internalClient.CreateModel(ctx, req, opts...)
+}
+
+// CreateModelOperation returns a new CreateModelOperation from a given name.
+// The name must be that of a previously created CreateModelOperation, possibly from a different process.
+func (c *Client) CreateModelOperation(name string) *CreateModelOperation {
+	return c.internalClient.CreateModelOperation(name)
+}
+
+// GetModel gets a model.
+func (c *Client) GetModel(ctx context.Context, req *automlpb.GetModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
+	return c.internalClient.GetModel(ctx, req, opts...)
+}
+
+// ListModels lists models.
+func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
+	return c.internalClient.ListModels(ctx, req, opts...)
+}
+
+// DeleteModel deletes a model.
+// Returns google.protobuf.Empty in the
+// response field when it completes,
+// and delete_details in the
+// metadata field.
+func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
+	return c.internalClient.DeleteModel(ctx, req, opts...)
+}
+
+// DeleteModelOperation returns a new DeleteModelOperation from a given name.
+// The name must be that of a previously created DeleteModelOperation, possibly from a different process.
+func (c *Client) DeleteModelOperation(name string) *DeleteModelOperation {
+	return c.internalClient.DeleteModelOperation(name)
+}
+
+// UpdateModel updates a model.
+func (c *Client) UpdateModel(ctx context.Context, req *automlpb.UpdateModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
+	return c.internalClient.UpdateModel(ctx, req, opts...)
+}
+
+// DeployModel deploys a model. If a model is already deployed, deploying it with the
+// same parameters has no effect. Deploying with different parametrs
+// (as e.g. changing
+// node_number)
+// will reset the deployment state without pausing the model’s availability.
+//
+// Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
+// deployment automatically.
+//
+// Returns an empty response in the
+// response field when it completes.
+func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
+	return c.internalClient.DeployModel(ctx, req, opts...)
+}
+
+// DeployModelOperation returns a new DeployModelOperation from a given name.
+// The name must be that of a previously created DeployModelOperation, possibly from a different process.
+func (c *Client) DeployModelOperation(name string) *DeployModelOperation {
+	return c.internalClient.DeployModelOperation(name)
+}
+
+// UndeployModel undeploys a model. If the model is not deployed this method has no effect.
+//
+// Only applicable for Text Classification, Image Object Detection and Tables;
+// all other domains manage deployment automatically.
+//
+// Returns an empty response in the
+// response field when it completes.
+func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
+	return c.internalClient.UndeployModel(ctx, req, opts...)
+}
+
+// UndeployModelOperation returns a new UndeployModelOperation from a given name.
+// The name must be that of a previously created UndeployModelOperation, possibly from a different process.
+func (c *Client) UndeployModelOperation(name string) *UndeployModelOperation {
+	return c.internalClient.UndeployModelOperation(name)
+}
+
+// ExportModel exports a trained, “export-able”, model to a user specified Google Cloud
+// Storage location. A model is considered export-able if and only if it has
+// an export format defined for it in
+// ModelExportOutputConfig.
+//
+// Returns an empty response in the
+// response field when it completes.
+func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
+	return c.internalClient.ExportModel(ctx, req, opts...)
+}
+
+// ExportModelOperation returns a new ExportModelOperation from a given name.
+// The name must be that of a previously created ExportModelOperation, possibly from a different process.
+func (c *Client) ExportModelOperation(name string) *ExportModelOperation {
+	return c.internalClient.ExportModelOperation(name)
+}
+
+// GetModelEvaluation gets a model evaluation.
+func (c *Client) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*automlpb.ModelEvaluation, error) {
+	return c.internalClient.GetModelEvaluation(ctx, req, opts...)
+}
+
+// ListModelEvaluations lists model evaluations.
+func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
+	return c.internalClient.ListModelEvaluations(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud AutoML API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type gRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
+	// The gRPC API client.
+	client automlpb.AutoMlClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewClient creates a new auto ml client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// AutoML Server API.
+//
+// The resource names are assigned by the server.
+// The server never reuses names that it has created after the resources with
+// those names are deleted.
+//
+// An ID of a resource is the last element of the item’s resource name. For
+// projects/{project_id}/locations/{location_id}/datasets/{dataset_id}, then
+// the id for the item is {dataset_id}.
+//
+// Currently the only supported location_id is “us-central1”.
+//
+// On any input that is documented to expect a string parameter in
+// snake_case or dash-case, either of those cases is accepted.
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -257,16 +532,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: automlpb.NewAutoMlClient(connPool),
+		client:           automlpb.NewAutoMlClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -276,41 +554,42 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateDataset creates a dataset.
-func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDataset[0:len(c.CallOptions.CreateDataset):len(c.CallOptions.CreateDataset)], opts...)
+	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -321,20 +600,20 @@ func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetR
 		return nil, err
 	}
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetDataset gets a dataset.
-func (c *Client) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+func (c *gRPCClient) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDataset[0:len(c.CallOptions.GetDataset):len(c.CallOptions.GetDataset)], opts...)
+	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -347,19 +626,21 @@ func (c *Client) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest
 	return resp, nil
 }
 
-// ListDatasets lists datasets in a project.
-func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
+func (c *gRPCClient) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDatasets[0:len(c.CallOptions.ListDatasets):len(c.CallOptions.ListDatasets)], opts...)
+	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*automlpb.ListDatasetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Dataset, string, error) {
-		var resp *automlpb.ListDatasetsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -382,22 +663,24 @@ func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsReq
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// UpdateDataset updates a dataset.
-func (c *Client) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+func (c *gRPCClient) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDataset[0:len(c.CallOptions.UpdateDataset):len(c.CallOptions.UpdateDataset)], opts...)
+	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *automlpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -410,20 +693,16 @@ func (c *Client) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetR
 	return resp, nil
 }
 
-// DeleteDataset deletes a dataset and all of its contents.
-// Returns empty response in the
-// response field when it completes,
-// and delete_details in the
-// metadata field.
-func (c *Client) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
+func (c *gRPCClient) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteDataset[0:len(c.CallOptions.DeleteDataset):len(c.CallOptions.DeleteDataset)], opts...)
+	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -434,29 +713,20 @@ func (c *Client) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetR
 		return nil, err
 	}
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ImportData imports data into a dataset.
-// For Tables this method can only be called on an empty Dataset.
-//
-// For Tables:
-//
-//   A
-//   schema_inference_version
-//   parameter must be explicitly set.
-//   Returns an empty response in the
-//   response field when it completes.
-func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
+func (c *gRPCClient) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportData[0:len(c.CallOptions.ImportData):len(c.CallOptions.ImportData)], opts...)
+	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -467,22 +737,20 @@ func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest
 		return nil, err
 	}
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportData exports dataset’s data to the provided output location.
-// Returns an empty response in the
-// response field when it completes.
-func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
+func (c *gRPCClient) ExportData(ctx context.Context, req *automlpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportData[0:len(c.CallOptions.ExportData):len(c.CallOptions.ExportData)], opts...)
+	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -493,20 +761,20 @@ func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest
 		return nil, err
 	}
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetAnnotationSpec gets an annotation spec.
-func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*automlpb.AnnotationSpec, error) {
+func (c *gRPCClient) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*automlpb.AnnotationSpec, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAnnotationSpec[0:len(c.CallOptions.GetAnnotationSpec):len(c.CallOptions.GetAnnotationSpec)], opts...)
+	opts = append((*c.CallOptions).GetAnnotationSpec[0:len((*c.CallOptions).GetAnnotationSpec):len((*c.CallOptions).GetAnnotationSpec)], opts...)
 	var resp *automlpb.AnnotationSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -519,20 +787,16 @@ func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotat
 	return resp, nil
 }
 
-// CreateModel creates a model.
-// Returns a Model in the response
-// field when it completes.
-// When you create a model, several model evaluations are created for it:
-// a global evaluation, and one evaluation for each annotation spec.
-func (c *Client) CreateModel(ctx context.Context, req *automlpb.CreateModelRequest, opts ...gax.CallOption) (*CreateModelOperation, error) {
+func (c *gRPCClient) CreateModel(ctx context.Context, req *automlpb.CreateModelRequest, opts ...gax.CallOption) (*CreateModelOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateModel[0:len(c.CallOptions.CreateModel):len(c.CallOptions.CreateModel)], opts...)
+	opts = append((*c.CallOptions).CreateModel[0:len((*c.CallOptions).CreateModel):len((*c.CallOptions).CreateModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -543,20 +807,20 @@ func (c *Client) CreateModel(ctx context.Context, req *automlpb.CreateModelReque
 		return nil, err
 	}
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetModel gets a model.
-func (c *Client) GetModel(ctx context.Context, req *automlpb.GetModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
+func (c *gRPCClient) GetModel(ctx context.Context, req *automlpb.GetModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetModel[0:len(c.CallOptions.GetModel):len(c.CallOptions.GetModel)], opts...)
+	opts = append((*c.CallOptions).GetModel[0:len((*c.CallOptions).GetModel):len((*c.CallOptions).GetModel)], opts...)
 	var resp *automlpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -569,19 +833,21 @@ func (c *Client) GetModel(ctx context.Context, req *automlpb.GetModelRequest, op
 	return resp, nil
 }
 
-// ListModels lists models.
-func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
+func (c *gRPCClient) ListModels(ctx context.Context, req *automlpb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListModels[0:len(c.CallOptions.ListModels):len(c.CallOptions.ListModels)], opts...)
+	opts = append((*c.CallOptions).ListModels[0:len((*c.CallOptions).ListModels):len((*c.CallOptions).ListModels)], opts...)
 	it := &ModelIterator{}
 	req = proto.Clone(req).(*automlpb.ListModelsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.Model, string, error) {
-		var resp *automlpb.ListModelsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListModelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -604,26 +870,24 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteModel deletes a model.
-// Returns google.protobuf.Empty in the
-// response field when it completes,
-// and delete_details in the
-// metadata field.
-func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
+func (c *gRPCClient) DeleteModel(ctx context.Context, req *automlpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteModel[0:len(c.CallOptions.DeleteModel):len(c.CallOptions.DeleteModel)], opts...)
+	opts = append((*c.CallOptions).DeleteModel[0:len((*c.CallOptions).DeleteModel):len((*c.CallOptions).DeleteModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -634,20 +898,20 @@ func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelReque
 		return nil, err
 	}
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateModel updates a model.
-func (c *Client) UpdateModel(ctx context.Context, req *automlpb.UpdateModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
+func (c *gRPCClient) UpdateModel(ctx context.Context, req *automlpb.UpdateModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "model.name", url.QueryEscape(req.GetModel().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateModel[0:len(c.CallOptions.UpdateModel):len(c.CallOptions.UpdateModel)], opts...)
+	opts = append((*c.CallOptions).UpdateModel[0:len((*c.CallOptions).UpdateModel):len((*c.CallOptions).UpdateModel)], opts...)
 	var resp *automlpb.Model
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -660,27 +924,16 @@ func (c *Client) UpdateModel(ctx context.Context, req *automlpb.UpdateModelReque
 	return resp, nil
 }
 
-// DeployModel deploys a model. If a model is already deployed, deploying it with the
-// same parameters has no effect. Deploying with different parametrs
-// (as e.g. changing
-//
-// node_number)
-// will reset the deployment state without pausing the model’s availability.
-//
-// Only applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage
-// deployment automatically.
-//
-// Returns an empty response in the
-// response field when it completes.
-func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
+func (c *gRPCClient) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeployModel[0:len(c.CallOptions.DeployModel):len(c.CallOptions.DeployModel)], opts...)
+	opts = append((*c.CallOptions).DeployModel[0:len((*c.CallOptions).DeployModel):len((*c.CallOptions).DeployModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -691,26 +944,20 @@ func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelReque
 		return nil, err
 	}
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UndeployModel undeploys a model. If the model is not deployed this method has no effect.
-//
-// Only applicable for Text Classification, Image Object Detection and Tables;
-// all other domains manage deployment automatically.
-//
-// Returns an empty response in the
-// response field when it completes.
-func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
+func (c *gRPCClient) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UndeployModel[0:len(c.CallOptions.UndeployModel):len(c.CallOptions.UndeployModel)], opts...)
+	opts = append((*c.CallOptions).UndeployModel[0:len((*c.CallOptions).UndeployModel):len((*c.CallOptions).UndeployModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -721,26 +968,20 @@ func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelR
 		return nil, err
 	}
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ExportModel exports a trained, “export-able”, model to a user specified Google Cloud
-// Storage location. A model is considered export-able if and only if it has
-// an export format defined for it in
-// ModelExportOutputConfig.
-//
-// Returns an empty response in the
-// response field when it completes.
-func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
+func (c *gRPCClient) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportModel[0:len(c.CallOptions.ExportModel):len(c.CallOptions.ExportModel)], opts...)
+	opts = append((*c.CallOptions).ExportModel[0:len((*c.CallOptions).ExportModel):len((*c.CallOptions).ExportModel)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -751,20 +992,20 @@ func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelReque
 		return nil, err
 	}
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetModelEvaluation gets a model evaluation.
-func (c *Client) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*automlpb.ModelEvaluation, error) {
+func (c *gRPCClient) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*automlpb.ModelEvaluation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetModelEvaluation[0:len(c.CallOptions.GetModelEvaluation):len(c.CallOptions.GetModelEvaluation)], opts...)
+	opts = append((*c.CallOptions).GetModelEvaluation[0:len((*c.CallOptions).GetModelEvaluation):len((*c.CallOptions).GetModelEvaluation)], opts...)
 	var resp *automlpb.ModelEvaluation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -777,19 +1018,21 @@ func (c *Client) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelE
 	return resp, nil
 }
 
-// ListModelEvaluations lists model evaluations.
-func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
+func (c *gRPCClient) ListModelEvaluations(ctx context.Context, req *automlpb.ListModelEvaluationsRequest, opts ...gax.CallOption) *ModelEvaluationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListModelEvaluations[0:len(c.CallOptions.ListModelEvaluations):len(c.CallOptions.ListModelEvaluations)], opts...)
+	opts = append((*c.CallOptions).ListModelEvaluations[0:len((*c.CallOptions).ListModelEvaluations):len((*c.CallOptions).ListModelEvaluations)], opts...)
 	it := &ModelEvaluationIterator{}
 	req = proto.Clone(req).(*automlpb.ListModelEvaluationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*automlpb.ModelEvaluation, string, error) {
-		var resp *automlpb.ListModelEvaluationsResponse
-		req.PageToken = pageToken
+		resp := &automlpb.ListModelEvaluationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -812,9 +1055,11 @@ func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListMod
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -825,9 +1070,9 @@ type CreateDatasetOperation struct {
 
 // CreateDatasetOperation returns a new CreateDatasetOperation from a given name.
 // The name must be that of a previously created CreateDatasetOperation, possibly from a different process.
-func (c *Client) CreateDatasetOperation(name string) *CreateDatasetOperation {
+func (c *gRPCClient) CreateDatasetOperation(name string) *CreateDatasetOperation {
 	return &CreateDatasetOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -894,9 +1139,9 @@ type CreateModelOperation struct {
 
 // CreateModelOperation returns a new CreateModelOperation from a given name.
 // The name must be that of a previously created CreateModelOperation, possibly from a different process.
-func (c *Client) CreateModelOperation(name string) *CreateModelOperation {
+func (c *gRPCClient) CreateModelOperation(name string) *CreateModelOperation {
 	return &CreateModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -963,9 +1208,9 @@ type DeleteDatasetOperation struct {
 
 // DeleteDatasetOperation returns a new DeleteDatasetOperation from a given name.
 // The name must be that of a previously created DeleteDatasetOperation, possibly from a different process.
-func (c *Client) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
+func (c *gRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOperation {
 	return &DeleteDatasetOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1021,9 +1266,9 @@ type DeleteModelOperation struct {
 
 // DeleteModelOperation returns a new DeleteModelOperation from a given name.
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
-func (c *Client) DeleteModelOperation(name string) *DeleteModelOperation {
+func (c *gRPCClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return &DeleteModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1079,9 +1324,9 @@ type DeployModelOperation struct {
 
 // DeployModelOperation returns a new DeployModelOperation from a given name.
 // The name must be that of a previously created DeployModelOperation, possibly from a different process.
-func (c *Client) DeployModelOperation(name string) *DeployModelOperation {
+func (c *gRPCClient) DeployModelOperation(name string) *DeployModelOperation {
 	return &DeployModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1137,9 +1382,9 @@ type ExportDataOperation struct {
 
 // ExportDataOperation returns a new ExportDataOperation from a given name.
 // The name must be that of a previously created ExportDataOperation, possibly from a different process.
-func (c *Client) ExportDataOperation(name string) *ExportDataOperation {
+func (c *gRPCClient) ExportDataOperation(name string) *ExportDataOperation {
 	return &ExportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1195,9 +1440,9 @@ type ExportModelOperation struct {
 
 // ExportModelOperation returns a new ExportModelOperation from a given name.
 // The name must be that of a previously created ExportModelOperation, possibly from a different process.
-func (c *Client) ExportModelOperation(name string) *ExportModelOperation {
+func (c *gRPCClient) ExportModelOperation(name string) *ExportModelOperation {
 	return &ExportModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1253,9 +1498,9 @@ type ImportDataOperation struct {
 
 // ImportDataOperation returns a new ImportDataOperation from a given name.
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
-func (c *Client) ImportDataOperation(name string) *ImportDataOperation {
+func (c *gRPCClient) ImportDataOperation(name string) *ImportDataOperation {
 	return &ImportDataOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1311,9 +1556,9 @@ type UndeployModelOperation struct {
 
 // UndeployModelOperation returns a new UndeployModelOperation from a given name.
 // The name must be that of a previously created UndeployModelOperation, possibly from a different process.
-func (c *Client) UndeployModelOperation(name string) *UndeployModelOperation {
+func (c *gRPCClient) UndeployModelOperation(name string) *UndeployModelOperation {
 	return &UndeployModelOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

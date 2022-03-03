@@ -1,0 +1,68 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.spanner.admin.instance.v1",
+  "libraryPackage": "cloud.google.com/go/spanner/admin/instance/apiv1",
+  "services": {
+    "InstanceAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "InstanceAdminClient",
+          "rpcs": {
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetInstanceConfig": {
+              "methods": [
+                "GetInstanceConfig"
+              ]
+            },
+            "ListInstanceConfigs": {
+              "methods": [
+                "ListInstanceConfigs"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

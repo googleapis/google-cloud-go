@@ -28,8 +28,9 @@ import (
 // A pullStream supports the methods of a StreamingPullClient, but re-opens
 // the stream on a retryable error.
 type pullStream struct {
-	ctx  context.Context
-	open func() (pb.Subscriber_StreamingPullClient, error)
+	ctx    context.Context
+	open   func() (pb.Subscriber_StreamingPullClient, error)
+	cancel context.CancelFunc
 
 	mu  sync.Mutex
 	spc *pb.Subscriber_StreamingPullClient
@@ -41,8 +42,10 @@ type streamingPullFunc func(context.Context, ...gax.CallOption) (pb.Subscriber_S
 
 func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName string, maxOutstandingMessages, maxOutstandingBytes int, maxDurationPerLeaseExtension time.Duration) *pullStream {
 	ctx = withSubscriptionKey(ctx, subName)
+	ctx, cancel := context.WithCancel(ctx)
 	return &pullStream{
-		ctx: ctx,
+		ctx:    ctx,
+		cancel: cancel,
 		open: func() (pb.Subscriber_StreamingPullClient, error) {
 			spc, err := streamingPull(ctx, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
 			if err == nil {

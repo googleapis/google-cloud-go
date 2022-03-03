@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewBigQueryReadClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBigQueryReadClient_CreateReadSession() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#CreateReadSessionRequest.
 	}
 	resp, err := c.CreateReadSession(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleBigQueryReadClient_CreateReadSession() {
 }
 
 func ExampleBigQueryReadClient_SplitReadStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2#SplitReadStreamRequest.
 	}
 	resp, err := c.SplitReadStream(ctx, req)
 	if err != nil {

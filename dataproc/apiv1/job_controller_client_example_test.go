@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewJobControllerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleJobControllerClient_SubmitJob() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.SubmitJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#SubmitJobRequest.
 	}
 	resp, err := c.SubmitJob(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleJobControllerClient_SubmitJob() {
 }
 
 func ExampleJobControllerClient_SubmitJobAsOperation() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.SubmitJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#SubmitJobRequest.
 	}
 	op, err := c.SubmitJobAsOperation(ctx, req)
 	if err != nil {
@@ -80,16 +82,16 @@ func ExampleJobControllerClient_SubmitJobAsOperation() {
 }
 
 func ExampleJobControllerClient_GetJob() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.GetJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetJobRequest.
 	}
 	resp, err := c.GetJob(ctx, req)
 	if err != nil {
@@ -100,17 +102,16 @@ func ExampleJobControllerClient_GetJob() {
 }
 
 func ExampleJobControllerClient_ListJobs() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.ListJobsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListJobsRequest.
 	}
 	it := c.ListJobs(ctx, req)
 	for {
@@ -127,16 +128,16 @@ func ExampleJobControllerClient_ListJobs() {
 }
 
 func ExampleJobControllerClient_UpdateJob() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateJobRequest.
 	}
 	resp, err := c.UpdateJob(ctx, req)
 	if err != nil {
@@ -147,16 +148,16 @@ func ExampleJobControllerClient_UpdateJob() {
 }
 
 func ExampleJobControllerClient_CancelJob() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewJobControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.CancelJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CancelJobRequest.
 	}
 	resp, err := c.CancelJob(ctx, req)
 	if err != nil {
@@ -172,9 +173,11 @@ func ExampleJobControllerClient_DeleteJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteJobRequest.
 	}
 	err = c.DeleteJob(ctx, req)
 	if err != nil {

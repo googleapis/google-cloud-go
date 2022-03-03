@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewMetricsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleMetricsClient_ListLogMetrics() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewMetricsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListLogMetricsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#ListLogMetricsRequest.
 	}
 	it := c.ListLogMetrics(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleMetricsClient_ListLogMetrics() {
 }
 
 func ExampleMetricsClient_GetLogMetric() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewMetricsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.GetLogMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#GetLogMetricRequest.
 	}
 	resp, err := c.GetLogMetric(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleMetricsClient_GetLogMetric() {
 }
 
 func ExampleMetricsClient_CreateLogMetric() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewMetricsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.CreateLogMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#CreateLogMetricRequest.
 	}
 	resp, err := c.CreateLogMetric(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleMetricsClient_CreateLogMetric() {
 }
 
 func ExampleMetricsClient_UpdateLogMetric() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewMetricsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.UpdateLogMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#UpdateLogMetricRequest.
 	}
 	resp, err := c.UpdateLogMetric(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleMetricsClient_DeleteLogMetric() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.DeleteLogMetricRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/logging/v2#DeleteLogMetricRequest.
 	}
 	err = c.DeleteLogMetric(ctx, req)
 	if err != nil {

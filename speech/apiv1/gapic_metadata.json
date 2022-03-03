@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.speech.v1",
+  "libraryPackage": "cloud.google.com/go/speech/apiv1",
+  "services": {
+    "Speech": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "LongRunningRecognize": {
+              "methods": [
+                "LongRunningRecognize"
+              ]
+            },
+            "Recognize": {
+              "methods": [
+                "Recognize"
+              ]
+            },
+            "StreamingRecognize": {
+              "methods": [
+                "StreamingRecognize"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

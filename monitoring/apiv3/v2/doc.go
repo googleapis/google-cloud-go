@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,12 +17,49 @@
 // Package monitoring is an auto-generated package for the
 // Cloud Monitoring API.
 //
-// Manages your Cloud Monitoring data and configurations. Most projects must
-// be associated with a Workspace, with a few exceptions as noted on the
-// individual method pages. The table entries below are presented in
-// alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the [Cloud Monitoring
-// documentation](https://cloud.google.com/monitoring/docs).
+// Manages your Cloud Monitoring data and configurations.
+//
+// Example usage
+//
+// To get started with this package, create a client.
+//  ctx := context.Background()
+//  c, err := monitoring.NewAlertPolicyClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+// The client will use your default application credentials. Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
+// The returned client must be Closed when it is done being used.
+//
+// Using the Client
+//
+// The following is an example of making an API call with the newly created client.
+//
+//  ctx := context.Background()
+//  c, err := monitoring.NewAlertPolicyClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+//  req := &monitoringpb.ListAlertPoliciesRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListAlertPoliciesRequest.
+//  }
+//  it := c.ListAlertPolicies(ctx, req)
+//  for {
+//  	resp, err := it.Next()
+//  	if err == iterator.Done {
+//  		break
+//  	}
+//  	if err != nil {
+//  		// TODO: Handle error.
+//  	}
+//  	// TODO: Use resp.
+//  	_ = resp
+//  }
 //
 // Use of Context
 //
@@ -33,7 +70,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package monitoring // import "cloud.google.com/go/monitoring/apiv3/v2"
 
 import (
@@ -53,7 +90,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201211"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

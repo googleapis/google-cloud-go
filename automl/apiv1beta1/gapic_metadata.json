@@ -1,0 +1,157 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.automl.v1beta1",
+  "libraryPackage": "cloud.google.com/go/automl/apiv1beta1",
+  "services": {
+    "AutoMl": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataset": {
+              "methods": [
+                "CreateDataset"
+              ]
+            },
+            "CreateModel": {
+              "methods": [
+                "CreateModel"
+              ]
+            },
+            "DeleteDataset": {
+              "methods": [
+                "DeleteDataset"
+              ]
+            },
+            "DeleteModel": {
+              "methods": [
+                "DeleteModel"
+              ]
+            },
+            "DeployModel": {
+              "methods": [
+                "DeployModel"
+              ]
+            },
+            "ExportData": {
+              "methods": [
+                "ExportData"
+              ]
+            },
+            "ExportEvaluatedExamples": {
+              "methods": [
+                "ExportEvaluatedExamples"
+              ]
+            },
+            "ExportModel": {
+              "methods": [
+                "ExportModel"
+              ]
+            },
+            "GetAnnotationSpec": {
+              "methods": [
+                "GetAnnotationSpec"
+              ]
+            },
+            "GetColumnSpec": {
+              "methods": [
+                "GetColumnSpec"
+              ]
+            },
+            "GetDataset": {
+              "methods": [
+                "GetDataset"
+              ]
+            },
+            "GetModel": {
+              "methods": [
+                "GetModel"
+              ]
+            },
+            "GetModelEvaluation": {
+              "methods": [
+                "GetModelEvaluation"
+              ]
+            },
+            "GetTableSpec": {
+              "methods": [
+                "GetTableSpec"
+              ]
+            },
+            "ImportData": {
+              "methods": [
+                "ImportData"
+              ]
+            },
+            "ListColumnSpecs": {
+              "methods": [
+                "ListColumnSpecs"
+              ]
+            },
+            "ListDatasets": {
+              "methods": [
+                "ListDatasets"
+              ]
+            },
+            "ListModelEvaluations": {
+              "methods": [
+                "ListModelEvaluations"
+              ]
+            },
+            "ListModels": {
+              "methods": [
+                "ListModels"
+              ]
+            },
+            "ListTableSpecs": {
+              "methods": [
+                "ListTableSpecs"
+              ]
+            },
+            "UndeployModel": {
+              "methods": [
+                "UndeployModel"
+              ]
+            },
+            "UpdateColumnSpec": {
+              "methods": [
+                "UpdateColumnSpec"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateTableSpec": {
+              "methods": [
+                "UpdateTableSpec"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PredictionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "BatchPredict": {
+              "methods": [
+                "BatchPredict"
+              ]
+            },
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

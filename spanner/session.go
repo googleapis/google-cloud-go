@@ -29,8 +29,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"cloud.google.com/go/spanner/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
@@ -328,6 +328,12 @@ func (s *session) recycle() {
 // destroy removes the session from its home session pool, healthcheck queue
 // and Cloud Spanner service.
 func (s *session) destroy(isExpire bool) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	return s.destroyWithContext(ctx, isExpire)
+}
+
+func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 	// Remove s from session pool.
 	if !s.pool.remove(s, isExpire) {
 		return false
@@ -335,8 +341,6 @@ func (s *session) destroy(isExpire bool) bool {
 	// Unregister s from healthcheck queue.
 	s.pool.hc.unregister(s)
 	// Remove s from Cloud Spanner service.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
 	s.delete(ctx)
 	return true
 }
@@ -345,7 +349,9 @@ func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
 	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
-	if err != nil {
+	// Do not log DeadlineExceeded errors when deleting sessions, as these do
+	// not indicate anything the user can or should act upon.
+	if err != nil && ErrCode(err) != codes.DeadlineExceeded {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
 }
@@ -398,12 +404,21 @@ type SessionPoolConfig struct {
 	// Defaults to 100.
 	MinOpened uint64
 
-	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep.
+	// MaxIdle is the maximum number of idle sessions that are allowed in the
+	// session pool.
 	//
 	// Defaults to 0.
 	MaxIdle uint64
 
 	// MaxBurst is the maximum number of concurrent session creation requests.
+	//
+	// Deprecated: MaxBurst exists for historical compatibility and should not
+	// be used. MaxBurst was used to limit the number of sessions that the
+	// session pool could create within a time frame. This was an early safety
+	// valve to prevent a client from overwhelming the backend if a large number
+	// of sessions was suddenly needed. The session pool would then pause the
+	// creation of sessions for a while. Such a pause is no longer needed and
+	// the implementation has been removed from the pool.
 	//
 	// Defaults to 10.
 	MaxBurst uint64
@@ -428,7 +443,7 @@ type SessionPoolConfig struct {
 
 	// HealthCheckInterval is how often the health checker pings a session.
 	//
-	// Defaults to 5m.
+	// Defaults to 50m.
 	HealthCheckInterval time.Duration
 
 	// TrackSessionHandles determines whether the session pool will keep track
@@ -610,7 +625,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		tag.Upsert(tagKeyClientID, sc.id),
 		tag.Upsert(tagKeyDatabase, database),
 		tag.Upsert(tagKeyInstance, instance),
-		tag.Upsert(tagKeyLibVersion, version.Repo),
+		tag.Upsert(tagKeyLibVersion, internal.Version),
 	)
 	if err != nil {
 		logf(pool.sc.logger, "Failed to create tag map, error: %v", err)
@@ -725,8 +740,11 @@ func (p *sessionPool) isValid() bool {
 	return p.valid
 }
 
-// close marks the session pool as closed.
-func (p *sessionPool) close() {
+// close marks the session pool as closed and deletes all sessions in parallel.
+// Any errors that are returned by the Delete RPC are logged but otherwise
+// ignored, except for DeadlineExceeded errors, which are ignored and not
+// logged.
+func (p *sessionPool) close(ctx context.Context) {
 	if p == nil {
 		return
 	}
@@ -743,9 +761,17 @@ func (p *sessionPool) close() {
 	allSessions := make([]*session, len(p.hc.queue.sessions))
 	copy(allSessions, p.hc.queue.sessions)
 	p.hc.mu.Unlock()
+	wg := sync.WaitGroup{}
 	for _, s := range allSessions {
-		s.destroy(false)
+		wg.Add(1)
+		go deleteSession(ctx, s, &wg)
 	}
+	wg.Wait()
+}
+
+func deleteSession(ctx context.Context, s *session, wg *sync.WaitGroup) {
+	defer wg.Done()
+	s.destroyWithContext(ctx, false)
 }
 
 // errInvalidSessionPool is the error for using an invalid session pool.

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
-	structpbpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -37,27 +36,31 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	ListEnvironments         []gax.CallOption
-	GetEnvironment           []gax.CallOption
-	CreateEnvironment        []gax.CallOption
-	UpdateEnvironment        []gax.CallOption
-	DeleteEnvironment        []gax.CallOption
-	LookupEnvironmentHistory []gax.CallOption
+	ListEnvironments          []gax.CallOption
+	GetEnvironment            []gax.CallOption
+	CreateEnvironment         []gax.CallOption
+	UpdateEnvironment         []gax.CallOption
+	DeleteEnvironment         []gax.CallOption
+	LookupEnvironmentHistory  []gax.CallOption
+	RunContinuousTest         []gax.CallOption
+	ListContinuousTestResults []gax.CallOption
+	DeployFlow                []gax.CallOption
 }
 
-func defaultEnvironmentsClientOptions() []option.ClientOption {
+func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -131,40 +134,235 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 				})
 			}),
 		},
+		RunContinuousTest: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListContinuousTestResults: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeployFlow: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
+// internalEnvironmentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalEnvironmentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListEnvironments(context.Context, *cxpb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
+	GetEnvironment(context.Context, *cxpb.GetEnvironmentRequest, ...gax.CallOption) (*cxpb.Environment, error)
+	CreateEnvironment(context.Context, *cxpb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
+	CreateEnvironmentOperation(name string) *CreateEnvironmentOperation
+	UpdateEnvironment(context.Context, *cxpb.UpdateEnvironmentRequest, ...gax.CallOption) (*UpdateEnvironmentOperation, error)
+	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
+	DeleteEnvironment(context.Context, *cxpb.DeleteEnvironmentRequest, ...gax.CallOption) error
+	LookupEnvironmentHistory(context.Context, *cxpb.LookupEnvironmentHistoryRequest, ...gax.CallOption) *EnvironmentIterator
+	RunContinuousTest(context.Context, *cxpb.RunContinuousTestRequest, ...gax.CallOption) (*RunContinuousTestOperation, error)
+	RunContinuousTestOperation(name string) *RunContinuousTestOperation
+	ListContinuousTestResults(context.Context, *cxpb.ListContinuousTestResultsRequest, ...gax.CallOption) *ContinuousTestResultIterator
+	DeployFlow(context.Context, *cxpb.DeployFlowRequest, ...gax.CallOption) (*DeployFlowOperation, error)
+	DeployFlowOperation(name string) *DeployFlowOperation
+}
+
 // EnvironmentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Environments.
+type EnvironmentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalEnvironmentsClient
+
+	// The call options for this service.
+	CallOptions *EnvironmentsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *EnvironmentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListEnvironments returns the list of all environments in the specified Agent.
+func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.ListEnvironments(ctx, req, opts...)
+}
+
+// GetEnvironment retrieves the specified Environment.
+func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
+	return c.internalClient.GetEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironment creates an Environment in the specified Agent.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: Environment
+func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	return c.internalClient.CreateEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	return c.internalClient.CreateEnvironmentOperation(name)
+}
+
+// UpdateEnvironment updates the specified Environment.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: Environment
+func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
+}
+
+// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
+// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
+func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+	return c.internalClient.UpdateEnvironmentOperation(name)
+}
+
+// DeleteEnvironment deletes the specified Environment.
+func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
+}
+
+// LookupEnvironmentHistory looks up the history of the specified Environment.
+func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.LookupEnvironmentHistory(ctx, req, opts...)
+}
+
+// RunContinuousTest kicks off a continuous test under the specified Environment.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: RunContinuousTestMetadata
+//
+//   response: RunContinuousTestResponse
+func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
+	return c.internalClient.RunContinuousTest(ctx, req, opts...)
+}
+
+// RunContinuousTestOperation returns a new RunContinuousTestOperation from a given name.
+// The name must be that of a previously created RunContinuousTestOperation, possibly from a different process.
+func (c *EnvironmentsClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
+	return c.internalClient.RunContinuousTestOperation(name)
+}
+
+// ListContinuousTestResults fetches a list of continuous test results for a given environment.
+func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
+	return c.internalClient.ListContinuousTestResults(ctx, req, opts...)
+}
+
+// DeployFlow deploys a flow to the specified Environment.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: DeployFlowMetadata
+//
+//   response: DeployFlowResponse
+func (c *EnvironmentsClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
+	return c.internalClient.DeployFlow(ctx, req, opts...)
+}
+
+// DeployFlowOperation returns a new DeployFlowOperation from a given name.
+// The name must be that of a previously created DeployFlowOperation, possibly from a different process.
+func (c *EnvironmentsClient) DeployFlowOperation(name string) *DeployFlowOperation {
+	return c.internalClient.DeployFlowOperation(name)
+}
+
+// environmentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type EnvironmentsClient struct {
+type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing EnvironmentsClient
+	CallOptions **EnvironmentsCallOptions
+
 	// The gRPC API client.
 	environmentsClient cxpb.EnvironmentsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *EnvironmentsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewEnvironmentsClient creates a new environments client.
+// NewEnvironmentsClient creates a new environments client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
-	clientOpts := defaultEnvironmentsClientOptions()
-
+	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
 		hookOpts, err := newEnvironmentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -182,16 +380,19 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 	if err != nil {
 		return nil, err
 	}
-	c := &EnvironmentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultEnvironmentsCallOptions(),
+	client := EnvironmentsClient{CallOptions: defaultEnvironmentsCallOptions()}
 
+	c := &environmentsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		environmentsClient: cxpb.NewEnvironmentsClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -201,44 +402,47 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *EnvironmentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
-func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *environmentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEnvironments[0:len(c.CallOptions.ListEnvironments):len(c.CallOptions.ListEnvironments)], opts...)
+	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
-		var resp *cxpb.ListEnvironmentsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -261,22 +465,24 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetEnvironment retrieves the specified Environment.
-func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
+func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEnvironment[0:len(c.CallOptions.GetEnvironment):len(c.CallOptions.GetEnvironment)], opts...)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *cxpb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -289,16 +495,16 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 	return resp, nil
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
-func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateEnvironment[0:len(c.CallOptions.CreateEnvironment):len(c.CallOptions.CreateEnvironment)], opts...)
+	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -309,20 +515,20 @@ func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.Cr
 		return nil, err
 	}
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateEnvironment updates the specified Environment.
-func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateEnvironment[0:len(c.CallOptions.UpdateEnvironment):len(c.CallOptions.UpdateEnvironment)], opts...)
+	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -333,20 +539,20 @@ func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.Up
 		return nil, err
 	}
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteEnvironment deletes the specified Environment.
-func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteEnvironment[0:len(c.CallOptions.DeleteEnvironment):len(c.CallOptions.DeleteEnvironment)], opts...)
+	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.environmentsClient.DeleteEnvironment(ctx, req, settings.GRPC...)
@@ -355,19 +561,21 @@ func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.De
 	return err
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
-func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
+func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LookupEnvironmentHistory[0:len(c.CallOptions.LookupEnvironmentHistory):len(c.CallOptions.LookupEnvironmentHistory)], opts...)
+	opts = append((*c.CallOptions).LookupEnvironmentHistory[0:len((*c.CallOptions).LookupEnvironmentHistory):len((*c.CallOptions).LookupEnvironmentHistory)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
-		var resp *cxpb.LookupEnvironmentHistoryResponse
-		req.PageToken = pageToken
+		resp := &cxpb.LookupEnvironmentHistoryResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -390,10 +598,105 @@ func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
+}
+
+func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunContinuousTest[0:len((*c.CallOptions).RunContinuousTest):len((*c.CallOptions).RunContinuousTest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.RunContinuousTest(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RunContinuousTestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *environmentsGRPCClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListContinuousTestResults[0:len((*c.CallOptions).ListContinuousTestResults):len((*c.CallOptions).ListContinuousTestResults)], opts...)
+	it := &ContinuousTestResultIterator{}
+	req = proto.Clone(req).(*cxpb.ListContinuousTestResultsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ContinuousTestResult, string, error) {
+		resp := &cxpb.ListContinuousTestResultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.ListContinuousTestResults(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetContinuousTestResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *environmentsGRPCClient) DeployFlow(ctx context.Context, req *cxpb.DeployFlowRequest, opts ...gax.CallOption) (*DeployFlowOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeployFlow[0:len((*c.CallOptions).DeployFlow):len((*c.CallOptions).DeployFlow)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.DeployFlow(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeployFlowOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 // CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
@@ -403,9 +706,9 @@ type CreateEnvironmentOperation struct {
 
 // CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -444,8 +747,8 @@ func (op *CreateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.Call
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEnvironmentOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *CreateEnvironmentOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -465,6 +768,144 @@ func (op *CreateEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeployFlowOperation manages a long-running operation from DeployFlow.
+type DeployFlowOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeployFlowOperation returns a new DeployFlowOperation from a given name.
+// The name must be that of a previously created DeployFlowOperation, possibly from a different process.
+func (c *environmentsGRPCClient) DeployFlowOperation(name string) *DeployFlowOperation {
+	return &DeployFlowOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeployFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.DeployFlowResponse, error) {
+	var resp cxpb.DeployFlowResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeployFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.DeployFlowResponse, error) {
+	var resp cxpb.DeployFlowResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeployFlowOperation) Metadata() (*cxpb.DeployFlowMetadata, error) {
+	var meta cxpb.DeployFlowMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeployFlowOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeployFlowOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RunContinuousTestOperation manages a long-running operation from RunContinuousTest.
+type RunContinuousTestOperation struct {
+	lro *longrunning.Operation
+}
+
+// RunContinuousTestOperation returns a new RunContinuousTestOperation from a given name.
+// The name must be that of a previously created RunContinuousTestOperation, possibly from a different process.
+func (c *environmentsGRPCClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
+	return &RunContinuousTestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RunContinuousTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.RunContinuousTestResponse, error) {
+	var resp cxpb.RunContinuousTestResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RunContinuousTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.RunContinuousTestResponse, error) {
+	var resp cxpb.RunContinuousTestResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RunContinuousTestOperation) Metadata() (*cxpb.RunContinuousTestMetadata, error) {
+	var meta cxpb.RunContinuousTestMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RunContinuousTestOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RunContinuousTestOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateEnvironmentOperation manages a long-running operation from UpdateEnvironment.
 type UpdateEnvironmentOperation struct {
 	lro *longrunning.Operation
@@ -472,9 +913,9 @@ type UpdateEnvironmentOperation struct {
 
 // UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
 // The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
-func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -513,8 +954,8 @@ func (op *UpdateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.Call
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateEnvironmentOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *UpdateEnvironmentOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -532,6 +973,53 @@ func (op *UpdateEnvironmentOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateEnvironmentOperation) Name() string {
 	return op.lro.Name()
+}
+
+// ContinuousTestResultIterator manages a stream of *cxpb.ContinuousTestResult.
+type ContinuousTestResultIterator struct {
+	items    []*cxpb.ContinuousTestResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.ContinuousTestResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ContinuousTestResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ContinuousTestResultIterator) Next() (*cxpb.ContinuousTestResult, error) {
+	var item *cxpb.ContinuousTestResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ContinuousTestResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ContinuousTestResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // EnvironmentIterator manages a stream of *cxpb.Environment.

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewWorkflowTemplateClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.CreateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#CreateWorkflowTemplateRequest.
 	}
 	resp, err := c.CreateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 }
 
 func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.GetWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#GetWorkflowTemplateRequest.
 	}
 	resp, err := c.GetWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 }
 
 func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.InstantiateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#InstantiateWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -98,16 +100,16 @@ func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 }
 
 func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#InstantiateInlineWorkflowTemplateRequest.
 	}
 	op, err := c.InstantiateInlineWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -121,16 +123,16 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 }
 
 func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.UpdateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#UpdateWorkflowTemplateRequest.
 	}
 	resp, err := c.UpdateWorkflowTemplate(ctx, req)
 	if err != nil {
@@ -141,17 +143,16 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 }
 
 func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.ListWorkflowTemplatesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#ListWorkflowTemplatesRequest.
 	}
 	it := c.ListWorkflowTemplates(ctx, req)
 	for {
@@ -173,9 +174,11 @@ func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataproc/v1#DeleteWorkflowTemplateRequest.
 	}
 	err = c.DeleteWorkflowTemplate(ctx, req)
 	if err != nil {

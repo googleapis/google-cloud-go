@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
@@ -214,3 +215,10 @@ func typeOrder(v *pb.Value) int {
 		panic(fmt.Sprintf("bad value type: %v", v))
 	}
 }
+
+// byReferenceValue implements sort.Interface for []*firestorepb.Value
+type byFirestoreValue []*firestorepb.Value
+
+func (a byFirestoreValue) Len() int           { return len(a) }
+func (a byFirestoreValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byFirestoreValue) Less(i, j int) bool { return compareValues(a[i], a[j]) < 0 }

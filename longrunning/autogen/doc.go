@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,50 @@
 // Package longrunning is an auto-generated package for the
 // Long Running Operations API.
 //
+//   NOTE: This package is in alpha. It is not stable, and is likely to change.
+//
+// Example usage
+//
+// To get started with this package, create a client.
+//  ctx := context.Background()
+//  c, err := longrunning.NewOperationsClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+// The client will use your default application credentials. Clients should be reused instead of created as needed.
+// The methods of Client are safe for concurrent use by multiple goroutines.
+// The returned client must be Closed when it is done being used.
+//
+// Using the Client
+//
+// The following is an example of making an API call with the newly created client.
+//
+//  ctx := context.Background()
+//  c, err := longrunning.NewOperationsClient(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  defer c.Close()
+//
+//  req := &longrunningpb.ListOperationsRequest{
+//  	// TODO: Fill request struct fields.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+//  }
+//  it := c.ListOperations(ctx, req)
+//  for {
+//  	resp, err := it.Next()
+//  	if err == iterator.Done {
+//  		break
+//  	}
+//  	if err != nil {
+//  		// TODO: Handle error.
+//  	}
+//  	// TODO: Use resp.
+//  	_ = resp
+//  }
+//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -26,7 +70,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package longrunning // import "cloud.google.com/go/longrunning/autogen"
 
 import (
@@ -46,7 +90,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201211"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -71,7 +122,9 @@ func checkDisableDeadlines() (bool, error) {
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
-	return []string{}
+	return []string{
+		"",
+	}
 }
 
 // versionGo returns the Go runtime version. The returned string

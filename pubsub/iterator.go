@@ -23,12 +23,12 @@ import (
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
 )
 
 // Between message receipt and ack (that is, the time spent processing a message) we want to extend the message
@@ -92,6 +92,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
 	cctx, cancel := context.WithCancel(context.Background())
+	cctx = withSubscriptionKey(cctx, subName)
 	it := &messageIterator{
 		ctx:                cctx,
 		cancel:             cancel,
@@ -246,6 +247,8 @@ func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage,
 	}, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(maxSendRecvBytes)))
 	switch {
 	case err == context.Canceled:
+		return nil, nil
+	case status.Code(err) == codes.Canceled:
 		return nil, nil
 	case err != nil:
 		return nil, err
@@ -534,7 +537,7 @@ func (it *messageIterator) pingStream() {
 func calcFieldSizeString(fields ...string) int {
 	overhead := 0
 	for _, field := range fields {
-		overhead += 1 + len(field) + proto.SizeVarint(uint64(len(field)))
+		overhead += 1 + len(field) + protowire.SizeVarint(uint64(len(field)))
 	}
 	return overhead
 }
@@ -544,7 +547,7 @@ func calcFieldSizeString(fields ...string) int {
 func calcFieldSizeInt(fields ...int) int {
 	overhead := 0
 	for _, field := range fields {
-		overhead += 1 + proto.SizeVarint(uint64(field))
+		overhead += 1 + protowire.SizeVarint(uint64(field))
 	}
 	return overhead
 }

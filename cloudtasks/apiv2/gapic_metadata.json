@@ -1,0 +1,98 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.tasks.v2",
+  "libraryPackage": "cloud.google.com/go/cloudtasks/apiv2",
+  "services": {
+    "CloudTasks": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateQueue": {
+              "methods": [
+                "CreateQueue"
+              ]
+            },
+            "CreateTask": {
+              "methods": [
+                "CreateTask"
+              ]
+            },
+            "DeleteQueue": {
+              "methods": [
+                "DeleteQueue"
+              ]
+            },
+            "DeleteTask": {
+              "methods": [
+                "DeleteTask"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetQueue": {
+              "methods": [
+                "GetQueue"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "ListQueues": {
+              "methods": [
+                "ListQueues"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            },
+            "PauseQueue": {
+              "methods": [
+                "PauseQueue"
+              ]
+            },
+            "PurgeQueue": {
+              "methods": [
+                "PurgeQueue"
+              ]
+            },
+            "ResumeQueue": {
+              "methods": [
+                "ResumeQueue"
+              ]
+            },
+            "RunTask": {
+              "methods": [
+                "RunTask"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateQueue": {
+              "methods": [
+                "UpdateQueue"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import (
 	"context"
 
 	retail "cloud.google.com/go/retail/apiv2"
+	"google.golang.org/api/iterator"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
 
@@ -29,21 +30,23 @@ func ExampleNewProductClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleProductClient_CreateProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#CreateProductRequest.
 	}
 	resp, err := c.CreateProduct(ctx, req)
 	if err != nil {
@@ -54,16 +57,16 @@ func ExampleProductClient_CreateProduct() {
 }
 
 func ExampleProductClient_GetProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.GetProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetProductRequest.
 	}
 	resp, err := c.GetProduct(ctx, req)
 	if err != nil {
@@ -73,17 +76,43 @@ func ExampleProductClient_GetProduct() {
 	_ = resp
 }
 
-func ExampleProductClient_UpdateProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
+func ExampleProductClient_ListProducts() {
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &retailpb.ListProductsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListProductsRequest.
+	}
+	it := c.ListProducts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleProductClient_UpdateProduct() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &retailpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateProductRequest.
 	}
 	resp, err := c.UpdateProduct(ctx, req)
 	if err != nil {
@@ -99,9 +128,11 @@ func ExampleProductClient_DeleteProduct() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#DeleteProductRequest.
 	}
 	err = c.DeleteProduct(ctx, req)
 	if err != nil {
@@ -110,18 +141,93 @@ func ExampleProductClient_DeleteProduct() {
 }
 
 func ExampleProductClient_ImportProducts() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ImportProductsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ImportProductsRequest.
 	}
 	op, err := c.ImportProducts(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_SetInventory() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.SetInventoryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetInventoryRequest.
+	}
+	op, err := c.SetInventory(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_AddFulfillmentPlaces() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.AddFulfillmentPlacesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#AddFulfillmentPlacesRequest.
+	}
+	op, err := c.AddFulfillmentPlaces(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleProductClient_RemoveFulfillmentPlaces() {
+	ctx := context.Background()
+	c, err := retail.NewProductClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.RemoveFulfillmentPlacesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#RemoveFulfillmentPlacesRequest.
+	}
+	op, err := c.RemoveFulfillmentPlaces(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

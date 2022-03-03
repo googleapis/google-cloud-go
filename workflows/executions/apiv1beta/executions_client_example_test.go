@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListExecutions() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#ListExecutionsRequest.
 	}
 	it := c.ListExecutions(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleClient_ListExecutions() {
 }
 
 func ExampleClient_CreateExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CreateExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#CreateExecutionRequest.
 	}
 	resp, err := c.CreateExecution(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleClient_CreateExecution() {
 }
 
 func ExampleClient_GetExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.GetExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#GetExecutionRequest.
 	}
 	resp, err := c.GetExecution(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleClient_GetExecution() {
 }
 
 func ExampleClient_CancelExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta#CancelExecutionRequest.
 	}
 	resp, err := c.CancelExecution(ctx, req)
 	if err != nil {

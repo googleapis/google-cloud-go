@@ -14,17 +14,21 @@
 package test
 
 import (
+	"log"
 	"strings"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ErrorEqual compares two errors for equivalence.
 func ErrorEqual(got, want error) bool {
-	if got == want {
+	if xerrors.Is(got, want) {
 		return true
 	}
 	return cmp.Equal(got, want, cmpopts.EquateErrors())
@@ -53,3 +57,12 @@ func (f *FakeSource) Int63() int64 { return f.Ret }
 
 // Seed is unimplemented.
 func (f *FakeSource) Seed(seed int64) {}
+
+// MakeAny packs a message into an Any proto.
+func MakeAny(msg proto.Message) *anypb.Any {
+	any, err := anypb.New(msg)
+	if err != nil {
+		log.Fatalf("Failed to make Any: %v", err)
+	}
+	return any
+}

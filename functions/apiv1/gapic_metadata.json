@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.functions.v1",
+  "libraryPackage": "cloud.google.com/go/functions/apiv1",
+  "services": {
+    "CloudFunctionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudFunctionsClient",
+          "rpcs": {
+            "CallFunction": {
+              "methods": [
+                "CallFunction"
+              ]
+            },
+            "CreateFunction": {
+              "methods": [
+                "CreateFunction"
+              ]
+            },
+            "DeleteFunction": {
+              "methods": [
+                "DeleteFunction"
+              ]
+            },
+            "GenerateDownloadUrl": {
+              "methods": [
+                "GenerateDownloadUrl"
+              ]
+            },
+            "GenerateUploadUrl": {
+              "methods": [
+                "GenerateUploadUrl"
+              ]
+            },
+            "GetFunction": {
+              "methods": [
+                "GetFunction"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "ListFunctions": {
+              "methods": [
+                "ListFunctions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFunction": {
+              "methods": [
+                "UpdateFunction"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

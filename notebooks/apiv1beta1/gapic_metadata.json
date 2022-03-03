@@ -1,0 +1,113 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.notebooks.v1beta1",
+  "libraryPackage": "cloud.google.com/go/notebooks/apiv1beta1",
+  "services": {
+    "NotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "IsInstanceUpgradeable": {
+              "methods": [
+                "IsInstanceUpgradeable"
+              ]
+            },
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "RegisterInstance": {
+              "methods": [
+                "RegisterInstance"
+              ]
+            },
+            "ReportInstanceInfo": {
+              "methods": [
+                "ReportInstanceInfo"
+              ]
+            },
+            "ResetInstance": {
+              "methods": [
+                "ResetInstance"
+              ]
+            },
+            "SetInstanceAccelerator": {
+              "methods": [
+                "SetInstanceAccelerator"
+              ]
+            },
+            "SetInstanceLabels": {
+              "methods": [
+                "SetInstanceLabels"
+              ]
+            },
+            "SetInstanceMachineType": {
+              "methods": [
+                "SetInstanceMachineType"
+              ]
+            },
+            "StartInstance": {
+              "methods": [
+                "StartInstance"
+              ]
+            },
+            "StopInstance": {
+              "methods": [
+                "StopInstance"
+              ]
+            },
+            "UpgradeInstance": {
+              "methods": [
+                "UpgradeInstance"
+              ]
+            },
+            "UpgradeInstanceInternal": {
+              "methods": [
+                "UpgradeInstanceInternal"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

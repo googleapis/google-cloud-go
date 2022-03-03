@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newRealmsClientHook clientHook
@@ -50,13 +50,13 @@ type RealmsCallOptions struct {
 	PreviewRealmUpdate []gax.CallOption
 }
 
-func defaultRealmsClientOptions() []option.ClientOption {
+func defaultRealmsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -103,38 +103,142 @@ func defaultRealmsCallOptions() *RealmsCallOptions {
 	}
 }
 
-// RealmsClient is a client for interacting with .
+// internalRealmsClient is an interface that defines the methods availaible from Game Services API.
+type internalRealmsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListRealms(context.Context, *gamingpb.ListRealmsRequest, ...gax.CallOption) *RealmIterator
+	GetRealm(context.Context, *gamingpb.GetRealmRequest, ...gax.CallOption) (*gamingpb.Realm, error)
+	CreateRealm(context.Context, *gamingpb.CreateRealmRequest, ...gax.CallOption) (*CreateRealmOperation, error)
+	CreateRealmOperation(name string) *CreateRealmOperation
+	DeleteRealm(context.Context, *gamingpb.DeleteRealmRequest, ...gax.CallOption) (*DeleteRealmOperation, error)
+	DeleteRealmOperation(name string) *DeleteRealmOperation
+	UpdateRealm(context.Context, *gamingpb.UpdateRealmRequest, ...gax.CallOption) (*UpdateRealmOperation, error)
+	UpdateRealmOperation(name string) *UpdateRealmOperation
+	PreviewRealmUpdate(context.Context, *gamingpb.PreviewRealmUpdateRequest, ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error)
+}
+
+// RealmsClient is a client for interacting with Game Services API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A realm is a grouping of game server clusters that are considered
+// interchangeable.
+type RealmsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalRealmsClient
+
+	// The call options for this service.
+	CallOptions *RealmsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *RealmsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *RealmsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListRealms lists realms in a given project and location.
+func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
+	return c.internalClient.ListRealms(ctx, req, opts...)
+}
+
+// GetRealm gets details of a single realm.
+func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	return c.internalClient.GetRealm(ctx, req, opts...)
+}
+
+// CreateRealm creates a new realm in a given project and location.
+func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
+	return c.internalClient.CreateRealm(ctx, req, opts...)
+}
+
+// CreateRealmOperation returns a new CreateRealmOperation from a given name.
+// The name must be that of a previously created CreateRealmOperation, possibly from a different process.
+func (c *RealmsClient) CreateRealmOperation(name string) *CreateRealmOperation {
+	return c.internalClient.CreateRealmOperation(name)
+}
+
+// DeleteRealm deletes a single realm.
+func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
+	return c.internalClient.DeleteRealm(ctx, req, opts...)
+}
+
+// DeleteRealmOperation returns a new DeleteRealmOperation from a given name.
+// The name must be that of a previously created DeleteRealmOperation, possibly from a different process.
+func (c *RealmsClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
+	return c.internalClient.DeleteRealmOperation(name)
+}
+
+// UpdateRealm patches a single realm.
+func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
+	return c.internalClient.UpdateRealm(ctx, req, opts...)
+}
+
+// UpdateRealmOperation returns a new UpdateRealmOperation from a given name.
+// The name must be that of a previously created UpdateRealmOperation, possibly from a different process.
+func (c *RealmsClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
+	return c.internalClient.UpdateRealmOperation(name)
+}
+
+// PreviewRealmUpdate previews patches to a single realm.
+func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
+	return c.internalClient.PreviewRealmUpdate(ctx, req, opts...)
+}
+
+// realmsGRPCClient is a client for interacting with Game Services API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type RealmsClient struct {
+type realmsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing RealmsClient
+	CallOptions **RealmsCallOptions
+
 	// The gRPC API client.
 	realmsClient gamingpb.RealmsServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *RealmsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewRealmsClient creates a new realms service client.
+// NewRealmsClient creates a new realms service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A realm is a grouping of game server clusters that are considered
 // interchangeable.
 func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsClient, error) {
-	clientOpts := defaultRealmsClientOptions()
-
+	clientOpts := defaultRealmsGRPCClientOptions()
 	if newRealmsClientHook != nil {
 		hookOpts, err := newRealmsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -152,16 +256,19 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 	if err != nil {
 		return nil, err
 	}
-	c := &RealmsClient{
+	client := RealmsClient{CallOptions: defaultRealmsCallOptions()}
+
+	c := &realmsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultRealmsCallOptions(),
-
-		realmsClient: gamingpb.NewRealmsServiceClient(connPool),
+		realmsClient:     gamingpb.NewRealmsServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -171,44 +278,47 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *RealmsClient) Connection() *grpc.ClientConn {
+func (c *realmsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *RealmsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *RealmsClient) setGoogleClientInfo(keyval ...string) {
+func (c *realmsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListRealms lists realms in a given project and location.
-func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *realmsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *realmsGRPCClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsRequest, opts ...gax.CallOption) *RealmIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListRealms[0:len(c.CallOptions.ListRealms):len(c.CallOptions.ListRealms)], opts...)
+	opts = append((*c.CallOptions).ListRealms[0:len((*c.CallOptions).ListRealms):len((*c.CallOptions).ListRealms)], opts...)
 	it := &RealmIterator{}
 	req = proto.Clone(req).(*gamingpb.ListRealmsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*gamingpb.Realm, string, error) {
-		var resp *gamingpb.ListRealmsResponse
-		req.PageToken = pageToken
+		resp := &gamingpb.ListRealmsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -231,22 +341,24 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetRealm gets details of a single realm.
-func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+func (c *realmsGRPCClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetRealm[0:len(c.CallOptions.GetRealm):len(c.CallOptions.GetRealm)], opts...)
+	opts = append((*c.CallOptions).GetRealm[0:len((*c.CallOptions).GetRealm):len((*c.CallOptions).GetRealm)], opts...)
 	var resp *gamingpb.Realm
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -259,16 +371,16 @@ func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmReque
 	return resp, nil
 }
 
-// CreateRealm creates a new realm in a given project and location.
-func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
+func (c *realmsGRPCClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateRealm[0:len(c.CallOptions.CreateRealm):len(c.CallOptions.CreateRealm)], opts...)
+	opts = append((*c.CallOptions).CreateRealm[0:len((*c.CallOptions).CreateRealm):len((*c.CallOptions).CreateRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -279,20 +391,20 @@ func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateReal
 		return nil, err
 	}
 	return &CreateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteRealm deletes a single realm.
-func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
+func (c *realmsGRPCClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteRealm[0:len(c.CallOptions.DeleteRealm):len(c.CallOptions.DeleteRealm)], opts...)
+	opts = append((*c.CallOptions).DeleteRealm[0:len((*c.CallOptions).DeleteRealm):len((*c.CallOptions).DeleteRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -303,20 +415,20 @@ func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteReal
 		return nil, err
 	}
 	return &DeleteRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateRealm patches a single realm.
-func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
+func (c *realmsGRPCClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateRealm[0:len(c.CallOptions.UpdateRealm):len(c.CallOptions.UpdateRealm)], opts...)
+	opts = append((*c.CallOptions).UpdateRealm[0:len((*c.CallOptions).UpdateRealm):len((*c.CallOptions).UpdateRealm)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -327,20 +439,20 @@ func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateReal
 		return nil, err
 	}
 	return &UpdateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PreviewRealmUpdate previews patches to a single realm.
-func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
+func (c *realmsGRPCClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PreviewRealmUpdate[0:len(c.CallOptions.PreviewRealmUpdate):len(c.CallOptions.PreviewRealmUpdate)], opts...)
+	opts = append((*c.CallOptions).PreviewRealmUpdate[0:len((*c.CallOptions).PreviewRealmUpdate):len((*c.CallOptions).PreviewRealmUpdate)], opts...)
 	var resp *gamingpb.PreviewRealmUpdateResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -360,9 +472,9 @@ type CreateRealmOperation struct {
 
 // CreateRealmOperation returns a new CreateRealmOperation from a given name.
 // The name must be that of a previously created CreateRealmOperation, possibly from a different process.
-func (c *RealmsClient) CreateRealmOperation(name string) *CreateRealmOperation {
+func (c *realmsGRPCClient) CreateRealmOperation(name string) *CreateRealmOperation {
 	return &CreateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -429,9 +541,9 @@ type DeleteRealmOperation struct {
 
 // DeleteRealmOperation returns a new DeleteRealmOperation from a given name.
 // The name must be that of a previously created DeleteRealmOperation, possibly from a different process.
-func (c *RealmsClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
+func (c *realmsGRPCClient) DeleteRealmOperation(name string) *DeleteRealmOperation {
 	return &DeleteRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -487,9 +599,9 @@ type UpdateRealmOperation struct {
 
 // UpdateRealmOperation returns a new UpdateRealmOperation from a given name.
 // The name must be that of a previously created UpdateRealmOperation, possibly from a different process.
-func (c *RealmsClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
+func (c *realmsGRPCClient) UpdateRealmOperation(name string) *UpdateRealmOperation {
 	return &UpdateRealmOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

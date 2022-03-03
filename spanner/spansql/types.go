@@ -23,6 +23,9 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -30,11 +33,12 @@ import (
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
-	Name        ID
-	Columns     []ColumnDef
-	Constraints []TableConstraint
-	PrimaryKey  []KeyPart
-	Interleave  *Interleave
+	Name              ID
+	Columns           []ColumnDef
+	Constraints       []TableConstraint
+	PrimaryKey        []KeyPart
+	Interleave        *Interleave
+	RowDeletionPolicy *RowDeletionPolicy
 
 	Position Position // position of the "CREATE" token
 }
@@ -87,6 +91,12 @@ type Interleave struct {
 	OnDelete OnDelete
 }
 
+// RowDeletionPolicy represents an row deletion policy clause of a CREATE, ALTER TABLE statement.
+type RowDeletionPolicy struct {
+	Column  ID
+	NumDays int64
+}
+
 // CreateIndex represents a CREATE INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create-index
 type CreateIndex struct {
@@ -107,6 +117,21 @@ func (ci *CreateIndex) String() string { return fmt.Sprintf("%#v", ci) }
 func (*CreateIndex) isDDLStmt()        {}
 func (ci *CreateIndex) Pos() Position  { return ci.Position }
 func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
+
+// CreateView represents a CREATE [OR REPLACE] VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#view_statements
+type CreateView struct {
+	Name      ID
+	OrReplace bool
+	Query     Query
+
+	Position Position // position of the "CREATE" token
+}
+
+func (cv *CreateView) String() string { return fmt.Sprintf("%#v", cv) }
+func (*CreateView) isDDLStmt()        {}
+func (cv *CreateView) Pos() Position  { return cv.Position }
+func (cv *CreateView) clearOffset()   { cv.Position.Offset = 0 }
 
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
@@ -134,6 +159,19 @@ func (*DropIndex) isDDLStmt()        {}
 func (di *DropIndex) Pos() Position  { return di.Position }
 func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
 
+// DropView represents a DROP VIEW statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#drop-view
+type DropView struct {
+	Name ID
+
+	Position Position // position of the "DROP" token
+}
+
+func (dv *DropView) String() string { return fmt.Sprintf("%#v", dv) }
+func (*DropView) isDDLStmt()        {}
+func (dv *DropView) Pos() Position  { return dv.Position }
+func (dv *DropView) clearOffset()   { dv.Position.Offset = 0 }
+
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
 type AlterTable struct {
@@ -159,18 +197,22 @@ func (at *AlterTable) clearOffset() {
 }
 
 // TableAlteration is satisfied by AddColumn, DropColumn, AddConstraint,
-// DropConstraint, SetOnDelete and AlterColumn.
+// DropConstraint, SetOnDelete and AlterColumn,
+// AddRowDeletionPolicy, ReplaceRowDeletionPolicy, DropRowDeletionPolicy.
 type TableAlteration interface {
 	isTableAlteration()
 	SQL() string
 }
 
-func (AddColumn) isTableAlteration()      {}
-func (DropColumn) isTableAlteration()     {}
-func (AddConstraint) isTableAlteration()  {}
-func (DropConstraint) isTableAlteration() {}
-func (SetOnDelete) isTableAlteration()    {}
-func (AlterColumn) isTableAlteration()    {}
+func (AddColumn) isTableAlteration()                {}
+func (DropColumn) isTableAlteration()               {}
+func (AddConstraint) isTableAlteration()            {}
+func (DropConstraint) isTableAlteration()           {}
+func (SetOnDelete) isTableAlteration()              {}
+func (AlterColumn) isTableAlteration()              {}
+func (AddRowDeletionPolicy) isTableAlteration()     {}
+func (ReplaceRowDeletionPolicy) isTableAlteration() {}
+func (DropRowDeletionPolicy) isTableAlteration()    {}
 
 type AddColumn struct{ Def ColumnDef }
 type DropColumn struct{ Name ID }
@@ -181,6 +223,9 @@ type AlterColumn struct {
 	Name       ID
 	Alteration ColumnAlteration
 }
+type AddRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+type ReplaceRowDeletionPolicy struct{ RowDeletionPolicy RowDeletionPolicy }
+type DropRowDeletionPolicy struct{}
 
 // ColumnAlteration is satisfied by SetColumnType and SetColumnOptions.
 type ColumnAlteration interface {
@@ -204,6 +249,37 @@ const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
 )
+
+// AlterDatabase represents an ALTER DATABASE statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-database
+type AlterDatabase struct {
+	Name       ID
+	Alteration DatabaseAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (ad *AlterDatabase) String() string { return fmt.Sprintf("%#v", ad) }
+func (*AlterDatabase) isDDLStmt()        {}
+func (ad *AlterDatabase) Pos() Position  { return ad.Position }
+func (ad *AlterDatabase) clearOffset()   { ad.Position.Offset = 0 }
+
+type DatabaseAlteration interface {
+	isDatabaseAlteration()
+	SQL() string
+}
+
+type SetDatabaseOptions struct{ Options DatabaseOptions }
+
+func (SetDatabaseOptions) isDatabaseAlteration() {}
+
+// DatabaseOptions represents options on a database as part of a
+// ALTER DATABASE statement.
+type DatabaseOptions struct {
+	OptimizerVersion       *int
+	VersionRetentionPeriod *string
+	EnableKeyVisualizer    *bool
+}
 
 // Delete represents a DELETE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
@@ -311,6 +387,7 @@ const (
 	Bytes
 	Date
 	Timestamp
+	JSON
 )
 
 // KeyPart represents a column specification as part of a primary key or index definition.
@@ -360,6 +437,7 @@ type SelectFrom interface {
 type SelectFromTable struct {
 	Table ID
 	Alias ID // empty if not aliased
+	Hints map[string]string
 }
 
 func (SelectFromTable) isSelectFrom() {}
@@ -560,6 +638,33 @@ type Func struct {
 func (Func) isBoolExpr() {} // possibly bool
 func (Func) isExpr()     {}
 
+// TypedExpr represents a typed expression in the form `expr AS type_name`, e.g. `'17' AS INT64`.
+type TypedExpr struct {
+	Type Type
+	Expr Expr
+}
+
+func (TypedExpr) isBoolExpr() {} // possibly bool
+func (TypedExpr) isExpr()     {}
+
+type ExtractExpr struct {
+	Part string
+	Type Type
+	Expr Expr
+}
+
+func (ExtractExpr) isBoolExpr() {} // possibly bool
+func (ExtractExpr) isExpr()     {}
+
+type AtTimeZoneExpr struct {
+	Expr Expr
+	Type Type
+	Zone string
+}
+
+func (AtTimeZoneExpr) isBoolExpr() {} // possibly bool
+func (AtTimeZoneExpr) isExpr()     {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr
@@ -629,6 +734,18 @@ func (StringLiteral) isExpr() {}
 type BytesLiteral string
 
 func (BytesLiteral) isExpr() {}
+
+// DateLiteral represents a date literal.
+// https://cloud.google.com/spanner/docs/lexical#date_literals
+type DateLiteral civil.Date
+
+func (DateLiteral) isExpr() {}
+
+// TimestampLiteral represents a timestamp literal.
+// https://cloud.google.com/spanner/docs/lexical#timestamp_literals
+type TimestampLiteral time.Time
+
+func (TimestampLiteral) isExpr() {}
 
 type StarExpr int
 

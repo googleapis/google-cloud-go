@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewCloudCatalogClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudCatalogClient_ListServices() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -62,17 +63,16 @@ func ExampleCloudCatalogClient_ListServices() {
 }
 
 func ExampleCloudCatalogClient_ListSkus() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListSkusRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/billing/v1#ListSkusRequest.
 	}
 	it := c.ListSkus(ctx, req)
 	for {

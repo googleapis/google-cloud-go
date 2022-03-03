@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,22 +32,28 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	ListEnvironments []gax.CallOption
+	ListEnvironments      []gax.CallOption
+	GetEnvironment        []gax.CallOption
+	CreateEnvironment     []gax.CallOption
+	UpdateEnvironment     []gax.CallOption
+	DeleteEnvironment     []gax.CallOption
+	GetEnvironmentHistory []gax.CallOption
 }
 
-func defaultEnvironmentsClientOptions() []option.ClientOption {
+func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -67,35 +72,178 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 				})
 			}),
 		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEnvironmentHistory: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
+// internalEnvironmentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalEnvironmentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListEnvironments(context.Context, *dialogflowpb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
+	GetEnvironment(context.Context, *dialogflowpb.GetEnvironmentRequest, ...gax.CallOption) (*dialogflowpb.Environment, error)
+	CreateEnvironment(context.Context, *dialogflowpb.CreateEnvironmentRequest, ...gax.CallOption) (*dialogflowpb.Environment, error)
+	UpdateEnvironment(context.Context, *dialogflowpb.UpdateEnvironmentRequest, ...gax.CallOption) (*dialogflowpb.Environment, error)
+	DeleteEnvironment(context.Context, *dialogflowpb.DeleteEnvironmentRequest, ...gax.CallOption) error
+	GetEnvironmentHistory(context.Context, *dialogflowpb.GetEnvironmentHistoryRequest, ...gax.CallOption) *EnvironmentHistory_EntryIterator
+}
+
 // EnvironmentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Environments.
+type EnvironmentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalEnvironmentsClient
+
+	// The call options for this service.
+	CallOptions *EnvironmentsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *EnvironmentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListEnvironments returns the list of all non-default environments of the specified agent.
+func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogflowpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.ListEnvironments(ctx, req, opts...)
+}
+
+// GetEnvironment retrieves the specified agent environment.
+func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *dialogflowpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	return c.internalClient.GetEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironment creates an agent environment.
+func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *dialogflowpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	return c.internalClient.CreateEnvironment(ctx, req, opts...)
+}
+
+// UpdateEnvironment updates the specified agent environment.
+//
+// This method allows you to deploy new agent versions into the environment.
+// When an environment is pointed to a new agent version by setting
+// environment.agent_version, the environment is temporarily set to the
+// LOADING state. During that time, the environment continues serving the
+// previous version of the agent. After the new agent version is done loading,
+// the environment is set back to the RUNNING state.
+// You can use “-” as Environment ID in environment name to update an agent
+// version in the default environment. WARNING: this will negate all recent
+// changes to the draft agent and can’t be undone. You may want to save the
+// draft agent to a version before calling this method.
+func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *dialogflowpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
+}
+
+// DeleteEnvironment deletes the specified agent environment.
+func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *dialogflowpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
+}
+
+// GetEnvironmentHistory gets the history of the specified environment.
+func (c *EnvironmentsClient) GetEnvironmentHistory(ctx context.Context, req *dialogflowpb.GetEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentHistory_EntryIterator {
+	return c.internalClient.GetEnvironmentHistory(ctx, req, opts...)
+}
+
+// environmentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type EnvironmentsClient struct {
+type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing EnvironmentsClient
+	CallOptions **EnvironmentsCallOptions
+
 	// The gRPC API client.
 	environmentsClient dialogflowpb.EnvironmentsClient
-
-	// The call options for this service.
-	CallOptions *EnvironmentsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewEnvironmentsClient creates a new environments client.
+// NewEnvironmentsClient creates a new environments client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
-	clientOpts := defaultEnvironmentsClientOptions()
-
+	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
 		hookOpts, err := newEnvironmentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -113,53 +261,58 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 	if err != nil {
 		return nil, err
 	}
-	c := &EnvironmentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultEnvironmentsCallOptions(),
+	client := EnvironmentsClient{CallOptions: defaultEnvironmentsCallOptions()}
 
+	c := &environmentsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		environmentsClient: dialogflowpb.NewEnvironmentsClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *EnvironmentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListEnvironments returns the list of all non-draft environments of the specified agent.
-func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogflowpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *environmentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *dialogflowpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEnvironments[0:len(c.CallOptions.ListEnvironments):len(c.CallOptions.ListEnvironments)], opts...)
+	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Environment, string, error) {
-		var resp *dialogflowpb.ListEnvironmentsResponse
-		req.PageToken = pageToken
+		resp := &dialogflowpb.ListEnvironmentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -182,10 +335,188 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogfl
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
+}
+
+func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *dialogflowpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.GetEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *dialogflowpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.CreateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *dialogflowpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.UpdateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *dialogflowpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.environmentsClient.DeleteEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *environmentsGRPCClient) GetEnvironmentHistory(ctx context.Context, req *dialogflowpb.GetEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentHistory_EntryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetEnvironmentHistory[0:len((*c.CallOptions).GetEnvironmentHistory):len((*c.CallOptions).GetEnvironmentHistory)], opts...)
+	it := &EnvironmentHistory_EntryIterator{}
+	req = proto.Clone(req).(*dialogflowpb.GetEnvironmentHistoryRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EnvironmentHistory_Entry, string, error) {
+		resp := &dialogflowpb.EnvironmentHistory{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.GetEnvironmentHistory(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// EnvironmentHistory_EntryIterator manages a stream of *dialogflowpb.EnvironmentHistory_Entry.
+type EnvironmentHistory_EntryIterator struct {
+	items    []*dialogflowpb.EnvironmentHistory_Entry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EnvironmentHistory_Entry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EnvironmentHistory_EntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EnvironmentHistory_EntryIterator) Next() (*dialogflowpb.EnvironmentHistory_Entry, error) {
+	var item *dialogflowpb.EnvironmentHistory_Entry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EnvironmentHistory_EntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EnvironmentHistory_EntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // EnvironmentIterator manages a stream of *dialogflowpb.Environment.

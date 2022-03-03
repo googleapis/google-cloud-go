@@ -1,0 +1,87 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.billing.v1",
+  "libraryPackage": "cloud.google.com/go/billing/apiv1",
+  "services": {
+    "CloudBilling": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudBillingClient",
+          "rpcs": {
+            "CreateBillingAccount": {
+              "methods": [
+                "CreateBillingAccount"
+              ]
+            },
+            "GetBillingAccount": {
+              "methods": [
+                "GetBillingAccount"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetProjectBillingInfo": {
+              "methods": [
+                "GetProjectBillingInfo"
+              ]
+            },
+            "ListBillingAccounts": {
+              "methods": [
+                "ListBillingAccounts"
+              ]
+            },
+            "ListProjectBillingInfo": {
+              "methods": [
+                "ListProjectBillingInfo"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateBillingAccount": {
+              "methods": [
+                "UpdateBillingAccount"
+              ]
+            },
+            "UpdateProjectBillingInfo": {
+              "methods": [
+                "UpdateProjectBillingInfo"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CloudCatalog": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudCatalogClient",
+          "rpcs": {
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

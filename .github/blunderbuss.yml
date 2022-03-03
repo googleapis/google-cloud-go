@@ -3,6 +3,9 @@ assign_issues_by:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
+  to:
+  - telpirion
+- labels:
   - 'api: storage'
   to:
   - tritone
@@ -17,9 +20,9 @@ assign_issues_by:
 - labels:
   - 'api: spanner'
   to:
-  - skuruppu
+  - rahul2393
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - nicolezhu
+  - googleapis/api-logging

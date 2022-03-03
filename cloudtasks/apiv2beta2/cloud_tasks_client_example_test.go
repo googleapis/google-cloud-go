@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,22 +31,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListQueues() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ListQueuesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#ListQueuesRequest.
 	}
 	it := c.ListQueues(ctx, req)
 	for {
@@ -63,16 +64,16 @@ func ExampleClient_ListQueues() {
 }
 
 func ExampleClient_GetQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.GetQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#GetQueueRequest.
 	}
 	resp, err := c.GetQueue(ctx, req)
 	if err != nil {
@@ -83,16 +84,16 @@ func ExampleClient_GetQueue() {
 }
 
 func ExampleClient_CreateQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.CreateQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#CreateQueueRequest.
 	}
 	resp, err := c.CreateQueue(ctx, req)
 	if err != nil {
@@ -103,16 +104,16 @@ func ExampleClient_CreateQueue() {
 }
 
 func ExampleClient_UpdateQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.UpdateQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#UpdateQueueRequest.
 	}
 	resp, err := c.UpdateQueue(ctx, req)
 	if err != nil {
@@ -128,9 +129,11 @@ func ExampleClient_DeleteQueue() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#DeleteQueueRequest.
 	}
 	err = c.DeleteQueue(ctx, req)
 	if err != nil {
@@ -139,16 +142,16 @@ func ExampleClient_DeleteQueue() {
 }
 
 func ExampleClient_PurgeQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.PurgeQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#PurgeQueueRequest.
 	}
 	resp, err := c.PurgeQueue(ctx, req)
 	if err != nil {
@@ -159,16 +162,16 @@ func ExampleClient_PurgeQueue() {
 }
 
 func ExampleClient_PauseQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.PauseQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#PauseQueueRequest.
 	}
 	resp, err := c.PauseQueue(ctx, req)
 	if err != nil {
@@ -179,16 +182,16 @@ func ExampleClient_PauseQueue() {
 }
 
 func ExampleClient_ResumeQueue() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ResumeQueueRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#ResumeQueueRequest.
 	}
 	resp, err := c.ResumeQueue(ctx, req)
 	if err != nil {
@@ -199,16 +202,16 @@ func ExampleClient_ResumeQueue() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -219,16 +222,16 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -239,16 +242,16 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -259,17 +262,16 @@ func ExampleClient_TestIamPermissions() {
 }
 
 func ExampleClient_ListTasks() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ListTasksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#ListTasksRequest.
 	}
 	it := c.ListTasks(ctx, req)
 	for {
@@ -286,16 +288,16 @@ func ExampleClient_ListTasks() {
 }
 
 func ExampleClient_GetTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.GetTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#GetTaskRequest.
 	}
 	resp, err := c.GetTask(ctx, req)
 	if err != nil {
@@ -306,16 +308,16 @@ func ExampleClient_GetTask() {
 }
 
 func ExampleClient_CreateTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.CreateTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#CreateTaskRequest.
 	}
 	resp, err := c.CreateTask(ctx, req)
 	if err != nil {
@@ -331,9 +333,11 @@ func ExampleClient_DeleteTask() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#DeleteTaskRequest.
 	}
 	err = c.DeleteTask(ctx, req)
 	if err != nil {
@@ -342,16 +346,16 @@ func ExampleClient_DeleteTask() {
 }
 
 func ExampleClient_LeaseTasks() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.LeaseTasksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#LeaseTasksRequest.
 	}
 	resp, err := c.LeaseTasks(ctx, req)
 	if err != nil {
@@ -367,9 +371,11 @@ func ExampleClient_AcknowledgeTask() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.AcknowledgeTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#AcknowledgeTaskRequest.
 	}
 	err = c.AcknowledgeTask(ctx, req)
 	if err != nil {
@@ -378,16 +384,16 @@ func ExampleClient_AcknowledgeTask() {
 }
 
 func ExampleClient_RenewLease() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.RenewLeaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#RenewLeaseRequest.
 	}
 	resp, err := c.RenewLease(ctx, req)
 	if err != nil {
@@ -398,16 +404,16 @@ func ExampleClient_RenewLease() {
 }
 
 func ExampleClient_CancelLease() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.CancelLeaseRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#CancelLeaseRequest.
 	}
 	resp, err := c.CancelLease(ctx, req)
 	if err != nil {
@@ -418,16 +424,16 @@ func ExampleClient_CancelLease() {
 }
 
 func ExampleClient_RunTask() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.RunTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/tasks/v2beta2#RunTaskRequest.
 	}
 	resp, err := c.RunTask(ctx, req)
 	if err != nil {

@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.asset.v1p2beta1",
+  "libraryPackage": "cloud.google.com/go/asset/apiv1p2beta1",
+  "services": {
+    "AssetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,21 +31,48 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
-func ExampleClient_CreateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
+func ExampleClient_BulkMuteFindings() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.BulkMuteFindingsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#BulkMuteFindingsRequest.
+	}
+	op, err := c.BulkMuteFindings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateSource() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateSourceRequest.
 	}
 	resp, err := c.CreateSource(ctx, req)
 	if err != nil {
@@ -56,16 +83,16 @@ func ExampleClient_CreateSource() {
 }
 
 func ExampleClient_CreateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateFindingRequest.
 	}
 	resp, err := c.CreateFinding(ctx, req)
 	if err != nil {
@@ -75,17 +102,37 @@ func ExampleClient_CreateFinding() {
 	_ = resp
 }
 
-func ExampleClient_CreateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
+func ExampleClient_CreateMuteConfig() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.CreateMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateMuteConfigRequest.
+	}
+	resp, err := c.CreateMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateNotificationConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateNotificationConfigRequest.
 	}
 	resp, err := c.CreateNotificationConfig(ctx, req)
 	if err != nil {
@@ -95,15 +142,35 @@ func ExampleClient_CreateNotificationConfig() {
 	_ = resp
 }
 
+func ExampleClient_DeleteMuteConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#DeleteMuteConfigRequest.
+	}
+	err = c.DeleteMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteNotificationConfig() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.DeleteNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#DeleteNotificationConfigRequest.
 	}
 	err = c.DeleteNotificationConfig(ctx, req)
 	if err != nil {
@@ -111,17 +178,37 @@ func ExampleClient_DeleteNotificationConfig() {
 	}
 }
 
-func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
+func ExampleClient_GetBigQueryExport() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetBigQueryExportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetBigQueryExportRequest.
+	}
+	resp, err := c.GetBigQueryExport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetIamPolicy() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -131,17 +218,37 @@ func ExampleClient_GetIamPolicy() {
 	_ = resp
 }
 
-func ExampleClient_GetNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
+func ExampleClient_GetMuteConfig() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetMuteConfigRequest.
+	}
+	resp, err := c.GetMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNotificationConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetNotificationConfigRequest.
 	}
 	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {
@@ -152,16 +259,16 @@ func ExampleClient_GetNotificationConfig() {
 }
 
 func ExampleClient_GetOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetOrganizationSettingsRequest.
 	}
 	resp, err := c.GetOrganizationSettings(ctx, req)
 	if err != nil {
@@ -172,16 +279,16 @@ func ExampleClient_GetOrganizationSettings() {
 }
 
 func ExampleClient_GetSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GetSourceRequest.
 	}
 	resp, err := c.GetSource(ctx, req)
 	if err != nil {
@@ -192,17 +299,16 @@ func ExampleClient_GetSource() {
 }
 
 func ExampleClient_GroupAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GroupAssetsRequest.
 	}
 	it := c.GroupAssets(ctx, req)
 	for {
@@ -219,17 +325,16 @@ func ExampleClient_GroupAssets() {
 }
 
 func ExampleClient_GroupFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#GroupFindingsRequest.
 	}
 	it := c.GroupFindings(ctx, req)
 	for {
@@ -246,17 +351,16 @@ func ExampleClient_GroupFindings() {
 }
 
 func ExampleClient_ListAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {
@@ -273,17 +377,16 @@ func ExampleClient_ListAssets() {
 }
 
 func ExampleClient_ListFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListFindingsRequest.
 	}
 	it := c.ListFindings(ctx, req)
 	for {
@@ -299,18 +402,43 @@ func ExampleClient_ListFindings() {
 	}
 }
 
-func ExampleClient_ListNotificationConfigs() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
+func ExampleClient_ListMuteConfigs() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListMuteConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListMuteConfigsRequest.
+	}
+	it := c.ListMuteConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListNotificationConfigs() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListNotificationConfigsRequest.
 	}
 	it := c.ListNotificationConfigs(ctx, req)
 	for {
@@ -327,17 +455,16 @@ func ExampleClient_ListNotificationConfigs() {
 }
 
 func ExampleClient_ListSources() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListSourcesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListSourcesRequest.
 	}
 	it := c.ListSources(ctx, req)
 	for {
@@ -354,16 +481,16 @@ func ExampleClient_ListSources() {
 }
 
 func ExampleClient_RunAssetDiscovery() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.RunAssetDiscoveryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#RunAssetDiscoveryRequest.
 	}
 	op, err := c.RunAssetDiscovery(ctx, req)
 	if err != nil {
@@ -379,16 +506,16 @@ func ExampleClient_RunAssetDiscovery() {
 }
 
 func ExampleClient_SetFindingState() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.SetFindingStateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#SetFindingStateRequest.
 	}
 	resp, err := c.SetFindingState(ctx, req)
 	if err != nil {
@@ -398,17 +525,37 @@ func ExampleClient_SetFindingState() {
 	_ = resp
 }
 
-func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
+func ExampleClient_SetMute() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.SetMuteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#SetMuteRequest.
+	}
+	resp, err := c.SetMute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_SetIamPolicy() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -419,16 +566,16 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -438,17 +585,37 @@ func ExampleClient_TestIamPermissions() {
 	_ = resp
 }
 
-func ExampleClient_UpdateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
+func ExampleClient_UpdateExternalSystem() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateExternalSystemRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateExternalSystemRequest.
+	}
+	resp, err := c.UpdateExternalSystem(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateFinding() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateFindingRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateFindingRequest.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
 	if err != nil {
@@ -458,17 +625,37 @@ func ExampleClient_UpdateFinding() {
 	_ = resp
 }
 
-func ExampleClient_UpdateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
+func ExampleClient_UpdateMuteConfig() {
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateMuteConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateMuteConfigRequest.
+	}
+	resp, err := c.UpdateMuteConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateNotificationConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateNotificationConfigRequest.
 	}
 	resp, err := c.UpdateNotificationConfig(ctx, req)
 	if err != nil {
@@ -479,16 +666,16 @@ func ExampleClient_UpdateNotificationConfig() {
 }
 
 func ExampleClient_UpdateOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateOrganizationSettingsRequest.
 	}
 	resp, err := c.UpdateOrganizationSettings(ctx, req)
 	if err != nil {
@@ -499,16 +686,16 @@ func ExampleClient_UpdateOrganizationSettings() {
 }
 
 func ExampleClient_UpdateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSourceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateSourceRequest.
 	}
 	resp, err := c.UpdateSource(ctx, req)
 	if err != nil {
@@ -519,16 +706,16 @@ func ExampleClient_UpdateSource() {
 }
 
 func ExampleClient_UpdateSecurityMarks() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSecurityMarksRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateSecurityMarksRequest.
 	}
 	resp, err := c.UpdateSecurityMarks(ctx, req)
 	if err != nil {
@@ -536,4 +723,88 @@ func ExampleClient_UpdateSecurityMarks() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_CreateBigQueryExport() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.CreateBigQueryExportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#CreateBigQueryExportRequest.
+	}
+	resp, err := c.CreateBigQueryExport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteBigQueryExport() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteBigQueryExportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#DeleteBigQueryExportRequest.
+	}
+	err = c.DeleteBigQueryExport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_UpdateBigQueryExport() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateBigQueryExportRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#UpdateBigQueryExportRequest.
+	}
+	resp, err := c.UpdateBigQueryExport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListBigQueryExports() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListBigQueryExportsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/securitycenter/v1#ListBigQueryExportsRequest.
+	}
+	it := c.ListBigQueryExports(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

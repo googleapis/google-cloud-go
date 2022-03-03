@@ -12,20 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
+// +build !windows
+
 // Package gapicgen provides some helpers for gapicgen binaries.
 package gapicgen
 
 import (
 	"fmt"
 	"os"
-	"os/exec"
+
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 // VerifyAllToolsExist ensures that all required tools exist on the system.
 func VerifyAllToolsExist(toolsNeeded []string) error {
 	for _, t := range toolsNeeded {
-		c := exec.Command("which", t)
-		c.Stdout = os.Stdout
+		c := execv.Command("which", t)
 		c.Stderr = os.Stderr
 		if c.Run() != nil {
 			return fmt.Errorf("%s does not appear to be installed. please install it. all tools needed: %v", t, toolsNeeded)

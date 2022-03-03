@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,13 +44,13 @@ type Debugger2CallOptions struct {
 	ListDebuggees    []gax.CallOption
 }
 
-func defaultDebugger2ClientOptions() []option.ClientOption {
+func defaultDebugger2GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouddebugger.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddebugger.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -110,27 +110,110 @@ func defaultDebugger2CallOptions() *Debugger2CallOptions {
 	}
 }
 
+// internalDebugger2Client is an interface that defines the methods availaible from Stackdriver Debugger API.
+type internalDebugger2Client interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	SetBreakpoint(context.Context, *clouddebuggerpb.SetBreakpointRequest, ...gax.CallOption) (*clouddebuggerpb.SetBreakpointResponse, error)
+	GetBreakpoint(context.Context, *clouddebuggerpb.GetBreakpointRequest, ...gax.CallOption) (*clouddebuggerpb.GetBreakpointResponse, error)
+	DeleteBreakpoint(context.Context, *clouddebuggerpb.DeleteBreakpointRequest, ...gax.CallOption) error
+	ListBreakpoints(context.Context, *clouddebuggerpb.ListBreakpointsRequest, ...gax.CallOption) (*clouddebuggerpb.ListBreakpointsResponse, error)
+	ListDebuggees(context.Context, *clouddebuggerpb.ListDebuggeesRequest, ...gax.CallOption) (*clouddebuggerpb.ListDebuggeesResponse, error)
+}
+
 // Debugger2Client is a client for interacting with Stackdriver Debugger API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Debugger service provides the API that allows users to collect run-time
+// information from a running application, without stopping or slowing it down
+// and without modifying its state.  An application may include one or
+// more replicated processes performing the same work.
+//
+// A debugged application is represented using the Debuggee concept. The
+// Debugger service provides a way to query for available debuggees, but does
+// not provide a way to create one.  A debuggee is created using the Controller
+// service, usually by running a debugger agent with the application.
+//
+// The Debugger service enables the client to set one or more Breakpoints on a
+// Debuggee and collect the results of the set Breakpoints.
+type Debugger2Client struct {
+	// The internal transport-dependent client.
+	internalClient internalDebugger2Client
+
+	// The call options for this service.
+	CallOptions *Debugger2CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Debugger2Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Debugger2Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Debugger2Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// SetBreakpoint sets the breakpoint to the debuggee.
+func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerpb.SetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.SetBreakpointResponse, error) {
+	return c.internalClient.SetBreakpoint(ctx, req, opts...)
+}
+
+// GetBreakpoint gets breakpoint information.
+func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerpb.GetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.GetBreakpointResponse, error) {
+	return c.internalClient.GetBreakpoint(ctx, req, opts...)
+}
+
+// DeleteBreakpoint deletes the breakpoint from the debuggee.
+func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBreakpoint(ctx, req, opts...)
+}
+
+// ListBreakpoints lists all breakpoints for the debuggee.
+func (c *Debugger2Client) ListBreakpoints(ctx context.Context, req *clouddebuggerpb.ListBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListBreakpointsResponse, error) {
+	return c.internalClient.ListBreakpoints(ctx, req, opts...)
+}
+
+// ListDebuggees lists all the debuggees that the user has access to.
+func (c *Debugger2Client) ListDebuggees(ctx context.Context, req *clouddebuggerpb.ListDebuggeesRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListDebuggeesResponse, error) {
+	return c.internalClient.ListDebuggees(ctx, req, opts...)
+}
+
+// debugger2GRPCClient is a client for interacting with Stackdriver Debugger API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Debugger2Client struct {
+type debugger2GRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Debugger2Client
+	CallOptions **Debugger2CallOptions
+
 	// The gRPC API client.
 	debugger2Client clouddebuggerpb.Debugger2Client
-
-	// The call options for this service.
-	CallOptions *Debugger2CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDebugger2Client creates a new debugger2 client.
+// NewDebugger2Client creates a new debugger2 client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Debugger service provides the API that allows users to collect run-time
 // information from a running application, without stopping or slowing it down
@@ -145,8 +228,7 @@ type Debugger2Client struct {
 // The Debugger service enables the client to set one or more Breakpoints on a
 // Debuggee and collect the results of the set Breakpoints.
 func NewDebugger2Client(ctx context.Context, opts ...option.ClientOption) (*Debugger2Client, error) {
-	clientOpts := defaultDebugger2ClientOptions()
-
+	clientOpts := defaultDebugger2GRPCClientOptions()
 	if newDebugger2ClientHook != nil {
 		hookOpts, err := newDebugger2ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -164,50 +246,53 @@ func NewDebugger2Client(ctx context.Context, opts ...option.ClientOption) (*Debu
 	if err != nil {
 		return nil, err
 	}
-	c := &Debugger2Client{
+	client := Debugger2Client{CallOptions: defaultDebugger2CallOptions()}
+
+	c := &debugger2GRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDebugger2CallOptions(),
-
-		debugger2Client: clouddebuggerpb.NewDebugger2Client(connPool),
+		debugger2Client:  clouddebuggerpb.NewDebugger2Client(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Debugger2Client) Connection() *grpc.ClientConn {
+func (c *debugger2GRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Debugger2Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Debugger2Client) setGoogleClientInfo(keyval ...string) {
+func (c *debugger2GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// SetBreakpoint sets the breakpoint to the debuggee.
-func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerpb.SetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.SetBreakpointResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *debugger2GRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *debugger2GRPCClient) SetBreakpoint(ctx context.Context, req *clouddebuggerpb.SetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.SetBreakpointResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetBreakpoint[0:len(c.CallOptions.SetBreakpoint):len(c.CallOptions.SetBreakpoint)], opts...)
+	opts = append((*c.CallOptions).SetBreakpoint[0:len((*c.CallOptions).SetBreakpoint):len((*c.CallOptions).SetBreakpoint)], opts...)
 	var resp *clouddebuggerpb.SetBreakpointResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -220,16 +305,16 @@ func (c *Debugger2Client) SetBreakpoint(ctx context.Context, req *clouddebuggerp
 	return resp, nil
 }
 
-// GetBreakpoint gets breakpoint information.
-func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerpb.GetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.GetBreakpointResponse, error) {
+func (c *debugger2GRPCClient) GetBreakpoint(ctx context.Context, req *clouddebuggerpb.GetBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.GetBreakpointResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint_id", url.QueryEscape(req.GetBreakpointId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetBreakpoint[0:len(c.CallOptions.GetBreakpoint):len(c.CallOptions.GetBreakpoint)], opts...)
+	opts = append((*c.CallOptions).GetBreakpoint[0:len((*c.CallOptions).GetBreakpoint):len((*c.CallOptions).GetBreakpoint)], opts...)
 	var resp *clouddebuggerpb.GetBreakpointResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -242,16 +327,16 @@ func (c *Debugger2Client) GetBreakpoint(ctx context.Context, req *clouddebuggerp
 	return resp, nil
 }
 
-// DeleteBreakpoint deletes the breakpoint from the debuggee.
-func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest, opts ...gax.CallOption) error {
+func (c *debugger2GRPCClient) DeleteBreakpoint(ctx context.Context, req *clouddebuggerpb.DeleteBreakpointRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint_id", url.QueryEscape(req.GetBreakpointId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteBreakpoint[0:len(c.CallOptions.DeleteBreakpoint):len(c.CallOptions.DeleteBreakpoint)], opts...)
+	opts = append((*c.CallOptions).DeleteBreakpoint[0:len((*c.CallOptions).DeleteBreakpoint):len((*c.CallOptions).DeleteBreakpoint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.debugger2Client.DeleteBreakpoint(ctx, req, settings.GRPC...)
@@ -260,16 +345,16 @@ func (c *Debugger2Client) DeleteBreakpoint(ctx context.Context, req *clouddebugg
 	return err
 }
 
-// ListBreakpoints lists all breakpoints for the debuggee.
-func (c *Debugger2Client) ListBreakpoints(ctx context.Context, req *clouddebuggerpb.ListBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListBreakpointsResponse, error) {
+func (c *debugger2GRPCClient) ListBreakpoints(ctx context.Context, req *clouddebuggerpb.ListBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListBreakpointsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListBreakpoints[0:len(c.CallOptions.ListBreakpoints):len(c.CallOptions.ListBreakpoints)], opts...)
+	opts = append((*c.CallOptions).ListBreakpoints[0:len((*c.CallOptions).ListBreakpoints):len((*c.CallOptions).ListBreakpoints)], opts...)
 	var resp *clouddebuggerpb.ListBreakpointsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -282,15 +367,14 @@ func (c *Debugger2Client) ListBreakpoints(ctx context.Context, req *clouddebugge
 	return resp, nil
 }
 
-// ListDebuggees lists all the debuggees that the user has access to.
-func (c *Debugger2Client) ListDebuggees(ctx context.Context, req *clouddebuggerpb.ListDebuggeesRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListDebuggeesResponse, error) {
+func (c *debugger2GRPCClient) ListDebuggees(ctx context.Context, req *clouddebuggerpb.ListDebuggeesRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListDebuggeesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListDebuggees[0:len(c.CallOptions.ListDebuggees):len(c.CallOptions.ListDebuggees)], opts...)
+	opts = append((*c.CallOptions).ListDebuggees[0:len((*c.CallOptions).ListDebuggees):len((*c.CallOptions).ListDebuggees)], opts...)
 	var resp *clouddebuggerpb.ListDebuggeesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

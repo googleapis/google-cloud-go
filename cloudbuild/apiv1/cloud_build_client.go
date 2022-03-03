@@ -23,6 +23,8 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -114,6 +116,11 @@ type Client struct {
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // NewClient creates a new cloud build client.
@@ -138,6 +145,16 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client: cloudbuildpb.NewCloudBuildClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
 	return c, nil
 }
 
@@ -410,10 +427,10 @@ func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildReq
 // CreateWorkerPool creates a WorkerPool to run the builds, and returns the new worker pool.
 //
 // This API is experimental.
-func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateWorkerPoolRequest, opts ...gax.CallOption) (*CreateWorkerPoolOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateWorkerPool[0:len(c.CallOptions.CreateWorkerPool):len(c.CallOptions.CreateWorkerPool)], opts...)
-	var resp *cloudbuildpb.WorkerPool
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.CreateWorkerPool(ctx, req, settings.GRPC...)
@@ -422,7 +439,9 @@ func (c *Client) CreateWorkerPool(ctx context.Context, req *cloudbuildpb.CreateW
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &CreateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // GetWorkerPool returns information about a WorkerPool.
@@ -460,10 +479,10 @@ func (c *Client) DeleteWorkerPool(ctx context.Context, req *cloudbuildpb.DeleteW
 // UpdateWorkerPool update a WorkerPool.
 //
 // This API is experimental.
-func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateWorkerPoolRequest, opts ...gax.CallOption) (*UpdateWorkerPoolOperation, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.UpdateWorkerPool[0:len(c.CallOptions.UpdateWorkerPool):len(c.CallOptions.UpdateWorkerPool)], opts...)
-	var resp *cloudbuildpb.WorkerPool
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.UpdateWorkerPool(ctx, req, settings.GRPC...)
@@ -472,7 +491,9 @@ func (c *Client) UpdateWorkerPool(ctx context.Context, req *cloudbuildpb.UpdateW
 	if err != nil {
 		return nil, err
 	}
-	return resp, nil
+	return &UpdateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // ListWorkerPools list project's WorkerPools.
@@ -533,4 +554,142 @@ func (it *BuildIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// CreateWorkerPoolOperation manages a long-running operation from CreateWorkerPool.
+type CreateWorkerPoolOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateWorkerPoolOperation returns a new CreateWorkerPoolOperation from a given name.
+// The name must be that of a previously created CreateWorkerPoolOperation, possibly from a different process.
+func (c *Client) CreateWorkerPoolOperation(name string) *CreateWorkerPoolOperation {
+	return &CreateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateWorkerPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateWorkerPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateWorkerPoolOperation) Metadata() (*cloudbuildpb.CreateWorkerPoolOperationMetadata, error) {
+	var meta cloudbuildpb.CreateWorkerPoolOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateWorkerPoolOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateWorkerPoolOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateWorkerPoolOperation manages a long-running operation from UpdateWorkerPool.
+type UpdateWorkerPoolOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateWorkerPoolOperation returns a new UpdateWorkerPoolOperation from a given name.
+// The name must be that of a previously created UpdateWorkerPoolOperation, possibly from a different process.
+func (c *Client) UpdateWorkerPoolOperation(name string) *UpdateWorkerPoolOperation {
+	return &UpdateWorkerPoolOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateWorkerPoolOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateWorkerPoolOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cloudbuildpb.WorkerPool, error) {
+	var resp cloudbuildpb.WorkerPool
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateWorkerPoolOperation) Metadata() (*cloudbuildpb.UpdateWorkerPoolOperationMetadata, error) {
+	var meta cloudbuildpb.UpdateWorkerPoolOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateWorkerPoolOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateWorkerPoolOperation) Name() string {
+	return op.lro.Name()
 }

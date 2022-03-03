@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewEntityTypesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEntityTypesClient_ListEntityTypes() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListEntityTypesRequest.
 	}
 	it := c.ListEntityTypes(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleEntityTypesClient_ListEntityTypes() {
 }
 
 func ExampleEntityTypesClient_GetEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetEntityTypeRequest.
 	}
 	resp, err := c.GetEntityType(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleEntityTypesClient_GetEntityType() {
 }
 
 func ExampleEntityTypesClient_CreateEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateEntityTypeRequest.
 	}
 	resp, err := c.CreateEntityType(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleEntityTypesClient_CreateEntityType() {
 }
 
 func ExampleEntityTypesClient_UpdateEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateEntityTypeRequest.
 	}
 	resp, err := c.UpdateEntityType(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteEntityTypeRequest.
 	}
 	err = c.DeleteEntityType(ctx, req)
 	if err != nil {

@@ -1,5 +1,39 @@
 # Changes
 
+### [1.6.1](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.6.0...firestore/v1.6.1) (2021-10-29)
+
+
+### Bug Fixes
+
+* **firestore:** prefer exact matches when reflecting fields ([#4908](https://www.github.com/googleapis/google-cloud-go/issues/4908)) ([d3d9420](https://www.github.com/googleapis/google-cloud-go/commit/d3d94205995ad910bd277f1f930cef4ac86c8040))
+
+## [1.6.0](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.5.0...firestore/v1.6.0) (2021-09-09)
+
+
+### Features
+
+* **firestore:** Add support for PartitionQuery ([#4206](https://www.github.com/googleapis/google-cloud-go/issues/4206)) ([b34783a](https://www.github.com/googleapis/google-cloud-go/commit/b34783a4d7a8c88204e0f44bd411795d8267d811))
+* **firestore:** Support DocumentRefs in OrderBy, Add Query.Serialize, Query.Deserialize for cross machine serialization ([#4347](https://www.github.com/googleapis/google-cloud-go/issues/4347)) ([a0f7a02](https://www.github.com/googleapis/google-cloud-go/commit/a0f7a02bd8db90fa2297c6e84658868901ef9566))
+
+
+### Bug Fixes
+
+* **firestore:** correct an issue with returning empty paritions from GetPartionedQueries ([#4346](https://www.github.com/googleapis/google-cloud-go/issues/4346)) ([b2a6171](https://www.github.com/googleapis/google-cloud-go/commit/b2a61719b3caf43b095fc290b23de245a2135512))
+* **firestore:** remove excessive spans on iterator ([#4163](https://www.github.com/googleapis/google-cloud-go/issues/4163)) ([812ef1f](https://www.github.com/googleapis/google-cloud-go/commit/812ef1ffdce2e87570660b58f0e725ad51f68546))
+* **firestore:** retry RESOURCE_EXHAUSTED errors docs: various documentation improvements ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+
+## [1.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.4.0...v1.5.0) (2021-02-24)
+
+
+### Features
+
+* **firestore:** add opencensus tracing support  ([#2942](https://www.github.com/googleapis/google-cloud-go/issues/2942)) ([257f322](https://www.github.com/googleapis/google-cloud-go/commit/257f322e68b75765bd316ccefed5461d4df538a0))
+
+
+### Bug Fixes
+
+* **firestore:** address a missing branch in watch.stop() error remapping ([#3643](https://www.github.com/googleapis/google-cloud-go/issues/3643)) ([89ad55d](https://www.github.com/googleapis/google-cloud-go/commit/89ad55d72f79995a68f9c2ed1cd9b5ba50009d6d))
+
 ## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.3.0...v1.4.0) (2020-12-03)
 
 

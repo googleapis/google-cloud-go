@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListInsights() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.ListInsightsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#ListInsightsRequest.
 	}
 	it := c.ListInsights(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleClient_ListInsights() {
 }
 
 func ExampleClient_GetInsight() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.GetInsightRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#GetInsightRequest.
 	}
 	resp, err := c.GetInsight(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleClient_GetInsight() {
 }
 
 func ExampleClient_MarkInsightAccepted() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.MarkInsightAcceptedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkInsightAcceptedRequest.
 	}
 	resp, err := c.MarkInsightAccepted(ctx, req)
 	if err != nil {
@@ -102,17 +103,16 @@ func ExampleClient_MarkInsightAccepted() {
 }
 
 func ExampleClient_ListRecommendations() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.ListRecommendationsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#ListRecommendationsRequest.
 	}
 	it := c.ListRecommendations(ctx, req)
 	for {
@@ -129,16 +129,16 @@ func ExampleClient_ListRecommendations() {
 }
 
 func ExampleClient_GetRecommendation() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.GetRecommendationRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#GetRecommendationRequest.
 	}
 	resp, err := c.GetRecommendation(ctx, req)
 	if err != nil {
@@ -149,16 +149,16 @@ func ExampleClient_GetRecommendation() {
 }
 
 func ExampleClient_MarkRecommendationClaimed() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.MarkRecommendationClaimedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkRecommendationClaimedRequest.
 	}
 	resp, err := c.MarkRecommendationClaimed(ctx, req)
 	if err != nil {
@@ -169,16 +169,16 @@ func ExampleClient_MarkRecommendationClaimed() {
 }
 
 func ExampleClient_MarkRecommendationSucceeded() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.MarkRecommendationSucceededRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkRecommendationSucceededRequest.
 	}
 	resp, err := c.MarkRecommendationSucceeded(ctx, req)
 	if err != nil {
@@ -189,18 +189,98 @@ func ExampleClient_MarkRecommendationSucceeded() {
 }
 
 func ExampleClient_MarkRecommendationFailed() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.MarkRecommendationFailedRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#MarkRecommendationFailedRequest.
 	}
 	resp, err := c.MarkRecommendationFailed(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetRecommenderConfig() {
+	ctx := context.Background()
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetRecommenderConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#GetRecommenderConfigRequest.
+	}
+	resp, err := c.GetRecommenderConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateRecommenderConfig() {
+	ctx := context.Background()
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.UpdateRecommenderConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#UpdateRecommenderConfigRequest.
+	}
+	resp, err := c.UpdateRecommenderConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetInsightTypeConfig() {
+	ctx := context.Background()
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.GetInsightTypeConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#GetInsightTypeConfigRequest.
+	}
+	resp, err := c.GetInsightTypeConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateInsightTypeConfig() {
+	ctx := context.Background()
+	c, err := recommender.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommenderpb.UpdateInsightTypeConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recommender/v1beta1#UpdateInsightTypeConfigRequest.
+	}
+	resp, err := c.UpdateInsightTypeConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,18 +30,19 @@ func ExampleNewPublisherClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePublisherClient_Publish() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Publish(ctx)
 	if err != nil {
 		// TODO: Handle error.

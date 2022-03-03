@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewServiceMonitoringClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleServiceMonitoringClient_CreateService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateServiceRequest.
 	}
 	resp, err := c.CreateService(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleServiceMonitoringClient_CreateService() {
 }
 
 func ExampleServiceMonitoringClient_GetService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetServiceRequest.
 	}
 	resp, err := c.GetService(ctx, req)
 	if err != nil {
@@ -75,17 +77,16 @@ func ExampleServiceMonitoringClient_GetService() {
 }
 
 func ExampleServiceMonitoringClient_ListServices() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -102,16 +103,16 @@ func ExampleServiceMonitoringClient_ListServices() {
 }
 
 func ExampleServiceMonitoringClient_UpdateService() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateServiceRequest.
 	}
 	resp, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleServiceMonitoringClient_DeleteService() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteServiceRequest.
 	}
 	err = c.DeleteService(ctx, req)
 	if err != nil {
@@ -138,16 +141,16 @@ func ExampleServiceMonitoringClient_DeleteService() {
 }
 
 func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateServiceLevelObjectiveRequest.
 	}
 	resp, err := c.CreateServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -158,16 +161,16 @@ func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
 }
 
 func ExampleServiceMonitoringClient_GetServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetServiceLevelObjectiveRequest.
 	}
 	resp, err := c.GetServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -178,17 +181,16 @@ func ExampleServiceMonitoringClient_GetServiceLevelObjective() {
 }
 
 func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListServiceLevelObjectivesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListServiceLevelObjectivesRequest.
 	}
 	it := c.ListServiceLevelObjectives(ctx, req)
 	for {
@@ -205,16 +207,16 @@ func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
 }
 
 func ExampleServiceMonitoringClient_UpdateServiceLevelObjective() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateServiceLevelObjectiveRequest.
 	}
 	resp, err := c.UpdateServiceLevelObjective(ctx, req)
 	if err != nil {
@@ -230,9 +232,11 @@ func ExampleServiceMonitoringClient_DeleteServiceLevelObjective() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteServiceLevelObjectiveRequest.
 	}
 	err = c.DeleteServiceLevelObjective(ctx, req)
 	if err != nil {

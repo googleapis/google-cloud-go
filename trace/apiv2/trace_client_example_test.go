@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
@@ -39,9 +41,11 @@ func ExampleClient_BatchWriteSpans() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.BatchWriteSpansRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#BatchWriteSpansRequest.
 	}
 	err = c.BatchWriteSpans(ctx, req)
 	if err != nil {
@@ -50,16 +54,16 @@ func ExampleClient_BatchWriteSpans() {
 }
 
 func ExampleClient_CreateSpan() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.Span{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudtrace/v2#Span.
 	}
 	resp, err := c.CreateSpan(ctx, req)
 	if err != nil {

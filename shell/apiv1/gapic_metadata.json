@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.shell.v1",
+  "libraryPackage": "cloud.google.com/go/shell/apiv1",
+  "services": {
+    "CloudShellService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudShellClient",
+          "rpcs": {
+            "AddPublicKey": {
+              "methods": [
+                "AddPublicKey"
+              ]
+            },
+            "AuthorizeEnvironment": {
+              "methods": [
+                "AuthorizeEnvironment"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "RemovePublicKey": {
+              "methods": [
+                "RemovePublicKey"
+              ]
+            },
+            "StartEnvironment": {
+              "methods": [
+                "StartEnvironment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

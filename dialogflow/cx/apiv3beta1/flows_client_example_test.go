@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewFlowsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleFlowsClient_CreateFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#CreateFlowRequest.
 	}
 	resp, err := c.CreateFlow(ctx, req)
 	if err != nil {
@@ -60,9 +62,11 @@ func ExampleFlowsClient_DeleteFlow() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#DeleteFlowRequest.
 	}
 	err = c.DeleteFlow(ctx, req)
 	if err != nil {
@@ -71,17 +75,16 @@ func ExampleFlowsClient_DeleteFlow() {
 }
 
 func ExampleFlowsClient_ListFlows() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListFlowsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ListFlowsRequest.
 	}
 	it := c.ListFlows(ctx, req)
 	for {
@@ -98,16 +101,16 @@ func ExampleFlowsClient_ListFlows() {
 }
 
 func ExampleFlowsClient_GetFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetFlowRequest.
 	}
 	resp, err := c.GetFlow(ctx, req)
 	if err != nil {
@@ -118,16 +121,16 @@ func ExampleFlowsClient_GetFlow() {
 }
 
 func ExampleFlowsClient_UpdateFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#UpdateFlowRequest.
 	}
 	resp, err := c.UpdateFlow(ctx, req)
 	if err != nil {
@@ -138,16 +141,16 @@ func ExampleFlowsClient_UpdateFlow() {
 }
 
 func ExampleFlowsClient_TrainFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#TrainFlowRequest.
 	}
 	op, err := c.TrainFlow(ctx, req)
 	if err != nil {
@@ -158,4 +161,94 @@ func ExampleFlowsClient_TrainFlow() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleFlowsClient_ValidateFlow() {
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.ValidateFlowRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ValidateFlowRequest.
+	}
+	resp, err := c.ValidateFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFlowsClient_GetFlowValidationResult() {
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.GetFlowValidationResultRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#GetFlowValidationResultRequest.
+	}
+	resp, err := c.GetFlowValidationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFlowsClient_ImportFlow() {
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.ImportFlowRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ImportFlowRequest.
+	}
+	op, err := c.ImportFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFlowsClient_ExportFlow() {
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.ExportFlowRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1#ExportFlowRequest.
+	}
+	op, err := c.ExportFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ type CallOptions struct {
 	SynthesizeSpeech []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("texttospeech.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("texttospeech.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://texttospeech.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -80,32 +80,86 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Cloud Text-to-Speech API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListVoices(context.Context, *texttospeechpb.ListVoicesRequest, ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error)
+	SynthesizeSpeech(context.Context, *texttospeechpb.SynthesizeSpeechRequest, ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error)
+}
+
 // Client is a client for interacting with Cloud Text-to-Speech API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service that implements Google Cloud Text-to-Speech API.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListVoices returns a list of Voice supported for synthesis.
+func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesRequest, opts ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error) {
+	return c.internalClient.ListVoices(ctx, req, opts...)
+}
+
+// SynthesizeSpeech synthesizes speech synchronously: receive results after all text input
+// has been processed.
+func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
+	return c.internalClient.SynthesizeSpeech(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud Text-to-Speech API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client texttospeechpb.TextToSpeechClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new text to speech client.
+// NewClient creates a new text to speech client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service that implements Google Cloud Text-to-Speech API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -123,49 +177,51 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: texttospeechpb.NewTextToSpeechClient(connPool),
+		client:           texttospeechpb.NewTextToSpeechClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListVoices returns a list of Voice supported for synthesis.
-func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesRequest, opts ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesRequest, opts ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListVoices[0:len(c.CallOptions.ListVoices):len(c.CallOptions.ListVoices)], opts...)
+	opts = append((*c.CallOptions).ListVoices[0:len((*c.CallOptions).ListVoices):len((*c.CallOptions).ListVoices)], opts...)
 	var resp *texttospeechpb.ListVoicesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -178,16 +234,14 @@ func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesR
 	return resp, nil
 }
 
-// SynthesizeSpeech synthesizes speech synchronously: receive results after all text input
-// has been processed.
-func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
+func (c *gRPCClient) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.SynthesizeSpeech[0:len(c.CallOptions.SynthesizeSpeech):len(c.CallOptions.SynthesizeSpeech)], opts...)
+	opts = append((*c.CallOptions).SynthesizeSpeech[0:len((*c.CallOptions).SynthesizeSpeech):len((*c.CallOptions).SynthesizeSpeech)], opts...)
 	var resp *texttospeechpb.SynthesizeSpeechResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

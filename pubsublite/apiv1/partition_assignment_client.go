@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,13 +36,13 @@ type PartitionAssignmentCallOptions struct {
 	AssignPartitions []gax.CallOption
 }
 
-func defaultPartitionAssignmentClientOptions() []option.ClientOption {
+func defaultPartitionAssignmentGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -54,33 +54,87 @@ func defaultPartitionAssignmentCallOptions() *PartitionAssignmentCallOptions {
 	}
 }
 
-// PartitionAssignmentClient is a client for interacting with .
+// internalPartitionAssignmentClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+type internalPartitionAssignmentClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	AssignPartitions(context.Context, ...gax.CallOption) (pubsublitepb.PartitionAssignmentService_AssignPartitionsClient, error)
+}
+
+// PartitionAssignmentClient is a client for interacting with Pub/Sub Lite API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The service that a subscriber client application uses to determine which
+// partitions it should connect to.
+type PartitionAssignmentClient struct {
+	// The internal transport-dependent client.
+	internalClient internalPartitionAssignmentClient
+
+	// The call options for this service.
+	CallOptions *PartitionAssignmentCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *PartitionAssignmentClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *PartitionAssignmentClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *PartitionAssignmentClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// AssignPartitions assign partitions for this client to handle for the specified subscription.
+//
+// The client must send an InitialPartitionAssignmentRequest first.
+// The server will then send at most one unacknowledged PartitionAssignment
+// outstanding on the stream at a time.
+// The client should send a PartitionAssignmentAck after updating the
+// partitions it is connected to to reflect the new assignment.
+func (c *PartitionAssignmentClient) AssignPartitions(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.PartitionAssignmentService_AssignPartitionsClient, error) {
+	return c.internalClient.AssignPartitions(ctx, opts...)
+}
+
+// partitionAssignmentGRPCClient is a client for interacting with Pub/Sub Lite API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type PartitionAssignmentClient struct {
+type partitionAssignmentGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing PartitionAssignmentClient
+	CallOptions **PartitionAssignmentCallOptions
+
 	// The gRPC API client.
 	partitionAssignmentClient pubsublitepb.PartitionAssignmentServiceClient
-
-	// The call options for this service.
-	CallOptions *PartitionAssignmentCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewPartitionAssignmentClient creates a new partition assignment service client.
+// NewPartitionAssignmentClient creates a new partition assignment service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The service that a subscriber client application uses to determine which
 // partitions it should connect to.
 func NewPartitionAssignmentClient(ctx context.Context, opts ...option.ClientOption) (*PartitionAssignmentClient, error) {
-	clientOpts := defaultPartitionAssignmentClientOptions()
-
+	clientOpts := defaultPartitionAssignmentGRPCClientOptions()
 	if newPartitionAssignmentClientHook != nil {
 		hookOpts, err := newPartitionAssignmentClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -98,51 +152,47 @@ func NewPartitionAssignmentClient(ctx context.Context, opts ...option.ClientOpti
 	if err != nil {
 		return nil, err
 	}
-	c := &PartitionAssignmentClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultPartitionAssignmentCallOptions(),
+	client := PartitionAssignmentClient{CallOptions: defaultPartitionAssignmentCallOptions()}
 
+	c := &partitionAssignmentGRPCClient{
+		connPool:                  connPool,
+		disableDeadlines:          disableDeadlines,
 		partitionAssignmentClient: pubsublitepb.NewPartitionAssignmentServiceClient(connPool),
+		CallOptions:               &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *PartitionAssignmentClient) Connection() *grpc.ClientConn {
+func (c *partitionAssignmentGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *PartitionAssignmentClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PartitionAssignmentClient) setGoogleClientInfo(keyval ...string) {
+func (c *partitionAssignmentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// AssignPartitions assign partitions for this client to handle for the specified subscription.
-//
-// The client must send an InitialPartitionAssignmentRequest first.
-// The server will then send at most one unacknowledged PartitionAssignment
-// outstanding on the stream at a time.
-// The client should send a PartitionAssignmentAck after updating the
-// partitions it is connected to to reflect the new assignment.
-func (c *PartitionAssignmentClient) AssignPartitions(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.PartitionAssignmentService_AssignPartitionsClient, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *partitionAssignmentGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *partitionAssignmentGRPCClient) AssignPartitions(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.PartitionAssignmentService_AssignPartitionsClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.AssignPartitions[0:len(c.CallOptions.AssignPartitions):len(c.CallOptions.AssignPartitions)], opts...)
 	var resp pubsublitepb.PartitionAssignmentService_AssignPartitionsClient
+	opts = append((*c.CallOptions).AssignPartitions[0:len((*c.CallOptions).AssignPartitions):len((*c.CallOptions).AssignPartitions)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.partitionAssignmentClient.AssignPartitions(ctx, settings.GRPC...)

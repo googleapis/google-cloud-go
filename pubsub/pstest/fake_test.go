@@ -15,9 +15,12 @@
 package pstest
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"math/rand"
+	"net"
 	"reflect"
 	"strings"
 	"sync"
@@ -25,16 +28,42 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+func TestNewServerWithPort(t *testing.T) {
+	// Allocate an available port to use with NewServerWithPort and then close it so it's available.
+	// Note: There is no guarantee that the port does not become used between closing
+	// the listener and creating the new server with NewServerWithPort, but the chances are
+	// very small.
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
+	srv := NewServerWithPort(port)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+}
+
 func TestTopics(t *testing.T) {
-	pclient, _, server, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, server, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
 
 	ctx := context.Background()
@@ -74,6 +103,39 @@ func TestTopics(t *testing.T) {
 	if got, want := len(server.GServer.topics), 0; got != want {
 		t.Fatalf("got %d topics, want %d", got, want)
 	}
+
+	t.Run(`Given a topic that is used by a subscription as deadLetter,
+	When topic deleted,
+	Then error raised`, func(t *testing.T) {
+		var topics []*pb.Topic
+		for i := 1; i < 3; i++ {
+			topics = append(topics, mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{
+				Name:   fmt.Sprintf("projects/P/topics/T%d", i),
+				Labels: map[string]string{"num": fmt.Sprintf("%d", i)},
+			}))
+		}
+
+		if got, want := len(server.GServer.topics), len(topics); got != want {
+			t.Fatalf("got %d topics, want %d", got, want)
+		}
+
+		s := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+			Name:               fmt.Sprintf("project/P/subscriptions/sub_with_deadLetter"),
+			Topic:              topics[0].Name,
+			AckDeadlineSeconds: 10,
+			DeadLetterPolicy: &pb.DeadLetterPolicy{
+				DeadLetterTopic: topics[1].Name,
+			},
+		})
+
+		_, err := pclient.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: topics[1].Name,
+		})
+		expectedErr := status.Errorf(codes.FailedPrecondition, "topic %q used as deadLetter for %s", topics[1].Name, s.Name)
+		if err == nil || err.Error() != expectedErr.Error() {
+			t.Fatalf("returned a different error than the expected one. \nReceived '%s'; \nExpected: '%s'", err, expectedErr)
+		}
+	})
 }
 
 func TestSubscriptions(t *testing.T) {
@@ -142,6 +204,30 @@ func TestSubscriptions(t *testing.T) {
 	if got, want := len(server.GServer.subs), 0; got != want {
 		t.Fatalf("got %d subscriptions, want %d", got, want)
 	}
+
+	t.Run(`Given a subscription creation,
+	When called with a deadLetter topic that does not exist,
+	Then error returned`, func(t *testing.T) {
+		topic := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/test"})
+		_, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+			Name:               "projects/P/subscriptions/test",
+			Topic:              topic.Name,
+			AckDeadlineSeconds: 10,
+			DeadLetterPolicy: &pb.DeadLetterPolicy{
+				DeadLetterTopic: "projects/P/topics/nonexisting",
+			},
+		})
+		expectedErr := status.Errorf(codes.NotFound, "deadLetter topic \"projects/P/topics/nonexisting\"")
+		if err == nil || err.Error() != expectedErr.Error() {
+			t.Fatalf("expected subscription creation to fail with a specific err but it didn't. \nError: %s \nExepcted err: %s", err, expectedErr)
+		}
+		_, err = server.GServer.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: topic.Name,
+		})
+		if err != nil {
+			t.Fatalf("unexpected error during deleting topic")
+		}
+	})
 }
 
 func TestSubscriptionErrors(t *testing.T) {
@@ -185,11 +271,150 @@ func TestSubscriptionErrors(t *testing.T) {
 	checkCode(err, codes.NotFound)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{})
 	checkCode(err, codes.InvalidArgument)
-	srt := &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}
+	srt := &pb.SeekRequest_Time{Time: timestamppb.Now()}
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt})
 	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
 	checkCode(err, codes.NotFound)
+}
+
+func TestSubscriptionDeadLetter(t *testing.T) {
+	_, _, server, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	ctx := context.Background()
+
+	topic, err := server.GServer.CreateTopic(ctx, &pb.Topic{
+		Name: "projects/P/topics/in",
+	})
+	if err != nil {
+		t.Fatalf("failed to create in topic")
+	}
+	deadLetterTopic, err := server.GServer.CreateTopic(ctx, &pb.Topic{
+		Name: "projects/P/topics/deadLetter",
+	})
+	if err != nil {
+		t.Fatalf("failed to create deadLetter topic")
+	}
+	retries := 3
+	sub, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              topic.Name,
+		AckDeadlineSeconds: 10,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic:     deadLetterTopic.Name,
+			MaxDeliveryAttempts: int32(retries),
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription")
+	}
+	dlSub, err := server.GServer.CreateSubscription(ctx, &pb.Subscription{
+		Name:               "projects/P/subscriptions/SD",
+		Topic:              deadLetterTopic.Name,
+		AckDeadlineSeconds: 10,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription")
+	}
+
+	messageData := []byte("message data")
+	_, err = server.GServer.Publish(ctx, &pb.PublishRequest{
+		Topic: topic.Name,
+		Messages: []*pb.PubsubMessage{
+			{
+				Data: messageData,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("failed to publish message")
+	}
+	rand.Seed(time.Now().UTC().UnixNano())
+	maxAttempts := rand.Intn(5) + retries
+	for i := 0; i < maxAttempts; i++ {
+		pull, err := server.GServer.Pull(ctx, &pb.PullRequest{
+			Subscription: sub.Name,
+			MaxMessages:  10,
+		})
+		if err != nil {
+			t.Fatalf("failed during pull")
+		}
+		if i < retries {
+			if len(pull.ReceivedMessages) != 1 {
+				t.Fatalf("expected 1 message received a different number %d", len(pull.ReceivedMessages))
+
+			}
+			for _, m := range pull.ReceivedMessages {
+				if int32(i) != m.DeliveryAttempt {
+					t.Fatalf("message delivery attempt not the expected one. expected: %d, actual: %d", i, m.DeliveryAttempt)
+				}
+				_, err := server.GServer.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
+					Subscription:       sub.Name,
+					AckIds:             []string{m.AckId},
+					AckDeadlineSeconds: 0,
+				})
+				if err != nil {
+					t.Fatalf("failed to modify ack deadline")
+				}
+			}
+		} else {
+			if len(pull.ReceivedMessages) > 0 {
+				t.Fatalf("received a non empty list of messages %d", len(pull.ReceivedMessages))
+			}
+		}
+	}
+
+	dlPull, err := server.GServer.Pull(ctx, &pb.PullRequest{
+		Subscription: dlSub.Name,
+		MaxMessages:  10,
+	})
+	if err != nil {
+		t.Fatalf("failed during pulling from deadLetter sub")
+	}
+	if len(dlPull.ReceivedMessages) != 1 {
+		t.Fatalf("expected 1 message received a different number %d", len(dlPull.ReceivedMessages))
+	}
+	receivedMessage := dlPull.ReceivedMessages[0]
+	if bytes.Compare(receivedMessage.Message.Data, messageData) != 0 {
+		t.Fatalf("unexpected message received from deadLetter")
+	}
+	if receivedMessage.DeliveryAttempt > 0 {
+		t.Fatalf("message sent to deadLetter should not have the deliveryAttempt value from the original subscription message")
+	}
+	_, err = server.GServer.Acknowledge(ctx, &pb.AcknowledgeRequest{
+		Subscription: dlSub.Name,
+		AckIds:       []string{receivedMessage.GetAckId()},
+	})
+	if err != nil {
+		t.Fatalf("failed to acknowledge message from deadLetter")
+	}
+
+	for _, s := range []string{"projects/P/subscriptions/S", "projects/P/subscriptions/SD"} {
+		_, err = server.GServer.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{
+			Subscription: s,
+		})
+		if err != nil {
+			t.Fatalf("failed to delete subscription %s; error: %s", s, err)
+		}
+	}
+
+	for _, delTopic := range []string{"projects/P/topics/in", "projects/P/topics/deadLetter"} {
+		_, err = server.GServer.DeleteTopic(ctx, &pb.DeleteTopicRequest{
+			Topic: delTopic,
+		})
+		if err != nil {
+			t.Fatalf("failed to delete topic %s; error: %s", delTopic, err)
+		}
+	}
+
+	if got, want := len(server.GServer.subs), 0; got != want {
+		t.Fatalf("got %d subscriptions, want %d", got, want)
+	}
+
+	if got, want := len(server.GServer.topics), 0; got != want {
+		t.Fatalf("got %d topics, want %d", got, want)
+	}
 }
 
 func TestPublish(t *testing.T) {
@@ -278,10 +503,7 @@ func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages
 	if err != nil {
 		t.Fatal(err)
 	}
-	tsPubTime, err := ptypes.TimestampProto(pubTime)
-	if err != nil {
-		t.Fatal(err)
-	}
+	tsPubTime := timestamppb.New(pubTime)
 	want := map[string]*pb.PubsubMessage{}
 	for i, id := range res.MessageIds {
 		want[id] = &pb.PubsubMessage{
@@ -639,7 +861,7 @@ func TestSeek(t *testing.T) {
 		Topic:              top.Name,
 		AckDeadlineSeconds: 10,
 	})
-	ts := ptypes.TimestampNow()
+	ts := timestamppb.Now()
 	_, err := sclient.Seek(context.Background(), &pb.SeekRequest{
 		Subscription: sub.Name,
 		Target:       &pb.SeekRequest_Time{Time: ts},
@@ -660,7 +882,7 @@ func TestTryDeliverMessage(t *testing.T) {
 		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
 	} {
 		top := newTopic(&pb.Topic{Name: "some-topic"})
-		sub := newSubscription(top, &sync.Mutex{}, time.Now, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, time.Now, nil, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
 
 		done := make(chan struct{}, 1)
 		done <- struct{}{}
@@ -700,7 +922,7 @@ func TestTimeNowFunc(t *testing.T) {
 
 	m := s.Message(id)
 	if m == nil {
-		t.Error("got nil, want a message")
+		t.Fatalf("got nil, want a message")
 	}
 	if got, want := m.PublishTime, timeFunc(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -797,8 +1019,8 @@ func TestUpdateRetryPolicy(t *testing.T) {
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
 		RetryPolicy: &pb.RetryPolicy{
-			MinimumBackoff: ptypes.DurationProto(10 * time.Second),
-			MaximumBackoff: ptypes.DurationProto(60 * time.Second),
+			MinimumBackoff: durationpb.New(10 * time.Second),
+			MaximumBackoff: durationpb.New(60 * time.Second),
 		},
 	})
 
@@ -807,8 +1029,8 @@ func TestUpdateRetryPolicy(t *testing.T) {
 		Name:               sub.Name,
 		Topic:              top.Name,
 		RetryPolicy: &pb.RetryPolicy{
-			MinimumBackoff: ptypes.DurationProto(20 * time.Second),
-			MaximumBackoff: ptypes.DurationProto(100 * time.Second),
+			MinimumBackoff: durationpb.New(20 * time.Second),
+			MaximumBackoff: durationpb.New(100 * time.Second),
 		},
 	}
 
@@ -850,6 +1072,69 @@ func TestUpdateFilter(t *testing.T) {
 	if got, want := updated.Filter, update.Filter; got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
+}
+
+// Test Create, Get, List, and Delete methods for schema client.
+// Updating a schema is not available at this moment.
+func TestSchemaAdminClient(t *testing.T) {
+	ctx := context.Background()
+	_, _, srv, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal(err)
+	}
+	project := "projects/some-project"
+	schemaID := "some-schema"
+	sclient := pb.NewSchemaServiceClient(conn)
+	pbs, err := sclient.CreateSchema(ctx, &pb.CreateSchemaRequest{
+		Parent: project,
+		Schema: &pb.Schema{
+			Type:       pb.Schema_AVRO,
+			Definition: "avro-definition",
+		},
+		SchemaId: schemaID,
+	})
+	if err != nil {
+		t.Errorf("cannot create schema: %v", err)
+	}
+	pbs2, err := sclient.GetSchema(ctx, &pb.GetSchemaRequest{
+		Name: fmt.Sprintf("%s/schemas/%s", project, schemaID),
+		View: pb.SchemaView_FULL,
+	})
+	if err != nil {
+		t.Errorf("cannot get schema: %v", err)
+	}
+	if diff := testutil.Diff(pbs, pbs2); diff != "" {
+		t.Errorf("returned schema different, -want, +got, %s", diff)
+	}
+
+	resp, err := sclient.ListSchemas(ctx, &pb.ListSchemasRequest{
+		Parent: project,
+		View:   pb.SchemaView_FULL,
+	})
+	if err != nil {
+		t.Errorf("cannot list schema: %v", err)
+	}
+	schemas := resp.Schemas
+	if len(schemas) != 1 {
+		for _, schema := range schemas {
+			fmt.Printf("schema: %v\n", schema)
+		}
+		t.Errorf("got wrong number of schemas in list: %d", len(schemas))
+	}
+
+	_, err = sclient.DeleteSchema(ctx, &pb.DeleteSchemaRequest{
+		Name: fmt.Sprintf("%s/schemas/%s", project, schemaID),
+	})
+	if err != nil {
+		t.Errorf("cannot delete schema: %v", err)
+	}
+	if got, want := len(srv.GServer.schemas), 0; got != want {
+		t.Fatalf("got %d topics, want %d", got, want)
+	}
+
 }
 
 func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
@@ -1007,7 +1292,7 @@ func TestErrorInjection(t *testing.T) {
 		},
 		{
 			funcName: "Seek",
-			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}},
+			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: timestamppb.Now()}},
 		},
 	}
 
@@ -1046,4 +1331,47 @@ func TestErrorInjection(t *testing.T) {
 			t.Errorf("Got error does not contain the right key %v", got)
 		}
 	}
+}
+
+func TestPublishResponse(t *testing.T) {
+	ctx := context.Background()
+	_, _, srv, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	// By default, autoPublishResponse is true so this should succeed immediately.
+	got := srv.Publish("projects/p/topics/t", []byte("msg1"), nil)
+	if want := "m0"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	// After disabling autoPublishResponse, publish() operations
+	// will read from the channel instead of auto generating messages.
+	srv.SetAutoPublishResponse(false)
+
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"1"},
+	}, nil)
+	got = srv.Publish("projects/p/topics/t", []byte("msg2"), nil)
+	if want := "1"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"2"},
+	}, nil)
+	got = srv.Publish("projects/p/topics/t", []byte("msg3"), nil)
+	if want := "2"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	go func() {
+		got = srv.Publish("projects/p/topics/t", []byte("msg4"), nil)
+		if want := "3"; got != want {
+			fmt.Printf("srv.Publish(): got %v, want %v", got, want)
+		}
+	}()
+	time.Sleep(5 * time.Second)
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"3"},
+	}, nil)
 }

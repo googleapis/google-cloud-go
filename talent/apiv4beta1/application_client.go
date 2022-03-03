@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newApplicationClientHook clientHook
@@ -46,13 +46,13 @@ type ApplicationCallOptions struct {
 	ListApplications  []gax.CallOption
 }
 
-func defaultApplicationClientOptions() []option.ClientOption {
+func defaultApplicationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -101,33 +101,105 @@ func defaultApplicationCallOptions() *ApplicationCallOptions {
 	}
 }
 
+// internalApplicationClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+type internalApplicationClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateApplication(context.Context, *talentpb.CreateApplicationRequest, ...gax.CallOption) (*talentpb.Application, error)
+	GetApplication(context.Context, *talentpb.GetApplicationRequest, ...gax.CallOption) (*talentpb.Application, error)
+	UpdateApplication(context.Context, *talentpb.UpdateApplicationRequest, ...gax.CallOption) (*talentpb.Application, error)
+	DeleteApplication(context.Context, *talentpb.DeleteApplicationRequest, ...gax.CallOption) error
+	ListApplications(context.Context, *talentpb.ListApplicationsRequest, ...gax.CallOption) *ApplicationIterator
+}
+
 // ApplicationClient is a client for interacting with Cloud Talent Solution API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service that handles application management, including CRUD and
+// enumeration.
+type ApplicationClient struct {
+	// The internal transport-dependent client.
+	internalClient internalApplicationClient
+
+	// The call options for this service.
+	CallOptions *ApplicationCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ApplicationClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ApplicationClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ApplicationClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateApplication creates a new application entity.
+func (c *ApplicationClient) CreateApplication(ctx context.Context, req *talentpb.CreateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+	return c.internalClient.CreateApplication(ctx, req, opts...)
+}
+
+// GetApplication retrieves specified application.
+func (c *ApplicationClient) GetApplication(ctx context.Context, req *talentpb.GetApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+	return c.internalClient.GetApplication(ctx, req, opts...)
+}
+
+// UpdateApplication updates specified application.
+func (c *ApplicationClient) UpdateApplication(ctx context.Context, req *talentpb.UpdateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+	return c.internalClient.UpdateApplication(ctx, req, opts...)
+}
+
+// DeleteApplication deletes specified application.
+func (c *ApplicationClient) DeleteApplication(ctx context.Context, req *talentpb.DeleteApplicationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteApplication(ctx, req, opts...)
+}
+
+// ListApplications lists all applications associated with the profile.
+func (c *ApplicationClient) ListApplications(ctx context.Context, req *talentpb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
+	return c.internalClient.ListApplications(ctx, req, opts...)
+}
+
+// applicationGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ApplicationClient struct {
+type applicationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ApplicationClient
+	CallOptions **ApplicationCallOptions
+
 	// The gRPC API client.
 	applicationClient talentpb.ApplicationServiceClient
-
-	// The call options for this service.
-	CallOptions *ApplicationCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewApplicationClient creates a new application service client.
+// NewApplicationClient creates a new application service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A service that handles application management, including CRUD and
 // enumeration.
 func NewApplicationClient(ctx context.Context, opts ...option.ClientOption) (*ApplicationClient, error) {
-	clientOpts := defaultApplicationClientOptions()
-
+	clientOpts := defaultApplicationGRPCClientOptions()
 	if newApplicationClientHook != nil {
 		hookOpts, err := newApplicationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -145,50 +217,53 @@ func NewApplicationClient(ctx context.Context, opts ...option.ClientOption) (*Ap
 	if err != nil {
 		return nil, err
 	}
-	c := &ApplicationClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultApplicationCallOptions(),
+	client := ApplicationClient{CallOptions: defaultApplicationCallOptions()}
 
+	c := &applicationGRPCClient{
+		connPool:          connPool,
+		disableDeadlines:  disableDeadlines,
 		applicationClient: talentpb.NewApplicationServiceClient(connPool),
+		CallOptions:       &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ApplicationClient) Connection() *grpc.ClientConn {
+func (c *applicationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ApplicationClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ApplicationClient) setGoogleClientInfo(keyval ...string) {
+func (c *applicationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateApplication creates a new application entity.
-func (c *ApplicationClient) CreateApplication(ctx context.Context, req *talentpb.CreateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *applicationGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *applicationGRPCClient) CreateApplication(ctx context.Context, req *talentpb.CreateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateApplication[0:len(c.CallOptions.CreateApplication):len(c.CallOptions.CreateApplication)], opts...)
+	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *talentpb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -201,16 +276,16 @@ func (c *ApplicationClient) CreateApplication(ctx context.Context, req *talentpb
 	return resp, nil
 }
 
-// GetApplication retrieves specified application.
-func (c *ApplicationClient) GetApplication(ctx context.Context, req *talentpb.GetApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+func (c *applicationGRPCClient) GetApplication(ctx context.Context, req *talentpb.GetApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetApplication[0:len(c.CallOptions.GetApplication):len(c.CallOptions.GetApplication)], opts...)
+	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	var resp *talentpb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -223,16 +298,16 @@ func (c *ApplicationClient) GetApplication(ctx context.Context, req *talentpb.Ge
 	return resp, nil
 }
 
-// UpdateApplication updates specified application.
-func (c *ApplicationClient) UpdateApplication(ctx context.Context, req *talentpb.UpdateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
+func (c *applicationGRPCClient) UpdateApplication(ctx context.Context, req *talentpb.UpdateApplicationRequest, opts ...gax.CallOption) (*talentpb.Application, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "application.name", url.QueryEscape(req.GetApplication().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateApplication[0:len(c.CallOptions.UpdateApplication):len(c.CallOptions.UpdateApplication)], opts...)
+	opts = append((*c.CallOptions).UpdateApplication[0:len((*c.CallOptions).UpdateApplication):len((*c.CallOptions).UpdateApplication)], opts...)
 	var resp *talentpb.Application
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -245,16 +320,16 @@ func (c *ApplicationClient) UpdateApplication(ctx context.Context, req *talentpb
 	return resp, nil
 }
 
-// DeleteApplication deletes specified application.
-func (c *ApplicationClient) DeleteApplication(ctx context.Context, req *talentpb.DeleteApplicationRequest, opts ...gax.CallOption) error {
+func (c *applicationGRPCClient) DeleteApplication(ctx context.Context, req *talentpb.DeleteApplicationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteApplication[0:len(c.CallOptions.DeleteApplication):len(c.CallOptions.DeleteApplication)], opts...)
+	opts = append((*c.CallOptions).DeleteApplication[0:len((*c.CallOptions).DeleteApplication):len((*c.CallOptions).DeleteApplication)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.applicationClient.DeleteApplication(ctx, req, settings.GRPC...)
@@ -263,19 +338,21 @@ func (c *ApplicationClient) DeleteApplication(ctx context.Context, req *talentpb
 	return err
 }
 
-// ListApplications lists all applications associated with the profile.
-func (c *ApplicationClient) ListApplications(ctx context.Context, req *talentpb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
+func (c *applicationGRPCClient) ListApplications(ctx context.Context, req *talentpb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListApplications[0:len(c.CallOptions.ListApplications):len(c.CallOptions.ListApplications)], opts...)
+	opts = append((*c.CallOptions).ListApplications[0:len((*c.CallOptions).ListApplications):len((*c.CallOptions).ListApplications)], opts...)
 	it := &ApplicationIterator{}
 	req = proto.Clone(req).(*talentpb.ListApplicationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Application, string, error) {
-		var resp *talentpb.ListApplicationsResponse
-		req.PageToken = pageToken
+		resp := &talentpb.ListApplicationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -298,9 +375,11 @@ func (c *ApplicationClient) ListApplications(ctx context.Context, req *talentpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 

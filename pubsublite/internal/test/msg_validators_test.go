@@ -46,13 +46,10 @@ func TestOrderingReceiver(t *testing.T) {
 		if gotErr := receiver.Receive("foo/3", "foo"); gotErr != nil {
 			t.Errorf("OrderingReceiver.Receive() got err: %v", gotErr)
 		}
-		if gotErr := receiver.Receive("foo/3", "foo"); gotErr != nil {
-			t.Errorf("OrderingReceiver.Receive() got err: %v", gotErr)
-		}
 		if gotErr := receiver.Receive("foo/4", "foo"); gotErr != nil {
 			t.Errorf("OrderingReceiver.Receive() got err: %v", gotErr)
 		}
-		if gotErr, wantMsg := receiver.Receive("foo/3", "foo"), "expected message idx >= 4, got 3"; !ErrorHasMsg(gotErr, wantMsg) {
+		if gotErr, wantMsg := receiver.Receive("foo/4", "foo"), "expected message idx > 4, got 4"; !ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("OrderingReceiver.Receive() got err: %v, want msg: %q", gotErr, wantMsg)
 		}
 	})
@@ -61,10 +58,7 @@ func TestOrderingReceiver(t *testing.T) {
 		if gotErr := receiver.Receive("bar/30", "bar"); gotErr != nil {
 			t.Errorf("OrderingReceiver.Receive() got err: %v", gotErr)
 		}
-		if gotErr := receiver.Receive("bar/30", "bar"); gotErr != nil {
-			t.Errorf("OrderingReceiver.Receive() got err: %v", gotErr)
-		}
-		if gotErr, wantMsg := receiver.Receive("bar/29", "bar"), "expected message idx >= 30, got 29"; !ErrorHasMsg(gotErr, wantMsg) {
+		if gotErr, wantMsg := receiver.Receive("bar/29", "bar"), "expected message idx > 30, got 29"; !ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("OrderingReceiver.Receive() got err: %v, want msg: %q", gotErr, wantMsg)
 		}
 	})

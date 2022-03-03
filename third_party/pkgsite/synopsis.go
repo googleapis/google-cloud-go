@@ -16,14 +16,14 @@ import (
 const maxSynopsisNodeDepth = 10
 
 // Synopsis returns a one-line summary of the given input node.
-func Synopsis(fset *token.FileSet, n ast.Node) string {
-	return oneLineNodeDepth(fset, n, 0)
+func Synopsis(fset *token.FileSet, n ast.Node, linkify func(string) string) string {
+	return oneLineNodeDepth(fset, n, 0, linkify)
 }
 
 // oneLineNodeDepth returns a one-line summary of the given input node.
 // The depth specifies the current depth when traversing the AST and the
 // function will stop traversing once depth reaches maxSynopsisNodeDepth.
-func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
+func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int, linkify func(string) string) string {
 	const dotDotDot = "..."
 	if depth == maxSynopsisNodeDepth {
 		return dotDotDot
@@ -52,20 +52,20 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 				// The type name may carry over from a previous specification in the
 				// case of constants and iota.
 				if valueSpec.Type != nil {
-					typ = fmt.Sprintf(" %s", oneLineNodeDepth(fset, valueSpec.Type, depth))
+					typ = fmt.Sprintf(" %s", oneLineNodeDepth(fset, valueSpec.Type, depth, linkify))
 				} else if len(valueSpec.Values) > 0 {
 					typ = ""
 				}
 
 				val := ""
 				if i < len(valueSpec.Values) && valueSpec.Values[i] != nil {
-					val = fmt.Sprintf(" = %s", oneLineNodeDepth(fset, valueSpec.Values[i], depth))
+					val = fmt.Sprintf(" = %s", oneLineNodeDepth(fset, valueSpec.Values[i], depth, linkify))
 				}
 				return fmt.Sprintf("%s %s%s%s%s", n.Tok, valueSpec.Names[0], typ, val, trailer)
 			}
 		case token.TYPE:
 			if len(n.Specs) > 0 {
-				return oneLineNodeDepth(fset, n.Specs[0], depth) + trailer
+				return oneLineNodeDepth(fset, n.Specs[0], depth, linkify) + trailer
 			}
 		case token.IMPORT:
 			if len(n.Specs) > 0 {
@@ -78,11 +78,11 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 	case *ast.FuncDecl:
 		// Formats func declarations.
 		name := n.Name.Name
-		recv := oneLineNodeDepth(fset, n.Recv, depth)
+		recv := oneLineNodeDepth(fset, n.Recv, depth, linkify)
 		if len(recv) > 0 {
 			recv = "(" + recv + ") "
 		}
-		fnc := oneLineNodeDepth(fset, n.Type, depth)
+		fnc := oneLineNodeDepth(fset, n.Type, depth, linkify)
 		if strings.Index(fnc, "func") == 0 {
 			fnc = fnc[4:]
 		}
@@ -93,13 +93,13 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 		if n.Assign.IsValid() {
 			sep = " = "
 		}
-		return fmt.Sprintf("type %s%s%s", n.Name.Name, sep, oneLineNodeDepth(fset, n.Type, depth))
+		return fmt.Sprintf("type %s%s%s", n.Name.Name, sep, oneLineNodeDepth(fset, n.Type, depth, linkify))
 
 	case *ast.FuncType:
 		var params []string
 		if n.Params != nil {
 			for _, field := range n.Params.List {
-				params = append(params, oneLineField(fset, field, depth))
+				params = append(params, oneLineField(fset, field, depth, linkify))
 			}
 		}
 		needParens := false
@@ -108,7 +108,7 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 			needParens = needParens || len(n.Results.List) > 1
 			for _, field := range n.Results.List {
 				needParens = needParens || len(field.Names) > 0
-				results = append(results, oneLineField(fset, field, depth))
+				results = append(results, oneLineField(fset, field, depth, linkify))
 			}
 		}
 
@@ -139,43 +139,43 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 			return ""
 		}
 		if len(n.List) == 1 {
-			return oneLineField(fset, n.List[0], depth)
+			return oneLineField(fset, n.List[0], depth, linkify)
 		}
 		return dotDotDot
 
 	case *ast.FuncLit:
-		return oneLineNodeDepth(fset, n.Type, depth) + " { ... }"
+		return oneLineNodeDepth(fset, n.Type, depth, linkify) + " { ... }"
 
 	case *ast.CompositeLit:
-		typ := oneLineNodeDepth(fset, n.Type, depth)
+		typ := oneLineNodeDepth(fset, n.Type, depth, linkify)
 		if len(n.Elts) == 0 {
 			return fmt.Sprintf("%s{}", typ)
 		}
 		return fmt.Sprintf("%s{ %s }", typ, dotDotDot)
 
 	case *ast.ArrayType:
-		length := oneLineNodeDepth(fset, n.Len, depth)
-		element := oneLineNodeDepth(fset, n.Elt, depth)
+		length := oneLineNodeDepth(fset, n.Len, depth, linkify)
+		element := oneLineNodeDepth(fset, n.Elt, depth, linkify)
 		return fmt.Sprintf("[%s]%s", length, element)
 
 	case *ast.MapType:
-		key := oneLineNodeDepth(fset, n.Key, depth)
-		value := oneLineNodeDepth(fset, n.Value, depth)
+		key := oneLineNodeDepth(fset, n.Key, depth, linkify)
+		value := oneLineNodeDepth(fset, n.Value, depth, linkify)
 		return fmt.Sprintf("map[%s]%s", key, value)
 
 	case *ast.CallExpr:
-		fnc := oneLineNodeDepth(fset, n.Fun, depth)
+		fnc := oneLineNodeDepth(fset, n.Fun, depth, linkify)
 		var args []string
 		for _, arg := range n.Args {
-			args = append(args, oneLineNodeDepth(fset, arg, depth))
+			args = append(args, oneLineNodeDepth(fset, arg, depth, linkify))
 		}
 		return fmt.Sprintf("%s(%s)", fnc, joinStrings(args))
 
 	case *ast.UnaryExpr:
-		return fmt.Sprintf("%s%s", n.Op, oneLineNodeDepth(fset, n.X, depth))
+		return fmt.Sprintf("%s%s", n.Op, oneLineNodeDepth(fset, n.X, depth, linkify))
 
 	case *ast.Ident:
-		return n.Name
+		return linkify(n.Name)
 
 	default:
 		// As a fallback, use default formatter for all unknown node types.
@@ -185,33 +185,24 @@ func oneLineNodeDepth(fset *token.FileSet, node ast.Node, depth int) string {
 		if strings.Contains(s, "\n") {
 			return dotDotDot
 		}
-		return s
+		return linkify(s)
 	}
 }
 
 // oneLineField returns a one-line summary of the field.
-func oneLineField(fset *token.FileSet, field *ast.Field, depth int) string {
+func oneLineField(fset *token.FileSet, field *ast.Field, depth int, linkify func(string) string) string {
 	var names []string
 	for _, name := range field.Names {
 		names = append(names, name.Name)
 	}
+	t := oneLineNodeDepth(fset, field.Type, depth, linkify)
 	if len(names) == 0 {
-		return oneLineNodeDepth(fset, field.Type, depth)
+		return t
 	}
-	return joinStrings(names) + " " + oneLineNodeDepth(fset, field.Type, depth)
+	return joinStrings(names) + " " + t
 }
 
-// joinStrings formats the input as a comma-separated list,
-// but truncates the list at some reasonable length if necessary.
+// joinStrings formats the input as a comma-separated list.
 func joinStrings(ss []string) string {
-	const widthLimit = 80
-	var n int
-	for i, s := range ss {
-		n += len(s) + len(", ")
-		if n > widthLimit {
-			ss = append(ss[:i:i], "...")
-			break
-		}
-	}
 	return strings.Join(ss, ", ")
 }

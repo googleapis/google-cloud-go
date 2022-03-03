@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewTranslationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleTranslationClient_TranslateText() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.TranslateTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#TranslateTextRequest.
 	}
 	resp, err := c.TranslateText(ctx, req)
 	if err != nil {
@@ -55,16 +57,16 @@ func ExampleTranslationClient_TranslateText() {
 }
 
 func ExampleTranslationClient_DetectLanguage() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.DetectLanguageRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#DetectLanguageRequest.
 	}
 	resp, err := c.DetectLanguage(ctx, req)
 	if err != nil {
@@ -75,16 +77,16 @@ func ExampleTranslationClient_DetectLanguage() {
 }
 
 func ExampleTranslationClient_GetSupportedLanguages() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.GetSupportedLanguagesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#GetSupportedLanguagesRequest.
 	}
 	resp, err := c.GetSupportedLanguages(ctx, req)
 	if err != nil {
@@ -94,17 +96,37 @@ func ExampleTranslationClient_GetSupportedLanguages() {
 	_ = resp
 }
 
-func ExampleTranslationClient_BatchTranslateText() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
+func ExampleTranslationClient_TranslateDocument() {
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &translatepb.TranslateDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#TranslateDocumentRequest.
+	}
+	resp, err := c.TranslateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_BatchTranslateText() {
+	ctx := context.Background()
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &translatepb.BatchTranslateTextRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#BatchTranslateTextRequest.
 	}
 	op, err := c.BatchTranslateText(ctx, req)
 	if err != nil {
@@ -119,17 +141,42 @@ func ExampleTranslationClient_BatchTranslateText() {
 	_ = resp
 }
 
-func ExampleTranslationClient_CreateGlossary() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
+func ExampleTranslationClient_BatchTranslateDocument() {
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &translatepb.BatchTranslateDocumentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#BatchTranslateDocumentRequest.
+	}
+	op, err := c.BatchTranslateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTranslationClient_CreateGlossary() {
+	ctx := context.Background()
+	c, err := translate.NewTranslationClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &translatepb.CreateGlossaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#CreateGlossaryRequest.
 	}
 	op, err := c.CreateGlossary(ctx, req)
 	if err != nil {
@@ -145,17 +192,16 @@ func ExampleTranslationClient_CreateGlossary() {
 }
 
 func ExampleTranslationClient_ListGlossaries() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.ListGlossariesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#ListGlossariesRequest.
 	}
 	it := c.ListGlossaries(ctx, req)
 	for {
@@ -172,16 +218,16 @@ func ExampleTranslationClient_ListGlossaries() {
 }
 
 func ExampleTranslationClient_GetGlossary() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.GetGlossaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#GetGlossaryRequest.
 	}
 	resp, err := c.GetGlossary(ctx, req)
 	if err != nil {
@@ -192,16 +238,16 @@ func ExampleTranslationClient_GetGlossary() {
 }
 
 func ExampleTranslationClient_DeleteGlossary() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.DeleteGlossaryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/translate/v3#DeleteGlossaryRequest.
 	}
 	op, err := c.DeleteGlossary(ctx, req)
 	if err != nil {

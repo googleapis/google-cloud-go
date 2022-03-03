@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.memcache.v1beta2",
+  "libraryPackage": "cloud.google.com/go/memcache/apiv1beta2",
+  "services": {
+    "CloudMemcache": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudMemcacheClient",
+          "rpcs": {
+            "ApplyParameters": {
+              "methods": [
+                "ApplyParameters"
+              ]
+            },
+            "ApplySoftwareUpdate": {
+              "methods": [
+                "ApplySoftwareUpdate"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpdateParameters": {
+              "methods": [
+                "UpdateParameters"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

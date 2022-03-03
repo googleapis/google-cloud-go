@@ -1,0 +1,48 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.analytics.data.v1alpha",
+  "libraryPackage": "cloud.google.com/go/analytics/data/apiv1alpha",
+  "services": {
+    "AlphaAnalyticsData": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AlphaAnalyticsDataClient",
+          "rpcs": {
+            "BatchRunPivotReports": {
+              "methods": [
+                "BatchRunPivotReports"
+              ]
+            },
+            "BatchRunReports": {
+              "methods": [
+                "BatchRunReports"
+              ]
+            },
+            "GetMetadata": {
+              "methods": [
+                "GetMetadata"
+              ]
+            },
+            "RunPivotReport": {
+              "methods": [
+                "RunPivotReport"
+              ]
+            },
+            "RunRealtimeReport": {
+              "methods": [
+                "RunRealtimeReport"
+              ]
+            },
+            "RunReport": {
+              "methods": [
+                "RunReport"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

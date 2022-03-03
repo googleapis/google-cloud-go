@@ -1,0 +1,173 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.retail.v2",
+  "libraryPackage": "cloud.google.com/go/retail/apiv2",
+  "services": {
+    "CatalogService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "GetDefaultBranch": {
+              "methods": [
+                "GetDefaultBranch"
+              ]
+            },
+            "ListCatalogs": {
+              "methods": [
+                "ListCatalogs"
+              ]
+            },
+            "SetDefaultBranch": {
+              "methods": [
+                "SetDefaultBranch"
+              ]
+            },
+            "UpdateCatalog": {
+              "methods": [
+                "UpdateCatalog"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CompletionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
+                "CompleteQuery"
+              ]
+            },
+            "ImportCompletionData": {
+              "methods": [
+                "ImportCompletionData"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PredictionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProductService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProductClient",
+          "rpcs": {
+            "AddFulfillmentPlaces": {
+              "methods": [
+                "AddFulfillmentPlaces"
+              ]
+            },
+            "CreateProduct": {
+              "methods": [
+                "CreateProduct"
+              ]
+            },
+            "DeleteProduct": {
+              "methods": [
+                "DeleteProduct"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ImportProducts": {
+              "methods": [
+                "ImportProducts"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "RemoveFulfillmentPlaces": {
+              "methods": [
+                "RemoveFulfillmentPlaces"
+              ]
+            },
+            "SetInventory": {
+              "methods": [
+                "SetInventory"
+              ]
+            },
+            "UpdateProduct": {
+              "methods": [
+                "UpdateProduct"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SearchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SearchClient",
+          "rpcs": {
+            "Search": {
+              "methods": [
+                "Search"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserEventService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserEventClient",
+          "rpcs": {
+            "CollectUserEvent": {
+              "methods": [
+                "CollectUserEvent"
+              ]
+            },
+            "ImportUserEvents": {
+              "methods": [
+                "ImportUserEvents"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
+            "RejoinUserEvents": {
+              "methods": [
+                "RejoinUserEvents"
+              ]
+            },
+            "WriteUserEvent": {
+              "methods": [
+                "WriteUserEvent"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -22,13 +22,15 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
-	"github.com/golang/protobuf/ptypes"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // All returns the remaining subscriptions from this iterator.
@@ -79,6 +81,32 @@ func TestListProjectSubscriptions(t *testing.T) {
 	got := getSubIDs(subs)
 	if !testutil.Equal(got, want) {
 		t.Errorf("got %v, want %v", got, want)
+	}
+
+	// Call list again, but check the config this time.
+	it := c.Subscriptions(ctx)
+	i := 1
+	for {
+		sub, err := it.NextConfig()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Errorf("SubscriptionIterator.NextConfig() got err: %v", err)
+		}
+		if got := sub.Topic.ID(); got != topic.ID() {
+			t.Errorf("subConfig.Topic mismatch, got: %v, want: %v", got, topic.ID())
+		}
+
+		want := fmt.Sprintf("s%d", i)
+		if got := sub.ID(); got != want {
+			t.Errorf("sub.ID() mismatch: got %s, want: %s", got, want)
+		}
+		want = fmt.Sprintf("projects/P/subscriptions/s%d", i)
+		if got := sub.String(); got != want {
+			t.Errorf("sub.String() mismatch: got %s, want: %s", got, want)
+		}
+		i++
 	}
 }
 
@@ -163,7 +191,8 @@ func TestUpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if !testutil.Equal(cfg, want) {
+	opt := cmpopts.IgnoreUnexported(SubscriptionConfig{})
+	if !testutil.Equal(cfg, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
 	}
 
@@ -198,7 +227,7 @@ func TestUpdateSubscription(t *testing.T) {
 			},
 		},
 	}
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
 	}
 
@@ -211,7 +240,7 @@ func TestUpdateSubscription(t *testing.T) {
 	}
 	want.RetentionDuration = 2 * time.Hour
 	want.Labels = nil
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}
 
@@ -228,7 +257,7 @@ func TestUpdateSubscription(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.ExpirationPolicy = time.Duration(0)
-	if !testutil.Equal(got, want) {
+	if !testutil.Equal(got, want, opt) {
 		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}
 }
@@ -339,7 +368,7 @@ func TestDeadLettering_toMessage(t *testing.T) {
 		Message: &pb.PubsubMessage{
 			Data:        []byte("some message"),
 			MessageId:   "id-1234",
-			PublishTime: ptypes.TimestampNow(),
+			PublishTime: timestamppb.Now(),
 		},
 	}
 	got, err := toMessage(receivedMsg, time.Time{}, nil)
@@ -368,8 +397,8 @@ func TestRetryPolicy_toProto(t *testing.T) {
 	}
 	got := in.toProto()
 	want := &pb.RetryPolicy{
-		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
-		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+		MinimumBackoff: durationpb.New(20 * time.Second),
+		MaximumBackoff: durationpb.New(300 * time.Second),
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
@@ -398,4 +427,11 @@ func TestOrdering_CreateSubscription(t *testing.T) {
 	if !cfg.EnableMessageOrdering {
 		t.Fatalf("Expected EnableMessageOrdering to be true in %s", orderSub.String())
 	}
+
+	// Test cancellation works as intended with ordering enabled.
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+	orderSub.Receive(ctx, func(ctx context.Context, msg *Message) {
+		msg.Ack()
+	})
 }

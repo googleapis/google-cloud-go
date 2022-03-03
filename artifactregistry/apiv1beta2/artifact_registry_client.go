@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -37,42 +36,47 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListRepositories   []gax.CallOption
-	GetRepository      []gax.CallOption
-	CreateRepository   []gax.CallOption
-	UpdateRepository   []gax.CallOption
-	DeleteRepository   []gax.CallOption
-	ListPackages       []gax.CallOption
-	GetPackage         []gax.CallOption
-	DeletePackage      []gax.CallOption
-	ListVersions       []gax.CallOption
-	GetVersion         []gax.CallOption
-	DeleteVersion      []gax.CallOption
-	ListFiles          []gax.CallOption
-	GetFile            []gax.CallOption
-	ListTags           []gax.CallOption
-	GetTag             []gax.CallOption
-	CreateTag          []gax.CallOption
-	UpdateTag          []gax.CallOption
-	DeleteTag          []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	ImportAptArtifacts    []gax.CallOption
+	ImportYumArtifacts    []gax.CallOption
+	ListRepositories      []gax.CallOption
+	GetRepository         []gax.CallOption
+	CreateRepository      []gax.CallOption
+	UpdateRepository      []gax.CallOption
+	DeleteRepository      []gax.CallOption
+	ListPackages          []gax.CallOption
+	GetPackage            []gax.CallOption
+	DeletePackage         []gax.CallOption
+	ListVersions          []gax.CallOption
+	GetVersion            []gax.CallOption
+	DeleteVersion         []gax.CallOption
+	ListFiles             []gax.CallOption
+	GetFile               []gax.CallOption
+	ListTags              []gax.CallOption
+	GetTag                []gax.CallOption
+	CreateTag             []gax.CallOption
+	UpdateTag             []gax.CallOption
+	DeleteTag             []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	GetProjectSettings    []gax.CallOption
+	UpdateProjectSettings []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("artifactregistry.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("artifactregistry.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://artifactregistry.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -80,6 +84,8 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		ImportAptArtifacts: []gax.CallOption{},
+		ImportYumArtifacts: []gax.CallOption{},
 		ListRepositories: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -250,36 +256,304 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		TestIamPermissions: []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		GetProjectSettings:    []gax.CallOption{},
+		UpdateProjectSettings: []gax.CallOption{},
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Artifact Registry API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ImportAptArtifacts(context.Context, *artifactregistrypb.ImportAptArtifactsRequest, ...gax.CallOption) (*ImportAptArtifactsOperation, error)
+	ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation
+	ImportYumArtifacts(context.Context, *artifactregistrypb.ImportYumArtifactsRequest, ...gax.CallOption) (*ImportYumArtifactsOperation, error)
+	ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation
+	ListRepositories(context.Context, *artifactregistrypb.ListRepositoriesRequest, ...gax.CallOption) *RepositoryIterator
+	GetRepository(context.Context, *artifactregistrypb.GetRepositoryRequest, ...gax.CallOption) (*artifactregistrypb.Repository, error)
+	CreateRepository(context.Context, *artifactregistrypb.CreateRepositoryRequest, ...gax.CallOption) (*CreateRepositoryOperation, error)
+	CreateRepositoryOperation(name string) *CreateRepositoryOperation
+	UpdateRepository(context.Context, *artifactregistrypb.UpdateRepositoryRequest, ...gax.CallOption) (*artifactregistrypb.Repository, error)
+	DeleteRepository(context.Context, *artifactregistrypb.DeleteRepositoryRequest, ...gax.CallOption) (*DeleteRepositoryOperation, error)
+	DeleteRepositoryOperation(name string) *DeleteRepositoryOperation
+	ListPackages(context.Context, *artifactregistrypb.ListPackagesRequest, ...gax.CallOption) *PackageIterator
+	GetPackage(context.Context, *artifactregistrypb.GetPackageRequest, ...gax.CallOption) (*artifactregistrypb.Package, error)
+	DeletePackage(context.Context, *artifactregistrypb.DeletePackageRequest, ...gax.CallOption) (*DeletePackageOperation, error)
+	DeletePackageOperation(name string) *DeletePackageOperation
+	ListVersions(context.Context, *artifactregistrypb.ListVersionsRequest, ...gax.CallOption) *VersionIterator
+	GetVersion(context.Context, *artifactregistrypb.GetVersionRequest, ...gax.CallOption) (*artifactregistrypb.Version, error)
+	DeleteVersion(context.Context, *artifactregistrypb.DeleteVersionRequest, ...gax.CallOption) (*DeleteVersionOperation, error)
+	DeleteVersionOperation(name string) *DeleteVersionOperation
+	ListFiles(context.Context, *artifactregistrypb.ListFilesRequest, ...gax.CallOption) *FileIterator
+	GetFile(context.Context, *artifactregistrypb.GetFileRequest, ...gax.CallOption) (*artifactregistrypb.File, error)
+	ListTags(context.Context, *artifactregistrypb.ListTagsRequest, ...gax.CallOption) *TagIterator
+	GetTag(context.Context, *artifactregistrypb.GetTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
+	CreateTag(context.Context, *artifactregistrypb.CreateTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
+	UpdateTag(context.Context, *artifactregistrypb.UpdateTagRequest, ...gax.CallOption) (*artifactregistrypb.Tag, error)
+	DeleteTag(context.Context, *artifactregistrypb.DeleteTagRequest, ...gax.CallOption) error
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetProjectSettings(context.Context, *artifactregistrypb.GetProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
+	UpdateProjectSettings(context.Context, *artifactregistrypb.UpdateProjectSettingsRequest, ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error)
+}
+
 // Client is a client for interacting with Artifact Registry API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Artifact Registry API service.
+//
+// Artifact Registry is an artifact management system for storing artifacts
+// from different package management systems.
+//
+// The resources managed by this API are:
+//
+//   Repositories, which group packages and their data.
+//
+//   Packages, which group versions and their tags.
+//
+//   Versions, which are specific forms of a package.
+//
+//   Tags, which represent alternative names for versions.
+//
+//   Files, which contain content and are optionally associated with a Package
+//   or Version.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ImportAptArtifacts imports Apt artifacts. The returned Operation will complete once the
+// resources are imported. Package, Version, and File resources are created
+// based on the imported artifacts. Imported artifacts that conflict with
+// existing resources are ignored.
+func (c *Client) ImportAptArtifacts(ctx context.Context, req *artifactregistrypb.ImportAptArtifactsRequest, opts ...gax.CallOption) (*ImportAptArtifactsOperation, error) {
+	return c.internalClient.ImportAptArtifacts(ctx, req, opts...)
+}
+
+// ImportAptArtifactsOperation returns a new ImportAptArtifactsOperation from a given name.
+// The name must be that of a previously created ImportAptArtifactsOperation, possibly from a different process.
+func (c *Client) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
+	return c.internalClient.ImportAptArtifactsOperation(name)
+}
+
+// ImportYumArtifacts imports Yum (RPM) artifacts. The returned Operation will complete once the
+// resources are imported. Package, Version, and File resources are created
+// based on the imported artifacts. Imported artifacts that conflict with
+// existing resources are ignored.
+func (c *Client) ImportYumArtifacts(ctx context.Context, req *artifactregistrypb.ImportYumArtifactsRequest, opts ...gax.CallOption) (*ImportYumArtifactsOperation, error) {
+	return c.internalClient.ImportYumArtifacts(ctx, req, opts...)
+}
+
+// ImportYumArtifactsOperation returns a new ImportYumArtifactsOperation from a given name.
+// The name must be that of a previously created ImportYumArtifactsOperation, possibly from a different process.
+func (c *Client) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
+	return c.internalClient.ImportYumArtifactsOperation(name)
+}
+
+// ListRepositories lists repositories.
+func (c *Client) ListRepositories(ctx context.Context, req *artifactregistrypb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
+	return c.internalClient.ListRepositories(ctx, req, opts...)
+}
+
+// GetRepository gets a repository.
+func (c *Client) GetRepository(ctx context.Context, req *artifactregistrypb.GetRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
+	return c.internalClient.GetRepository(ctx, req, opts...)
+}
+
+// CreateRepository creates a repository. The returned Operation will finish once the
+// repository has been created. Its response will be the created Repository.
+func (c *Client) CreateRepository(ctx context.Context, req *artifactregistrypb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
+	return c.internalClient.CreateRepository(ctx, req, opts...)
+}
+
+// CreateRepositoryOperation returns a new CreateRepositoryOperation from a given name.
+// The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
+func (c *Client) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
+	return c.internalClient.CreateRepositoryOperation(name)
+}
+
+// UpdateRepository updates a repository.
+func (c *Client) UpdateRepository(ctx context.Context, req *artifactregistrypb.UpdateRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
+	return c.internalClient.UpdateRepository(ctx, req, opts...)
+}
+
+// DeleteRepository deletes a repository and all of its contents. The returned Operation will
+// finish once the repository has been deleted. It will not have any Operation
+// metadata and will return a google.protobuf.Empty response.
+func (c *Client) DeleteRepository(ctx context.Context, req *artifactregistrypb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
+	return c.internalClient.DeleteRepository(ctx, req, opts...)
+}
+
+// DeleteRepositoryOperation returns a new DeleteRepositoryOperation from a given name.
+// The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
+func (c *Client) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
+	return c.internalClient.DeleteRepositoryOperation(name)
+}
+
+// ListPackages lists packages.
+func (c *Client) ListPackages(ctx context.Context, req *artifactregistrypb.ListPackagesRequest, opts ...gax.CallOption) *PackageIterator {
+	return c.internalClient.ListPackages(ctx, req, opts...)
+}
+
+// GetPackage gets a package.
+func (c *Client) GetPackage(ctx context.Context, req *artifactregistrypb.GetPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
+	return c.internalClient.GetPackage(ctx, req, opts...)
+}
+
+// DeletePackage deletes a package and all of its versions and tags. The returned operation
+// will complete once the package has been deleted.
+func (c *Client) DeletePackage(ctx context.Context, req *artifactregistrypb.DeletePackageRequest, opts ...gax.CallOption) (*DeletePackageOperation, error) {
+	return c.internalClient.DeletePackage(ctx, req, opts...)
+}
+
+// DeletePackageOperation returns a new DeletePackageOperation from a given name.
+// The name must be that of a previously created DeletePackageOperation, possibly from a different process.
+func (c *Client) DeletePackageOperation(name string) *DeletePackageOperation {
+	return c.internalClient.DeletePackageOperation(name)
+}
+
+// ListVersions lists versions.
+func (c *Client) ListVersions(ctx context.Context, req *artifactregistrypb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
+	return c.internalClient.ListVersions(ctx, req, opts...)
+}
+
+// GetVersion gets a version
+func (c *Client) GetVersion(ctx context.Context, req *artifactregistrypb.GetVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
+	return c.internalClient.GetVersion(ctx, req, opts...)
+}
+
+// DeleteVersion deletes a version and all of its content. The returned operation will
+// complete once the version has been deleted.
+func (c *Client) DeleteVersion(ctx context.Context, req *artifactregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
+	return c.internalClient.DeleteVersion(ctx, req, opts...)
+}
+
+// DeleteVersionOperation returns a new DeleteVersionOperation from a given name.
+// The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
+func (c *Client) DeleteVersionOperation(name string) *DeleteVersionOperation {
+	return c.internalClient.DeleteVersionOperation(name)
+}
+
+// ListFiles lists files.
+func (c *Client) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
+	return c.internalClient.ListFiles(ctx, req, opts...)
+}
+
+// GetFile gets a file.
+func (c *Client) GetFile(ctx context.Context, req *artifactregistrypb.GetFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
+	return c.internalClient.GetFile(ctx, req, opts...)
+}
+
+// ListTags lists tags.
+func (c *Client) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
+	return c.internalClient.ListTags(ctx, req, opts...)
+}
+
+// GetTag gets a tag.
+func (c *Client) GetTag(ctx context.Context, req *artifactregistrypb.GetTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+	return c.internalClient.GetTag(ctx, req, opts...)
+}
+
+// CreateTag creates a tag.
+func (c *Client) CreateTag(ctx context.Context, req *artifactregistrypb.CreateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+	return c.internalClient.CreateTag(ctx, req, opts...)
+}
+
+// UpdateTag updates a tag.
+func (c *Client) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+	return c.internalClient.UpdateTag(ctx, req, opts...)
+}
+
+// DeleteTag deletes a tag.
+func (c *Client) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTagRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTag(ctx, req, opts...)
+}
+
+// SetIamPolicy updates the IAM policy for a given resource.
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the IAM policy for a given resource.
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions tests if the caller has a list of permissions on a resource.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// GetProjectSettings retrieves the Settings for the Project.
+func (c *Client) GetProjectSettings(ctx context.Context, req *artifactregistrypb.GetProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
+	return c.internalClient.GetProjectSettings(ctx, req, opts...)
+}
+
+// UpdateProjectSettings updates the Settings for the Project.
+func (c *Client) UpdateProjectSettings(ctx context.Context, req *artifactregistrypb.UpdateProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
+	return c.internalClient.UpdateProjectSettings(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Artifact Registry API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client artifactregistrypb.ArtifactRegistryClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new artifact registry client.
+// NewClient creates a new artifact registry client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Artifact Registry API service.
 //
@@ -299,8 +573,7 @@ type Client struct {
 //   Files, which contain content and are optionally associated with a Package
 //   or Version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -318,16 +591,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: artifactregistrypb.NewArtifactRegistryClient(connPool),
+		client:           artifactregistrypb.NewArtifactRegistryClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -337,44 +613,85 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListRepositories lists repositories.
-func (c *Client) ListRepositories(ctx context.Context, req *artifactregistrypb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ImportAptArtifacts(ctx context.Context, req *artifactregistrypb.ImportAptArtifactsRequest, opts ...gax.CallOption) (*ImportAptArtifactsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListRepositories[0:len(c.CallOptions.ListRepositories):len(c.CallOptions.ListRepositories)], opts...)
+	opts = append((*c.CallOptions).ImportAptArtifacts[0:len((*c.CallOptions).ImportAptArtifacts):len((*c.CallOptions).ImportAptArtifacts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ImportAptArtifacts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportAptArtifactsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ImportYumArtifacts(ctx context.Context, req *artifactregistrypb.ImportYumArtifactsRequest, opts ...gax.CallOption) (*ImportYumArtifactsOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportYumArtifacts[0:len((*c.CallOptions).ImportYumArtifacts):len((*c.CallOptions).ImportYumArtifacts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ImportYumArtifacts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportYumArtifactsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistrypb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListRepositoriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Repository, string, error) {
-		var resp *artifactregistrypb.ListRepositoriesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListRepositoriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -397,22 +714,24 @@ func (c *Client) ListRepositories(ctx context.Context, req *artifactregistrypb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetRepository gets a repository.
-func (c *Client) GetRepository(ctx context.Context, req *artifactregistrypb.GetRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
+func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.GetRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetRepository[0:len(c.CallOptions.GetRepository):len(c.CallOptions.GetRepository)], opts...)
+	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -425,17 +744,16 @@ func (c *Client) GetRepository(ctx context.Context, req *artifactregistrypb.GetR
 	return resp, nil
 }
 
-// CreateRepository creates a repository. The returned Operation will finish once the
-// repository has been created. Its response will be the created Repository.
-func (c *Client) CreateRepository(ctx context.Context, req *artifactregistrypb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
+func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistrypb.CreateRepositoryRequest, opts ...gax.CallOption) (*CreateRepositoryOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateRepository[0:len(c.CallOptions.CreateRepository):len(c.CallOptions.CreateRepository)], opts...)
+	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -446,20 +764,20 @@ func (c *Client) CreateRepository(ctx context.Context, req *artifactregistrypb.C
 		return nil, err
 	}
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateRepository updates a repository.
-func (c *Client) UpdateRepository(ctx context.Context, req *artifactregistrypb.UpdateRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
+func (c *gRPCClient) UpdateRepository(ctx context.Context, req *artifactregistrypb.UpdateRepositoryRequest, opts ...gax.CallOption) (*artifactregistrypb.Repository, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "repository.name", url.QueryEscape(req.GetRepository().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateRepository[0:len(c.CallOptions.UpdateRepository):len(c.CallOptions.UpdateRepository)], opts...)
+	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	var resp *artifactregistrypb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -472,18 +790,16 @@ func (c *Client) UpdateRepository(ctx context.Context, req *artifactregistrypb.U
 	return resp, nil
 }
 
-// DeleteRepository deletes a repository and all of its contents. The returned Operation will
-// finish once the repository has been deleted. It will not have any Operation
-// metadata and will return a google.protobuf.Empty response.
-func (c *Client) DeleteRepository(ctx context.Context, req *artifactregistrypb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
+func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistrypb.DeleteRepositoryRequest, opts ...gax.CallOption) (*DeleteRepositoryOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteRepository[0:len(c.CallOptions.DeleteRepository):len(c.CallOptions.DeleteRepository)], opts...)
+	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -494,23 +810,25 @@ func (c *Client) DeleteRepository(ctx context.Context, req *artifactregistrypb.D
 		return nil, err
 	}
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListPackages lists packages.
-func (c *Client) ListPackages(ctx context.Context, req *artifactregistrypb.ListPackagesRequest, opts ...gax.CallOption) *PackageIterator {
+func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.ListPackagesRequest, opts ...gax.CallOption) *PackageIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListPackages[0:len(c.CallOptions.ListPackages):len(c.CallOptions.ListPackages)], opts...)
+	opts = append((*c.CallOptions).ListPackages[0:len((*c.CallOptions).ListPackages):len((*c.CallOptions).ListPackages)], opts...)
 	it := &PackageIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListPackagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Package, string, error) {
-		var resp *artifactregistrypb.ListPackagesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListPackagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -533,22 +851,24 @@ func (c *Client) ListPackages(ctx context.Context, req *artifactregistrypb.ListP
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetPackage gets a package.
-func (c *Client) GetPackage(ctx context.Context, req *artifactregistrypb.GetPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
+func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.GetPackageRequest, opts ...gax.CallOption) (*artifactregistrypb.Package, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetPackage[0:len(c.CallOptions.GetPackage):len(c.CallOptions.GetPackage)], opts...)
+	opts = append((*c.CallOptions).GetPackage[0:len((*c.CallOptions).GetPackage):len((*c.CallOptions).GetPackage)], opts...)
 	var resp *artifactregistrypb.Package
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -561,17 +881,16 @@ func (c *Client) GetPackage(ctx context.Context, req *artifactregistrypb.GetPack
 	return resp, nil
 }
 
-// DeletePackage deletes a package and all of its versions and tags. The returned operation
-// will complete once the package has been deleted.
-func (c *Client) DeletePackage(ctx context.Context, req *artifactregistrypb.DeletePackageRequest, opts ...gax.CallOption) (*DeletePackageOperation, error) {
+func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.DeletePackageRequest, opts ...gax.CallOption) (*DeletePackageOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeletePackage[0:len(c.CallOptions.DeletePackage):len(c.CallOptions.DeletePackage)], opts...)
+	opts = append((*c.CallOptions).DeletePackage[0:len((*c.CallOptions).DeletePackage):len((*c.CallOptions).DeletePackage)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -582,23 +901,25 @@ func (c *Client) DeletePackage(ctx context.Context, req *artifactregistrypb.Dele
 		return nil, err
 	}
 	return &DeletePackageOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListVersions lists versions.
-func (c *Client) ListVersions(ctx context.Context, req *artifactregistrypb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
+func (c *gRPCClient) ListVersions(ctx context.Context, req *artifactregistrypb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListVersions[0:len(c.CallOptions.ListVersions):len(c.CallOptions.ListVersions)], opts...)
+	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Version, string, error) {
-		var resp *artifactregistrypb.ListVersionsResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -621,22 +942,24 @@ func (c *Client) ListVersions(ctx context.Context, req *artifactregistrypb.ListV
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetVersion gets a version
-func (c *Client) GetVersion(ctx context.Context, req *artifactregistrypb.GetVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
+func (c *gRPCClient) GetVersion(ctx context.Context, req *artifactregistrypb.GetVersionRequest, opts ...gax.CallOption) (*artifactregistrypb.Version, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetVersion[0:len(c.CallOptions.GetVersion):len(c.CallOptions.GetVersion)], opts...)
+	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *artifactregistrypb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -649,17 +972,16 @@ func (c *Client) GetVersion(ctx context.Context, req *artifactregistrypb.GetVers
 	return resp, nil
 }
 
-// DeleteVersion deletes a version and all of its content. The returned operation will
-// complete once the version has been deleted.
-func (c *Client) DeleteVersion(ctx context.Context, req *artifactregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
+func (c *gRPCClient) DeleteVersion(ctx context.Context, req *artifactregistrypb.DeleteVersionRequest, opts ...gax.CallOption) (*DeleteVersionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteVersion[0:len(c.CallOptions.DeleteVersion):len(c.CallOptions.DeleteVersion)], opts...)
+	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -670,23 +992,25 @@ func (c *Client) DeleteVersion(ctx context.Context, req *artifactregistrypb.Dele
 		return nil, err
 	}
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListFiles lists files.
-func (c *Client) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
+func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.ListFilesRequest, opts ...gax.CallOption) *FileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListFiles[0:len(c.CallOptions.ListFiles):len(c.CallOptions.ListFiles)], opts...)
+	opts = append((*c.CallOptions).ListFiles[0:len((*c.CallOptions).ListFiles):len((*c.CallOptions).ListFiles)], opts...)
 	it := &FileIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListFilesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.File, string, error) {
-		var resp *artifactregistrypb.ListFilesResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -709,22 +1033,24 @@ func (c *Client) ListFiles(ctx context.Context, req *artifactregistrypb.ListFile
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetFile gets a file.
-func (c *Client) GetFile(ctx context.Context, req *artifactregistrypb.GetFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
+func (c *gRPCClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFileRequest, opts ...gax.CallOption) (*artifactregistrypb.File, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetFile[0:len(c.CallOptions.GetFile):len(c.CallOptions.GetFile)], opts...)
+	opts = append((*c.CallOptions).GetFile[0:len((*c.CallOptions).GetFile):len((*c.CallOptions).GetFile)], opts...)
 	var resp *artifactregistrypb.File
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -737,19 +1063,21 @@ func (c *Client) GetFile(ctx context.Context, req *artifactregistrypb.GetFileReq
 	return resp, nil
 }
 
-// ListTags lists tags.
-func (c *Client) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
+func (c *gRPCClient) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsRequest, opts ...gax.CallOption) *TagIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTags[0:len(c.CallOptions.ListTags):len(c.CallOptions.ListTags)], opts...)
+	opts = append((*c.CallOptions).ListTags[0:len((*c.CallOptions).ListTags):len((*c.CallOptions).ListTags)], opts...)
 	it := &TagIterator{}
 	req = proto.Clone(req).(*artifactregistrypb.ListTagsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*artifactregistrypb.Tag, string, error) {
-		var resp *artifactregistrypb.ListTagsResponse
-		req.PageToken = pageToken
+		resp := &artifactregistrypb.ListTagsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -772,22 +1100,24 @@ func (c *Client) ListTags(ctx context.Context, req *artifactregistrypb.ListTagsR
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetTag gets a tag.
-func (c *Client) GetTag(ctx context.Context, req *artifactregistrypb.GetTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+func (c *gRPCClient) GetTag(ctx context.Context, req *artifactregistrypb.GetTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTag[0:len(c.CallOptions.GetTag):len(c.CallOptions.GetTag)], opts...)
+	opts = append((*c.CallOptions).GetTag[0:len((*c.CallOptions).GetTag):len((*c.CallOptions).GetTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -800,16 +1130,16 @@ func (c *Client) GetTag(ctx context.Context, req *artifactregistrypb.GetTagReque
 	return resp, nil
 }
 
-// CreateTag creates a tag.
-func (c *Client) CreateTag(ctx context.Context, req *artifactregistrypb.CreateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+func (c *gRPCClient) CreateTag(ctx context.Context, req *artifactregistrypb.CreateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTag[0:len(c.CallOptions.CreateTag):len(c.CallOptions.CreateTag)], opts...)
+	opts = append((*c.CallOptions).CreateTag[0:len((*c.CallOptions).CreateTag):len((*c.CallOptions).CreateTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -822,16 +1152,16 @@ func (c *Client) CreateTag(ctx context.Context, req *artifactregistrypb.CreateTa
 	return resp, nil
 }
 
-// UpdateTag updates a tag.
-func (c *Client) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
+func (c *gRPCClient) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTagRequest, opts ...gax.CallOption) (*artifactregistrypb.Tag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag.name", url.QueryEscape(req.GetTag().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTag[0:len(c.CallOptions.UpdateTag):len(c.CallOptions.UpdateTag)], opts...)
+	opts = append((*c.CallOptions).UpdateTag[0:len((*c.CallOptions).UpdateTag):len((*c.CallOptions).UpdateTag)], opts...)
 	var resp *artifactregistrypb.Tag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -844,16 +1174,16 @@ func (c *Client) UpdateTag(ctx context.Context, req *artifactregistrypb.UpdateTa
 	return resp, nil
 }
 
-// DeleteTag deletes a tag.
-func (c *Client) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTagRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTagRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTag[0:len(c.CallOptions.DeleteTag):len(c.CallOptions.DeleteTag)], opts...)
+	opts = append((*c.CallOptions).DeleteTag[0:len((*c.CallOptions).DeleteTag):len((*c.CallOptions).DeleteTag)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteTag(ctx, req, settings.GRPC...)
@@ -862,11 +1192,11 @@ func (c *Client) DeleteTag(ctx context.Context, req *artifactregistrypb.DeleteTa
 	return err
 }
 
-// SetIamPolicy updates the IAM policy for a given resource.
-func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -879,16 +1209,16 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	return resp, nil
 }
 
-// GetIamPolicy gets the IAM policy for a given resource.
-func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -901,20 +1231,54 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	return resp, nil
 }
 
-// TestIamPermissions tests if the caller has a list of permissions on a resource.
-func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregistrypb.GetProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetProjectSettings[0:len((*c.CallOptions).GetProjectSettings):len((*c.CallOptions).GetProjectSettings)], opts...)
+	var resp *artifactregistrypb.ProjectSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetProjectSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateProjectSettings(ctx context.Context, req *artifactregistrypb.UpdateProjectSettingsRequest, opts ...gax.CallOption) (*artifactregistrypb.ProjectSettings, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_settings.name", url.QueryEscape(req.GetProjectSettings().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateProjectSettings[0:len((*c.CallOptions).UpdateProjectSettings):len((*c.CallOptions).UpdateProjectSettings)], opts...)
+	var resp *artifactregistrypb.ProjectSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateProjectSettings(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -930,9 +1294,9 @@ type CreateRepositoryOperation struct {
 
 // CreateRepositoryOperation returns a new CreateRepositoryOperation from a given name.
 // The name must be that of a previously created CreateRepositoryOperation, possibly from a different process.
-func (c *Client) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
+func (c *gRPCClient) CreateRepositoryOperation(name string) *CreateRepositoryOperation {
 	return &CreateRepositoryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -999,9 +1363,9 @@ type DeletePackageOperation struct {
 
 // DeletePackageOperation returns a new DeletePackageOperation from a given name.
 // The name must be that of a previously created DeletePackageOperation, possibly from a different process.
-func (c *Client) DeletePackageOperation(name string) *DeletePackageOperation {
+func (c *gRPCClient) DeletePackageOperation(name string) *DeletePackageOperation {
 	return &DeletePackageOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1057,9 +1421,9 @@ type DeleteRepositoryOperation struct {
 
 // DeleteRepositoryOperation returns a new DeleteRepositoryOperation from a given name.
 // The name must be that of a previously created DeleteRepositoryOperation, possibly from a different process.
-func (c *Client) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
+func (c *gRPCClient) DeleteRepositoryOperation(name string) *DeleteRepositoryOperation {
 	return &DeleteRepositoryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1115,9 +1479,9 @@ type DeleteVersionOperation struct {
 
 // DeleteVersionOperation returns a new DeleteVersionOperation from a given name.
 // The name must be that of a previously created DeleteVersionOperation, possibly from a different process.
-func (c *Client) DeleteVersionOperation(name string) *DeleteVersionOperation {
+func (c *gRPCClient) DeleteVersionOperation(name string) *DeleteVersionOperation {
 	return &DeleteVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1163,6 +1527,144 @@ func (op *DeleteVersionOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteVersionOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportAptArtifactsOperation manages a long-running operation from ImportAptArtifacts.
+type ImportAptArtifactsOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportAptArtifactsOperation returns a new ImportAptArtifactsOperation from a given name.
+// The name must be that of a previously created ImportAptArtifactsOperation, possibly from a different process.
+func (c *gRPCClient) ImportAptArtifactsOperation(name string) *ImportAptArtifactsOperation {
+	return &ImportAptArtifactsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportAptArtifactsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ImportAptArtifactsResponse, error) {
+	var resp artifactregistrypb.ImportAptArtifactsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportAptArtifactsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ImportAptArtifactsResponse, error) {
+	var resp artifactregistrypb.ImportAptArtifactsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportAptArtifactsOperation) Metadata() (*artifactregistrypb.ImportAptArtifactsMetadata, error) {
+	var meta artifactregistrypb.ImportAptArtifactsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportAptArtifactsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportAptArtifactsOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportYumArtifactsOperation manages a long-running operation from ImportYumArtifacts.
+type ImportYumArtifactsOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportYumArtifactsOperation returns a new ImportYumArtifactsOperation from a given name.
+// The name must be that of a previously created ImportYumArtifactsOperation, possibly from a different process.
+func (c *gRPCClient) ImportYumArtifactsOperation(name string) *ImportYumArtifactsOperation {
+	return &ImportYumArtifactsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportYumArtifactsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ImportYumArtifactsResponse, error) {
+	var resp artifactregistrypb.ImportYumArtifactsResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportYumArtifactsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*artifactregistrypb.ImportYumArtifactsResponse, error) {
+	var resp artifactregistrypb.ImportYumArtifactsResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportYumArtifactsOperation) Metadata() (*artifactregistrypb.ImportYumArtifactsMetadata, error) {
+	var meta artifactregistrypb.ImportYumArtifactsMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportYumArtifactsOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportYumArtifactsOperation) Name() string {
 	return op.lro.Name()
 }
 

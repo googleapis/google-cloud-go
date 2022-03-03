@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,23 +29,65 @@ func ExampleNewTopicStatsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleTopicStatsClient_ComputeMessageStats() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ComputeMessageStatsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeMessageStatsRequest.
 	}
 	resp, err := c.ComputeMessageStats(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ComputeHeadCursor() {
+	ctx := context.Background()
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ComputeHeadCursorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeHeadCursorRequest.
+	}
+	resp, err := c.ComputeHeadCursor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ComputeTimeCursor() {
+	ctx := context.Background()
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ComputeTimeCursorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ComputeTimeCursorRequest.
+	}
+	resp, err := c.ComputeTimeCursor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

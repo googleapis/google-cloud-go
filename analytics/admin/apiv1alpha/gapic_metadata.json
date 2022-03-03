@@ -1,0 +1,438 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.analytics.admin.v1alpha",
+  "libraryPackage": "cloud.google.com/go/analytics/admin/apiv1alpha",
+  "services": {
+    "AnalyticsAdminService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AnalyticsAdminClient",
+          "rpcs": {
+            "AcknowledgeUserDataCollection": {
+              "methods": [
+                "AcknowledgeUserDataCollection"
+              ]
+            },
+            "ApproveDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "ApproveDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "ArchiveCustomDimension": {
+              "methods": [
+                "ArchiveCustomDimension"
+              ]
+            },
+            "ArchiveCustomMetric": {
+              "methods": [
+                "ArchiveCustomMetric"
+              ]
+            },
+            "AuditUserLinks": {
+              "methods": [
+                "AuditUserLinks"
+              ]
+            },
+            "BatchCreateUserLinks": {
+              "methods": [
+                "BatchCreateUserLinks"
+              ]
+            },
+            "BatchDeleteUserLinks": {
+              "methods": [
+                "BatchDeleteUserLinks"
+              ]
+            },
+            "BatchGetUserLinks": {
+              "methods": [
+                "BatchGetUserLinks"
+              ]
+            },
+            "BatchUpdateUserLinks": {
+              "methods": [
+                "BatchUpdateUserLinks"
+              ]
+            },
+            "CancelDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "CancelDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateConversionEvent": {
+              "methods": [
+                "CreateConversionEvent"
+              ]
+            },
+            "CreateCustomDimension": {
+              "methods": [
+                "CreateCustomDimension"
+              ]
+            },
+            "CreateCustomMetric": {
+              "methods": [
+                "CreateCustomMetric"
+              ]
+            },
+            "CreateDataStream": {
+              "methods": [
+                "CreateDataStream"
+              ]
+            },
+            "CreateDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "CreateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "CreateDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "CreateDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "CreateFirebaseLink": {
+              "methods": [
+                "CreateFirebaseLink"
+              ]
+            },
+            "CreateGoogleAdsLink": {
+              "methods": [
+                "CreateGoogleAdsLink"
+              ]
+            },
+            "CreateMeasurementProtocolSecret": {
+              "methods": [
+                "CreateMeasurementProtocolSecret"
+              ]
+            },
+            "CreateProperty": {
+              "methods": [
+                "CreateProperty"
+              ]
+            },
+            "CreateUserLink": {
+              "methods": [
+                "CreateUserLink"
+              ]
+            },
+            "CreateWebDataStream": {
+              "methods": [
+                "CreateWebDataStream"
+              ]
+            },
+            "DeleteAccount": {
+              "methods": [
+                "DeleteAccount"
+              ]
+            },
+            "DeleteAndroidAppDataStream": {
+              "methods": [
+                "DeleteAndroidAppDataStream"
+              ]
+            },
+            "DeleteConversionEvent": {
+              "methods": [
+                "DeleteConversionEvent"
+              ]
+            },
+            "DeleteDataStream": {
+              "methods": [
+                "DeleteDataStream"
+              ]
+            },
+            "DeleteDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "DeleteDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "DeleteDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "DeleteDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "DeleteFirebaseLink": {
+              "methods": [
+                "DeleteFirebaseLink"
+              ]
+            },
+            "DeleteGoogleAdsLink": {
+              "methods": [
+                "DeleteGoogleAdsLink"
+              ]
+            },
+            "DeleteIosAppDataStream": {
+              "methods": [
+                "DeleteIosAppDataStream"
+              ]
+            },
+            "DeleteMeasurementProtocolSecret": {
+              "methods": [
+                "DeleteMeasurementProtocolSecret"
+              ]
+            },
+            "DeleteProperty": {
+              "methods": [
+                "DeleteProperty"
+              ]
+            },
+            "DeleteUserLink": {
+              "methods": [
+                "DeleteUserLink"
+              ]
+            },
+            "DeleteWebDataStream": {
+              "methods": [
+                "DeleteWebDataStream"
+              ]
+            },
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "GetAndroidAppDataStream": {
+              "methods": [
+                "GetAndroidAppDataStream"
+              ]
+            },
+            "GetConversionEvent": {
+              "methods": [
+                "GetConversionEvent"
+              ]
+            },
+            "GetCustomDimension": {
+              "methods": [
+                "GetCustomDimension"
+              ]
+            },
+            "GetCustomMetric": {
+              "methods": [
+                "GetCustomMetric"
+              ]
+            },
+            "GetDataRetentionSettings": {
+              "methods": [
+                "GetDataRetentionSettings"
+              ]
+            },
+            "GetDataSharingSettings": {
+              "methods": [
+                "GetDataSharingSettings"
+              ]
+            },
+            "GetDataStream": {
+              "methods": [
+                "GetDataStream"
+              ]
+            },
+            "GetDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "GetDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "GetDisplayVideo360AdvertiserLinkProposal": {
+              "methods": [
+                "GetDisplayVideo360AdvertiserLinkProposal"
+              ]
+            },
+            "GetGlobalSiteTag": {
+              "methods": [
+                "GetGlobalSiteTag"
+              ]
+            },
+            "GetGoogleSignalsSettings": {
+              "methods": [
+                "GetGoogleSignalsSettings"
+              ]
+            },
+            "GetIosAppDataStream": {
+              "methods": [
+                "GetIosAppDataStream"
+              ]
+            },
+            "GetMeasurementProtocolSecret": {
+              "methods": [
+                "GetMeasurementProtocolSecret"
+              ]
+            },
+            "GetProperty": {
+              "methods": [
+                "GetProperty"
+              ]
+            },
+            "GetUserLink": {
+              "methods": [
+                "GetUserLink"
+              ]
+            },
+            "GetWebDataStream": {
+              "methods": [
+                "GetWebDataStream"
+              ]
+            },
+            "ListAccountSummaries": {
+              "methods": [
+                "ListAccountSummaries"
+              ]
+            },
+            "ListAccounts": {
+              "methods": [
+                "ListAccounts"
+              ]
+            },
+            "ListAndroidAppDataStreams": {
+              "methods": [
+                "ListAndroidAppDataStreams"
+              ]
+            },
+            "ListConversionEvents": {
+              "methods": [
+                "ListConversionEvents"
+              ]
+            },
+            "ListCustomDimensions": {
+              "methods": [
+                "ListCustomDimensions"
+              ]
+            },
+            "ListCustomMetrics": {
+              "methods": [
+                "ListCustomMetrics"
+              ]
+            },
+            "ListDataStreams": {
+              "methods": [
+                "ListDataStreams"
+              ]
+            },
+            "ListDisplayVideo360AdvertiserLinkProposals": {
+              "methods": [
+                "ListDisplayVideo360AdvertiserLinkProposals"
+              ]
+            },
+            "ListDisplayVideo360AdvertiserLinks": {
+              "methods": [
+                "ListDisplayVideo360AdvertiserLinks"
+              ]
+            },
+            "ListFirebaseLinks": {
+              "methods": [
+                "ListFirebaseLinks"
+              ]
+            },
+            "ListGoogleAdsLinks": {
+              "methods": [
+                "ListGoogleAdsLinks"
+              ]
+            },
+            "ListIosAppDataStreams": {
+              "methods": [
+                "ListIosAppDataStreams"
+              ]
+            },
+            "ListMeasurementProtocolSecrets": {
+              "methods": [
+                "ListMeasurementProtocolSecrets"
+              ]
+            },
+            "ListProperties": {
+              "methods": [
+                "ListProperties"
+              ]
+            },
+            "ListUserLinks": {
+              "methods": [
+                "ListUserLinks"
+              ]
+            },
+            "ListWebDataStreams": {
+              "methods": [
+                "ListWebDataStreams"
+              ]
+            },
+            "ProvisionAccountTicket": {
+              "methods": [
+                "ProvisionAccountTicket"
+              ]
+            },
+            "SearchChangeHistoryEvents": {
+              "methods": [
+                "SearchChangeHistoryEvents"
+              ]
+            },
+            "UpdateAccount": {
+              "methods": [
+                "UpdateAccount"
+              ]
+            },
+            "UpdateAndroidAppDataStream": {
+              "methods": [
+                "UpdateAndroidAppDataStream"
+              ]
+            },
+            "UpdateCustomDimension": {
+              "methods": [
+                "UpdateCustomDimension"
+              ]
+            },
+            "UpdateCustomMetric": {
+              "methods": [
+                "UpdateCustomMetric"
+              ]
+            },
+            "UpdateDataRetentionSettings": {
+              "methods": [
+                "UpdateDataRetentionSettings"
+              ]
+            },
+            "UpdateDataStream": {
+              "methods": [
+                "UpdateDataStream"
+              ]
+            },
+            "UpdateDisplayVideo360AdvertiserLink": {
+              "methods": [
+                "UpdateDisplayVideo360AdvertiserLink"
+              ]
+            },
+            "UpdateGoogleAdsLink": {
+              "methods": [
+                "UpdateGoogleAdsLink"
+              ]
+            },
+            "UpdateGoogleSignalsSettings": {
+              "methods": [
+                "UpdateGoogleSignalsSettings"
+              ]
+            },
+            "UpdateIosAppDataStream": {
+              "methods": [
+                "UpdateIosAppDataStream"
+              ]
+            },
+            "UpdateMeasurementProtocolSecret": {
+              "methods": [
+                "UpdateMeasurementProtocolSecret"
+              ]
+            },
+            "UpdateProperty": {
+              "methods": [
+                "UpdateProperty"
+              ]
+            },
+            "UpdateUserLink": {
+              "methods": [
+                "UpdateUserLink"
+              ]
+            },
+            "UpdateWebDataStream": {
+              "methods": [
+                "UpdateWebDataStream"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

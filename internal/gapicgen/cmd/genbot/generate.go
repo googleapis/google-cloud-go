@@ -12,27 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
+// +build !windows
+
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"cloud.google.com/go/internal/gapicgen/git"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/src-d/go-git.v4"
 )
 
 // generate downloads sources and generates pull requests for go-genproto and
 // google-cloud-go if needed.
-func generate(ctx context.Context, githubClient *GithubClient) error {
+func generate(ctx context.Context, githubClient *git.GithubClient, forceAll bool) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -51,16 +51,16 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/googleapis", googleapisDir)
+		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/go-genproto", genprotoDir)
+		return git.DeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
+		return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/protocolbuffers/protobuf", protoDir)
+		return git.DeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
 	})
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
@@ -72,6 +72,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 		GenprotoDir:   genprotoDir,
 		GapicDir:      gocloudDir,
 		ProtoDir:      protoDir,
+		ForceAll:      forceAll,
 	}
 	changes, err := generator.Generate(ctx, conf)
 	if err != nil {
@@ -79,12 +80,12 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 	}
 
 	// Create PRs.
-	genprotoHasChanges, err := hasChanges(genprotoDir)
+	genprotoHasChanges, err := git.HasChanges(genprotoDir)
 	if err != nil {
 		return err
 	}
 
-	gocloudHasChanges, err := hasChanges(gocloudDir)
+	gocloudHasChanges, err := git.HasChanges(gocloudDir)
 	if err != nil {
 		return err
 	}
@@ -135,32 +136,4 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 		log.Println("Neither genproto nor gocloud had changes")
 	}
 	return nil
-}
-
-// gitClone clones a repository in the given directory.
-func gitClone(repo, dir string) error {
-	log.Printf("cloning %s\n", repo)
-
-	_, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:      repo,
-		Progress: os.Stdout,
-	})
-	return err
-}
-
-// hasChanges reports whether the given directory has uncommitted git changes.
-func hasChanges(dir string) (bool, error) {
-	// Write command output to both os.Stderr and local, so that we can check
-	// whether there are modified files.
-	inmem := &bytes.Buffer{}
-	w := io.MultiWriter(os.Stderr, inmem)
-
-	c := exec.Command("bash", "-c", "git status --short")
-	c.Dir = dir
-	c.Stdout = w
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-	err := c.Run()
-
-	return inmem.Len() > 0, err
 }

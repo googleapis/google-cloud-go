@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,21 +30,23 @@ func ExampleNewDatastoreAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDatastoreAdminClient_ExportEntities() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ExportEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ExportEntitiesRequest.
 	}
 	op, err := c.ExportEntities(ctx, req)
 	if err != nil {
@@ -60,16 +62,16 @@ func ExampleDatastoreAdminClient_ExportEntities() {
 }
 
 func ExampleDatastoreAdminClient_ImportEntities() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ImportEntitiesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ImportEntitiesRequest.
 	}
 	op, err := c.ImportEntities(ctx, req)
 	if err != nil {
@@ -82,17 +84,67 @@ func ExampleDatastoreAdminClient_ImportEntities() {
 	}
 }
 
-func ExampleDatastoreAdminClient_GetIndex() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-
+func ExampleDatastoreAdminClient_CreateIndex() {
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &adminpb.CreateIndexRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#CreateIndexRequest.
+	}
+	op, err := c.CreateIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatastoreAdminClient_DeleteIndex() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteIndexRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#DeleteIndexRequest.
+	}
+	op, err := c.DeleteIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatastoreAdminClient_GetIndex() {
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &adminpb.GetIndexRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#GetIndexRequest.
 	}
 	resp, err := c.GetIndex(ctx, req)
 	if err != nil {
@@ -103,17 +155,16 @@ func ExampleDatastoreAdminClient_GetIndex() {
 }
 
 func ExampleDatastoreAdminClient_ListIndexes() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/datastore/admin/v1#ListIndexesRequest.
 	}
 	it := c.ListIndexes(ctx, req)
 	for {

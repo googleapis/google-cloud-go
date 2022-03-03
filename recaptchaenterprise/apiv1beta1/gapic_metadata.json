@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.recaptchaenterprise.v1beta1",
+  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/apiv1beta1",
+  "services": {
+    "RecaptchaEnterpriseServiceV1Beta1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RecaptchaEnterpriseServiceV1Beta1Client",
+          "rpcs": {
+            "AnnotateAssessment": {
+              "methods": [
+                "AnnotateAssessment"
+              ]
+            },
+            "CreateAssessment": {
+              "methods": [
+                "CreateAssessment"
+              ]
+            },
+            "CreateKey": {
+              "methods": [
+                "CreateKey"
+              ]
+            },
+            "DeleteKey": {
+              "methods": [
+                "DeleteKey"
+              ]
+            },
+            "GetKey": {
+              "methods": [
+                "GetKey"
+              ]
+            },
+            "ListKeys": {
+              "methods": [
+                "ListKeys"
+              ]
+            },
+            "UpdateKey": {
+              "methods": [
+                "UpdateKey"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

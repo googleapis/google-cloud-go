@@ -1,9 +1,9 @@
-## Cloud Logging [![GoDoc](https://godoc.org/cloud.google.com/go/logging?status.svg)](https://godoc.org/cloud.google.com/go/logging)
+## Cloud Logging [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/logging.svg)](https://pkg.go.dev/cloud.google.com/go/logging)
 
 - [About Cloud Logging](https://cloud.google.com/logging/)
 - [API documentation](https://cloud.google.com/logging/docs)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/logging)
-- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/logging)
+- [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/logging)
 
 ### Example Usage
 

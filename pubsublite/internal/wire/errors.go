@@ -16,6 +16,8 @@ package wire
 import (
 	"errors"
 	"fmt"
+
+	"golang.org/x/xerrors"
 )
 
 // Errors exported from this package.
@@ -37,7 +39,19 @@ var (
 	ErrServiceStarting = errors.New("pubsublite: service is starting up")
 
 	// ErrServiceStopped indicates that a service (e.g. publisher or subscriber)
-	// cannot perform an operation because it has stoped or is in the process of
+	// cannot perform an operation because it has stopped or is in the process of
 	// stopping.
 	ErrServiceStopped = errors.New("pubsublite: service has stopped or is stopping")
+
+	// ErrBackendUnavailable indicates that the backend service has been
+	// unavailable for a period of time. The timeout can be configured using
+	// PublishSettings.Timeout or ReceiveSettings.Timeout.
+	ErrBackendUnavailable = errors.New("pubsublite: backend service is unavailable")
 )
+
+func wrapError(context, resource string, err error) error {
+	if err != nil {
+		return xerrors.Errorf("%s(%s): %w", context, resource, err)
+	}
+	return err
+}

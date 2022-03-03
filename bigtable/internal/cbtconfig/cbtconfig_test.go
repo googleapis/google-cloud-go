@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestReadConfig(t *testing.T) {
@@ -32,11 +33,13 @@ func TestReadConfig(t *testing.T) {
 	certificateFile := "test-certificate-file"
 	userAgent := "test-user-agent"
 	authToken := "test-auth-token="
+	timeout := time.Duration(42e9)
 	// Read configuration from string containing spaces, tabs and empty lines.
 	validConfig := fmt.Sprintf(`
         project=%s
         instance=%s
         creds=%s
+        timeout=42s
 
         admin-endpoint =%s
         data-endpoint= %s
@@ -70,6 +73,9 @@ func TestReadConfig(t *testing.T) {
 		t.Errorf("UserAgent mismatch\nGot: %s\nWant: %s", g, w)
 	}
 	if g, w := c.AuthToken, authToken; g != w {
+		t.Errorf("AuthToken mismatch\nGot: %s\nWant: %s", g, w)
+	}
+	if g, w := c.Timeout, timeout; g != w {
 		t.Errorf("AuthToken mismatch\nGot: %s\nWant: %s", g, w)
 	}
 

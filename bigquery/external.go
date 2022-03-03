@@ -90,46 +90,61 @@ type ExternalDataConfig struct {
 	// when reading data.
 	MaxBadRecords int64
 
-	// Additional options for CSV, GoogleSheets and Bigtable formats.
+	// Additional options for CSV, GoogleSheets, Bigtable, and Parquet formats.
 	Options ExternalDataConfigOptions
 
 	// HivePartitioningOptions allows use of Hive partitioning based on the
 	// layout of objects in Google Cloud Storage.
 	HivePartitioningOptions *HivePartitioningOptions
+
+	// DecimalTargetTypes allows selection of how decimal values are converted when
+	// processed in bigquery, subject to the value type having sufficient precision/scale
+	// to support the values.  In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
+	// selected if is present in the list and if supports the necessary precision and scale.
+	//
+	// StringTargetType supports all precision and scale values.
+	DecimalTargetTypes []DecimalTargetType
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	q := bq.ExternalDataConfiguration{
-		SourceFormat:        string(e.SourceFormat),
-		SourceUris:          e.SourceURIs,
-		Autodetect:          e.AutoDetect,
-		Compression:         string(e.Compression),
-		IgnoreUnknownValues: e.IgnoreUnknownValues,
-		MaxBadRecords:       e.MaxBadRecords,
+		SourceFormat:            string(e.SourceFormat),
+		SourceUris:              e.SourceURIs,
+		Autodetect:              e.AutoDetect,
+		Compression:             string(e.Compression),
+		IgnoreUnknownValues:     e.IgnoreUnknownValues,
+		MaxBadRecords:           e.MaxBadRecords,
+		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
 	}
-	if e.HivePartitioningOptions != nil {
-		q.HivePartitioningOptions = e.HivePartitioningOptions.toBQ()
-	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
+	}
+	for _, v := range e.DecimalTargetTypes {
+		q.DecimalTargetTypes = append(q.DecimalTargetTypes, string(v))
 	}
 	return q
 }
 
 func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfig, error) {
 	e := &ExternalDataConfig{
-		SourceFormat:        DataFormat(q.SourceFormat),
-		SourceURIs:          q.SourceUris,
-		AutoDetect:          q.Autodetect,
-		Compression:         Compression(q.Compression),
-		IgnoreUnknownValues: q.IgnoreUnknownValues,
-		MaxBadRecords:       q.MaxBadRecords,
-		Schema:              bqToSchema(q.Schema),
+		SourceFormat:            DataFormat(q.SourceFormat),
+		SourceURIs:              q.SourceUris,
+		AutoDetect:              q.Autodetect,
+		Compression:             Compression(q.Compression),
+		IgnoreUnknownValues:     q.IgnoreUnknownValues,
+		MaxBadRecords:           q.MaxBadRecords,
+		Schema:                  bqToSchema(q.Schema),
+		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
+	}
+	for _, v := range q.DecimalTargetTypes {
+		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
 	}
 	switch {
+	case q.AvroOptions != nil:
+		e.Options = bqToAvroOptions(q.AvroOptions)
 	case q.CsvOptions != nil:
 		e.Options = bqToCSVOptions(q.CsvOptions)
 	case q.GoogleSheetsOptions != nil:
@@ -140,9 +155,8 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
-	}
-	if q.HivePartitioningOptions != nil {
-		e.HivePartitioningOptions = bqToHivePartitioningOptions(q.HivePartitioningOptions)
+	case q.ParquetOptions != nil:
+		e.Options = bqToParquetOptions(q.ParquetOptions)
 	}
 	return e, nil
 }
@@ -151,6 +165,29 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 // This interface is implemented by CSVOptions, GoogleSheetsOptions and BigtableOptions.
 type ExternalDataConfigOptions interface {
 	populateExternalDataConfig(*bq.ExternalDataConfiguration)
+}
+
+// AvroOptions are additional options for Avro external data data sources.
+type AvroOptions struct {
+	// UseAvroLogicalTypes indicates whether to interpret logical types as the
+	// corresponding BigQuery data type (for example, TIMESTAMP), instead of using
+	// the raw type (for example, INTEGER).
+	UseAvroLogicalTypes bool
+}
+
+func (o *AvroOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	c.AvroOptions = &bq.AvroOptions{
+		UseAvroLogicalTypes: o.UseAvroLogicalTypes,
+	}
+}
+
+func bqToAvroOptions(q *bq.AvroOptions) *AvroOptions {
+	if q == nil {
+		return nil
+	}
+	return &AvroOptions{
+		UseAvroLogicalTypes: q.UseAvroLogicalTypes,
+	}
 }
 
 // CSVOptions are additional options for CSV external data sources.
@@ -182,6 +219,10 @@ type CSVOptions struct {
 	// The number of rows at the top of a CSV file that BigQuery will skip when
 	// reading data.
 	SkipLeadingRows int64
+
+	// An optional custom string that will represent a NULL
+	// value in CSV import data.
+	NullMarker string
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
@@ -192,6 +233,7 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 		FieldDelimiter:      o.FieldDelimiter,
 		Quote:               o.quote(),
 		SkipLeadingRows:     o.SkipLeadingRows,
+		NullMarker:          o.NullMarker,
 	}
 }
 
@@ -223,6 +265,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		Encoding:            Encoding(q.Encoding),
 		FieldDelimiter:      q.FieldDelimiter,
 		SkipLeadingRows:     q.SkipLeadingRows,
+		NullMarker:          q.NullMarker,
 	}
 	o.setQuote(q.Quote)
 	return o
@@ -418,6 +461,36 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 		b.Qualifier = string(bytes)
 	}
 	return b, nil
+}
+
+// ParquetOptions are additional options for Parquet external data sources.
+type ParquetOptions struct {
+	// EnumAsString indicates whether to infer Parquet ENUM logical type as
+	// STRING instead of BYTES by default.
+	EnumAsString bool
+
+	// EnableListInference indicates whether to use schema inference
+	// specifically for Parquet LIST logical type.
+	EnableListInference bool
+}
+
+func (o *ParquetOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	if o != nil {
+		c.ParquetOptions = &bq.ParquetOptions{
+			EnumAsString:        o.EnumAsString,
+			EnableListInference: o.EnableListInference,
+		}
+	}
+}
+
+func bqToParquetOptions(q *bq.ParquetOptions) *ParquetOptions {
+	if q == nil {
+		return nil
+	}
+	return &ParquetOptions{
+		EnumAsString:        q.EnumAsString,
+		EnableListInference: q.EnableListInference,
+	}
 }
 
 // HivePartitioningMode is used in conjunction with HivePartitioningOptions.

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import (
 
 	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"google.golang.org/api/iterator"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -30,21 +31,23 @@ func ExampleNewPublisherClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePublisherClient_CreateTopic() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.Topic{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#Topic.
 	}
 	resp, err := c.CreateTopic(ctx, req)
 	if err != nil {
@@ -55,16 +58,16 @@ func ExamplePublisherClient_CreateTopic() {
 }
 
 func ExamplePublisherClient_UpdateTopic() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#UpdateTopicRequest.
 	}
 	resp, err := c.UpdateTopic(ctx, req)
 	if err != nil {
@@ -75,16 +78,16 @@ func ExamplePublisherClient_UpdateTopic() {
 }
 
 func ExamplePublisherClient_Publish() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.PublishRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#PublishRequest.
 	}
 	resp, err := c.Publish(ctx, req)
 	if err != nil {
@@ -95,16 +98,16 @@ func ExamplePublisherClient_Publish() {
 }
 
 func ExamplePublisherClient_GetTopic() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.GetTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#GetTopicRequest.
 	}
 	resp, err := c.GetTopic(ctx, req)
 	if err != nil {
@@ -115,17 +118,16 @@ func ExamplePublisherClient_GetTopic() {
 }
 
 func ExamplePublisherClient_ListTopics() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicsRequest.
 	}
 	it := c.ListTopics(ctx, req)
 	for {
@@ -142,17 +144,16 @@ func ExamplePublisherClient_ListTopics() {
 }
 
 func ExamplePublisherClient_ListTopicSubscriptions() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListTopicSubscriptionsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicSubscriptionsRequest.
 	}
 	it := c.ListTopicSubscriptions(ctx, req)
 	for {
@@ -169,17 +170,16 @@ func ExamplePublisherClient_ListTopicSubscriptions() {
 }
 
 func ExamplePublisherClient_ListTopicSnapshots() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListTopicSnapshotsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#ListTopicSnapshotsRequest.
 	}
 	it := c.ListTopicSnapshots(ctx, req)
 	for {
@@ -201,9 +201,11 @@ func ExamplePublisherClient_DeleteTopic() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DeleteTopicRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DeleteTopicRequest.
 	}
 	err = c.DeleteTopic(ctx, req)
 	if err != nil {
@@ -212,18 +214,78 @@ func ExamplePublisherClient_DeleteTopic() {
 }
 
 func ExamplePublisherClient_DetachSubscription() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DetachSubscriptionRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/pubsub/v1#DetachSubscriptionRequest.
 	}
 	resp, err := c.DetachSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePublisherClient_GetIamPolicy() {
+	ctx := context.Background()
+	c, err := pubsub.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePublisherClient_SetIamPolicy() {
+	ctx := context.Background()
+	c, err := pubsub.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePublisherClient_TestIamPermissions() {
+	ctx := context.Background()
+	c, err := pubsub.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

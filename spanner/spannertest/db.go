@@ -45,6 +45,7 @@ type database struct {
 	lastTS  time.Time // last commit timestamp
 	tables  map[spansql.ID]*table
 	indexes map[spansql.ID]struct{} // only record their existence
+	views   map[spansql.ID]struct{} // only record their existence
 
 	rwMu sync.Mutex // held by read-write transactions
 }
@@ -55,10 +56,11 @@ type table struct {
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
 	cols      []colInfo
-	colIndex  map[spansql.ID]int // col name to index
-	origIndex map[spansql.ID]int // original index of each column upon construction
-	pkCols    int                // number of primary key columns (may be 0)
-	pkDesc    []bool             // whether each primary key column is in descending order
+	colIndex  map[spansql.ID]int         // col name to index
+	origIndex map[spansql.ID]int         // original index of each column upon construction
+	pkCols    int                        // number of primary key columns (may be 0)
+	pkDesc    []bool                     // whether each primary key column is in descending order
+	rdw       *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -66,10 +68,12 @@ type table struct {
 
 // colInfo represents information about a column in a table or result set.
 type colInfo struct {
-	Name     spansql.ID
-	Type     spansql.Type
-	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
-	Alias    spansql.PathExp // an alternate name for this column (result sets only)
+	Name      spansql.ID
+	Type      spansql.Type
+	Generated spansql.Expr
+	NotNull   bool            // only set for table columns
+	AggIndex  int             // Index+1 of SELECT list for which this is an aggregate value.
+	Alias     spansql.PathExp // an alternate name for this column (result sets only)
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -216,9 +220,10 @@ func (d *database) GetDDL() []spansql.DDLStmt {
 		t.mu.Lock()
 		for i, col := range t.cols {
 			ct.Columns = append(ct.Columns, spansql.ColumnDef{
-				Name: col.Name,
-				Type: col.Type,
-				// TODO: NotNull, AllowCommitTimestamp
+				Name:    col.Name,
+				Type:    col.Type,
+				NotNull: col.NotNull,
+				// TODO: AllowCommitTimestamp
 			})
 			if i < t.pkCols {
 				ct.PrimaryKey = append(ct.PrimaryKey, spansql.KeyPart{
@@ -245,6 +250,9 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 	}
 	if d.indexes == nil {
 		d.indexes = make(map[spansql.ID]struct{})
+	}
+	if d.views == nil {
+		d.views = make(map[spansql.ID]struct{})
 	}
 
 	switch stmt := stmt.(type) {
@@ -294,6 +302,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 				return status.Newf(codes.InvalidArgument, "primary key column %q not in table", col)
 			}
 		}
+		t.rdw = stmt.RowDeletionPolicy
 		d.tables[stmt.Name] = t
 		return nil
 	case *spansql.CreateIndex:
@@ -301,6 +310,14 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.AlreadyExists, "index %s already exists", stmt.Name)
 		}
 		d.indexes[stmt.Name] = struct{}{}
+		return nil
+	case *spansql.CreateView:
+		if !stmt.OrReplace {
+			if _, ok := d.views[stmt.Name]; ok {
+				return status.Newf(codes.AlreadyExists, "view %s already exists", stmt.Name)
+			}
+		}
+		d.views[stmt.Name] = struct{}{}
 		return nil
 	case *spansql.DropTable:
 		if _, ok := d.tables[stmt.Name]; !ok {
@@ -314,6 +331,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return status.Newf(codes.NotFound, "no index named %s", stmt.Name)
 		}
 		delete(d.indexes, stmt.Name)
+		return nil
+	case *spansql.DropView:
+		if _, ok := d.views[stmt.Name]; !ok {
+			return status.Newf(codes.NotFound, "no view named %s", stmt.Name)
+		}
+		delete(d.views, stmt.Name)
 		return nil
 	case *spansql.AlterTable:
 		t, ok := d.tables[stmt.Name]
@@ -335,6 +358,21 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return nil
 		case spansql.AlterColumn:
 			if st := t.alterColumn(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.AddRowDeletionPolicy:
+			if st := t.addRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.ReplaceRowDeletionPolicy:
+			if st := t.replaceRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.DropRowDeletionPolicy:
+			if st := t.dropRowDeletionPolicy(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -393,6 +431,9 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 		for j, v := range vs.Values {
 			i := colIndexes[j]
 
+			if t.cols[i].Generated != nil {
+				return status.Error(codes.InvalidArgument, "values can't be written to a generated column")
+			}
 			x, err := valForType(v, t.cols[i].Type)
 			if err != nil {
 				return err
@@ -400,15 +441,44 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			if x == commitTimestampSentinel {
 				x = tx.commitTimestamp
 			}
+			if x == nil && t.cols[i].NotNull {
+				return status.Errorf(codes.FailedPrecondition, "%s must not be NULL in table %s", t.cols[i].Name, tbl)
+			}
 
 			r[i] = x
 		}
-		// TODO: enforce NOT NULL?
 		// TODO: enforce that provided timestamp for commit_timestamp=true columns
 		// are not ahead of the transaction's commit timestamp.
 
 		if err := f(t, colIndexes, r); err != nil {
 			return err
+		}
+
+		// Get row again after potential update merge to ensure we compute
+		// generated columns with fresh data.
+		pk := r[:t.pkCols]
+		rowNum, found := t.rowForPK(pk)
+		// This should never fail as the row was just inserted.
+		if !found {
+			return status.Error(codes.Internal, "row failed to be inserted")
+		}
+		row := t.rows[rowNum]
+		ec := evalContext{
+			cols: t.cols,
+			row:  row,
+		}
+
+		// TODO: We would need to do a topological sort on dependencies
+		// (i.e. what other columns the expression references) to ensure we
+		// can handle generated columns which reference other generated columns
+		for i, col := range t.cols {
+			if col.Generated != nil {
+				res, err := ec.evalExpr(col.Generated)
+				if err != nil {
+					return err
+				}
+				row[i] = res
+			}
 		}
 	}
 
@@ -618,6 +688,10 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		return status.Newf(codes.InvalidArgument, "new non-key columns cannot be NOT NULL")
 	}
 
+	if _, ok := t.colIndex[cd.Name]; ok {
+		return status.Newf(codes.AlreadyExists, "column %s already exists", cd.Name)
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
@@ -627,13 +701,31 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 			return status.Newf(codes.Unimplemented, "can't add NOT NULL columns to non-empty tables yet")
 		}
 		for i := range t.rows {
-			t.rows[i] = append(t.rows[i], nil)
+			if cd.Generated != nil {
+				ec := evalContext{
+					cols: t.cols,
+					row:  t.rows[i],
+				}
+				val, err := ec.evalExpr(cd.Generated)
+				if err != nil {
+					return status.Newf(codes.InvalidArgument, "could not backfill values for generated column: %v", err)
+				}
+				t.rows[i] = append(t.rows[i], val)
+			} else {
+				t.rows[i] = append(t.rows[i], nil)
+			}
 		}
 	}
 
 	t.cols = append(t.cols, colInfo{
-		Name: cd.Name,
-		Type: cd.Type,
+		Name:    cd.Name,
+		Type:    cd.Type,
+		NotNull: cd.NotNull,
+		// TODO: We should figure out what columns the Generator expression
+		// relies on and check it is valid at this time currently it will
+		// fail when writing data instead as it is the first time we
+		// evaluate the expression.
+		Generated: cd.Generated,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
 	if !newTable {
@@ -691,6 +783,9 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	//	Enable or disable commit timestamps in value and primary key columns.
 	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
 
+	// TODO: codes.InvalidArgument is used throughout here for reporting errors,
+	// but that has not been validated against the real Spanner.
+
 	sct, ok := alt.Alteration.(spansql.SetColumnType)
 	if !ok {
 		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
@@ -701,42 +796,88 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 
 	ci, ok := t.colIndex[alt.Name]
 	if !ok {
-		// TODO: What's the right response code?
 		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
-	// Check and make type transformations.
 	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
-	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
-	// We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
-	// TODO: Do this when we track NOT NULL-ness.
-
-	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
-	// TODO: This should permit array conversions too.
+	// First phase: Check the validity of the change.
+	// TODO: Don't permit changes to allow commit timestamps.
+	if !t.cols[ci].NotNull && sct.NotNull {
+		// Adding NOT NULL is not permitted for primary key columns or array typed columns.
+		if ci < t.pkCols {
+			return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on primary key column %q", alt.Name)
+		}
+		if oldT.Array {
+			return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on array-typed column %q", alt.Name)
+		}
+		// Validate that there are no NULL values.
+		for _, row := range t.rows {
+			if row[ci] == nil {
+				return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on column %q that contains NULL values", alt.Name)
+			}
+		}
+	}
+	var conv func(x interface{}) interface{}
 	if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
+		// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
+		// TODO: This should permit array conversions too.
 		// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
-		var conv func(x interface{}) interface{}
 		if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
 			conv = func(x interface{}) interface{} { return string(x.([]byte)) }
 		} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
 			conv = func(x interface{}) interface{} { return []byte(x.(string)) }
 		}
-		if conv != nil {
-			for _, row := range t.rows {
-				if row[ci] != nil { // NULL stays as NULL.
-					row[ci] = conv(row[ci])
-				}
-			}
-		}
-		t.cols[ci].Type = newT
-		return nil
+	} else if oldT == newT {
+		// Same type; only NOT NULL changes.
+	} else { // TODO: Support other alterations.
+		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 	}
 
-	// TODO: Support other alterations.
+	// Second phase: Make type transformations.
+	t.cols[ci].NotNull = sct.NotNull
+	t.cols[ci].Type = newT
+	if conv != nil {
+		for _, row := range t.rows {
+			if row[ci] != nil { // NULL stays as NULL.
+				row[ci] = conv(row[ci])
+			}
+		}
+	}
+	return nil
+}
 
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+func (t *table) addRowDeletionPolicy(ard spansql.AddRowDeletionPolicy) *status.Status {
+	_, ok := t.colIndex[ard.RowDeletionPolicy.Column]
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unknown column %q", ard.RowDeletionPolicy.Column)
+	}
+	if t.rdw != nil {
+		return status.New(codes.InvalidArgument, "table already has a row deletion policy")
+	}
+	t.rdw = &ard.RowDeletionPolicy
+	return nil
+}
+
+func (t *table) replaceRowDeletionPolicy(ard spansql.ReplaceRowDeletionPolicy) *status.Status {
+	_, ok := t.colIndex[ard.RowDeletionPolicy.Column]
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unknown column %q", ard.RowDeletionPolicy.Column)
+	}
+	if t.rdw == nil {
+		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
+	}
+	t.rdw = &ard.RowDeletionPolicy
+	return nil
+}
+
+func (t *table) dropRowDeletionPolicy(ard spansql.DropRowDeletionPolicy) *status.Status {
+	if t.rdw == nil {
+		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
+	}
+	t.rdw = nil
+	return nil
 }
 
 func (t *table) insertRow(rowNum int, r row) {
@@ -856,7 +997,6 @@ func rowEqual(a, b []interface{}) bool {
 // valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
-		// TODO: enforce NOT NULL constraints?
 		return nil, nil
 	}
 

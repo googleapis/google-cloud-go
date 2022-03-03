@@ -18,7 +18,6 @@ package spanner
 
 import (
 	"context"
-	"os"
 	"sync"
 	"testing"
 	"time"
@@ -80,8 +79,8 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -112,6 +111,9 @@ func TestPartitionQuery_QueryOptions(t *testing.T) {
 			for _, p := range ps {
 				if got, want := p.qreq.QueryOptions.OptimizerVersion, tt.want.Options.OptimizerVersion; got != want {
 					t.Fatalf("Incorrect optimizer version: got %v, want %v", got, want)
+				}
+				if got, want := p.qreq.QueryOptions.OptimizerStatisticsPackage, tt.want.Options.OptimizerStatisticsPackage; got != want {
+					t.Fatalf("Incorrect optimizer statistics package: got %v, want %v", got, want)
 				}
 			}
 		})

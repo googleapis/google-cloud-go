@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewMetricClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleMetricClient_ListMonitoredResourceDescriptors() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMonitoredResourceDescriptorsRequest.
 	}
 	it := c.ListMonitoredResourceDescriptors(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleMetricClient_ListMonitoredResourceDescriptors() {
 }
 
 func ExampleMetricClient_GetMonitoredResourceDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetMonitoredResourceDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMonitoredResourceDescriptorRequest.
 	}
 	resp, err := c.GetMonitoredResourceDescriptor(ctx, req)
 	if err != nil {
@@ -82,17 +83,16 @@ func ExampleMetricClient_GetMonitoredResourceDescriptor() {
 }
 
 func ExampleMetricClient_ListMetricDescriptors() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListMetricDescriptorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListMetricDescriptorsRequest.
 	}
 	it := c.ListMetricDescriptors(ctx, req)
 	for {
@@ -109,16 +109,16 @@ func ExampleMetricClient_ListMetricDescriptors() {
 }
 
 func ExampleMetricClient_GetMetricDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetMetricDescriptorRequest.
 	}
 	resp, err := c.GetMetricDescriptor(ctx, req)
 	if err != nil {
@@ -129,16 +129,16 @@ func ExampleMetricClient_GetMetricDescriptor() {
 }
 
 func ExampleMetricClient_CreateMetricDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateMetricDescriptorRequest.
 	}
 	resp, err := c.CreateMetricDescriptor(ctx, req)
 	if err != nil {
@@ -154,9 +154,11 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteMetricDescriptorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteMetricDescriptorRequest.
 	}
 	err = c.DeleteMetricDescriptor(ctx, req)
 	if err != nil {
@@ -165,17 +167,16 @@ func ExampleMetricClient_DeleteMetricDescriptor() {
 }
 
 func ExampleMetricClient_ListTimeSeries() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewMetricClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListTimeSeriesRequest.
 	}
 	it := c.ListTimeSeries(ctx, req)
 	for {
@@ -197,11 +198,31 @@ func ExampleMetricClient_CreateTimeSeries() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateTimeSeriesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
 	}
 	err = c.CreateTimeSeries(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleMetricClient_CreateServiceTimeSeries() {
+	ctx := context.Background()
+	c, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.CreateTimeSeriesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateTimeSeriesRequest.
+	}
+	err = c.CreateServiceTimeSeries(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.assuredworkloads.v1beta1",
+  "libraryPackage": "cloud.google.com/go/assuredworkloads/apiv1beta1",
+  "services": {
+    "AssuredWorkloadsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

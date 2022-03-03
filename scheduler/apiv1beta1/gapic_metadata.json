@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.scheduler.v1beta1",
+  "libraryPackage": "cloud.google.com/go/scheduler/apiv1beta1",
+  "services": {
+    "CloudScheduler": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudSchedulerClient",
+          "rpcs": {
+            "CreateJob": {
+              "methods": [
+                "CreateJob"
+              ]
+            },
+            "DeleteJob": {
+              "methods": [
+                "DeleteJob"
+              ]
+            },
+            "GetJob": {
+              "methods": [
+                "GetJob"
+              ]
+            },
+            "ListJobs": {
+              "methods": [
+                "ListJobs"
+              ]
+            },
+            "PauseJob": {
+              "methods": [
+                "PauseJob"
+              ]
+            },
+            "ResumeJob": {
+              "methods": [
+                "ResumeJob"
+              ]
+            },
+            "RunJob": {
+              "methods": [
+                "RunJob"
+              ]
+            },
+            "UpdateJob": {
+              "methods": [
+                "UpdateJob"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

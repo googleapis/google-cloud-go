@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewGameServerClustersClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGameServerClustersClient_ListGameServerClusters() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListGameServerClustersRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#ListGameServerClustersRequest.
 	}
 	it := c.ListGameServerClusters(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleGameServerClustersClient_ListGameServerClusters() {
 }
 
 func ExampleGameServerClustersClient_GetGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#GetGameServerClusterRequest.
 	}
 	resp, err := c.GetGameServerCluster(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleGameServerClustersClient_GetGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_CreateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#CreateGameServerClusterRequest.
 	}
 	op, err := c.CreateGameServerCluster(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleGameServerClustersClient_CreateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewCreateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewCreateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#PreviewCreateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewCreateGameServerCluster(ctx, req)
 	if err != nil {
@@ -127,16 +128,16 @@ func ExampleGameServerClustersClient_PreviewCreateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_DeleteGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#DeleteGameServerClusterRequest.
 	}
 	op, err := c.DeleteGameServerCluster(ctx, req)
 	if err != nil {
@@ -150,16 +151,16 @@ func ExampleGameServerClustersClient_DeleteGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewDeleteGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewDeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#PreviewDeleteGameServerClusterRequest.
 	}
 	resp, err := c.PreviewDeleteGameServerCluster(ctx, req)
 	if err != nil {
@@ -170,16 +171,16 @@ func ExampleGameServerClustersClient_PreviewDeleteGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_UpdateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.UpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#UpdateGameServerClusterRequest.
 	}
 	op, err := c.UpdateGameServerCluster(ctx, req)
 	if err != nil {
@@ -195,16 +196,16 @@ func ExampleGameServerClustersClient_UpdateGameServerCluster() {
 }
 
 func ExampleGameServerClustersClient_PreviewUpdateGameServerCluster() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewUpdateGameServerClusterRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1beta#PreviewUpdateGameServerClusterRequest.
 	}
 	resp, err := c.PreviewUpdateGameServerCluster(ctx, req)
 	if err != nil {

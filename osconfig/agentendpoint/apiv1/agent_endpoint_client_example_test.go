@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_StartNextTask() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1#StartNextTaskRequest.
 	}
 	resp, err := c.StartNextTask(ctx, req)
 	if err != nil {
@@ -54,16 +56,16 @@ func ExampleClient_StartNextTask() {
 }
 
 func ExampleClient_ReportTaskProgress() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportTaskProgressRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1#ReportTaskProgressRequest.
 	}
 	resp, err := c.ReportTaskProgress(ctx, req)
 	if err != nil {
@@ -74,16 +76,16 @@ func ExampleClient_ReportTaskProgress() {
 }
 
 func ExampleClient_ReportTaskComplete() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1#ReportTaskCompleteRequest.
 	}
 	resp, err := c.ReportTaskComplete(ctx, req)
 	if err != nil {
@@ -94,16 +96,16 @@ func ExampleClient_ReportTaskComplete() {
 }
 
 func ExampleClient_RegisterAgent() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.RegisterAgentRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1#RegisterAgentRequest.
 	}
 	resp, err := c.RegisterAgent(ctx, req)
 	if err != nil {
@@ -114,16 +116,16 @@ func ExampleClient_RegisterAgent() {
 }
 
 func ExampleClient_ReportInventory() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportInventoryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1#ReportInventoryRequest.
 	}
 	resp, err := c.ReportInventory(ctx, req)
 	if err != nil {

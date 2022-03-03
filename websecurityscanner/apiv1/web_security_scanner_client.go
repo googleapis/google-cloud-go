@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newClientHook clientHook
@@ -54,13 +54,13 @@ type CallOptions struct {
 	ListFindingTypeStats []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("websecurityscanner.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("websecurityscanner.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://websecurityscanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -183,34 +183,156 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Web Security Scanner API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateScanConfig(context.Context, *websecurityscannerpb.CreateScanConfigRequest, ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error)
+	DeleteScanConfig(context.Context, *websecurityscannerpb.DeleteScanConfigRequest, ...gax.CallOption) error
+	GetScanConfig(context.Context, *websecurityscannerpb.GetScanConfigRequest, ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error)
+	ListScanConfigs(context.Context, *websecurityscannerpb.ListScanConfigsRequest, ...gax.CallOption) *ScanConfigIterator
+	UpdateScanConfig(context.Context, *websecurityscannerpb.UpdateScanConfigRequest, ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error)
+	StartScanRun(context.Context, *websecurityscannerpb.StartScanRunRequest, ...gax.CallOption) (*websecurityscannerpb.ScanRun, error)
+	GetScanRun(context.Context, *websecurityscannerpb.GetScanRunRequest, ...gax.CallOption) (*websecurityscannerpb.ScanRun, error)
+	ListScanRuns(context.Context, *websecurityscannerpb.ListScanRunsRequest, ...gax.CallOption) *ScanRunIterator
+	StopScanRun(context.Context, *websecurityscannerpb.StopScanRunRequest, ...gax.CallOption) (*websecurityscannerpb.ScanRun, error)
+	ListCrawledUrls(context.Context, *websecurityscannerpb.ListCrawledUrlsRequest, ...gax.CallOption) *CrawledUrlIterator
+	GetFinding(context.Context, *websecurityscannerpb.GetFindingRequest, ...gax.CallOption) (*websecurityscannerpb.Finding, error)
+	ListFindings(context.Context, *websecurityscannerpb.ListFindingsRequest, ...gax.CallOption) *FindingIterator
+	ListFindingTypeStats(context.Context, *websecurityscannerpb.ListFindingTypeStatsRequest, ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error)
+}
+
 // Client is a client for interacting with Web Security Scanner API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Web Security Scanner Service identifies security vulnerabilities in web
+// applications hosted on Google Cloud. It crawls your application, and
+// attempts to exercise as many user inputs and event handlers as possible.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateScanConfig creates a new ScanConfig.
+func (c *Client) CreateScanConfig(ctx context.Context, req *websecurityscannerpb.CreateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	return c.internalClient.CreateScanConfig(ctx, req, opts...)
+}
+
+// DeleteScanConfig deletes an existing ScanConfig and its child resources.
+func (c *Client) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb.DeleteScanConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteScanConfig(ctx, req, opts...)
+}
+
+// GetScanConfig gets a ScanConfig.
+func (c *Client) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	return c.internalClient.GetScanConfig(ctx, req, opts...)
+}
+
+// ListScanConfigs lists ScanConfigs under a given project.
+func (c *Client) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.ListScanConfigsRequest, opts ...gax.CallOption) *ScanConfigIterator {
+	return c.internalClient.ListScanConfigs(ctx, req, opts...)
+}
+
+// UpdateScanConfig updates a ScanConfig. This method support partial update of a ScanConfig.
+func (c *Client) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb.UpdateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	return c.internalClient.UpdateScanConfig(ctx, req, opts...)
+}
+
+// StartScanRun start a ScanRun according to the given ScanConfig.
+func (c *Client) StartScanRun(ctx context.Context, req *websecurityscannerpb.StartScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	return c.internalClient.StartScanRun(ctx, req, opts...)
+}
+
+// GetScanRun gets a ScanRun.
+func (c *Client) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	return c.internalClient.GetScanRun(ctx, req, opts...)
+}
+
+// ListScanRuns lists ScanRuns under a given ScanConfig, in descending order of ScanRun
+// stop time.
+func (c *Client) ListScanRuns(ctx context.Context, req *websecurityscannerpb.ListScanRunsRequest, opts ...gax.CallOption) *ScanRunIterator {
+	return c.internalClient.ListScanRuns(ctx, req, opts...)
+}
+
+// StopScanRun stops a ScanRun. The stopped ScanRun is returned.
+func (c *Client) StopScanRun(ctx context.Context, req *websecurityscannerpb.StopScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	return c.internalClient.StopScanRun(ctx, req, opts...)
+}
+
+// ListCrawledUrls list CrawledUrls under a given ScanRun.
+func (c *Client) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.ListCrawledUrlsRequest, opts ...gax.CallOption) *CrawledUrlIterator {
+	return c.internalClient.ListCrawledUrls(ctx, req, opts...)
+}
+
+// GetFinding gets a Finding.
+func (c *Client) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
+	return c.internalClient.GetFinding(ctx, req, opts...)
+}
+
+// ListFindings list Findings under a given ScanRun.
+func (c *Client) ListFindings(ctx context.Context, req *websecurityscannerpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
+	return c.internalClient.ListFindings(ctx, req, opts...)
+}
+
+// ListFindingTypeStats list all FindingTypeStats under a given ScanRun.
+func (c *Client) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
+	return c.internalClient.ListFindingTypeStats(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Web Security Scanner API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client websecurityscannerpb.WebSecurityScannerClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new web security scanner client.
+// NewClient creates a new web security scanner client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Web Security Scanner Service identifies security vulnerabilities in web
 // applications hosted on Google Cloud. It crawls your application, and
 // attempts to exercise as many user inputs and event handlers as possible.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -228,50 +350,53 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: websecurityscannerpb.NewWebSecurityScannerClient(connPool),
+		client:           websecurityscannerpb.NewWebSecurityScannerClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateScanConfig creates a new ScanConfig.
-func (c *Client) CreateScanConfig(ctx context.Context, req *websecurityscannerpb.CreateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateScanConfig(ctx context.Context, req *websecurityscannerpb.CreateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateScanConfig[0:len(c.CallOptions.CreateScanConfig):len(c.CallOptions.CreateScanConfig)], opts...)
+	opts = append((*c.CallOptions).CreateScanConfig[0:len((*c.CallOptions).CreateScanConfig):len((*c.CallOptions).CreateScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -284,16 +409,16 @@ func (c *Client) CreateScanConfig(ctx context.Context, req *websecurityscannerpb
 	return resp, nil
 }
 
-// DeleteScanConfig deletes an existing ScanConfig and its child resources.
-func (c *Client) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb.DeleteScanConfigRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb.DeleteScanConfigRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteScanConfig[0:len(c.CallOptions.DeleteScanConfig):len(c.CallOptions.DeleteScanConfig)], opts...)
+	opts = append((*c.CallOptions).DeleteScanConfig[0:len((*c.CallOptions).DeleteScanConfig):len((*c.CallOptions).DeleteScanConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteScanConfig(ctx, req, settings.GRPC...)
@@ -302,16 +427,16 @@ func (c *Client) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb
 	return err
 }
 
-// GetScanConfig gets a ScanConfig.
-func (c *Client) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+func (c *gRPCClient) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetScanConfig[0:len(c.CallOptions.GetScanConfig):len(c.CallOptions.GetScanConfig)], opts...)
+	opts = append((*c.CallOptions).GetScanConfig[0:len((*c.CallOptions).GetScanConfig):len((*c.CallOptions).GetScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -324,19 +449,21 @@ func (c *Client) GetScanConfig(ctx context.Context, req *websecurityscannerpb.Ge
 	return resp, nil
 }
 
-// ListScanConfigs lists ScanConfigs under a given project.
-func (c *Client) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.ListScanConfigsRequest, opts ...gax.CallOption) *ScanConfigIterator {
+func (c *gRPCClient) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.ListScanConfigsRequest, opts ...gax.CallOption) *ScanConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListScanConfigs[0:len(c.CallOptions.ListScanConfigs):len(c.CallOptions.ListScanConfigs)], opts...)
+	opts = append((*c.CallOptions).ListScanConfigs[0:len((*c.CallOptions).ListScanConfigs):len((*c.CallOptions).ListScanConfigs)], opts...)
 	it := &ScanConfigIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanConfigsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanConfig, string, error) {
-		var resp *websecurityscannerpb.ListScanConfigsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListScanConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -359,22 +486,24 @@ func (c *Client) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// UpdateScanConfig updates a ScanConfig. This method support partial update of a ScanConfig.
-func (c *Client) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb.UpdateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+func (c *gRPCClient) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb.UpdateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scan_config.name", url.QueryEscape(req.GetScanConfig().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateScanConfig[0:len(c.CallOptions.UpdateScanConfig):len(c.CallOptions.UpdateScanConfig)], opts...)
+	opts = append((*c.CallOptions).UpdateScanConfig[0:len((*c.CallOptions).UpdateScanConfig):len((*c.CallOptions).UpdateScanConfig)], opts...)
 	var resp *websecurityscannerpb.ScanConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -387,16 +516,16 @@ func (c *Client) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb
 	return resp, nil
 }
 
-// StartScanRun start a ScanRun according to the given ScanConfig.
-func (c *Client) StartScanRun(ctx context.Context, req *websecurityscannerpb.StartScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+func (c *gRPCClient) StartScanRun(ctx context.Context, req *websecurityscannerpb.StartScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StartScanRun[0:len(c.CallOptions.StartScanRun):len(c.CallOptions.StartScanRun)], opts...)
+	opts = append((*c.CallOptions).StartScanRun[0:len((*c.CallOptions).StartScanRun):len((*c.CallOptions).StartScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -409,16 +538,16 @@ func (c *Client) StartScanRun(ctx context.Context, req *websecurityscannerpb.Sta
 	return resp, nil
 }
 
-// GetScanRun gets a ScanRun.
-func (c *Client) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+func (c *gRPCClient) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetScanRun[0:len(c.CallOptions.GetScanRun):len(c.CallOptions.GetScanRun)], opts...)
+	opts = append((*c.CallOptions).GetScanRun[0:len((*c.CallOptions).GetScanRun):len((*c.CallOptions).GetScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -431,20 +560,21 @@ func (c *Client) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetSc
 	return resp, nil
 }
 
-// ListScanRuns lists ScanRuns under a given ScanConfig, in descending order of ScanRun
-// stop time.
-func (c *Client) ListScanRuns(ctx context.Context, req *websecurityscannerpb.ListScanRunsRequest, opts ...gax.CallOption) *ScanRunIterator {
+func (c *gRPCClient) ListScanRuns(ctx context.Context, req *websecurityscannerpb.ListScanRunsRequest, opts ...gax.CallOption) *ScanRunIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListScanRuns[0:len(c.CallOptions.ListScanRuns):len(c.CallOptions.ListScanRuns)], opts...)
+	opts = append((*c.CallOptions).ListScanRuns[0:len((*c.CallOptions).ListScanRuns):len((*c.CallOptions).ListScanRuns)], opts...)
 	it := &ScanRunIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListScanRunsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.ScanRun, string, error) {
-		var resp *websecurityscannerpb.ListScanRunsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListScanRunsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -467,22 +597,24 @@ func (c *Client) ListScanRuns(ctx context.Context, req *websecurityscannerpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// StopScanRun stops a ScanRun. The stopped ScanRun is returned.
-func (c *Client) StopScanRun(ctx context.Context, req *websecurityscannerpb.StopScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+func (c *gRPCClient) StopScanRun(ctx context.Context, req *websecurityscannerpb.StopScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StopScanRun[0:len(c.CallOptions.StopScanRun):len(c.CallOptions.StopScanRun)], opts...)
+	opts = append((*c.CallOptions).StopScanRun[0:len((*c.CallOptions).StopScanRun):len((*c.CallOptions).StopScanRun)], opts...)
 	var resp *websecurityscannerpb.ScanRun
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -495,19 +627,21 @@ func (c *Client) StopScanRun(ctx context.Context, req *websecurityscannerpb.Stop
 	return resp, nil
 }
 
-// ListCrawledUrls list CrawledUrls under a given ScanRun.
-func (c *Client) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.ListCrawledUrlsRequest, opts ...gax.CallOption) *CrawledUrlIterator {
+func (c *gRPCClient) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.ListCrawledUrlsRequest, opts ...gax.CallOption) *CrawledUrlIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCrawledUrls[0:len(c.CallOptions.ListCrawledUrls):len(c.CallOptions.ListCrawledUrls)], opts...)
+	opts = append((*c.CallOptions).ListCrawledUrls[0:len((*c.CallOptions).ListCrawledUrls):len((*c.CallOptions).ListCrawledUrls)], opts...)
 	it := &CrawledUrlIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListCrawledUrlsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.CrawledUrl, string, error) {
-		var resp *websecurityscannerpb.ListCrawledUrlsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListCrawledUrlsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -530,22 +664,24 @@ func (c *Client) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetFinding gets a Finding.
-func (c *Client) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
+func (c *gRPCClient) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetFinding[0:len(c.CallOptions.GetFinding):len(c.CallOptions.GetFinding)], opts...)
+	opts = append((*c.CallOptions).GetFinding[0:len((*c.CallOptions).GetFinding):len((*c.CallOptions).GetFinding)], opts...)
 	var resp *websecurityscannerpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -558,19 +694,21 @@ func (c *Client) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFi
 	return resp, nil
 }
 
-// ListFindings list Findings under a given ScanRun.
-func (c *Client) ListFindings(ctx context.Context, req *websecurityscannerpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
+func (c *gRPCClient) ListFindings(ctx context.Context, req *websecurityscannerpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListFindings[0:len(c.CallOptions.ListFindings):len(c.CallOptions.ListFindings)], opts...)
+	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &FindingIterator{}
 	req = proto.Clone(req).(*websecurityscannerpb.ListFindingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*websecurityscannerpb.Finding, string, error) {
-		var resp *websecurityscannerpb.ListFindingsResponse
-		req.PageToken = pageToken
+		resp := &websecurityscannerpb.ListFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -593,22 +731,24 @@ func (c *Client) ListFindings(ctx context.Context, req *websecurityscannerpb.Lis
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// ListFindingTypeStats list all FindingTypeStats under a given ScanRun.
-func (c *Client) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
+func (c *gRPCClient) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListFindingTypeStats[0:len(c.CallOptions.ListFindingTypeStats):len(c.CallOptions.ListFindingTypeStats)], opts...)
+	opts = append((*c.CallOptions).ListFindingTypeStats[0:len((*c.CallOptions).ListFindingTypeStats):len((*c.CallOptions).ListFindingTypeStats)], opts...)
 	var resp *websecurityscannerpb.ListFindingTypeStatsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

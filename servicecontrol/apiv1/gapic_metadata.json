@@ -1,0 +1,42 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.servicecontrol.v1",
+  "libraryPackage": "cloud.google.com/go/servicecontrol/apiv1",
+  "services": {
+    "QuotaController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "QuotaControllerClient",
+          "rpcs": {
+            "AllocateQuota": {
+              "methods": [
+                "AllocateQuota"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ServiceController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServiceControllerClient",
+          "rpcs": {
+            "Check": {
+              "methods": [
+                "Check"
+              ]
+            },
+            "Report": {
+              "methods": [
+                "Report"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

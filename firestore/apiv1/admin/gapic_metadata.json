@@ -1,0 +1,78 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.firestore.admin.v1",
+  "libraryPackage": "cloud.google.com/go/firestore/apiv1/admin",
+  "services": {
+    "FirestoreAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FirestoreAdminClient",
+          "rpcs": {
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "ExportDocuments": {
+              "methods": [
+                "ExportDocuments"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetField": {
+              "methods": [
+                "GetField"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListFields": {
+              "methods": [
+                "ListFields"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
+              ]
+            },
+            "UpdateField": {
+              "methods": [
+                "UpdateField"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

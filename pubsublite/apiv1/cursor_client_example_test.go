@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,18 +31,19 @@ func ExampleNewCursorClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCursorClient_StreamingCommitCursor() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingCommitCursor(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,16 +73,16 @@ func ExampleCursorClient_StreamingCommitCursor() {
 }
 
 func ExampleCursorClient_CommitCursor() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.CommitCursorRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#CommitCursorRequest.
 	}
 	resp, err := c.CommitCursor(ctx, req)
 	if err != nil {
@@ -92,17 +93,16 @@ func ExampleCursorClient_CommitCursor() {
 }
 
 func ExampleCursorClient_ListPartitionCursors() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/pubsublite/v1#ListPartitionCursorsRequest.
 	}
 	it := c.ListPartitionCursors(ctx, req)
 	for {

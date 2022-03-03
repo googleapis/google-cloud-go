@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.documentai.v1beta3",
+  "libraryPackage": "cloud.google.com/go/documentai/apiv1beta3",
+  "services": {
+    "DocumentProcessorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentProcessorClient",
+          "rpcs": {
+            "BatchProcessDocuments": {
+              "methods": [
+                "BatchProcessDocuments"
+              ]
+            },
+            "CreateProcessor": {
+              "methods": [
+                "CreateProcessor"
+              ]
+            },
+            "DeleteProcessor": {
+              "methods": [
+                "DeleteProcessor"
+              ]
+            },
+            "DisableProcessor": {
+              "methods": [
+                "DisableProcessor"
+              ]
+            },
+            "EnableProcessor": {
+              "methods": [
+                "EnableProcessor"
+              ]
+            },
+            "FetchProcessorTypes": {
+              "methods": [
+                "FetchProcessorTypes"
+              ]
+            },
+            "ListProcessors": {
+              "methods": [
+                "ListProcessors"
+              ]
+            },
+            "ProcessDocument": {
+              "methods": [
+                "ProcessDocument"
+              ]
+            },
+            "ReviewDocument": {
+              "methods": [
+                "ReviewDocument"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

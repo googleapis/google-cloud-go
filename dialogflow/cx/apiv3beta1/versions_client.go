@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
-	structpbpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -37,27 +36,29 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newVersionsClientHook clientHook
 
 // VersionsCallOptions contains the retry settings for each method of VersionsClient.
 type VersionsCallOptions struct {
-	ListVersions  []gax.CallOption
-	GetVersion    []gax.CallOption
-	CreateVersion []gax.CallOption
-	UpdateVersion []gax.CallOption
-	DeleteVersion []gax.CallOption
-	LoadVersion   []gax.CallOption
+	ListVersions    []gax.CallOption
+	GetVersion      []gax.CallOption
+	CreateVersion   []gax.CallOption
+	UpdateVersion   []gax.CallOption
+	DeleteVersion   []gax.CallOption
+	LoadVersion     []gax.CallOption
+	CompareVersions []gax.CallOption
 }
 
-func defaultVersionsClientOptions() []option.ClientOption {
+func defaultVersionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -131,40 +132,171 @@ func defaultVersionsCallOptions() *VersionsCallOptions {
 				})
 			}),
 		},
+		CompareVersions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
+// internalVersionsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalVersionsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListVersions(context.Context, *cxpb.ListVersionsRequest, ...gax.CallOption) *VersionIterator
+	GetVersion(context.Context, *cxpb.GetVersionRequest, ...gax.CallOption) (*cxpb.Version, error)
+	CreateVersion(context.Context, *cxpb.CreateVersionRequest, ...gax.CallOption) (*CreateVersionOperation, error)
+	CreateVersionOperation(name string) *CreateVersionOperation
+	UpdateVersion(context.Context, *cxpb.UpdateVersionRequest, ...gax.CallOption) (*cxpb.Version, error)
+	DeleteVersion(context.Context, *cxpb.DeleteVersionRequest, ...gax.CallOption) error
+	LoadVersion(context.Context, *cxpb.LoadVersionRequest, ...gax.CallOption) (*LoadVersionOperation, error)
+	LoadVersionOperation(name string) *LoadVersionOperation
+	CompareVersions(context.Context, *cxpb.CompareVersionsRequest, ...gax.CallOption) (*cxpb.CompareVersionsResponse, error)
+}
+
 // VersionsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Versions.
+type VersionsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalVersionsClient
+
+	// The call options for this service.
+	CallOptions *VersionsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *VersionsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *VersionsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *VersionsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListVersions returns the list of all versions in the specified Flow.
+func (c *VersionsClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
+	return c.internalClient.ListVersions(ctx, req, opts...)
+}
+
+// GetVersion retrieves the specified Version.
+func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
+	return c.internalClient.GetVersion(ctx, req, opts...)
+}
+
+// CreateVersion creates a Version in the specified Flow.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: CreateVersionOperationMetadata
+//
+//   response: Version
+func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
+	return c.internalClient.CreateVersion(ctx, req, opts...)
+}
+
+// CreateVersionOperation returns a new CreateVersionOperation from a given name.
+// The name must be that of a previously created CreateVersionOperation, possibly from a different process.
+func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOperation {
+	return c.internalClient.CreateVersionOperation(name)
+}
+
+// UpdateVersion updates the specified Version.
+func (c *VersionsClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
+	return c.internalClient.UpdateVersion(ctx, req, opts...)
+}
+
+// DeleteVersion deletes the specified Version.
+func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteVersion(ctx, req, opts...)
+}
+
+// LoadVersion loads resources in the specified version to the draft flow.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: An empty Struct
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct)
+//
+//   response: An Empty
+//   message (at https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty)
+func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
+	return c.internalClient.LoadVersion(ctx, req, opts...)
+}
+
+// LoadVersionOperation returns a new LoadVersionOperation from a given name.
+// The name must be that of a previously created LoadVersionOperation, possibly from a different process.
+func (c *VersionsClient) LoadVersionOperation(name string) *LoadVersionOperation {
+	return c.internalClient.LoadVersionOperation(name)
+}
+
+// CompareVersions compares the specified base version with target version.
+func (c *VersionsClient) CompareVersions(ctx context.Context, req *cxpb.CompareVersionsRequest, opts ...gax.CallOption) (*cxpb.CompareVersionsResponse, error) {
+	return c.internalClient.CompareVersions(ctx, req, opts...)
+}
+
+// versionsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type VersionsClient struct {
+type versionsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing VersionsClient
+	CallOptions **VersionsCallOptions
+
 	// The gRPC API client.
 	versionsClient cxpb.VersionsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *VersionsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewVersionsClient creates a new versions client.
+// NewVersionsClient creates a new versions client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Versions.
 func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*VersionsClient, error) {
-	clientOpts := defaultVersionsClientOptions()
-
+	clientOpts := defaultVersionsGRPCClientOptions()
 	if newVersionsClientHook != nil {
 		hookOpts, err := newVersionsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -182,16 +314,19 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 	if err != nil {
 		return nil, err
 	}
-	c := &VersionsClient{
+	client := VersionsClient{CallOptions: defaultVersionsCallOptions()}
+
+	c := &versionsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultVersionsCallOptions(),
-
-		versionsClient: cxpb.NewVersionsClient(connPool),
+		versionsClient:   cxpb.NewVersionsClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -201,44 +336,47 @@ func NewVersionsClient(ctx context.Context, opts ...option.ClientOption) (*Versi
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *VersionsClient) Connection() *grpc.ClientConn {
+func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *VersionsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *VersionsClient) setGoogleClientInfo(keyval ...string) {
+func (c *versionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListVersions returns the list of all versions in the specified Flow.
-func (c *VersionsClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *versionsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListVersions[0:len(c.CallOptions.ListVersions):len(c.CallOptions.ListVersions)], opts...)
+	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
 	req = proto.Clone(req).(*cxpb.ListVersionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Version, string, error) {
-		var resp *cxpb.ListVersionsResponse
-		req.PageToken = pageToken
+		resp := &cxpb.ListVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -261,22 +399,24 @@ func (c *VersionsClient) ListVersions(ctx context.Context, req *cxpb.ListVersion
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// GetVersion retrieves the specified Version.
-func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
+func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *cxpb.GetVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetVersion[0:len(c.CallOptions.GetVersion):len(c.CallOptions.GetVersion)], opts...)
+	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *cxpb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -289,16 +429,16 @@ func (c *VersionsClient) GetVersion(ctx context.Context, req *cxpb.GetVersionReq
 	return resp, nil
 }
 
-// CreateVersion creates a Version in the specified Flow.
-func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
+func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *cxpb.CreateVersionRequest, opts ...gax.CallOption) (*CreateVersionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateVersion[0:len(c.CallOptions.CreateVersion):len(c.CallOptions.CreateVersion)], opts...)
+	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -309,20 +449,20 @@ func (c *VersionsClient) CreateVersion(ctx context.Context, req *cxpb.CreateVers
 		return nil, err
 	}
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateVersion updates the specified Version.
-func (c *VersionsClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
+func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVersionRequest, opts ...gax.CallOption) (*cxpb.Version, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateVersion[0:len(c.CallOptions.UpdateVersion):len(c.CallOptions.UpdateVersion)], opts...)
+	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	var resp *cxpb.Version
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -335,16 +475,16 @@ func (c *VersionsClient) UpdateVersion(ctx context.Context, req *cxpb.UpdateVers
 	return resp, nil
 }
 
-// DeleteVersion deletes the specified Version.
-func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
+func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVersionRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteVersion[0:len(c.CallOptions.DeleteVersion):len(c.CallOptions.DeleteVersion)], opts...)
+	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.versionsClient.DeleteVersion(ctx, req, settings.GRPC...)
@@ -353,16 +493,16 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 	return err
 }
 
-// LoadVersion loads a specified version to draft version.
-func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
+func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LoadVersion[0:len(c.CallOptions.LoadVersion):len(c.CallOptions.LoadVersion)], opts...)
+	opts = append((*c.CallOptions).LoadVersion[0:len((*c.CallOptions).LoadVersion):len((*c.CallOptions).LoadVersion)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -373,8 +513,30 @@ func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionR
 		return nil, err
 	}
 	return &LoadVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *versionsGRPCClient) CompareVersions(ctx context.Context, req *cxpb.CompareVersionsRequest, opts ...gax.CallOption) (*cxpb.CompareVersionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "base_version", url.QueryEscape(req.GetBaseVersion())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CompareVersions[0:len((*c.CallOptions).CompareVersions):len((*c.CallOptions).CompareVersions)], opts...)
+	var resp *cxpb.CompareVersionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.versionsClient.CompareVersions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateVersionOperation manages a long-running operation from CreateVersion.
@@ -384,9 +546,9 @@ type CreateVersionOperation struct {
 
 // CreateVersionOperation returns a new CreateVersionOperation from a given name.
 // The name must be that of a previously created CreateVersionOperation, possibly from a different process.
-func (c *VersionsClient) CreateVersionOperation(name string) *CreateVersionOperation {
+func (c *versionsGRPCClient) CreateVersionOperation(name string) *CreateVersionOperation {
 	return &CreateVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -453,9 +615,9 @@ type LoadVersionOperation struct {
 
 // LoadVersionOperation returns a new LoadVersionOperation from a given name.
 // The name must be that of a previously created LoadVersionOperation, possibly from a different process.
-func (c *VersionsClient) LoadVersionOperation(name string) *LoadVersionOperation {
+func (c *versionsGRPCClient) LoadVersionOperation(name string) *LoadVersionOperation {
 	return &LoadVersionOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -483,8 +645,8 @@ func (op *LoadVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *LoadVersionOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *LoadVersionOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

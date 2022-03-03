@@ -28,13 +28,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/sys/execabs"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -47,6 +47,7 @@ type Config struct {
 	CertFile          string                           // optional
 	UserAgent         string                           // optional
 	AuthToken         string                           // optional
+	Timeout           time.Duration                    // optional
 	TokenSource       oauth2.TokenSource               // derived
 	TLSCreds          credentials.TransportCredentials // derived
 }
@@ -76,6 +77,8 @@ func (c *Config) RegisterFlags() {
 	flag.StringVar(&c.CertFile, "cert-file", c.CertFile, "Override the TLS certificates file")
 	flag.StringVar(&c.UserAgent, "user-agent", c.UserAgent, "Override the user agent string")
 	flag.StringVar(&c.AuthToken, "auth-token", c.AuthToken, "if set, use IAM Auth Token for requests")
+	flag.DurationVar(&c.Timeout, "timeout", c.Timeout,
+		"Timeout (e.g. 10s, 100ms, 5m )")
 }
 
 // CheckFlags checks that the required config values are set.
@@ -163,6 +166,12 @@ func readConfig(s *bufio.Scanner, filename string) (*Config, error) {
 			c.UserAgent = val
 		case "auth-token":
 			c.AuthToken = val
+		case "timeout":
+			timeout, err := time.ParseDuration(val)
+			if err != nil {
+				return nil, err
+			}
+			c.Timeout = timeout
 		}
 
 	}
@@ -211,7 +220,7 @@ func (g *GcloudCmdTokenSource) Token() (*oauth2.Token, error) {
 // LoadGcloudConfig retrieves the gcloud configuration values we need use via the
 // 'config-helper' command
 func LoadGcloudConfig(gcloudCmd string, gcloudCmdArgs []string) (*GcloudConfig, error) {
-	out, err := exec.Command(gcloudCmd, gcloudCmdArgs...).Output()
+	out, err := execabs.Command(gcloudCmd, gcloudCmdArgs...).Output()
 	if err != nil {
 		return nil, fmt.Errorf("Could not retrieve gcloud configuration")
 	}

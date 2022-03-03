@@ -18,7 +18,6 @@ import (
 	"errors"
 	"fmt"
 
-	"cloud.google.com/go/pubsublite/publish"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
@@ -29,7 +28,7 @@ import (
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
 
 // PublishResultFunc receives the result of a publish.
-type PublishResultFunc func(*publish.Metadata, error)
+type PublishResultFunc func(*MessageMetadata, error)
 
 // messageHolder stores a message to be published, with associated metadata.
 type messageHolder struct {
@@ -42,6 +41,7 @@ type messageHolder struct {
 // MessagePublishRequest.
 type publishBatch struct {
 	msgHolders []*messageHolder
+	totalSize  int
 }
 
 func (b *publishBatch) ToPublishRequest() *pb.PublishRequest {
@@ -94,7 +94,11 @@ func newPublishMessageBatcher(settings *PublishSettings, partition int, onNewBat
 		// singlePartitionPublisher.onNewBatch() receives the new batch from the
 		// Bundler, which calls publishMessageBatcher.AddBatch(). Only the
 		// publisher's mutex is required.
-		onNewBatch(&publishBatch{msgHolders: msgs})
+		batch := &publishBatch{msgHolders: msgs}
+		for _, msg := range batch.msgHolders {
+			batch.totalSize += msg.size
+		}
+		onNewBatch(batch)
 	})
 	msgBundler.DelayThreshold = settings.DelayThreshold
 	msgBundler.BundleCountThreshold = settings.CountThreshold
@@ -142,8 +146,8 @@ func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) error {
 	batch, _ := frontElem.Value.(*publishBatch)
 	for i, msgHolder := range batch.msgHolders {
 		// Messages are ordered, so the offset of each message is firstOffset + i.
-		pm := &publish.Metadata{Partition: b.partition, Offset: firstOffset + int64(i)}
-		msgHolder.onResult(pm, nil)
+		mm := &MessageMetadata{Partition: b.partition, Offset: firstOffset + int64(i)}
+		msgHolder.onResult(mm, nil)
 		b.availableBufferBytes += msgHolder.size
 	}
 
@@ -165,10 +169,24 @@ func (b *publishMessageBatcher) OnPermanentError(err error) {
 
 func (b *publishMessageBatcher) InFlightBatches() []*publishBatch {
 	var batches []*publishBatch
-	for elem := b.publishQueue.Front(); elem != nil; elem = elem.Next() {
-		if batch, ok := elem.Value.(*publishBatch); ok {
-			batches = append(batches, batch)
+	for elem := b.publishQueue.Front(); elem != nil; {
+		batch := elem.Value.(*publishBatch)
+		if elem.Prev() != nil {
+			// Merge current batch with previous if within max bytes and count limits.
+			prevBatch := elem.Prev().Value.(*publishBatch)
+			totalSize := prevBatch.totalSize + batch.totalSize
+			totalLen := len(prevBatch.msgHolders) + len(batch.msgHolders)
+			if totalSize <= MaxPublishRequestBytes && totalLen <= MaxPublishRequestCount {
+				prevBatch.totalSize = totalSize
+				prevBatch.msgHolders = append(prevBatch.msgHolders, batch.msgHolders...)
+				removeElem := elem
+				elem = elem.Next()
+				b.publishQueue.Remove(removeElem)
+				continue
+			}
 		}
+		batches = append(batches, batch)
+		elem = elem.Next()
 	}
 	return batches
 }

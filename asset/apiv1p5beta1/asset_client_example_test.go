@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListAssets() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1#ListAssetsRequest.
 	}
 	it := c.ListAssets(ctx, req)
 	for {

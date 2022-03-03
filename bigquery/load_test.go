@@ -139,12 +139,16 @@ func TestLoad(t *testing.T) {
 				g.IgnoreUnknownValues = true
 				return g
 			}(),
+			config: LoadConfig{
+				JobTimeout: 4 * time.Second,
+			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.MaxBadRecords = 1
 				j.Configuration.Load.AllowJaggedRows = true
 				j.Configuration.Load.AllowQuotedNewlines = true
 				j.Configuration.Load.IgnoreUnknownValues = true
+				j.Configuration.JobTimeoutMs = 4000
 				return j
 			}(),
 		},
@@ -339,6 +343,48 @@ func TestLoad(t *testing.T) {
 				j := defaultLoadJob()
 				j.Configuration.Load.SourceFormat = "DATASTORE_BACKUP"
 				j.Configuration.Load.ProjectionFields = []string{"foo", "bar", "baz"}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				HivePartitioningOptions: &HivePartitioningOptions{
+					Mode:                   CustomHivePartitioningMode,
+					SourceURIPrefix:        "source_uri",
+					RequirePartitionFilter: true,
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.HivePartitioningOptions = &bq.HivePartitioningOptions{
+					Mode:                   "CUSTOM",
+					RequirePartitionFilter: true,
+					SourceUriPrefix:        "source_uri",
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.DecimalTargetTypes = []string{"BIGNUMERIC", "NUMERIC", "STRING"}
 				return j
 			}(),
 		},

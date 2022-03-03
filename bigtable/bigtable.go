@@ -30,6 +30,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
@@ -78,9 +79,10 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCConnectionPool(4),
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
-		// TODO(grpc/grpc-go#1388) using connection pool without WithBlock
-		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
-		option.WithGRPCDialOption(grpc.WithBlock()))
+	)
+	// Attempts direct access to spanner service over gRPC to improve throughput,
+	// whether the attempt is allowed is totally controlled by service owner.
+	o = append(o, internaloption.EnableDirectPath(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {

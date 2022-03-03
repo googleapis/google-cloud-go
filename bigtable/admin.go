@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -115,8 +116,74 @@ func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
-func (ac *AdminClient) backupPath(cluster, backup string) string {
-	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, instance, cluster, backup)
+}
+
+// EncryptionInfo represents the encryption info of a table.
+type EncryptionInfo struct {
+	Status        *Status
+	Type          EncryptionType
+	KMSKeyVersion string
+}
+
+func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
+	return &EncryptionInfo{
+		Status:        pbInfo.EncryptionStatus,
+		Type:          EncryptionType(pbInfo.EncryptionType.Number()),
+		KMSKeyVersion: pbInfo.KmsKeyVersion,
+	}
+}
+
+// Status references google.golang.org/grpc/status.
+// It represents an RPC status code, message, and details of EncryptionInfo.
+// https://pkg.go.dev/google.golang.org/grpc/internal/status
+type Status = status.Status
+
+// EncryptionType is the type of encryption for an instance.
+type EncryptionType int32
+
+const (
+	// EncryptionTypeUnspecified is the type was not specified, though data at rest remains encrypted.
+	EncryptionTypeUnspecified EncryptionType = iota
+	// GoogleDefaultEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is fully managed by Google. No key
+	// version or status will be populated. This is the default state.
+	GoogleDefaultEncryption
+	// CustomerManagedEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is managed by the customer.
+	// The in-use version of the key and its status are populated for
+	// CMEK-protected tables.
+	// CMEK-protected backups are pinned to the key version that was in use at
+	// the time the backup was taken. This key version is populated but its
+	// status is not tracked and is reported as `UNKNOWN`.
+	CustomerManagedEncryption
+)
+
+// EncryptionInfoByCluster is a map of cluster name to EncryptionInfo
+type EncryptionInfoByCluster map[string][]*EncryptionInfo
+
+// EncryptionInfo gets the current encryption info for the table across all of the clusters.
+// The returned map will be keyed by cluster id and contain a status for all of the keys in use.
+func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
+	if err != nil {
+		return nil, err
+	}
+	encryptionInfo := EncryptionInfoByCluster{}
+	for key, cs := range res.ClusterStates {
+		for _, pbInfo := range cs.EncryptionInfo {
+			info := EncryptionInfo{}
+			info.Status = pbInfo.EncryptionStatus
+			info.Type = EncryptionType(pbInfo.EncryptionType.Number())
+			info.KMSKeyVersion = pbInfo.KmsKeyVersion
+			encryptionInfo[key] = append(encryptionInfo[key], &info)
+		}
+	}
+
+	return encryptionInfo, nil
 }
 
 // Tables returns a list of the tables in the instance.
@@ -247,12 +314,12 @@ type FamilyInfo struct {
 	GCPolicy string
 }
 
-// TableInfo retrieves information about a table.
-func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
+		View: view,
 	}
 
 	var res *btapb.Table
@@ -262,6 +329,17 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
 	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// TableInfo retrieves information about a table.
+func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table, btapb.Table_SCHEMA_VIEW)
 	if err != nil {
 		return nil, err
 	}
@@ -609,7 +687,7 @@ func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 
 // BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
 func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
-	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, backup))
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, ac.instance, backup))
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
@@ -730,6 +808,10 @@ type InstanceConf struct {
 	StorageType  StorageType
 	InstanceType InstanceType
 	Labels       map[string]string
+
+	// AutoscalingConfig configures the autoscaling properties on the cluster
+	// created with the instance. It is optional.
+	AutoscalingConfig *AutoscalingConfig
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -746,22 +828,23 @@ var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][
 // This method will return when the instance has been created or when an error occurs.
 func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *InstanceConf) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	newConfig := InstanceWithClustersConfig{
+	newConfig := &InstanceWithClustersConfig{
 		InstanceID:   conf.InstanceId,
 		DisplayName:  conf.DisplayName,
 		InstanceType: conf.InstanceType,
 		Labels:       conf.Labels,
 		Clusters: []ClusterConfig{
 			{
-				InstanceID:  conf.InstanceId,
-				ClusterID:   conf.ClusterId,
-				Zone:        conf.Zone,
-				NumNodes:    conf.NumNodes,
-				StorageType: conf.StorageType,
+				InstanceID:        conf.InstanceId,
+				ClusterID:         conf.ClusterId,
+				Zone:              conf.Zone,
+				NumNodes:          conf.NumNodes,
+				StorageType:       conf.StorageType,
+				AutoscalingConfig: conf.AutoscalingConfig,
 			},
 		},
 	}
-	return iac.CreateInstanceWithClusters(ctx, &newConfig)
+	return iac.CreateInstanceWithClusters(ctx, newConfig)
 }
 
 // CreateInstanceWithClusters creates a new instance with configured clusters in the project.
@@ -842,7 +925,9 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 // - InstanceID is required
 // - DisplayName and InstanceType are updated only if they are not empty
 // - ClusterID is required for any provided cluster
-// - All other cluster fields are ignored except for NumNodes, which if set will be updated
+// - All other cluster fields are ignored except for NumNodes and
+//   AutoscalingConfig, which if set will be updated. If both are provided,
+//   AutoscalingConfig takes precedence.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -863,12 +948,17 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 
 	// Update any clusters
 	for _, cluster := range conf.Clusters {
-		err := iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID, cluster.NumNodes)
-		if err != nil {
+		var clusterErr error
+		if cluster.AutoscalingConfig != nil {
+			clusterErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID, *cluster.AutoscalingConfig)
+		} else if cluster.NumNodes > 0 {
+			clusterErr = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID, cluster.NumNodes)
+		}
+		if clusterErr != nil {
 			if updatedInstance {
 				// We updated the instance, so note that in the error message.
 				return fmt.Errorf("UpdateCluster %q failed %v; however UpdateInstance succeeded",
-					cluster.ClusterID, err)
+					cluster.ClusterID, clusterErr)
 			}
 			return err
 		}
@@ -955,28 +1045,120 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 	}, nil
 }
 
+// AutoscalingConfig contains autoscaling configuration for a cluster.
+// For details, see https://cloud.google.com/bigtable/docs/autoscaling.
+type AutoscalingConfig struct {
+	// MinNodes sets the minumum number of nodes in a cluster. MinNodes must
+	// be 1 or greater.
+	MinNodes int
+	// MaxNodes sets the maximum number of nodes in a cluster. MaxNodes must be
+	// equal to or greater than MinNodes.
+	MaxNodes int
+	// CPUTargetPercent sets the CPU utilization target for your cluster's
+	// workload.
+	CPUTargetPercent int
+}
+
+func (a *AutoscalingConfig) proto() *btapb.Cluster_ClusterAutoscalingConfig {
+	if a == nil {
+		return nil
+	}
+	return &btapb.Cluster_ClusterAutoscalingConfig{
+		AutoscalingLimits: &btapb.AutoscalingLimits{
+			MinServeNodes: int32(a.MinNodes),
+			MaxServeNodes: int32(a.MaxNodes),
+		},
+		AutoscalingTargets: &btapb.AutoscalingTargets{
+			CpuUtilizationPercent: int32(a.CPUTargetPercent),
+		},
+	}
+}
+
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
-	InstanceID, ClusterID, Zone string
-	NumNodes                    int32
-	StorageType                 StorageType
+	// InstanceID specifies the unique name of the instance. Required.
+	InstanceID string
+
+	// ClusterID specifies the unique name of the cluster. Required.
+	ClusterID string
+
+	// Zone specifies the location where this cluster's nodes and storage reside.
+	// For best performance, clients should be located as close as possible to this
+	// cluster. Required.
+	Zone string
+
+	// NumNodes specifies the number of nodes allocated to this cluster. More
+	// nodes enable higher throughput and more consistent performance. One of
+	// NumNodes or AutoscalingConfig is required. If both are set,
+	// AutoscalingConfig takes precedence.
+	NumNodes int32
+
+	// StorageType specifies the type of storage used by this cluster to serve
+	// its parent instance's tables, unless explicitly overridden. Required.
+	StorageType StorageType
+
+	// KMSKeyName is the name of the KMS customer managed encryption key (CMEK)
+	// to use for at-rest encryption of data in this cluster.  If omitted,
+	// Google's default encryption will be used. If specified, the requirements
+	// for this key are:
+	// 1) The Cloud Bigtable service account associated with the
+	//    project that contains the cluster must be granted the
+	//    ``cloudkms.cryptoKeyEncrypterDecrypter`` role on the
+	//    CMEK.
+	// 2) Only regional keys can be used and the region of the
+	//    CMEK key must match the region of the cluster.
+	// 3) All clusters within an instance must use the same CMEK
+	//    key.
+	// Optional. Immutable.
+	KMSKeyName string
+
+	// AutoscalingConfig configures the autoscaling properties on a cluster.
+	// One of NumNodes or AutoscalingConfig is required.
+	AutoscalingConfig *AutoscalingConfig
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
-	return &btapb.Cluster{
+	cl := &btapb.Cluster{
 		ServeNodes:         cc.NumNodes,
 		DefaultStorageType: cc.StorageType.proto(),
 		Location:           "projects/" + project + "/locations/" + cc.Zone,
+		EncryptionConfig: &btapb.Cluster_EncryptionConfig{
+			KmsKeyName: cc.KMSKeyName,
+		},
 	}
+
+	if asc := cc.AutoscalingConfig; asc != nil {
+		cl.Config = &btapb.Cluster_ClusterConfig_{
+			ClusterConfig: &btapb.Cluster_ClusterConfig{
+				ClusterAutoscalingConfig: asc.proto(),
+			},
+		}
+	}
+	return cl
 }
 
 // ClusterInfo represents information about a cluster.
 type ClusterInfo struct {
-	Name        string      // name of the cluster
-	Zone        string      // GCP zone of the cluster (e.g. "us-central1-a")
-	ServeNodes  int         // number of allocated serve nodes
-	State       string      // state of the cluster
-	StorageType StorageType // the storage type of the cluster
+	// Name is the name of the cluster.
+	Name string
+
+	// Zone is the GCP zone of the cluster (e.g. "us-central1-a").
+	Zone string
+
+	// ServeNodes is the number of allocated serve nodes.
+	ServeNodes int
+
+	// State is the state of the cluster.
+	State string
+
+	// StorageType is the storage type of the cluster.
+	StorageType StorageType
+
+	// KMSKeyName is the customer managed encryption key for the cluster.
+	KMSKeyName string
+
+	// AutoscalingConfig are the configured values for a cluster.
+	AutoscalingConfig *AutoscalingConfig
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1006,20 +1188,58 @@ func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, c
 	return err
 }
 
-// UpdateCluster updates attributes of a cluster
-func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, clusterID string, serveNodes int32) error {
+// SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
+// UpdateCluster. See AutoscalingConfig documentation for deatils.
+func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
-		Name:       "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
-		ServeNodes: serveNodes}
-	lro, err := iac.iClient.UpdateCluster(ctx, cluster)
+		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
+		Config: &btapb.Cluster_ClusterConfig_{
+			ClusterConfig: &btapb.Cluster_ClusterConfig{
+				ClusterAutoscalingConfig: conf.proto(),
+			},
+		},
+	}
+	lro, err := iac.iClient.PartialUpdateCluster(ctx, &btapb.PartialUpdateClusterRequest{
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"cluster_config.cluster_autoscaling_config"},
+		},
+		Cluster: cluster,
+	})
 	if err != nil {
 		return err
 	}
 	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
 }
 
-// Clusters lists the clusters in an instance.
+// UpdateCluster updates attributes of a cluster. If Autoscaling is configured
+// for the cluster, it will be removed and replaced by the static number of
+// serve nodes specified.
+func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, clusterID string, serveNodes int32) error {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	cluster := &btapb.Cluster{
+		Name:       "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
+		ServeNodes: serveNodes,
+		// Explicitly removing autoscaling config (and including it in the field
+		// mask below)
+		Config: nil,
+	}
+	lro, err := iac.iClient.PartialUpdateCluster(ctx, &btapb.PartialUpdateClusterRequest{
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"serve_nodes", "cluster_config.cluster_autoscaling_config"},
+		},
+		Cluster: cluster,
+	})
+	if err != nil {
+		return err
+	}
+	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
+}
+
+// Clusters lists the clusters in an instance. If any location
+// (cluster) is unavailable due to some transient conditions, Clusters
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
@@ -1032,18 +1252,34 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	if err != nil {
 		return nil, err
 	}
-	// TODO(garyelliott): Deal with failed_locations.
+
 	var cis []*ClusterInfo
 	for _, c := range res.Clusters {
 		nameParts := strings.Split(c.Name, "/")
 		locParts := strings.Split(c.Location, "/")
-		cis = append(cis, &ClusterInfo{
+		kmsKeyName := ""
+		if c.EncryptionConfig != nil {
+			kmsKeyName = c.EncryptionConfig.KmsKeyName
+		}
+		ci := &ClusterInfo{
 			Name:        nameParts[len(nameParts)-1],
 			Zone:        locParts[len(locParts)-1],
 			ServeNodes:  int(c.ServeNodes),
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
-		})
+			KMSKeyName:  kmsKeyName,
+		}
+		if cfg := c.GetClusterConfig(); cfg != nil {
+			if asc := fromClusterConfigProto(cfg); asc != nil {
+				ci.AutoscalingConfig = asc
+			}
+		}
+		cis = append(cis, ci)
+	}
+	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
+		return cis, ErrPartiallyUnavailable{res.FailedLocations}
 	}
 	return cis, nil
 }
@@ -1051,7 +1287,9 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 // GetCluster fetches a cluster in an instance
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.GetClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
+	req := &btapb.GetClusterRequest{
+		Name: fmt.Sprintf("projects/%s/instances/%s/clusters/%s", iac.project, instanceID, clusterID),
+	}
 	var c *btapb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
@@ -1062,16 +1300,45 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		return nil, err
 	}
 
+	kmsKeyName := ""
+	if c.EncryptionConfig != nil {
+		kmsKeyName = c.EncryptionConfig.KmsKeyName
+	}
 	nameParts := strings.Split(c.Name, "/")
 	locParts := strings.Split(c.Location, "/")
-	cis := &ClusterInfo{
+	ci := &ClusterInfo{
 		Name:        nameParts[len(nameParts)-1],
 		Zone:        locParts[len(locParts)-1],
 		ServeNodes:  int(c.ServeNodes),
 		State:       c.State.String(),
 		StorageType: storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:  kmsKeyName,
 	}
-	return cis, nil
+	// Use type assertion to handle protobuf oneof type
+	if cfg := c.GetClusterConfig(); cfg != nil {
+		if asc := fromClusterConfigProto(cfg); asc != nil {
+			ci.AutoscalingConfig = asc
+		}
+	}
+	return ci, nil
+}
+
+func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
+	if c == nil {
+		return nil
+	}
+	if c.ClusterAutoscalingConfig == nil {
+		return nil
+	}
+	got := c.ClusterAutoscalingConfig
+	if got.AutoscalingLimits == nil || got.AutoscalingTargets == nil {
+		return nil
+	}
+	return &AutoscalingConfig{
+		MinNodes:         int(got.AutoscalingLimits.MinServeNodes),
+		MaxNodes:         int(got.AutoscalingLimits.MaxServeNodes),
+		CPUTargetPercent: int(got.AutoscalingTargets.CpuUtilizationPercent),
+	}
 }
 
 // InstanceIAM returns the instance's IAM handle.
@@ -1335,8 +1602,12 @@ func max(x, y int) int {
 //   and the given ClusterConfig.
 // - Any cluster missing from conf.Clusters but present in the instance will be removed from the instance
 //   using DeleteCluster.
-// - Any cluster in conf.Clusters that also exists in the instance will be updated to contain the
-//   provided number of nodes if set.
+// - Any cluster in conf.Clusters that also exists in the instance will be
+//   updated either to contain the provided number of nodes or to use the
+//   provided autoscaling config. If both the number of nodes and autoscaling
+//   are configured, autoscaling takes precedence. If the number of nodes is zero
+//   and autoscaling is not provided in InstanceWithClustersConfig, the cluster
+//   is not updated.
 //
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
@@ -1378,16 +1649,25 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 		}
 		delete(existingClusterNames, cluster.ClusterID)
 
-		if cluster.NumNodes <= 0 {
-			// We only synchronize clusters with a valid number of nodes.
+		if cluster.NumNodes <= 0 && cluster.AutoscalingConfig == nil {
+			// We only synchronize clusters with a valid number of nodes
+			// or a valid autoscaling config.
 			continue
 		}
 
-		// We simply want to update this cluster
-		err = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID, cluster.NumNodes)
-		if err != nil {
+		// We update teh clusters autoscaling config, or its number of serve
+		// nodes.
+		var updateErr error
+		if cluster.AutoscalingConfig != nil {
+			updateErr = iac.SetAutoscaling(ctx, conf.InstanceID, cluster.ClusterID,
+				*cluster.AutoscalingConfig)
+		} else {
+			updateErr = iac.UpdateCluster(ctx, conf.InstanceID, cluster.ClusterID,
+				cluster.NumNodes)
+		}
+		if updateErr != nil {
 			return results, fmt.Errorf("UpdateCluster %q failed %v; Progress: %v",
-				cluster.ClusterID, err, results)
+				cluster.ClusterID, updateErr, results)
 		}
 		results.UpdatedClusters = append(results.UpdatedClusters, cluster.ClusterID)
 	}
@@ -1449,15 +1729,24 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 }
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
+// To restore a table to a different instance, see RestoreTableFrom.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := ac.backupPath(cluster, backup)
+	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
+}
 
+// RestoreTableFrom creates a new table in the admin's instance by restoring from the given backup and instance.
+// To restore within the same instance, see RestoreTable.
+// sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
+// tableName (ex. "my-restored-table") will be the name of the newly created table.
+// backupName (ex. "my-backup") is the name of the backup to restore.
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	parent := ac.instancePrefix()
+	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
 	req := &btapb.RestoreTableRequest{
-		Parent:  prefix,
+		Parent:  parent,
 		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
 	if err != nil {
@@ -1562,16 +1851,19 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
+	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
+	bi := BackupInfo{
+		Name:           name,
+		SourceTable:    tableID,
+		SizeBytes:      backup.SizeBytes,
+		StartTime:      startTime,
+		EndTime:        endTime,
+		ExpireTime:     expireTime,
+		State:          backup.State.String(),
+		EncryptionInfo: encryptionInfo,
+	}
 
-	return &BackupInfo{
-		Name:        name,
-		SourceTable: tableID,
-		SizeBytes:   backup.SizeBytes,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		ExpireTime:  expireTime,
-		State:       backup.State.String(),
-	}, nil
+	return &bi, nil
 }
 
 // BackupIterator is an EntryIterator that iterates over log entries.
@@ -1600,19 +1892,20 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 
 // BackupInfo contains backup metadata. This struct is read-only.
 type BackupInfo struct {
-	Name        string
-	SourceTable string
-	SizeBytes   int64
-	StartTime   time.Time
-	EndTime     time.Time
-	ExpireTime  time.Time
-	State       string
+	Name           string
+	SourceTable    string
+	SizeBytes      int64
+	StartTime      time.Time
+	EndTime        time.Time
+	ExpireTime     time.Time
+	State          string
+	EncryptionInfo *EncryptionInfo
 }
 
 // BackupInfo gets backup metadata.
 func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
@@ -1634,7 +1927,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 // DeleteBackup deletes a backup in a cluster.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.DeleteBackupRequest{
 		Name: backupPath,
@@ -1646,7 +1939,7 @@ func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string)
 // UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
 func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	expireTimestamp, err := ptypes.TimestampProto(expireTime)
 	if err != nil {

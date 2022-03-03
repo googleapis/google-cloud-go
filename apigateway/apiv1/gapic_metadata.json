@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.apigateway.v1",
+  "libraryPackage": "cloud.google.com/go/apigateway/apiv1",
+  "services": {
+    "ApiGatewayService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateApi": {
+              "methods": [
+                "CreateApi"
+              ]
+            },
+            "CreateApiConfig": {
+              "methods": [
+                "CreateApiConfig"
+              ]
+            },
+            "CreateGateway": {
+              "methods": [
+                "CreateGateway"
+              ]
+            },
+            "DeleteApi": {
+              "methods": [
+                "DeleteApi"
+              ]
+            },
+            "DeleteApiConfig": {
+              "methods": [
+                "DeleteApiConfig"
+              ]
+            },
+            "DeleteGateway": {
+              "methods": [
+                "DeleteGateway"
+              ]
+            },
+            "GetApi": {
+              "methods": [
+                "GetApi"
+              ]
+            },
+            "GetApiConfig": {
+              "methods": [
+                "GetApiConfig"
+              ]
+            },
+            "GetGateway": {
+              "methods": [
+                "GetGateway"
+              ]
+            },
+            "ListApiConfigs": {
+              "methods": [
+                "ListApiConfigs"
+              ]
+            },
+            "ListApis": {
+              "methods": [
+                "ListApis"
+              ]
+            },
+            "ListGateways": {
+              "methods": [
+                "ListGateways"
+              ]
+            },
+            "UpdateApi": {
+              "methods": [
+                "UpdateApi"
+              ]
+            },
+            "UpdateApiConfig": {
+              "methods": [
+                "UpdateApiConfig"
+              ]
+            },
+            "UpdateGateway": {
+              "methods": [
+                "UpdateGateway"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

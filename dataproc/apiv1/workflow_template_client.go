@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newWorkflowTemplateClientHook clientHook
@@ -51,13 +51,13 @@ type WorkflowTemplateCallOptions struct {
 	DeleteWorkflowTemplate            []gax.CallOption
 }
 
-func defaultWorkflowTemplateClientOptions() []option.ClientOption {
+func defaultWorkflowTemplateGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -149,119 +149,65 @@ func defaultWorkflowTemplateCallOptions() *WorkflowTemplateCallOptions {
 	}
 }
 
+// internalWorkflowTemplateClient is an interface that defines the methods availaible from Cloud Dataproc API.
+type internalWorkflowTemplateClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateWorkflowTemplate(context.Context, *dataprocpb.CreateWorkflowTemplateRequest, ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error)
+	GetWorkflowTemplate(context.Context, *dataprocpb.GetWorkflowTemplateRequest, ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error)
+	InstantiateWorkflowTemplate(context.Context, *dataprocpb.InstantiateWorkflowTemplateRequest, ...gax.CallOption) (*InstantiateWorkflowTemplateOperation, error)
+	InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation
+	InstantiateInlineWorkflowTemplate(context.Context, *dataprocpb.InstantiateInlineWorkflowTemplateRequest, ...gax.CallOption) (*InstantiateInlineWorkflowTemplateOperation, error)
+	InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation
+	UpdateWorkflowTemplate(context.Context, *dataprocpb.UpdateWorkflowTemplateRequest, ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error)
+	ListWorkflowTemplates(context.Context, *dataprocpb.ListWorkflowTemplatesRequest, ...gax.CallOption) *WorkflowTemplateIterator
+	DeleteWorkflowTemplate(context.Context, *dataprocpb.DeleteWorkflowTemplateRequest, ...gax.CallOption) error
+}
+
 // WorkflowTemplateClient is a client for interacting with Cloud Dataproc API.
-//
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The API interface for managing Workflow Templates in the
+// Dataproc API.
 type WorkflowTemplateClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	workflowTemplateClient dataprocpb.WorkflowTemplateServiceClient
-
-	// LROClient is used internally to handle longrunning operations.
-	// It is exposed so that its CallOptions can be modified if required.
-	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
+	// The internal transport-dependent client.
+	internalClient internalWorkflowTemplateClient
 
 	// The call options for this service.
 	CallOptions *WorkflowTemplateCallOptions
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
-// NewWorkflowTemplateClient creates a new workflow template service client.
-//
-// The API interface for managing Workflow Templates in the
-// Dataproc API.
-func NewWorkflowTemplateClient(ctx context.Context, opts ...option.ClientOption) (*WorkflowTemplateClient, error) {
-	clientOpts := defaultWorkflowTemplateClientOptions()
-
-	if newWorkflowTemplateClientHook != nil {
-		hookOpts, err := newWorkflowTemplateClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &WorkflowTemplateClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultWorkflowTemplateCallOptions(),
-
-		workflowTemplateClient: dataprocpb.NewWorkflowTemplateServiceClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
-	if err != nil {
-		// This error "should not happen", since we are just reusing old connection pool
-		// and never actually need to dial.
-		// If this does happen, we could leak connp. However, we cannot close conn:
-		// If the user invoked the constructor with option.WithGRPCConn,
-		// we would close a connection that's still in use.
-		// TODO: investigate error conditions.
-		return nil, err
-	}
-	return c, nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *WorkflowTemplateClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *WorkflowTemplateClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *WorkflowTemplateClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *WorkflowTemplateClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // CreateWorkflowTemplate creates new workflow template.
 func (c *WorkflowTemplateClient) CreateWorkflowTemplate(ctx context.Context, req *dataprocpb.CreateWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateWorkflowTemplate[0:len(c.CallOptions.CreateWorkflowTemplate):len(c.CallOptions.CreateWorkflowTemplate)], opts...)
-	var resp *dataprocpb.WorkflowTemplate
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.workflowTemplateClient.CreateWorkflowTemplate(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.CreateWorkflowTemplate(ctx, req, opts...)
 }
 
 // GetWorkflowTemplate retrieves the latest workflow template.
@@ -269,24 +215,7 @@ func (c *WorkflowTemplateClient) CreateWorkflowTemplate(ctx context.Context, req
 // Can retrieve previously instantiated template by specifying optional
 // version parameter.
 func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *dataprocpb.GetWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetWorkflowTemplate[0:len(c.CallOptions.GetWorkflowTemplate):len(c.CallOptions.GetWorkflowTemplate)], opts...)
-	var resp *dataprocpb.WorkflowTemplate
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.workflowTemplateClient.GetWorkflowTemplate(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.GetWorkflowTemplate(ctx, req, opts...)
 }
 
 // InstantiateWorkflowTemplate instantiates a template and begins execution.
@@ -310,26 +239,13 @@ func (c *WorkflowTemplateClient) GetWorkflowTemplate(ctx context.Context, req *d
 // Operation.response will be
 // Empty.
 func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateWorkflowTemplateOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.InstantiateWorkflowTemplate[0:len(c.CallOptions.InstantiateWorkflowTemplate):len(c.CallOptions.InstantiateWorkflowTemplate)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.workflowTemplateClient.InstantiateWorkflowTemplate(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &InstantiateWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
+	return c.internalClient.InstantiateWorkflowTemplate(ctx, req, opts...)
+}
+
+// InstantiateWorkflowTemplateOperation returns a new InstantiateWorkflowTemplateOperation from a given name.
+// The name must be that of a previously created InstantiateWorkflowTemplateOperation, possibly from a different process.
+func (c *WorkflowTemplateClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
+	return c.internalClient.InstantiateWorkflowTemplateOperation(name)
 }
 
 // InstantiateInlineWorkflowTemplate instantiates a template and begins execution.
@@ -357,14 +273,206 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // Operation.response will be
 // Empty.
 func (c *WorkflowTemplateClient) InstantiateInlineWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateInlineWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateInlineWorkflowTemplateOperation, error) {
+	return c.internalClient.InstantiateInlineWorkflowTemplate(ctx, req, opts...)
+}
+
+// InstantiateInlineWorkflowTemplateOperation returns a new InstantiateInlineWorkflowTemplateOperation from a given name.
+// The name must be that of a previously created InstantiateInlineWorkflowTemplateOperation, possibly from a different process.
+func (c *WorkflowTemplateClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
+	return c.internalClient.InstantiateInlineWorkflowTemplateOperation(name)
+}
+
+// UpdateWorkflowTemplate updates (replaces) workflow template. The updated template
+// must contain version that matches the current server version.
+func (c *WorkflowTemplateClient) UpdateWorkflowTemplate(ctx context.Context, req *dataprocpb.UpdateWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
+	return c.internalClient.UpdateWorkflowTemplate(ctx, req, opts...)
+}
+
+// ListWorkflowTemplates lists workflows that match the specified filter in the request.
+func (c *WorkflowTemplateClient) ListWorkflowTemplates(ctx context.Context, req *dataprocpb.ListWorkflowTemplatesRequest, opts ...gax.CallOption) *WorkflowTemplateIterator {
+	return c.internalClient.ListWorkflowTemplates(ctx, req, opts...)
+}
+
+// DeleteWorkflowTemplate deletes a workflow template. It does not cancel in-progress workflows.
+func (c *WorkflowTemplateClient) DeleteWorkflowTemplate(ctx context.Context, req *dataprocpb.DeleteWorkflowTemplateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteWorkflowTemplate(ctx, req, opts...)
+}
+
+// workflowTemplateGRPCClient is a client for interacting with Cloud Dataproc API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type workflowTemplateGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing WorkflowTemplateClient
+	CallOptions **WorkflowTemplateCallOptions
+
+	// The gRPC API client.
+	workflowTemplateClient dataprocpb.WorkflowTemplateServiceClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewWorkflowTemplateClient creates a new workflow template service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// The API interface for managing Workflow Templates in the
+// Dataproc API.
+func NewWorkflowTemplateClient(ctx context.Context, opts ...option.ClientOption) (*WorkflowTemplateClient, error) {
+	clientOpts := defaultWorkflowTemplateGRPCClientOptions()
+	if newWorkflowTemplateClientHook != nil {
+		hookOpts, err := newWorkflowTemplateClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := WorkflowTemplateClient{CallOptions: defaultWorkflowTemplateCallOptions()}
+
+	c := &workflowTemplateGRPCClient{
+		connPool:               connPool,
+		disableDeadlines:       disableDeadlines,
+		workflowTemplateClient: dataprocpb.NewWorkflowTemplateServiceClient(connPool),
+		CallOptions:            &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *workflowTemplateGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *workflowTemplateGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *workflowTemplateGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *workflowTemplateGRPCClient) CreateWorkflowTemplate(ctx context.Context, req *dataprocpb.CreateWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.InstantiateInlineWorkflowTemplate[0:len(c.CallOptions.InstantiateInlineWorkflowTemplate):len(c.CallOptions.InstantiateInlineWorkflowTemplate)], opts...)
+	opts = append((*c.CallOptions).CreateWorkflowTemplate[0:len((*c.CallOptions).CreateWorkflowTemplate):len((*c.CallOptions).CreateWorkflowTemplate)], opts...)
+	var resp *dataprocpb.WorkflowTemplate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.workflowTemplateClient.CreateWorkflowTemplate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *workflowTemplateGRPCClient) GetWorkflowTemplate(ctx context.Context, req *dataprocpb.GetWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetWorkflowTemplate[0:len((*c.CallOptions).GetWorkflowTemplate):len((*c.CallOptions).GetWorkflowTemplate)], opts...)
+	var resp *dataprocpb.WorkflowTemplate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.workflowTemplateClient.GetWorkflowTemplate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateWorkflowTemplateOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).InstantiateWorkflowTemplate[0:len((*c.CallOptions).InstantiateWorkflowTemplate):len((*c.CallOptions).InstantiateWorkflowTemplate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.workflowTemplateClient.InstantiateWorkflowTemplate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &InstantiateWorkflowTemplateOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplate(ctx context.Context, req *dataprocpb.InstantiateInlineWorkflowTemplateRequest, opts ...gax.CallOption) (*InstantiateInlineWorkflowTemplateOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).InstantiateInlineWorkflowTemplate[0:len((*c.CallOptions).InstantiateInlineWorkflowTemplate):len((*c.CallOptions).InstantiateInlineWorkflowTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -375,21 +483,20 @@ func (c *WorkflowTemplateClient) InstantiateInlineWorkflowTemplate(ctx context.C
 		return nil, err
 	}
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateWorkflowTemplate updates (replaces) workflow template. The updated template
-// must contain version that matches the current server version.
-func (c *WorkflowTemplateClient) UpdateWorkflowTemplate(ctx context.Context, req *dataprocpb.UpdateWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
+func (c *workflowTemplateGRPCClient) UpdateWorkflowTemplate(ctx context.Context, req *dataprocpb.UpdateWorkflowTemplateRequest, opts ...gax.CallOption) (*dataprocpb.WorkflowTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "template.name", url.QueryEscape(req.GetTemplate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateWorkflowTemplate[0:len(c.CallOptions.UpdateWorkflowTemplate):len(c.CallOptions.UpdateWorkflowTemplate)], opts...)
+	opts = append((*c.CallOptions).UpdateWorkflowTemplate[0:len((*c.CallOptions).UpdateWorkflowTemplate):len((*c.CallOptions).UpdateWorkflowTemplate)], opts...)
 	var resp *dataprocpb.WorkflowTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -402,19 +509,21 @@ func (c *WorkflowTemplateClient) UpdateWorkflowTemplate(ctx context.Context, req
 	return resp, nil
 }
 
-// ListWorkflowTemplates lists workflows that match the specified filter in the request.
-func (c *WorkflowTemplateClient) ListWorkflowTemplates(ctx context.Context, req *dataprocpb.ListWorkflowTemplatesRequest, opts ...gax.CallOption) *WorkflowTemplateIterator {
+func (c *workflowTemplateGRPCClient) ListWorkflowTemplates(ctx context.Context, req *dataprocpb.ListWorkflowTemplatesRequest, opts ...gax.CallOption) *WorkflowTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListWorkflowTemplates[0:len(c.CallOptions.ListWorkflowTemplates):len(c.CallOptions.ListWorkflowTemplates)], opts...)
+	opts = append((*c.CallOptions).ListWorkflowTemplates[0:len((*c.CallOptions).ListWorkflowTemplates):len((*c.CallOptions).ListWorkflowTemplates)], opts...)
 	it := &WorkflowTemplateIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListWorkflowTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.WorkflowTemplate, string, error) {
-		var resp *dataprocpb.ListWorkflowTemplatesResponse
-		req.PageToken = pageToken
+		resp := &dataprocpb.ListWorkflowTemplatesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -437,22 +546,24 @@ func (c *WorkflowTemplateClient) ListWorkflowTemplates(ctx context.Context, req 
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// DeleteWorkflowTemplate deletes a workflow template. It does not cancel in-progress workflows.
-func (c *WorkflowTemplateClient) DeleteWorkflowTemplate(ctx context.Context, req *dataprocpb.DeleteWorkflowTemplateRequest, opts ...gax.CallOption) error {
+func (c *workflowTemplateGRPCClient) DeleteWorkflowTemplate(ctx context.Context, req *dataprocpb.DeleteWorkflowTemplateRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteWorkflowTemplate[0:len(c.CallOptions.DeleteWorkflowTemplate):len(c.CallOptions.DeleteWorkflowTemplate)], opts...)
+	opts = append((*c.CallOptions).DeleteWorkflowTemplate[0:len((*c.CallOptions).DeleteWorkflowTemplate):len((*c.CallOptions).DeleteWorkflowTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.workflowTemplateClient.DeleteWorkflowTemplate(ctx, req, settings.GRPC...)
@@ -468,9 +579,9 @@ type InstantiateInlineWorkflowTemplateOperation struct {
 
 // InstantiateInlineWorkflowTemplateOperation returns a new InstantiateInlineWorkflowTemplateOperation from a given name.
 // The name must be that of a previously created InstantiateInlineWorkflowTemplateOperation, possibly from a different process.
-func (c *WorkflowTemplateClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
+func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
 	return &InstantiateInlineWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -526,9 +637,9 @@ type InstantiateWorkflowTemplateOperation struct {
 
 // InstantiateWorkflowTemplateOperation returns a new InstantiateWorkflowTemplateOperation from a given name.
 // The name must be that of a previously created InstantiateWorkflowTemplateOperation, possibly from a different process.
-func (c *WorkflowTemplateClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
+func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
 	return &InstantiateWorkflowTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

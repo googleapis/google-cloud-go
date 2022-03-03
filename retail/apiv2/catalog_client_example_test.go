@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewCatalogClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCatalogClient_ListCatalogs() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#ListCatalogsRequest.
 	}
 	it := c.ListCatalogs(ctx, req)
 	for {
@@ -62,18 +63,56 @@ func ExampleCatalogClient_ListCatalogs() {
 }
 
 func ExampleCatalogClient_UpdateCatalog() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.UpdateCatalogRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#UpdateCatalogRequest.
 	}
 	resp, err := c.UpdateCatalog(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCatalogClient_SetDefaultBranch() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.SetDefaultBranchRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#SetDefaultBranchRequest.
+	}
+	err = c.SetDefaultBranch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCatalogClient_GetDefaultBranch() {
+	ctx := context.Background()
+	c, err := retail.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &retailpb.GetDefaultBranchRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/retail/v2#GetDefaultBranchRequest.
+	}
+	resp, err := c.GetDefaultBranch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

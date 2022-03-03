@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewProfileClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleProfileClient_ListProfiles() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#ListProfilesRequest.
 	}
 	it := c.ListProfiles(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleProfileClient_ListProfiles() {
 }
 
 func ExampleProfileClient_CreateProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#CreateProfileRequest.
 	}
 	resp, err := c.CreateProfile(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleProfileClient_CreateProfile() {
 }
 
 func ExampleProfileClient_GetProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#GetProfileRequest.
 	}
 	resp, err := c.GetProfile(ctx, req)
 	if err != nil {
@@ -102,16 +103,16 @@ func ExampleProfileClient_GetProfile() {
 }
 
 func ExampleProfileClient_UpdateProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.UpdateProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#UpdateProfileRequest.
 	}
 	resp, err := c.UpdateProfile(ctx, req)
 	if err != nil {
@@ -127,9 +128,11 @@ func ExampleProfileClient_DeleteProfile() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.DeleteProfileRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#DeleteProfileRequest.
 	}
 	err = c.DeleteProfile(ctx, req)
 	if err != nil {
@@ -138,16 +141,16 @@ func ExampleProfileClient_DeleteProfile() {
 }
 
 func ExampleProfileClient_SearchProfiles() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.SearchProfilesRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4beta1#SearchProfilesRequest.
 	}
 	resp, err := c.SearchProfiles(ctx, req)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewCompletionClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCompletionClient_CompleteQuery() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewCompletionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CompleteQueryRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/talent/v4#CompleteQueryRequest.
 	}
 	resp, err := c.CompleteQuery(ctx, req)
 	if err != nil {

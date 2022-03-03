@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build linux
+// +build linux
+
 package profiler
 
 import (
@@ -62,8 +65,9 @@ retry apt-get -y -q install git >/dev/null
 mkdir -p /tmp/gocache
 export GOCACHE=/tmp/gocache
 
-# Install gcc, needed to install go master
-if [ "{{.GoVersion}}" = "master" ]
+# Install gcc, needed to install go master and cgo depencencies when using
+# go1.11.
+if [ "{{.GoVersion}}" = "master" ] || [[ "{{.GoVersion}}" =~ 1.11.* ]]
 then
 retry apt-get -y -q install gcc >/dev/null
 fi
@@ -74,7 +78,14 @@ retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gim
 chmod +x /tmp/bin/gimme
 export PATH=$PATH:/tmp/bin
 
-retry eval "$(gimme {{.GoVersion}})"
+gimme_retrier() {
+  eval "$(gimme {{.GoVersion}})"
+  which go # To retry on non-zero code if go not installed.
+}
+retry gimme_retrier
+
+# Use go modules
+export GO111MODULE="on"
 
 # Set $GOPATH
 export GOPATH="$HOME/go"
@@ -83,7 +94,7 @@ export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
 mkdir -p $GOCLOUD_HOME
 
 # Install agent
-retry git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
+retry git clone https://github.com/googleapis/google-cloud-go.git $GOCLOUD_HOME >/dev/null
 cd $GOCLOUD_HOME
 retry git fetch origin {{.Commit}}
 git reset --hard {{.Commit}}
@@ -262,9 +273,11 @@ func TestAgentIntegration(t *testing.T) {
 	testcases := []goGCETestCase{
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-gomaster-%s", runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-gomaster-%s", runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             "profiler-test-gomaster",
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -275,9 +288,11 @@ func TestAgentIntegration(t *testing.T) {
 		},
 		{
 			InstanceConfig: proftest.InstanceConfig{
-				ProjectID:   projectID,
-				Name:        fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
-				MachineType: "n1-standard-1",
+				ProjectID:    projectID,
+				Name:         fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
+				MachineType:  "n1-standard-1",
+				ImageProject: "debian-cloud",
+				ImageFamily:  "debian-11",
 			},
 			name:             fmt.Sprintf("profiler-test-go%s", goVersionName),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -299,6 +314,9 @@ func TestAgentIntegration(t *testing.T) {
 					// memory than is available on an n1-standard-1. Use a
 					// machine type with more memory for backoff test.
 					MachineType: "n1-highmem-2",
+
+					ImageProject: "debian-cloud",
+					ImageFamily:  "debian-11",
 				},
 				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
 				goVersion:     goVersion,
@@ -337,9 +355,9 @@ func TestAgentIntegration(t *testing.T) {
 
 			timeoutCtx, cancel := context.WithTimeout(ctx, tc.timeout)
 			defer cancel()
-			output, err := gceTr.PollForAndReturnSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString)
+			output, err := gceTr.PollAndLogSerialPort(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString, t.Logf)
 			if err != nil {
-				t.Fatalf("PollForSerialOutput() got error: %v", err)
+				t.Fatalf("PollAndLogSerialPort() got error: %v", err)
 			}
 
 			if tc.backoffTest {

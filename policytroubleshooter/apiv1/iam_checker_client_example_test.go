@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,21 +29,23 @@ func ExampleNewIamCheckerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleIamCheckerClient_TroubleshootIamPolicy() {
-	// import policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
-
 	ctx := context.Background()
 	c, err := policytroubleshooter.NewIamCheckerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &policytroubleshooterpb.TroubleshootIamPolicyRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1#TroubleshootIamPolicyRequest.
 	}
 	resp, err := c.TroubleshootIamPolicy(ctx, req)
 	if err != nil {

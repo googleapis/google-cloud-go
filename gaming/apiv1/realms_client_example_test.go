@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,22 +30,23 @@ func ExampleNewRealmsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleRealmsClient_ListRealms() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#ListRealmsRequest.
 	}
 	it := c.ListRealms(ctx, req)
 	for {
@@ -62,16 +63,16 @@ func ExampleRealmsClient_ListRealms() {
 }
 
 func ExampleRealmsClient_GetRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#GetRealmRequest.
 	}
 	resp, err := c.GetRealm(ctx, req)
 	if err != nil {
@@ -82,16 +83,16 @@ func ExampleRealmsClient_GetRealm() {
 }
 
 func ExampleRealmsClient_CreateRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#CreateRealmRequest.
 	}
 	op, err := c.CreateRealm(ctx, req)
 	if err != nil {
@@ -107,16 +108,16 @@ func ExampleRealmsClient_CreateRealm() {
 }
 
 func ExampleRealmsClient_DeleteRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#DeleteRealmRequest.
 	}
 	op, err := c.DeleteRealm(ctx, req)
 	if err != nil {
@@ -130,16 +131,16 @@ func ExampleRealmsClient_DeleteRealm() {
 }
 
 func ExampleRealmsClient_UpdateRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.UpdateRealmRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#UpdateRealmRequest.
 	}
 	op, err := c.UpdateRealm(ctx, req)
 	if err != nil {
@@ -155,16 +156,16 @@ func ExampleRealmsClient_UpdateRealm() {
 }
 
 func ExampleRealmsClient_PreviewRealmUpdate() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewRealmUpdateRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gaming/v1#PreviewRealmUpdateRequest.
 	}
 	resp, err := c.PreviewRealmUpdate(ctx, req)
 	if err != nil {

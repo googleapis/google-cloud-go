@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newDatabaseAdminClientHook clientHook
@@ -62,13 +62,13 @@ type DatabaseAdminCallOptions struct {
 	ListBackupOperations   []gax.CallOption
 }
 
-func defaultDatabaseAdminClientOptions() []option.ClientOption {
+func defaultDatabaseAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -228,42 +228,319 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 	}
 }
 
+// internalDatabaseAdminClient is an interface that defines the methods availaible from Cloud Spanner Database Admin API.
+type internalDatabaseAdminClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListDatabases(context.Context, *databasepb.ListDatabasesRequest, ...gax.CallOption) *DatabaseIterator
+	CreateDatabase(context.Context, *databasepb.CreateDatabaseRequest, ...gax.CallOption) (*CreateDatabaseOperation, error)
+	CreateDatabaseOperation(name string) *CreateDatabaseOperation
+	GetDatabase(context.Context, *databasepb.GetDatabaseRequest, ...gax.CallOption) (*databasepb.Database, error)
+	UpdateDatabaseDdl(context.Context, *databasepb.UpdateDatabaseDdlRequest, ...gax.CallOption) (*UpdateDatabaseDdlOperation, error)
+	UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation
+	DropDatabase(context.Context, *databasepb.DropDatabaseRequest, ...gax.CallOption) error
+	GetDatabaseDdl(context.Context, *databasepb.GetDatabaseDdlRequest, ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CreateBackup(context.Context, *databasepb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
+	CreateBackupOperation(name string) *CreateBackupOperation
+	GetBackup(context.Context, *databasepb.GetBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
+	UpdateBackup(context.Context, *databasepb.UpdateBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
+	DeleteBackup(context.Context, *databasepb.DeleteBackupRequest, ...gax.CallOption) error
+	ListBackups(context.Context, *databasepb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	RestoreDatabase(context.Context, *databasepb.RestoreDatabaseRequest, ...gax.CallOption) (*RestoreDatabaseOperation, error)
+	RestoreDatabaseOperation(name string) *RestoreDatabaseOperation
+	ListDatabaseOperations(context.Context, *databasepb.ListDatabaseOperationsRequest, ...gax.CallOption) *OperationIterator
+	ListBackupOperations(context.Context, *databasepb.ListBackupOperationsRequest, ...gax.CallOption) *OperationIterator
+}
+
 // DatabaseAdminClient is a client for interacting with Cloud Spanner Database Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Cloud Spanner Database Admin API
+//
+// The Cloud Spanner Database Admin API can be used to:
+//
+//   create, drop, and list databases
+//
+//   update the schema of pre-existing databases
+//
+//   create, delete and list backups for a database
+//
+//   restore a database from an existing backup
+type DatabaseAdminClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDatabaseAdminClient
+
+	// The call options for this service.
+	CallOptions *DatabaseAdminCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DatabaseAdminClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DatabaseAdminClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DatabaseAdminClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListDatabases lists Cloud Spanner databases.
+func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	return c.internalClient.ListDatabases(ctx, req, opts...)
+}
+
+// CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.
+// The returned [long-running operation][google.longrunning.Operation] will
+// have a name of the format <database_name>/operations/<operation_id> and
+// can be used to track preparation of the database. The
+// metadata field type is
+// CreateDatabaseMetadata. The
+// response field type is
+// Database, if successful.
+func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
+	return c.internalClient.CreateDatabase(ctx, req, opts...)
+}
+
+// CreateDatabaseOperation returns a new CreateDatabaseOperation from a given name.
+// The name must be that of a previously created CreateDatabaseOperation, possibly from a different process.
+func (c *DatabaseAdminClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
+	return c.internalClient.CreateDatabaseOperation(name)
+}
+
+// GetDatabase gets the state of a Cloud Spanner database.
+func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
+	return c.internalClient.GetDatabase(ctx, req, opts...)
+}
+
+// UpdateDatabaseDdl updates the schema of a Cloud Spanner database by
+// creating/altering/dropping tables, columns, indexes, etc. The returned
+// [long-running operation][google.longrunning.Operation] will have a name of
+// the format <database_name>/operations/<operation_id> and can be used to
+// track execution of the schema change(s). The
+// metadata field type is
+// UpdateDatabaseDdlMetadata.  The operation has no response.
+func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
+	return c.internalClient.UpdateDatabaseDdl(ctx, req, opts...)
+}
+
+// UpdateDatabaseDdlOperation returns a new UpdateDatabaseDdlOperation from a given name.
+// The name must be that of a previously created UpdateDatabaseDdlOperation, possibly from a different process.
+func (c *DatabaseAdminClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
+	return c.internalClient.UpdateDatabaseDdlOperation(name)
+}
+
+// DropDatabase drops (aka deletes) a Cloud Spanner database.
+// Completed backups for the database will be retained according to their
+// expire_time.
+// Note: Cloud Spanner might continue to accept requests for a few seconds
+// after the database has been deleted.
+func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DropDatabase(ctx, req, opts...)
+}
+
+// GetDatabaseDdl returns the schema of a Cloud Spanner database as a list of formatted
+// DDL statements. This method does not show pending schema updates, those may
+// be queried using the Operations API.
+func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
+	return c.internalClient.GetDatabaseDdl(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on a database or backup resource.
+// Replaces any existing policy.
+//
+// Authorization requires spanner.databases.setIamPolicy
+// permission on resource.
+// For backups, authorization requires spanner.backups.setIamPolicy
+// permission on resource.
+func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a database or backup resource.
+// Returns an empty policy if a database or backup exists but does not have a
+// policy set.
+//
+// Authorization requires spanner.databases.getIamPolicy permission on
+// resource.
+// For backups, authorization requires spanner.backups.getIamPolicy
+// permission on resource.
+func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that the caller has on the specified database or backup
+// resource.
+//
+// Attempting this RPC on a non-existent Cloud Spanner database will
+// result in a NOT_FOUND error if the user has
+// spanner.databases.list permission on the containing Cloud
+// Spanner instance. Otherwise returns an empty set of permissions.
+// Calling this method on a backup that does not exist will
+// result in a NOT_FOUND error if the user has
+// spanner.backups.list permission on the containing instance.
+func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CreateBackup starts creating a new Cloud Spanner Backup.
+// The returned backup [long-running operation][google.longrunning.Operation]
+// will have a name of the format
+// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
+// and can be used to track creation of the backup. The
+// metadata field type is
+// CreateBackupMetadata. The
+// response field type is
+// Backup, if successful. Cancelling the returned operation will stop the
+// creation and delete the backup.
+// There can be only one pending backup creation per database. Backup creation
+// of different databases can run concurrently.
+func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	return c.internalClient.CreateBackup(ctx, req, opts...)
+}
+
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *DatabaseAdminClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	return c.internalClient.CreateBackupOperation(name)
+}
+
+// GetBackup gets metadata on a pending or completed Backup.
+func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// UpdateBackup updates a pending or completed Backup.
+func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	return c.internalClient.UpdateBackup(ctx, req, opts...)
+}
+
+// DeleteBackup deletes a pending or completed Backup.
+func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// ListBackups lists completed and pending backups.
+// Backups returned are ordered by create_time in descending order,
+// starting from the most recent create_time.
+func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// RestoreDatabase create a new database by restoring from a completed backup. The new
+// database must be in the same project and in an instance with the same
+// instance configuration as the instance containing
+// the backup. The returned database [long-running
+// operation][google.longrunning.Operation] has a name of the format
+// projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>,
+// and can be used to track the progress of the operation, and to cancel it.
+// The metadata field type is
+// RestoreDatabaseMetadata.
+// The response type
+// is Database, if
+// successful. Cancelling the returned operation will stop the restore and
+// delete the database.
+// There can be only one database being restored into an instance at a time.
+// Once the restore operation completes, a new restore operation can be
+// initiated, without waiting for the optimize operation associated with the
+// first restore to complete.
+func (c *DatabaseAdminClient) RestoreDatabase(ctx context.Context, req *databasepb.RestoreDatabaseRequest, opts ...gax.CallOption) (*RestoreDatabaseOperation, error) {
+	return c.internalClient.RestoreDatabase(ctx, req, opts...)
+}
+
+// RestoreDatabaseOperation returns a new RestoreDatabaseOperation from a given name.
+// The name must be that of a previously created RestoreDatabaseOperation, possibly from a different process.
+func (c *DatabaseAdminClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
+	return c.internalClient.RestoreDatabaseOperation(name)
+}
+
+// ListDatabaseOperations lists database [longrunning-operations][google.longrunning.Operation].
+// A database operation has a name of the form
+// projects/<project>/instances/<instance>/databases/<database>/operations/<operation>.
+// The long-running operation
+// metadata field type
+// metadata.type_url describes the type of the metadata. Operations returned
+// include those that have completed/failed/canceled within the last 7 days,
+// and pending operations.
+func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *databasepb.ListDatabaseOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListDatabaseOperations(ctx, req, opts...)
+}
+
+// ListBackupOperations lists the backup [long-running operations][google.longrunning.Operation] in
+// the given instance. A backup operation has a name of the form
+// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation>.
+// The long-running operation
+// metadata field type
+// metadata.type_url describes the type of the metadata. Operations returned
+// include those that have completed/failed/canceled within the last 7 days,
+// and pending operations. Operations returned are ordered by
+// operation.metadata.value.progress.start_time in descending order starting
+// from the most recently started operation.
+func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListBackupOperations(ctx, req, opts...)
+}
+
+// databaseAdminGRPCClient is a client for interacting with Cloud Spanner Database Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DatabaseAdminClient struct {
+type databaseAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DatabaseAdminClient
+	CallOptions **DatabaseAdminCallOptions
+
 	// The gRPC API client.
 	databaseAdminClient databasepb.DatabaseAdminClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DatabaseAdminCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDatabaseAdminClient creates a new database admin client.
+// NewDatabaseAdminClient creates a new database admin client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Cloud Spanner Database Admin API
 //
-// The Cloud Spanner Database Admin API can be used to create, drop, and
-// list databases. It also enables updating the schema of pre-existing
-// databases. It can be also used to create, delete and list backups for a
-// database and to restore from an existing backup.
+// The Cloud Spanner Database Admin API can be used to:
+//
+//   create, drop, and list databases
+//
+//   update the schema of pre-existing databases
+//
+//   create, delete and list backups for a database
+//
+//   restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
-	clientOpts := defaultDatabaseAdminClientOptions()
-
+	clientOpts := defaultDatabaseAdminGRPCClientOptions()
 	if newDatabaseAdminClientHook != nil {
 		hookOpts, err := newDatabaseAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -281,16 +558,19 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	c := &DatabaseAdminClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDatabaseAdminCallOptions(),
+	client := DatabaseAdminClient{CallOptions: defaultDatabaseAdminCallOptions()}
 
+	c := &databaseAdminGRPCClient{
+		connPool:            connPool,
+		disableDeadlines:    disableDeadlines,
 		databaseAdminClient: databasepb.NewDatabaseAdminClient(connPool),
+		CallOptions:         &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -300,44 +580,47 @@ func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DatabaseAdminClient) Connection() *grpc.ClientConn {
+func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DatabaseAdminClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DatabaseAdminClient) setGoogleClientInfo(keyval ...string) {
+func (c *databaseAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListDatabases lists Cloud Spanner databases.
-func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *databaseAdminGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *databaseAdminGRPCClient) ListDatabases(ctx context.Context, req *databasepb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDatabases[0:len(c.CallOptions.ListDatabases):len(c.CallOptions.ListDatabases)], opts...)
+	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
 	it := &DatabaseIterator{}
 	req = proto.Clone(req).(*databasepb.ListDatabasesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Database, string, error) {
-		var resp *databasepb.ListDatabasesResponse
-		req.PageToken = pageToken
+		resp := &databasepb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -360,29 +643,24 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.
-// The returned [long-running operation][google.longrunning.Operation] will
-// have a name of the format <database_name>/operations/<operation_id> and
-// can be used to track preparation of the database. The
-// metadata field type is
-// CreateDatabaseMetadata. The
-// response field type is
-// Database, if successful.
-func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
+func (c *databaseAdminGRPCClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateDatabase[0:len(c.CallOptions.CreateDatabase):len(c.CallOptions.CreateDatabase)], opts...)
+	opts = append((*c.CallOptions).CreateDatabase[0:len((*c.CallOptions).CreateDatabase):len((*c.CallOptions).CreateDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -393,20 +671,20 @@ func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasep
 		return nil, err
 	}
 	return &CreateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetDatabase gets the state of a Cloud Spanner database.
-func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
+func (c *databaseAdminGRPCClient) GetDatabase(ctx context.Context, req *databasepb.GetDatabaseRequest, opts ...gax.CallOption) (*databasepb.Database, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDatabase[0:len(c.CallOptions.GetDatabase):len(c.CallOptions.GetDatabase)], opts...)
+	opts = append((*c.CallOptions).GetDatabase[0:len((*c.CallOptions).GetDatabase):len((*c.CallOptions).GetDatabase)], opts...)
 	var resp *databasepb.Database
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -419,22 +697,16 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 	return resp, nil
 }
 
-// UpdateDatabaseDdl updates the schema of a Cloud Spanner database by
-// creating/altering/dropping tables, columns, indexes, etc. The returned
-// [long-running operation][google.longrunning.Operation] will have a name of
-// the format <database_name>/operations/<operation_id> and can be used to
-// track execution of the schema change(s). The
-// metadata field type is
-// UpdateDatabaseDdlMetadata.  The operation has no response.
-func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
+func (c *databaseAdminGRPCClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateDatabaseDdl[0:len(c.CallOptions.UpdateDatabaseDdl):len(c.CallOptions.UpdateDatabaseDdl)], opts...)
+	opts = append((*c.CallOptions).UpdateDatabaseDdl[0:len((*c.CallOptions).UpdateDatabaseDdl):len((*c.CallOptions).UpdateDatabaseDdl)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -445,22 +717,20 @@ func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databa
 		return nil, err
 	}
 	return &UpdateDatabaseDdlOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DropDatabase drops (aka deletes) a Cloud Spanner database.
-// Completed backups for the database will be retained according to their
-// expire_time.
-func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
+func (c *databaseAdminGRPCClient) DropDatabase(ctx context.Context, req *databasepb.DropDatabaseRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DropDatabase[0:len(c.CallOptions.DropDatabase):len(c.CallOptions.DropDatabase)], opts...)
+	opts = append((*c.CallOptions).DropDatabase[0:len((*c.CallOptions).DropDatabase):len((*c.CallOptions).DropDatabase)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.databaseAdminClient.DropDatabase(ctx, req, settings.GRPC...)
@@ -469,18 +739,16 @@ func (c *DatabaseAdminClient) DropDatabase(ctx context.Context, req *databasepb.
 	return err
 }
 
-// GetDatabaseDdl returns the schema of a Cloud Spanner database as a list of formatted
-// DDL statements. This method does not show pending schema updates, those may
-// be queried using the Operations API.
-func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
+func (c *databaseAdminGRPCClient) GetDatabaseDdl(ctx context.Context, req *databasepb.GetDatabaseDdlRequest, opts ...gax.CallOption) (*databasepb.GetDatabaseDdlResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDatabaseDdl[0:len(c.CallOptions.GetDatabaseDdl):len(c.CallOptions.GetDatabaseDdl)], opts...)
+	opts = append((*c.CallOptions).GetDatabaseDdl[0:len((*c.CallOptions).GetDatabaseDdl):len((*c.CallOptions).GetDatabaseDdl)], opts...)
 	var resp *databasepb.GetDatabaseDdlResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -493,22 +761,16 @@ func (c *DatabaseAdminClient) GetDatabaseDdl(ctx context.Context, req *databasep
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy on a database or backup resource.
-// Replaces any existing policy.
-//
-// Authorization requires spanner.databases.setIamPolicy
-// permission on resource.
-// For backups, authorization requires spanner.backups.setIamPolicy
-// permission on resource.
-func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *databaseAdminGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -521,23 +783,16 @@ func (c *DatabaseAdminClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a database or backup resource.
-// Returns an empty policy if a database or backup exists but does not have a
-// policy set.
-//
-// Authorization requires spanner.databases.getIamPolicy permission on
-// resource.
-// For backups, authorization requires spanner.backups.getIamPolicy
-// permission on resource.
-func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *databaseAdminGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -550,25 +805,16 @@ func (c *DatabaseAdminClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that the caller has on the specified database or backup
-// resource.
-//
-// Attempting this RPC on a non-existent Cloud Spanner database will
-// result in a NOT_FOUND error if the user has
-// spanner.databases.list permission on the containing Cloud
-// Spanner instance. Otherwise returns an empty set of permissions.
-// Calling this method on a backup that does not exist will
-// result in a NOT_FOUND error if the user has
-// spanner.backups.list permission on the containing instance.
-func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *databaseAdminGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -581,27 +827,16 @@ func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb
 	return resp, nil
 }
 
-// CreateBackup starts creating a new Cloud Spanner Backup.
-// The returned backup [long-running operation][google.longrunning.Operation]
-// will have a name of the format
-// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
-// and can be used to track creation of the backup. The
-// metadata field type is
-// CreateBackupMetadata. The
-// response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// creation and delete the backup.
-// There can be only one pending backup creation per database. Backup creation
-// of different databases can run concurrently.
-func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateBackup[0:len(c.CallOptions.CreateBackup):len(c.CallOptions.CreateBackup)], opts...)
+	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -612,20 +847,20 @@ func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.
 		return nil, err
 	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetBackup gets metadata on a pending or completed Backup.
-func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
+func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetBackup[0:len(c.CallOptions.GetBackup):len(c.CallOptions.GetBackup)], opts...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *databasepb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -638,16 +873,16 @@ func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.Get
 	return resp, nil
 }
 
-// UpdateBackup updates a pending or completed Backup.
-func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
+func (c *databaseAdminGRPCClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateBackup[0:len(c.CallOptions.UpdateBackup):len(c.CallOptions.UpdateBackup)], opts...)
+	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
 	var resp *databasepb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -660,16 +895,16 @@ func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.
 	return resp, nil
 }
 
-// DeleteBackup deletes a pending or completed Backup.
-func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
+func (c *databaseAdminGRPCClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteBackup[0:len(c.CallOptions.DeleteBackup):len(c.CallOptions.DeleteBackup)], opts...)
+	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.databaseAdminClient.DeleteBackup(ctx, req, settings.GRPC...)
@@ -678,21 +913,21 @@ func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.
 	return err
 }
 
-// ListBackups lists completed and pending backups.
-// Backups returned are ordered by create_time in descending order,
-// starting from the most recent create_time.
-func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+func (c *databaseAdminGRPCClient) ListBackups(ctx context.Context, req *databasepb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListBackups[0:len(c.CallOptions.ListBackups):len(c.CallOptions.ListBackups)], opts...)
+	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
 	req = proto.Clone(req).(*databasepb.ListBackupsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*databasepb.Backup, string, error) {
-		var resp *databasepb.ListBackupsResponse
-		req.PageToken = pageToken
+		resp := &databasepb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -715,38 +950,24 @@ func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.L
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// RestoreDatabase create a new database by restoring from a completed backup. The new
-// database must be in the same project and in an instance with the same
-// instance configuration as the instance containing
-// the backup. The returned database [long-running
-// operation][google.longrunning.Operation] has a name of the format
-// projects/<project>/instances/<instance>/databases/<database>/operations/<operation_id>,
-// and can be used to track the progress of the operation, and to cancel it.
-// The metadata field type is
-// RestoreDatabaseMetadata.
-// The response type
-// is Database, if
-// successful. Cancelling the returned operation will stop the restore and
-// delete the database.
-// There can be only one database being restored into an instance at a time.
-// Once the restore operation completes, a new restore operation can be
-// initiated, without waiting for the optimize operation associated with the
-// first restore to complete.
-func (c *DatabaseAdminClient) RestoreDatabase(ctx context.Context, req *databasepb.RestoreDatabaseRequest, opts ...gax.CallOption) (*RestoreDatabaseOperation, error) {
+func (c *databaseAdminGRPCClient) RestoreDatabase(ctx context.Context, req *databasepb.RestoreDatabaseRequest, opts ...gax.CallOption) (*RestoreDatabaseOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RestoreDatabase[0:len(c.CallOptions.RestoreDatabase):len(c.CallOptions.RestoreDatabase)], opts...)
+	opts = append((*c.CallOptions).RestoreDatabase[0:len((*c.CallOptions).RestoreDatabase):len((*c.CallOptions).RestoreDatabase)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -757,30 +978,25 @@ func (c *DatabaseAdminClient) RestoreDatabase(ctx context.Context, req *database
 		return nil, err
 	}
 	return &RestoreDatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ListDatabaseOperations lists database [longrunning-operations][google.longrunning.Operation].
-// A database operation has a name of the form
-// projects/<project>/instances/<instance>/databases/<database>/operations/<operation>.
-// The long-running operation
-// metadata field type
-// metadata.type_url describes the type of the metadata. Operations returned
-// include those that have completed/failed/canceled within the last 7 days,
-// and pending operations.
-func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *databasepb.ListDatabaseOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *databaseAdminGRPCClient) ListDatabaseOperations(ctx context.Context, req *databasepb.ListDatabaseOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListDatabaseOperations[0:len(c.CallOptions.ListDatabaseOperations):len(c.CallOptions.ListDatabaseOperations)], opts...)
+	opts = append((*c.CallOptions).ListDatabaseOperations[0:len((*c.CallOptions).ListDatabaseOperations):len((*c.CallOptions).ListDatabaseOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*databasepb.ListDatabaseOperationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
-		var resp *databasepb.ListDatabaseOperationsResponse
-		req.PageToken = pageToken
+		resp := &databasepb.ListDatabaseOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -803,34 +1019,29 @@ func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *d
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
-// ListBackupOperations lists the backup [long-running operations][google.longrunning.Operation] in
-// the given instance. A backup operation has a name of the form
-// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation>.
-// The long-running operation
-// metadata field type
-// metadata.type_url describes the type of the metadata. Operations returned
-// include those that have completed/failed/canceled within the last 7 days,
-// and pending operations. Operations returned are ordered by
-// operation.metadata.value.progress.start_time in descending order starting
-// from the most recently started operation.
-func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req *databasepb.ListBackupOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListBackupOperations[0:len(c.CallOptions.ListBackupOperations):len(c.CallOptions.ListBackupOperations)], opts...)
+	opts = append((*c.CallOptions).ListBackupOperations[0:len((*c.CallOptions).ListBackupOperations):len((*c.CallOptions).ListBackupOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*databasepb.ListBackupOperationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
-		var resp *databasepb.ListBackupOperationsResponse
-		req.PageToken = pageToken
+		resp := &databasepb.ListBackupOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -853,9 +1064,11 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
@@ -866,9 +1079,9 @@ type CreateBackupOperation struct {
 
 // CreateBackupOperation returns a new CreateBackupOperation from a given name.
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
-func (c *DatabaseAdminClient) CreateBackupOperation(name string) *CreateBackupOperation {
+func (c *databaseAdminGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -935,9 +1148,9 @@ type CreateDatabaseOperation struct {
 
 // CreateDatabaseOperation returns a new CreateDatabaseOperation from a given name.
 // The name must be that of a previously created CreateDatabaseOperation, possibly from a different process.
-func (c *DatabaseAdminClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
+func (c *databaseAdminGRPCClient) CreateDatabaseOperation(name string) *CreateDatabaseOperation {
 	return &CreateDatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1004,9 +1217,9 @@ type RestoreDatabaseOperation struct {
 
 // RestoreDatabaseOperation returns a new RestoreDatabaseOperation from a given name.
 // The name must be that of a previously created RestoreDatabaseOperation, possibly from a different process.
-func (c *DatabaseAdminClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
+func (c *databaseAdminGRPCClient) RestoreDatabaseOperation(name string) *RestoreDatabaseOperation {
 	return &RestoreDatabaseOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1073,9 +1286,9 @@ type UpdateDatabaseDdlOperation struct {
 
 // UpdateDatabaseDdlOperation returns a new UpdateDatabaseDdlOperation from a given name.
 // The name must be that of a previously created UpdateDatabaseDdlOperation, possibly from a different process.
-func (c *DatabaseAdminClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
+func (c *databaseAdminGRPCClient) UpdateDatabaseDdlOperation(name string) *UpdateDatabaseDdlOperation {
 	return &UpdateDatabaseDdlOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

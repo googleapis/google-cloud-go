@@ -18,12 +18,14 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"reflect"
 	"runtime"
 	"strings"
 	"time"
 
-	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	"cloud.google.com/go/pubsub/internal"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
@@ -51,8 +53,75 @@ type Client struct {
 	subc      *vkit.SubscriberClient
 }
 
-// NewClient creates a new PubSub client.
+// ClientConfig has configurations for the client.
+type ClientConfig struct {
+	PublisherCallOptions  *vkit.PublisherCallOptions
+	SubscriberCallOptions *vkit.SubscriberCallOptions
+}
+
+// mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
+// a lower order of precedence than the second one. If either is nil, return the other.
+func mergePublisherCallOptions(a *vkit.PublisherCallOptions, b *vkit.PublisherCallOptions) *vkit.PublisherCallOptions {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
+	res := &vkit.PublisherCallOptions{}
+	resVal := reflect.ValueOf(res).Elem()
+	aVal := reflect.ValueOf(a).Elem()
+	bVal := reflect.ValueOf(b).Elem()
+
+	t := aVal.Type()
+
+	for i := 0; i < aVal.NumField(); i++ {
+		fieldName := t.Field(i).Name
+
+		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
+		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
+
+		merged := append(aFieldVal, bFieldVal...)
+		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
+	}
+	return res
+}
+
+// mergeSubscribercallOptions merges two SubscriberCallOptions into one and the first argument has
+// a lower order of precedence than the second one. If either is nil, the other is used.
+func mergeSubscriberCallOptions(a *vkit.SubscriberCallOptions, b *vkit.SubscriberCallOptions) *vkit.SubscriberCallOptions {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
+	res := &vkit.SubscriberCallOptions{}
+	resVal := reflect.ValueOf(res).Elem()
+	aVal := reflect.ValueOf(a).Elem()
+	bVal := reflect.ValueOf(b).Elem()
+
+	t := aVal.Type()
+
+	for i := 0; i < aVal.NumField(); i++ {
+		fieldName := t.Field(i).Name
+
+		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
+		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
+
+		merged := append(aFieldVal, bFieldVal...)
+		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
+	}
+	return res
+}
+
+// NewClient creates a new PubSub client. It uses a default configuration.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (c *Client, err error) {
+	return NewClientWithConfig(ctx, projectID, nil, opts...)
+}
+
+// NewClientWithConfig creates a new PubSub client.
+func NewClientWithConfig(ctx context.Context, projectID string, config *ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
 	var o []option.ClientOption
 	// Environment variables for gcloud emulator:
 	// https://cloud.google.com/sdk/gcloud/reference/beta/emulators/pubsub/
@@ -85,7 +154,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, fmt.Errorf("pubsub(subscriber): %v", err)
 	}
-	pubc.SetGoogleClientInfo("gccl", version.Repo)
+	if config != nil {
+		pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
+		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
+	}
+	pubc.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		projectID: projectID,
 		pubc:      pubc,

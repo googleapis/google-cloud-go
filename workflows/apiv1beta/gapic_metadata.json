@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.workflows.v1beta",
+  "libraryPackage": "cloud.google.com/go/workflows/apiv1beta",
+  "services": {
+    "Workflows": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateWorkflow": {
+              "methods": [
+                "CreateWorkflow"
+              ]
+            },
+            "DeleteWorkflow": {
+              "methods": [
+                "DeleteWorkflow"
+              ]
+            },
+            "GetWorkflow": {
+              "methods": [
+                "GetWorkflow"
+              ]
+            },
+            "ListWorkflows": {
+              "methods": [
+                "ListWorkflows"
+              ]
+            },
+            "UpdateWorkflow": {
+              "methods": [
+                "UpdateWorkflow"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

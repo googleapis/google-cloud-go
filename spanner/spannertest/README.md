@@ -19,14 +19,17 @@ by ascending esotericism:
 
 - expression functions
 - NUMERIC
+- JSON
 - more aggregation functions
 - SELECT HAVING
-- case insensitivity
-- alternate literal types (esp. strings)
-- generated columns
+- more literal types
+- expressions that return null for generated columns
+- generated columns referencing other generated columns
+- checking dependencies on a generated column before deleting a column
 - expression type casting, coercion
 - multiple joins
 - subselects
+- case insensitivity of table and column names and query aliases
 - transaction simulation
 - FOREIGN KEY and CHECK constraints
 - INSERT DML statements

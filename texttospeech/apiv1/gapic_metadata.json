@@ -1,0 +1,28 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.texttospeech.v1",
+  "libraryPackage": "cloud.google.com/go/texttospeech/apiv1",
+  "services": {
+    "TextToSpeech": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ListVoices": {
+              "methods": [
+                "ListVoices"
+              ]
+            },
+            "SynthesizeSpeech": {
+              "methods": [
+                "SynthesizeSpeech"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

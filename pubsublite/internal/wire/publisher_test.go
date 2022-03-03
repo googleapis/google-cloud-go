@@ -34,8 +34,9 @@ func testPublishSettings() PublishSettings {
 	// Send messages with minimal delay to speed up tests.
 	settings.DelayThreshold = time.Millisecond
 	settings.Timeout = 5 * time.Second
-	// Disable topic partition count background polling.
-	settings.ConfigPollPeriod = 0
+	// Set long poll period to prevent background update, but still have non-zero
+	// request timeout.
+	settings.ConfigPollPeriod = 1 * time.Minute
 	return settings
 }
 
@@ -47,7 +48,7 @@ type testPartitionPublisher struct {
 
 func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, settings PublishSettings) *testPartitionPublisher {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +62,7 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
 	}
-	tp.initAndStart(t, tp.pub, "Publisher")
+	tp.initAndStart(t, tp.pub, "Publisher", pubClient)
 	return tp
 }
 
@@ -196,8 +197,7 @@ func TestSinglePartitionPublisherResendMessages(t *testing.T) {
 	// The publisher should resend all in-flight batches to the second stream.
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topic), initPubResp(), nil)
-	stream2.Push(msgPubReq(msg1), msgPubResp(0), nil)
-	stream2.Push(msgPubReq(msg2), msgPubResp(1), nil)
+	stream2.Push(msgPubReq(msg1, msg2), msgPubResp(0), nil)
 	stream2.Push(msgPubReq(msg3), msgPubResp(2), nil)
 	verifiers.AddPublishStream(topic.Path, topic.Partition, stream2)
 
@@ -506,14 +506,15 @@ type testRoutingPublisher struct {
 
 func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, fakeSourceVal int64) *testRoutingPublisher {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	adminClient, err := NewAdminClient(ctx, "ignored", testClientOpts...)
+	adminClient, err := NewAdminClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
+	allClients := apiClients{pubClient, adminClient}
 
 	source := &test.FakeSource{Ret: fakeSourceVal}
 	msgRouterFactory := newMessageRouterFactory(rand.New(source))
@@ -523,7 +524,7 @@ func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSet
 		settings:  settings,
 		topicPath: topicPath,
 	}
-	pub := newRoutingPublisher(adminClient, msgRouterFactory, pubFactory)
+	pub := newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory)
 	pub.Start()
 	return &testRoutingPublisher{t: t, pub: pub}
 }
@@ -1004,24 +1005,15 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	t.Run("Failed update", func(t *testing.T) {
 		pub.pub.partitionWatcher.updatePartitionCount()
 
-		// Failed background update terminates the routingPublisher.
-		if gotErr := pub.WaitStopped(); !test.ErrorHasMsg(gotErr, serverErr.Error()) {
-			t.Errorf("Final error got: (%v), want: (%v)", gotErr, serverErr)
-		}
+		// Failed update ignored.
 		if got, want := pub.NumPartitionPublishers(), initialPartitionCount; got != want {
 			t.Errorf("Num partition publishers: got %d, want %d", got, want)
 		}
 	})
-}
 
-func TestNewPublisherCreatesImpl(t *testing.T) {
-	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	const region = "us-central1"
-
-	if pub, err := NewPublisher(context.Background(), DefaultPublishSettings, region, topic); err != nil {
-		t.Errorf("NewPublisher() got error: %v", err)
-	} else if _, ok := pub.(*routingPublisher); !ok {
-		t.Error("NewPublisher() did not return a routingPublisher")
+	pub.Stop()
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
 	}
 }
 

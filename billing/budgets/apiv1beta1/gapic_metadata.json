@@ -1,0 +1,43 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.billing.budgets.v1beta1",
+  "libraryPackage": "cloud.google.com/go/billing/budgets/apiv1beta1",
+  "services": {
+    "BudgetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BudgetClient",
+          "rpcs": {
+            "CreateBudget": {
+              "methods": [
+                "CreateBudget"
+              ]
+            },
+            "DeleteBudget": {
+              "methods": [
+                "DeleteBudget"
+              ]
+            },
+            "GetBudget": {
+              "methods": [
+                "GetBudget"
+              ]
+            },
+            "ListBudgets": {
+              "methods": [
+                "ListBudgets"
+              ]
+            },
+            "UpdateBudget": {
+              "methods": [
+                "UpdateBudget"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
