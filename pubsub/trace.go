@@ -278,6 +278,8 @@ func (c PubsubMessageCarrier) Keys() []string {
 	return out
 }
 
+const orderingAttribute = "messaging.pubsub.ordering_key"
+
 func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
 	// TODO(hongalex): benchmark this to make sure no significant performance degradation
 	// when calculating proto.Size in receive paths.
@@ -293,7 +295,7 @@ func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyV
 			semconv.MessagingDestinationKindTopic,
 			semconv.MessagingMessageIDKey.String(msg.ID),
 			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-			attribute.String("pubsub.ordering_key", msg.OrderingKey),
+			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(opts...),
 		trace.WithSpanKind(trace.SpanKindProducer),
@@ -314,7 +316,7 @@ func getSubSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue
 			semconv.MessagingDestinationKindTopic,
 			semconv.MessagingMessageIDKey.String(msg.ID),
 			semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-			attribute.String("pubsub.ordering_key", msg.OrderingKey),
+			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(opts...),
 		trace.WithSpanKind(trace.SpanKindConsumer),
