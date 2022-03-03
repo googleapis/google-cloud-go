@@ -340,7 +340,7 @@ func (c *videoStitcherGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *videoStitcherGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -357,6 +357,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCdnKey[0:len((*c.CallOptions).CreateCdnKey):len((*c.CallOptions).CreateCdnKey)], opts...)
 	var resp *stitcherpb.CdnKey
@@ -373,6 +374,7 @@ func (c *videoStitcherGRPCClient) CreateCdnKey(ctx context.Context, req *stitche
 
 func (c *videoStitcherGRPCClient) ListCdnKeys(ctx context.Context, req *stitcherpb.ListCdnKeysRequest, opts ...gax.CallOption) *CdnKeyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCdnKeys[0:len((*c.CallOptions).ListCdnKeys):len((*c.CallOptions).ListCdnKeys)], opts...)
 	it := &CdnKeyIterator{}
@@ -422,6 +424,7 @@ func (c *videoStitcherGRPCClient) GetCdnKey(ctx context.Context, req *stitcherpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCdnKey[0:len((*c.CallOptions).GetCdnKey):len((*c.CallOptions).GetCdnKey)], opts...)
 	var resp *stitcherpb.CdnKey
@@ -443,6 +446,7 @@ func (c *videoStitcherGRPCClient) DeleteCdnKey(ctx context.Context, req *stitche
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCdnKey[0:len((*c.CallOptions).DeleteCdnKey):len((*c.CallOptions).DeleteCdnKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -460,6 +464,7 @@ func (c *videoStitcherGRPCClient) UpdateCdnKey(ctx context.Context, req *stitche
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "cdn_key.name", url.QueryEscape(req.GetCdnKey().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCdnKey[0:len((*c.CallOptions).UpdateCdnKey):len((*c.CallOptions).UpdateCdnKey)], opts...)
 	var resp *stitcherpb.CdnKey
@@ -481,6 +486,7 @@ func (c *videoStitcherGRPCClient) CreateVodSession(ctx context.Context, req *sti
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateVodSession[0:len((*c.CallOptions).CreateVodSession):len((*c.CallOptions).CreateVodSession)], opts...)
 	var resp *stitcherpb.VodSession
@@ -502,6 +508,7 @@ func (c *videoStitcherGRPCClient) GetVodSession(ctx context.Context, req *stitch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVodSession[0:len((*c.CallOptions).GetVodSession):len((*c.CallOptions).GetVodSession)], opts...)
 	var resp *stitcherpb.VodSession
@@ -518,6 +525,7 @@ func (c *videoStitcherGRPCClient) GetVodSession(ctx context.Context, req *stitch
 
 func (c *videoStitcherGRPCClient) ListVodStitchDetails(ctx context.Context, req *stitcherpb.ListVodStitchDetailsRequest, opts ...gax.CallOption) *VodStitchDetailIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVodStitchDetails[0:len((*c.CallOptions).ListVodStitchDetails):len((*c.CallOptions).ListVodStitchDetails)], opts...)
 	it := &VodStitchDetailIterator{}
@@ -567,6 +575,7 @@ func (c *videoStitcherGRPCClient) GetVodStitchDetail(ctx context.Context, req *s
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVodStitchDetail[0:len((*c.CallOptions).GetVodStitchDetail):len((*c.CallOptions).GetVodStitchDetail)], opts...)
 	var resp *stitcherpb.VodStitchDetail
@@ -583,6 +592,7 @@ func (c *videoStitcherGRPCClient) GetVodStitchDetail(ctx context.Context, req *s
 
 func (c *videoStitcherGRPCClient) ListVodAdTagDetails(ctx context.Context, req *stitcherpb.ListVodAdTagDetailsRequest, opts ...gax.CallOption) *VodAdTagDetailIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVodAdTagDetails[0:len((*c.CallOptions).ListVodAdTagDetails):len((*c.CallOptions).ListVodAdTagDetails)], opts...)
 	it := &VodAdTagDetailIterator{}
@@ -632,6 +642,7 @@ func (c *videoStitcherGRPCClient) GetVodAdTagDetail(ctx context.Context, req *st
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVodAdTagDetail[0:len((*c.CallOptions).GetVodAdTagDetail):len((*c.CallOptions).GetVodAdTagDetail)], opts...)
 	var resp *stitcherpb.VodAdTagDetail
@@ -648,6 +659,7 @@ func (c *videoStitcherGRPCClient) GetVodAdTagDetail(ctx context.Context, req *st
 
 func (c *videoStitcherGRPCClient) ListLiveAdTagDetails(ctx context.Context, req *stitcherpb.ListLiveAdTagDetailsRequest, opts ...gax.CallOption) *LiveAdTagDetailIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListLiveAdTagDetails[0:len((*c.CallOptions).ListLiveAdTagDetails):len((*c.CallOptions).ListLiveAdTagDetails)], opts...)
 	it := &LiveAdTagDetailIterator{}
@@ -697,6 +709,7 @@ func (c *videoStitcherGRPCClient) GetLiveAdTagDetail(ctx context.Context, req *s
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLiveAdTagDetail[0:len((*c.CallOptions).GetLiveAdTagDetail):len((*c.CallOptions).GetLiveAdTagDetail)], opts...)
 	var resp *stitcherpb.LiveAdTagDetail
@@ -718,6 +731,7 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSlate[0:len((*c.CallOptions).CreateSlate):len((*c.CallOptions).CreateSlate)], opts...)
 	var resp *stitcherpb.Slate
@@ -734,6 +748,7 @@ func (c *videoStitcherGRPCClient) CreateSlate(ctx context.Context, req *stitcher
 
 func (c *videoStitcherGRPCClient) ListSlates(ctx context.Context, req *stitcherpb.ListSlatesRequest, opts ...gax.CallOption) *SlateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSlates[0:len((*c.CallOptions).ListSlates):len((*c.CallOptions).ListSlates)], opts...)
 	it := &SlateIterator{}
@@ -783,6 +798,7 @@ func (c *videoStitcherGRPCClient) GetSlate(ctx context.Context, req *stitcherpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSlate[0:len((*c.CallOptions).GetSlate):len((*c.CallOptions).GetSlate)], opts...)
 	var resp *stitcherpb.Slate
@@ -804,6 +820,7 @@ func (c *videoStitcherGRPCClient) UpdateSlate(ctx context.Context, req *stitcher
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "slate.name", url.QueryEscape(req.GetSlate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSlate[0:len((*c.CallOptions).UpdateSlate):len((*c.CallOptions).UpdateSlate)], opts...)
 	var resp *stitcherpb.Slate
@@ -825,6 +842,7 @@ func (c *videoStitcherGRPCClient) DeleteSlate(ctx context.Context, req *stitcher
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSlate[0:len((*c.CallOptions).DeleteSlate):len((*c.CallOptions).DeleteSlate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -842,6 +860,7 @@ func (c *videoStitcherGRPCClient) CreateLiveSession(ctx context.Context, req *st
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateLiveSession[0:len((*c.CallOptions).CreateLiveSession):len((*c.CallOptions).CreateLiveSession)], opts...)
 	var resp *stitcherpb.LiveSession
@@ -863,6 +882,7 @@ func (c *videoStitcherGRPCClient) GetLiveSession(ctx context.Context, req *stitc
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetLiveSession[0:len((*c.CallOptions).GetLiveSession):len((*c.CallOptions).GetLiveSession)], opts...)
 	var resp *stitcherpb.LiveSession
