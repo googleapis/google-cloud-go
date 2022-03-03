@@ -2796,20 +2796,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		return -1
 	}
 
-	// Retry requests if idempotent or if it is a rate limit issue
-	retryRateLimit := func(err error) bool {
-		var gErr *googleapi.Error
-
-		isRateLimitErr := false
-		if xerrors.As(err, &gErr) {
-			isRateLimitErr = gErr.Code == 429
-		}
-
-		return isRateLimitErr || shouldRetry(err)
-	}
-
-	mainUserClient.SetRetry(WithErrorFunc(retryRateLimit))
-	otherUserClient.SetRetry(WithErrorFunc(retryRateLimit))
+	// We hit bucket rate limits with these test, so we retry
+	mainUserClient.SetRetry(WithPolicy(RetryAlways))
+	otherUserClient.SetRetry(WithPolicy(RetryAlways))
 
 	for _, test := range []struct {
 		desc          string
