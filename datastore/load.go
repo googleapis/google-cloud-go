@@ -302,6 +302,11 @@ func setVal(v reflect.Value, p Property) (s string) {
 			return fmt.Sprintf("%v is unsettable", v.Type())
 		}
 
+		if pValue == nil {
+			v.Set(reflect.Zero(v.Type()))
+			break
+		}
+
 		rpValue := reflect.ValueOf(pValue)
 		if !rpValue.Type().AssignableTo(v.Type()) {
 			return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type())
