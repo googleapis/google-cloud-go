@@ -1493,6 +1493,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/video/stitcher/apiv1": {
+    "distribution_name": "cloud.google.com/go/video/stitcher/apiv1",
+    "description": "Video Stitcher API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/stitcher/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/video/transcoder/apiv1": {
     "distribution_name": "cloud.google.com/go/video/transcoder/apiv1",
     "description": "Transcoder API",
