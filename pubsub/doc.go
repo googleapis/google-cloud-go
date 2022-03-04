@@ -74,8 +74,12 @@ The callback is invoked concurrently by multiple goroutines, maximizing
 throughput. To terminate a call to Receive, cancel its context.
 
 Once client code has processed the message, it must call Message.Ack or
-message.Nack, otherwise the message will eventually be redelivered. If the
-client cannot or doesn't want to process the message, it can call Message.Nack
+Message.Nack, otherwise the message will eventually be redelivered. Ack/Nack
+MUST be called within the Receive handler function, and not from a goroutine.
+Otherwise, flow control (e.g. ReceiveSettings.MaxOutstandingMessages) will
+not be respected, and messages can get orphaned when cancelling Receive.
+
+If the client cannot or doesn't want to process the message, it can call Message.Nack
 to speed redelivery. For more information and configuration options, see
 "Deadlines" below.
 
