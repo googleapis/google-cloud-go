@@ -292,14 +292,9 @@ func SaveStruct(src interface{}) ([]Property, error) {
 // v must be settable.
 func plsForLoad(v reflect.Value) (PropertyLoadSaver, error) {
 	var nilPtr bool
-
 	if v.Kind() == reflect.Ptr && v.IsNil() {
 		nilPtr = true
 		v.Set(reflect.New(v.Type().Elem()))
-	} else if v.Kind() == reflect.Map && v.IsNil() {
-		nilPtr = true
-		mt := reflect.MapOf(v.Type().Key(), v.Type().Elem())
-		v.Set(reflect.MakeMap(mt))
 	}
 
 	vpls, err := pls(v)
