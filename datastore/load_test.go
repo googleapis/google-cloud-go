@@ -1160,6 +1160,44 @@ func TestLoadPointers(t *testing.T) {
 	}
 }
 
+func TestInitMap(t *testing.T) {
+	for _, test := range []struct {
+		desc string
+		in   []Property
+		want Struct
+	}{
+		{
+			desc: "nil map property",
+			in: []Property{
+				{Name: "Map", Value: nil},
+			},
+			want: Struct{},
+		},
+		{
+			desc: "nil map empty properties",
+			in:   []Property{},
+			want: Struct{},
+		},
+		{
+			desc: "map with value",
+			in: []Property{
+				{Name: "Map", Value: []byte{}},
+			},
+			want: Struct{
+				Map: Map{},
+			},
+		},
+	} {
+		var got Struct
+		if err := LoadStruct(&got, test.in); err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+		}
+		if !testutil.Equal(got, test.want) {
+			t.Errorf("%s:\ngot  %+v\nwant %+v", test.desc, got, test.want)
+		}
+	}
+}
+
 func TestLoadNonArrayIntoSlice(t *testing.T) {
 	// Loading a non-array value into a slice field results in a slice of size 1.
 	var got struct{ S []string }

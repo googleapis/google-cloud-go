@@ -247,6 +247,12 @@ func plsFieldLoad(v reflect.Value, p Property, subfields []string) (ok bool, err
 		return false, nil
 	}
 
+	// Initialize Map if value isn't nil
+	if v.Kind() == reflect.Map && p.Value != nil {
+		mt := reflect.MapOf(v.Type().Key(), v.Type().Elem())
+		v.Set(reflect.MakeMap(mt))
+	}
+
 	// If Entity, load properties as well as key.
 	if e, ok := p.Value.(*Entity); ok {
 		err = loadEntity(vpls, e)
