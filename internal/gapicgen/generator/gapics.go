@@ -40,6 +40,8 @@ var (
 	readmeTmpl string
 	//go:embed _version.go.txt
 	versionTmpl string
+	//go:embed _internal_version.go.txt
+	internalVersionTmpl string
 )
 
 // GapicGenerator is used to regenerate gapic libraries.
@@ -102,13 +104,13 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		if err := g.microgen(c); err != nil {
 			return err
 		}
+		if err := g.genVersionFile(c); err != nil {
+			return err
+		}
 		if g.genModule {
 			if err := gocmd.ModTidy(modPath); err != nil {
 				return nil
 			}
-		}
-		if err := g.genVersionFile(c); err != nil {
-			return err
 		}
 	}
 
@@ -326,7 +328,7 @@ func (g *GapicGenerator) genVersionFile(conf *microgenConfig) error {
 	rootPackage := strings.Split(relDir, "/")[0]
 	rootModInternal := fmt.Sprintf("cloud.google.com/go/%s/internal", rootPackage)
 
-	f, err := os.Create(filepath.Join(g.googleCloudDir, relDir, "version.go"))
+	f, err := os.Create(filepath.Join(g.googleCloudDir, conf.importPath, "version.go"))
 	if err != nil {
 		return err
 	}
@@ -344,6 +346,26 @@ func (g *GapicGenerator) genVersionFile(conf *microgenConfig) error {
 	}
 	if err := t.Execute(f, versionData); err != nil {
 		return err
+	}
+
+	if g.genModule {
+		os.MkdirAll(filepath.Join(g.googleCloudDir, rootModInternal), os.ModePerm)
+
+		f2, err := os.Create(filepath.Join(g.googleCloudDir, rootModInternal, "version.go"))
+		if err != nil {
+			return err
+		}
+		defer f2.Close()
+
+		t2 := template.Must(template.New("internal_version").Parse(internalVersionTmpl))
+		internalVersionData := struct {
+			Year int
+		}{
+			Year: time.Now().Year(),
+		}
+		if err := t2.Execute(f2, internalVersionData); err != nil {
+			return err
+		}
 	}
 	return nil
 }
