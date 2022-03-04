@@ -678,7 +678,8 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+			gax.WithRetry(func() gax.Retryer { return &publishRetryer{} }))
 	}
 	end := time.Now()
 	if err != nil {

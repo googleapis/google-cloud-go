@@ -91,3 +91,24 @@ func (r *streamingPullRetryer) Retry(err error) (pause time.Duration, shouldRetr
 		return r.defaultRetryer.Retry(err)
 	}
 }
+
+type publishRetryer struct {
+	defaultRetryer gax.Retryer
+}
+
+func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	s, ok := status.FromError(err)
+	if !ok { // call defaultRetryer so that its backoff can be used
+		return r.defaultRetryer.Retry(err)
+	}
+	switch s.Code() {
+	case codes.Internal:
+		invalid := strings.Contains(s.Message(), "string field contains invalid UTF-8")
+		if invalid {
+			return 0, false
+		}
+		return 0, true
+	default:
+		return 0, false
+	}
+}
