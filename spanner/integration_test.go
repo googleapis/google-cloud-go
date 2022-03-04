@@ -3483,6 +3483,7 @@ func readPGSingerTable(iter *RowIterator) ([][]interface{}, error) {
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
 	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
 	t.Parallel()
 
 	startTime := time.Now()
