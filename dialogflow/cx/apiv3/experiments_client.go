@@ -297,7 +297,7 @@ func (c *experimentsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *experimentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -309,6 +309,7 @@ func (c *experimentsGRPCClient) Close() error {
 
 func (c *experimentsGRPCClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListExperiments[0:len((*c.CallOptions).ListExperiments):len((*c.CallOptions).ListExperiments)], opts...)
 	it := &ExperimentIterator{}
@@ -358,6 +359,7 @@ func (c *experimentsGRPCClient) GetExperiment(ctx context.Context, req *cxpb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetExperiment[0:len((*c.CallOptions).GetExperiment):len((*c.CallOptions).GetExperiment)], opts...)
 	var resp *cxpb.Experiment
@@ -379,6 +381,7 @@ func (c *experimentsGRPCClient) CreateExperiment(ctx context.Context, req *cxpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateExperiment[0:len((*c.CallOptions).CreateExperiment):len((*c.CallOptions).CreateExperiment)], opts...)
 	var resp *cxpb.Experiment
@@ -400,6 +403,7 @@ func (c *experimentsGRPCClient) UpdateExperiment(ctx context.Context, req *cxpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "experiment.name", url.QueryEscape(req.GetExperiment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateExperiment[0:len((*c.CallOptions).UpdateExperiment):len((*c.CallOptions).UpdateExperiment)], opts...)
 	var resp *cxpb.Experiment
@@ -421,6 +425,7 @@ func (c *experimentsGRPCClient) DeleteExperiment(ctx context.Context, req *cxpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteExperiment[0:len((*c.CallOptions).DeleteExperiment):len((*c.CallOptions).DeleteExperiment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -438,6 +443,7 @@ func (c *experimentsGRPCClient) StartExperiment(ctx context.Context, req *cxpb.S
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartExperiment[0:len((*c.CallOptions).StartExperiment):len((*c.CallOptions).StartExperiment)], opts...)
 	var resp *cxpb.Experiment
@@ -459,6 +465,7 @@ func (c *experimentsGRPCClient) StopExperiment(ctx context.Context, req *cxpb.St
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StopExperiment[0:len((*c.CallOptions).StopExperiment):len((*c.CallOptions).StopExperiment)], opts...)
 	var resp *cxpb.Experiment

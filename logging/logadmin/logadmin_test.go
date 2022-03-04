@@ -23,13 +23,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
-	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
@@ -261,41 +261,59 @@ func TestFromLogEntry(t *testing.T) {
 	}
 }
 
+func TestListLogEntriesRequestDefaults(t *testing.T) {
+	const timeFilterPrefix = "timestamp >= "
+
+	got := listLogEntriesRequest("projects/PROJECT_ID", nil)
+
+	// parse time from filter
+	if len(got.Filter) < len(timeFilterPrefix) {
+		t.Errorf("got %v; want len(%v) start with '%v'", got, got.Filter, timeFilterPrefix)
+	}
+	filterTime, err := time.Parse(time.RFC3339, strings.Trim(got.Filter[len(timeFilterPrefix):], "\""))
+	if err != nil {
+		t.Errorf("got %v; want %v in RFC3339", err, got.Filter)
+	}
+	timeDiff := time.Now().UTC().Sub(filterTime)
+
+	// Default is client's project ID, 24 hour lookback, and no orderBy.
+	if !testutil.Equal(got.ResourceNames, []string{"projects/PROJECT_ID"}) || got.OrderBy != "" || timeDiff.Hours() < 24 {
+		t.Errorf("got %v; want resource_names:\"projects/PROJECT_ID\" filter: %v - 24 hours order_by:\"\"", got, filterTime)
+	}
+}
+
 func TestListLogEntriesRequest(t *testing.T) {
-	dayAgo := time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)
 	for _, test := range []struct {
 		opts          []EntriesOption
 		resourceNames []string
-		filter        string
+		filterPrefix  string
 		orderBy       string
 	}{
-		// Default is client's project ID, 24 hour lookback, and orderBy.
-		{nil, []string{"projects/PROJECT_ID"}, `timestamp >= "` + dayAgo + `"`, ""},
 		// Timestamp default does not override user's filter
 		{[]EntriesOption{NewestFirst(), Filter(`timestamp > "2020-10-30T15:39:09Z"`)},
 			[]string{"projects/PROJECT_ID"}, `timestamp > "2020-10-30T15:39:09Z"`, "timestamp desc"},
 		{[]EntriesOption{NewestFirst(), Filter("f")},
-			[]string{"projects/PROJECT_ID"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
+			[]string{"projects/PROJECT_ID"}, "f AND timestamp >= \"", "timestamp desc"},
 		{[]EntriesOption{ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, `timestamp >= "` + dayAgo + `"`, ""},
+			[]string{"projects/foo"}, "timestamp >= \"", ""},
 		{[]EntriesOption{ResourceNames([]string{"folders/F", "organizations/O"})},
-			[]string{"folders/F", "organizations/O"}, `timestamp >= "` + dayAgo + `"`, ""},
+			[]string{"folders/F", "organizations/O"}, "timestamp >= \"", ""},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
+			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc"},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
+			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc"},
 		// If there are repeats, last one wins.
 		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
+			[]string{"projects/foo"}, "f AND timestamp >= \"", "timestamp desc"},
 	} {
 		got := listLogEntriesRequest("projects/PROJECT_ID", test.opts)
 		want := &logpb.ListLogEntriesRequest{
 			ResourceNames: test.resourceNames,
-			Filter:        test.filter,
+			Filter:        test.filterPrefix,
 			OrderBy:       test.orderBy,
 		}
-		if !proto.Equal(got, want) {
-			t.Errorf("%v:\ngot  %v\nwant %v", test.opts, got, want)
+		if !testutil.Equal(got.ResourceNames, want.ResourceNames) || !strings.HasPrefix(got.Filter, want.Filter) || got.OrderBy != want.OrderBy {
+			t.Errorf("got: %v; want %v (mind wanted Filter is prefix)", got, want)
 		}
 	}
 }

@@ -34,13 +34,14 @@ const InfiniteRetention = time.Duration(-1)
 // about how topics are configured.
 type TopicConfig struct {
 	// The full path of the topic, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+	// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
 	//
 	// - PROJECT_ID: The project ID (e.g. "my-project") or the project number
 	//   (e.g. "987654321") can be provided.
-	// - ZONE: The Google Cloud zone (e.g. "us-central1-a") where the topic is
-	//   located. See https://cloud.google.com/pubsub/lite/docs/locations for the
-	//   list of zones where Pub/Sub Lite is available.
+	// - LOCATION: The Google Cloud region (e.g. "us-central1") or zone
+	//   (e.g. "us-central1-a") where the topic is located.
+	//   See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+	//   regions and zones where Pub/Sub Lite is available.
 	// - TOPIC_ID: The ID of the topic (e.g. "my-topic"). See
 	//   https://cloud.google.com/pubsub/docs/admin#resource_names for information
 	//   about valid topic IDs.
@@ -128,7 +129,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 // TopicConfigToUpdate specifies the properties to update for a topic.
 type TopicConfigToUpdate struct {
 	// The full path of the topic to update, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". Required.
+	// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID". Required.
 	Name string
 
 	// If non-zero, will update the number of partitions in the topic.
@@ -234,19 +235,19 @@ const (
 // information about how subscriptions are configured.
 type SubscriptionConfig struct {
 	// The full path of the subscription, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+	// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 	//
 	// - PROJECT_ID: The project ID (e.g. "my-project") or the project number
 	//   (e.g. "987654321") can be provided.
-	// - ZONE: The Google Cloud zone (e.g. "us-central1-a") of the corresponding
-	//   topic.
+	// - LOCATION: The Google Cloud region (e.g. "us-central1") or zone
+	//   (e.g. "us-central1-a") of the corresponding topic.
 	// - SUBSCRIPTION_ID: The ID of the subscription (e.g. "my-subscription"). See
 	//   https://cloud.google.com/pubsub/docs/admin#resource_names for information
 	//   about valid subscription IDs.
 	Name string
 
 	// The path of the topic that this subscription is attached to, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". This cannot be
+	// "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID". This cannot be
 	// changed after creation.
 	Topic string
 
@@ -282,7 +283,7 @@ func protoToSubscriptionConfig(s *pb.Subscription) *SubscriptionConfig {
 // subscription.
 type SubscriptionConfigToUpdate struct {
 	// The full path of the subscription to update, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+	// "projects/PROJECT_ID/locations/LOCATION/subscriptions/SUBSCRIPTION_ID".
 	// Required.
 	Name string
 

@@ -226,6 +226,13 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 //   For PENDING streams, data is not made visible until the stream itself is
 //   finalized (via the FinalizeWriteStream rpc), and the stream is explicitly
 //   committed via the BatchCommitWriteStreams rpc.
+//
+// Note: For users coding against the gRPC api directly, it may be
+// necessary to supply the x-goog-request-params system parameter
+// with write_stream=<full_write_stream_name>.
+//
+// More information about system parameters:
+// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return c.internalClient.AppendRows(ctx, opts...)
 }
@@ -338,7 +345,7 @@ func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *bigQueryWriteGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -355,6 +362,7 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateWriteStream[0:len((*c.CallOptions).CreateWriteStream):len((*c.CallOptions).CreateWriteStream)], opts...)
 	var resp *storagepb.WriteStream
@@ -391,6 +399,7 @@ func (c *bigQueryWriteGRPCClient) GetWriteStream(ctx context.Context, req *stora
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWriteStream[0:len((*c.CallOptions).GetWriteStream):len((*c.CallOptions).GetWriteStream)], opts...)
 	var resp *storagepb.WriteStream
@@ -412,6 +421,7 @@ func (c *bigQueryWriteGRPCClient) FinalizeWriteStream(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FinalizeWriteStream[0:len((*c.CallOptions).FinalizeWriteStream):len((*c.CallOptions).FinalizeWriteStream)], opts...)
 	var resp *storagepb.FinalizeWriteStreamResponse
@@ -433,6 +443,7 @@ func (c *bigQueryWriteGRPCClient) BatchCommitWriteStreams(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCommitWriteStreams[0:len((*c.CallOptions).BatchCommitWriteStreams):len((*c.CallOptions).BatchCommitWriteStreams)], opts...)
 	var resp *storagepb.BatchCommitWriteStreamsResponse
@@ -454,6 +465,7 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "write_stream", url.QueryEscape(req.GetWriteStream())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FlushRows[0:len((*c.CallOptions).FlushRows):len((*c.CallOptions).FlushRows)], opts...)
 	var resp *storagepb.FlushRowsResponse

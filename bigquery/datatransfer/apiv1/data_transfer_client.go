@@ -53,6 +53,7 @@ type CallOptions struct {
 	ListTransferRuns        []gax.CallOption
 	ListTransferLogs        []gax.CallOption
 	CheckValidCreds         []gax.CallOption
+	EnrollDataSources       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -193,6 +194,7 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		EnrollDataSources: []gax.CallOption{},
 	}
 }
 
@@ -215,15 +217,13 @@ type internalClient interface {
 	ListTransferRuns(context.Context, *datatransferpb.ListTransferRunsRequest, ...gax.CallOption) *TransferRunIterator
 	ListTransferLogs(context.Context, *datatransferpb.ListTransferLogsRequest, ...gax.CallOption) *TransferMessageIterator
 	CheckValidCreds(context.Context, *datatransferpb.CheckValidCredsRequest, ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error)
+	EnrollDataSources(context.Context, *datatransferpb.EnrollDataSourcesRequest, ...gax.CallOption) error
 }
 
 // Client is a client for interacting with BigQuery Data Transfer API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Google BigQuery Data Transfer Service API enables BigQuery users to
-// configure the transfer of their data from other Google Products into
-// BigQuery. This service contains methods that are end user exposed. It backs
-// up the frontend.
+// This API allows users to manage their data transfers into BigQuery.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -254,14 +254,12 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetDataSource retrieves a supported data source and returns its settings,
-// which can be used for UI rendering.
+// GetDataSource retrieves a supported data source and returns its settings.
 func (c *Client) GetDataSource(ctx context.Context, req *datatransferpb.GetDataSourceRequest, opts ...gax.CallOption) (*datatransferpb.DataSource, error) {
 	return c.internalClient.GetDataSource(ctx, req, opts...)
 }
 
-// ListDataSources lists supported data sources and returns their settings,
-// which can be used for UI rendering.
+// ListDataSources lists supported data sources and returns their settings.
 func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	return c.internalClient.ListDataSources(ctx, req, opts...)
 }
@@ -277,8 +275,8 @@ func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.U
 	return c.internalClient.UpdateTransferConfig(ctx, req, opts...)
 }
 
-// DeleteTransferConfig deletes a data transfer configuration,
-// including any associated transfer runs and logs.
+// DeleteTransferConfig deletes a data transfer configuration, including any associated transfer
+// runs and logs.
 func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.DeleteTransferConfigRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTransferConfig(ctx, req, opts...)
 }
@@ -323,24 +321,30 @@ func (c *Client) DeleteTransferRun(ctx context.Context, req *datatransferpb.Dele
 	return c.internalClient.DeleteTransferRun(ctx, req, opts...)
 }
 
-// ListTransferRuns returns information about running and completed jobs.
+// ListTransferRuns returns information about running and completed transfer runs.
 func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListTransferRunsRequest, opts ...gax.CallOption) *TransferRunIterator {
 	return c.internalClient.ListTransferRuns(ctx, req, opts...)
 }
 
-// ListTransferLogs returns user facing log messages for the data transfer run.
+// ListTransferLogs returns log messages for the transfer run.
 func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListTransferLogsRequest, opts ...gax.CallOption) *TransferMessageIterator {
 	return c.internalClient.ListTransferLogs(ctx, req, opts...)
 }
 
 // CheckValidCreds returns true if valid credentials exist for the given data source and
 // requesting user.
-// Some data sources doesn’t support service account, so we need to talk to
-// them on behalf of the end user. This API just checks whether we have OAuth
-// token for the particular user, which is a pre-requisite before user can
-// create a transfer config.
 func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckValidCredsRequest, opts ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error) {
 	return c.internalClient.CheckValidCreds(ctx, req, opts...)
+}
+
+// EnrollDataSources enroll data sources in a user project. This allows users to create transfer
+// configurations for these data sources. They will also appear in the
+// ListDataSources RPC and as such, will appear in the BigQuery UI
+// ‘https://bigquery.cloud.google.com (at https://bigquery.cloud.google.com)’ (and the documents can be found at
+// https://cloud.google.com/bigquery/bigquery-web-ui (at https://cloud.google.com/bigquery/bigquery-web-ui) and
+// https://cloud.google.com/bigquery/docs/working-with-transfers (at https://cloud.google.com/bigquery/docs/working-with-transfers)).
+func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.EnrollDataSources(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with BigQuery Data Transfer API over gRPC transport.
@@ -366,10 +370,7 @@ type gRPCClient struct {
 // NewClient creates a new data transfer service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Google BigQuery Data Transfer Service API enables BigQuery users to
-// configure the transfer of their data from other Google Products into
-// BigQuery. This service contains methods that are end user exposed. It backs
-// up the frontend.
+// This API allows users to manage their data transfers into BigQuery.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -416,7 +417,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -433,6 +434,7 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDataSource[0:len((*c.CallOptions).GetDataSource):len((*c.CallOptions).GetDataSource)], opts...)
 	var resp *datatransferpb.DataSource
@@ -449,6 +451,7 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datatransferpb.GetD
 
 func (c *gRPCClient) ListDataSources(ctx context.Context, req *datatransferpb.ListDataSourcesRequest, opts ...gax.CallOption) *DataSourceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDataSources[0:len((*c.CallOptions).ListDataSources):len((*c.CallOptions).ListDataSources)], opts...)
 	it := &DataSourceIterator{}
@@ -498,6 +501,7 @@ func (c *gRPCClient) CreateTransferConfig(ctx context.Context, req *datatransfer
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTransferConfig[0:len((*c.CallOptions).CreateTransferConfig):len((*c.CallOptions).CreateTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -519,6 +523,7 @@ func (c *gRPCClient) UpdateTransferConfig(ctx context.Context, req *datatransfer
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transfer_config.name", url.QueryEscape(req.GetTransferConfig().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTransferConfig[0:len((*c.CallOptions).UpdateTransferConfig):len((*c.CallOptions).UpdateTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -540,6 +545,7 @@ func (c *gRPCClient) DeleteTransferConfig(ctx context.Context, req *datatransfer
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTransferConfig[0:len((*c.CallOptions).DeleteTransferConfig):len((*c.CallOptions).DeleteTransferConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -557,6 +563,7 @@ func (c *gRPCClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTransferConfig[0:len((*c.CallOptions).GetTransferConfig):len((*c.CallOptions).GetTransferConfig)], opts...)
 	var resp *datatransferpb.TransferConfig
@@ -573,6 +580,7 @@ func (c *gRPCClient) GetTransferConfig(ctx context.Context, req *datatransferpb.
 
 func (c *gRPCClient) ListTransferConfigs(ctx context.Context, req *datatransferpb.ListTransferConfigsRequest, opts ...gax.CallOption) *TransferConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransferConfigs[0:len((*c.CallOptions).ListTransferConfigs):len((*c.CallOptions).ListTransferConfigs)], opts...)
 	it := &TransferConfigIterator{}
@@ -622,6 +630,7 @@ func (c *gRPCClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ScheduleTransferRuns[0:len((*c.CallOptions).ScheduleTransferRuns):len((*c.CallOptions).ScheduleTransferRuns)], opts...)
 	var resp *datatransferpb.ScheduleTransferRunsResponse
@@ -638,6 +647,7 @@ func (c *gRPCClient) ScheduleTransferRuns(ctx context.Context, req *datatransfer
 
 func (c *gRPCClient) StartManualTransferRuns(ctx context.Context, req *datatransferpb.StartManualTransferRunsRequest, opts ...gax.CallOption) (*datatransferpb.StartManualTransferRunsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartManualTransferRuns[0:len((*c.CallOptions).StartManualTransferRuns):len((*c.CallOptions).StartManualTransferRuns)], opts...)
 	var resp *datatransferpb.StartManualTransferRunsResponse
@@ -659,6 +669,7 @@ func (c *gRPCClient) GetTransferRun(ctx context.Context, req *datatransferpb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTransferRun[0:len((*c.CallOptions).GetTransferRun):len((*c.CallOptions).GetTransferRun)], opts...)
 	var resp *datatransferpb.TransferRun
@@ -680,6 +691,7 @@ func (c *gRPCClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTransferRun[0:len((*c.CallOptions).DeleteTransferRun):len((*c.CallOptions).DeleteTransferRun)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -692,6 +704,7 @@ func (c *gRPCClient) DeleteTransferRun(ctx context.Context, req *datatransferpb.
 
 func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.ListTransferRunsRequest, opts ...gax.CallOption) *TransferRunIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransferRuns[0:len((*c.CallOptions).ListTransferRuns):len((*c.CallOptions).ListTransferRuns)], opts...)
 	it := &TransferRunIterator{}
@@ -736,6 +749,7 @@ func (c *gRPCClient) ListTransferRuns(ctx context.Context, req *datatransferpb.L
 
 func (c *gRPCClient) ListTransferLogs(ctx context.Context, req *datatransferpb.ListTransferLogsRequest, opts ...gax.CallOption) *TransferMessageIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTransferLogs[0:len((*c.CallOptions).ListTransferLogs):len((*c.CallOptions).ListTransferLogs)], opts...)
 	it := &TransferMessageIterator{}
@@ -785,6 +799,7 @@ func (c *gRPCClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CheckValidCreds[0:len((*c.CallOptions).CheckValidCreds):len((*c.CallOptions).CheckValidCreds)], opts...)
 	var resp *datatransferpb.CheckValidCredsResponse
@@ -797,6 +812,19 @@ func (c *gRPCClient) CheckValidCreds(ctx context.Context, req *datatransferpb.Ch
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.EnrollDataSourcesRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).EnrollDataSources[0:len((*c.CallOptions).EnrollDataSources):len((*c.CallOptions).EnrollDataSources)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.EnrollDataSources(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // DataSourceIterator manages a stream of *datatransferpb.DataSource.

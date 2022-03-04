@@ -45,22 +45,21 @@
 //  }
 //  defer c.Close()
 //
-//  req := &artifactregistrypb.ListRepositoriesRequest{
+//  req := &artifactregistrypb.ImportAptArtifactsRequest{
 //  	// TODO: Fill request struct fields.
-//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ListRepositoriesRequest.
+//  	// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2#ImportAptArtifactsRequest.
 //  }
-//  it := c.ListRepositories(ctx, req)
-//  for {
-//  	resp, err := it.Next()
-//  	if err == iterator.Done {
-//  		break
-//  	}
-//  	if err != nil {
-//  		// TODO: Handle error.
-//  	}
-//  	// TODO: Use resp.
-//  	_ = resp
+//  op, err := c.ImportAptArtifacts(ctx, req)
+//  if err != nil {
+//  	// TODO: Handle error.
 //  }
+//
+//  resp, err := op.Wait(ctx)
+//  if err != nil {
+//  	// TODO: Handle error.
+//  }
+//  // TODO: Use resp.
+//  _ = resp
 //
 // Use of Context
 //
@@ -91,7 +90,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20220112"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

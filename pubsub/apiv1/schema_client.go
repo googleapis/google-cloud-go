@@ -254,7 +254,7 @@ func (c *schemaGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *schemaGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -266,6 +266,7 @@ func (c *schemaGRPCClient) Close() error {
 
 func (c *schemaGRPCClient) CreateSchema(ctx context.Context, req *pubsubpb.CreateSchemaRequest, opts ...gax.CallOption) (*pubsubpb.Schema, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSchema[0:len((*c.CallOptions).CreateSchema):len((*c.CallOptions).CreateSchema)], opts...)
 	var resp *pubsubpb.Schema
@@ -282,6 +283,7 @@ func (c *schemaGRPCClient) CreateSchema(ctx context.Context, req *pubsubpb.Creat
 
 func (c *schemaGRPCClient) GetSchema(ctx context.Context, req *pubsubpb.GetSchemaRequest, opts ...gax.CallOption) (*pubsubpb.Schema, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSchema[0:len((*c.CallOptions).GetSchema):len((*c.CallOptions).GetSchema)], opts...)
 	var resp *pubsubpb.Schema
@@ -298,6 +300,7 @@ func (c *schemaGRPCClient) GetSchema(ctx context.Context, req *pubsubpb.GetSchem
 
 func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSchemasRequest, opts ...gax.CallOption) *SchemaIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSchemas[0:len((*c.CallOptions).ListSchemas):len((*c.CallOptions).ListSchemas)], opts...)
 	it := &SchemaIterator{}
@@ -342,6 +345,7 @@ func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *pubsubpb.ListSc
 
 func (c *schemaGRPCClient) DeleteSchema(ctx context.Context, req *pubsubpb.DeleteSchemaRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSchema[0:len((*c.CallOptions).DeleteSchema):len((*c.CallOptions).DeleteSchema)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -354,6 +358,7 @@ func (c *schemaGRPCClient) DeleteSchema(ctx context.Context, req *pubsubpb.Delet
 
 func (c *schemaGRPCClient) ValidateSchema(ctx context.Context, req *pubsubpb.ValidateSchemaRequest, opts ...gax.CallOption) (*pubsubpb.ValidateSchemaResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ValidateSchema[0:len((*c.CallOptions).ValidateSchema):len((*c.CallOptions).ValidateSchema)], opts...)
 	var resp *pubsubpb.ValidateSchemaResponse
@@ -370,6 +375,7 @@ func (c *schemaGRPCClient) ValidateSchema(ctx context.Context, req *pubsubpb.Val
 
 func (c *schemaGRPCClient) ValidateMessage(ctx context.Context, req *pubsubpb.ValidateMessageRequest, opts ...gax.CallOption) (*pubsubpb.ValidateMessageResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ValidateMessage[0:len((*c.CallOptions).ValidateMessage):len((*c.CallOptions).ValidateMessage)], opts...)
 	var resp *pubsubpb.ValidateMessageResponse

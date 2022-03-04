@@ -40,6 +40,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/storage/internal"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -51,6 +52,7 @@ import (
 	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -68,7 +70,7 @@ var (
 	errMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
 )
 
-var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", version.Repo)
+var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", internal.Version)
 
 const (
 	// ScopeFullControl grants permissions to manage your
@@ -90,7 +92,7 @@ const (
 	defaultConnPoolSize = 4
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
@@ -216,6 +218,27 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	c, err := NewClient(ctx, opts.HTTPOpts...)
 	if err != nil {
 		return nil, err
+	}
+
+	// Set emulator options for gRPC if an emulator was specified. Note that in a
+	// hybrid client, STORAGE_EMULATOR_HOST will set the host to use for HTTP and
+	// STORAGE_EMULATOR_HOST_GRPC will set the host to use for gRPC (when using a
+	// local emulator, HTTP and gRPC must use different ports, so this is
+	// necessary).
+	// TODO: when full gRPC client is available, remove STORAGE_EMULATOR_HOST_GRPC
+	// and use STORAGE_EMULATOR_HOST for both the HTTP and gRPC based clients.
+	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
+		// Strip the scheme from the emulator host. WithEndpoint does not take a
+		// scheme for gRPC.
+		if strings.Contains(host, "://") {
+			host = strings.SplitN(host, "://", 2)[1]
+		}
+
+		opts.GRPCOpts = append(opts.GRPCOpts,
+			option.WithEndpoint(host),
+			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithoutAuthentication(),
+		)
 	}
 
 	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
@@ -1565,6 +1588,14 @@ type Query struct {
 	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
 	// which may improve performance when listing many objects.
 	Projection Projection
+
+	// IncludeTrailingDelimiter controls how objects which end in a single
+	// instance of Delimiter (for example, if Query.Delimiter = "/" and the
+	// object name is "foo/bar/") are included in the results. By default, these
+	// objects only show up as prefixes. If IncludeTrailingDelimiter is set to
+	// true, they will also be included as objects and their metadata will be
+	// populated in the returned ObjectAttrs.
+	IncludeTrailingDelimiter bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field

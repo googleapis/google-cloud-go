@@ -41,11 +41,20 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	GetTrigger    []gax.CallOption
-	ListTriggers  []gax.CallOption
-	CreateTrigger []gax.CallOption
-	UpdateTrigger []gax.CallOption
-	DeleteTrigger []gax.CallOption
+	GetTrigger              []gax.CallOption
+	ListTriggers            []gax.CallOption
+	CreateTrigger           []gax.CallOption
+	UpdateTrigger           []gax.CallOption
+	DeleteTrigger           []gax.CallOption
+	GetChannel              []gax.CallOption
+	ListChannels            []gax.CallOption
+	CreateChannel           []gax.CallOption
+	UpdateChannel           []gax.CallOption
+	DeleteChannel           []gax.CallOption
+	GetChannelConnection    []gax.CallOption
+	ListChannelConnections  []gax.CallOption
+	CreateChannelConnection []gax.CallOption
+	DeleteChannelConnection []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -62,11 +71,20 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		GetTrigger:    []gax.CallOption{},
-		ListTriggers:  []gax.CallOption{},
-		CreateTrigger: []gax.CallOption{},
-		UpdateTrigger: []gax.CallOption{},
-		DeleteTrigger: []gax.CallOption{},
+		GetTrigger:              []gax.CallOption{},
+		ListTriggers:            []gax.CallOption{},
+		CreateTrigger:           []gax.CallOption{},
+		UpdateTrigger:           []gax.CallOption{},
+		DeleteTrigger:           []gax.CallOption{},
+		GetChannel:              []gax.CallOption{},
+		ListChannels:            []gax.CallOption{},
+		CreateChannel:           []gax.CallOption{},
+		UpdateChannel:           []gax.CallOption{},
+		DeleteChannel:           []gax.CallOption{},
+		GetChannelConnection:    []gax.CallOption{},
+		ListChannelConnections:  []gax.CallOption{},
+		CreateChannelConnection: []gax.CallOption{},
+		DeleteChannelConnection: []gax.CallOption{},
 	}
 }
 
@@ -83,6 +101,20 @@ type internalClient interface {
 	UpdateTriggerOperation(name string) *UpdateTriggerOperation
 	DeleteTrigger(context.Context, *eventarcpb.DeleteTriggerRequest, ...gax.CallOption) (*DeleteTriggerOperation, error)
 	DeleteTriggerOperation(name string) *DeleteTriggerOperation
+	GetChannel(context.Context, *eventarcpb.GetChannelRequest, ...gax.CallOption) (*eventarcpb.Channel, error)
+	ListChannels(context.Context, *eventarcpb.ListChannelsRequest, ...gax.CallOption) *ChannelIterator
+	CreateChannel(context.Context, *eventarcpb.CreateChannelRequest, ...gax.CallOption) (*CreateChannelOperation, error)
+	CreateChannelOperation(name string) *CreateChannelOperation
+	UpdateChannel(context.Context, *eventarcpb.UpdateChannelRequest, ...gax.CallOption) (*UpdateChannelOperation, error)
+	UpdateChannelOperation(name string) *UpdateChannelOperation
+	DeleteChannel(context.Context, *eventarcpb.DeleteChannelRequest, ...gax.CallOption) (*DeleteChannelOperation, error)
+	DeleteChannelOperation(name string) *DeleteChannelOperation
+	GetChannelConnection(context.Context, *eventarcpb.GetChannelConnectionRequest, ...gax.CallOption) (*eventarcpb.ChannelConnection, error)
+	ListChannelConnections(context.Context, *eventarcpb.ListChannelConnectionsRequest, ...gax.CallOption) *ChannelConnectionIterator
+	CreateChannelConnection(context.Context, *eventarcpb.CreateChannelConnectionRequest, ...gax.CallOption) (*CreateChannelConnectionOperation, error)
+	CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation
+	DeleteChannelConnection(context.Context, *eventarcpb.DeleteChannelConnectionRequest, ...gax.CallOption) (*DeleteChannelConnectionOperation, error)
+	DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation
 }
 
 // Client is a client for interacting with Eventarc API.
@@ -166,6 +198,81 @@ func (c *Client) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTrigge
 // The name must be that of a previously created DeleteTriggerOperation, possibly from a different process.
 func (c *Client) DeleteTriggerOperation(name string) *DeleteTriggerOperation {
 	return c.internalClient.DeleteTriggerOperation(name)
+}
+
+// GetChannel get a single Channel.
+func (c *Client) GetChannel(ctx context.Context, req *eventarcpb.GetChannelRequest, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	return c.internalClient.GetChannel(ctx, req, opts...)
+}
+
+// ListChannels list channels.
+func (c *Client) ListChannels(ctx context.Context, req *eventarcpb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
+	return c.internalClient.ListChannels(ctx, req, opts...)
+}
+
+// CreateChannel create a new channel in a particular project and location.
+func (c *Client) CreateChannel(ctx context.Context, req *eventarcpb.CreateChannelRequest, opts ...gax.CallOption) (*CreateChannelOperation, error) {
+	return c.internalClient.CreateChannel(ctx, req, opts...)
+}
+
+// CreateChannelOperation returns a new CreateChannelOperation from a given name.
+// The name must be that of a previously created CreateChannelOperation, possibly from a different process.
+func (c *Client) CreateChannelOperation(name string) *CreateChannelOperation {
+	return c.internalClient.CreateChannelOperation(name)
+}
+
+// UpdateChannel update a single channel.
+func (c *Client) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateChannelRequest, opts ...gax.CallOption) (*UpdateChannelOperation, error) {
+	return c.internalClient.UpdateChannel(ctx, req, opts...)
+}
+
+// UpdateChannelOperation returns a new UpdateChannelOperation from a given name.
+// The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
+func (c *Client) UpdateChannelOperation(name string) *UpdateChannelOperation {
+	return c.internalClient.UpdateChannelOperation(name)
+}
+
+// DeleteChannel delete a single channel.
+func (c *Client) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteChannelRequest, opts ...gax.CallOption) (*DeleteChannelOperation, error) {
+	return c.internalClient.DeleteChannel(ctx, req, opts...)
+}
+
+// DeleteChannelOperation returns a new DeleteChannelOperation from a given name.
+// The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
+func (c *Client) DeleteChannelOperation(name string) *DeleteChannelOperation {
+	return c.internalClient.DeleteChannelOperation(name)
+}
+
+// GetChannelConnection get a single ChannelConnection.
+func (c *Client) GetChannelConnection(ctx context.Context, req *eventarcpb.GetChannelConnectionRequest, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	return c.internalClient.GetChannelConnection(ctx, req, opts...)
+}
+
+// ListChannelConnections list channel connections.
+func (c *Client) ListChannelConnections(ctx context.Context, req *eventarcpb.ListChannelConnectionsRequest, opts ...gax.CallOption) *ChannelConnectionIterator {
+	return c.internalClient.ListChannelConnections(ctx, req, opts...)
+}
+
+// CreateChannelConnection create a new ChannelConnection in a particular project and location.
+func (c *Client) CreateChannelConnection(ctx context.Context, req *eventarcpb.CreateChannelConnectionRequest, opts ...gax.CallOption) (*CreateChannelConnectionOperation, error) {
+	return c.internalClient.CreateChannelConnection(ctx, req, opts...)
+}
+
+// CreateChannelConnectionOperation returns a new CreateChannelConnectionOperation from a given name.
+// The name must be that of a previously created CreateChannelConnectionOperation, possibly from a different process.
+func (c *Client) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
+	return c.internalClient.CreateChannelConnectionOperation(name)
+}
+
+// DeleteChannelConnection delete a single ChannelConnection.
+func (c *Client) DeleteChannelConnection(ctx context.Context, req *eventarcpb.DeleteChannelConnectionRequest, opts ...gax.CallOption) (*DeleteChannelConnectionOperation, error) {
+	return c.internalClient.DeleteChannelConnection(ctx, req, opts...)
+}
+
+// DeleteChannelConnectionOperation returns a new DeleteChannelConnectionOperation from a given name.
+// The name must be that of a previously created DeleteChannelConnectionOperation, possibly from a different process.
+func (c *Client) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
+	return c.internalClient.DeleteChannelConnectionOperation(name)
 }
 
 // gRPCClient is a client for interacting with Eventarc API over gRPC transport.
@@ -255,7 +362,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -267,6 +374,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerRequest, opts ...gax.CallOption) (*eventarcpb.Trigger, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTrigger[0:len((*c.CallOptions).GetTrigger):len((*c.CallOptions).GetTrigger)], opts...)
 	var resp *eventarcpb.Trigger
@@ -283,6 +391,7 @@ func (c *gRPCClient) GetTrigger(ctx context.Context, req *eventarcpb.GetTriggerR
 
 func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTriggersRequest, opts ...gax.CallOption) *TriggerIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTriggers[0:len((*c.CallOptions).ListTriggers):len((*c.CallOptions).ListTriggers)], opts...)
 	it := &TriggerIterator{}
@@ -327,6 +436,7 @@ func (c *gRPCClient) ListTriggers(ctx context.Context, req *eventarcpb.ListTrigg
 
 func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTriggerRequest, opts ...gax.CallOption) (*CreateTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTrigger[0:len((*c.CallOptions).CreateTrigger):len((*c.CallOptions).CreateTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -345,6 +455,7 @@ func (c *gRPCClient) CreateTrigger(ctx context.Context, req *eventarcpb.CreateTr
 
 func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTriggerRequest, opts ...gax.CallOption) (*UpdateTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trigger.name", url.QueryEscape(req.GetTrigger().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTrigger[0:len((*c.CallOptions).UpdateTrigger):len((*c.CallOptions).UpdateTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -363,6 +474,7 @@ func (c *gRPCClient) UpdateTrigger(ctx context.Context, req *eventarcpb.UpdateTr
 
 func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTriggerRequest, opts ...gax.CallOption) (*DeleteTriggerOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTrigger[0:len((*c.CallOptions).DeleteTrigger):len((*c.CallOptions).DeleteTrigger)], opts...)
 	var resp *longrunningpb.Operation
@@ -377,6 +489,363 @@ func (c *gRPCClient) DeleteTrigger(ctx context.Context, req *eventarcpb.DeleteTr
 	return &DeleteTriggerOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) GetChannel(ctx context.Context, req *eventarcpb.GetChannelRequest, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetChannel[0:len((*c.CallOptions).GetChannel):len((*c.CallOptions).GetChannel)], opts...)
+	var resp *eventarcpb.Channel
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetChannel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListChannels(ctx context.Context, req *eventarcpb.ListChannelsRequest, opts ...gax.CallOption) *ChannelIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
+	it := &ChannelIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListChannelsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.Channel, string, error) {
+		resp := &eventarcpb.ListChannelsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListChannels(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannels(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateChannel(ctx context.Context, req *eventarcpb.CreateChannelRequest, opts ...gax.CallOption) (*CreateChannelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateChannel[0:len((*c.CallOptions).CreateChannel):len((*c.CallOptions).CreateChannel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateChannel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateChannel(ctx context.Context, req *eventarcpb.UpdateChannelRequest, opts ...gax.CallOption) (*UpdateChannelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "channel.name", url.QueryEscape(req.GetChannel().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateChannel[0:len((*c.CallOptions).UpdateChannel):len((*c.CallOptions).UpdateChannel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateChannel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteChannel(ctx context.Context, req *eventarcpb.DeleteChannelRequest, opts ...gax.CallOption) (*DeleteChannelOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteChannel[0:len((*c.CallOptions).DeleteChannel):len((*c.CallOptions).DeleteChannel)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteChannel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetChannelConnection(ctx context.Context, req *eventarcpb.GetChannelConnectionRequest, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetChannelConnection[0:len((*c.CallOptions).GetChannelConnection):len((*c.CallOptions).GetChannelConnection)], opts...)
+	var resp *eventarcpb.ChannelConnection
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetChannelConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListChannelConnections(ctx context.Context, req *eventarcpb.ListChannelConnectionsRequest, opts ...gax.CallOption) *ChannelConnectionIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListChannelConnections[0:len((*c.CallOptions).ListChannelConnections):len((*c.CallOptions).ListChannelConnections)], opts...)
+	it := &ChannelConnectionIterator{}
+	req = proto.Clone(req).(*eventarcpb.ListChannelConnectionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*eventarcpb.ChannelConnection, string, error) {
+		resp := &eventarcpb.ListChannelConnectionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListChannelConnections(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannelConnections(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateChannelConnection(ctx context.Context, req *eventarcpb.CreateChannelConnectionRequest, opts ...gax.CallOption) (*CreateChannelConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateChannelConnection[0:len((*c.CallOptions).CreateChannelConnection):len((*c.CallOptions).CreateChannelConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateChannelConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateChannelConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteChannelConnection(ctx context.Context, req *eventarcpb.DeleteChannelConnectionRequest, opts ...gax.CallOption) (*DeleteChannelConnectionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteChannelConnection[0:len((*c.CallOptions).DeleteChannelConnection):len((*c.CallOptions).DeleteChannelConnection)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteChannelConnection(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteChannelConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+// CreateChannelOperation manages a long-running operation from CreateChannel.
+type CreateChannelOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateChannelOperation returns a new CreateChannelOperation from a given name.
+// The name must be that of a previously created CreateChannelOperation, possibly from a different process.
+func (c *gRPCClient) CreateChannelOperation(name string) *CreateChannelOperation {
+	return &CreateChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
+	var meta eventarcpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateChannelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateChannelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// CreateChannelConnectionOperation manages a long-running operation from CreateChannelConnection.
+type CreateChannelConnectionOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateChannelConnectionOperation returns a new CreateChannelConnectionOperation from a given name.
+// The name must be that of a previously created CreateChannelConnectionOperation, possibly from a different process.
+func (c *gRPCClient) CreateChannelConnectionOperation(name string) *CreateChannelConnectionOperation {
+	return &CreateChannelConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateChannelConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	var resp eventarcpb.ChannelConnection
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateChannelConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	var resp eventarcpb.ChannelConnection
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateChannelConnectionOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
+	var meta eventarcpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateChannelConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateChannelConnectionOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateTriggerOperation manages a long-running operation from CreateTrigger.
@@ -445,6 +914,144 @@ func (op *CreateTriggerOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateTriggerOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteChannelOperation manages a long-running operation from DeleteChannel.
+type DeleteChannelOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteChannelOperation returns a new DeleteChannelOperation from a given name.
+// The name must be that of a previously created DeleteChannelOperation, possibly from a different process.
+func (c *gRPCClient) DeleteChannelOperation(name string) *DeleteChannelOperation {
+	return &DeleteChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
+	var meta eventarcpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteChannelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteChannelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteChannelConnectionOperation manages a long-running operation from DeleteChannelConnection.
+type DeleteChannelConnectionOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteChannelConnectionOperation returns a new DeleteChannelConnectionOperation from a given name.
+// The name must be that of a previously created DeleteChannelConnectionOperation, possibly from a different process.
+func (c *gRPCClient) DeleteChannelConnectionOperation(name string) *DeleteChannelConnectionOperation {
+	return &DeleteChannelConnectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteChannelConnectionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	var resp eventarcpb.ChannelConnection
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteChannelConnectionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.ChannelConnection, error) {
+	var resp eventarcpb.ChannelConnection
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteChannelConnectionOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
+	var meta eventarcpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteChannelConnectionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteChannelConnectionOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -517,6 +1124,75 @@ func (op *DeleteTriggerOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateChannelOperation manages a long-running operation from UpdateChannel.
+type UpdateChannelOperation struct {
+	lro *longrunning.Operation
+}
+
+// UpdateChannelOperation returns a new UpdateChannelOperation from a given name.
+// The name must be that of a previously created UpdateChannelOperation, possibly from a different process.
+func (c *gRPCClient) UpdateChannelOperation(name string) *UpdateChannelOperation {
+	return &UpdateChannelOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateChannelOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateChannelOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*eventarcpb.Channel, error) {
+	var resp eventarcpb.Channel
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateChannelOperation) Metadata() (*eventarcpb.OperationMetadata, error) {
+	var meta eventarcpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateChannelOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateChannelOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateTriggerOperation manages a long-running operation from UpdateTrigger.
 type UpdateTriggerOperation struct {
 	lro *longrunning.Operation
@@ -584,6 +1260,100 @@ func (op *UpdateTriggerOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateTriggerOperation) Name() string {
 	return op.lro.Name()
+}
+
+// ChannelConnectionIterator manages a stream of *eventarcpb.ChannelConnection.
+type ChannelConnectionIterator struct {
+	items    []*eventarcpb.ChannelConnection
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.ChannelConnection, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ChannelConnectionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ChannelConnectionIterator) Next() (*eventarcpb.ChannelConnection, error) {
+	var item *eventarcpb.ChannelConnection
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ChannelConnectionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ChannelConnectionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ChannelIterator manages a stream of *eventarcpb.Channel.
+type ChannelIterator struct {
+	items    []*eventarcpb.Channel
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*eventarcpb.Channel, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ChannelIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ChannelIterator) Next() (*eventarcpb.Channel, error) {
+	var item *eventarcpb.Channel
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ChannelIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ChannelIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // TriggerIterator manages a stream of *eventarcpb.Trigger.

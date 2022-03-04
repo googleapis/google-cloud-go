@@ -48,12 +48,15 @@ func ExampleBackendServicesClient_AddSignedUrlKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddSignedUrlKeyBackendServiceRequest.
 	}
-	resp, err := c.AddSignedUrlKey(ctx, req)
+	op, err := c.AddSignedUrlKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_AggregatedList() {
@@ -94,12 +97,15 @@ func ExampleBackendServicesClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteBackendServiceRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_DeleteSignedUrlKey() {
@@ -114,12 +120,15 @@ func ExampleBackendServicesClient_DeleteSignedUrlKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSignedUrlKeyBackendServiceRequest.
 	}
-	resp, err := c.DeleteSignedUrlKey(ctx, req)
+	op, err := c.DeleteSignedUrlKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_Get() {
@@ -174,12 +183,15 @@ func ExampleBackendServicesClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertBackendServiceRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_List() {
@@ -220,12 +232,38 @@ func ExampleBackendServicesClient_Patch() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchBackendServiceRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleBackendServicesClient_SetEdgeSecurityPolicy() {
+	ctx := context.Background()
+	c, err := compute.NewBackendServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetEdgeSecurityPolicyBackendServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetEdgeSecurityPolicyBackendServiceRequest.
+	}
+	op, err := c.SetEdgeSecurityPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_SetSecurityPolicy() {
@@ -240,12 +278,15 @@ func ExampleBackendServicesClient_SetSecurityPolicy() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSecurityPolicyBackendServiceRequest.
 	}
-	resp, err := c.SetSecurityPolicy(ctx, req)
+	op, err := c.SetSecurityPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBackendServicesClient_Update() {
@@ -260,10 +301,13 @@ func ExampleBackendServicesClient_Update() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateBackendServiceRequest.
 	}
-	resp, err := c.Update(ctx, req)
+	op, err := c.Update(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
