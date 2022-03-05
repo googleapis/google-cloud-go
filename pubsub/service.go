@@ -47,7 +47,7 @@ type defaultRetryer struct {
 }
 
 // Logic originally from
-// https://github.com/GoogleCloudPlatform/google-cloud-java/blob/master/google-cloud-clients/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StatusUtil.java
+// https://github.com/googleapis/java-pubsub/blob/main/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StatusUtil.java
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 	s, ok := status.FromError(err)
 	if !ok { // includes io.EOF, normal stream close, which causes us to reopen
@@ -93,13 +93,12 @@ func (r *streamingPullRetryer) Retry(err error) (pause time.Duration, shouldRetr
 }
 
 type publishRetryer struct {
-	defaultRetryer gax.Retryer
 }
 
 func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 	s, ok := status.FromError(err)
-	if !ok { // call defaultRetryer so that its backoff can be used
-		return r.defaultRetryer.Retry(err)
+	if !ok {
+		return 0, false
 	}
 	switch s.Code() {
 	case codes.Internal:
