@@ -93,12 +93,13 @@ func (r *streamingPullRetryer) Retry(err error) (pause time.Duration, shouldRetr
 }
 
 type publishRetryer struct {
+	defaultRetryer gax.Retryer
 }
 
 func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 	s, ok := status.FromError(err)
 	if !ok {
-		return 0, false
+		return r.defaultRetryer.Retry(err)
 	}
 	switch s.Code() {
 	case codes.Internal:
@@ -106,8 +107,7 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		if invalid {
 			return 0, false
 		}
-		return 0, true
 	default:
-		return 0, false
 	}
+	return r.defaultRetryer.Retry(err)
 }
