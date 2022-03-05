@@ -269,6 +269,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/certificatemanager/apiv1": {
+    "distribution_name": "cloud.google.com/go/certificatemanager/apiv1",
+    "description": "Certificate Manager API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/certificatemanager/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/channel/apiv1": {
     "distribution_name": "cloud.google.com/go/channel/apiv1",
     "description": "Cloud Channel API",
