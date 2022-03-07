@@ -60,19 +60,6 @@ type AnalyticsAdminCallOptions struct {
 	BatchUpdateUserLinks                         []gax.CallOption
 	DeleteUserLink                               []gax.CallOption
 	BatchDeleteUserLinks                         []gax.CallOption
-	GetWebDataStream                             []gax.CallOption
-	DeleteWebDataStream                          []gax.CallOption
-	UpdateWebDataStream                          []gax.CallOption
-	CreateWebDataStream                          []gax.CallOption
-	ListWebDataStreams                           []gax.CallOption
-	GetIosAppDataStream                          []gax.CallOption
-	DeleteIosAppDataStream                       []gax.CallOption
-	UpdateIosAppDataStream                       []gax.CallOption
-	ListIosAppDataStreams                        []gax.CallOption
-	GetAndroidAppDataStream                      []gax.CallOption
-	DeleteAndroidAppDataStream                   []gax.CallOption
-	UpdateAndroidAppDataStream                   []gax.CallOption
-	ListAndroidAppDataStreams                    []gax.CallOption
 	CreateFirebaseLink                           []gax.CallOption
 	DeleteFirebaseLink                           []gax.CallOption
 	ListFirebaseLinks                            []gax.CallOption
@@ -139,11 +126,66 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 
 func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	return &AnalyticsAdminCallOptions{
-		GetAccount:             []gax.CallOption{},
-		ListAccounts:           []gax.CallOption{},
-		DeleteAccount:          []gax.CallOption{},
-		UpdateAccount:          []gax.CallOption{},
-		ProvisionAccountTicket: []gax.CallOption{},
+		GetAccount: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListAccounts: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteAccount: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAccount: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ProvisionAccountTicket: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListAccountSummaries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -156,23 +198,7 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		GetProperty:          []gax.CallOption{},
-		ListProperties:       []gax.CallOption{},
-		CreateProperty:       []gax.CallOption{},
-		DeleteProperty:       []gax.CallOption{},
-		UpdateProperty:       []gax.CallOption{},
-		GetUserLink:          []gax.CallOption{},
-		BatchGetUserLinks:    []gax.CallOption{},
-		ListUserLinks:        []gax.CallOption{},
-		AuditUserLinks:       []gax.CallOption{},
-		CreateUserLink:       []gax.CallOption{},
-		BatchCreateUserLinks: []gax.CallOption{},
-		UpdateUserLink:       []gax.CallOption{},
-		BatchUpdateUserLinks: []gax.CallOption{},
-		DeleteUserLink:       []gax.CallOption{},
-		BatchDeleteUserLinks: []gax.CallOption{},
-		GetWebDataStream:     []gax.CallOption{},
-		DeleteWebDataStream: []gax.CallOption{
+		GetProperty: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -184,25 +210,270 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
-		UpdateWebDataStream:        []gax.CallOption{},
-		CreateWebDataStream:        []gax.CallOption{},
-		ListWebDataStreams:         []gax.CallOption{},
-		GetIosAppDataStream:        []gax.CallOption{},
-		DeleteIosAppDataStream:     []gax.CallOption{},
-		UpdateIosAppDataStream:     []gax.CallOption{},
-		ListIosAppDataStreams:      []gax.CallOption{},
-		GetAndroidAppDataStream:    []gax.CallOption{},
-		DeleteAndroidAppDataStream: []gax.CallOption{},
-		UpdateAndroidAppDataStream: []gax.CallOption{},
-		ListAndroidAppDataStreams:  []gax.CallOption{},
-		CreateFirebaseLink:         []gax.CallOption{},
-		DeleteFirebaseLink:         []gax.CallOption{},
-		ListFirebaseLinks:          []gax.CallOption{},
-		GetGlobalSiteTag:           []gax.CallOption{},
-		CreateGoogleAdsLink:        []gax.CallOption{},
-		UpdateGoogleAdsLink:        []gax.CallOption{},
-		DeleteGoogleAdsLink:        []gax.CallOption{},
-		ListGoogleAdsLinks:         []gax.CallOption{},
+		ListProperties: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateProperty: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteProperty: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateProperty: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetUserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchGetUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AuditUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateUserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchCreateUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateUserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchUpdateUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteUserLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchDeleteUserLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateFirebaseLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteFirebaseLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListFirebaseLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGlobalSiteTag: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateGoogleAdsLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateGoogleAdsLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteGoogleAdsLink: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListGoogleAdsLinks: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetDataSharingSettings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -736,19 +1007,6 @@ type internalAnalyticsAdminClient interface {
 	BatchUpdateUserLinks(context.Context, *adminpb.BatchUpdateUserLinksRequest, ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error)
 	DeleteUserLink(context.Context, *adminpb.DeleteUserLinkRequest, ...gax.CallOption) error
 	BatchDeleteUserLinks(context.Context, *adminpb.BatchDeleteUserLinksRequest, ...gax.CallOption) error
-	GetWebDataStream(context.Context, *adminpb.GetWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
-	DeleteWebDataStream(context.Context, *adminpb.DeleteWebDataStreamRequest, ...gax.CallOption) error
-	UpdateWebDataStream(context.Context, *adminpb.UpdateWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
-	CreateWebDataStream(context.Context, *adminpb.CreateWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
-	ListWebDataStreams(context.Context, *adminpb.ListWebDataStreamsRequest, ...gax.CallOption) *WebDataStreamIterator
-	GetIosAppDataStream(context.Context, *adminpb.GetIosAppDataStreamRequest, ...gax.CallOption) (*adminpb.IosAppDataStream, error)
-	DeleteIosAppDataStream(context.Context, *adminpb.DeleteIosAppDataStreamRequest, ...gax.CallOption) error
-	UpdateIosAppDataStream(context.Context, *adminpb.UpdateIosAppDataStreamRequest, ...gax.CallOption) (*adminpb.IosAppDataStream, error)
-	ListIosAppDataStreams(context.Context, *adminpb.ListIosAppDataStreamsRequest, ...gax.CallOption) *IosAppDataStreamIterator
-	GetAndroidAppDataStream(context.Context, *adminpb.GetAndroidAppDataStreamRequest, ...gax.CallOption) (*adminpb.AndroidAppDataStream, error)
-	DeleteAndroidAppDataStream(context.Context, *adminpb.DeleteAndroidAppDataStreamRequest, ...gax.CallOption) error
-	UpdateAndroidAppDataStream(context.Context, *adminpb.UpdateAndroidAppDataStreamRequest, ...gax.CallOption) (*adminpb.AndroidAppDataStream, error)
-	ListAndroidAppDataStreams(context.Context, *adminpb.ListAndroidAppDataStreamsRequest, ...gax.CallOption) *AndroidAppDataStreamIterator
 	CreateFirebaseLink(context.Context, *adminpb.CreateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
 	DeleteFirebaseLink(context.Context, *adminpb.DeleteFirebaseLinkRequest, ...gax.CallOption) error
 	ListFirebaseLinks(context.Context, *adminpb.ListFirebaseLinksRequest, ...gax.CallOption) *FirebaseLinkIterator
@@ -982,80 +1240,6 @@ func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.
 // BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
 func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
 	return c.internalClient.BatchDeleteUserLinks(ctx, req, opts...)
-}
-
-// GetWebDataStream lookup for a single WebDataStream
-func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	return c.internalClient.GetWebDataStream(ctx, req, opts...)
-}
-
-// DeleteWebDataStream deletes a web stream on a property.
-func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteWebDataStream(ctx, req, opts...)
-}
-
-// UpdateWebDataStream updates a web stream on a property.
-func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	return c.internalClient.UpdateWebDataStream(ctx, req, opts...)
-}
-
-// CreateWebDataStream creates a web stream with the specified location and attributes.
-func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	return c.internalClient.CreateWebDataStream(ctx, req, opts...)
-}
-
-// ListWebDataStreams returns child web data streams under the specified parent property.
-//
-// Web data streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant web data streams are found.
-func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *adminpb.ListWebDataStreamsRequest, opts ...gax.CallOption) *WebDataStreamIterator {
-	return c.internalClient.ListWebDataStreams(ctx, req, opts...)
-}
-
-// GetIosAppDataStream lookup for a single IosAppDataStream
-func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
-	return c.internalClient.GetIosAppDataStream(ctx, req, opts...)
-}
-
-// DeleteIosAppDataStream deletes an iOS app stream on a property.
-func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteIosAppDataStream(ctx, req, opts...)
-}
-
-// UpdateIosAppDataStream updates an iOS app stream on a property.
-func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
-	return c.internalClient.UpdateIosAppDataStream(ctx, req, opts...)
-}
-
-// ListIosAppDataStreams returns child iOS app data streams under the specified parent property.
-//
-// iOS app data streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant iOS app data streams are found.
-func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *adminpb.ListIosAppDataStreamsRequest, opts ...gax.CallOption) *IosAppDataStreamIterator {
-	return c.internalClient.ListIosAppDataStreams(ctx, req, opts...)
-}
-
-// GetAndroidAppDataStream lookup for a single AndroidAppDataStream
-func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
-	return c.internalClient.GetAndroidAppDataStream(ctx, req, opts...)
-}
-
-// DeleteAndroidAppDataStream deletes an android app stream on a property.
-func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
-	return c.internalClient.DeleteAndroidAppDataStream(ctx, req, opts...)
-}
-
-// UpdateAndroidAppDataStream updates an android app stream on a property.
-func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
-	return c.internalClient.UpdateAndroidAppDataStream(ctx, req, opts...)
-}
-
-// ListAndroidAppDataStreams returns child android app streams under the specified parent property.
-//
-// Android app streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant android app streams are found.
-func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, req *adminpb.ListAndroidAppDataStreamsRequest, opts ...gax.CallOption) *AndroidAppDataStreamIterator {
-	return c.internalClient.ListAndroidAppDataStreams(ctx, req, opts...)
 }
 
 // CreateFirebaseLink creates a FirebaseLink.
@@ -1966,349 +2150,6 @@ func (c *analyticsAdminGRPCClient) BatchDeleteUserLinks(ctx context.Context, req
 		return err
 	}, opts...)
 	return err
-}
-
-func (c *analyticsAdminGRPCClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetWebDataStream[0:len((*c.CallOptions).GetWebDataStream):len((*c.CallOptions).GetWebDataStream)], opts...)
-	var resp *adminpb.WebDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.GetWebDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteWebDataStream[0:len((*c.CallOptions).DeleteWebDataStream):len((*c.CallOptions).DeleteWebDataStream)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.DeleteWebDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *analyticsAdminGRPCClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "web_data_stream.name", url.QueryEscape(req.GetWebDataStream().GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateWebDataStream[0:len((*c.CallOptions).UpdateWebDataStream):len((*c.CallOptions).UpdateWebDataStream)], opts...)
-	var resp *adminpb.WebDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateWebDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).CreateWebDataStream[0:len((*c.CallOptions).CreateWebDataStream):len((*c.CallOptions).CreateWebDataStream)], opts...)
-	var resp *adminpb.WebDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.CreateWebDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *adminpb.ListWebDataStreamsRequest, opts ...gax.CallOption) *WebDataStreamIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListWebDataStreams[0:len((*c.CallOptions).ListWebDataStreams):len((*c.CallOptions).ListWebDataStreams)], opts...)
-	it := &WebDataStreamIterator{}
-	req = proto.Clone(req).(*adminpb.ListWebDataStreamsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.WebDataStream, string, error) {
-		resp := &adminpb.ListWebDataStreamsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.analyticsAdminClient.ListWebDataStreams(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetWebDataStreams(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *analyticsAdminGRPCClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetIosAppDataStream[0:len((*c.CallOptions).GetIosAppDataStream):len((*c.CallOptions).GetIosAppDataStream)], opts...)
-	var resp *adminpb.IosAppDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.GetIosAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteIosAppDataStream[0:len((*c.CallOptions).DeleteIosAppDataStream):len((*c.CallOptions).DeleteIosAppDataStream)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.DeleteIosAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *analyticsAdminGRPCClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ios_app_data_stream.name", url.QueryEscape(req.GetIosAppDataStream().GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateIosAppDataStream[0:len((*c.CallOptions).UpdateIosAppDataStream):len((*c.CallOptions).UpdateIosAppDataStream)], opts...)
-	var resp *adminpb.IosAppDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateIosAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, req *adminpb.ListIosAppDataStreamsRequest, opts ...gax.CallOption) *IosAppDataStreamIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListIosAppDataStreams[0:len((*c.CallOptions).ListIosAppDataStreams):len((*c.CallOptions).ListIosAppDataStreams)], opts...)
-	it := &IosAppDataStreamIterator{}
-	req = proto.Clone(req).(*adminpb.ListIosAppDataStreamsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.IosAppDataStream, string, error) {
-		resp := &adminpb.ListIosAppDataStreamsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.analyticsAdminClient.ListIosAppDataStreams(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetIosAppDataStreams(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *analyticsAdminGRPCClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).GetAndroidAppDataStream[0:len((*c.CallOptions).GetAndroidAppDataStream):len((*c.CallOptions).GetAndroidAppDataStream)], opts...)
-	var resp *adminpb.AndroidAppDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.GetAndroidAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).DeleteAndroidAppDataStream[0:len((*c.CallOptions).DeleteAndroidAppDataStream):len((*c.CallOptions).DeleteAndroidAppDataStream)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.analyticsAdminClient.DeleteAndroidAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
-func (c *analyticsAdminGRPCClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "android_app_data_stream.name", url.QueryEscape(req.GetAndroidAppDataStream().GetName())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).UpdateAndroidAppDataStream[0:len((*c.CallOptions).UpdateAndroidAppDataStream):len((*c.CallOptions).UpdateAndroidAppDataStream)], opts...)
-	var resp *adminpb.AndroidAppDataStream
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.UpdateAndroidAppDataStream(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context, req *adminpb.ListAndroidAppDataStreamsRequest, opts ...gax.CallOption) *AndroidAppDataStreamIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append((*c.CallOptions).ListAndroidAppDataStreams[0:len((*c.CallOptions).ListAndroidAppDataStreams):len((*c.CallOptions).ListAndroidAppDataStreams)], opts...)
-	it := &AndroidAppDataStreamIterator{}
-	req = proto.Clone(req).(*adminpb.ListAndroidAppDataStreamsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AndroidAppDataStream, string, error) {
-		resp := &adminpb.ListAndroidAppDataStreamsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.analyticsAdminClient.ListAndroidAppDataStreams(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetAndroidAppDataStreams(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
@@ -3699,53 +3540,6 @@ func (it *AccountSummaryIterator) takeBuf() interface{} {
 	return b
 }
 
-// AndroidAppDataStreamIterator manages a stream of *adminpb.AndroidAppDataStream.
-type AndroidAppDataStreamIterator struct {
-	items    []*adminpb.AndroidAppDataStream
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AndroidAppDataStream, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AndroidAppDataStreamIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AndroidAppDataStreamIterator) Next() (*adminpb.AndroidAppDataStream, error) {
-	var item *adminpb.AndroidAppDataStream
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AndroidAppDataStreamIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AndroidAppDataStreamIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
 // AuditUserLinkIterator manages a stream of *adminpb.AuditUserLink.
 type AuditUserLinkIterator struct {
 	items    []*adminpb.AuditUserLink
@@ -4216,53 +4010,6 @@ func (it *GoogleAdsLinkIterator) takeBuf() interface{} {
 	return b
 }
 
-// IosAppDataStreamIterator manages a stream of *adminpb.IosAppDataStream.
-type IosAppDataStreamIterator struct {
-	items    []*adminpb.IosAppDataStream
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.IosAppDataStream, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *IosAppDataStreamIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *IosAppDataStreamIterator) Next() (*adminpb.IosAppDataStream, error) {
-	var item *adminpb.IosAppDataStream
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *IosAppDataStreamIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *IosAppDataStreamIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
 // MeasurementProtocolSecretIterator manages a stream of *adminpb.MeasurementProtocolSecret.
 type MeasurementProtocolSecretIterator struct {
 	items    []*adminpb.MeasurementProtocolSecret
@@ -4399,53 +4146,6 @@ func (it *UserLinkIterator) bufLen() int {
 }
 
 func (it *UserLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// WebDataStreamIterator manages a stream of *adminpb.WebDataStream.
-type WebDataStreamIterator struct {
-	items    []*adminpb.WebDataStream
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.WebDataStream, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WebDataStreamIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WebDataStreamIterator) Next() (*adminpb.WebDataStream, error) {
-	var item *adminpb.WebDataStream
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WebDataStreamIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WebDataStreamIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
