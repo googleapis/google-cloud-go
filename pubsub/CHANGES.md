@@ -1,5 +1,19 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.18.0...pubsub/v1.19.0) (2022-03-07)
+
+
+### Features
+
+* **pubsub:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **pubsub:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+
+### Bug Fixes
+
+* **pubsub:** prevent infinite retry with publishing invalid utf-8 chars ([#5728](https://github.com/googleapis/google-cloud-go/issues/5728)) ([0a4dab9](https://github.com/googleapis/google-cloud-go/commit/0a4dab9043db81342dc41bd496d35fd4a7b08ad5))
+* **pubsub:** removing misspelled field, add correctly spelled field ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.18.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.1...pubsub/v1.18.0) (2022-02-08)
 
 
