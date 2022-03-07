@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 // Package compute is an auto-generated package for the
 // Google Compute Engine API.
-//
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Example usage
 //
@@ -75,13 +73,14 @@ package compute // import "cloud.google.com/go/compute/apiv1"
 
 import (
 	"context"
+	"fmt"
+	"net/http"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"unicode"
 
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/metadata"
 )
@@ -91,7 +90,14 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210921"
+var versionClient string
+
+func getVersionClient() string {
+	if versionClient == "" {
+		return "UNKNOWN"
+	}
+	return versionClient
+}
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -164,7 +170,17 @@ func versionGo() string {
 // of receiving an unknown enum value.
 func maybeUnknownEnum(err error) error {
 	if strings.Contains(err.Error(), "invalid value for enum type") {
-		err = xerrors.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
+		err = fmt.Errorf("received an unknown enum value; a later version of the library may support it: %w", err)
 	}
 	return err
+}
+
+// buildHeaders extracts metadata from the outgoing context, joins it with any other
+// given metadata, and converts them into a http.Header.
+func buildHeaders(ctx context.Context, mds ...metadata.MD) http.Header {
+	if cmd, ok := metadata.FromOutgoingContext(ctx); ok {
+		mds = append(mds, cmd)
+	}
+	md := metadata.Join(mds...)
+	return http.Header(md)
 }

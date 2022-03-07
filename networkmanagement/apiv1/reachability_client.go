@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ func defaultReachabilityGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://networkmanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -319,7 +318,7 @@ func (c *reachabilityGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *reachabilityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -331,6 +330,7 @@ func (c *reachabilityGRPCClient) Close() error {
 
 func (c *reachabilityGRPCClient) ListConnectivityTests(ctx context.Context, req *networkmanagementpb.ListConnectivityTestsRequest, opts ...gax.CallOption) *ConnectivityTestIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListConnectivityTests[0:len((*c.CallOptions).ListConnectivityTests):len((*c.CallOptions).ListConnectivityTests)], opts...)
 	it := &ConnectivityTestIterator{}
@@ -380,6 +380,7 @@ func (c *reachabilityGRPCClient) GetConnectivityTest(ctx context.Context, req *n
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetConnectivityTest[0:len((*c.CallOptions).GetConnectivityTest):len((*c.CallOptions).GetConnectivityTest)], opts...)
 	var resp *networkmanagementpb.ConnectivityTest
@@ -401,6 +402,7 @@ func (c *reachabilityGRPCClient) CreateConnectivityTest(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateConnectivityTest[0:len((*c.CallOptions).CreateConnectivityTest):len((*c.CallOptions).CreateConnectivityTest)], opts...)
 	var resp *longrunningpb.Operation
@@ -424,6 +426,7 @@ func (c *reachabilityGRPCClient) UpdateConnectivityTest(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource.name", url.QueryEscape(req.GetResource().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateConnectivityTest[0:len((*c.CallOptions).UpdateConnectivityTest):len((*c.CallOptions).UpdateConnectivityTest)], opts...)
 	var resp *longrunningpb.Operation
@@ -447,6 +450,7 @@ func (c *reachabilityGRPCClient) RerunConnectivityTest(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RerunConnectivityTest[0:len((*c.CallOptions).RerunConnectivityTest):len((*c.CallOptions).RerunConnectivityTest)], opts...)
 	var resp *longrunningpb.Operation
@@ -470,6 +474,7 @@ func (c *reachabilityGRPCClient) DeleteConnectivityTest(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteConnectivityTest[0:len((*c.CallOptions).DeleteConnectivityTest):len((*c.CallOptions).DeleteConnectivityTest)], opts...)
 	var resp *longrunningpb.Operation

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ func defaultSessionEntityTypesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -283,7 +282,7 @@ func (c *sessionEntityTypesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *sessionEntityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -295,6 +294,7 @@ func (c *sessionEntityTypesGRPCClient) Close() error {
 
 func (c *sessionEntityTypesGRPCClient) ListSessionEntityTypes(ctx context.Context, req *dialogflowpb.ListSessionEntityTypesRequest, opts ...gax.CallOption) *SessionEntityTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSessionEntityTypes[0:len((*c.CallOptions).ListSessionEntityTypes):len((*c.CallOptions).ListSessionEntityTypes)], opts...)
 	it := &SessionEntityTypeIterator{}
@@ -344,6 +344,7 @@ func (c *sessionEntityTypesGRPCClient) GetSessionEntityType(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSessionEntityType[0:len((*c.CallOptions).GetSessionEntityType):len((*c.CallOptions).GetSessionEntityType)], opts...)
 	var resp *dialogflowpb.SessionEntityType
@@ -365,6 +366,7 @@ func (c *sessionEntityTypesGRPCClient) CreateSessionEntityType(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSessionEntityType[0:len((*c.CallOptions).CreateSessionEntityType):len((*c.CallOptions).CreateSessionEntityType)], opts...)
 	var resp *dialogflowpb.SessionEntityType
@@ -386,6 +388,7 @@ func (c *sessionEntityTypesGRPCClient) UpdateSessionEntityType(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session_entity_type.name", url.QueryEscape(req.GetSessionEntityType().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSessionEntityType[0:len((*c.CallOptions).UpdateSessionEntityType):len((*c.CallOptions).UpdateSessionEntityType)], opts...)
 	var resp *dialogflowpb.SessionEntityType
@@ -407,6 +410,7 @@ func (c *sessionEntityTypesGRPCClient) DeleteSessionEntityType(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSessionEntityType[0:len((*c.CallOptions).DeleteSessionEntityType):len((*c.CallOptions).DeleteSessionEntityType)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

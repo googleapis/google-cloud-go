@@ -10,9 +10,24 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "BulkMuteFindings": {
+              "methods": [
+                "BulkMuteFindings"
+              ]
+            },
+            "CreateBigQueryExport": {
+              "methods": [
+                "CreateBigQueryExport"
+              ]
+            },
             "CreateFinding": {
               "methods": [
                 "CreateFinding"
+              ]
+            },
+            "CreateMuteConfig": {
+              "methods": [
+                "CreateMuteConfig"
               ]
             },
             "CreateNotificationConfig": {
@@ -25,14 +40,34 @@
                 "CreateSource"
               ]
             },
+            "DeleteBigQueryExport": {
+              "methods": [
+                "DeleteBigQueryExport"
+              ]
+            },
+            "DeleteMuteConfig": {
+              "methods": [
+                "DeleteMuteConfig"
+              ]
+            },
             "DeleteNotificationConfig": {
               "methods": [
                 "DeleteNotificationConfig"
               ]
             },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
+              ]
+            },
+            "GetMuteConfig": {
+              "methods": [
+                "GetMuteConfig"
               ]
             },
             "GetNotificationConfig": {
@@ -65,9 +100,19 @@
                 "ListAssets"
               ]
             },
+            "ListBigQueryExports": {
+              "methods": [
+                "ListBigQueryExports"
+              ]
+            },
             "ListFindings": {
               "methods": [
                 "ListFindings"
+              ]
+            },
+            "ListMuteConfigs": {
+              "methods": [
+                "ListMuteConfigs"
               ]
             },
             "ListNotificationConfigs": {
@@ -95,14 +140,34 @@
                 "SetIamPolicy"
               ]
             },
+            "SetMute": {
+              "methods": [
+                "SetMute"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
               ]
             },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            },
+            "UpdateExternalSystem": {
+              "methods": [
+                "UpdateExternalSystem"
+              ]
+            },
             "UpdateFinding": {
               "methods": [
                 "UpdateFinding"
+              ]
+            },
+            "UpdateMuteConfig": {
+              "methods": [
+                "UpdateMuteConfig"
               ]
             },
             "UpdateNotificationConfig": {

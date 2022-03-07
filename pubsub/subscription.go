@@ -212,6 +212,9 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 
 // SubscriptionConfig describes the configuration of a subscription.
 type SubscriptionConfig struct {
+	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
+	name string
+
 	Topic      *Topic
 	PushConfig PushConfig
 
@@ -289,6 +292,26 @@ type SubscriptionConfig struct {
 	TopicMessageRetentionDuration time.Duration
 }
 
+// String returns the globally unique printable name of the subscription config.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) String() string {
+	return s.name
+}
+
+// ID returns the unique identifier of the subscription within its project.
+// This method only works when the subscription config is returned from the server,
+// such as when calling `client.Subscription` or `client.Subscriptions`.
+// Otherwise, this will return an empty string.
+func (s *SubscriptionConfig) ID() string {
+	slash := strings.LastIndex(s.name, "/")
+	if slash == -1 {
+		return ""
+	}
+	return s.name[slash+1:]
+}
+
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	var pbPushConfig *pb.PushConfig
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
@@ -335,6 +358,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
+		name:                          pbSub.Name,
 		Topic:                         newTopic(c, pbSub.Topic),
 		AckDeadline:                   time.Second * time.Duration(pbSub.AckDeadlineSeconds),
 		RetainAckedMessages:           pbSub.RetainAckedMessages,
@@ -816,7 +840,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkOrdering()
+	s.checkOrdering(ctx)
 
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -1009,8 +1033,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 // the roles/viewer or roles/pubsub.viewer role) we will assume
 // EnableMessageOrdering to be true.
 // See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering() {
-	ctx := context.Background()
+func (s *Subscription) checkOrdering(ctx context.Context) {
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		s.enableOrdering = true

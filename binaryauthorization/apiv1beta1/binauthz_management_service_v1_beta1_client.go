@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ func defaultBinauthzManagementServiceV1Beta1GRPCClientOptions() []option.ClientO
 		internaloption.WithDefaultAudience("https://binaryauthorization.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -194,54 +193,42 @@ func (c *BinauthzManagementServiceV1Beta1Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// GetPolicy a policy specifies the
-// attestors that must
-// attest to a container image, before the project is allowed to deploy that
+// GetPolicy a policy specifies the attestors that must attest to
+// a container image, before the project is allowed to deploy that
 // image. There is at most one policy per project. All image admission
 // requests are permitted if a project has no policy.
 //
-// Gets the policy for this
-// project. Returns a default
-// policy if the project
-// does not have one.
+// Gets the policy for this project. Returns a default
+// policy if the project does not have one.
 func (c *BinauthzManagementServiceV1Beta1Client) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.GetPolicy(ctx, req, opts...)
 }
 
-// UpdatePolicy creates or updates a project’s
-// policy, and returns a
-// copy of the new policy.
-// A policy is always updated as a whole, to avoid race conditions with
-// concurrent policy enforcement (or management!) requests. Returns NOT_FOUND
-// if the project does not exist, INVALID_ARGUMENT if the request is
-// malformed.
+// UpdatePolicy creates or updates a project’s policy, and returns a copy of the
+// new policy. A policy is always updated as a whole, to avoid race
+// conditions with concurrent policy enforcement (or management!)
+// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
+// if the request is malformed.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	return c.internalClient.UpdatePolicy(ctx, req, opts...)
 }
 
-// CreateAttestor creates an attestor,
-// and returns a copy of the new
-// attestor. Returns
-// NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is
-// malformed, ALREADY_EXISTS if the
-// attestor already
-// exists.
+// CreateAttestor creates an attestor, and returns a copy of the new
+// attestor. Returns NOT_FOUND if the project does not exist,
+// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
+// attestor already exists.
 func (c *BinauthzManagementServiceV1Beta1Client) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.CreateAttestor(ctx, req, opts...)
 }
 
 // GetAttestor gets an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// Returns NOT_FOUND if the attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.GetAttestor(ctx, req, opts...)
 }
 
 // UpdateAttestor updates an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// Returns NOT_FOUND if the attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	return c.internalClient.UpdateAttestor(ctx, req, opts...)
 }
@@ -252,10 +239,8 @@ func (c *BinauthzManagementServiceV1Beta1Client) ListAttestors(ctx context.Conte
 	return c.internalClient.ListAttestors(ctx, req, opts...)
 }
 
-// DeleteAttestor deletes an attestor.
-// Returns NOT_FOUND if the
-// attestor does not
-// exist.
+// DeleteAttestor deletes an attestor. Returns NOT_FOUND if the
+// attestor does not exist.
 func (c *BinauthzManagementServiceV1Beta1Client) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteAttestor(ctx, req, opts...)
 }
@@ -337,7 +322,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 // use by Google-written clients.
 func (c *binauthzManagementServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -354,6 +339,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetPolicy(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
@@ -375,6 +361,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdatePolicy(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
@@ -396,6 +383,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) CreateAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAttestor[0:len((*c.CallOptions).CreateAttestor):len((*c.CallOptions).CreateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -417,6 +405,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetAttestor(ctx context.Con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAttestor[0:len((*c.CallOptions).GetAttestor):len((*c.CallOptions).GetAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -438,6 +427,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdateAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAttestor[0:len((*c.CallOptions).UpdateAttestor):len((*c.CallOptions).UpdateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -454,6 +444,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdateAttestor(ctx context.
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) ListAttestors(ctx context.Context, req *binaryauthorizationpb.ListAttestorsRequest, opts ...gax.CallOption) *AttestorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAttestors[0:len((*c.CallOptions).ListAttestors):len((*c.CallOptions).ListAttestors)], opts...)
 	it := &AttestorIterator{}
@@ -503,6 +494,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) DeleteAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAttestor[0:len((*c.CallOptions).DeleteAttestor):len((*c.CallOptions).DeleteAttestor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

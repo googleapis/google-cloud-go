@@ -99,6 +99,8 @@ that have already been processed.
 */
 package bigtable // import "cloud.google.com/go/bigtable"
 
+import "cloud.google.com/go/bigtable/internal"
+
 // Scope constants for authentication credentials. These should be used when
 // using credential creation functions such as oauth.NewServiceAccountFromFile.
 const (
@@ -118,7 +120,7 @@ const (
 
 // clientUserAgent identifies the version of this package.
 // It should be the same as https://pkg.go.dev/cloud.google.com/go/bigtable.
-const clientUserAgent = "cbt-go/v1.6.0"
+var clientUserAgent = "cbt-go/v" + internal.Version
 
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.

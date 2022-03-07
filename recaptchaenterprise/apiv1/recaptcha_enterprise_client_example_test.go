@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -218,4 +218,82 @@ func ExampleClient_GetMetrics() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleClient_ListRelatedAccountGroups() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.ListRelatedAccountGroupsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListRelatedAccountGroupsRequest.
+	}
+	it := c.ListRelatedAccountGroups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListRelatedAccountGroupMemberships() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#ListRelatedAccountGroupMembershipsRequest.
+	}
+	it := c.ListRelatedAccountGroupMemberships(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_SearchRelatedAccountGroupMemberships() {
+	ctx := context.Background()
+	c, err := recaptchaenterprise.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1#SearchRelatedAccountGroupMembershipsRequest.
+	}
+	it := c.SearchRelatedAccountGroupMemberships(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

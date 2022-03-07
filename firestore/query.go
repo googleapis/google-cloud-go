@@ -830,6 +830,10 @@ func (it *DocumentIterator) Stop() {
 // GetAll returns all the documents remaining from the iterator.
 // It is not necessary to call Stop on the iterator after calling GetAll.
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
+	if it.err != nil {
+		return nil, it.err
+	}
+
 	defer it.Stop()
 
 	q := it.q

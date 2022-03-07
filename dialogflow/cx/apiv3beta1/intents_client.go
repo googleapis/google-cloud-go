@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ func defaultIntentsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -272,7 +271,7 @@ func (c *intentsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *intentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -284,6 +283,7 @@ func (c *intentsGRPCClient) Close() error {
 
 func (c *intentsGRPCClient) ListIntents(ctx context.Context, req *cxpb.ListIntentsRequest, opts ...gax.CallOption) *IntentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIntents[0:len((*c.CallOptions).ListIntents):len((*c.CallOptions).ListIntents)], opts...)
 	it := &IntentIterator{}
@@ -333,6 +333,7 @@ func (c *intentsGRPCClient) GetIntent(ctx context.Context, req *cxpb.GetIntentRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIntent[0:len((*c.CallOptions).GetIntent):len((*c.CallOptions).GetIntent)], opts...)
 	var resp *cxpb.Intent
@@ -354,6 +355,7 @@ func (c *intentsGRPCClient) CreateIntent(ctx context.Context, req *cxpb.CreateIn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIntent[0:len((*c.CallOptions).CreateIntent):len((*c.CallOptions).CreateIntent)], opts...)
 	var resp *cxpb.Intent
@@ -375,6 +377,7 @@ func (c *intentsGRPCClient) UpdateIntent(ctx context.Context, req *cxpb.UpdateIn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "intent.name", url.QueryEscape(req.GetIntent().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateIntent[0:len((*c.CallOptions).UpdateIntent):len((*c.CallOptions).UpdateIntent)], opts...)
 	var resp *cxpb.Intent
@@ -396,6 +399,7 @@ func (c *intentsGRPCClient) DeleteIntent(ctx context.Context, req *cxpb.DeleteIn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIntent[0:len((*c.CallOptions).DeleteIntent):len((*c.CallOptions).DeleteIntent)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

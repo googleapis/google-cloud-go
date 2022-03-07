@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -63,7 +63,6 @@ func defaultGrafeasV1Beta1GRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -420,7 +419,7 @@ func (c *grafeasV1Beta1GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *grafeasV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -437,6 +436,7 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrence(ctx context.Context, req *grafe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOccurrence[0:len((*c.CallOptions).GetOccurrence):len((*c.CallOptions).GetOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
@@ -453,6 +453,7 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrence(ctx context.Context, req *grafe
 
 func (c *grafeasV1Beta1GRPCClient) ListOccurrences(ctx context.Context, req *grafeaspb.ListOccurrencesRequest, opts ...gax.CallOption) *OccurrenceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListOccurrences[0:len((*c.CallOptions).ListOccurrences):len((*c.CallOptions).ListOccurrences)], opts...)
 	it := &OccurrenceIterator{}
@@ -502,6 +503,7 @@ func (c *grafeasV1Beta1GRPCClient) DeleteOccurrence(ctx context.Context, req *gr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteOccurrence[0:len((*c.CallOptions).DeleteOccurrence):len((*c.CallOptions).DeleteOccurrence)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -519,6 +521,7 @@ func (c *grafeasV1Beta1GRPCClient) CreateOccurrence(ctx context.Context, req *gr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateOccurrence[0:len((*c.CallOptions).CreateOccurrence):len((*c.CallOptions).CreateOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
@@ -540,6 +543,7 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateOccurrences(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateOccurrences[0:len((*c.CallOptions).BatchCreateOccurrences):len((*c.CallOptions).BatchCreateOccurrences)], opts...)
 	var resp *grafeaspb.BatchCreateOccurrencesResponse
@@ -561,6 +565,7 @@ func (c *grafeasV1Beta1GRPCClient) UpdateOccurrence(ctx context.Context, req *gr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateOccurrence[0:len((*c.CallOptions).UpdateOccurrence):len((*c.CallOptions).UpdateOccurrence)], opts...)
 	var resp *grafeaspb.Occurrence
@@ -582,6 +587,7 @@ func (c *grafeasV1Beta1GRPCClient) GetOccurrenceNote(ctx context.Context, req *g
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetOccurrenceNote[0:len((*c.CallOptions).GetOccurrenceNote):len((*c.CallOptions).GetOccurrenceNote)], opts...)
 	var resp *grafeaspb.Note
@@ -603,6 +609,7 @@ func (c *grafeasV1Beta1GRPCClient) GetNote(ctx context.Context, req *grafeaspb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetNote[0:len((*c.CallOptions).GetNote):len((*c.CallOptions).GetNote)], opts...)
 	var resp *grafeaspb.Note
@@ -619,6 +626,7 @@ func (c *grafeasV1Beta1GRPCClient) GetNote(ctx context.Context, req *grafeaspb.G
 
 func (c *grafeasV1Beta1GRPCClient) ListNotes(ctx context.Context, req *grafeaspb.ListNotesRequest, opts ...gax.CallOption) *NoteIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNotes[0:len((*c.CallOptions).ListNotes):len((*c.CallOptions).ListNotes)], opts...)
 	it := &NoteIterator{}
@@ -668,6 +676,7 @@ func (c *grafeasV1Beta1GRPCClient) DeleteNote(ctx context.Context, req *grafeasp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteNote[0:len((*c.CallOptions).DeleteNote):len((*c.CallOptions).DeleteNote)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -685,6 +694,7 @@ func (c *grafeasV1Beta1GRPCClient) CreateNote(ctx context.Context, req *grafeasp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateNote[0:len((*c.CallOptions).CreateNote):len((*c.CallOptions).CreateNote)], opts...)
 	var resp *grafeaspb.Note
@@ -706,6 +716,7 @@ func (c *grafeasV1Beta1GRPCClient) BatchCreateNotes(ctx context.Context, req *gr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateNotes[0:len((*c.CallOptions).BatchCreateNotes):len((*c.CallOptions).BatchCreateNotes)], opts...)
 	var resp *grafeaspb.BatchCreateNotesResponse
@@ -727,6 +738,7 @@ func (c *grafeasV1Beta1GRPCClient) UpdateNote(ctx context.Context, req *grafeasp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateNote[0:len((*c.CallOptions).UpdateNote):len((*c.CallOptions).UpdateNote)], opts...)
 	var resp *grafeaspb.Note
@@ -743,6 +755,7 @@ func (c *grafeasV1Beta1GRPCClient) UpdateNote(ctx context.Context, req *grafeasp
 
 func (c *grafeasV1Beta1GRPCClient) ListNoteOccurrences(ctx context.Context, req *grafeaspb.ListNoteOccurrencesRequest, opts ...gax.CallOption) *OccurrenceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListNoteOccurrences[0:len((*c.CallOptions).ListNoteOccurrences):len((*c.CallOptions).ListNoteOccurrences)], opts...)
 	it := &OccurrenceIterator{}
@@ -792,6 +805,7 @@ func (c *grafeasV1Beta1GRPCClient) GetVulnerabilityOccurrencesSummary(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVulnerabilityOccurrencesSummary[0:len((*c.CallOptions).GetVulnerabilityOccurrencesSummary):len((*c.CallOptions).GetVulnerabilityOccurrencesSummary)], opts...)
 	var resp *grafeaspb.VulnerabilityOccurrencesSummary

@@ -87,12 +87,25 @@ func (ci CreateIndex) SQL() string {
 	return str
 }
 
+func (cv CreateView) SQL() string {
+	str := "CREATE"
+	if cv.OrReplace {
+		str += " OR REPLACE"
+	}
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	return str
+}
+
 func (dt DropTable) SQL() string {
 	return "DROP TABLE " + dt.Name.SQL()
 }
 
 func (di DropIndex) SQL() string {
 	return "DROP INDEX " + di.Name.SQL()
+}
+
+func (dv DropView) SQL() string {
+	return "DROP VIEW " + dv.Name.SQL()
 }
 
 func (at AlterTable) SQL() string {
@@ -276,7 +289,7 @@ func (c Check) SQL() string {
 
 func (t Type) SQL() string {
 	str := t.Base.SQL()
-	if t.Base == String || t.Base == Bytes {
+	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
 		if t.Len == MaxLen {
 			str += "MAX"
@@ -309,6 +322,8 @@ func (tb TypeBase) SQL() string {
 		return "DATE"
 	case Timestamp:
 		return "TIMESTAMP"
+	case JSON:
+		return "JSON"
 	}
 	panic("unknown TypeBase")
 }
@@ -565,6 +580,27 @@ func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString("(")
 	addExprList(sb, f.Args, ", ")
 	sb.WriteString(")")
+}
+
+func (te TypedExpr) SQL() string { return buildSQL(te) }
+func (te TypedExpr) addSQL(sb *strings.Builder) {
+	te.Expr.addSQL(sb)
+	sb.WriteString(" AS ")
+	sb.WriteString(te.Type.SQL())
+}
+
+func (ee ExtractExpr) SQL() string { return buildSQL(ee) }
+func (ee ExtractExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString(ee.Part)
+	sb.WriteString(" FROM ")
+	ee.Expr.addSQL(sb)
+}
+
+func (aze AtTimeZoneExpr) SQL() string { return buildSQL(aze) }
+func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
+	aze.Expr.addSQL(sb)
+	sb.WriteString(" AT TIME ZONE ")
+	sb.WriteString(aze.Zone)
 }
 
 func idList(l []ID, join string) string {

@@ -1,5 +1,23 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.1.0...translate/v1.2.0) (2022-02-23)
+
+
+### Features
+
+* **translate:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/translate/v1.0.0...translate/v1.1.0) (2022-02-14)
+
+
+### Features
+
+* **translate:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+
+## 1.0.0
+
+Stabilize GA surface.
+
 ## [0.2.0](https://www.github.com/googleapis/google-cloud-go/compare/translate/v0.1.0...translate/v0.2.0) (2021-08-30)
 
 

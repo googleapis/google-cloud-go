@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ type IndexEndpointCallOptions struct {
 	DeleteIndexEndpoint []gax.CallOption
 	DeployIndex         []gax.CallOption
 	UndeployIndex       []gax.CallOption
+	MutateDeployedIndex []gax.CallOption
 }
 
 func defaultIndexEndpointGRPCClientOptions() []option.ClientOption {
@@ -57,7 +58,6 @@ func defaultIndexEndpointGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -72,6 +72,7 @@ func defaultIndexEndpointCallOptions() *IndexEndpointCallOptions {
 		DeleteIndexEndpoint: []gax.CallOption{},
 		DeployIndex:         []gax.CallOption{},
 		UndeployIndex:       []gax.CallOption{},
+		MutateDeployedIndex: []gax.CallOption{},
 	}
 }
 
@@ -91,6 +92,8 @@ type internalIndexEndpointClient interface {
 	DeployIndexOperation(name string) *DeployIndexOperation
 	UndeployIndex(context.Context, *aiplatformpb.UndeployIndexRequest, ...gax.CallOption) (*UndeployIndexOperation, error)
 	UndeployIndexOperation(name string) *UndeployIndexOperation
+	MutateDeployedIndex(context.Context, *aiplatformpb.MutateDeployedIndexRequest, ...gax.CallOption) (*MutateDeployedIndexOperation, error)
+	MutateDeployedIndexOperation(name string) *MutateDeployedIndexOperation
 }
 
 // IndexEndpointClient is a client for interacting with Vertex AI API.
@@ -194,6 +197,17 @@ func (c *IndexEndpointClient) UndeployIndexOperation(name string) *UndeployIndex
 	return c.internalClient.UndeployIndexOperation(name)
 }
 
+// MutateDeployedIndex update an existing DeployedIndex under an IndexEndpoint.
+func (c *IndexEndpointClient) MutateDeployedIndex(ctx context.Context, req *aiplatformpb.MutateDeployedIndexRequest, opts ...gax.CallOption) (*MutateDeployedIndexOperation, error) {
+	return c.internalClient.MutateDeployedIndex(ctx, req, opts...)
+}
+
+// MutateDeployedIndexOperation returns a new MutateDeployedIndexOperation from a given name.
+// The name must be that of a previously created MutateDeployedIndexOperation, possibly from a different process.
+func (c *IndexEndpointClient) MutateDeployedIndexOperation(name string) *MutateDeployedIndexOperation {
+	return c.internalClient.MutateDeployedIndexOperation(name)
+}
+
 // indexEndpointGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -280,7 +294,7 @@ func (c *indexEndpointGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *indexEndpointGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -292,6 +306,7 @@ func (c *indexEndpointGRPCClient) Close() error {
 
 func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *aiplatformpb.CreateIndexEndpointRequest, opts ...gax.CallOption) (*CreateIndexEndpointOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIndexEndpoint[0:len((*c.CallOptions).CreateIndexEndpoint):len((*c.CallOptions).CreateIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -310,6 +325,7 @@ func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aiplatformpb.GetIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIndexEndpoint[0:len((*c.CallOptions).GetIndexEndpoint):len((*c.CallOptions).GetIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
@@ -326,6 +342,7 @@ func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aip
 
 func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *aiplatformpb.ListIndexEndpointsRequest, opts ...gax.CallOption) *IndexEndpointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIndexEndpoints[0:len((*c.CallOptions).ListIndexEndpoints):len((*c.CallOptions).ListIndexEndpoints)], opts...)
 	it := &IndexEndpointIterator{}
@@ -370,6 +387,7 @@ func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *a
 
 func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *aiplatformpb.UpdateIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint.name", url.QueryEscape(req.GetIndexEndpoint().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateIndexEndpoint[0:len((*c.CallOptions).UpdateIndexEndpoint):len((*c.CallOptions).UpdateIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
@@ -386,6 +404,7 @@ func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *aiplatformpb.DeleteIndexEndpointRequest, opts ...gax.CallOption) (*DeleteIndexEndpointOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIndexEndpoint[0:len((*c.CallOptions).DeleteIndexEndpoint):len((*c.CallOptions).DeleteIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
@@ -404,6 +423,7 @@ func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *
 
 func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatformpb.DeployIndexRequest, opts ...gax.CallOption) (*DeployIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeployIndex[0:len((*c.CallOptions).DeployIndex):len((*c.CallOptions).DeployIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -422,6 +442,7 @@ func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatfo
 
 func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplatformpb.UndeployIndexRequest, opts ...gax.CallOption) (*UndeployIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeployIndex[0:len((*c.CallOptions).UndeployIndex):len((*c.CallOptions).UndeployIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -434,6 +455,25 @@ func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplat
 		return nil, err
 	}
 	return &UndeployIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *indexEndpointGRPCClient) MutateDeployedIndex(ctx context.Context, req *aiplatformpb.MutateDeployedIndexRequest, opts ...gax.CallOption) (*MutateDeployedIndexOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MutateDeployedIndex[0:len((*c.CallOptions).MutateDeployedIndex):len((*c.CallOptions).MutateDeployedIndex)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.indexEndpointClient.MutateDeployedIndex(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &MutateDeployedIndexOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -631,6 +671,75 @@ func (op *DeployIndexOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeployIndexOperation) Name() string {
+	return op.lro.Name()
+}
+
+// MutateDeployedIndexOperation manages a long-running operation from MutateDeployedIndex.
+type MutateDeployedIndexOperation struct {
+	lro *longrunning.Operation
+}
+
+// MutateDeployedIndexOperation returns a new MutateDeployedIndexOperation from a given name.
+// The name must be that of a previously created MutateDeployedIndexOperation, possibly from a different process.
+func (c *indexEndpointGRPCClient) MutateDeployedIndexOperation(name string) *MutateDeployedIndexOperation {
+	return &MutateDeployedIndexOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *MutateDeployedIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedIndexResponse, error) {
+	var resp aiplatformpb.MutateDeployedIndexResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *MutateDeployedIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedIndexResponse, error) {
+	var resp aiplatformpb.MutateDeployedIndexResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *MutateDeployedIndexOperation) Metadata() (*aiplatformpb.MutateDeployedIndexOperationMetadata, error) {
+	var meta aiplatformpb.MutateDeployedIndexOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *MutateDeployedIndexOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *MutateDeployedIndexOperation) Name() string {
 	return op.lro.Name()
 }
 

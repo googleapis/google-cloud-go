@@ -126,23 +126,23 @@ func withExactRowCount(totalRows int64) constraintOption {
 }
 
 // withNullCount asserts the number of null values in a column.
-func withNullCount(colname string, nullcount int64) constraintOption {
+func withNullCount(colname string, nullCount int64) constraintOption {
 	return func(vi *validationInfo) {
 		resultCol := fmt.Sprintf("nullcol_count_%s", colname)
 		vi.constraints[resultCol] = &constraint{
-			projection:    fmt.Sprintf("COUNTIF(ISNULL(%s)) AS %s", colname, resultCol),
-			expectedValue: nullcount,
+			projection:    fmt.Sprintf("SUM(IF(%s IS NULL,1,0)) AS %s", colname, resultCol),
+			expectedValue: nullCount,
 		}
 	}
 }
 
 // withNonNullCount asserts the number of non null values in a column.
-func withNonNullCount(colname string, nullcount int64) constraintOption {
+func withNonNullCount(colname string, nonNullCount int64) constraintOption {
 	return func(vi *validationInfo) {
 		resultCol := fmt.Sprintf("nonnullcol_count_%s", colname)
 		vi.constraints[resultCol] = &constraint{
-			projection:    fmt.Sprintf("COUNTIF(NOT ISNULL(%s)) AS %s", colname, resultCol),
-			expectedValue: nullcount,
+			projection:    fmt.Sprintf("SUM(IF(%s IS NOT NULL,1,0)) AS %s", colname, resultCol),
+			expectedValue: nonNullCount,
 		}
 	}
 }

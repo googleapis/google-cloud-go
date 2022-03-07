@@ -741,6 +741,20 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		t.Errorf("Updating with DML affected %d rows, want 3", n)
 	}
 
+	rows := client.Single().Query(ctx, spanner.NewStatement("SELECT CAST('Foo' AS INT64)"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid CAST\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
+	rows = client.Single().Query(ctx, spanner.NewStatement("SELECT EXTRACT(INVALID_PART FROM TIMESTAMP('2008-12-25T05:30:00Z')"))
+	_, err = rows.Next()
+	if g, w := spanner.ErrCode(err), codes.InvalidArgument; g != w {
+		t.Errorf("error code mismatch for invalid part from EXTRACT\n Got: %v\nWant: %v", g, w)
+	}
+	rows.Stop()
+
 	// Do some complex queries.
 	tests := []struct {
 		q      string
@@ -748,9 +762,10 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		want   [][]interface{}
 	}{
 		{
-			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B')`,
+
+			`SELECT 17, "sweet", TRUE AND FALSE, NULL, B"hello", STARTS_WITH('Foo', 'B'), STARTS_WITH('Bar', 'B'), CAST(17 AS STRING), SAFE_CAST(TRUE AS STRING), SAFE_CAST('Foo' AS INT64), EXTRACT(DATE FROM TIMESTAMP('2008-12-25T05:30:00Z') AT TIME ZONE 'Europe/Amsterdam'), EXTRACT(YEAR FROM TIMESTAMP('2008-12-25T05:30:00Z')), FARM_FINGERPRINT('test'), MOD(5, 10)`,
 			nil,
-			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true}},
+			[][]interface{}{{int64(17), "sweet", false, nil, []byte("hello"), false, true, "17", "true", nil, civil.Date{Year: 2008, Month: 12, Day: 25}, int64(2008), int64(1), int64(5)}},
 		},
 		// Check handling of NULL values for the IS operator.
 		// There was a bug that returned errors for some of these cases.
@@ -932,6 +947,15 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		// From https://cloud.google.com/spanner/docs/query-syntax#group-by-clause_1:
+		{
+			`SELECT LastName FROM PlayerStats GROUP BY LastName`,
+			nil,
+			[][]interface{}{
+				{"Adams"},
+				{"Buchanan"},
+				{"Coolidge"},
+			},
+		},
 		{
 			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
 			// but nothing documented seems to guarantee that.
@@ -1270,13 +1294,16 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	defer cancel()
 
 	tableName := "SongWriters"
-
 	err := updateDDL(t, adminClient,
 		`CREATE TABLE `+tableName+` (
 			Name STRING(50) NOT NULL,
 			NumSongs INT64,
+			CreatedAT TIMESTAMP,
+			CreatedDate DATE,
 			EstimatedSales INT64 NOT NULL,
 			CanonicalName STRING(50) AS (LOWER(Name)) STORED,
+			GeneratedCreatedDate DATE AS (EXTRACT(DATE FROM CreatedAT AT TIME ZONE "CET")) STORED,
+			GeneratedCreatedDay INT64 AS (EXTRACT(DAY FROM CreatedDate)) STORED,
 		) PRIMARY KEY (Name)`)
 	if err != nil {
 		t.Fatalf("Setting up fresh table: %v", err)
@@ -1288,16 +1315,18 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	// Insert some data.
+	d1, _ := civil.ParseDate("2016-11-15")
+	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "NumSongs"},
-			[]interface{}{"Average Writer", 10, 10}),
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Average Writer", 10, 10, t1, d1}),
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales"},
-			[]interface{}{"Great Writer", 100}),
+			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Great Writer", 100, t1, d1}),
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "NumSongs"},
-			[]interface{}{"Poor Writer", 1, 50}),
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
+			[]interface{}{"Poor Writer", 1, 50, t1, d1}),
 	})
 	if err != nil {
 		t.Fatalf("Applying mutations: %v", err)
@@ -1305,12 +1334,12 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	err = updateDDL(t, adminClient,
 		`ALTER TABLE `+tableName+` ADD COLUMN TotalSales2 INT64 AS (NumSongs * EstimatedSales) STORED`)
-	if err == nil {
-		t.Fatalf("Should have failed to add a generated column to non empty table")
+	if err != nil {
+		t.Fatalf("Failed to add a generated column to a non-empty table: %v", err)
 	}
 
 	ri := client.Single().Query(ctx, spanner.NewStatement(
-		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+		`SELECT CanonicalName, TotalSales, GeneratedCreatedDate, GeneratedCreatedDay FROM `+tableName+` ORDER BY Name`,
 	))
 	all, err := slurpRows(t, ri)
 	if err != nil {
@@ -1319,9 +1348,9 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	// Great writer has nil because NumSongs is nil
 	want := [][]interface{}{
-		{"average writer", int64(100)},
-		{"great writer", nil},
-		{"poor writer", int64(50)},
+		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
 	}
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
@@ -1384,6 +1413,72 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
+	}
+}
+
+func TestIntegration_Views(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	err := updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers`)
+	if err != nil {
+		t.Fatalf("Creating view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `CREATE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if g, w := spanner.ErrCode(err), codes.AlreadyExists; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+	err = updateDDL(t, adminClient, `CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT * FROM Singers ORDER BY LastName`)
+	if err != nil {
+		t.Fatalf("Replacing view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if err != nil {
+		t.Fatalf("Dropping view: %v", err)
+	}
+	err = updateDDL(t, adminClient, `DROP VIEW SingersView`)
+	if g, w := spanner.ErrCode(err), codes.NotFound; g != w {
+		t.Fatalf("Creating duplicate view error code mismatch\n  Got: %v\nWant: %v", g, w)
+	}
+}
+
+func TestIntegration_RowDeletionPolicy(t *testing.T) {
+	_, adminClient, _, cleanup := makeClient(t)
+	defer cleanup()
+
+	if err := updateDDL(t, adminClient,
+		`CREATE TABLE WithRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id), ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`,
+		`CREATE TABLE WithoutRowDeletionPolicy (
+			Id INT64,
+			Value STRING(MAX),
+			DelTimestamp TIMESTAMP,
+		) PRIMARY KEY (Id)`); err != nil {
+		t.Fatalf("Create tables: %v", err)
+	}
+	// These should succeed.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Replacing row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY`); err != nil {
+		t.Fatalf("Dropping row deletion policy: %v", err)
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err != nil {
+		t.Fatalf("Adding row deletion policy: %v", err)
+	}
+
+	// These should fail.
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for replacing row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithoutRowDeletionPolicy DROP ROW DELETION POLICY`); err == nil {
+		t.Fatalf("Missing error for dropping row deletion policy")
+	}
+	if err := updateDDL(t, adminClient, `ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ))`); err == nil {
+		t.Fatalf("Missing error for adding row deletion policy")
 	}
 }
 

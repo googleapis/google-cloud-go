@@ -1,5 +1,42 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.18.0...pubsub/v1.19.0) (2022-03-07)
+
+
+### Features
+
+* **pubsub:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **pubsub:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+
+### Bug Fixes
+
+* **pubsub:** prevent infinite retry with publishing invalid utf-8 chars ([#5728](https://github.com/googleapis/google-cloud-go/issues/5728)) ([0a4dab9](https://github.com/googleapis/google-cloud-go/commit/0a4dab9043db81342dc41bd496d35fd4a7b08ad5))
+* **pubsub:** removing misspelled field, add correctly spelled field ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
+## [1.18.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.1...pubsub/v1.18.0) (2022-02-08)
+
+
+### Features
+
+* **pubsub:** add exactly once delivery flag ([f71dc3d](https://www.github.com/googleapis/google-cloud-go/commit/f71dc3dfefa54ab41861aea15971108850a9f98b))
+* **pubsub:** add exactly once delivery flag ([f71dc3d](https://www.github.com/googleapis/google-cloud-go/commit/f71dc3dfefa54ab41861aea15971108850a9f98b))
+
+
+### Bug Fixes
+
+* **pubsub:** add deadletter and retries handling in the fake pubsub ([#5320](https://www.github.com/googleapis/google-cloud-go/issues/5320)) ([116a610](https://www.github.com/googleapis/google-cloud-go/commit/116a61008e174e5d49b9485d78bc13f64461322f))
+* **pubsub:** pass context into checkOrdering to allow cancel ([#5316](https://www.github.com/googleapis/google-cloud-go/issues/5316)) ([fc08c49](https://www.github.com/googleapis/google-cloud-go/commit/fc08c49fc013cbad00642bbba317e02f0ba15a6d))
+
+### [1.17.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.0...pubsub/v1.17.1) (2021-10-25)
+
+
+### Bug Fixes
+
+* **pubsub:** add methods to allow retrieval of topic/sub config names ([#4953](https://www.github.com/googleapis/google-cloud-go/issues/4953)) ([bff5b1c](https://www.github.com/googleapis/google-cloud-go/commit/bff5b1ca331a0d193407a0f3eb501772cbb8ba78))
+* **pubsub:** prevent draining error return for Receive ([#4733](https://www.github.com/googleapis/google-cloud-go/issues/4733)) ([c6d5189](https://www.github.com/googleapis/google-cloud-go/commit/c6d51891649d8169089a0a2b7365ea54f991af56))
+* **pubsub:** tag ctx in iterator with subscription for opencensus ([#5011](https://www.github.com/googleapis/google-cloud-go/issues/5011)) ([cdf9588](https://www.github.com/googleapis/google-cloud-go/commit/cdf958864e278bb394cc548cb5f15ad08859f347))
+
 ## [1.17.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.16.0...pubsub/v1.17.0) (2021-09-08)
 
 
@@ -107,7 +144,6 @@
 * **pubsub:** add opencensus metrics for outstanding messages/bytes ([#3690](https://www.github.com/googleapis/google-cloud-go/issues/3690)) ([4039b82](https://www.github.com/googleapis/google-cloud-go/commit/4039b82e95b3a8ba2322d1f4fe9e2c21b087a907))
 
 ### [1.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.9.0...v1.9.1) (2020-12-10)
-
 
 ### Bug Fixes
 

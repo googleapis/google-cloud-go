@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,6 @@ func defaultHubGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://networkconnectivity.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -360,7 +359,7 @@ func (c *hubGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *hubGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -372,6 +371,7 @@ func (c *hubGRPCClient) Close() error {
 
 func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb.ListHubsRequest, opts ...gax.CallOption) *HubIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListHubs[0:len((*c.CallOptions).ListHubs):len((*c.CallOptions).ListHubs)], opts...)
 	it := &HubIterator{}
@@ -421,6 +421,7 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetHub[0:len((*c.CallOptions).GetHub):len((*c.CallOptions).GetHub)], opts...)
 	var resp *networkconnectivitypb.Hub
@@ -442,6 +443,7 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateHub[0:len((*c.CallOptions).CreateHub):len((*c.CallOptions).CreateHub)], opts...)
 	var resp *longrunningpb.Operation
@@ -465,6 +467,7 @@ func (c *hubGRPCClient) UpdateHub(ctx context.Context, req *networkconnectivityp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "hub.name", url.QueryEscape(req.GetHub().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateHub[0:len((*c.CallOptions).UpdateHub):len((*c.CallOptions).UpdateHub)], opts...)
 	var resp *longrunningpb.Operation
@@ -488,6 +491,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteHub[0:len((*c.CallOptions).DeleteHub):len((*c.CallOptions).DeleteHub)], opts...)
 	var resp *longrunningpb.Operation
@@ -506,6 +510,7 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 
 func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivitypb.ListSpokesRequest, opts ...gax.CallOption) *SpokeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSpokes[0:len((*c.CallOptions).ListSpokes):len((*c.CallOptions).ListSpokes)], opts...)
 	it := &SpokeIterator{}
@@ -555,6 +560,7 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSpoke[0:len((*c.CallOptions).GetSpoke):len((*c.CallOptions).GetSpoke)], opts...)
 	var resp *networkconnectivitypb.Spoke
@@ -576,6 +582,7 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSpoke[0:len((*c.CallOptions).CreateSpoke):len((*c.CallOptions).CreateSpoke)], opts...)
 	var resp *longrunningpb.Operation
@@ -599,6 +606,7 @@ func (c *hubGRPCClient) UpdateSpoke(ctx context.Context, req *networkconnectivit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "spoke.name", url.QueryEscape(req.GetSpoke().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSpoke[0:len((*c.CallOptions).UpdateSpoke):len((*c.CallOptions).UpdateSpoke)], opts...)
 	var resp *longrunningpb.Operation
@@ -622,6 +630,7 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSpoke[0:len((*c.CallOptions).DeleteSpoke):len((*c.CallOptions).DeleteSpoke)], opts...)
 	var resp *longrunningpb.Operation

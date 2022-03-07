@@ -2198,6 +2198,7 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	defer iter.Stop()
 
 	var results []typesTable
+	var lenientResults []typesTable
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
@@ -2212,9 +2213,15 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 			t.Fatalf("failed to convert a row to a struct: %v", err)
 		}
 		results = append(results, d)
+
+		var d2 typesTable
+		if err := row.ToStructLenient(&d2); err != nil {
+			t.Fatalf("failed to convert a row to a struct: %v", err)
+		}
+		lenientResults = append(lenientResults, d2)
 	}
 
-	if len(results) > 1 {
+	if len(results) > 1 || len(lenientResults) > 1 {
 		t.Fatalf("mismatch length of array: got %v, want 1", results)
 	}
 
@@ -2228,7 +2235,11 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	}
 	got := results[0]
 	if !testEqual(got, want) {
-		t.Fatalf("mismatch result: got %v, want %v", got, want)
+		t.Fatalf("mismatch result from ToStruct: got %v, want %v", got, want)
+	}
+	got = lenientResults[0]
+	if !testEqual(got, want) {
+		t.Fatalf("mismatch result from ToStructLenient: got %v, want %v", got, want)
 	}
 }
 
@@ -2345,8 +2356,25 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
-	_, client, teardown := setupMockedTestServer(t)
+	minOpened := uint64(1)
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
 
 	iter := client.Single().Query(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 	iter.Do(func(r *Row) error {
@@ -2357,6 +2385,8 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
 	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
@@ -2370,8 +2400,25 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	// This test cannot be parallel, as the TestExporter does not support that.
 	te := itestutil.NewTestExporter()
 	defer te.Unregister()
-	server, client, teardown := setupMockedTestServer(t)
+	minOpened := uint64(1)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     minOpened,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until all sessions have been created, so we know that those requests will not interfere with the test.
+	sp := client.idleSessions
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
 
 	sql := "SELECT * FROM"
 	server.TestSpanner.PutStatementResult(sql, &StatementResult{
@@ -2388,6 +2435,8 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
 	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
@@ -2808,6 +2857,21 @@ func TestClient_Single_Read_WithNumericKey(t *testing.T) {
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
 		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_ReadRowWithOptions(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	row, err := client.Single().ReadRowWithOptions(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"}, &ReadOptions{RequestTag: "foo/bar"})
+	if err != nil {
+		t.Fatalf("Unexpected error for read row with options: %v", err)
+	}
+	if row == nil {
+		t.Fatal("ReadRowWithOptions did not return a row")
 	}
 }
 

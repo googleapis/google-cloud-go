@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -55,7 +55,6 @@ func defaultGameServerConfigsGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -264,7 +263,7 @@ func (c *gameServerConfigsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gameServerConfigsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -276,6 +275,7 @@ func (c *gameServerConfigsGRPCClient) Close() error {
 
 func (c *gameServerConfigsGRPCClient) ListGameServerConfigs(ctx context.Context, req *gamingpb.ListGameServerConfigsRequest, opts ...gax.CallOption) *GameServerConfigIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGameServerConfigs[0:len((*c.CallOptions).ListGameServerConfigs):len((*c.CallOptions).ListGameServerConfigs)], opts...)
 	it := &GameServerConfigIterator{}
@@ -325,6 +325,7 @@ func (c *gameServerConfigsGRPCClient) GetGameServerConfig(ctx context.Context, r
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGameServerConfig[0:len((*c.CallOptions).GetGameServerConfig):len((*c.CallOptions).GetGameServerConfig)], opts...)
 	var resp *gamingpb.GameServerConfig
@@ -346,6 +347,7 @@ func (c *gameServerConfigsGRPCClient) CreateGameServerConfig(ctx context.Context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGameServerConfig[0:len((*c.CallOptions).CreateGameServerConfig):len((*c.CallOptions).CreateGameServerConfig)], opts...)
 	var resp *longrunningpb.Operation
@@ -369,6 +371,7 @@ func (c *gameServerConfigsGRPCClient) DeleteGameServerConfig(ctx context.Context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGameServerConfig[0:len((*c.CallOptions).DeleteGameServerConfig):len((*c.CallOptions).DeleteGameServerConfig)], opts...)
 	var resp *longrunningpb.Operation

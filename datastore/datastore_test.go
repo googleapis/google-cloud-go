@@ -395,6 +395,16 @@ type SliceOfSlices struct {
 	} `datastore:",flatten"`
 }
 
+type LastFlattened struct {
+	Bs []struct{ IDs []string }
+	A  struct{ T time.Time } `datastore:",flatten"`
+}
+
+type FirstFlattened struct {
+	A  struct{ T time.Time } `datastore:",flatten"`
+	Bs []struct{ IDs []string }
+}
+
 type Recursive struct {
 	I int
 	R []Recursive
@@ -1851,10 +1861,36 @@ var testCases = []testCase{
 		"",
 	},
 	{
+		"last field flattened",
+		&LastFlattened{},
+		&LastFlattened{},
+		"",
+		"",
+	},
+	{
+		// Request/Bug: https://github.com/googleapis/google-cloud-go/issues/5026
+		// User expected this to work as it worked when the last field. (above test)
+		"first field flattened",
+		&FirstFlattened{},
+		nil,
+		"flattening nested structs leads to a slice of slices: field \"IDs\"",
+		"",
+	},
+	{
 		"slice of slices",
 		&SliceOfSlices{},
 		nil,
-		"flattening nested structs leads to a slice of slices",
+		"flattening nested structs leads to a slice of slices: field \"F\"",
+		"",
+	},
+	{
+		"slice of slices, non-defaults",
+		&SliceOfSlices{I: 1, S: []struct {
+			J int
+			F []float64
+		}{{J: 2, F: []float64{3.4, 5.6}}}},
+		nil,
+		"flattening nested structs leads to a slice of slices: field \"F\"",
 		"",
 	},
 	{

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,7 +61,6 @@ func defaultTranslationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -363,7 +362,7 @@ func (c *translationGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *translationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -380,6 +379,7 @@ func (c *translationGRPCClient) TranslateText(ctx context.Context, req *translat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TranslateText[0:len((*c.CallOptions).TranslateText):len((*c.CallOptions).TranslateText)], opts...)
 	var resp *translatepb.TranslateTextResponse
@@ -401,6 +401,7 @@ func (c *translationGRPCClient) DetectLanguage(ctx context.Context, req *transla
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DetectLanguage[0:len((*c.CallOptions).DetectLanguage):len((*c.CallOptions).DetectLanguage)], opts...)
 	var resp *translatepb.DetectLanguageResponse
@@ -422,6 +423,7 @@ func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSupportedLanguages[0:len((*c.CallOptions).GetSupportedLanguages):len((*c.CallOptions).GetSupportedLanguages)], opts...)
 	var resp *translatepb.SupportedLanguages
@@ -443,6 +445,7 @@ func (c *translationGRPCClient) TranslateDocument(ctx context.Context, req *tran
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TranslateDocument[0:len((*c.CallOptions).TranslateDocument):len((*c.CallOptions).TranslateDocument)], opts...)
 	var resp *translatepb.TranslateDocumentResponse
@@ -464,6 +467,7 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchTranslateText[0:len((*c.CallOptions).BatchTranslateText):len((*c.CallOptions).BatchTranslateText)], opts...)
 	var resp *longrunningpb.Operation
@@ -487,6 +491,7 @@ func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchTranslateDocument[0:len((*c.CallOptions).BatchTranslateDocument):len((*c.CallOptions).BatchTranslateDocument)], opts...)
 	var resp *longrunningpb.Operation
@@ -510,6 +515,7 @@ func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *transla
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGlossary[0:len((*c.CallOptions).CreateGlossary):len((*c.CallOptions).CreateGlossary)], opts...)
 	var resp *longrunningpb.Operation
@@ -528,6 +534,7 @@ func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *transla
 
 func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *translatepb.ListGlossariesRequest, opts ...gax.CallOption) *GlossaryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGlossaries[0:len((*c.CallOptions).ListGlossaries):len((*c.CallOptions).ListGlossaries)], opts...)
 	it := &GlossaryIterator{}
@@ -577,6 +584,7 @@ func (c *translationGRPCClient) GetGlossary(ctx context.Context, req *translatep
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGlossary[0:len((*c.CallOptions).GetGlossary):len((*c.CallOptions).GetGlossary)], opts...)
 	var resp *translatepb.Glossary
@@ -598,6 +606,7 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGlossary[0:len((*c.CallOptions).DeleteGlossary):len((*c.CallOptions).DeleteGlossary)], opts...)
 	var resp *longrunningpb.Operation

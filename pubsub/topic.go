@@ -197,6 +197,9 @@ func newTopic(c *Client, name string) *Topic {
 
 // TopicConfig describes the configuration of a topic.
 type TopicConfig struct {
+	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
+	name string
+
 	// The set of labels for the topic.
 	Labels map[string]string
 
@@ -223,6 +226,26 @@ type TopicConfig struct {
 	//
 	// For more information, see https://cloud.google.com/pubsub/docs/replay-overview#topic_message_retention.
 	RetentionDuration optional.Duration
+}
+
+// String returns the printable globally unique name for the topic config.
+// This method only works when the topic config is returned from the server,
+// such as when calling `client.Topic` or `client.Topics`.
+// Otherwise, this will return an empty string.
+func (t *TopicConfig) String() string {
+	return t.name
+}
+
+// ID returns the unique identifier of the topic within its project.
+// This method only works when the topic config is returned from the server,
+// such as when calling `client.Topic` or `client.Topics`.
+// Otherwise, this will return an empty string.
+func (t *TopicConfig) ID() string {
+	slash := strings.LastIndex(t.name, "/")
+	if slash == -1 {
+		return ""
+	}
+	return t.name[slash+1:]
 }
 
 func (tc *TopicConfig) toProto() *pb.Topic {
@@ -266,6 +289,7 @@ type TopicConfigToUpdate struct {
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	tc := TopicConfig{
+		name:                 pbt.Name,
 		Labels:               pbt.Labels,
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
@@ -651,10 +675,19 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
 		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
 	} else {
+		// Apply custom publish retryer on top of user specified retryer and
+		// default retryer.
+		opts := t.c.pubc.CallOptions.Publish
+		var settings gax.CallSettings
+		for _, opt := range opts {
+			opt.Resolve(&settings)
+		}
+		r := &publishRetryer{defaultRetryer: settings.Retry()}
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+			gax.WithRetry(func() gax.Retryer { return r }))
 	}
 	end := time.Now()
 	if err != nil {

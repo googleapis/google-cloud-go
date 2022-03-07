@@ -180,7 +180,7 @@ automatically inferred as nullable, so the "nullable" tag is only needed for []b
         Name     string `bigquery:"full_name"`
         Grades   []int
         Secret   string `bigquery:"-"`
-        Optional []byte `bigquery:",nullable"
+        Optional []byte `bigquery:",nullable"`
     }
     schema3, err := bigquery.InferSchema(student2{})
     if err != nil {
@@ -303,10 +303,11 @@ Errors
 
 Errors returned by this client are often of the type googleapi.Error: https://godoc.org/google.golang.org/api/googleapi#Error
 
-These errors can be introspected for more information by type asserting to the richer *googleapi.Error type. For example:
+These errors can be introspected for more information by using `xerrors.As` with the richer *googleapi.Error type. For example:
 
-	if e, ok := err.(*googleapi.Error); ok {
-		  if e.Code = 409 { ... }
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok {
+		  if e.Code == 409 { ... }
     }
 
 In some cases, your client may received unstructured googleapi.Error error responses.  In such cases, it is likely that
