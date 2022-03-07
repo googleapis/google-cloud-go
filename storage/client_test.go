@@ -28,7 +28,7 @@ func TestNewGRPCStorageClient(t *testing.T) {
 	}
 }
 
-func TestnewHTTPStorageClient(t *testing.T) {
+func TestNewHTTPStorageClient(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
