@@ -1357,6 +1357,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2022/04/02
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/certificatemanager/v1",
+		pkg:                   "certificatemanager",
+		importPath:            "cloud.google.com/go/certificatemanager/apiv1",
+		gRPCServiceConfigPath: "certificatemanager_grpc_service_config.json",
+		apiServiceConfigPath:  "certificatemanager_v1.yaml",
+		// GA after 2022/04/04
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
