@@ -249,7 +249,7 @@ func (c *adaptationGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *adaptationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -261,6 +261,7 @@ func (c *adaptationGRPCClient) Close() error {
 
 func (c *adaptationGRPCClient) CreatePhraseSet(ctx context.Context, req *speechpb.CreatePhraseSetRequest, opts ...gax.CallOption) (*speechpb.PhraseSet, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreatePhraseSet[0:len((*c.CallOptions).CreatePhraseSet):len((*c.CallOptions).CreatePhraseSet)], opts...)
 	var resp *speechpb.PhraseSet
@@ -277,6 +278,7 @@ func (c *adaptationGRPCClient) CreatePhraseSet(ctx context.Context, req *speechp
 
 func (c *adaptationGRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.GetPhraseSetRequest, opts ...gax.CallOption) (*speechpb.PhraseSet, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPhraseSet[0:len((*c.CallOptions).GetPhraseSet):len((*c.CallOptions).GetPhraseSet)], opts...)
 	var resp *speechpb.PhraseSet
@@ -293,6 +295,7 @@ func (c *adaptationGRPCClient) GetPhraseSet(ctx context.Context, req *speechpb.G
 
 func (c *adaptationGRPCClient) ListPhraseSet(ctx context.Context, req *speechpb.ListPhraseSetRequest, opts ...gax.CallOption) *PhraseSetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPhraseSet[0:len((*c.CallOptions).ListPhraseSet):len((*c.CallOptions).ListPhraseSet)], opts...)
 	it := &PhraseSetIterator{}
@@ -337,6 +340,7 @@ func (c *adaptationGRPCClient) ListPhraseSet(ctx context.Context, req *speechpb.
 
 func (c *adaptationGRPCClient) UpdatePhraseSet(ctx context.Context, req *speechpb.UpdatePhraseSetRequest, opts ...gax.CallOption) (*speechpb.PhraseSet, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "phrase_set.name", url.QueryEscape(req.GetPhraseSet().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdatePhraseSet[0:len((*c.CallOptions).UpdatePhraseSet):len((*c.CallOptions).UpdatePhraseSet)], opts...)
 	var resp *speechpb.PhraseSet
@@ -353,6 +357,7 @@ func (c *adaptationGRPCClient) UpdatePhraseSet(ctx context.Context, req *speechp
 
 func (c *adaptationGRPCClient) DeletePhraseSet(ctx context.Context, req *speechpb.DeletePhraseSetRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePhraseSet[0:len((*c.CallOptions).DeletePhraseSet):len((*c.CallOptions).DeletePhraseSet)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -365,6 +370,7 @@ func (c *adaptationGRPCClient) DeletePhraseSet(ctx context.Context, req *speechp
 
 func (c *adaptationGRPCClient) CreateCustomClass(ctx context.Context, req *speechpb.CreateCustomClassRequest, opts ...gax.CallOption) (*speechpb.CustomClass, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCustomClass[0:len((*c.CallOptions).CreateCustomClass):len((*c.CallOptions).CreateCustomClass)], opts...)
 	var resp *speechpb.CustomClass
@@ -381,6 +387,7 @@ func (c *adaptationGRPCClient) CreateCustomClass(ctx context.Context, req *speec
 
 func (c *adaptationGRPCClient) GetCustomClass(ctx context.Context, req *speechpb.GetCustomClassRequest, opts ...gax.CallOption) (*speechpb.CustomClass, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCustomClass[0:len((*c.CallOptions).GetCustomClass):len((*c.CallOptions).GetCustomClass)], opts...)
 	var resp *speechpb.CustomClass
@@ -397,6 +404,7 @@ func (c *adaptationGRPCClient) GetCustomClass(ctx context.Context, req *speechpb
 
 func (c *adaptationGRPCClient) ListCustomClasses(ctx context.Context, req *speechpb.ListCustomClassesRequest, opts ...gax.CallOption) *CustomClassIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCustomClasses[0:len((*c.CallOptions).ListCustomClasses):len((*c.CallOptions).ListCustomClasses)], opts...)
 	it := &CustomClassIterator{}
@@ -441,6 +449,7 @@ func (c *adaptationGRPCClient) ListCustomClasses(ctx context.Context, req *speec
 
 func (c *adaptationGRPCClient) UpdateCustomClass(ctx context.Context, req *speechpb.UpdateCustomClassRequest, opts ...gax.CallOption) (*speechpb.CustomClass, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "custom_class.name", url.QueryEscape(req.GetCustomClass().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCustomClass[0:len((*c.CallOptions).UpdateCustomClass):len((*c.CallOptions).UpdateCustomClass)], opts...)
 	var resp *speechpb.CustomClass
@@ -457,6 +466,7 @@ func (c *adaptationGRPCClient) UpdateCustomClass(ctx context.Context, req *speec
 
 func (c *adaptationGRPCClient) DeleteCustomClass(ctx context.Context, req *speechpb.DeleteCustomClassRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCustomClass[0:len((*c.CallOptions).DeleteCustomClass):len((*c.CallOptions).DeleteCustomClass)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

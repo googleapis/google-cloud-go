@@ -328,7 +328,7 @@ func (c *tagValuesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *tagValuesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -388,6 +388,7 @@ func (c *tagValuesGRPCClient) GetTagValue(ctx context.Context, req *resourcemana
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTagValue[0:len((*c.CallOptions).GetTagValue):len((*c.CallOptions).GetTagValue)], opts...)
 	var resp *resourcemanagerpb.TagValue
@@ -431,6 +432,7 @@ func (c *tagValuesGRPCClient) UpdateTagValue(ctx context.Context, req *resourcem
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_value.name", url.QueryEscape(req.GetTagValue().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTagValue[0:len((*c.CallOptions).UpdateTagValue):len((*c.CallOptions).UpdateTagValue)], opts...)
 	var resp *longrunningpb.Operation
@@ -454,6 +456,7 @@ func (c *tagValuesGRPCClient) DeleteTagValue(ctx context.Context, req *resourcem
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTagValue[0:len((*c.CallOptions).DeleteTagValue):len((*c.CallOptions).DeleteTagValue)], opts...)
 	var resp *longrunningpb.Operation
@@ -477,6 +480,7 @@ func (c *tagValuesGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -498,6 +502,7 @@ func (c *tagValuesGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -514,6 +519,7 @@ func (c *tagValuesGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 func (c *tagValuesGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse

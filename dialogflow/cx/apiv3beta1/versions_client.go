@@ -352,7 +352,7 @@ func (c *versionsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *versionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -364,6 +364,7 @@ func (c *versionsGRPCClient) Close() error {
 
 func (c *versionsGRPCClient) ListVersions(ctx context.Context, req *cxpb.ListVersionsRequest, opts ...gax.CallOption) *VersionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListVersions[0:len((*c.CallOptions).ListVersions):len((*c.CallOptions).ListVersions)], opts...)
 	it := &VersionIterator{}
@@ -413,6 +414,7 @@ func (c *versionsGRPCClient) GetVersion(ctx context.Context, req *cxpb.GetVersio
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
 	var resp *cxpb.Version
@@ -434,6 +436,7 @@ func (c *versionsGRPCClient) CreateVersion(ctx context.Context, req *cxpb.Create
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateVersion[0:len((*c.CallOptions).CreateVersion):len((*c.CallOptions).CreateVersion)], opts...)
 	var resp *longrunningpb.Operation
@@ -457,6 +460,7 @@ func (c *versionsGRPCClient) UpdateVersion(ctx context.Context, req *cxpb.Update
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "version.name", url.QueryEscape(req.GetVersion().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateVersion[0:len((*c.CallOptions).UpdateVersion):len((*c.CallOptions).UpdateVersion)], opts...)
 	var resp *cxpb.Version
@@ -478,6 +482,7 @@ func (c *versionsGRPCClient) DeleteVersion(ctx context.Context, req *cxpb.Delete
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteVersion[0:len((*c.CallOptions).DeleteVersion):len((*c.CallOptions).DeleteVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -495,6 +500,7 @@ func (c *versionsGRPCClient) LoadVersion(ctx context.Context, req *cxpb.LoadVers
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LoadVersion[0:len((*c.CallOptions).LoadVersion):len((*c.CallOptions).LoadVersion)], opts...)
 	var resp *longrunningpb.Operation
@@ -518,6 +524,7 @@ func (c *versionsGRPCClient) CompareVersions(ctx context.Context, req *cxpb.Comp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "base_version", url.QueryEscape(req.GetBaseVersion())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CompareVersions[0:len((*c.CallOptions).CompareVersions):len((*c.CallOptions).CompareVersions)], opts...)
 	var resp *cxpb.CompareVersionsResponse

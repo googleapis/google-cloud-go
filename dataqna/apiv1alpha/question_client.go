@@ -256,7 +256,7 @@ func (c *questionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *questionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -273,6 +273,7 @@ func (c *questionGRPCClient) GetQuestion(ctx context.Context, req *dataqnapb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetQuestion[0:len((*c.CallOptions).GetQuestion):len((*c.CallOptions).GetQuestion)], opts...)
 	var resp *dataqnapb.Question
@@ -294,6 +295,7 @@ func (c *questionGRPCClient) CreateQuestion(ctx context.Context, req *dataqnapb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateQuestion[0:len((*c.CallOptions).CreateQuestion):len((*c.CallOptions).CreateQuestion)], opts...)
 	var resp *dataqnapb.Question
@@ -315,6 +317,7 @@ func (c *questionGRPCClient) ExecuteQuestion(ctx context.Context, req *dataqnapb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExecuteQuestion[0:len((*c.CallOptions).ExecuteQuestion):len((*c.CallOptions).ExecuteQuestion)], opts...)
 	var resp *dataqnapb.Question
@@ -336,6 +339,7 @@ func (c *questionGRPCClient) GetUserFeedback(ctx context.Context, req *dataqnapb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetUserFeedback[0:len((*c.CallOptions).GetUserFeedback):len((*c.CallOptions).GetUserFeedback)], opts...)
 	var resp *dataqnapb.UserFeedback
@@ -357,6 +361,7 @@ func (c *questionGRPCClient) UpdateUserFeedback(ctx context.Context, req *dataqn
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "user_feedback.name", url.QueryEscape(req.GetUserFeedback().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateUserFeedback[0:len((*c.CallOptions).UpdateUserFeedback):len((*c.CallOptions).UpdateUserFeedback)], opts...)
 	var resp *dataqnapb.UserFeedback

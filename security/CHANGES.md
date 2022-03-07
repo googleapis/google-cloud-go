@@ -1,5 +1,19 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.2.1...security/v1.3.0) (2022-02-23)
+
+
+### Features
+
+* **security:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+### [1.2.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.2.0...security/v1.2.1) (2022-02-22)
+
+
+### Bug Fixes
+
+* **security/privateca:** Add google-cloud-location as a dependency for the privateca client ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.1.1...security/v1.2.0) (2022-02-14)
 
 

@@ -186,7 +186,7 @@ func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -203,6 +203,7 @@ func (c *predictionGRPCClient) Predict(ctx context.Context, req *retailpb.Predic
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "placement", url.QueryEscape(req.GetPlacement())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	var resp *retailpb.PredictResponse
