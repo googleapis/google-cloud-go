@@ -101,13 +101,8 @@ func (r *publishRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 	if !ok {
 		return r.defaultRetryer.Retry(err)
 	}
-	switch s.Code() {
-	case codes.Internal:
-		invalid := strings.Contains(s.Message(), "string field contains invalid UTF-8")
-		if invalid {
-			return 0, false
-		}
-	default:
+	if s.Code() == codes.Internal && strings.Contains(s.Message(), "string field contains invalid UTF-8") {
+		return 0, false
 	}
 	return r.defaultRetryer.Retry(err)
 }
