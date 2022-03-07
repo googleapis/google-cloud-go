@@ -178,9 +178,7 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 	if !ok {
 		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
 	}
-	if _, err = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic}); err != nil {
-		panic(fmt.Sprintf("failed to create topic %v", err))
-	}
+	s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
 		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs, OrderingKey: orderingKey}},
