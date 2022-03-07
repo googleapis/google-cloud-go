@@ -178,7 +178,9 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 	if !ok {
 		panic(fmt.Sprintf("topic name must be of the form %q", topicPattern))
 	}
-	_, _ = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
+	if _, err = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic}); err != nil {
+		panic(fmt.Sprintf("failed to create topic %v", err))
+	}
 	req := &pb.PublishRequest{
 		Topic:    topic,
 		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs, OrderingKey: orderingKey}},
@@ -534,6 +536,9 @@ const (
 var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
 
 func checkMRD(pmrd *durpb.Duration) error {
+	if pmrd == nil {
+		return nil
+	}
 	mrd := pmrd.AsDuration()
 	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
