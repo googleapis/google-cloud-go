@@ -266,7 +266,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -278,6 +278,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListSettings(ctx context.Context, req *resourcesettingspb.ListSettingsRequest, opts ...gax.CallOption) *SettingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSettings[0:len((*c.CallOptions).ListSettings):len((*c.CallOptions).ListSettings)], opts...)
 	it := &SettingIterator{}
@@ -327,6 +328,7 @@ func (c *gRPCClient) GetSetting(ctx context.Context, req *resourcesettingspb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSetting[0:len((*c.CallOptions).GetSetting):len((*c.CallOptions).GetSetting)], opts...)
 	var resp *resourcesettingspb.Setting
@@ -348,6 +350,7 @@ func (c *gRPCClient) UpdateSetting(ctx context.Context, req *resourcesettingspb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "setting.name", url.QueryEscape(req.GetSetting().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSetting[0:len((*c.CallOptions).UpdateSetting):len((*c.CallOptions).UpdateSetting)], opts...)
 	var resp *resourcesettingspb.Setting

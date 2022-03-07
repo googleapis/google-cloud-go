@@ -283,7 +283,7 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -300,6 +300,7 @@ func (c *metadataGRPCClient) CreateEntity(ctx context.Context, req *dataplexpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEntity[0:len((*c.CallOptions).CreateEntity):len((*c.CallOptions).CreateEntity)], opts...)
 	var resp *dataplexpb.Entity
@@ -321,6 +322,7 @@ func (c *metadataGRPCClient) UpdateEntity(ctx context.Context, req *dataplexpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity.name", url.QueryEscape(req.GetEntity().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEntity[0:len((*c.CallOptions).UpdateEntity):len((*c.CallOptions).UpdateEntity)], opts...)
 	var resp *dataplexpb.Entity
@@ -342,6 +344,7 @@ func (c *metadataGRPCClient) DeleteEntity(ctx context.Context, req *dataplexpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEntity[0:len((*c.CallOptions).DeleteEntity):len((*c.CallOptions).DeleteEntity)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -359,6 +362,7 @@ func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntity[0:len((*c.CallOptions).GetEntity):len((*c.CallOptions).GetEntity)], opts...)
 	var resp *dataplexpb.Entity
@@ -375,6 +379,7 @@ func (c *metadataGRPCClient) GetEntity(ctx context.Context, req *dataplexpb.GetE
 
 func (c *metadataGRPCClient) ListEntities(ctx context.Context, req *dataplexpb.ListEntitiesRequest, opts ...gax.CallOption) *EntityIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntities[0:len((*c.CallOptions).ListEntities):len((*c.CallOptions).ListEntities)], opts...)
 	it := &EntityIterator{}
@@ -424,6 +429,7 @@ func (c *metadataGRPCClient) CreatePartition(ctx context.Context, req *dataplexp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreatePartition[0:len((*c.CallOptions).CreatePartition):len((*c.CallOptions).CreatePartition)], opts...)
 	var resp *dataplexpb.Partition
@@ -445,6 +451,7 @@ func (c *metadataGRPCClient) DeletePartition(ctx context.Context, req *dataplexp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePartition[0:len((*c.CallOptions).DeletePartition):len((*c.CallOptions).DeletePartition)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -462,6 +469,7 @@ func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPartition[0:len((*c.CallOptions).GetPartition):len((*c.CallOptions).GetPartition)], opts...)
 	var resp *dataplexpb.Partition
@@ -478,6 +486,7 @@ func (c *metadataGRPCClient) GetPartition(ctx context.Context, req *dataplexpb.G
 
 func (c *metadataGRPCClient) ListPartitions(ctx context.Context, req *dataplexpb.ListPartitionsRequest, opts ...gax.CallOption) *PartitionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPartitions[0:len((*c.CallOptions).ListPartitions):len((*c.CallOptions).ListPartitions)], opts...)
 	it := &PartitionIterator{}

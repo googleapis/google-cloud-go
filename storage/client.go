@@ -18,6 +18,7 @@ import (
 	"context"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,7 +43,7 @@ type storageClient interface {
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
 	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
-	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error)
 
 	// Bucket methods.
 
@@ -62,19 +63,19 @@ type storageClient interface {
 
 	DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (ACLRule, error)
+	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error)
 
 	// Bucket ACL methods.
 
 	DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
 
 	// Object ACL methods.
 
 	DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error
 	ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error)
-	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
 
 	// Media operations.
 
@@ -114,6 +115,23 @@ type settings struct {
 	// idempotent indicates if the call is idempotent or not when considering
 	// if the call should be retired or not.
 	idempotent bool
+
+	// clientOption is a set of option.ClientOption to be used during client
+	// transport initialization. See https://pkg.go.dev/google.golang.org/api/option
+	// for a list of supported options.
+	clientOption []option.ClientOption
+}
+
+func initSettings(opts ...storageOption) *settings {
+	s := &settings{}
+	resolveOptions(s, opts...)
+	return s
+}
+
+func resolveOptions(s *settings, opts ...storageOption) {
+	for _, o := range opts {
+		o.Apply(s)
+	}
 }
 
 // storageOption is the transport-agnostic call option for the storageClient
@@ -151,6 +169,16 @@ type idempotentOption struct {
 }
 
 func (o *idempotentOption) Apply(s *settings) { s.idempotent = o.idempotency }
+
+func withClientOptions(opts ...option.ClientOption) storageOption {
+	return &clientOption{opts: opts}
+}
+
+type clientOption struct {
+	opts []option.ClientOption
+}
+
+func (o *clientOption) Apply(s *settings) { s.clientOption = o.opts }
 
 type composeObjectRequest struct {
 	dstBucket     string

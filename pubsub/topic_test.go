@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -582,6 +583,30 @@ func TestPublishFlowControl_Block(t *testing.T) {
 	response3Sent.Done()
 
 	publish4Completed.Wait()
+}
+
+func TestInvalidUTF8(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "invalid-utf8-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("foo"),
+		Attributes: map[string]string{
+			"attr": "a\xc5z",
+		},
+	})
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	_, err = res.Get(ctx)
+	if err == nil || !strings.Contains(err.Error(), "string field contains invalid UTF-8") {
+		t.Fatalf("expected invalid UTF-8 error, got: %v", err)
+	}
 }
 
 // publishSingleMessage publishes a single message to a topic.

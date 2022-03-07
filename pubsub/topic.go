@@ -715,10 +715,19 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
 		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
 	} else {
+		// Apply custom publish retryer on top of user specified retryer and
+		// default retryer.
+		opts := t.c.pubc.CallOptions.Publish
+		var settings gax.CallSettings
+		for _, opt := range opts {
+			opt.Resolve(&settings)
+		}
+		r := &publishRetryer{defaultRetryer: settings.Retry()}
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+			gax.WithRetry(func() gax.Retryer { return r }))
 	}
 	end := time.Now()
 	if err != nil {

@@ -23,12 +23,15 @@ import (
 	"net/url"
 	"time"
 
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -39,11 +42,13 @@ var newConversationProfilesClientHook clientHook
 
 // ConversationProfilesCallOptions contains the retry settings for each method of ConversationProfilesClient.
 type ConversationProfilesCallOptions struct {
-	ListConversationProfiles  []gax.CallOption
-	GetConversationProfile    []gax.CallOption
-	CreateConversationProfile []gax.CallOption
-	UpdateConversationProfile []gax.CallOption
-	DeleteConversationProfile []gax.CallOption
+	ListConversationProfiles     []gax.CallOption
+	GetConversationProfile       []gax.CallOption
+	CreateConversationProfile    []gax.CallOption
+	UpdateConversationProfile    []gax.CallOption
+	DeleteConversationProfile    []gax.CallOption
+	SetSuggestionFeatureConfig   []gax.CallOption
+	ClearSuggestionFeatureConfig []gax.CallOption
 }
 
 func defaultConversationProfilesGRPCClientOptions() []option.ClientOption {
@@ -115,6 +120,28 @@ func defaultConversationProfilesCallOptions() *ConversationProfilesCallOptions {
 				})
 			}),
 		},
+		SetSuggestionFeatureConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ClearSuggestionFeatureConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -128,6 +155,10 @@ type internalConversationProfilesClient interface {
 	CreateConversationProfile(context.Context, *dialogflowpb.CreateConversationProfileRequest, ...gax.CallOption) (*dialogflowpb.ConversationProfile, error)
 	UpdateConversationProfile(context.Context, *dialogflowpb.UpdateConversationProfileRequest, ...gax.CallOption) (*dialogflowpb.ConversationProfile, error)
 	DeleteConversationProfile(context.Context, *dialogflowpb.DeleteConversationProfileRequest, ...gax.CallOption) error
+	SetSuggestionFeatureConfig(context.Context, *dialogflowpb.SetSuggestionFeatureConfigRequest, ...gax.CallOption) (*SetSuggestionFeatureConfigOperation, error)
+	SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation
+	ClearSuggestionFeatureConfig(context.Context, *dialogflowpb.ClearSuggestionFeatureConfigRequest, ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error)
+	ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation
 }
 
 // ConversationProfilesClient is a client for interacting with Dialogflow API.
@@ -140,6 +171,11 @@ type ConversationProfilesClient struct {
 
 	// The call options for this service.
 	CallOptions *ConversationProfilesCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -197,6 +233,53 @@ func (c *ConversationProfilesClient) DeleteConversationProfile(ctx context.Conte
 	return c.internalClient.DeleteConversationProfile(ctx, req, opts...)
 }
 
+// SetSuggestionFeatureConfig adds or updates a suggestion feature in a conversation profile.
+// If the conversation profile contains the type of suggestion feature for
+// the participant role, it will update it. Otherwise it will insert the
+// suggestion feature.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: SetSuggestionFeatureConfigOperationMetadata
+//
+//   response: ConversationProfile
+//
+// If a long running operation to add or update suggestion feature
+// config for the same conversation profile, participant role and suggestion
+// feature type exists, please cancel the existing long running operation
+// before sending such request, otherwise the request will be rejected.
+func (c *ConversationProfilesClient) SetSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.SetSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*SetSuggestionFeatureConfigOperation, error) {
+	return c.internalClient.SetSuggestionFeatureConfig(ctx, req, opts...)
+}
+
+// SetSuggestionFeatureConfigOperation returns a new SetSuggestionFeatureConfigOperation from a given name.
+// The name must be that of a previously created SetSuggestionFeatureConfigOperation, possibly from a different process.
+func (c *ConversationProfilesClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
+	return c.internalClient.SetSuggestionFeatureConfigOperation(name)
+}
+
+// ClearSuggestionFeatureConfig clears a suggestion feature from a conversation profile for the given
+// participant role.
+//
+// This method is a long-running
+// operation (at https://cloud.google.com/dialogflow/es/docs/how/long-running-operations).
+// The returned Operation type has the following method-specific fields:
+//
+//   metadata: ClearSuggestionFeatureConfigOperationMetadata
+//
+//   response: ConversationProfile
+func (c *ConversationProfilesClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
+	return c.internalClient.ClearSuggestionFeatureConfig(ctx, req, opts...)
+}
+
+// ClearSuggestionFeatureConfigOperation returns a new ClearSuggestionFeatureConfigOperation from a given name.
+// The name must be that of a previously created ClearSuggestionFeatureConfigOperation, possibly from a different process.
+func (c *ConversationProfilesClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
+	return c.internalClient.ClearSuggestionFeatureConfigOperation(name)
+}
+
 // conversationProfilesGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -212,6 +295,11 @@ type conversationProfilesGRPCClient struct {
 
 	// The gRPC API client.
 	conversationProfilesClient dialogflowpb.ConversationProfilesClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -252,6 +340,17 @@ func NewConversationProfilesClient(ctx context.Context, opts ...option.ClientOpt
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -267,7 +366,7 @@ func (c *conversationProfilesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *conversationProfilesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -279,6 +378,7 @@ func (c *conversationProfilesGRPCClient) Close() error {
 
 func (c *conversationProfilesGRPCClient) ListConversationProfiles(ctx context.Context, req *dialogflowpb.ListConversationProfilesRequest, opts ...gax.CallOption) *ConversationProfileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListConversationProfiles[0:len((*c.CallOptions).ListConversationProfiles):len((*c.CallOptions).ListConversationProfiles)], opts...)
 	it := &ConversationProfileIterator{}
@@ -328,6 +428,7 @@ func (c *conversationProfilesGRPCClient) GetConversationProfile(ctx context.Cont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetConversationProfile[0:len((*c.CallOptions).GetConversationProfile):len((*c.CallOptions).GetConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -349,6 +450,7 @@ func (c *conversationProfilesGRPCClient) CreateConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateConversationProfile[0:len((*c.CallOptions).CreateConversationProfile):len((*c.CallOptions).CreateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -370,6 +472,7 @@ func (c *conversationProfilesGRPCClient) UpdateConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile.name", url.QueryEscape(req.GetConversationProfile().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateConversationProfile[0:len((*c.CallOptions).UpdateConversationProfile):len((*c.CallOptions).UpdateConversationProfile)], opts...)
 	var resp *dialogflowpb.ConversationProfile
@@ -391,6 +494,7 @@ func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteConversationProfile[0:len((*c.CallOptions).DeleteConversationProfile):len((*c.CallOptions).DeleteConversationProfile)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -399,6 +503,192 @@ func (c *conversationProfilesGRPCClient) DeleteConversationProfile(ctx context.C
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.SetSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*SetSuggestionFeatureConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile", url.QueryEscape(req.GetConversationProfile())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SetSuggestionFeatureConfig[0:len((*c.CallOptions).SetSuggestionFeatureConfig):len((*c.CallOptions).SetSuggestionFeatureConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationProfilesClient.SetSuggestionFeatureConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SetSuggestionFeatureConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfig(ctx context.Context, req *dialogflowpb.ClearSuggestionFeatureConfigRequest, opts ...gax.CallOption) (*ClearSuggestionFeatureConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "conversation_profile", url.QueryEscape(req.GetConversationProfile())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ClearSuggestionFeatureConfig[0:len((*c.CallOptions).ClearSuggestionFeatureConfig):len((*c.CallOptions).ClearSuggestionFeatureConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.conversationProfilesClient.ClearSuggestionFeatureConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ClearSuggestionFeatureConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+// ClearSuggestionFeatureConfigOperation manages a long-running operation from ClearSuggestionFeatureConfig.
+type ClearSuggestionFeatureConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// ClearSuggestionFeatureConfigOperation returns a new ClearSuggestionFeatureConfigOperation from a given name.
+// The name must be that of a previously created ClearSuggestionFeatureConfigOperation, possibly from a different process.
+func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
+	return &ClearSuggestionFeatureConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ClearSuggestionFeatureConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	var resp dialogflowpb.ConversationProfile
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ClearSuggestionFeatureConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	var resp dialogflowpb.ConversationProfile
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ClearSuggestionFeatureConfigOperation) Metadata() (*dialogflowpb.ClearSuggestionFeatureConfigOperationMetadata, error) {
+	var meta dialogflowpb.ClearSuggestionFeatureConfigOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ClearSuggestionFeatureConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ClearSuggestionFeatureConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
+// SetSuggestionFeatureConfigOperation manages a long-running operation from SetSuggestionFeatureConfig.
+type SetSuggestionFeatureConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// SetSuggestionFeatureConfigOperation returns a new SetSuggestionFeatureConfigOperation from a given name.
+// The name must be that of a previously created SetSuggestionFeatureConfigOperation, possibly from a different process.
+func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
+	return &SetSuggestionFeatureConfigOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SetSuggestionFeatureConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	var resp dialogflowpb.ConversationProfile
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SetSuggestionFeatureConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
+	var resp dialogflowpb.ConversationProfile
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SetSuggestionFeatureConfigOperation) Metadata() (*dialogflowpb.SetSuggestionFeatureConfigOperationMetadata, error) {
+	var meta dialogflowpb.SetSuggestionFeatureConfigOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SetSuggestionFeatureConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SetSuggestionFeatureConfigOperation) Name() string {
+	return op.lro.Name()
 }
 
 // ConversationProfileIterator manages a stream of *dialogflowpb.ConversationProfile.

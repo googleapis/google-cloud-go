@@ -139,12 +139,16 @@ func TestLoad(t *testing.T) {
 				g.IgnoreUnknownValues = true
 				return g
 			}(),
+			config: LoadConfig{
+				JobTimeout: 4 * time.Second,
+			},
 			want: func() *bq.Job {
 				j := defaultLoadJob()
 				j.Configuration.Load.MaxBadRecords = 1
 				j.Configuration.Load.AllowJaggedRows = true
 				j.Configuration.Load.AllowQuotedNewlines = true
 				j.Configuration.Load.IgnoreUnknownValues = true
+				j.Configuration.JobTimeoutMs = 4000
 				return j
 			}(),
 		},
