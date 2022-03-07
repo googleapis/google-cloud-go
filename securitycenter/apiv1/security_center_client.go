@@ -51,6 +51,7 @@ type CallOptions struct {
 	CreateNotificationConfig   []gax.CallOption
 	DeleteMuteConfig           []gax.CallOption
 	DeleteNotificationConfig   []gax.CallOption
+	GetBigQueryExport          []gax.CallOption
 	GetIamPolicy               []gax.CallOption
 	GetMuteConfig              []gax.CallOption
 	GetNotificationConfig      []gax.CallOption
@@ -75,6 +76,10 @@ type CallOptions struct {
 	UpdateOrganizationSettings []gax.CallOption
 	UpdateSource               []gax.CallOption
 	UpdateSecurityMarks        []gax.CallOption
+	CreateBigQueryExport       []gax.CallOption
+	DeleteBigQueryExport       []gax.CallOption
+	UpdateBigQueryExport       []gax.CallOption
+	ListBigQueryExports        []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -98,6 +103,7 @@ func defaultCallOptions() *CallOptions {
 		CreateNotificationConfig: []gax.CallOption{},
 		DeleteMuteConfig:         []gax.CallOption{},
 		DeleteNotificationConfig: []gax.CallOption{},
+		GetBigQueryExport:        []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -243,6 +249,10 @@ func defaultCallOptions() *CallOptions {
 		UpdateOrganizationSettings: []gax.CallOption{},
 		UpdateSource:               []gax.CallOption{},
 		UpdateSecurityMarks:        []gax.CallOption{},
+		CreateBigQueryExport:       []gax.CallOption{},
+		DeleteBigQueryExport:       []gax.CallOption{},
+		UpdateBigQueryExport:       []gax.CallOption{},
+		ListBigQueryExports:        []gax.CallOption{},
 	}
 }
 
@@ -259,6 +269,7 @@ type internalClient interface {
 	CreateNotificationConfig(context.Context, *securitycenterpb.CreateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	DeleteMuteConfig(context.Context, *securitycenterpb.DeleteMuteConfigRequest, ...gax.CallOption) error
 	DeleteNotificationConfig(context.Context, *securitycenterpb.DeleteNotificationConfigRequest, ...gax.CallOption) error
+	GetBigQueryExport(context.Context, *securitycenterpb.GetBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetMuteConfig(context.Context, *securitycenterpb.GetMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	GetNotificationConfig(context.Context, *securitycenterpb.GetNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
@@ -284,6 +295,10 @@ type internalClient interface {
 	UpdateOrganizationSettings(context.Context, *securitycenterpb.UpdateOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
 	UpdateSource(context.Context, *securitycenterpb.UpdateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	UpdateSecurityMarks(context.Context, *securitycenterpb.UpdateSecurityMarksRequest, ...gax.CallOption) (*securitycenterpb.SecurityMarks, error)
+	CreateBigQueryExport(context.Context, *securitycenterpb.CreateBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
+	DeleteBigQueryExport(context.Context, *securitycenterpb.DeleteBigQueryExportRequest, ...gax.CallOption) error
+	UpdateBigQueryExport(context.Context, *securitycenterpb.UpdateBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
+	ListBigQueryExports(context.Context, *securitycenterpb.ListBigQueryExportsRequest, ...gax.CallOption) *BigQueryExportIterator
 }
 
 // Client is a client for interacting with Security Command Center API.
@@ -367,6 +382,11 @@ func (c *Client) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.Del
 // DeleteNotificationConfig deletes a notification config.
 func (c *Client) DeleteNotificationConfig(ctx context.Context, req *securitycenterpb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteNotificationConfig(ctx, req, opts...)
+}
+
+// GetBigQueryExport gets a big query export.
+func (c *Client) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	return c.internalClient.GetBigQueryExport(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the access control policy on the specified Source.
@@ -510,6 +530,30 @@ func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateS
 // UpdateSecurityMarks updates security marks.
 func (c *Client) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
 	return c.internalClient.UpdateSecurityMarks(ctx, req, opts...)
+}
+
+// CreateBigQueryExport creates a big query export.
+func (c *Client) CreateBigQueryExport(ctx context.Context, req *securitycenterpb.CreateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	return c.internalClient.CreateBigQueryExport(ctx, req, opts...)
+}
+
+// DeleteBigQueryExport deletes an existing big query export.
+func (c *Client) DeleteBigQueryExport(ctx context.Context, req *securitycenterpb.DeleteBigQueryExportRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBigQueryExport(ctx, req, opts...)
+}
+
+// UpdateBigQueryExport updates a BigQuery export.
+func (c *Client) UpdateBigQueryExport(ctx context.Context, req *securitycenterpb.UpdateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	return c.internalClient.UpdateBigQueryExport(ctx, req, opts...)
+}
+
+// ListBigQueryExports lists BigQuery exports. Note that when requesting BigQuery exports at a
+// given level all exports under that level are also returned e.g. if
+// requesting BigQuery exports under a folder, then all BigQuery exports
+// immediately under the folder plus the ones created under the projects
+// within the folder are returned.
+func (c *Client) ListBigQueryExports(ctx context.Context, req *securitycenterpb.ListBigQueryExportsRequest, opts ...gax.CallOption) *BigQueryExportIterator {
+	return c.internalClient.ListBigQueryExports(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Security Command Center API over gRPC transport.
@@ -739,6 +783,23 @@ func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *security
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetBigQueryExport[0:len((*c.CallOptions).GetBigQueryExport):len((*c.CallOptions).GetBigQueryExport)], opts...)
+	var resp *securitycenterpb.BigQueryExport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBigQueryExport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -1412,6 +1473,98 @@ func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 	return resp, nil
 }
 
+func (c *gRPCClient) CreateBigQueryExport(ctx context.Context, req *securitycenterpb.CreateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateBigQueryExport[0:len((*c.CallOptions).CreateBigQueryExport):len((*c.CallOptions).CreateBigQueryExport)], opts...)
+	var resp *securitycenterpb.BigQueryExport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateBigQueryExport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteBigQueryExport(ctx context.Context, req *securitycenterpb.DeleteBigQueryExportRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteBigQueryExport[0:len((*c.CallOptions).DeleteBigQueryExport):len((*c.CallOptions).DeleteBigQueryExport)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteBigQueryExport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) UpdateBigQueryExport(ctx context.Context, req *securitycenterpb.UpdateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "big_query_export.name", url.QueryEscape(req.GetBigQueryExport().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateBigQueryExport[0:len((*c.CallOptions).UpdateBigQueryExport):len((*c.CallOptions).UpdateBigQueryExport)], opts...)
+	var resp *securitycenterpb.BigQueryExport
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBigQueryExport(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBigQueryExports(ctx context.Context, req *securitycenterpb.ListBigQueryExportsRequest, opts ...gax.CallOption) *BigQueryExportIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListBigQueryExports[0:len((*c.CallOptions).ListBigQueryExports):len((*c.CallOptions).ListBigQueryExports)], opts...)
+	it := &BigQueryExportIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListBigQueryExportsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.BigQueryExport, string, error) {
+		resp := &securitycenterpb.ListBigQueryExportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListBigQueryExports(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBigQueryExports(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // BulkMuteFindingsOperation manages a long-running operation from BulkMuteFindings.
 type BulkMuteFindingsOperation struct {
 	lro *longrunning.Operation
@@ -1548,6 +1701,53 @@ func (op *RunAssetDiscoveryOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RunAssetDiscoveryOperation) Name() string {
 	return op.lro.Name()
+}
+
+// BigQueryExportIterator manages a stream of *securitycenterpb.BigQueryExport.
+type BigQueryExportIterator struct {
+	items    []*securitycenterpb.BigQueryExport
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.BigQueryExport, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *BigQueryExportIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BigQueryExportIterator) Next() (*securitycenterpb.BigQueryExport, error) {
+	var item *securitycenterpb.BigQueryExport
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *BigQueryExportIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *BigQueryExportIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // GroupResultIterator manages a stream of *securitycenterpb.GroupResult.

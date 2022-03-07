@@ -1348,6 +1348,24 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2022/02/28
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/video/stitcher/v1",
+		pkg:                   "stitcher",
+		importPath:            "cloud.google.com/go/video/stitcher/apiv1",
+		gRPCServiceConfigPath: "videostitcher_grpc_service_config.json",
+		apiServiceConfigPath:  "videostitcher_v1.yaml",
+		// GA after 2022/04/02
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/certificatemanager/v1",
+		pkg:                   "certificatemanager",
+		importPath:            "cloud.google.com/go/certificatemanager/apiv1",
+		gRPCServiceConfigPath: "certificatemanager_grpc_service_config.json",
+		apiServiceConfigPath:  "certificatemanager_v1.yaml",
+		// GA after 2022/04/04
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
