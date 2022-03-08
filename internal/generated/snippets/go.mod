@@ -23,11 +23,11 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.3.0
+	cloud.google.com/go/compute v1.5.0
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
-	cloud.google.com/go/datacatalog v1.1.0
+	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/dataflow v0.1.0
 	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
@@ -51,11 +51,11 @@ require (
 	cloud.google.com/go/gkeconnect v0.1.0
 	cloud.google.com/go/gkehub v0.2.0
 	cloud.google.com/go/gsuiteaddons v1.0.0
-	cloud.google.com/go/iam v0.2.0
+	cloud.google.com/go/iam v0.3.0
 	cloud.google.com/go/iap v1.0.0
 	cloud.google.com/go/ids v0.1.0
 	cloud.google.com/go/iot v1.0.0
-	cloud.google.com/go/kms v1.1.0
+	cloud.google.com/go/kms v1.4.0
 	cloud.google.com/go/language v1.0.0
 	cloud.google.com/go/lifesciences v0.1.0
 	cloud.google.com/go/logging v1.4.2
@@ -75,7 +75,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.17.1
+	cloud.google.com/go/pubsub v1.19.0
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
