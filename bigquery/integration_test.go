@@ -56,6 +56,7 @@ var (
 	storageClient          *storage.Client
 	policyTagManagerClient *datacatalog.PolicyTagManagerClient
 	dataset                *Dataset
+	otherDataset           *Dataset
 	schema                 = Schema{
 		{Name: "name", Type: StringFieldType},
 		{Name: "nums", Type: IntegerFieldType, Repeated: true},
@@ -221,11 +222,20 @@ func initTestState(client *Client, t time.Time) func() {
 	Seed(t.UnixNano())
 
 	dataset = client.Dataset(datasetIDs.New())
+	otherDataset = client.Dataset(datasetIDs.New())
+
 	if err := dataset.Create(ctx, nil); err != nil {
 		log.Fatalf("creating dataset %s: %v", dataset.DatasetID, err)
 	}
+	if err := otherDataset.Create(ctx, nil); err != nil {
+		log.Fatalf("creating other dataset %s: %v", dataset.DatasetID, err)
+	}
+
 	return func() {
 		if err := dataset.DeleteWithContents(ctx); err != nil {
+			log.Printf("could not delete %s", dataset.DatasetID)
+		}
+		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
 	}
@@ -955,6 +965,13 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			EntityType: RoutineEntity,
 			Routine:    routine,
 		},
+		{
+			EntityType: DatasetEntity,
+			Dataset: &DatasetAccessEntry{
+				Dataset:     otherDataset,
+				TargetTypes: []string{"VIEWS"},
+			},
+		},
 	}
 
 	newAccess := append(md.Access, newEntries...)
@@ -970,8 +987,8 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		}
 	}()
 
-	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{})); diff != "" {
-		t.Fatalf("got=-, want=+:\n%s", diff)
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{}, Dataset{})); diff != "" {
+		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
 
@@ -997,6 +1014,12 @@ func lessAccessEntries(x, y *AccessEntry) bool {
 	}
 	if x.View == nil {
 		return y.View != nil
+	}
+	if x.Routine == nil {
+		return y.Routine == nil
+	}
+	if x.Dataset == nil {
+		return y.Dataset == nil
 	}
 	return false
 }
