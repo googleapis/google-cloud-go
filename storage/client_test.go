@@ -12,7 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package storage
 
-// Version is the current tagged release of the library.
-const Version = "1.19.0"
+import (
+	"context"
+	"testing"
+)
+
+func TestNewGRPCStorageClient(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	if _, err := newGRPCStorageClient(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestNewHTTPStorageClient(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	if _, err := newHTTPStorageClient(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+}
