@@ -6,17 +6,13 @@ items:
   summary: "<p>Package storage provides an easy way to work with Google Cloud Storage.\nGoogle
     Cloud Storage stores data in named objects, which are grouped into buckets.</p>\n<p>More
     information about Google Cloud Storage is available at\nhttps://cloud.google.com/storage/docs.</p>\n<p>See
-    https://godoc.org/cloud.google.com/go for authentication, timeouts,\nconnection
-    pooling and similar aspects of this package.</p>\n<p>All of the methods of this
-    package use exponential backoff to retry calls that fail\nwith certain errors,
-    as described in\nhttps://cloud.google.com/storage/docs/exponential-backoff. Retrying
-    continues\nindefinitely unless the controlling context is canceled or the client
-    is closed. See\ncontext.WithTimeout and context.WithCancel.</p>\n<h3>Creating
-    a Client</h3>\n<p>To start working with this package, create a client:</p>\n<pre
-    class=\"prettyprint\"><code>ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif
-    err != nil {\n    // TODO: Handle error.\n}\n</code></pre><p>The client will use
-    your default application credentials. Clients should be\nreused instead of created
-    as needed. The methods of Client are safe for\nconcurrent use by multiple goroutines.</p>\n<p>If
+    https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,\nconnection
+    pooling and similar aspects of this package.</p>\n<h3>Creating a Client</h3>\n<p>To
+    start working with this package, create a client:</p>\n<pre class=\"prettyprint\"><code>ctx
+    := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil
+    {\n    // TODO: Handle error.\n}\n</code></pre><p>The client will use your default
+    application credentials. Clients should be\nreused instead of created as needed.
+    The methods of Client are safe for\nconcurrent use by multiple goroutines.</p>\n<p>If
     you only wish to access public data, you can create\nan unauthenticated client
     with</p>\n<pre class=\"prettyprint\"><code>client, err := storage.NewClient(ctx,
     option.WithoutAuthentication())\n</code></pre><p>To use an emulator with this
@@ -104,11 +100,30 @@ items:
     err := storage.GenerateSignedPostPolicyV4(bucketName, objectName, opts)\nif err
     != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields; %v\\n&quot;,
     pv4.URL, pv4.Fields)\n</code></pre><h3>Errors</h3>\n<p>Errors returned by this
-    client are often of the type <a href=\"https://godoc.org/google.golang.org/api/googleapi#Error\"><code>googleapi.Error</code></a>.\nThese
-    errors can be introspected for more information by using <code>errors.As</code>
-    with the richer <code>googleapi.Error</code> type. For example:</p>\n<pre class=\"prettyprint\"><code>var
-    e &#42;googleapi.Error\nif ok := errors.As(err, &amp;e); ok {\n\t  if e.Code ==
-    409 { ... }\n}\n</code></pre>"
+    client are often of the type googleapi.Error.\nThese errors can be introspected
+    for more information by using errors.As\nwith the richer googleapi.Error type.
+    For example:</p>\n<pre class=\"prettyprint\"><code>var e &#42;googleapi.Error\nif
+    ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre><p>See
+    https://pkg.go.dev/google.golang.org/api/googleapi#Error for more information.</p>\n<h3>Retrying
+    failed requests</h3>\n<p>Methods in this package may retry calls that fail with
+    transient errors.\nRetrying continues indefinitely unless the controlling context
+    is canceled, the\nclient is closed, or a non-transient error is received. To stop
+    retries from\ncontinuing, use context timeouts or cancellation.</p>\n<p>The retry
+    strategy in this library follows best practices for Cloud Storage. By\ndefault,
+    operations are retried only if they are idempotent, and exponential\nbackoff with
+    jitter is employed. In addition, errors are only retried if they\nare defined
+    as transient by the service. See\nhttps://cloud.google.com/storage/docs/retry-strategy
+    for more information.</p>\n<p>Users can configure non-default retry behavior for
+    a single library call (using\nBucketHandle.Retryer and ObjectHandle.Retryer) or
+    for all calls made by a\nclient (using Client.SetRetry). For example:</p>\n<pre
+    class=\"prettyprint\"><code>o := client.Bucket(bucket).Object(object).Retryer(\n\t//
+    Use WithBackoff to change the timing of the exponential backoff.\n\tstorage.WithBackoff(gax.Backoff{\n\t\tInitial:
+    \   2 &#42; time.Second,\n\t}),\n\t// Use WithPolicy to configure the idempotency
+    policy. RetryAlways will\n\t// retry the operation even if it is non-idempotent.\n\tstorage.WithPolicy(storage.RetryAlways),\n)\n\n//
+    Use a context timeout to set an overall deadline on the call, including all\n//
+    potential retries.\nctx, cancel := context.WithTimeout(ctx, 5&#42;time.Second)\ndefer
+    cancel()\n\n// Delete an object using the specified strategy and timeout.\nif
+    err := o.Delete(ctx); err != nil {\n\t// Handle err.\n}\n</code></pre>"
   type: package
   langs:
   - go
@@ -141,12 +156,14 @@ items:
   - cloud.google.com/go/storage.BucketHandle.DefaultObjectACL
   - cloud.google.com/go/storage.BucketHandle.Delete
   - cloud.google.com/go/storage.BucketHandle.DeleteNotification
+  - cloud.google.com/go/storage.BucketHandle.GenerateSignedPostPolicyV4
   - cloud.google.com/go/storage.BucketHandle.IAM
   - cloud.google.com/go/storage.BucketHandle.If
   - cloud.google.com/go/storage.BucketHandle.LockRetentionPolicy
   - cloud.google.com/go/storage.BucketHandle.Notifications
   - cloud.google.com/go/storage.BucketHandle.Object
   - cloud.google.com/go/storage.BucketHandle.Objects
+  - cloud.google.com/go/storage.BucketHandle.Retryer
   - cloud.google.com/go/storage.BucketHandle.SignedURL
   - cloud.google.com/go/storage.BucketHandle.Update
   - cloud.google.com/go/storage.BucketHandle.UserProject
@@ -166,6 +183,7 @@ items:
   - cloud.google.com/go/storage.Client.HMACKeyHandle
   - cloud.google.com/go/storage.Client.ListHMACKeys
   - cloud.google.com/go/storage.Client.ServiceAccount
+  - cloud.google.com/go/storage.Client.SetRetry
   - cloud.google.com/go/storage.Composer
   - cloud.google.com/go/storage.Composer.Run
   - cloud.google.com/go/storage.Conditions
@@ -210,6 +228,7 @@ items:
   - cloud.google.com/go/storage.ObjectHandle.NewWriter
   - cloud.google.com/go/storage.ObjectHandle.ObjectName
   - cloud.google.com/go/storage.ObjectHandle.ReadCompressed
+  - cloud.google.com/go/storage.ObjectHandle.Retryer
   - cloud.google.com/go/storage.ObjectHandle.Update
   - cloud.google.com/go/storage.ObjectIterator
   - cloud.google.com/go/storage.ObjectIterator.Next
@@ -230,6 +249,9 @@ items:
   - cloud.google.com/go/storage.PublicAccessPrevention.String
   - cloud.google.com/go/storage.Query
   - cloud.google.com/go/storage.Query.SetAttrSelection
+  - cloud.google.com/go/storage.RPO
+  - cloud.google.com/go/storage.RPOUnknown,RPODefault,RPOAsyncTurbo
+  - cloud.google.com/go/storage.RPO.String
   - cloud.google.com/go/storage.Reader
   - cloud.google.com/go/storage.Reader.CacheControl
   - cloud.google.com/go/storage.Reader.Close
@@ -241,6 +263,12 @@ items:
   - cloud.google.com/go/storage.Reader.Size
   - cloud.google.com/go/storage.ReaderObjectAttrs
   - cloud.google.com/go/storage.RetentionPolicy
+  - cloud.google.com/go/storage.RetryOption
+  - cloud.google.com/go/storage.RetryOption.WithBackoff
+  - cloud.google.com/go/storage.RetryOption.WithErrorFunc
+  - cloud.google.com/go/storage.RetryOption.WithPolicy
+  - cloud.google.com/go/storage.RetryPolicy
+  - cloud.google.com/go/storage.RetryIdempotent,RetryAlways,RetryNever
   - cloud.google.com/go/storage.SignedURLOptions
   - cloud.google.com/go/storage.SigningScheme
   - cloud.google.com/go/storage.SigningSchemeDefault,SigningSchemeV2,SigningSchemeV4
@@ -545,7 +573,10 @@ items:
       \"region\" and \"dual-region\".\n\t// This field is read-only.\n\tLocationType
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// The project
       number of the project the bucket belongs to.\n\t// This field is read-only.\n\tProjectNumber
-      <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>\n}"
+      <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>\n\n\t// RPO configures
+      the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
+      to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate
   name: BucketAttrsToUpdate
   id: BucketAttrsToUpdate
@@ -600,8 +631,11 @@ items:
       If not empty, applies a predefined set of access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedACL
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// If not empty,
       applies a predefined set of default object access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedDefaultObjectACL
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// contains filtered
-      or unexported fields\n}"
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// RPO configures
+      the Recovery Point Objective (RPO) policy of the bucket.\n\t// Set to RPOAsyncTurbo
+      to turn on Turbo Replication for a bucket.\n\t// See https://cloud.google.com/storage/docs/managing-turbo-replication
+      for\n\t// more information.\n\tRPO <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>\n\t//
+      contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
   name: |
     func (*BucketAttrsToUpdate) DeleteLabel
@@ -820,6 +854,35 @@ items:
       := client.Bucket(\"my-bucket\")\n\t// TODO: Obtain notificationID from BucketHandle.AddNotification\n\t//
       or BucketHandle.Notifications.\n\terr = b.DeleteNotification(ctx, notificationID)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.GenerateSignedPostPolicyV4
+  name: |
+    func (*BucketHandle) GenerateSignedPostPolicyV4
+  id: GenerateSignedPostPolicyV4
+  summary: |
+    GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
+    The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
+
+    This method only requires the Expires field in the specified PostPolicyV4Options
+    to be non-nil. If not provided, it attempts to fill the GoogleAccessID and PrivateKey
+    from the GOOGLE_APPLICATION_CREDENTIALS environment variable.
+    If you are authenticating with a custom HTTP client, Service Account based
+    auto-detection will be hindered.
+
+    If no private key is found, it attempts to use the GoogleAccessID to sign the URL.
+    This requires the IAM Service Account Credentials API to be enabled
+    (https://console.developers.google.com/apis/api/iamcredentials.googleapis.com/overview)
+    and iam.serviceAccounts.signBlob permissions on the GoogleAccessID service account.
+    If you do not want these fields set for you, you may pass them in through opts or use
+    GenerateSignedPostPolicyV4(bucket, name string, opts *PostPolicyV4Options) instead.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      GenerateSignedPostPolicyV4(object <a href="https://pkg.go.dev/builtin#string">string</a>,
+      opts *<a href="#cloud_google_com_go_storage_PostPolicyV4Options">PostPolicyV4Options</a>)
+      (*<a href="#cloud_google_com_go_storage_PostPolicyV4">PostPolicyV4</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.BucketHandle.IAM
   name: |
     func (*BucketHandle) IAM
@@ -947,6 +1010,28 @@ items:
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
       err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Bucket(\"my-bucket\").Objects(ctx,
       nil)\n\t_ = it // TODO: iterate using Next or iterator.Pager.\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Retryer
+  name: |
+    func (*BucketHandle) Retryer
+  id: Retryer
+  summary: |
+    Retryer returns a bucket handle that is configured with custom retry
+    behavior as specified by the options that are passed to it. All operations
+    on the new handle will use the customized retry configuration.
+    Retry options set on a object handle will take precedence over options set on
+    the bucket handle.
+    These retry options will merge with the client's retry configuration (if set)
+    for the returned handle. Options passed into this method will take precedence
+    over retry options on the client. Note that you must explicitly pass in each
+    option you want to override.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Retryer(opts ...<a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>)
+      *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.SignedURL
   name: |
     func (*BucketHandle) SignedURL
@@ -1356,6 +1441,25 @@ items:
       <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       projectID <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/builtin#string">string</a>,
       <a href="https://pkg.go.dev/builtin#error">error</a>)
+- uid: cloud.google.com/go/storage.Client.SetRetry
+  name: |
+    func (*Client) SetRetry
+  id: SetRetry
+  summary: |
+    SetRetry configures the client with custom retry behavior as specified by the
+    options that are passed to it. All operations using this client will use the
+    customized retry configuration.
+    This should be called once before using the client for network operations, as
+    there could be indeterminate behaviour with operations in progress.
+    Retry options set on a bucket or object handle will take precedence over
+    these options.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) SetRetry(opts
+      ...<a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>)
 - uid: cloud.google.com/go/storage.Composer
   name: Composer
   id: Composer
@@ -2424,6 +2528,26 @@ items:
     content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
       ReadCompressed(compressed <a href="https://pkg.go.dev/builtin#bool">bool</a>)
       *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
+- uid: cloud.google.com/go/storage.ObjectHandle.Retryer
+  name: |
+    func (*ObjectHandle) Retryer
+  id: Retryer
+  summary: |
+    Retryer returns an object handle that is configured with custom retry
+    behavior as specified by the options that are passed to it. All operations
+    on the new handle will use the customized retry configuration.
+    These retry options will merge with the bucket's retryer (if set) for the
+    returned handle. Options passed into this method will take precedence over
+    retry options on the bucket and client. Note that you must explicitly pass in
+    each option you want to override.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Retryer(opts ...<a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>)
+      *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.Update
   name: |
     func (*ObjectHandle) Update
@@ -2665,16 +2789,26 @@ items:
       pass:notasecret -out key.pem -nodes\n\t//\n\t// Provide the contents of the
       PEM file as a byte slice.\n\t// Exactly one of PrivateKey or SignBytes must
       be non-nil.\n\tPrivateKey []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
-      SignBytes is a function for implementing custom signing. For example, if\n\t//
-      your application is running on Google App Engine, you can use\n\t// appengine's
-      internal signing function:\n\t//     ctx := appengine.NewContext(request)\n\t//
-      \    acc, _ := appengine.ServiceAccount(ctx)\n\t//     url, err := SignedURL(\"bucket\",
-      \"object\", &SignedURLOptions{\n\t//     \tGoogleAccessID: acc,\n\t//     \tSignBytes:
-      func(b []byte) ([]byte, error) {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx,
-      b)\n\t//     \t\treturn signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//
-      \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes
-      func(hashBytes []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>) (signature
-      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, err <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
+      SignBytes is a function for implementing custom signing.\n\t//\n\t// Deprecated:
+      Use SignRawBytes. If both SignBytes and SignRawBytes are defined,\n\t// SignBytes
+      will be ignored.\n\t// This SignBytes function expects the bytes it receives
+      to be hashed, while\n\t// SignRawBytes accepts the raw bytes without hashing,
+      allowing more flexibility.\n\t// Add the following to the top of your signing
+      function to hash the bytes\n\t// to use SignRawBytes instead:\n\t//\t\tshaSum
+      := sha256.Sum256(bytes)\n\t//\t\tbytes = shaSum[:]\n\t//\n\tSignBytes func(hashBytes
+      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>) (signature []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>,
+      err <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t// SignRawBytes
+      is a function for implementing custom signing. For example, if\n\t// your application
+      is running on Google App Engine, you can use\n\t// appengine's internal signing
+      function:\n\t//\t\tctx := appengine.NewContext(request)\n\t//     \tacc, _ :=
+      appengine.ServiceAccount(ctx)\n\t//     \t&PostPolicyV4Options{\n\t//     \t\tGoogleAccessID:
+      acc,\n\t//     \t\tSignRawBytes: func(b []byte) ([]byte, error) {\n\t//     \t\t\t_,
+      signedBytes, err := appengine.SignBytes(ctx, b)\n\t//     \t\t\treturn signedBytes,
+      err\n\t//     \t\t},\n\t//     \t\t// etc.\n\t//     \t})\n\t//\n\t// SignRawBytes
+      is equivalent to the SignBytes field on SignedURLOptions;\n\t// that is, you
+      may use the same signing function for the two.\n\t//\n\t// Exactly one of PrivateKey
+      or SignRawBytes must be non-nil.\n\tSignRawBytes func(bytes []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>)
+      (signature []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, err <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
       Expires is the expiration time on the signed URL.\n\t// It must be a time in
       the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Style provides options
@@ -2689,7 +2823,8 @@ items:
       The conditions that the uploaded file will be expected to conform to.\n\t//
       When used, the failure of an upload to satisfy a condition will result in\n\t//
       a 4XX status code, back with the message describing the problem.\n\t// Optional.\n\tConditions
-      []<a href=\"#cloud_google_com_go_storage_PostPolicyV4Condition\">PostPolicyV4Condition</a>\n}"
+      []<a href=\"#cloud_google_com_go_storage_PostPolicyV4Condition\">PostPolicyV4Condition</a>\n\t//
+      contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.ProjectTeam
   name: ProjectTeam
   id: ProjectTeam
@@ -2829,6 +2964,47 @@ items:
   syntax:
     content: func (q *<a href="#cloud_google_com_go_storage_Query">Query</a>) SetAttrSelection(attrs
       []<a href="https://pkg.go.dev/builtin#string">string</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
+- uid: cloud.google.com/go/storage.RPO
+  name: RPO
+  id: RPO
+  summary: |
+    RPO (Recovery Point Objective) configures the turbo replication feature. See
+    https://cloud.google.com/storage/docs/managing-turbo-replication for more information.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type RPO <a href="https://pkg.go.dev/builtin#int">int</a>
+- uid: cloud.google.com/go/storage.RPOUnknown,RPODefault,RPOAsyncTurbo
+  name: RPOUnknown, RPODefault, RPOAsyncTurbo
+  id: RPOUnknown,RPODefault,RPOAsyncTurbo
+  parent: cloud.google.com/go/storage.RPO
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// RPOUnknown is a zero value. It may be returned from bucket.Attrs()
+      if RPO\n\t// is not present in the bucket metadata, that is, the bucket is not
+      dual-region.\n\t// This value is also used if the RPO field is not set in a
+      call to GCS.\n\tRPOUnknown <a href=\"#cloud_google_com_go_storage_RPO\">RPO</a>
+      = <a href=\"https://pkg.go.dev/builtin#iota\">iota</a>\n\n\t// RPODefault represents
+      default replication. It is used to reset RPO on an\n\t// existing bucket  that
+      has this field set to RPOAsyncTurbo. Otherwise it\n\t// is equivalent to RPOUnknown,
+      and is always ignored. This value is valid\n\t// for dual- or multi-region buckets.\n\tRPODefault\n\n\t//
+      RPOAsyncTurbo represents turbo replication and is used to enable Turbo\n\t//
+      Replication on a bucket. This value is only valid for dual-region buckets.\n\tRPOAsyncTurbo\n)"
+- uid: cloud.google.com/go/storage.RPO.String
+  name: |
+    func (RPO) String
+  id: String
+  parent: cloud.google.com/go/storage.RPO
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (rpo <a href="#cloud_google_com_go_storage_RPO">RPO</a>) String()
+      <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.Reader
   name: Reader
   id: Reader
@@ -3030,6 +3206,107 @@ items:
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// IsLocked describes whether
       the bucket is locked. Once locked, an\n\t// object retention policy cannot be
       modified.\n\t// This field is read-only.\n\tIsLocked <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n}"
+- uid: cloud.google.com/go/storage.RetryOption
+  name: RetryOption
+  id: RetryOption
+  summary: |
+    RetryOption allows users to configure non-default retry behavior for API
+    calls made to GCS.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type RetryOption interface {\n\t// contains filtered or unexported methods\n}"
+- uid: cloud.google.com/go/storage.RetryOption.WithBackoff
+  name: |
+    func WithBackoff
+  id: WithBackoff
+  summary: |
+    WithBackoff allows configuration of the backoff timing used for retries.
+    Available configuration options (Initial, Max and Multiplier) are described
+    at https://pkg.go.dev/github.com/googleapis/gax-go/v2#Backoff. If any fields
+    are not supplied by the user, gax default values will be used.
+  parent: cloud.google.com/go/storage.RetryOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithBackoff(backoff <a href="https://pkg.go.dev/github.com/googleapis/gax-go/v2">gax</a>.<a
+      href="https://pkg.go.dev/github.com/googleapis/gax-go/v2#Backoff">Backoff</a>)
+      <a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>
+- uid: cloud.google.com/go/storage.RetryOption.WithErrorFunc
+  name: |
+    func WithErrorFunc
+  id: WithErrorFunc
+  summary: |
+    WithErrorFunc allows users to pass a custom function to the retryer. Errors
+    will be retried if and only if `shouldRetry(err)` returns true.
+    By default, the following errors are retried (see invoke.go for the default
+    shouldRetry function):
+
+    - HTTP responses with codes 408, 429, 502, 503, and 504.
+
+    - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
+
+    - Errors which are considered transient using the Temporary() interface.
+
+    - Wrapped versions of these errors.
+
+    This option can be used to retry on a different set of errors than the
+    default.
+  parent: cloud.google.com/go/storage.RetryOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithErrorFunc(shouldRetry func(err <a href="https://pkg.go.dev/builtin#error">error</a>)
+      <a href="https://pkg.go.dev/builtin#bool">bool</a>) <a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>
+- uid: cloud.google.com/go/storage.RetryOption.WithPolicy
+  name: |
+    func WithPolicy
+  id: WithPolicy
+  summary: |
+    WithPolicy allows the configuration of which operations should be performed
+    with retries for transient errors.
+  parent: cloud.google.com/go/storage.RetryOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func WithPolicy(policy <a href="#cloud_google_com_go_storage_RetryPolicy">RetryPolicy</a>)
+      <a href="#cloud_google_com_go_storage_RetryOption">RetryOption</a>
+- uid: cloud.google.com/go/storage.RetryPolicy
+  name: RetryPolicy
+  id: RetryPolicy
+  summary: |
+    RetryPolicy describes the available policies for which operations should be
+    retried. The default is `RetryIdempotent`.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type RetryPolicy <a href="https://pkg.go.dev/builtin#int">int</a>
+- uid: cloud.google.com/go/storage.RetryIdempotent,RetryAlways,RetryNever
+  name: RetryIdempotent, RetryAlways, RetryNever
+  id: RetryIdempotent,RetryAlways,RetryNever
+  parent: cloud.google.com/go/storage.RetryPolicy
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// RetryIdempotent causes only idempotent operations to be
+      retried when the\n\t// service returns a transient error. Using this policy,
+      fully idempotent\n\t// operations (such as `ObjectHandle.Attrs()`) will always
+      be retried.\n\t// Conditionally idempotent operations (for example `ObjectHandle.Update()`)\n\t//
+      will be retried only if the necessary conditions have been supplied (in\n\t//
+      the case of `ObjectHandle.Update()` this would mean supplying a\n\t// `Conditions.MetagenerationMatch`
+      condition is required).\n\tRetryIdempotent <a href=\"#cloud_google_com_go_storage_RetryPolicy\">RetryPolicy</a>
+      = <a href=\"https://pkg.go.dev/builtin#iota\">iota</a>\n\n\t// RetryAlways causes
+      all operations to be retried when the service returns a\n\t// transient error,
+      regardless of idempotency considerations.\n\tRetryAlways\n\n\t// RetryNever
+      causes the client to not perform retries on failed operations.\n\tRetryNever\n)"
 - uid: cloud.google.com/go/storage.SignedURLOptions
   name: SignedURLOptions
   id: SignedURLOptions
@@ -3223,6 +3500,18 @@ items:
       from retrying in case of a transient error from the server, since a buffer\n\t//
       is required in order to retry the failed request.\n\t//\n\t// ChunkSize must
       be set before the first Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
+      ChunkRetryDeadline sets a per-chunk retry deadline for multi-chunk\n\t// resumable
+      uploads.\n\t//\n\t// For uploads of larger files, the Writer will attempt to
+      retry if the\n\t// request to upload a particular chunk fails with a transient
+      error.\n\t// If a single chunk has been attempting to upload for longer than
+      this\n\t// deadline and the request fails, it will no longer be retried, and
+      the error\n\t// will be returned to the caller. This is only applicable for
+      files which are\n\t// large enough to require a multi-chunk resumable upload.
+      The default value\n\t// is 32s. Users may want to pick a longer deadline if
+      they are using larger\n\t// values for ChunkSize or if they expect to have a
+      slow or unreliable\n\t// internet connection.\n\t//\n\t// To set a deadline
+      on the entire upload, use context timeout or\n\t// cancellation.\n\tChunkRetryDeadline
+      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t//
       ProgressFunc can be used to monitor the progress of a large write.\n\t// operation.
       If ProgressFunc is not nil and writing requires multiple\n\t// calls to the
       underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
