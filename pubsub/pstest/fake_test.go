@@ -1200,6 +1200,14 @@ func mustCreateTopic(ctx context.Context, t *testing.T, pc pb.PublisherClient, t
 	return top
 }
 
+func mustUpdateTopic(ctx context.Context, t *testing.T, pc pb.PublisherClient, req *pb.UpdateTopicRequest) *pb.Topic {
+	top, err := pc.UpdateTopic(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return top
+}
+
 func mustCreateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) *pb.Subscription {
 	sub, err := sc.CreateSubscription(ctx, sub)
 	if err != nil {
@@ -1374,4 +1382,47 @@ func TestPublishResponse(t *testing.T) {
 	srv.AddPublishResponse(&pb.PublishResponse{
 		MessageIds: []string{"3"},
 	}, nil)
+}
+
+func TestTopicRetentionAdmin(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	initialDur := durationpb.New(10 * time.Hour)
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name:                     "projects/P/topics/T",
+		MessageRetentionDuration: initialDur,
+	})
+	got := top.MessageRetentionDuration
+	want := initialDur
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top.MessageRetentionDuration mismatch: %s", diff)
+	}
+
+	updateTopic := &pb.Topic{
+		Name:                     "projects/P/topics/T",
+		MessageRetentionDuration: durationpb.New(5 * time.Hour),
+	}
+	top2 := mustUpdateTopic(ctx, t, pclient, &pb.UpdateTopicRequest{
+		Topic:      updateTopic,
+		UpdateMask: &field_mask.FieldMask{Paths: []string{"message_retention_duration"}},
+	})
+	got = top2.MessageRetentionDuration
+	want = updateTopic.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("top2.MessageRetentionDuration mismatch: %s", diff)
+	}
+
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top2.Name,
+	})
+
+	got = sub.TopicMessageRetentionDuration
+	want = top2.MessageRetentionDuration
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("sub.TopicMessageRetentionDuration mismatch: %s", diff)
+	}
 }
