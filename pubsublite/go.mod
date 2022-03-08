@@ -4,8 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/iam v0.1.0 // indirect
-	cloud.google.com/go/pubsub v1.17.1
+	cloud.google.com/go/pubsub v1.19.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.7
 	github.com/google/uuid v1.3.0
