@@ -713,8 +713,25 @@ func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
 var NeverExpire = time.Time{}.Add(-1)
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tablePatchCall struct {
+	call *bq.TablesPatchCall
+}
+
+// TableUpdateOption allow requests to update table metadata.
+type TableUpdateOption func(*tablePatchCall)
+
+// WithAutoDetectSchema governs whether the schema autodetection occurs as part of the table update.
+// This is relevant in cases like external tables where schema is detected from the source data.
+func WithAutoDetectSchema(b bool) TableUpdateOption {
+	return func(tpc *tablePatchCall) {
+		tpc.call.AutodetectSchema(b)
+	}
+}
+
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string, opts ...TableUpdateOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -722,14 +739,22 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	if err != nil {
 		return nil, err
 	}
-	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
-	setClientHeader(call.Header())
+
+	tpc := &tablePatchCall{
+		call: t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tpc)
+	}
+
+	setClientHeader(tpc.call.Header())
 	if etag != "" {
-		call.Header().Set("If-Match", etag)
+		tpc.call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Do()
+		res, err = tpc.call.Do()
 		return err
 	}); err != nil {
 		return nil, err

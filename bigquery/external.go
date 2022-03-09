@@ -104,6 +104,11 @@ type ExternalDataConfig struct {
 	//
 	// StringTargetType supports all precision and scale values.
 	DecimalTargetTypes []DecimalTargetType
+
+	// ConnectionId associates an external data configuration with a connection ID.
+	// Connections are managed through the BigQuery Connection API:
+	// https://pkg.go.dev/cloud.google.com/go/bigquery/connection/apiv1
+	ConnectionId string
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -115,6 +120,7 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 		IgnoreUnknownValues:     e.IgnoreUnknownValues,
 		MaxBadRecords:           e.MaxBadRecords,
 		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
+		ConnectionId:            e.ConnectionId,
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
@@ -138,6 +144,7 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		MaxBadRecords:           q.MaxBadRecords,
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
+		ConnectionId:            q.ConnectionId,
 	}
 	for _, v := range q.DecimalTargetTypes {
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
