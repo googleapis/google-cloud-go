@@ -134,6 +134,23 @@ func resolveOptions(s *settings, opts ...storageOption) {
 	}
 }
 
+// callSettings is a helper for resolving storage options against the settings
+// in the context of an individual call. This is to ensure that client-level
+// default settings are not mutated by two different calls getting options.
+//
+// Example: s := callSettings(c.settings, opts...)
+func callSettings(defaults *settings, opts ...storageOption) *settings {
+	if defaults == nil {
+		return nil
+	}
+	// This does not make a deep copy of the pointer/slice fields, but all
+	// options replace the settings fields rather than modify their values in
+	// place.
+	cs := *defaults
+	resolveOptions(&cs, opts...)
+	return &cs
+}
+
 // storageOption is the transport-agnostic call option for the storageClient
 // interface.
 type storageOption interface {
