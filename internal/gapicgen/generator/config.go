@@ -1184,6 +1184,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/aiplatform/v1beta1",
+		pkg:                   "aiplatform",
+		importPath:            "cloud.google.com/go/aiplatform/apiv1beta1",
+		gRPCServiceConfigPath: "aiplatform_grpc_service_config.json",
+		apiServiceConfigPath:  "aiplatform_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/gkeconnect/gateway/v1beta1",
 		pkg:                   "gateway",
 		importPath:            "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
