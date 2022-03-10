@@ -382,13 +382,8 @@ func (d *DocumentRef) newUpdateWithTransform(doc *pb.Document, updatePaths []Fie
 	}
 	if len(transforms) > 0 || pc != nil {
 		ws = append(ws, &pb.Write{
-			Operation: &pb.Write_Transform{
-				Transform: &pb.DocumentTransform{
-					Document:        d.Path,
-					FieldTransforms: transforms,
-				},
-			},
-			CurrentDocument: pc,
+			UpdateTransforms: transforms,
+			CurrentDocument:  pc,
 		})
 	}
 	return ws
