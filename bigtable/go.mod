@@ -8,7 +8,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.1
 	github.com/google/go-cmp v0.5.7
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.1.1
 	golang.org/x/oauth2 v0.0.0-20220223155221-ee480838109b
 	golang.org/x/sys v0.0.0-20220307203707-22a9840ba4d7
