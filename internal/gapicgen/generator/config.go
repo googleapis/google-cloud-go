@@ -1184,6 +1184,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/aiplatform/v1beta1",
+		pkg:                   "aiplatform",
+		importPath:            "cloud.google.com/go/aiplatform/apiv1beta1",
+		gRPCServiceConfigPath: "aiplatform_grpc_service_config.json",
+		apiServiceConfigPath:  "aiplatform_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/gkeconnect/gateway/v1beta1",
 		pkg:                   "gateway",
 		importPath:            "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
@@ -1393,11 +1401,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/storage/v2",
-		pkg:                   "storage",
-		importPath:            "cloud.google.com/go/storage/internal/apiv2",
-		gRPCServiceConfigPath: "storage_grpc_service_config.json",
-		apiServiceConfigPath:  "storage_v2.yaml",
-		releaseLevel:          "alpha",
+		inputDirectoryPath: "google/storage/v2",
+		pkg:                "storage",
+		importPath:         "cloud.google.com/go/storage/internal/apiv2",
+		// The retry configuration is explicitly excluded in order to disable
+		// GAPIC-level retries and allow the veneer layer to handle retries.
+		apiServiceConfigPath: "storage_v2.yaml",
+		releaseLevel:         "alpha",
 	},
 }
