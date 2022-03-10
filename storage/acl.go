@@ -259,6 +259,14 @@ func toBucketACLRules(items []*raw.BucketAccessControl) []ACLRule {
 	return rs
 }
 
+func toBucketACLRulesFromProto(items []*storagepb.BucketAccessControl) []ACLRule {
+	var rs []ACLRule
+	for _, item := range items {
+		rs = append(rs, toBucketACLRuleFromProto(item))
+	}
+	return rs
+}
+
 func toObjectACLRule(a *raw.ObjectAccessControl) ACLRule {
 	return ACLRule{
 		Entity:      ACLEntity(a.Entity),
@@ -289,6 +297,17 @@ func toBucketACLRule(a *raw.BucketAccessControl) ACLRule {
 		Domain:      a.Domain,
 		Email:       a.Email,
 		ProjectTeam: toBucketProjectTeam(a.ProjectTeam),
+	}
+}
+
+func toBucketACLRuleFromProto(a *storagepb.BucketAccessControl) ACLRule {
+	return ACLRule{
+		Entity:      ACLEntity(a.GetEntity()),
+		EntityID:    a.GetEntityId(),
+		Role:        ACLRole(a.GetRole()),
+		Domain:      a.GetDomain(),
+		Email:       a.GetEmail(),
+		ProjectTeam: projectTeamFromProto(a.GetProjectTeam()),
 	}
 }
 
@@ -325,6 +344,17 @@ func toRawBucketACL(rules []ACLRule) []*raw.BucketAccessControl {
 	return r
 }
 
+func toProtoBucketACL(rules []ACLRule) []*storagepb.BucketAccessControl {
+	if len(rules) == 0 {
+		return nil
+	}
+	r := make([]*storagepb.BucketAccessControl, 0, len(rules))
+	for _, rule := range rules {
+		r = append(r, rule.toProtoBucketAccessControl())
+	}
+	return r
+}
+
 func (r ACLRule) toRawBucketAccessControl(bucket string) *raw.BucketAccessControl {
 	return &raw.BucketAccessControl{
 		Bucket: bucket,
@@ -351,6 +381,14 @@ func (r ACLRule) toProtoObjectAccessControl(bucket string) *storagepb.ObjectAcce
 	}
 }
 
+func (r ACLRule) toProtoBucketAccessControl() *storagepb.BucketAccessControl {
+	return &storagepb.BucketAccessControl{
+		Entity: string(r.Entity),
+		Role:   string(r.Role),
+		// The other fields are not settable.
+	}
+}
+
 func toBucketProjectTeam(p *raw.BucketAccessControlProjectTeam) *ProjectTeam {
 	if p == nil {
 		return nil
@@ -358,6 +396,16 @@ func toBucketProjectTeam(p *raw.BucketAccessControlProjectTeam) *ProjectTeam {
 	return &ProjectTeam{
 		ProjectNumber: p.ProjectNumber,
 		Team:          p.Team,
+	}
+}
+
+func projectTeamFromProto(p *storagepb.ProjectTeam) *ProjectTeam {
+	if p == nil {
+		return nil
+	}
+	return &ProjectTeam{
+		ProjectNumber: p.GetProjectNumber(),
+		Team:          p.GetTeam(),
 	}
 }
 
