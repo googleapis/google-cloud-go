@@ -19,6 +19,7 @@ require (
 	cloud.google.com/go/bigquery v1.26.0
 	cloud.google.com/go/billing v1.0.0
 	cloud.google.com/go/binaryauthorization v0.2.0
+	cloud.google.com/go/certificatemanager v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/channel v1.1.0
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
@@ -110,8 +111,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.70.0
-	google.golang.org/genproto v0.0.0-20220307174427-659dce7fcb03
+	google.golang.org/api v0.71.0
+	google.golang.org/genproto v0.0.0-20220308174144-ae0e22291548
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -333,3 +334,5 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 replace cloud.google.com/go/dataplex => ../../../dataplex
+
+replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
