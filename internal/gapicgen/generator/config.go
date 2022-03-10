@@ -1401,11 +1401,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/storage/v2",
-		pkg:                   "storage",
-		importPath:            "cloud.google.com/go/storage/internal/apiv2",
-		gRPCServiceConfigPath: "storage_grpc_service_config.json",
-		apiServiceConfigPath:  "storage_v2.yaml",
-		releaseLevel:          "alpha",
+		inputDirectoryPath: "google/storage/v2",
+		pkg:                "storage",
+		importPath:         "cloud.google.com/go/storage/internal/apiv2",
+		// The retry configuration is explicitly excluded in order to disable
+		// GAPIC-level retries and allow the veneer layer to handle retries.
+		apiServiceConfigPath: "storage_v2.yaml",
+		releaseLevel:         "alpha",
 	},
 }
