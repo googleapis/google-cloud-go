@@ -917,8 +917,8 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 				Enabled: true,
 			}
 		}
-		// TODO(noahdietz): This may be switched to a string. Otherwise, need to
-		// do string to Enum conversion.
+		// TODO(noahdietz): This will be switched to a string.
+		//
 		// if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
 		// 	bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
 		// }
@@ -1429,6 +1429,10 @@ func toProtoLifecycle(l Lifecycle) *storagepb.Bucket_Lifecycle {
 				StorageClass: r.Action.StorageClass,
 			},
 			Condition: &storagepb.Bucket_Lifecycle_Rule_Condition{
+				// Note: The Apiary types use int64 (even though the Discovery
+				// doc states "format: int32"), so the client types used int64,
+				// but the proto uses int32 so we have a potentially lossy
+				// conversion.
 				AgeDays:                 proto.Int32(int32(r.Condition.AgeInDays)),
 				DaysSinceCustomTime:     proto.Int32(int32(r.Condition.DaysSinceCustomTime)),
 				DaysSinceNoncurrentTime: proto.Int32(int32(r.Condition.DaysSinceNoncurrentTime)),
