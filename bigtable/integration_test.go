@@ -39,7 +39,6 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
@@ -1403,8 +1402,10 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	}
 
 	// Create backup.
-	backupUUID := uuid.New()
-	backup := fmt.Sprintf("backup%s", backupUUID)
+	opts := &uid.Options{Sep: '_'}
+	backupUUID := uid.NewSpace("backup", opts)
+	backup := backupUUID.New()
+
 	defer adminClient.DeleteBackup(ctx, cluster, backup)
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
