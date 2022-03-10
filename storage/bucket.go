@@ -810,7 +810,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		return nil
 	}
 	return &BucketAttrs{
-		Name:                     b.GetName(),
+		Name:                     parseBucketName(b.GetName()),
 		Location:                 b.GetLocation(),
 		MetaGeneration:           b.GetMetageneration(),
 		DefaultEventBasedHold:    b.GetDefaultEventBasedHold(),
