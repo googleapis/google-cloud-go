@@ -838,11 +838,12 @@ func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
 	element := p.trackedSessionHandles.Front()
 	for element != nil {
 		sh := element.Value.(*sessionHandle)
-		sh.mu.Lock()
-		if sh.stack != nil {
-			stackTraces = fmt.Sprintf("%s\n\nSession %d checked out of pool at %s by goroutine:\n%s", stackTraces, i, sh.checkoutTime.Format(time.RFC3339), sh.stack)
+		// NOTE: No need to lock sessionHandle since we don't modify it.
+		// (see: https://github.com/googleapis/google-cloud-go/issues/5710)
+		stack := sh.stack
+		if stack != nil {
+			stackTraces = fmt.Sprintf("%s\n\nSession %d checked out of pool at %s by goroutine:\n%s", stackTraces, i, sh.checkoutTime.Format(time.RFC3339), stack)
 		}
-		sh.mu.Unlock()
 		element = element.Next()
 		i++
 	}
