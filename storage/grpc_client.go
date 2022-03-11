@@ -17,7 +17,6 @@ package storage
 import (
 	"context"
 	"os"
-	"strings"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/option"
@@ -56,9 +55,7 @@ func defaultGRPCOptions() []option.ClientOption {
 	if host := os.Getenv("STORAGE_EMULATOR_HOST_GRPC"); host != "" {
 		// Strip the scheme from the emulator host. WithEndpoint does not take a
 		// scheme for gRPC.
-		if strings.Contains(host, "://") {
-			host = strings.SplitN(host, "://", 2)[1]
-		}
+		host = stripScheme(host)
 
 		defaults = append(defaults,
 			option.WithEndpoint(host),
