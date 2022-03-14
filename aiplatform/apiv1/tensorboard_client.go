@@ -474,7 +474,7 @@ func (c *tensorboardGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *tensorboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -486,6 +486,7 @@ func (c *tensorboardGRPCClient) Close() error {
 
 func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aiplatformpb.CreateTensorboardRequest, opts ...gax.CallOption) (*CreateTensorboardOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTensorboard[0:len((*c.CallOptions).CreateTensorboard):len((*c.CallOptions).CreateTensorboard)], opts...)
 	var resp *longrunningpb.Operation
@@ -504,6 +505,7 @@ func (c *tensorboardGRPCClient) CreateTensorboard(ctx context.Context, req *aipl
 
 func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatformpb.GetTensorboardRequest, opts ...gax.CallOption) (*aiplatformpb.Tensorboard, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTensorboard[0:len((*c.CallOptions).GetTensorboard):len((*c.CallOptions).GetTensorboard)], opts...)
 	var resp *aiplatformpb.Tensorboard
@@ -520,6 +522,7 @@ func (c *tensorboardGRPCClient) GetTensorboard(ctx context.Context, req *aiplatf
 
 func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aiplatformpb.UpdateTensorboardRequest, opts ...gax.CallOption) (*UpdateTensorboardOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard.name", url.QueryEscape(req.GetTensorboard().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTensorboard[0:len((*c.CallOptions).UpdateTensorboard):len((*c.CallOptions).UpdateTensorboard)], opts...)
 	var resp *longrunningpb.Operation
@@ -538,6 +541,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboard(ctx context.Context, req *aipl
 
 func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aiplatformpb.ListTensorboardsRequest, opts ...gax.CallOption) *TensorboardIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTensorboards[0:len((*c.CallOptions).ListTensorboards):len((*c.CallOptions).ListTensorboards)], opts...)
 	it := &TensorboardIterator{}
@@ -582,6 +586,7 @@ func (c *tensorboardGRPCClient) ListTensorboards(ctx context.Context, req *aipla
 
 func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aiplatformpb.DeleteTensorboardRequest, opts ...gax.CallOption) (*DeleteTensorboardOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTensorboard[0:len((*c.CallOptions).DeleteTensorboard):len((*c.CallOptions).DeleteTensorboard)], opts...)
 	var resp *longrunningpb.Operation
@@ -600,6 +605,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboard(ctx context.Context, req *aipl
 
 func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context, req *aiplatformpb.CreateTensorboardExperimentRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTensorboardExperiment[0:len((*c.CallOptions).CreateTensorboardExperiment):len((*c.CallOptions).CreateTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
@@ -616,6 +622,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardExperiment(ctx context.Context,
 
 func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, req *aiplatformpb.GetTensorboardExperimentRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTensorboardExperiment[0:len((*c.CallOptions).GetTensorboardExperiment):len((*c.CallOptions).GetTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
@@ -632,6 +639,7 @@ func (c *tensorboardGRPCClient) GetTensorboardExperiment(ctx context.Context, re
 
 func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context, req *aiplatformpb.UpdateTensorboardExperimentRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardExperiment, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_experiment.name", url.QueryEscape(req.GetTensorboardExperiment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTensorboardExperiment[0:len((*c.CallOptions).UpdateTensorboardExperiment):len((*c.CallOptions).UpdateTensorboardExperiment)], opts...)
 	var resp *aiplatformpb.TensorboardExperiment
@@ -648,6 +656,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardExperiment(ctx context.Context,
 
 func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, req *aiplatformpb.ListTensorboardExperimentsRequest, opts ...gax.CallOption) *TensorboardExperimentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTensorboardExperiments[0:len((*c.CallOptions).ListTensorboardExperiments):len((*c.CallOptions).ListTensorboardExperiments)], opts...)
 	it := &TensorboardExperimentIterator{}
@@ -692,6 +701,7 @@ func (c *tensorboardGRPCClient) ListTensorboardExperiments(ctx context.Context, 
 
 func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context, req *aiplatformpb.DeleteTensorboardExperimentRequest, opts ...gax.CallOption) (*DeleteTensorboardExperimentOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTensorboardExperiment[0:len((*c.CallOptions).DeleteTensorboardExperiment):len((*c.CallOptions).DeleteTensorboardExperiment)], opts...)
 	var resp *longrunningpb.Operation
@@ -710,6 +720,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardExperiment(ctx context.Context,
 
 func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *aiplatformpb.CreateTensorboardRunRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardRun, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTensorboardRun[0:len((*c.CallOptions).CreateTensorboardRun):len((*c.CallOptions).CreateTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
@@ -726,6 +737,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardRun(ctx context.Context, req *a
 
 func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, req *aiplatformpb.BatchCreateTensorboardRunsRequest, opts ...gax.CallOption) (*aiplatformpb.BatchCreateTensorboardRunsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateTensorboardRuns[0:len((*c.CallOptions).BatchCreateTensorboardRuns):len((*c.CallOptions).BatchCreateTensorboardRuns)], opts...)
 	var resp *aiplatformpb.BatchCreateTensorboardRunsResponse
@@ -742,6 +754,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardRuns(ctx context.Context, 
 
 func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aiplatformpb.GetTensorboardRunRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardRun, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTensorboardRun[0:len((*c.CallOptions).GetTensorboardRun):len((*c.CallOptions).GetTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
@@ -758,6 +771,7 @@ func (c *tensorboardGRPCClient) GetTensorboardRun(ctx context.Context, req *aipl
 
 func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *aiplatformpb.UpdateTensorboardRunRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardRun, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_run.name", url.QueryEscape(req.GetTensorboardRun().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTensorboardRun[0:len((*c.CallOptions).UpdateTensorboardRun):len((*c.CallOptions).UpdateTensorboardRun)], opts...)
 	var resp *aiplatformpb.TensorboardRun
@@ -774,6 +788,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardRun(ctx context.Context, req *a
 
 func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *aiplatformpb.ListTensorboardRunsRequest, opts ...gax.CallOption) *TensorboardRunIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTensorboardRuns[0:len((*c.CallOptions).ListTensorboardRuns):len((*c.CallOptions).ListTensorboardRuns)], opts...)
 	it := &TensorboardRunIterator{}
@@ -818,6 +833,7 @@ func (c *tensorboardGRPCClient) ListTensorboardRuns(ctx context.Context, req *ai
 
 func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *aiplatformpb.DeleteTensorboardRunRequest, opts ...gax.CallOption) (*DeleteTensorboardRunOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTensorboardRun[0:len((*c.CallOptions).DeleteTensorboardRun):len((*c.CallOptions).DeleteTensorboardRun)], opts...)
 	var resp *longrunningpb.Operation
@@ -836,6 +852,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardRun(ctx context.Context, req *a
 
 func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.BatchCreateTensorboardTimeSeriesRequest, opts ...gax.CallOption) (*aiplatformpb.BatchCreateTensorboardTimeSeriesResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateTensorboardTimeSeries[0:len((*c.CallOptions).BatchCreateTensorboardTimeSeries):len((*c.CallOptions).BatchCreateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.BatchCreateTensorboardTimeSeriesResponse
@@ -852,6 +869,7 @@ func (c *tensorboardGRPCClient) BatchCreateTensorboardTimeSeries(ctx context.Con
 
 func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.CreateTensorboardTimeSeriesRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardTimeSeries, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTensorboardTimeSeries[0:len((*c.CallOptions).CreateTensorboardTimeSeries):len((*c.CallOptions).CreateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
@@ -868,6 +886,7 @@ func (c *tensorboardGRPCClient) CreateTensorboardTimeSeries(ctx context.Context,
 
 func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.GetTensorboardTimeSeriesRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardTimeSeries, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTensorboardTimeSeries[0:len((*c.CallOptions).GetTensorboardTimeSeries):len((*c.CallOptions).GetTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
@@ -884,6 +903,7 @@ func (c *tensorboardGRPCClient) GetTensorboardTimeSeries(ctx context.Context, re
 
 func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.UpdateTensorboardTimeSeriesRequest, opts ...gax.CallOption) (*aiplatformpb.TensorboardTimeSeries, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_time_series.name", url.QueryEscape(req.GetTensorboardTimeSeries().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTensorboardTimeSeries[0:len((*c.CallOptions).UpdateTensorboardTimeSeries):len((*c.CallOptions).UpdateTensorboardTimeSeries)], opts...)
 	var resp *aiplatformpb.TensorboardTimeSeries
@@ -900,6 +920,7 @@ func (c *tensorboardGRPCClient) UpdateTensorboardTimeSeries(ctx context.Context,
 
 func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.ListTensorboardTimeSeriesRequest, opts ...gax.CallOption) *TensorboardTimeSeriesIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTensorboardTimeSeries[0:len((*c.CallOptions).ListTensorboardTimeSeries):len((*c.CallOptions).ListTensorboardTimeSeries)], opts...)
 	it := &TensorboardTimeSeriesIterator{}
@@ -944,6 +965,7 @@ func (c *tensorboardGRPCClient) ListTensorboardTimeSeries(ctx context.Context, r
 
 func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context, req *aiplatformpb.DeleteTensorboardTimeSeriesRequest, opts ...gax.CallOption) (*DeleteTensorboardTimeSeriesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTensorboardTimeSeries[0:len((*c.CallOptions).DeleteTensorboardTimeSeries):len((*c.CallOptions).DeleteTensorboardTimeSeries)], opts...)
 	var resp *longrunningpb.Operation
@@ -962,6 +984,7 @@ func (c *tensorboardGRPCClient) DeleteTensorboardTimeSeries(ctx context.Context,
 
 func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.BatchReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard", url.QueryEscape(req.GetTensorboard())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchReadTensorboardTimeSeriesData[0:len((*c.CallOptions).BatchReadTensorboardTimeSeriesData):len((*c.CallOptions).BatchReadTensorboardTimeSeriesData)], opts...)
 	var resp *aiplatformpb.BatchReadTensorboardTimeSeriesDataResponse
@@ -978,6 +1001,7 @@ func (c *tensorboardGRPCClient) BatchReadTensorboardTimeSeriesData(ctx context.C
 
 func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.ReadTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) (*aiplatformpb.ReadTensorboardTimeSeriesDataResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_time_series", url.QueryEscape(req.GetTensorboardTimeSeries())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReadTensorboardTimeSeriesData[0:len((*c.CallOptions).ReadTensorboardTimeSeriesData):len((*c.CallOptions).ReadTensorboardTimeSeriesData)], opts...)
 	var resp *aiplatformpb.ReadTensorboardTimeSeriesDataResponse
@@ -994,6 +1018,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardTimeSeriesData(ctx context.Contex
 
 func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req *aiplatformpb.ReadTensorboardBlobDataRequest, opts ...gax.CallOption) (aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "time_series", url.QueryEscape(req.GetTimeSeries())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	var resp aiplatformpb.TensorboardService_ReadTensorboardBlobDataClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1009,6 +1034,7 @@ func (c *tensorboardGRPCClient) ReadTensorboardBlobData(ctx context.Context, req
 
 func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Context, req *aiplatformpb.WriteTensorboardExperimentDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardExperimentDataResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_experiment", url.QueryEscape(req.GetTensorboardExperiment())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).WriteTensorboardExperimentData[0:len((*c.CallOptions).WriteTensorboardExperimentData):len((*c.CallOptions).WriteTensorboardExperimentData)], opts...)
 	var resp *aiplatformpb.WriteTensorboardExperimentDataResponse
@@ -1025,6 +1051,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardExperimentData(ctx context.Conte
 
 func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req *aiplatformpb.WriteTensorboardRunDataRequest, opts ...gax.CallOption) (*aiplatformpb.WriteTensorboardRunDataResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_run", url.QueryEscape(req.GetTensorboardRun())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).WriteTensorboardRunData[0:len((*c.CallOptions).WriteTensorboardRunData):len((*c.CallOptions).WriteTensorboardRunData)], opts...)
 	var resp *aiplatformpb.WriteTensorboardRunDataResponse
@@ -1041,6 +1068,7 @@ func (c *tensorboardGRPCClient) WriteTensorboardRunData(ctx context.Context, req
 
 func (c *tensorboardGRPCClient) ExportTensorboardTimeSeriesData(ctx context.Context, req *aiplatformpb.ExportTensorboardTimeSeriesDataRequest, opts ...gax.CallOption) *TimeSeriesDataPointIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tensorboard_time_series", url.QueryEscape(req.GetTensorboardTimeSeries())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportTensorboardTimeSeriesData[0:len((*c.CallOptions).ExportTensorboardTimeSeriesData):len((*c.CallOptions).ExportTensorboardTimeSeriesData)], opts...)
 	it := &TimeSeriesDataPointIterator{}

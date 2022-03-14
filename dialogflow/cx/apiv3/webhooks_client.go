@@ -259,7 +259,7 @@ func (c *webhooksGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *webhooksGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -271,6 +271,7 @@ func (c *webhooksGRPCClient) Close() error {
 
 func (c *webhooksGRPCClient) ListWebhooks(ctx context.Context, req *cxpb.ListWebhooksRequest, opts ...gax.CallOption) *WebhookIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListWebhooks[0:len((*c.CallOptions).ListWebhooks):len((*c.CallOptions).ListWebhooks)], opts...)
 	it := &WebhookIterator{}
@@ -320,6 +321,7 @@ func (c *webhooksGRPCClient) GetWebhook(ctx context.Context, req *cxpb.GetWebhoo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWebhook[0:len((*c.CallOptions).GetWebhook):len((*c.CallOptions).GetWebhook)], opts...)
 	var resp *cxpb.Webhook
@@ -341,6 +343,7 @@ func (c *webhooksGRPCClient) CreateWebhook(ctx context.Context, req *cxpb.Create
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateWebhook[0:len((*c.CallOptions).CreateWebhook):len((*c.CallOptions).CreateWebhook)], opts...)
 	var resp *cxpb.Webhook
@@ -362,6 +365,7 @@ func (c *webhooksGRPCClient) UpdateWebhook(ctx context.Context, req *cxpb.Update
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "webhook.name", url.QueryEscape(req.GetWebhook().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateWebhook[0:len((*c.CallOptions).UpdateWebhook):len((*c.CallOptions).UpdateWebhook)], opts...)
 	var resp *cxpb.Webhook
@@ -383,6 +387,7 @@ func (c *webhooksGRPCClient) DeleteWebhook(ctx context.Context, req *cxpb.Delete
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteWebhook[0:len((*c.CallOptions).DeleteWebhook):len((*c.CallOptions).DeleteWebhook)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

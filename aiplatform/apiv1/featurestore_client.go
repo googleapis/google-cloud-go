@@ -457,7 +457,7 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -469,6 +469,7 @@ func (c *featurestoreGRPCClient) Close() error {
 
 func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *aiplatformpb.CreateFeaturestoreRequest, opts ...gax.CallOption) (*CreateFeaturestoreOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateFeaturestore[0:len((*c.CallOptions).CreateFeaturestore):len((*c.CallOptions).CreateFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
@@ -487,6 +488,7 @@ func (c *featurestoreGRPCClient) CreateFeaturestore(ctx context.Context, req *ai
 
 func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aiplatformpb.GetFeaturestoreRequest, opts ...gax.CallOption) (*aiplatformpb.Featurestore, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetFeaturestore[0:len((*c.CallOptions).GetFeaturestore):len((*c.CallOptions).GetFeaturestore)], opts...)
 	var resp *aiplatformpb.Featurestore
@@ -503,6 +505,7 @@ func (c *featurestoreGRPCClient) GetFeaturestore(ctx context.Context, req *aipla
 
 func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aiplatformpb.ListFeaturestoresRequest, opts ...gax.CallOption) *FeaturestoreIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListFeaturestores[0:len((*c.CallOptions).ListFeaturestores):len((*c.CallOptions).ListFeaturestores)], opts...)
 	it := &FeaturestoreIterator{}
@@ -547,6 +550,7 @@ func (c *featurestoreGRPCClient) ListFeaturestores(ctx context.Context, req *aip
 
 func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *aiplatformpb.UpdateFeaturestoreRequest, opts ...gax.CallOption) (*UpdateFeaturestoreOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore.name", url.QueryEscape(req.GetFeaturestore().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateFeaturestore[0:len((*c.CallOptions).UpdateFeaturestore):len((*c.CallOptions).UpdateFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
@@ -565,6 +569,7 @@ func (c *featurestoreGRPCClient) UpdateFeaturestore(ctx context.Context, req *ai
 
 func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *aiplatformpb.DeleteFeaturestoreRequest, opts ...gax.CallOption) (*DeleteFeaturestoreOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteFeaturestore[0:len((*c.CallOptions).DeleteFeaturestore):len((*c.CallOptions).DeleteFeaturestore)], opts...)
 	var resp *longrunningpb.Operation
@@ -583,6 +588,7 @@ func (c *featurestoreGRPCClient) DeleteFeaturestore(ctx context.Context, req *ai
 
 func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aiplatformpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*CreateEntityTypeOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEntityType[0:len((*c.CallOptions).CreateEntityType):len((*c.CallOptions).CreateEntityType)], opts...)
 	var resp *longrunningpb.Operation
@@ -601,6 +607,7 @@ func (c *featurestoreGRPCClient) CreateEntityType(ctx context.Context, req *aipl
 
 func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatformpb.GetEntityTypeRequest, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEntityType[0:len((*c.CallOptions).GetEntityType):len((*c.CallOptions).GetEntityType)], opts...)
 	var resp *aiplatformpb.EntityType
@@ -617,6 +624,7 @@ func (c *featurestoreGRPCClient) GetEntityType(ctx context.Context, req *aiplatf
 
 func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aiplatformpb.ListEntityTypesRequest, opts ...gax.CallOption) *EntityTypeIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEntityTypes[0:len((*c.CallOptions).ListEntityTypes):len((*c.CallOptions).ListEntityTypes)], opts...)
 	it := &EntityTypeIterator{}
@@ -661,6 +669,7 @@ func (c *featurestoreGRPCClient) ListEntityTypes(ctx context.Context, req *aipla
 
 func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aiplatformpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*aiplatformpb.EntityType, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEntityType[0:len((*c.CallOptions).UpdateEntityType):len((*c.CallOptions).UpdateEntityType)], opts...)
 	var resp *aiplatformpb.EntityType
@@ -677,6 +686,7 @@ func (c *featurestoreGRPCClient) UpdateEntityType(ctx context.Context, req *aipl
 
 func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aiplatformpb.DeleteEntityTypeRequest, opts ...gax.CallOption) (*DeleteEntityTypeOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEntityType[0:len((*c.CallOptions).DeleteEntityType):len((*c.CallOptions).DeleteEntityType)], opts...)
 	var resp *longrunningpb.Operation
@@ -695,6 +705,7 @@ func (c *featurestoreGRPCClient) DeleteEntityType(ctx context.Context, req *aipl
 
 func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatformpb.CreateFeatureRequest, opts ...gax.CallOption) (*CreateFeatureOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateFeature[0:len((*c.CallOptions).CreateFeature):len((*c.CallOptions).CreateFeature)], opts...)
 	var resp *longrunningpb.Operation
@@ -713,6 +724,7 @@ func (c *featurestoreGRPCClient) CreateFeature(ctx context.Context, req *aiplatf
 
 func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *aiplatformpb.BatchCreateFeaturesRequest, opts ...gax.CallOption) (*BatchCreateFeaturesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateFeatures[0:len((*c.CallOptions).BatchCreateFeatures):len((*c.CallOptions).BatchCreateFeatures)], opts...)
 	var resp *longrunningpb.Operation
@@ -731,6 +743,7 @@ func (c *featurestoreGRPCClient) BatchCreateFeatures(ctx context.Context, req *a
 
 func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatformpb.GetFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetFeature[0:len((*c.CallOptions).GetFeature):len((*c.CallOptions).GetFeature)], opts...)
 	var resp *aiplatformpb.Feature
@@ -747,6 +760,7 @@ func (c *featurestoreGRPCClient) GetFeature(ctx context.Context, req *aiplatform
 
 func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatformpb.ListFeaturesRequest, opts ...gax.CallOption) *FeatureIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListFeatures[0:len((*c.CallOptions).ListFeatures):len((*c.CallOptions).ListFeatures)], opts...)
 	it := &FeatureIterator{}
@@ -791,6 +805,7 @@ func (c *featurestoreGRPCClient) ListFeatures(ctx context.Context, req *aiplatfo
 
 func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatformpb.UpdateFeatureRequest, opts ...gax.CallOption) (*aiplatformpb.Feature, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feature.name", url.QueryEscape(req.GetFeature().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateFeature[0:len((*c.CallOptions).UpdateFeature):len((*c.CallOptions).UpdateFeature)], opts...)
 	var resp *aiplatformpb.Feature
@@ -807,6 +822,7 @@ func (c *featurestoreGRPCClient) UpdateFeature(ctx context.Context, req *aiplatf
 
 func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatformpb.DeleteFeatureRequest, opts ...gax.CallOption) (*DeleteFeatureOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteFeature[0:len((*c.CallOptions).DeleteFeature):len((*c.CallOptions).DeleteFeature)], opts...)
 	var resp *longrunningpb.Operation
@@ -825,6 +841,7 @@ func (c *featurestoreGRPCClient) DeleteFeature(ctx context.Context, req *aiplatf
 
 func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *aiplatformpb.ImportFeatureValuesRequest, opts ...gax.CallOption) (*ImportFeatureValuesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportFeatureValues[0:len((*c.CallOptions).ImportFeatureValues):len((*c.CallOptions).ImportFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
@@ -843,6 +860,7 @@ func (c *featurestoreGRPCClient) ImportFeatureValues(ctx context.Context, req *a
 
 func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req *aiplatformpb.BatchReadFeatureValuesRequest, opts ...gax.CallOption) (*BatchReadFeatureValuesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore", url.QueryEscape(req.GetFeaturestore())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchReadFeatureValues[0:len((*c.CallOptions).BatchReadFeatureValues):len((*c.CallOptions).BatchReadFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
@@ -861,6 +879,7 @@ func (c *featurestoreGRPCClient) BatchReadFeatureValues(ctx context.Context, req
 
 func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *aiplatformpb.ExportFeatureValuesRequest, opts ...gax.CallOption) (*ExportFeatureValuesOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportFeatureValues[0:len((*c.CallOptions).ExportFeatureValues):len((*c.CallOptions).ExportFeatureValues)], opts...)
 	var resp *longrunningpb.Operation
@@ -879,6 +898,7 @@ func (c *featurestoreGRPCClient) ExportFeatureValues(ctx context.Context, req *a
 
 func (c *featurestoreGRPCClient) SearchFeatures(ctx context.Context, req *aiplatformpb.SearchFeaturesRequest, opts ...gax.CallOption) *FeatureIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchFeatures[0:len((*c.CallOptions).SearchFeatures):len((*c.CallOptions).SearchFeatures)], opts...)
 	it := &FeatureIterator{}
