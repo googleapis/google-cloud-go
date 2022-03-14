@@ -625,11 +625,12 @@ func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	job, err = cloner.Run(ctx)
 	if err != nil {
-		t.Fatalf("couldn't run restore: %v", err)
+		t.Fatalf("couldn't run clone: %v", err)
 	}
+	t.Logf("clone job %q, dest %q", job.ID(), dataset.Table(cloneID).FullyQualifiedName())
 	err = wait(ctx, job)
 	if err != nil {
-		t.Fatalf("restore failed: %v", err)
+		t.Fatalf("clone failed: %v", err)
 	}
 
 	cloneMeta, err := dataset.Table(cloneID).Metadata(ctx)
@@ -645,7 +646,16 @@ func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 	if cloneMeta.Type != RegularTable {
 		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, RegularTable)
 	}
-	// TODO: validate CloneDefinition when it's exposed.
+	if cloneMeta.CloneDefinition == nil {
+		t.Errorf("expected CloneDefinition in (%q), was nil", cloneMeta.FullID)
+	}
+	if cloneMeta.CloneDefinition.BaseTableReference == nil {
+		t.Errorf("expected CloneDefinition.BaseTableReference, was nil")
+	}
+	wantBase := dataset.Table(snapshotID)
+	if cloneMeta.CloneDefinition.BaseTableReference != wantBase {
+		t.Errorf("mismatch in CloneDefinition.BaseTableReference.  Got %s, want %s", cloneMeta.CloneDefinition.BaseTableReference.FullyQualifiedName(), wantBase.FullyQualifiedName())
+	}
 
 }
 
