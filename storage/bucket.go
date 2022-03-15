@@ -818,7 +818,7 @@ func newBucketFromProto(b *storagepb.Bucket) *BucketAttrs {
 		Created:                  b.GetCreateTime().AsTime(),
 		VersioningEnabled:        b.GetVersioning().GetEnabled(),
 		ACL:                      toBucketACLRulesFromProto(b.GetAcl()),
-		DefaultObjectACL:         fromProtoToObjectACLRules(b.GetDefaultObjectAcl()),
+		DefaultObjectACL:         toObjectACLRulesFromProto(b.GetDefaultObjectAcl()),
 		Labels:                   b.GetLabels(),
 		RequesterPays:            b.GetBilling().GetRequesterPays(),
 		Lifecycle:                toLifecycleFromProto(b.GetLifecycle()),

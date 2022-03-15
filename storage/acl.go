@@ -243,10 +243,10 @@ func toObjectACLRules(items []*raw.ObjectAccessControl) []ACLRule {
 	return rs
 }
 
-func fromProtoToObjectACLRules(items []*storagepb.ObjectAccessControl) []ACLRule {
+func toObjectACLRulesFromProto(items []*storagepb.ObjectAccessControl) []ACLRule {
 	var rs []ACLRule
 	for _, item := range items {
-		rs = append(rs, fromProtoToObjectACLRule(item))
+		rs = append(rs, toObjectACLRuleFromProto(item))
 	}
 	return rs
 }
@@ -278,14 +278,14 @@ func toObjectACLRule(a *raw.ObjectAccessControl) ACLRule {
 	}
 }
 
-func fromProtoToObjectACLRule(a *storagepb.ObjectAccessControl) ACLRule {
+func toObjectACLRuleFromProto(a *storagepb.ObjectAccessControl) ACLRule {
 	return ACLRule{
 		Entity:      ACLEntity(a.GetEntity()),
 		EntityID:    a.GetEntityId(),
 		Role:        ACLRole(a.GetRole()),
 		Domain:      a.GetDomain(),
 		Email:       a.GetEmail(),
-		ProjectTeam: projectTeamFromProto(a.GetProjectTeam()),
+		ProjectTeam: toProjectTeamFromProto(a.GetProjectTeam()),
 	}
 }
 
@@ -307,7 +307,7 @@ func toBucketACLRuleFromProto(a *storagepb.BucketAccessControl) ACLRule {
 		Role:        ACLRole(a.GetRole()),
 		Domain:      a.GetDomain(),
 		Email:       a.GetEmail(),
-		ProjectTeam: projectTeamFromProto(a.GetProjectTeam()),
+		ProjectTeam: toProjectTeamFromProto(a.GetProjectTeam()),
 	}
 }
 
@@ -399,7 +399,7 @@ func toBucketProjectTeam(p *raw.BucketAccessControlProjectTeam) *ProjectTeam {
 	}
 }
 
-func projectTeamFromProto(p *storagepb.ProjectTeam) *ProjectTeam {
+func toProjectTeamFromProto(p *storagepb.ProjectTeam) *ProjectTeam {
 	if p == nil {
 		return nil
 	}
