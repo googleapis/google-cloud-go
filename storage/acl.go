@@ -285,7 +285,7 @@ func fromProtoToObjectACLRule(a *storagepb.ObjectAccessControl) ACLRule {
 		Role:        ACLRole(a.GetRole()),
 		Domain:      a.GetDomain(),
 		Email:       a.GetEmail(),
-		ProjectTeam: fromProtoToObjectProjectTeam(a.GetProjectTeam()),
+		ProjectTeam: projectTeamFromProto(a.GetProjectTeam()),
 	}
 }
 
@@ -416,15 +416,5 @@ func toObjectProjectTeam(p *raw.ObjectAccessControlProjectTeam) *ProjectTeam {
 	return &ProjectTeam{
 		ProjectNumber: p.ProjectNumber,
 		Team:          p.Team,
-	}
-}
-
-func fromProtoToObjectProjectTeam(p *storagepb.ProjectTeam) *ProjectTeam {
-	if p == nil {
-		return nil
-	}
-	return &ProjectTeam{
-		ProjectNumber: p.GetProjectNumber(),
-		Team:          p.GetTeam(),
 	}
 }
