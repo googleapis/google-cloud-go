@@ -1112,7 +1112,8 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 	defer adminClient.DeleteTable(ctx, presplitTable)
 
-	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+	cf := uid.NewSpace("follows", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, cf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1400,12 +1401,8 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
-
 	// Create backup.
-	opts := &uid.Options{Sep: '_'}
-	backupUUID := uid.NewSpace("backup", opts)
-	backup := backupUUID.New()
-
+	backup := "backup"
 	defer adminClient.DeleteBackup(ctx, cluster, backup)
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
