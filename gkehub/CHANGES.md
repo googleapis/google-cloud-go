@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.4.0...gkehub/v0.5.0) (2022-03-14)
+
+
+### Features
+
+* **gkehub:** added support for k8s_version field docs: k8s_version field is not part of resource_options struct ([a4f8273](https://github.com/googleapis/google-cloud-go/commit/a4f8273697a888473689db9b887298c74e0aebf3))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.3.0...gkehub/v0.4.0) (2022-02-23)
 
 
