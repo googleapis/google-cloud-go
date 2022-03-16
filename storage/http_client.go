@@ -131,9 +131,36 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
 	return "", errMethodNotSupported
 }
+
 func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	bkt := attrs.toRawBucket()
+
+	// If there is lifecycle information but no location, explicitly set
+	// the location. This is a GCS quirk/bug.
+	if bkt.Location == "" && bkt.Lifecycle != nil {
+		bkt.Location = "US"
+	}
+	req := c.raw.Buckets.Insert(project, bkt)
+	setClientHeader(req.Header())
+	if attrs.PredefinedACL != "" {
+		req.PredefinedAcl(attrs.PredefinedACL)
+	}
+	if attrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
+	}
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		b, err := req.Context(ctx).Do()
+		if err != nil {
+			return err
+		}
+		battrs, err = newBucket(b)
+		return err
+	}, s.retry, s.idempotent)
+	return battrs, err
 }
+
 func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
 	return nil, errMethodNotSupported
 }

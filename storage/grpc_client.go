@@ -21,6 +21,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/grpc"
 )
 
@@ -101,8 +102,30 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 	return "", errMethodNotSupported
 }
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	b := attrs.toProtoBucket()
+	req := &storagepb.CreateBucketRequest{
+		Parent:   toProjectResource(project),
+		Bucket:   b,
+		BucketId: b.GetName(),
+		// TODO(noahdietz): This will be switched to a string.
+		//
+		// PredefinedAcl: attrs.PredefinedACL,
+		// PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+	}
+
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.CreateBucket(ctx, req, s.gax...)
+
+		battrs = newBucketFromProto(res)
+
+		return err
+	}, s.retry, s.idempotent)
+
+	return battrs, err
 }
+
 func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
 	return nil, errMethodNotSupported
 }
