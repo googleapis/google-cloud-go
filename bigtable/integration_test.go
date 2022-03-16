@@ -1401,8 +1401,12 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
+
 	// Create backup.
-	backup := "backup"
+	opts := &uid.Options{Sep: '_'}
+	backupUUID := uid.NewSpace("backup", opts)
+	backup := backupUUID.New()
+
 	defer adminClient.DeleteBackup(ctx, cluster, backup)
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
