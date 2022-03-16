@@ -1129,7 +1129,7 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	for row, ss := range initialData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(cf, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
