@@ -121,6 +121,19 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT * FROM Foo WHERE CAST(Bar AS STRING)='Bar'`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromTable{Table: "Foo"}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}},
+						RHS: StringLiteral("Bar"),
+					},
+				},
+			},
+		},
 		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
@@ -325,6 +338,10 @@ func TestParseExpr(t *testing.T) {
 
 		// Functions
 		{`STARTS_WITH(Bar, 'B')`, Func{Name: "STARTS_WITH", Args: []Expr{ID("Bar"), StringLiteral("B")}}},
+		{`CAST(Bar AS STRING)`, Func{Name: "CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: String}}}}},
+		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
+		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
+		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -499,6 +516,21 @@ func TestParseDDL(t *testing.T) {
 		ALTER TABLE WithRowDeletionPolicy DROP ROW DELETION POLICY;
 		ALTER TABLE WithRowDeletionPolicy ADD ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
 		ALTER TABLE WithRowDeletionPolicy REPLACE ROW DELETION POLICY ( OLDER_THAN ( DelTimestamp, INTERVAL 30 DAY ));
+
+		CREATE VIEW SingersView
+		SQL SECURITY INVOKER
+		AS SELECT SingerId, FullName
+		FROM Singers
+		ORDER BY LastName, FirstName;
+
+		CREATE TABLE users (
+		  user_id      STRING(36) NOT NULL,
+		  some_string  STRING(16) NOT NULL,
+		  some_time TIMESTAMP NOT NULL,
+		  number_key   INT64 AS (SAFE_CAST(SUBSTR(some_string, 2) AS INT64)) STORED,
+		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
+		  shard_id  INT64 AS (MOD(FARM_FINGERPRINT(user_id), 19)) STORED,
+		) PRIMARY KEY(user_id);
 
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -689,6 +721,60 @@ func TestParseDDL(t *testing.T) {
 				},
 				Position: line(58),
 			},
+			&CreateView{
+				Name:      "SingersView",
+				OrReplace: false,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("SingerId"), ID("FullName")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "Singers",
+						}},
+					},
+					Order: []Order{
+						{Expr: ID("LastName")},
+						{Expr: ID("FirstName")},
+					},
+				},
+				Position: line(60),
+			},
+
+			//	CREATE TABLE users (
+			//	user_id      STRING(36) NOT NULL,
+			//	some_string  STRING(16) NOT NULL,
+			//	number_key   INT64 AS (SAFE_CAST(SUBSTR(some_string, 2) AS INT64)) STORED,
+			//) PRIMARY KEY(user_id);
+			&CreateTable{
+				Name: "users",
+				Columns: []ColumnDef{
+					{Name: "user_id", Type: Type{Base: String, Len: 36}, NotNull: true, Position: line(67)},
+					{Name: "some_string", Type: Type{Base: String, Len: 16}, NotNull: true, Position: line(68)},
+					{Name: "some_time", Type: Type{Base: Timestamp}, NotNull: true, Position: line(69)},
+					{
+						Name: "number_key", Type: Type{Base: Int64},
+						Generated: Func{Name: "SAFE_CAST", Args: []Expr{
+							TypedExpr{Expr: Func{Name: "SUBSTR", Args: []Expr{ID("some_string"), IntegerLiteral(2)}}, Type: Type{Base: Int64}},
+						}},
+						Position: line(70),
+					},
+					{
+						Name: "generated_date", Type: Type{Base: Date},
+						Generated: Func{Name: "EXTRACT", Args: []Expr{
+							ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("some_time"), Zone: "CET", Type: Type{Base: Timestamp}}},
+						}},
+						Position: line(71),
+					},
+					{
+						Name: "shard_id", Type: Type{Base: Int64},
+						Generated: Func{Name: "MOD", Args: []Expr{
+							Func{Name: "FARM_FINGERPRINT", Args: []Expr{ID("user_id")}}, IntegerLiteral(19),
+						}},
+						Position: line(72),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "user_id"}},
+				Position:   line(66),
+			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
@@ -711,7 +797,7 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(60), End: line(60), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -767,6 +853,50 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 			}},
+		{"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&CreateView{
+					Name:      "SingersView",
+					OrReplace: true,
+					Query: Query{
+						Select: Select{
+							List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+							From: []SelectFrom{SelectFromTable{
+								Table: "Singers",
+							}},
+						},
+						Order: []Order{
+							{Expr: ID("LastName")},
+							{Expr: ID("FirstName")},
+						},
+					},
+					Position: line(1),
+				},
+			},
+			}},
+		{"DROP VIEW `SingersView`",
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&DropView{
+					Name:     "SingersView",
+					Position: line(1),
+				},
+			},
+			}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_VALUE",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)

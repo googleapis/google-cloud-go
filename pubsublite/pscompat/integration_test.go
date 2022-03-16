@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -105,11 +106,11 @@ func initResourcePaths(t *testing.T) (string, wire.TopicPath, wire.SubscriptionP
 
 	proj := testutil.ProjID()
 	zone := test.RandomLiteZone()
-	region, _ := wire.ZoneToRegion(zone)
+	region, _ := wire.LocationToRegion(zone)
 	resourceID := resourceIDs.New()
 
-	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}
-	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
+	topicPath := wire.TopicPath{Project: proj, Location: zone, TopicID: resourceID}
+	subscriptionPath := wire.SubscriptionPath{Project: proj, Location: zone, SubscriptionID: resourceID}
 	return region, topicPath, subscriptionPath
 }
 
@@ -729,12 +730,29 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 			}
 		}
 
+		// Verify partition reassignment notifications.
+		var allPartitions []int
+		var mu sync.Mutex
+		reassignmentHandler := func(before, after []int) error {
+			t.Logf("Partition assignments: before %v, after %v", before, after)
+			if got, want := len(before), 0; got != want {
+				t.Errorf("Partition assignments len(before): got %d, want %d", got, want)
+			}
+			mu.Lock()
+			allPartitions = append(allPartitions, after...)
+			mu.Unlock()
+			return nil
+		}
+
+		receiveSettings := DefaultReceiveSettings
+		receiveSettings.ReassignmentHandler = reassignmentHandler
+
 		cctx, stopSubscribers := context.WithTimeout(context.Background(), defaultTestTimeout)
 		g, _ := errgroup.WithContext(ctx)
 		for i := 0; i < subscriberCount; i++ {
 			// Subscribers must be started in a goroutine as Receive() blocks.
 			g.Go(func() error {
-				subscriber := subscriberClient(context.Background(), t, DefaultReceiveSettings, subscriptionPath)
+				subscriber := subscriberClient(context.Background(), t, receiveSettings, subscriptionPath)
 				err := subscriber.Receive(cctx, messageReceiver)
 				if err != nil {
 					t.Errorf("Receive() got err: %v", err)
@@ -748,6 +766,13 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		stopSubscribers()
 		// Wait until all subscribers have terminated.
 		g.Wait()
+
+		mu.Lock()
+		sort.Ints(allPartitions)
+		if got, want := allPartitions, partitionNumbers(partitionCount); !testutil.Equal(got, want) {
+			t.Errorf("Assigned partition numbers: got %v, want %v", got, want)
+		}
+		mu.Unlock()
 	})
 }
 

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // TODO: Remove entire file when support for Go1.12 and lower has been dropped.
+//go:build go1.13
 // +build go1.13
 
 package spanner

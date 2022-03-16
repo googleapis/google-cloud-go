@@ -1,7 +1,8 @@
 {
     "extends": [
         "config:base",
-        "schedule:weekly"
+        "schedule:weekly",
+        ":disableDependencyDashboard"
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
@@ -13,9 +14,12 @@
     "ignoreDeps": [
         "google.golang.org/genproto"
     ],
+    "ignorePaths": [
+        "**/snippets/**"
+    ],
     "force": {
         "constraints": {
-          "go": "1.16"
+          "go": "1.17"
         }
       }
 }

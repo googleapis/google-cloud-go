@@ -30,6 +30,11 @@
                 "DeleteTransferRun"
               ]
             },
+            "EnrollDataSources": {
+              "methods": [
+                "EnrollDataSources"
+              ]
+            },
             "GetDataSource": {
               "methods": [
                 "GetDataSource"

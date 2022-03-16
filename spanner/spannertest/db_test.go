@@ -22,10 +22,12 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"strings"
 	"sync"
 	"testing"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
@@ -359,6 +361,90 @@ func TestConcurrentReadInsert(t *testing.T) {
 	if n := len(out); n != 1 && n != 2 {
 		t.Fatalf("Concurrent read returned %d rows, want 1 or 2", n)
 	}
+}
+
+func TestGeneratedColumn(t *testing.T) {
+	sql := `CREATE TABLE Songwriters (
+		Id INT64 NOT NULL,
+		Name STRING(20),
+		Age INT64,
+		Over18 BOOL AS (Age > 18) STORED,
+	) PRIMARY KEY (Id);`
+	var db database
+
+	ddl, err := spansql.ParseDDL("filename", sql)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	for _, stmt := range ddl.List {
+		if st := db.ApplyDDL(stmt); st.Code() != codes.OK {
+			t.Fatalf("ApplyDDL failed: %v", st)
+		}
+	}
+
+	addColSQL := `ALTER TABLE Songwriters ADD COLUMN CanonicalName STRING(20) AS (LOWER(Name)) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSQL)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Should have been able to add a generated column to empty table\n status: %v", st)
+	}
+
+	tx := db.NewTransaction()
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id", "Over18"},
+		[]*structpb.ListValue{
+			listV(stringV("3"), boolV(true)),
+		})
+	if err == nil || status.Code(err) != codes.InvalidArgument {
+		t.Fatal("Should have failed to insert to generated column")
+	}
+
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id"},
+		[]*structpb.ListValue{
+			listV(stringV("1")),
+		})
+	if err != nil {
+		t.Fatalf("Should have succeeded to insert to with no dependent columns: %v", err)
+	}
+
+	name := "Famous Writer"
+	err = db.Insert(tx, "Songwriters",
+		[]spansql.ID{"Id", "Name", "Age"},
+		[]*structpb.ListValue{
+			listV(stringV("3"), stringV(name), stringV("40")),
+		})
+	if err != nil {
+		t.Fatalf("Should have succeeded to insert to without generated column: %v", err)
+	}
+
+	var kr keyRangeList
+	iter, err := db.Read("Songwriters", []spansql.ID{"Id", "CanonicalName", "Over18"},
+		[]*structpb.ListValue{
+			listV(stringV("3")),
+		}, kr, 0)
+	if err != nil {
+		t.Fatalf("failed to read: %v", err)
+	}
+	rows := slurp(t, iter)
+	if rows[0][1].(string) != strings.ToLower(name) {
+		t.Fatalf("Generated value for CanonicalName mismatch\n Got: %v\n Want: %v", rows[0][1].(string), strings.ToLower(name))
+	}
+	if !rows[0][2].(bool) {
+		t.Fatalf("Generated value for Over18 mismatch\n Got: %v\n Want: true", rows[0][2].(bool))
+	}
+
+	addColSQL = `ALTER TABLE Songwriters ADD COLUMN Under18 BOOL AS (Age < 18) STORED;`
+	ddl, err = spansql.ParseDDL("filename", addColSQL)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	if st := db.ApplyDDL(ddl.List[0]); st.Code() != codes.OK {
+		t.Fatalf("Failed to add a generated column to non-empty table\n status: %v", st)
+	}
+
 }
 
 func slurp(t *testing.T, ri rowIter) (all [][]interface{}) {

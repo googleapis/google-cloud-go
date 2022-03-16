@@ -143,6 +143,8 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
 	}
 	switch {
+	case q.AvroOptions != nil:
+		e.Options = bqToAvroOptions(q.AvroOptions)
 	case q.CsvOptions != nil:
 		e.Options = bqToCSVOptions(q.CsvOptions)
 	case q.GoogleSheetsOptions != nil:
@@ -163,6 +165,29 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 // This interface is implemented by CSVOptions, GoogleSheetsOptions and BigtableOptions.
 type ExternalDataConfigOptions interface {
 	populateExternalDataConfig(*bq.ExternalDataConfiguration)
+}
+
+// AvroOptions are additional options for Avro external data data sources.
+type AvroOptions struct {
+	// UseAvroLogicalTypes indicates whether to interpret logical types as the
+	// corresponding BigQuery data type (for example, TIMESTAMP), instead of using
+	// the raw type (for example, INTEGER).
+	UseAvroLogicalTypes bool
+}
+
+func (o *AvroOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	c.AvroOptions = &bq.AvroOptions{
+		UseAvroLogicalTypes: o.UseAvroLogicalTypes,
+	}
+}
+
+func bqToAvroOptions(q *bq.AvroOptions) *AvroOptions {
+	if q == nil {
+		return nil
+	}
+	return &AvroOptions{
+		UseAvroLogicalTypes: q.UseAvroLogicalTypes,
+	}
 }
 
 // CSVOptions are additional options for CSV external data sources.
@@ -194,6 +219,10 @@ type CSVOptions struct {
 	// The number of rows at the top of a CSV file that BigQuery will skip when
 	// reading data.
 	SkipLeadingRows int64
+
+	// An optional custom string that will represent a NULL
+	// value in CSV import data.
+	NullMarker string
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
@@ -204,6 +233,7 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 		FieldDelimiter:      o.FieldDelimiter,
 		Quote:               o.quote(),
 		SkipLeadingRows:     o.SkipLeadingRows,
+		NullMarker:          o.NullMarker,
 	}
 }
 
@@ -235,6 +265,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		Encoding:            Encoding(q.Encoding),
 		FieldDelimiter:      q.FieldDelimiter,
 		SkipLeadingRows:     q.SkipLeadingRows,
+		NullMarker:          q.NullMarker,
 	}
 	o.setQuote(q.Quote)
 	return o

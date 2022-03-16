@@ -16,8 +16,8 @@
 # Display commands being run
 set -x
 
-# Only run apidiff checks on go1.16 (we only need it once).
-if [[ `go version` != *"go1.16"* ]]; then
+# Only run apidiff checks on latest (we only need it once).
+if [[ `go version` != *"go1.17"* ]]; then
     exit 0
 fi
 

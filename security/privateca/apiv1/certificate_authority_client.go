@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -71,6 +73,11 @@ type CertificateAuthorityCallOptions struct {
 	GetCertificateTemplate          []gax.CallOption
 	ListCertificateTemplates        []gax.CallOption
 	UpdateCertificateTemplate       []gax.CallOption
+	GetLocation                     []gax.CallOption
+	ListLocations                   []gax.CallOption
+	GetIamPolicy                    []gax.CallOption
+	SetIamPolicy                    []gax.CallOption
+	TestIamPermissions              []gax.CallOption
 }
 
 func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
@@ -80,7 +87,6 @@ func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -465,6 +471,11 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
@@ -516,6 +527,11 @@ type internalCertificateAuthorityClient interface {
 	ListCertificateTemplates(context.Context, *privatecapb.ListCertificateTemplatesRequest, ...gax.CallOption) *CertificateTemplateIterator
 	UpdateCertificateTemplate(context.Context, *privatecapb.UpdateCertificateTemplateRequest, ...gax.CallOption) (*UpdateCertificateTemplateOperation, error)
 	UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // CertificateAuthorityClient is a client for interacting with Certificate Authority API.
@@ -802,6 +818,42 @@ func (c *CertificateAuthorityClient) UpdateCertificateTemplateOperation(name str
 	return c.internalClient.UpdateCertificateTemplateOperation(name)
 }
 
+// GetLocation gets information about a location.
+func (c *CertificateAuthorityClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *CertificateAuthorityClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *CertificateAuthorityClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *CertificateAuthorityClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *CertificateAuthorityClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
 // certificateAuthorityGRPCClient is a client for interacting with Certificate Authority API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -822,6 +874,10 @@ type certificateAuthorityGRPCClient struct {
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -858,6 +914,8 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		disableDeadlines:           disableDeadlines,
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
 		CallOptions:                &client.CallOptions,
+		iamPolicyClient:            iampb.NewIAMPolicyClient(connPool),
+		locationsClient:            locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -889,7 +947,7 @@ func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -906,6 +964,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCertificate[0:len((*c.CallOptions).CreateCertificate):len((*c.CallOptions).CreateCertificate)], opts...)
 	var resp *privatecapb.Certificate
@@ -927,6 +986,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	var resp *privatecapb.Certificate
@@ -943,6 +1003,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req
 
 func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
@@ -992,6 +1053,7 @@ func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RevokeCertificate[0:len((*c.CallOptions).RevokeCertificate):len((*c.CallOptions).RevokeCertificate)], opts...)
 	var resp *privatecapb.Certificate
@@ -1013,6 +1075,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate.name", url.QueryEscape(req.GetCertificate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCertificate[0:len((*c.CallOptions).UpdateCertificate):len((*c.CallOptions).UpdateCertificate)], opts...)
 	var resp *privatecapb.Certificate
@@ -1034,6 +1097,7 @@ func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ActivateCertificateAuthority[0:len((*c.CallOptions).ActivateCertificateAuthority):len((*c.CallOptions).ActivateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1057,6 +1121,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCertificateAuthority[0:len((*c.CallOptions).CreateCertificateAuthority):len((*c.CallOptions).CreateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1080,6 +1145,7 @@ func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DisableCertificateAuthority[0:len((*c.CallOptions).DisableCertificateAuthority):len((*c.CallOptions).DisableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1103,6 +1169,7 @@ func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).EnableCertificateAuthority[0:len((*c.CallOptions).EnableCertificateAuthority):len((*c.CallOptions).EnableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1126,6 +1193,7 @@ func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FetchCertificateAuthorityCsr[0:len((*c.CallOptions).FetchCertificateAuthorityCsr):len((*c.CallOptions).FetchCertificateAuthorityCsr)], opts...)
 	var resp *privatecapb.FetchCertificateAuthorityCsrResponse
@@ -1147,6 +1215,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCertificateAuthority[0:len((*c.CallOptions).GetCertificateAuthority):len((*c.CallOptions).GetCertificateAuthority)], opts...)
 	var resp *privatecapb.CertificateAuthority
@@ -1163,6 +1232,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Con
 
 func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCertificateAuthorities[0:len((*c.CallOptions).ListCertificateAuthorities):len((*c.CallOptions).ListCertificateAuthorities)], opts...)
 	it := &CertificateAuthorityIterator{}
@@ -1212,6 +1282,7 @@ func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UndeleteCertificateAuthority[0:len((*c.CallOptions).UndeleteCertificateAuthority):len((*c.CallOptions).UndeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1235,6 +1306,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCertificateAuthority[0:len((*c.CallOptions).DeleteCertificateAuthority):len((*c.CallOptions).DeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1258,6 +1330,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCertificateAuthority[0:len((*c.CallOptions).UpdateCertificateAuthority):len((*c.CallOptions).UpdateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
@@ -1281,6 +1354,7 @@ func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCaPool[0:len((*c.CallOptions).CreateCaPool):len((*c.CallOptions).CreateCaPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -1304,6 +1378,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool.name", url.QueryEscape(req.GetCaPool().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCaPool[0:len((*c.CallOptions).UpdateCaPool):len((*c.CallOptions).UpdateCaPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -1327,6 +1402,7 @@ func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *pri
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCaPool[0:len((*c.CallOptions).GetCaPool):len((*c.CallOptions).GetCaPool)], opts...)
 	var resp *privatecapb.CaPool
@@ -1343,6 +1419,7 @@ func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *pri
 
 func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCaPools[0:len((*c.CallOptions).ListCaPools):len((*c.CallOptions).ListCaPools)], opts...)
 	it := &CaPoolIterator{}
@@ -1392,6 +1469,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCaPool[0:len((*c.CallOptions).DeleteCaPool):len((*c.CallOptions).DeleteCaPool)], opts...)
 	var resp *longrunningpb.Operation
@@ -1415,6 +1493,7 @@ func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool", url.QueryEscape(req.GetCaPool())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FetchCaCerts[0:len((*c.CallOptions).FetchCaCerts):len((*c.CallOptions).FetchCaCerts)], opts...)
 	var resp *privatecapb.FetchCaCertsResponse
@@ -1436,6 +1515,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCertificateRevocationList[0:len((*c.CallOptions).GetCertificateRevocationList):len((*c.CallOptions).GetCertificateRevocationList)], opts...)
 	var resp *privatecapb.CertificateRevocationList
@@ -1452,6 +1532,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx contex
 
 func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCertificateRevocationLists[0:len((*c.CallOptions).ListCertificateRevocationLists):len((*c.CallOptions).ListCertificateRevocationLists)], opts...)
 	it := &CertificateRevocationListIterator{}
@@ -1501,6 +1582,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCertificateRevocationList[0:len((*c.CallOptions).UpdateCertificateRevocationList):len((*c.CallOptions).UpdateCertificateRevocationList)], opts...)
 	var resp *longrunningpb.Operation
@@ -1524,6 +1606,7 @@ func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCertificateTemplate[0:len((*c.CallOptions).CreateCertificateTemplate):len((*c.CallOptions).CreateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
@@ -1547,6 +1630,7 @@ func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCertificateTemplate[0:len((*c.CallOptions).DeleteCertificateTemplate):len((*c.CallOptions).DeleteCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
@@ -1570,6 +1654,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Cont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCertificateTemplate[0:len((*c.CallOptions).GetCertificateTemplate):len((*c.CallOptions).GetCertificateTemplate)], opts...)
 	var resp *privatecapb.CertificateTemplate
@@ -1586,6 +1671,7 @@ func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Cont
 
 func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCertificateTemplates[0:len((*c.CallOptions).ListCertificateTemplates):len((*c.CallOptions).ListCertificateTemplates)], opts...)
 	it := &CertificateTemplateIterator{}
@@ -1635,6 +1721,7 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_template.name", url.QueryEscape(req.GetCertificateTemplate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCertificateTemplate[0:len((*c.CallOptions).UpdateCertificateTemplate):len((*c.CallOptions).UpdateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
@@ -1649,6 +1736,109 @@ func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.C
 	return &UpdateCertificateTemplateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *certificateAuthorityGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *certificateAuthorityGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *certificateAuthorityGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *certificateAuthorityGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *certificateAuthorityGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ActivateCertificateAuthorityOperation manages a long-running operation from ActivateCertificateAuthority.
@@ -2825,6 +3015,53 @@ func (it *CertificateTemplateIterator) bufLen() int {
 }
 
 func (it *CertificateTemplateIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LocationIterator manages a stream of *locationpb.Location.
+type LocationIterator struct {
+	items    []*locationpb.Location
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LocationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LocationIterator) Next() (*locationpb.Location, error) {
+	var item *locationpb.Location
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LocationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

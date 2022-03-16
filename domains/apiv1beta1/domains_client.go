@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ type CallOptions struct {
 	SearchDomains               []gax.CallOption
 	RetrieveRegisterParameters  []gax.CallOption
 	RegisterDomain              []gax.CallOption
+	RetrieveTransferParameters  []gax.CallOption
+	TransferDomain              []gax.CallOption
 	ListRegistrations           []gax.CallOption
 	GetRegistration             []gax.CallOption
 	UpdateRegistration          []gax.CallOption
@@ -63,7 +65,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://domains.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -74,6 +75,8 @@ func defaultCallOptions() *CallOptions {
 		SearchDomains:               []gax.CallOption{},
 		RetrieveRegisterParameters:  []gax.CallOption{},
 		RegisterDomain:              []gax.CallOption{},
+		RetrieveTransferParameters:  []gax.CallOption{},
+		TransferDomain:              []gax.CallOption{},
 		ListRegistrations:           []gax.CallOption{},
 		GetRegistration:             []gax.CallOption{},
 		UpdateRegistration:          []gax.CallOption{},
@@ -96,6 +99,9 @@ type internalClient interface {
 	RetrieveRegisterParameters(context.Context, *domainspb.RetrieveRegisterParametersRequest, ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error)
 	RegisterDomain(context.Context, *domainspb.RegisterDomainRequest, ...gax.CallOption) (*RegisterDomainOperation, error)
 	RegisterDomainOperation(name string) *RegisterDomainOperation
+	RetrieveTransferParameters(context.Context, *domainspb.RetrieveTransferParametersRequest, ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error)
+	TransferDomain(context.Context, *domainspb.TransferDomainRequest, ...gax.CallOption) (*TransferDomainOperation, error)
+	TransferDomainOperation(name string) *TransferDomainOperation
 	ListRegistrations(context.Context, *domainspb.ListRegistrationsRequest, ...gax.CallOption) *RegistrationIterator
 	GetRegistration(context.Context, *domainspb.GetRegistrationRequest, ...gax.CallOption) (*domainspb.Registration, error)
 	UpdateRegistration(context.Context, *domainspb.UpdateRegistrationRequest, ...gax.CallOption) (*UpdateRegistrationOperation, error)
@@ -191,6 +197,45 @@ func (c *Client) RegisterDomainOperation(name string) *RegisterDomainOperation {
 	return c.internalClient.RegisterDomainOperation(name)
 }
 
+// RetrieveTransferParameters gets parameters needed to transfer a domain name from another registrar to
+// Cloud Domains. For domains managed by Google Domains, transferring to Cloud
+// Domains is not supported.
+//
+// Use the returned values to call TransferDomain.
+func (c *Client) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
+	return c.internalClient.RetrieveTransferParameters(ctx, req, opts...)
+}
+
+// TransferDomain transfers a domain name from another registrar to Cloud Domains.  For
+// domains managed by Google Domains, transferring to Cloud Domains is not
+// supported.
+//
+// Before calling this method, go to the domain’s current registrar to unlock
+// the domain for transfer and retrieve the domain’s transfer authorization
+// code. Then call RetrieveTransferParameters to confirm that the domain is
+// unlocked and to get values needed to build a call to this method.
+//
+// A successful call creates a Registration resource in state
+// TRANSFER_PENDING. It can take several days to complete the transfer
+// process. The registrant can often speed up this process by approving the
+// transfer through the current registrar, either by clicking a link in an
+// email from the registrar or by visiting the registrar’s website.
+//
+// A few minutes after transfer approval, the resource transitions to state
+// ACTIVE, indicating that the transfer was successful. If the transfer is
+// rejected or the request expires without being approved, the resource can
+// end up in state TRANSFER_FAILED. If transfer fails, you can safely delete
+// the resource and retry the transfer.
+func (c *Client) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
+	return c.internalClient.TransferDomain(ctx, req, opts...)
+}
+
+// TransferDomainOperation returns a new TransferDomainOperation from a given name.
+// The name must be that of a previously created TransferDomainOperation, possibly from a different process.
+func (c *Client) TransferDomainOperation(name string) *TransferDomainOperation {
+	return c.internalClient.TransferDomainOperation(name)
+}
+
 // ListRegistrations lists the Registration resources in a project.
 func (c *Client) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
 	return c.internalClient.ListRegistrations(ctx, req, opts...)
@@ -253,22 +298,15 @@ func (c *Client) ConfigureContactSettingsOperation(name string) *ConfigureContac
 	return c.internalClient.ConfigureContactSettingsOperation(name)
 }
 
-// ExportRegistration exports a Registration that you no longer want to use with
-// Cloud Domains. You can continue to use the domain in
-// Google Domains (at https://domains.google/) until it expires.
+// ExportRegistration exports a Registration resource, such that it is no longer managed by
+// Cloud Domains.
 //
-// If the export is successful:
-//
-//   The resource’s state becomes EXPORTED, meaning that it is no longer
-//   managed by Cloud Domains
-//
-//   Because individual users can own domains in Google Domains, the calling
-//   user becomes the domain’s sole owner. Permissions for the domain are
-//   subsequently managed in Google Domains.
-//
-//   Without further action, the domain does not renew automatically.
-//   The new owner can set up billing in Google Domains to renew the domain
-//   if needed.
+// When an active domain is successfully exported, you can continue to use the
+// domain in Google Domains (at https://domains.google/) until it expires. The
+// calling user becomes the domain’s sole owner in Google Domains, and
+// permissions for the domain are subsequently managed there. The domain does
+// not renew automatically unless the new owner sets up billing in Google
+// Domains.
 func (c *Client) ExportRegistration(ctx context.Context, req *domainspb.ExportRegistrationRequest, opts ...gax.CallOption) (*ExportRegistrationOperation, error) {
 	return c.internalClient.ExportRegistration(ctx, req, opts...)
 }
@@ -281,11 +319,25 @@ func (c *Client) ExportRegistrationOperation(name string) *ExportRegistrationOpe
 
 // DeleteRegistration deletes a Registration resource.
 //
-// This method only works on resources in one of the following states:
+// This method works on any Registration resource using Subscription or
+// Commitment billing (at /domains/pricing#billing-models), provided that the
+// resource was created at least 1 day in the past.
+//
+// For Registration resources using
+// Monthly billing (at /domains/pricing#billing-models), this method works if:
 //
 //   state is EXPORTED with expire_time in the past
 //
 //   state is REGISTRATION_FAILED
+//
+//   state is TRANSFER_FAILED
+//
+// When an active registration is successfully deleted, you can continue to
+// use the domain in Google Domains (at https://domains.google/) until it
+// expires. The calling user becomes the domain’s sole owner in Google
+// Domains, and permissions for the domain are subsequently managed there. The
+// domain does not renew automatically unless the new owner sets up billing in
+// Google Domains.
 func (c *Client) DeleteRegistration(ctx context.Context, req *domainspb.DeleteRegistrationRequest, opts ...gax.CallOption) (*DeleteRegistrationOperation, error) {
 	return c.internalClient.DeleteRegistration(ctx, req, opts...)
 }
@@ -399,7 +451,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -411,6 +463,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDomainsRequest, opts ...gax.CallOption) (*domainspb.SearchDomainsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	var resp *domainspb.SearchDomainsResponse
@@ -427,6 +480,7 @@ func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 
 func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domainspb.RetrieveRegisterParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	var resp *domainspb.RetrieveRegisterParametersResponse
@@ -443,6 +497,7 @@ func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 
 func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.RegisterDomainRequest, opts ...gax.CallOption) (*RegisterDomainOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RegisterDomain[0:len((*c.CallOptions).RegisterDomain):len((*c.CallOptions).RegisterDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -459,8 +514,45 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	}, nil
 }
 
+func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
+	var resp *domainspb.RetrieveTransferParametersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RetrieveTransferParameters(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).TransferDomain[0:len((*c.CallOptions).TransferDomain):len((*c.CallOptions).TransferDomain)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TransferDomain(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &TransferDomainOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRegistrations[0:len((*c.CallOptions).ListRegistrations):len((*c.CallOptions).ListRegistrations)], opts...)
 	it := &RegistrationIterator{}
@@ -505,6 +597,7 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 
 func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegistrationRequest, opts ...gax.CallOption) (*domainspb.Registration, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	var resp *domainspb.Registration
@@ -521,6 +614,7 @@ func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 
 func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateRegistration[0:len((*c.CallOptions).UpdateRegistration):len((*c.CallOptions).UpdateRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -539,6 +633,7 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 
 func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domainspb.ConfigureManagementSettingsRequest, opts ...gax.CallOption) (*ConfigureManagementSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureManagementSettings[0:len((*c.CallOptions).ConfigureManagementSettings):len((*c.CallOptions).ConfigureManagementSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -557,6 +652,7 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 
 func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.ConfigureDnsSettingsRequest, opts ...gax.CallOption) (*ConfigureDnsSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureDnsSettings[0:len((*c.CallOptions).ConfigureDnsSettings):len((*c.CallOptions).ConfigureDnsSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -575,6 +671,7 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 
 func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainspb.ConfigureContactSettingsRequest, opts ...gax.CallOption) (*ConfigureContactSettingsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ConfigureContactSettings[0:len((*c.CallOptions).ConfigureContactSettings):len((*c.CallOptions).ConfigureContactSettings)], opts...)
 	var resp *longrunningpb.Operation
@@ -593,6 +690,7 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 
 func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.ExportRegistrationRequest, opts ...gax.CallOption) (*ExportRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportRegistration[0:len((*c.CallOptions).ExportRegistration):len((*c.CallOptions).ExportRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -611,6 +709,7 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 
 func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.DeleteRegistrationRequest, opts ...gax.CallOption) (*DeleteRegistrationOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteRegistration[0:len((*c.CallOptions).DeleteRegistration):len((*c.CallOptions).DeleteRegistration)], opts...)
 	var resp *longrunningpb.Operation
@@ -629,6 +728,7 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 
 func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domainspb.RetrieveAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
@@ -645,6 +745,7 @@ func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 
 func (c *gRPCClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.ResetAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
@@ -1059,6 +1160,75 @@ func (op *RegisterDomainOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *RegisterDomainOperation) Name() string {
+	return op.lro.Name()
+}
+
+// TransferDomainOperation manages a long-running operation from TransferDomain.
+type TransferDomainOperation struct {
+	lro *longrunning.Operation
+}
+
+// TransferDomainOperation returns a new TransferDomainOperation from a given name.
+// The name must be that of a previously created TransferDomainOperation, possibly from a different process.
+func (c *gRPCClient) TransferDomainOperation(name string) *TransferDomainOperation {
+	return &TransferDomainOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *TransferDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
+	var resp domainspb.Registration
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *TransferDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
+	var resp domainspb.Registration
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *TransferDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
+	var meta domainspb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *TransferDomainOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *TransferDomainOperation) Name() string {
 	return op.lro.Name()
 }
 

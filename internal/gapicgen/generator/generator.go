@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build !windows
 // +build !windows
 
 // Package generator provides tools for generating clients.
@@ -29,16 +30,16 @@ import (
 
 // Config contains inputs needed to generate sources.
 type Config struct {
-	GoogleapisDir      string
-	GoogleapisDiscoDir string
-	GenprotoDir        string
-	GapicDir           string
-	ProtoDir           string
-	GapicToGenerate    string
-	OnlyGenerateGapic  bool
-	LocalMode          bool
-	RegenOnly          bool
-	ForceAll           bool
+	GoogleapisDir     string
+	GenprotoDir       string
+	GapicDir          string
+	ProtoDir          string
+	GapicToGenerate   string
+	OnlyGenerateGapic bool
+	LocalMode         bool
+	RegenOnly         bool
+	ForceAll          bool
+	GenModule         bool
 }
 
 // Generate generates genproto and gapics.

@@ -39,6 +39,7 @@ var (
 			AllowJaggedRows:     true,
 			AllowQuotedNewlines: true,
 			Encoding:            UTF_8,
+			NullMarker:          "marker",
 		},
 	}
 )
@@ -71,6 +72,7 @@ func TestFileConfigPopulateLoadConfig(t *testing.T) {
 				Encoding:            "UTF-8",
 				MaxBadRecords:       7,
 				IgnoreUnknownValues: true,
+				NullMarker:          "marker",
 				Schema: &bq.TableSchema{
 					Fields: []*bq.TableFieldSchema{
 						bqStringFieldSchema(),
@@ -94,6 +96,19 @@ func TestFileConfigPopulateLoadConfig(t *testing.T) {
 					EnumAsString:        true,
 					EnableListInference: true,
 				},
+			},
+		},
+		{
+			description: "avro",
+			fileConfig: &FileConfig{
+				SourceFormat: Avro,
+				AvroOptions: &AvroOptions{
+					UseAvroLogicalTypes: true,
+				},
+			},
+			want: &bq.JobConfigurationLoad{
+				SourceFormat:        "AVRO",
+				UseAvroLogicalTypes: true,
 			},
 		},
 	}
@@ -141,6 +156,7 @@ func TestFileConfigPopulateExternalDataConfig(t *testing.T) {
 					FieldDelimiter:      "\t",
 					Quote:               &hyphen,
 					SkipLeadingRows:     8,
+					NullMarker:          "marker",
 				},
 			},
 		},

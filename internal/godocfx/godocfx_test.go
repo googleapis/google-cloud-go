@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+//go:build go1.15
 // +build go1.15
 
 package main
@@ -29,6 +30,7 @@ import (
 	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
 	_ "cloud.google.com/go/storage"  // Implicitly required by test.
 	"github.com/google/go-cmp/cmp"
+	_ "golang.org/x/sync/semaphore" // Implicitly required by test.
 	"golang.org/x/tools/go/packages"
 )
 
@@ -49,7 +51,7 @@ func TestParse(t *testing.T) {
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 10; got != want {
+	if got, want := len(r.pages), 12; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
 	if got := r.module.Path; got != mod {

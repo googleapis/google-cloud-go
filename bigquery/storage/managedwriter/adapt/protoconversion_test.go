@@ -19,8 +19,9 @@ import (
 	"reflect"
 	"testing"
 
+	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 	"github.com/google/go-cmp/cmp"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
@@ -349,4 +350,292 @@ func TestProtoJSONSerialization(t *testing.T) {
 		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
 
+}
+
+func TestNormalizeDescriptor(t *testing.T) {
+	testCases := []struct {
+		description string
+		in          protoreflect.MessageDescriptor
+		wantErr     bool
+		want        *descriptorpb.DescriptorProto
+	}{
+		{
+			description: "nil",
+			in:          nil,
+			wantErr:     true,
+		},
+		{
+			description: "AllSupportedTypes",
+			in:          (&testdata.AllSupportedTypes{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_AllSupportedTypes"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int32_value"),
+						JsonName: proto.String("int32Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("int64_value"),
+						JsonName: proto.String("int64Value"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("uint32_value"),
+						JsonName: proto.String("uint32Value"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_UINT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("uint64_value"),
+						JsonName: proto.String("uint64Value"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_UINT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("float_value"),
+						JsonName: proto.String("floatValue"),
+						Number:   proto.Int32(5),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_FLOAT.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("double_value"),
+						JsonName: proto.String("doubleValue"),
+						Number:   proto.Int32(6),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_DOUBLE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("bool_value"),
+						JsonName: proto.String("boolValue"),
+						Number:   proto.Int32(7),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_BOOL.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("enum_value"),
+						JsonName: proto.String("enumValue"),
+						TypeName: proto.String("testdata_TestEnum_E.TestEnum"),
+						Number:   proto.Int32(8),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(9),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("fixed64_value"),
+						JsonName: proto.String("fixed64Value"),
+						Number:   proto.Int32(10),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_FIXED64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("testdata_TestEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("TestEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("TestEnum0"),
+										Number: proto.Int32(0),
+									},
+									{
+										Name:   proto.String("TestEnum1"),
+										Number: proto.Int32(1),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "ContainsRecursive",
+			in:          (&testdata.ContainsRecursive{}).ProtoReflect().Descriptor(),
+			wantErr:     true,
+		},
+		{
+			description: "RecursiveTypeTopMessage",
+			in:          (&testdata.RecursiveTypeTopMessage{}).ProtoReflect().Descriptor(),
+			wantErr:     true,
+		},
+		{
+			description: "ComplexType",
+			in:          (&testdata.ComplexType{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_ComplexType"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("nested_repeated_type"),
+						JsonName: proto.String("nestedRepeatedType"),
+						Number:   proto.Int32(1),
+						TypeName: proto.String("testdata_NestedType"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("inner_type"),
+						JsonName: proto.String("innerType"),
+						Number:   proto.Int32(2),
+						TypeName: proto.String("testdata_InnerType"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("testdata_InnerType"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_NestedType"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("inner_type"),
+								JsonName: proto.String("innerType"),
+								Number:   proto.Int32(1),
+								TypeName: proto.String("testdata_InnerType"),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "WithWellKnownTypes",
+			in:          (&testdata.WithWellKnownTypes{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_WithWellKnownTypes"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int64_value"),
+						JsonName: proto.String("int64Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("wrapped_int64"),
+						JsonName: proto.String("wrappedInt64"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("google_protobuf_Int64Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+					{
+						Name:     proto.String("wrapped_string"),
+						JsonName: proto.String("wrappedString"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("google_protobuf_StringValue"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("google_protobuf_Int64Value"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("google_protobuf_StringValue"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "WithOneOf",
+			in:          (&testdata.WithOneOf{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_WithOneOf"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int32_value"),
+						JsonName: proto.String("int32Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("double_value"),
+						JsonName: proto.String("doubleValue"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_DOUBLE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		gotDP, err := NormalizeDescriptor(tc.in)
+
+		if tc.wantErr && err == nil {
+			t.Errorf("%s: wanted err but got success", tc.description)
+			continue
+		}
+		if !tc.wantErr && err != nil {
+			t.Errorf("%s: wanted success, got err: %v", tc.description, err)
+			continue
+		}
+		if diff := cmp.Diff(gotDP, tc.want, protocmp.Transform()); diff != "" {
+			t.Errorf("%s: -got, +want:\n%s", tc.description, diff)
+		}
+	}
 }

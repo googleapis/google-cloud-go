@@ -19,7 +19,16 @@ package compute
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
+	"time"
+
+	"google.golang.org/api/option"
+
+	"cloud.google.com/go/internal"
+	"github.com/googleapis/gax-go/v2"
 
 	"github.com/google/go-cmp/cmp"
 
@@ -32,6 +41,7 @@ import (
 
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
+var image = "projects/debian-cloud/global/images/family/debian-10"
 
 func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if testing.Short() {
@@ -41,10 +51,6 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	name := space.New()
 	ctx := context.Background()
 	c, err := NewInstancesRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	zonesClient, err := NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,9 +65,9 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 				{
 					AutoDelete: proto.Bool(true),
 					Boot:       proto.Bool(true),
-					Type:       computepb.AttachedDisk_PERSISTENT.Enum(),
+					Type:       proto.String(computepb.AttachedDisk_PERSISTENT.String()),
 					InitializeParams: &computepb.AttachedDiskInitializeParams{
-						SourceImage: proto.String("projects/debian-cloud/global/images/family/debian-10"),
+						SourceImage: proto.String(image),
 					},
 				},
 			},
@@ -82,16 +88,11 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	waitZonalRequest := &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: insert.Proto().GetName(),
-	}
-	_, err = zonesClient.Wait(ctx, waitZonalRequest)
-	if err != nil {
-		t.Error(err)
-	}
+	err = insert.Wait(ctx)
 	defer ForceDeleteInstance(ctx, name, c)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	getRequest := &computepb.GetInstanceRequest{
 		Project:  projectId,
@@ -100,7 +101,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	}
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if get.GetName() != name {
 		t.Fatalf("expected instance name: %s, got: %s", name, get.GetName())
@@ -123,13 +124,10 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: updateOp.Proto().GetName(),
-	})
+
+	err = updateOp.Wait(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	patchReq := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
@@ -144,18 +142,15 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if err != nil {
 		return
 	}
-	_, err = zonesClient.Wait(ctx, &computepb.WaitZoneOperationRequest{
-		Project:   projectId,
-		Zone:      defaultZone,
-		Operation: patchOp.Proto().GetName(),
-	})
+
+	err = patchOp.Wait(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	fetched, err := c.Get(ctx, getRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if fetched.GetDescription() != "updated" {
 		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
@@ -170,7 +165,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 
 	itr := c.List(ctx, listRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	found := false
 	element, err := itr.Next()
@@ -218,10 +213,6 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	globalCLient, err := NewGlobalOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	action := "allow"
 	matcher := &computepb.SecurityPolicyRuleMatcher{
 		Config: &computepb.SecurityPolicyRuleMatcherConfig{
@@ -229,7 +220,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 				"*",
 			},
 		},
-		VersionedExpr: computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1.Enum(),
+		VersionedExpr: proto.String(computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1.String()),
 	}
 	securityPolicyRule := &computepb.SecurityPolicyRule{
 		Action:      &action,
@@ -258,15 +249,11 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	waitGlobalRequest := &computepb.WaitGlobalOperationRequest{
-		Project:   projectId,
-		Operation: insert.Proto().GetName(),
-	}
-	_, err = globalCLient.Wait(ctx, waitGlobalRequest)
-	if err != nil {
-		t.Error(err)
-	}
+	err = insert.Wait(ctx)
 	defer ForceDeleteSecurityPolicy(ctx, name, c)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
 		Priority:       proto.Int32(0),
@@ -278,13 +265,9 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	waitGlobalRequestRemove := &computepb.WaitGlobalOperationRequest{
-		Project:   projectId,
-		Operation: rule.Proto().GetName(),
-	}
-	_, err = globalCLient.Wait(ctx, waitGlobalRequestRemove)
+	err = rule.Wait(ctx)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	getRequest := &computepb.GetSecurityPolicyRequest{
@@ -296,7 +279,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		t.Error(err)
 	}
 	if len(get.GetRules()) != 1 {
-		t.Fatal(fmt.Sprintf("expected count for rules: %d, got: %d", 1, len(get.GetRules())))
+		t.Fatalf("expected count for rules: %d, got: %d", 1, len(get.GetRules()))
 	}
 
 	deleteRequest := &computepb.DeleteSecurityPolicyRequest{
@@ -454,69 +437,6 @@ func TestPaginationMapResponseMaxRes(t *testing.T) {
 	}
 }
 
-func TestTypeInt64(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping smoke test in short mode")
-	}
-	ctx := context.Background()
-	c, err := NewImagesRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	space := uid.NewSpace("gogapic", nil)
-	name := space.New()
-
-	codes := []int64{
-		5543610867827062957,
-	}
-	req := &computepb.InsertImageRequest{
-		Project: projectId,
-		ImageResource: &computepb.Image{
-			Name:         &name,
-			LicenseCodes: codes,
-			SourceImage:  proto.String("projects/debian-cloud/global/images/debian-10-buster-v20210721"),
-		},
-	}
-	globalClient, err := NewGlobalOperationsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	insert, err := c.Insert(ctx, req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = globalClient.Wait(ctx,
-		&computepb.WaitGlobalOperationRequest{
-			Project:   projectId,
-			Operation: insert.Proto().GetName(),
-		})
-	if err != nil {
-		t.Error(err)
-	}
-	defer func() {
-		_, err := c.Delete(ctx,
-			&computepb.DeleteImageRequest{
-				Project: projectId,
-				Image:   name,
-			})
-		if err != nil {
-			t.Error(err)
-		}
-	}()
-
-	fetched, err := c.Get(ctx,
-		&computepb.GetImageRequest{
-			Project: projectId,
-			Image:   name,
-		})
-	if err != nil {
-		t.Error(err)
-	}
-	if diff := cmp.Diff(fetched.GetLicenseCodes(), codes, cmp.Comparer(proto.Equal)); diff != "" {
-		t.Fatalf("got(-),want(+):\n%s", diff)
-	}
-}
-
 func TestCapitalLetter(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
@@ -551,24 +471,21 @@ func TestCapitalLetter(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	globalClient, err := NewGlobalOperationsRESTClient(ctx)
+	err = insert.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = globalClient.Wait(ctx,
-		&computepb.WaitGlobalOperationRequest{
-			Project:   projectId,
-			Operation: insert.Proto().GetName(),
-		})
-	if err != nil {
-		t.Error(err)
-	}
 	defer func() {
-		_, err := c.Delete(ctx,
-			&computepb.DeleteFirewallRequest{
-				Project:  projectId,
-				Firewall: name,
-			})
+		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			_, err = c.Delete(timeoutCtx,
+				&computepb.DeleteFirewallRequest{
+					Project:  projectId,
+					Firewall: name,
+				})
+			return err == nil, err
+		})
 		if err != nil {
 			t.Error(err)
 		}
@@ -582,5 +499,191 @@ func TestCapitalLetter(t *testing.T) {
 	}
 	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Fatalf("got(-),want(+):\n%s", diff)
+	}
+}
+
+func TestHeaders(t *testing.T) {
+	ctx := context.Background()
+
+	svr := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		contentType := r.Header.Get("Content-Type")
+		xGoog := r.Header.Get("X-Goog-Api-Client")
+		if contentType != "application/json" {
+			t.Fatalf("Content-Type header was %s, expected `application/json`.", contentType)
+		}
+		if !strings.Contains(xGoog, "rest/") {
+			t.Fatal("X-Goog-Api-Client header doesn't contain `rest/`")
+		}
+	}))
+	defer svr.Close()
+	opts := []option.ClientOption{
+		option.WithEndpoint(svr.URL),
+		option.WithoutAuthentication(),
+	}
+	c, err := NewAcceleratorTypesRESTClient(ctx, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = c.Get(ctx, &computepb.GetAcceleratorTypeRequest{
+		AcceleratorType: "test",
+		Project:         "test",
+		Zone:            "test",
+	})
+	if err != nil {
+		return
+	}
+}
+
+func TestInstanceGroupResize(t *testing.T) {
+	// we test a required query-param field set to 0
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	ctx := context.Background()
+	instanceTemplatesClient, err := NewInstanceTemplatesRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	instanceGroupManagersClient, err := NewInstanceGroupManagersRESTClient(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	space := uid.NewSpace("gogapic", nil)
+	templateName := space.New()
+	managerName := space.New()
+	templateResource := &computepb.InstanceTemplate{
+		Name: proto.String(templateName),
+		Properties: &computepb.InstanceProperties{
+			MachineType: proto.String("n2-standard-2"),
+			Disks: []*computepb.AttachedDisk{
+				{
+					AutoDelete: proto.Bool(true),
+					Boot:       proto.Bool(true),
+					Type:       proto.String(computepb.AttachedDisk_PERSISTENT.String()),
+					InitializeParams: &computepb.AttachedDiskInitializeParams{
+						SourceImage: proto.String(image),
+					},
+				},
+			},
+			NetworkInterfaces: []*computepb.NetworkInterface{
+				{
+					AccessConfigs: []*computepb.AccessConfig{
+						{
+							Name: proto.String("default"),
+							Type: proto.String(computepb.AccessConfig_ONE_TO_ONE_NAT.String()),
+						},
+					},
+				},
+			},
+		},
+	}
+	insertOp, err := instanceTemplatesClient.Insert(
+		ctx,
+		&computepb.InsertInstanceTemplateRequest{
+			Project:                  projectId,
+			InstanceTemplateResource: templateResource,
+		})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = insertOp.Wait(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		_, err = instanceTemplatesClient.Delete(
+			ctx,
+			&computepb.DeleteInstanceTemplateRequest{
+				Project:          projectId,
+				InstanceTemplate: templateName,
+			})
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+
+	igmResource := &computepb.InstanceGroupManager{
+		BaseInstanceName: proto.String("gogapic"),
+		TargetSize:       proto.Int32(1),
+		InstanceTemplate: proto.String(insertOp.Proto().GetTargetLink()),
+		Name:             proto.String(managerName),
+	}
+
+	insertOp, err = instanceGroupManagersClient.Insert(
+		ctx,
+		&computepb.InsertInstanceGroupManagerRequest{
+			Project:                      projectId,
+			Zone:                         defaultZone,
+			InstanceGroupManagerResource: igmResource,
+		},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = insertOp.Wait(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+		defer cancel()
+		deleteOp, err := instanceGroupManagersClient.Delete(
+			timeoutCtx,
+			&computepb.DeleteInstanceGroupManagerRequest{
+				Zone:                 defaultZone,
+				Project:              projectId,
+				InstanceGroupManager: managerName,
+			})
+		if err != nil {
+			t.Error(err)
+		}
+		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
+			err = deleteOp.Wait(ctx)
+			return deleteOp.Done(), err
+		})
+		if err != nil {
+			t.Error(err)
+		}
+	}()
+	fetched, err := instanceGroupManagersClient.Get(
+		ctx,
+		&computepb.GetInstanceGroupManagerRequest{
+			Project:              projectId,
+			Zone:                 defaultZone,
+			InstanceGroupManager: managerName,
+		})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fetched.GetTargetSize() != 1 {
+		t.Fatalf("expected target size: %d, got: %d", 1, fetched.GetTargetSize())
+	}
+	resizeOperation, err := instanceGroupManagersClient.Resize(
+		ctx,
+		&computepb.ResizeInstanceGroupManagerRequest{
+			Project:              projectId,
+			Size:                 0,
+			Zone:                 defaultZone,
+			InstanceGroupManager: managerName,
+		})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = resizeOperation.Wait(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fetched, err = instanceGroupManagersClient.Get(
+		ctx,
+		&computepb.GetInstanceGroupManagerRequest{
+			Project:              projectId,
+			Zone:                 defaultZone,
+			InstanceGroupManager: managerName,
+		})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if fetched.GetTargetSize() != 0 {
+		t.Fatalf("expected target size: %d, got: %d", 0, fetched.GetTargetSize())
 	}
 }

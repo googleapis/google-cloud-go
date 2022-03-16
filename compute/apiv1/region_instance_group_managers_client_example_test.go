@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,15 @@ func ExampleRegionInstanceGroupManagersClient_AbandonInstances() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AbandonInstancesRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.AbandonInstances(ctx, req)
+	op, err := c.AbandonInstances(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_ApplyUpdatesToInstances() {
@@ -68,12 +71,15 @@ func ExampleRegionInstanceGroupManagersClient_ApplyUpdatesToInstances() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ApplyUpdatesToInstancesRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.ApplyUpdatesToInstances(ctx, req)
+	op, err := c.ApplyUpdatesToInstances(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_CreateInstances() {
@@ -88,12 +94,15 @@ func ExampleRegionInstanceGroupManagersClient_CreateInstances() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateInstancesRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.CreateInstances(ctx, req)
+	op, err := c.CreateInstances(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_Delete() {
@@ -108,12 +117,15 @@ func ExampleRegionInstanceGroupManagersClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_DeleteInstances() {
@@ -128,12 +140,15 @@ func ExampleRegionInstanceGroupManagersClient_DeleteInstances() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstancesRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.DeleteInstances(ctx, req)
+	op, err := c.DeleteInstances(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_DeletePerInstanceConfigs() {
@@ -148,12 +163,15 @@ func ExampleRegionInstanceGroupManagersClient_DeletePerInstanceConfigs() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePerInstanceConfigsRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.DeletePerInstanceConfigs(ctx, req)
+	op, err := c.DeletePerInstanceConfigs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_Get() {
@@ -188,12 +206,15 @@ func ExampleRegionInstanceGroupManagersClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_List() {
@@ -312,12 +333,15 @@ func ExampleRegionInstanceGroupManagersClient_Patch() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_PatchPerInstanceConfigs() {
@@ -332,12 +356,15 @@ func ExampleRegionInstanceGroupManagersClient_PatchPerInstanceConfigs() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPerInstanceConfigsRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.PatchPerInstanceConfigs(ctx, req)
+	op, err := c.PatchPerInstanceConfigs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_RecreateInstances() {
@@ -352,12 +379,15 @@ func ExampleRegionInstanceGroupManagersClient_RecreateInstances() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RecreateInstancesRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.RecreateInstances(ctx, req)
+	op, err := c.RecreateInstances(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_Resize() {
@@ -372,12 +402,15 @@ func ExampleRegionInstanceGroupManagersClient_Resize() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.Resize(ctx, req)
+	op, err := c.Resize(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_SetInstanceTemplate() {
@@ -392,12 +425,15 @@ func ExampleRegionInstanceGroupManagersClient_SetInstanceTemplate() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetInstanceTemplateRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.SetInstanceTemplate(ctx, req)
+	op, err := c.SetInstanceTemplate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_SetTargetPools() {
@@ -412,12 +448,15 @@ func ExampleRegionInstanceGroupManagersClient_SetTargetPools() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTargetPoolsRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.SetTargetPools(ctx, req)
+	op, err := c.SetTargetPools(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleRegionInstanceGroupManagersClient_UpdatePerInstanceConfigs() {
@@ -432,10 +471,13 @@ func ExampleRegionInstanceGroupManagersClient_UpdatePerInstanceConfigs() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePerInstanceConfigsRegionInstanceGroupManagerRequest.
 	}
-	resp, err := c.UpdatePerInstanceConfigs(ctx, req)
+	op, err := c.UpdatePerInstanceConfigs(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

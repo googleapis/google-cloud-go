@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,7 +54,6 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://vpcaccess.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -245,7 +244,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -262,6 +261,7 @@ func (c *gRPCClient) CreateConnector(ctx context.Context, req *vpcaccesspb.Creat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateConnector[0:len((*c.CallOptions).CreateConnector):len((*c.CallOptions).CreateConnector)], opts...)
 	var resp *longrunningpb.Operation
@@ -285,6 +285,7 @@ func (c *gRPCClient) GetConnector(ctx context.Context, req *vpcaccesspb.GetConne
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetConnector[0:len((*c.CallOptions).GetConnector):len((*c.CallOptions).GetConnector)], opts...)
 	var resp *vpcaccesspb.Connector
@@ -301,6 +302,7 @@ func (c *gRPCClient) GetConnector(ctx context.Context, req *vpcaccesspb.GetConne
 
 func (c *gRPCClient) ListConnectors(ctx context.Context, req *vpcaccesspb.ListConnectorsRequest, opts ...gax.CallOption) *ConnectorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListConnectors[0:len((*c.CallOptions).ListConnectors):len((*c.CallOptions).ListConnectors)], opts...)
 	it := &ConnectorIterator{}
@@ -350,6 +352,7 @@ func (c *gRPCClient) DeleteConnector(ctx context.Context, req *vpcaccesspb.Delet
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteConnector[0:len((*c.CallOptions).DeleteConnector):len((*c.CallOptions).DeleteConnector)], opts...)
 	var resp *longrunningpb.Operation
