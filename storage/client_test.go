@@ -16,23 +16,77 @@ package storage
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"os"
 	"testing"
+	"time"
+
+	"github.com/google/go-cmp/cmp"
 )
 
-func TestNewGRPCStorageClient(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
-	}
-	if _, err := newGRPCStorageClient(context.Background()); err != nil {
-		t.Fatal(err)
+var emulatorClients map[string]storageClient
+
+func TestCreateBucketEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for transport, client := range emulatorClients {
+		project := fmt.Sprintf("%s-project", transport)
+		want := &BucketAttrs{
+			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+		}
+		got, err := client.CreateBucket(context.Background(), project, want)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+		}
 	}
 }
 
-func TestNewHTTPStorageClient(t *testing.T) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
+func initEmulatorClients() func() error {
+	noopCloser := func() error { return nil }
+	if !isEmulatorEnvironmentSet() {
+		return noopCloser
 	}
-	if _, err := newHTTPStorageClient(context.Background()); err != nil {
-		t.Fatal(err)
+
+	grpcClient, err := newGRPCStorageClient(context.Background())
+	if err != nil {
+		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
+		return noopCloser
 	}
+	httpClient, err := newHTTPStorageClient(context.Background())
+	if err != nil {
+		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
+		return noopCloser
+	}
+
+	emulatorClients = map[string]storageClient{
+		"http": httpClient,
+		"grpc": grpcClient,
+	}
+
+	return func() error {
+		gerr := grpcClient.Close()
+		herr := httpClient.Close()
+
+		if gerr != nil {
+			return gerr
+		}
+		return herr
+	}
+}
+
+// checkEmulatorEnvironment skips the test if the emulator environment variables
+// are not set.
+func checkEmulatorEnvironment(t *testing.T) {
+	if !isEmulatorEnvironmentSet() {
+		t.Skip("Emulator tests skipped without emulator running")
+	}
+}
+
+// isEmulatorEnvironmentSet checks if the emulator environment variables are set.
+func isEmulatorEnvironmentSet() bool {
+	return os.Getenv("STORAGE_EMULATOR_HOST_GRPC") != "" && os.Getenv("STORAGE_EMULATOR_HOST") != ""
 }

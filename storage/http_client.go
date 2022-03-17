@@ -126,6 +126,11 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}, nil
 }
 
+func (c *httpStorageClient) Close() error {
+	c.hc.CloseIdleConnections()
+	return nil
+}
+
 // Top-level methods.
 
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {

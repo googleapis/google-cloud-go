@@ -88,11 +88,17 @@ var (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
+	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
 	if err := cleanup(); err != nil {
 		// Don't fail the test if cleanup fails.
 		log.Printf("Post-test cleanup failed: %v", err)
 	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
+	}
+
 	os.Exit(exit)
 }
 

@@ -96,6 +96,10 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}, nil
 }
 
+func (c *grpcStorageClient) Close() error {
+	return c.raw.Close()
+}
+
 // Top-level methods.
 
 func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
