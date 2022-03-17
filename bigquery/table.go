@@ -787,6 +787,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
 	}
+	if tm.ExternalDataConfig != nil {
+		cfg := tm.ExternalDataConfig.toBQ()
+		t.ExternalDataConfiguration = &cfg
+	}
 
 	if tm.Clustering != nil {
 		t.Clustering = tm.Clustering.toBQ()
@@ -872,6 +876,10 @@ type TableMetadataToUpdate struct {
 	// The time when this table expires. To remove a table's expiration,
 	// set ExpirationTime to NeverExpire. The zero value is ignored.
 	ExpirationTime time.Time
+
+	// ExternalDataConfig controls the definition of a table defined against
+	// an external source, such as one based on files in Google Cloud Storage.
+	ExternalDataConfig *ExternalDataConfig
 
 	// The query to use for a view.
 	ViewQuery optional.String
