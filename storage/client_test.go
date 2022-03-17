@@ -39,7 +39,11 @@ func TestCreateBucketEmulated(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+		}
+		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
 			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
 		}
 	}
