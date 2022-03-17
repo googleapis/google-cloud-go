@@ -2404,7 +2404,7 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 		t.Fatalf("query read: %v", err)
 	}
 	wantRows := [][]Value{
-		{"foo", int64(12), true},
+		{"bar", int64(32), int64(314)},
 	}
 	checkReadAndTotalRows(t, "row check", it, wantRows)
 }
