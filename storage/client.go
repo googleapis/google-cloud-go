@@ -121,6 +121,9 @@ type settings struct {
 	// transport initialization. See https://pkg.go.dev/google.golang.org/api/option
 	// for a list of supported options.
 	clientOption []option.ClientOption
+
+	// userProject is the user project that should be billed for the request.
+	userProject string
 }
 
 func initSettings(opts ...storageOption) *settings {
@@ -197,6 +200,16 @@ type clientOption struct {
 }
 
 func (o *clientOption) Apply(s *settings) { s.clientOption = o.opts }
+
+func withUserProject(project string) storageOption {
+	return &userProjectOption{project}
+}
+
+type userProjectOption struct {
+	project string
+}
+
+func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
 
 type composeObjectRequest struct {
 	dstBucket     string
