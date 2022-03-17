@@ -45,6 +45,9 @@
         "binaryauthorization": {
             "component": "binaryauthorization"
         },
+        "certificatemanager": {
+            "component": "certificatemanager"
+        },
         "channel": {
             "component": "channel"
         },
