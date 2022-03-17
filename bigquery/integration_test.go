@@ -2391,7 +2391,7 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 	wantSchema2 := Schema{
 		{Name: "stringfield", Type: "STRING"},
 		{Name: "int64field", Type: "INTEGER"},
-		{Name: "boolfield", Type: "BOOL"},
+		{Name: "otherfield", Type: "INTEGER"},
 	}
 	if diff := testutil.Diff(newMeta2.Schema, wantSchema2); diff != "" {
 		t.Errorf("new schema after autodetect, got=-, want=+\n%s", diff)
