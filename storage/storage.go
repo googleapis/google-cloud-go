@@ -276,10 +276,18 @@ type bucketBoundHostname struct {
 }
 
 func (s pathStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return stripScheme(host)
+	}
+
 	return "storage.googleapis.com"
 }
 
 func (s virtualHostedStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return bucket + "." + stripScheme(host)
+	}
+
 	return bucket + ".storage.googleapis.com"
 }
 
@@ -325,6 +333,14 @@ func VirtualHostedStyle() URLStyle {
 // be set to true.
 func BucketBoundHostname(hostname string) URLStyle {
 	return bucketBoundHostname{hostname: hostname}
+}
+
+// Strips the scheme from a host if it contains it
+func stripScheme(host string) string {
+	if strings.Contains(host, "://") {
+		host = strings.SplitN(host, "://", 2)[1]
+	}
+	return host
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -823,7 +839,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = "storage.googleapis.com"
+	u.Host = PathStyle().host(bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
@@ -1455,7 +1471,7 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		EventBasedHold:          o.GetEventBasedHold(),
 		TemporaryHold:           o.TemporaryHold,
 		RetentionExpirationTime: convertProtoTime(o.GetRetentionExpireTime()),
-		ACL:                     fromProtoToObjectACLRules(o.GetAcl()),
+		ACL:                     toObjectACLRulesFromProto(o.GetAcl()),
 		Owner:                   o.GetOwner().GetEntity(),
 		ContentEncoding:         o.ContentEncoding,
 		ContentDisposition:      o.ContentDisposition,

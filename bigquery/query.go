@@ -368,6 +368,9 @@ func (q *Query) newJob() (*bq.Job, error) {
 // is used in place of the jobs.insert path as this path does not expose a job
 // object.
 func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
+	if q.QueryConfig.DryRun {
+		return nil, errors.New("bigquery: cannot evaluate Query.Read() for dry-run queries")
+	}
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 	queryRequest, err := q.probeFastPath()
