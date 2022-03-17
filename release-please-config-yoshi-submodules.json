@@ -186,6 +186,9 @@
         "notebooks": {
             "component": "notebooks"
         },
+        "optimization": {
+            "component": "optimization"
+        },
         "orchestration": {
             "component": "orchestration"
         },
