@@ -165,9 +165,35 @@ For HTTP logging, set the GODEBUG environment variable to "http2debug=1" or "htt
 
 Inspecting errors
 
-Most of the errors returned by the generated clients can be converted into a
-`grpc.Status`. Converting your errors to this type can be a useful to get
-more information about what went wrong while debugging.
+Most of the errors returned by the generated clients are wrapped in an
+`apierror.APIError` (https://pkg.go.dev/github.com/googleapis/gax-go/v2/apierror)
+and can be further unwrapped into a `grpc.Status` or `googleapi.Error` depending
+on the transport used to make the call (gRPC or REST). Converting your errors to
+these types can be a useful way to get more information about what went wrong
+while debugging.
+
+Converting to an `apierror.APIError` gives access to specific details in the
+error. The transport-specific errors can still be unwrapped using the
+`apierror.APIError`.
+ if err != {
+	var ae *apierror.APIError
+    if errors.As(err, &ae) {
+	   log.Println(ae.Reason())
+	   log.Println(ae.Details().Help.GetLinks())
+	}
+ }
+
+If the REST transport was used, the `googleapi.Error` can be parsed in a similar
+way.
+if err != {
+	var gerr *googleapi.Error
+    if errors.As(err, &gerr) {
+	   log.Println(gerr.Message)
+	}
+ }
+
+If the gRPC transport was used, the `grpc.Status` can still be parsed using the
+`status.FromError` function.
  if err != {
     if s, ok := status.FromError(err); ok {
 	   log.Println(s.Message())
