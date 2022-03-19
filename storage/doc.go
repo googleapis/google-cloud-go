@@ -216,7 +216,7 @@ Signed URLs
 You can obtain a URL that lets anyone read or write an object for a limited time.
 Signing a URL requires credentials authorized to sign a URL. To use the same
 authentication that was used when instantiating the Storage client, use the
-Bucket.SignedURL method.
+BucketHandle.SignedURL method.
 
     url, err := client.Bucket(bucketName).SignedURL(objectName, opts)
     if err != nil {
@@ -240,7 +240,7 @@ temporary permission. Conditions can be applied to restrict how the HTML form is
 by a user.
 
 For more information, please see https://cloud.google.com/storage/docs/xml-api/post-object as well
-as the documentation of Bucket.GenerateSignedPostPolicyV4.
+as the documentation of BucketHandle.GenerateSignedPostPolicyV4.
 
     pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName, opts)
     if err != nil {
