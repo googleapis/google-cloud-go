@@ -1374,6 +1374,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2022/04/04
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/optimization/v1",
+		pkg:                   "optimization",
+		importPath:            "cloud.google.com/go/optimization/apiv1",
+		gRPCServiceConfigPath: "cloudoptimization_grpc_service_config.json",
+		apiServiceConfigPath:  "cloudoptimization_v1.yaml",
+		// GA after 2022/04/16
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
