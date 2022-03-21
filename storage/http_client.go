@@ -139,7 +139,12 @@ func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project strin
 
 func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
-	bkt := attrs.toRawBucket()
+	var bkt *raw.Bucket
+	if attrs != nil {
+		bkt = attrs.toRawBucket()
+	} else {
+		bkt = &raw.Bucket{}
+	}
 
 	// If there is lifecycle information but no location, explicitly set
 	// the location. This is a GCS quirk/bug.
@@ -148,10 +153,10 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 	req := c.raw.Buckets.Insert(project, bkt)
 	setClientHeader(req.Header())
-	if attrs.PredefinedACL != "" {
+	if attrs != nil && attrs.PredefinedACL != "" {
 		req.PredefinedAcl(attrs.PredefinedACL)
 	}
-	if attrs.PredefinedDefaultObjectACL != "" {
+	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
 	var battrs *BucketAttrs

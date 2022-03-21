@@ -86,7 +86,7 @@ func initEmulatorClients() func() error {
 // are not set.
 func checkEmulatorEnvironment(t *testing.T) {
 	if !isEmulatorEnvironmentSet() {
-		t.Skip("Emulator tests skipped without emulator running")
+		t.Skip("Emulator tests skipped without emulator environment variables set")
 	}
 }
 
