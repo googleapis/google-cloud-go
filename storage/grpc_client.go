@@ -21,6 +21,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/grpc"
 )
 
@@ -95,14 +96,47 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}, nil
 }
 
+func (c *grpcStorageClient) Close() error {
+	return c.raw.Close()
+}
+
 // Top-level methods.
 
 func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
 	return "", errMethodNotSupported
 }
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	b := attrs.toProtoBucket()
+
+	// If there is lifecycle information but no location, explicitly set
+	// the location. This is a GCS quirk/bug.
+	if b.GetLocation() == "" && b.GetLifecycle() != nil {
+		b.Location = "US"
+	}
+
+	req := &storagepb.CreateBucketRequest{
+		Parent:   toProjectResource(project),
+		Bucket:   b,
+		BucketId: b.GetName(),
+		// TODO(noahdietz): This will be switched to a string.
+		//
+		// PredefinedAcl: attrs.PredefinedACL,
+		// PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+	}
+
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.CreateBucket(ctx, req, s.gax...)
+
+		battrs = newBucketFromProto(res)
+
+		return err
+	}, s.retry, s.idempotent)
+
+	return battrs, err
 }
+
 func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
 	return nil, errMethodNotSupported
 }
