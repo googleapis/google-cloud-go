@@ -23,6 +23,8 @@ import (
 	"strings"
 
 	"golang.org/x/oauth2/google"
+	"golang.org/x/xerrors"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
@@ -178,10 +180,45 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 // Bucket methods.
 
 func (c *httpStorageClient) DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Buckets.Delete(bucket)
+	setClientHeader(req.Header())
+	if err := applyBucketConds("httpStorageClient.DeleteBucket", conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Buckets.Get(bucket).Projection("full")
+	setClientHeader(req.Header())
+	err := applyBucketConds("httpStorageClient.GetBucket", conds, req)
+	if err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+
+	var resp *raw.Bucket
+	err = run(ctx, func() error {
+		resp, err = req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+
+	var e *googleapi.Error
+	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return nil, ErrBucketNotExist
+	}
+	if err != nil {
+		return nil, err
+	}
+	return newBucket(resp)
 }
 func (c *httpStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	return nil, errMethodNotSupported
