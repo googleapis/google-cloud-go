@@ -2337,6 +2337,7 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 	ctx := context.Background()
 
 	testTable := dataset.Table(tableIDs.New())
+	t.Logf("testtable: %s", testTable.FullyQualifiedName())
 
 	origExtCfg := &ExternalDataConfig{
 		SourceFormat: Avro,
