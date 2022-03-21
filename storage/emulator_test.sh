@@ -45,6 +45,8 @@ CONTAINER_NAME=storage_testbench
 # The host networking driver works only on Linux hosts.
 # See more about using host networking: https://docs.docker.com/network/host/
 DOCKER_NETWORK="--net=host"
+# Note: We do not expect the RetryConformanceTest suite to pass on darwin due to
+# differences in the network errors emitted by the system.
 if [ `go env GOOS` == 'darwin' ]; then
     DOCKER_NETWORK="-p 9000:9000 -p 8888:8888"
 fi
