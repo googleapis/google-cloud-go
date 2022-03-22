@@ -889,6 +889,10 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 }
 
 func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
+	if b == nil {
+		return &storagepb.Bucket{}
+	}
+
 	// Copy label map.
 	var labels map[string]string
 	if len(b.Labels) > 0 {
