@@ -226,13 +226,53 @@ func (c *grpcStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 // IAM methods.
 
 func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &iampb.GetIamPolicyRequest{
+		Resource: bucketResourceName("_", resource),
+		Options: &iampb.GetPolicyOptions{
+			RequestedPolicyVersion: version,
+		},
+	}
+	var rp *iampb.Policy
+	err := run(ctx, func() error {
+		var err error
+		rp, err = c.raw.GetIamPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+
+	return rp, err
 }
+
 func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	req := &iampb.SetIamPolicyRequest{
+		Resource: bucketResourceName("_", resource),
+		Policy:   policy,
+	}
+
+	return run(ctx, func() error {
+		_, err := c.raw.SetIamPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
 }
+
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &iampb.TestIamPermissionsRequest{
+		Resource:    bucketResourceName("_", resource),
+		Permissions: permissions,
+	}
+	var res *iampb.TestIamPermissionsResponse
+	err := run(ctx, func() error {
+		var err error
+		res, err = c.raw.TestIamPermissions(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return res.Permissions, nil
 }
 
 // HMAC Key methods.

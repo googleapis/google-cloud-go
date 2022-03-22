@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 var emulatorClients map[string]storageClient
@@ -44,6 +45,43 @@ func TestCreateBucketEmulated(t *testing.T) {
 			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
+			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+		}
+	}
+}
+
+func TestGetSetTestIamPolicyEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+
+	for transport, client := range emulatorClients {
+		project := fmt.Sprintf("%s-project", transport)
+		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+		})
+		if err != nil {
+			t.Errorf("%s: on CreateBucket %v", transport, err)
+			continue
+		}
+		got, err := client.GetIamPolicy(context.Background(), battrs.Name, 0)
+		if err != nil {
+			t.Errorf("%s: on GetIamPolicy %v", transport, err)
+			continue
+		}
+		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
+			Etag:     got.GetEtag(),
+			Bindings: []*iampb.Binding{{Role: "roles/viewer"}},
+		})
+		if err != nil {
+			t.Errorf("%s: on SetIamPolicy %v", transport, err)
+			continue
+		}
+		want := []string{"foo", "bar"}
+		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
+		if err != nil {
+			t.Errorf("%s: on TestIamPermissions %v", transport, err)
+			continue
+		}
+		if diff := cmp.Diff(perms, want); diff != "" {
 			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
 		}
 	}
