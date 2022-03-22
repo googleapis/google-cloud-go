@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -23,7 +24,6 @@ import (
 	"strings"
 
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -212,7 +212,7 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	}, s.retry, s.idempotent)
 
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
 	}
 	if err != nil {
