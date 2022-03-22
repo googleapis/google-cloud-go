@@ -172,7 +172,7 @@ on the transport used to make the call (gRPC or REST). Converting your errors to
 these types can be a useful way to get more information about what went wrong
 while debugging.
 
-Converting to an `apierror.APIError` gives access to specific details in the
+`apierror.APIError` gives access to specific details in the
 error. The transport-specific errors can still be unwrapped using the
 `apierror.APIError`.
  if err != nil {
