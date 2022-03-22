@@ -175,32 +175,32 @@ while debugging.
 Converting to an `apierror.APIError` gives access to specific details in the
 error. The transport-specific errors can still be unwrapped using the
 `apierror.APIError`.
- if err != {
-	var ae *apierror.APIError
+ if err != nil {
+    var ae *apierror.APIError
     if errors.As(err, &ae) {
-	   log.Println(ae.Reason())
-	   log.Println(ae.Details().Help.GetLinks())
-	}
- }
-
-If the REST transport was used, the `googleapi.Error` can be parsed in a similar
-way.
-if err != {
-	var gerr *googleapi.Error
-    if errors.As(err, &gerr) {
-	   log.Println(gerr.Message)
-	}
+       log.Println(ae.Reason())
+       log.Println(ae.Details().Help.GetLinks())
+    }
  }
 
 If the gRPC transport was used, the `grpc.Status` can still be parsed using the
 `status.FromError` function.
- if err != {
+ if err != nil {
     if s, ok := status.FromError(err); ok {
-	   log.Println(s.Message())
-	   for _, d := range s.Proto().Details {
-	      log.Println(d)
-	   }
-	}
+       log.Println(s.Message())
+       for _, d := range s.Proto().Details {
+          log.Println(d)
+       }
+    }
+ }
+
+If the REST transport was used, the `googleapi.Error` can be parsed in a similar
+way.
+ if err != nil {
+    var gerr *googleapi.Error
+    if errors.As(err, &gerr) {
+       log.Println(gerr.Message)
+    }
  }
 
 Client Stability
