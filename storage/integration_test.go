@@ -88,11 +88,17 @@ var (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
+	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
 	if err := cleanup(); err != nil {
 		// Don't fail the test if cleanup fails.
 		log.Printf("Post-test cleanup failed: %v", err)
 	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
+	}
+
 	os.Exit(exit)
 }
 
@@ -2879,7 +2885,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			h := testHelper{t}
-			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 			defer cancel()
 
 			printTestCase := func() string {
@@ -2896,7 +2902,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 			checkforErrors := func(desc string, err error) {
 				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error\n\t\t%s \n\t\terror: %v", desc, printTestCase(), err)
+					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
 				} else if err == nil && !test.expectSuccess {
 					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
@@ -2970,27 +2976,25 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("default object acl list", err)
 			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Copy and compose
+			// Copy
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
-			if err == nil {
-				// Delete created "copy" object if created successfully
-				defer func() {
-					if err := bucket.Object("copy").Delete(ctx); err != nil {
-						t.Fatalf("could not delete copy: %v", err)
-					}
-				}()
-			}
+			// Delete created "copy" object
+			defer func() {
+				if err := bucket.Object("copy").Delete(ctx); err != nil {
+					t.Fatalf("could not delete copy: %v", err)
+				}
+			}()
+
+			// Compose
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
-			if err == nil {
-				// Delete created "compose" object if created successfully
-				defer func() {
-					if err := bucket.Object("compose").Delete(ctx); err != nil {
-						t.Fatalf("could not delete compose: %v", err)
-					}
-				}()
-			}
+			// Delete created "compose" object
+			defer func() {
+				if err := bucket.Object("compose").Delete(ctx); err != nil {
+					t.Fatalf("could not delete compose: %v", err)
+				}
+			}()
 
 			// Delete object
 			if err = bucket.Object(objectName).Delete(ctx); err != nil {
