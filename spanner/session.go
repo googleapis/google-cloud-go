@@ -832,10 +832,13 @@ func (p *sessionPool) errGetSessionTimeoutWithTrackedSessionHandles(code codes.C
 // requires the caller to have locked p.mu.
 func (p *sessionPool) getTrackedSessionHandleStacksLocked() string {
 	p.mu.Lock()
-	defer p.mu.Unlock()
+	element := p.trackedSessionHandles.Front()
+	// NOTE: No need to keep the sessionPool lock since we don't modify it,
+	// this will return the snapshot of current elements when error getting sessions
+	// (see: https://github.com/googleapis/google-cloud-go/issues/5710)
+	p.mu.Unlock()
 	stackTraces := ""
 	i := 1
-	element := p.trackedSessionHandles.Front()
 	for element != nil {
 		sh := element.Value.(*sessionHandle)
 		sh.mu.Lock()
