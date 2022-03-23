@@ -136,13 +136,13 @@ func initIntegrationTest() func() error {
 		log.Printf("replaying from %s", replayFilename)
 		return func() error { return replayer.Close() }
 
-	case testing.Short():
-		// go test -short without a replay file skips the integration tests.
-		if testutil.CanReplay(replayFilename) && testutil.ProjID() != "" {
-			log.Print("replay not supported for Go versions before 1.8")
-		}
-		newTestClient = nil
-		return func() error { return nil }
+	// case testing.Short():
+	// 	// go test -short without a replay file skips the integration tests.
+	// 	if testutil.CanReplay(replayFilename) && testutil.ProjID() != "" {
+	// 		log.Print("replay not supported for Go versions before 1.8")
+	// 	}
+	// 	newTestClient = nil
+	// 	return func() error { return nil }
 
 	default: // Run integration tests against a real backend.
 		now := time.Now().UTC()
