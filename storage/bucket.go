@@ -646,6 +646,12 @@ const (
 	// SetStorageClassAction changes the storage class of live and/or archived
 	// objects.
 	SetStorageClassAction = "SetStorageClass"
+
+	// AbortIncompleteMPUAction is a lifecycle action that aborts an incomplete
+	// multipart upload when the multipart upload meets the condition specified
+	// in the lifecycle rule. The AgeInDays Lifecycle condition is the only
+	// allowed condition for this action.
+	AbortIncompleteMPUAction = "AbortIncompleteMultipartUpload"
 )
 
 // LifecycleRule is a lifecycle configuration rule.
@@ -666,9 +672,8 @@ type LifecycleRule struct {
 type LifecycleAction struct {
 	// Type is the type of action to take on matching objects.
 	//
-	// Acceptable values are "Delete" to delete matching objects and
-	// "SetStorageClass" to set the storage class defined in StorageClass on
-	// matching objects.
+	// Acceptable values are "Delete", "SetStorageClass", and
+	// "AbortIncompleteMultipartUpload".
 	Type string
 
 	// StorageClass is the storage class to set on matching objects if the Action

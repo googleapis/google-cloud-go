@@ -325,6 +325,13 @@ func TestIntegration_BucketMethods(t *testing.T) {
 					MatchesStorageClasses:   []string{"NEARLINE"},
 					NumNewerVersions:        10,
 				},
+			}, {
+				Action: LifecycleAction{
+					Type: AbortIncompleteMPUAction,
+				},
+				Condition: LifecycleCondition{
+					AgeInDays: 12,
+				},
 			}},
 		},
 	}
