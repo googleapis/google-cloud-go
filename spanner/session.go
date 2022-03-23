@@ -72,14 +72,13 @@ func (sh *sessionHandle) recycle() {
 	}
 	p := sh.session.pool
 	tracked := sh.trackedSessionHandle
-	sh.mu.Unlock()
-	sh.session.recycle()
-	sh.mu.Lock()
+	s := sh.session
 	sh.session = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
 	sh.stack = nil
 	sh.mu.Unlock()
+	s.recycle()
 	if tracked != nil {
 		p.mu.Lock()
 		p.trackedSessionHandles.Remove(tracked)
