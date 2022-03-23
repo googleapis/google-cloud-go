@@ -794,6 +794,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
