@@ -213,9 +213,9 @@ func initUIDsAndRand(t time.Time) {
 // the current test if credentials are not available or when being run
 // in Short mode.
 func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
-	if testing.Short() && !replaying {
-		t.Skip("Integration tests skipped in short mode")
-	}
+	// if testing.Short() && !replaying {
+	// 	t.Skip("Integration tests skipped in short mode")
+	// }
 	client := config(ctx, scopes...)
 	if client == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
@@ -226,11 +226,19 @@ func testConfig(ctx context.Context, t *testing.T, scopes ...string) *Client {
 // testConfigGPRC returns a gRPC-based client to access GCS. testConfigGRPC
 // skips the curent test when being run in Short mode.
 func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
-	if testing.Short() {
-		t.Skip("Integration tests skipped in short mode")
+	// if testing.Short() {
+	// 	t.Skip("Integration tests skipped in short mode")
+	// }
+
+	ts := testutil.TokenSource(ctx, ScopeFullControl)
+	if ts == nil {
+		return nil
 	}
 
-	gc, err := newHybridClient(ctx, nil)
+	gc, err := newHybridClient(ctx, &hybridClientOptions{
+		HTTPOpts: []option.ClientOption{option.WithTokenSource(ts)},
+		GRPCOpts: []option.ClientOption{option.WithTokenSource(ts)},
+	})
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -787,7 +795,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
-	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
+	//t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
