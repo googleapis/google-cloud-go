@@ -419,10 +419,6 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 				if err := gax.Sleep(cctx, bo.Pause()); err != nil {
 					return nil
 				}
-			case codes.InvalidArgument:
-				if strings.Contains(err.Error(), "Some acknowledgement ids in the request were invalid") {
-					return nil
-				}
 			default:
 				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
 				// since acks are "fire and forget". Once EOS feature is out, retry error
