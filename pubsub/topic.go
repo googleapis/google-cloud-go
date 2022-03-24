@@ -568,7 +568,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	_, span3 := t.tracer.Start(ctx, t.String()+" schedule batch")
+	_, span3 := t.tracer.Start(ctx, t.String()+" waiting in batch")
 
 	bmsg := &bundledMessage{
 		ctx:       ctx,
