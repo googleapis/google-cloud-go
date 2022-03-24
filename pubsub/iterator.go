@@ -420,29 +420,14 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 					return nil
 				}
 			case codes.InvalidArgument:
-				// TODO(b/226593754): this error should be ignored unless exactly once is enabled
-				// since modacks are "fire and forget". Once EOS feature is out, retry this error
-				// if exactly-once is enabled (from StreamingPull response).
 				if strings.Contains(err.Error(), "Some acknowledgement ids in the request were invalid") {
 					return nil
 				}
 			default:
-				if err == nil {
-					return nil
-				}
-				// This addresses an error where `context deadline exceeded` errors
-				// not captured by the previous case causes fatal errors.
-				// See https://github.com/googleapis/google-cloud-go/issues/3060
-				if strings.Contains(err.Error(), "context deadline exceeded") {
-					// Context deadline exceeded errors here should be transparent
-					// to prevent the iterator from shutting down.
-					if err := gax.Sleep(cctx, bo.Pause()); err != nil {
-						return nil
-					}
-					continue
-				}
-				// Any other error is fatal.
-				return err
+				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
+				// since acks are "fire and forget". Once EOS feature is out, retry error
+				// if exactly-once is enabled (from StreamingPull response).
+				return nil
 			}
 		}
 	})
@@ -492,17 +477,7 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 				// Timeout. Not a fatal error, but note that it happened.
 				recordStat(it.ctx, ModAckTimeoutCount, 1)
 				return nil
-			case codes.InvalidArgument:
-				// TODO(b/226593754): this error should be ignored unless exactly once is enabled
-				// since modacks are "fire and forget". Once EOS feature is out, retry this error
-				// if exactly-once is enabled (from StreamingPull response).
-				if strings.Contains(err.Error(), "Some acknowledgement ids in the request were invalid") {
-					return nil
-				}
 			default:
-				if err == nil {
-					return nil
-				}
 				// This addresses an error where `context deadline exceeded` errors
 				// not captured by the previous case causes fatal errors.
 				// See https://github.com/googleapis/google-cloud-go/issues/3060
@@ -510,8 +485,10 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 					recordStat(it.ctx, ModAckTimeoutCount, 1)
 					return nil
 				}
-				// Any other error is fatal.
-				return err
+				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
+				// since modacks are "fire and forget". Once EOS feature is out, retry error
+				// if exactly-once is enabled (from StreamingPull response).
+				return nil
 			}
 		}
 	})
