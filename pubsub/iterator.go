@@ -419,6 +419,13 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 				if err := gax.Sleep(cctx, bo.Pause()); err != nil {
 					return nil
 				}
+			case codes.InvalidArgument:
+				// TODO(b/226593754): this error should be ignored unless exactly once is enabled
+				// since modacks are "fire and forget". Once EOS feature is out, retry this error
+				// if exactly-once is enabled (from StreamingPull response).
+				if strings.Contains(err.Error(), "Some acknowledgement ids in the request were invalid") {
+					return nil
+				}
 			default:
 				if err == nil {
 					return nil
@@ -485,6 +492,13 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 				// Timeout. Not a fatal error, but note that it happened.
 				recordStat(it.ctx, ModAckTimeoutCount, 1)
 				return nil
+			case codes.InvalidArgument:
+				// TODO(b/226593754): this error should be ignored unless exactly once is enabled
+				// since modacks are "fire and forget". Once EOS feature is out, retry this error
+				// if exactly-once is enabled (from StreamingPull response).
+				if strings.Contains(err.Error(), "Some acknowledgement ids in the request were invalid") {
+					return nil
+				}
 			default:
 				if err == nil {
 					return nil
