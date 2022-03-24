@@ -2031,7 +2031,14 @@ func bucketResourceName(p, b string) string {
 // parseBucketName strips the leading resource path segment and returns the
 // bucket ID, which is the simple Bucket name typical of the v1 API.
 func parseBucketName(b string) string {
-	return strings.TrimPrefix(b, "projects/_/buckets/")
+	sep := strings.LastIndex(b, "/")
+	return b[sep+1:]
+}
+
+// toProjectResource accepts a project ID and formats it as a Project resource
+// name.
+func toProjectResource(project string) string {
+	return fmt.Sprintf("projects/%s", project)
 }
 
 // setConditionProtoField uses protobuf reflection to set named condition field

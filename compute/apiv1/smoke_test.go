@@ -476,7 +476,7 @@ func TestCapitalLetter(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer func() {
-		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+		timeoutCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 		defer cancel()
 		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
 			_, err = c.Delete(timeoutCtx,

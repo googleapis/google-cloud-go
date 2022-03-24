@@ -889,6 +889,10 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 }
 
 func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
+	if b == nil {
+		return &storagepb.Bucket{}
+	}
+
 	// Copy label map.
 	var labels map[string]string
 	if len(b.Labels) > 0 {
@@ -1274,6 +1278,32 @@ func applyBucketConds(method string, conds *BucketConditions, call interface{}) 
 		}
 	case conds.MetagenerationNotMatch != 0:
 		if !setConditionField(cval, "IfMetagenerationNotMatch", conds.MetagenerationNotMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
+		}
+	}
+	return nil
+}
+
+// applyBucketConds modifies the provided request message using the conditions
+// in conds. msg is a protobuf Message that has fields if_metageneration_match
+// and if_metageneration_not_match.
+func applyBucketCondsProto(method string, conds *BucketConditions, msg proto.Message) error {
+	rmsg := msg.ProtoReflect()
+
+	if conds == nil {
+		return nil
+	}
+	if err := conds.validate(method); err != nil {
+		return err
+	}
+
+	switch {
+	case conds.MetagenerationMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_match", conds.MetagenerationMatch) {
+			return fmt.Errorf("storage: %s: ifMetagenerationMatch not supported", method)
+		}
+	case conds.MetagenerationNotMatch != 0:
+		if !setConditionProtoField(rmsg, "if_metageneration_not_match", conds.MetagenerationNotMatch) {
 			return fmt.Errorf("storage: %s: ifMetagenerationNotMatch not supported", method)
 		}
 	}

@@ -69,6 +69,7 @@ require (
 	cloud.google.com/go/networkmanagement v1.0.0
 	cloud.google.com/go/networksecurity v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
+	cloud.google.com/go/optimization v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/orchestration v0.1.0
 	cloud.google.com/go/orgpolicy v1.0.0
 	cloud.google.com/go/osconfig v1.2.0
@@ -112,7 +113,7 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.73.0
-	google.golang.org/genproto v0.0.0-20220317150908-0efb43f6373e
+	google.golang.org/genproto v0.0.0-20220323144105-ec3c684e5b14
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -336,3 +337,5 @@ replace cloud.google.com/go/storage => ../../../storage
 replace cloud.google.com/go/dataplex => ../../../dataplex
 
 replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
+
+replace cloud.google.com/go/optimization => ../../../optimization
