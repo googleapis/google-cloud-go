@@ -421,8 +421,8 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 				}
 			default:
 				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
-				// since acks are "fire and forget". Once EOS feature is out, retry error
-				// if exactly-once is enabled (from StreamingPull response).
+				// since acks are "fire and forget". Once EOS feature is out, retry these errors
+				// if exactly-once is enabled, which can be determined from StreamingPull response.
 				return nil
 			}
 		}
@@ -482,8 +482,8 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 					return nil
 				}
 				// TODO(b/226593754): by default, errors should not be fatal unless exactly once is enabled
-				// since modacks are "fire and forget". Once EOS feature is out, retry error
-				// if exactly-once is enabled (from StreamingPull response).
+				// since modacks are "fire and forget". Once EOS feature is out, retry these errors
+				// if exactly-once is enabled, which can be determined from StreamingPull response.
 				return nil
 			}
 		}
