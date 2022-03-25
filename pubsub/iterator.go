@@ -477,7 +477,7 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 				// This addresses an error where `context deadline exceeded` errors
 				// not captured by the previous case causes fatal errors.
 				// See https://github.com/googleapis/google-cloud-go/issues/3060
-				if strings.Contains(err.Error(), "context deadline exceeded") {
+				if err != nil && strings.Contains(err.Error(), "context deadline exceeded") {
 					recordStat(it.ctx, ModAckTimeoutCount, 1)
 					return nil
 				}
