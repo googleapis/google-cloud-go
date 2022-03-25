@@ -47,6 +47,7 @@ type ModelCallOptions struct {
 	UpdateModel               []gax.CallOption
 	DeleteModel               []gax.CallOption
 	ExportModel               []gax.CallOption
+	ImportModelEvaluation     []gax.CallOption
 	GetModelEvaluation        []gax.CallOption
 	ListModelEvaluations      []gax.CallOption
 	GetModelEvaluationSlice   []gax.CallOption
@@ -73,6 +74,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 		UpdateModel:               []gax.CallOption{},
 		DeleteModel:               []gax.CallOption{},
 		ExportModel:               []gax.CallOption{},
+		ImportModelEvaluation:     []gax.CallOption{},
 		GetModelEvaluation:        []gax.CallOption{},
 		ListModelEvaluations:      []gax.CallOption{},
 		GetModelEvaluationSlice:   []gax.CallOption{},
@@ -94,6 +96,7 @@ type internalModelClient interface {
 	DeleteModelOperation(name string) *DeleteModelOperation
 	ExportModel(context.Context, *aiplatformpb.ExportModelRequest, ...gax.CallOption) (*ExportModelOperation, error)
 	ExportModelOperation(name string) *ExportModelOperation
+	ImportModelEvaluation(context.Context, *aiplatformpb.ImportModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	GetModelEvaluation(context.Context, *aiplatformpb.GetModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
 	ListModelEvaluations(context.Context, *aiplatformpb.ListModelEvaluationsRequest, ...gax.CallOption) *ModelEvaluationIterator
 	GetModelEvaluationSlice(context.Context, *aiplatformpb.GetModelEvaluationSliceRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluationSlice, error)
@@ -191,6 +194,11 @@ func (c *ModelClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportM
 // The name must be that of a previously created ExportModelOperation, possibly from a different process.
 func (c *ModelClient) ExportModelOperation(name string) *ExportModelOperation {
 	return c.internalClient.ExportModelOperation(name)
+}
+
+// ImportModelEvaluation imports an externally generated ModelEvaluation.
+func (c *ModelClient) ImportModelEvaluation(ctx context.Context, req *aiplatformpb.ImportModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
+	return c.internalClient.ImportModelEvaluation(ctx, req, opts...)
 }
 
 // GetModelEvaluation gets a ModelEvaluation.
@@ -468,6 +476,23 @@ func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.Exp
 	return &ExportModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *modelGRPCClient) ImportModelEvaluation(ctx context.Context, req *aiplatformpb.ImportModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ImportModelEvaluation[0:len((*c.CallOptions).ImportModelEvaluation):len((*c.CallOptions).ImportModelEvaluation)], opts...)
+	var resp *aiplatformpb.ModelEvaluation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.ImportModelEvaluation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *modelGRPCClient) GetModelEvaluation(ctx context.Context, req *aiplatformpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error) {
