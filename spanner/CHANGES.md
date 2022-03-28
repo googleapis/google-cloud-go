@@ -1,5 +1,12 @@
 # Changes
 
+### [1.30.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.30.0...spanner/v1.30.1) (2022-03-28)
+
+
+### Bug Fixes
+
+* **spanner:** early unlock of session pool lock during dumping the tracked session handles to avoid deadlock ([#5777](https://github.com/googleapis/google-cloud-go/issues/5777)) ([b007836](https://github.com/googleapis/google-cloud-go/commit/b0078362865159b87bc34c1a7f990a361f1cafcf))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.29.0...spanner/v1.30.0) (2022-03-04)
 
 
