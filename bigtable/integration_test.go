@@ -42,12 +42,9 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
-	longrunning "google.golang.org/genproto/googleapis/longrunning"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -1115,7 +1112,8 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	}
 	defer adminClient.DeleteTable(ctx, presplitTable)
 
-	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+	cf := uid.NewSpace("follows", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, cf); err != nil {
 		t.Fatal(err)
 	}
 
@@ -1131,7 +1129,7 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	for row, ss := range initialData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(cf, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
@@ -1403,8 +1401,12 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
+
 	// Create backup.
-	backup := "backup"
+	opts := &uid.Options{Sep: '_'}
+	backupUUID := uid.NewSpace("backup", opts)
+	backup := backupUUID.New()
+
 	defer adminClient.DeleteBackup(ctx, cluster, backup)
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
@@ -1985,10 +1987,126 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 }
 
+func TestIntegration_Autoscaling(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance update testing")
+	}
+	instanceToCreate += "4"
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	clusterID := instanceToCreate + "-cluster"
+
+	t.Log("creating an instance with autoscaling ON (Min = 3, Max = 4)")
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterID,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: PRODUCTION,
+		AutoscalingConfig: &AutoscalingConfig{
+			MinNodes:         3,
+			MaxNodes:         4,
+			CPUTargetPercent: 60,
+		},
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	cluster, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes := 3
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	wantMin := 3
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax := 4
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU := 60
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+	serveNodes := 1
+	t.Logf("setting autoscaling OFF and setting serve nodes to %v", serveNodes)
+	err = iAdminClient.UpdateCluster(ctx, instanceToCreate, clusterID, int32(serveNodes))
+	if err != nil {
+		t.Fatalf("UpdateCluster: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantNodes = 1
+	if gotNodes := cluster.ServeNodes; gotNodes != wantNodes {
+		t.Fatalf("want cluster nodes = %v, got = %v", wantNodes, gotNodes)
+	}
+	if gotAsc := cluster.AutoscalingConfig; gotAsc != nil {
+		t.Fatalf("want cluster autoscaling = nil, got = %v", gotAsc)
+	}
+
+	ac := AutoscalingConfig{
+		MinNodes:         3,
+		MaxNodes:         4,
+		CPUTargetPercent: 80,
+	}
+	t.Logf("setting autoscaling ON (Min = %v, Max = %v)", ac.MinNodes, ac.MaxNodes)
+	err = iAdminClient.SetAutoscaling(ctx, instanceToCreate, clusterID, ac)
+	if err != nil {
+		t.Fatalf("SetAutoscaling: %v", err)
+	}
+	cluster, err = iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+	wantMin = ac.MinNodes
+	if gotMin := cluster.AutoscalingConfig.MinNodes; gotMin != wantMin {
+		t.Fatalf("want cluster autoscaling min = %v, got = %v", wantMin, gotMin)
+	}
+	wantMax = ac.MaxNodes
+	if gotMax := cluster.AutoscalingConfig.MaxNodes; gotMax != wantMax {
+		t.Fatalf("want cluster autoscaling max = %v, got = %v", wantMax, gotMax)
+	}
+	wantCPU = ac.CPUTargetPercent
+	if gotCPU := cluster.AutoscalingConfig.CPUTargetPercent; gotCPU != wantCPU {
+		t.Fatalf("want cluster autoscaling CPU target = %v, got = %v", wantCPU, gotCPU)
+	}
+
+}
+
 // instanceAdminClientMock is used to test FailedLocations field processing.
 type instanceAdminClientMock struct {
 	Clusters             []*btapb.Cluster
 	UnavailableLocations []string
+	// Imbedding the interface allows test writers to override just the methods
+	// that are interesting for a test and ignore the rest.
+	btapb.BigtableInstanceAdminClient
 }
 
 func (iacm *instanceAdminClientMock) ListClusters(ctx context.Context, req *btapb.ListClustersRequest, opts ...grpc.CallOption) (*btapb.ListClustersResponse, error) {
@@ -1997,78 +2115,6 @@ func (iacm *instanceAdminClientMock) ListClusters(ctx context.Context, req *btap
 		FailedLocations: iacm.UnavailableLocations,
 	}
 	return &res, nil
-}
-
-func (iacm *instanceAdminClientMock) CreateInstance(ctx context.Context, in *btapb.CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) GetInstance(ctx context.Context, in *btapb.GetInstanceRequest, opts ...grpc.CallOption) (*btapb.Instance, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) ListInstances(ctx context.Context, in *btapb.ListInstancesRequest, opts ...grpc.CallOption) (*btapb.ListInstancesResponse, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) UpdateInstance(ctx context.Context, in *btapb.Instance, opts ...grpc.CallOption) (*btapb.Instance, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) PartialUpdateInstance(ctx context.Context, in *btapb.PartialUpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) DeleteInstance(ctx context.Context, in *btapb.DeleteInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) CreateCluster(ctx context.Context, in *btapb.CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) GetCluster(ctx context.Context, in *btapb.GetClusterRequest, opts ...grpc.CallOption) (*btapb.Cluster, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) UpdateCluster(ctx context.Context, in *btapb.Cluster, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) DeleteCluster(ctx context.Context, in *btapb.DeleteClusterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) CreateAppProfile(ctx context.Context, in *btapb.CreateAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) GetAppProfile(ctx context.Context, in *btapb.GetAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) ListAppProfiles(ctx context.Context, in *btapb.ListAppProfilesRequest, opts ...grpc.CallOption) (*btapb.ListAppProfilesResponse, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) UpdateAppProfile(ctx context.Context, in *btapb.UpdateAppProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) DeleteAppProfile(ctx context.Context, in *btapb.DeleteAppProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
-	return nil, nil
-}
-
-func (iacm *instanceAdminClientMock) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	return nil, nil
 }
 
 func TestIntegration_InstanceAdminClient_Clusters_WithFailedLocations(t *testing.T) {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -597,7 +597,7 @@ func (c *subscriberGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *subscriberGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -614,6 +614,7 @@ func (c *subscriberGRPCClient) CreateSubscription(ctx context.Context, req *pubs
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSubscription[0:len((*c.CallOptions).CreateSubscription):len((*c.CallOptions).CreateSubscription)], opts...)
 	var resp *pubsubpb.Subscription
@@ -635,6 +636,7 @@ func (c *subscriberGRPCClient) GetSubscription(ctx context.Context, req *pubsubp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
 	var resp *pubsubpb.Subscription
@@ -656,6 +658,7 @@ func (c *subscriberGRPCClient) UpdateSubscription(ctx context.Context, req *pubs
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSubscription[0:len((*c.CallOptions).UpdateSubscription):len((*c.CallOptions).UpdateSubscription)], opts...)
 	var resp *pubsubpb.Subscription
@@ -672,6 +675,7 @@ func (c *subscriberGRPCClient) UpdateSubscription(ctx context.Context, req *pubs
 
 func (c *subscriberGRPCClient) ListSubscriptions(ctx context.Context, req *pubsubpb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
@@ -721,6 +725,7 @@ func (c *subscriberGRPCClient) DeleteSubscription(ctx context.Context, req *pubs
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -738,6 +743,7 @@ func (c *subscriberGRPCClient) ModifyAckDeadline(ctx context.Context, req *pubsu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ModifyAckDeadline[0:len((*c.CallOptions).ModifyAckDeadline):len((*c.CallOptions).ModifyAckDeadline)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -755,6 +761,7 @@ func (c *subscriberGRPCClient) Acknowledge(ctx context.Context, req *pubsubpb.Ac
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Acknowledge[0:len((*c.CallOptions).Acknowledge):len((*c.CallOptions).Acknowledge)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -772,6 +779,7 @@ func (c *subscriberGRPCClient) Pull(ctx context.Context, req *pubsubpb.PullReque
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Pull[0:len((*c.CallOptions).Pull):len((*c.CallOptions).Pull)], opts...)
 	var resp *pubsubpb.PullResponse
@@ -808,6 +816,7 @@ func (c *subscriberGRPCClient) ModifyPushConfig(ctx context.Context, req *pubsub
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ModifyPushConfig[0:len((*c.CallOptions).ModifyPushConfig):len((*c.CallOptions).ModifyPushConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,6 +834,7 @@ func (c *subscriberGRPCClient) GetSnapshot(ctx context.Context, req *pubsubpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot", url.QueryEscape(req.GetSnapshot())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
 	var resp *pubsubpb.Snapshot
@@ -841,6 +851,7 @@ func (c *subscriberGRPCClient) GetSnapshot(ctx context.Context, req *pubsubpb.Ge
 
 func (c *subscriberGRPCClient) ListSnapshots(ctx context.Context, req *pubsubpb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
@@ -890,6 +901,7 @@ func (c *subscriberGRPCClient) CreateSnapshot(ctx context.Context, req *pubsubpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSnapshot[0:len((*c.CallOptions).CreateSnapshot):len((*c.CallOptions).CreateSnapshot)], opts...)
 	var resp *pubsubpb.Snapshot
@@ -911,6 +923,7 @@ func (c *subscriberGRPCClient) UpdateSnapshot(ctx context.Context, req *pubsubpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot.name", url.QueryEscape(req.GetSnapshot().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSnapshot[0:len((*c.CallOptions).UpdateSnapshot):len((*c.CallOptions).UpdateSnapshot)], opts...)
 	var resp *pubsubpb.Snapshot
@@ -932,6 +945,7 @@ func (c *subscriberGRPCClient) DeleteSnapshot(ctx context.Context, req *pubsubpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "snapshot", url.QueryEscape(req.GetSnapshot())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSnapshot[0:len((*c.CallOptions).DeleteSnapshot):len((*c.CallOptions).DeleteSnapshot)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -949,6 +963,7 @@ func (c *subscriberGRPCClient) Seek(ctx context.Context, req *pubsubpb.SeekReque
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).Seek[0:len((*c.CallOptions).Seek):len((*c.CallOptions).Seek)], opts...)
 	var resp *pubsubpb.SeekResponse

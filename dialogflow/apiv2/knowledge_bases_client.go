@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -259,7 +259,7 @@ func (c *knowledgeBasesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *knowledgeBasesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -271,6 +271,7 @@ func (c *knowledgeBasesGRPCClient) Close() error {
 
 func (c *knowledgeBasesGRPCClient) ListKnowledgeBases(ctx context.Context, req *dialogflowpb.ListKnowledgeBasesRequest, opts ...gax.CallOption) *KnowledgeBaseIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListKnowledgeBases[0:len((*c.CallOptions).ListKnowledgeBases):len((*c.CallOptions).ListKnowledgeBases)], opts...)
 	it := &KnowledgeBaseIterator{}
@@ -320,6 +321,7 @@ func (c *knowledgeBasesGRPCClient) GetKnowledgeBase(ctx context.Context, req *di
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetKnowledgeBase[0:len((*c.CallOptions).GetKnowledgeBase):len((*c.CallOptions).GetKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase
@@ -341,6 +343,7 @@ func (c *knowledgeBasesGRPCClient) CreateKnowledgeBase(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateKnowledgeBase[0:len((*c.CallOptions).CreateKnowledgeBase):len((*c.CallOptions).CreateKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase
@@ -362,6 +365,7 @@ func (c *knowledgeBasesGRPCClient) DeleteKnowledgeBase(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteKnowledgeBase[0:len((*c.CallOptions).DeleteKnowledgeBase):len((*c.CallOptions).DeleteKnowledgeBase)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -379,6 +383,7 @@ func (c *knowledgeBasesGRPCClient) UpdateKnowledgeBase(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "knowledge_base.name", url.QueryEscape(req.GetKnowledgeBase().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateKnowledgeBase[0:len((*c.CallOptions).UpdateKnowledgeBase):len((*c.CallOptions).UpdateKnowledgeBase)], opts...)
 	var resp *dialogflowpb.KnowledgeBase

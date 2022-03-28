@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -286,7 +286,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -303,6 +303,7 @@ func (c *gRPCClient) GetTable(ctx context.Context, req *tablespb.GetTableRequest
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTable[0:len((*c.CallOptions).GetTable):len((*c.CallOptions).GetTable)], opts...)
 	var resp *tablespb.Table
@@ -367,6 +368,7 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspac
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	var resp *tablespb.Workspace
@@ -431,6 +433,7 @@ func (c *gRPCClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetRow[0:len((*c.CallOptions).GetRow):len((*c.CallOptions).GetRow)], opts...)
 	var resp *tablespb.Row
@@ -447,6 +450,7 @@ func (c *gRPCClient) GetRow(ctx context.Context, req *tablespb.GetRowRequest, op
 
 func (c *gRPCClient) ListRows(ctx context.Context, req *tablespb.ListRowsRequest, opts ...gax.CallOption) *RowIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListRows[0:len((*c.CallOptions).ListRows):len((*c.CallOptions).ListRows)], opts...)
 	it := &RowIterator{}
@@ -496,6 +500,7 @@ func (c *gRPCClient) CreateRow(ctx context.Context, req *tablespb.CreateRowReque
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateRow[0:len((*c.CallOptions).CreateRow):len((*c.CallOptions).CreateRow)], opts...)
 	var resp *tablespb.Row
@@ -517,6 +522,7 @@ func (c *gRPCClient) BatchCreateRows(ctx context.Context, req *tablespb.BatchCre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateRows[0:len((*c.CallOptions).BatchCreateRows):len((*c.CallOptions).BatchCreateRows)], opts...)
 	var resp *tablespb.BatchCreateRowsResponse
@@ -538,6 +544,7 @@ func (c *gRPCClient) UpdateRow(ctx context.Context, req *tablespb.UpdateRowReque
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "row.name", url.QueryEscape(req.GetRow().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateRow[0:len((*c.CallOptions).UpdateRow):len((*c.CallOptions).UpdateRow)], opts...)
 	var resp *tablespb.Row
@@ -559,6 +566,7 @@ func (c *gRPCClient) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchUpdateRows[0:len((*c.CallOptions).BatchUpdateRows):len((*c.CallOptions).BatchUpdateRows)], opts...)
 	var resp *tablespb.BatchUpdateRowsResponse
@@ -580,6 +588,7 @@ func (c *gRPCClient) DeleteRow(ctx context.Context, req *tablespb.DeleteRowReque
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteRow[0:len((*c.CallOptions).DeleteRow):len((*c.CallOptions).DeleteRow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -597,6 +606,7 @@ func (c *gRPCClient) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDel
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchDeleteRows[0:len((*c.CallOptions).BatchDeleteRows):len((*c.CallOptions).BatchDeleteRows)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

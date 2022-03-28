@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -398,7 +398,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -415,6 +415,7 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMicrosoftAdDomain[0:len((*c.CallOptions).CreateMicrosoftAdDomain):len((*c.CallOptions).CreateMicrosoftAdDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -438,6 +439,7 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResetAdminPassword[0:len((*c.CallOptions).ResetAdminPassword):len((*c.CallOptions).ResetAdminPassword)], opts...)
 	var resp *managedidentitiespb.ResetAdminPasswordResponse
@@ -454,6 +456,7 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 
 func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.ListDomainsRequest, opts ...gax.CallOption) *DomainIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDomains[0:len((*c.CallOptions).ListDomains):len((*c.CallOptions).ListDomains)], opts...)
 	it := &DomainIterator{}
@@ -503,6 +506,7 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDomain[0:len((*c.CallOptions).GetDomain):len((*c.CallOptions).GetDomain)], opts...)
 	var resp *managedidentitiespb.Domain
@@ -524,6 +528,7 @@ func (c *gRPCClient) UpdateDomain(ctx context.Context, req *managedidentitiespb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "domain.name", url.QueryEscape(req.GetDomain().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateDomain[0:len((*c.CallOptions).UpdateDomain):len((*c.CallOptions).UpdateDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -547,6 +552,7 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDomain[0:len((*c.CallOptions).DeleteDomain):len((*c.CallOptions).DeleteDomain)], opts...)
 	var resp *longrunningpb.Operation
@@ -570,6 +576,7 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AttachTrust[0:len((*c.CallOptions).AttachTrust):len((*c.CallOptions).AttachTrust)], opts...)
 	var resp *longrunningpb.Operation
@@ -593,6 +600,7 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReconfigureTrust[0:len((*c.CallOptions).ReconfigureTrust):len((*c.CallOptions).ReconfigureTrust)], opts...)
 	var resp *longrunningpb.Operation
@@ -616,6 +624,7 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DetachTrust[0:len((*c.CallOptions).DetachTrust):len((*c.CallOptions).DetachTrust)], opts...)
 	var resp *longrunningpb.Operation
@@ -639,6 +648,7 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ValidateTrust[0:len((*c.CallOptions).ValidateTrust):len((*c.CallOptions).ValidateTrust)], opts...)
 	var resp *longrunningpb.Operation

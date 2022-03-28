@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/proto"
@@ -47,11 +48,15 @@ type Writer struct {
 	// attributes are ignored.
 	ObjectAttrs
 
-	// SendCRC specifies whether to transmit a CRC32C field. It should be set
+	// SendCRC32C specifies whether to transmit a CRC32C field. It should be set
 	// to true in addition to setting the Writer's CRC32C field, because zero
 	// is a valid CRC and normally a zero would not be transmitted.
 	// If a CRC32C is sent, and the data written does not match the checksum,
 	// the write will be rejected.
+	//
+	// Note: SendCRC32C must be set to true BEFORE the first call to
+	// Writer.Write() in order to send the checksum. If it is set after that
+	// point, the checksum will be ignored.
 	SendCRC32C bool
 
 	// ChunkSize controls the maximum number of bytes of the object that the
@@ -75,6 +80,23 @@ type Writer struct {
 	//
 	// ChunkSize must be set before the first Write call.
 	ChunkSize int
+
+	// ChunkRetryDeadline sets a per-chunk retry deadline for multi-chunk
+	// resumable uploads.
+	//
+	// For uploads of larger files, the Writer will attempt to retry if the
+	// request to upload a particular chunk fails with a transient error.
+	// If a single chunk has been attempting to upload for longer than this
+	// deadline and the request fails, it will no longer be retried, and the error
+	// will be returned to the caller. This is only applicable for files which are
+	// large enough to require a multi-chunk resumable upload. The default value
+	// is 32s. Users may want to pick a longer deadline if they are using larger
+	// values for ChunkSize or if they expect to have a slow or unreliable
+	// internet connection.
+	//
+	// To set a deadline on the entire upload, use context timeout or
+	// cancellation.
+	ChunkRetryDeadline time.Duration
 
 	// ProgressFunc can be used to monitor the progress of a large write.
 	// operation. If ProgressFunc is not nil and writing requires multiple
@@ -127,6 +149,9 @@ func (w *Writer) open() error {
 	if c := attrs.ContentType; c != "" {
 		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
 	}
+	if w.ChunkRetryDeadline != 0 {
+		mediaOpts = append(mediaOpts, googleapi.ChunkRetryDeadline(w.ChunkRetryDeadline))
+	}
 
 	go func() {
 		defer close(w.donec)
@@ -172,6 +197,22 @@ func (w *Writer) open() error {
 			// call to set up the upload as well as calls to upload individual chunks
 			// for a resumable upload (as long as the chunk size is non-zero). Hence
 			// there is no need to add retries here.
+
+			// Retry only when the operation is idempotent or the retry policy is RetryAlways.
+			isIdempotent := w.o.conds != nil && (w.o.conds.GenerationMatch >= 0 || w.o.conds.DoesNotExist == true)
+			var useRetry bool
+			if (w.o.retry == nil || w.o.retry.policy == RetryIdempotent) && isIdempotent {
+				useRetry = true
+			} else if w.o.retry != nil && w.o.retry.policy == RetryAlways {
+				useRetry = true
+			}
+			if useRetry {
+				if w.o.retry != nil {
+					call.WithRetry(w.o.retry.backoff, w.o.retry.shouldRetry)
+				} else {
+					call.WithRetry(nil, nil)
+				}
+			}
 			resp, err = call.Do()
 		}
 		if err != nil {

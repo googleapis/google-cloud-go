@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -255,7 +255,7 @@ func (c *indexGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *indexGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -267,6 +267,7 @@ func (c *indexGRPCClient) Close() error {
 
 func (c *indexGRPCClient) CreateIndex(ctx context.Context, req *aiplatformpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateIndex[0:len((*c.CallOptions).CreateIndex):len((*c.CallOptions).CreateIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -285,6 +286,7 @@ func (c *indexGRPCClient) CreateIndex(ctx context.Context, req *aiplatformpb.Cre
 
 func (c *indexGRPCClient) GetIndex(ctx context.Context, req *aiplatformpb.GetIndexRequest, opts ...gax.CallOption) (*aiplatformpb.Index, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetIndex[0:len((*c.CallOptions).GetIndex):len((*c.CallOptions).GetIndex)], opts...)
 	var resp *aiplatformpb.Index
@@ -301,6 +303,7 @@ func (c *indexGRPCClient) GetIndex(ctx context.Context, req *aiplatformpb.GetInd
 
 func (c *indexGRPCClient) ListIndexes(ctx context.Context, req *aiplatformpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListIndexes[0:len((*c.CallOptions).ListIndexes):len((*c.CallOptions).ListIndexes)], opts...)
 	it := &IndexIterator{}
@@ -345,6 +348,7 @@ func (c *indexGRPCClient) ListIndexes(ctx context.Context, req *aiplatformpb.Lis
 
 func (c *indexGRPCClient) UpdateIndex(ctx context.Context, req *aiplatformpb.UpdateIndexRequest, opts ...gax.CallOption) (*UpdateIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index.name", url.QueryEscape(req.GetIndex().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateIndex[0:len((*c.CallOptions).UpdateIndex):len((*c.CallOptions).UpdateIndex)], opts...)
 	var resp *longrunningpb.Operation
@@ -363,6 +367,7 @@ func (c *indexGRPCClient) UpdateIndex(ctx context.Context, req *aiplatformpb.Upd
 
 func (c *indexGRPCClient) DeleteIndex(ctx context.Context, req *aiplatformpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteIndex[0:len((*c.CallOptions).DeleteIndex):len((*c.CallOptions).DeleteIndex)], opts...)
 	var resp *longrunningpb.Operation

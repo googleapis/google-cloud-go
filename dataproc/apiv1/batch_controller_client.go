@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -232,7 +232,7 @@ func (c *batchControllerGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *batchControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -244,6 +244,7 @@ func (c *batchControllerGRPCClient) Close() error {
 
 func (c *batchControllerGRPCClient) CreateBatch(ctx context.Context, req *dataprocpb.CreateBatchRequest, opts ...gax.CallOption) (*CreateBatchOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateBatch[0:len((*c.CallOptions).CreateBatch):len((*c.CallOptions).CreateBatch)], opts...)
 	var resp *longrunningpb.Operation
@@ -262,6 +263,7 @@ func (c *batchControllerGRPCClient) CreateBatch(ctx context.Context, req *datapr
 
 func (c *batchControllerGRPCClient) GetBatch(ctx context.Context, req *dataprocpb.GetBatchRequest, opts ...gax.CallOption) (*dataprocpb.Batch, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBatch[0:len((*c.CallOptions).GetBatch):len((*c.CallOptions).GetBatch)], opts...)
 	var resp *dataprocpb.Batch
@@ -278,6 +280,7 @@ func (c *batchControllerGRPCClient) GetBatch(ctx context.Context, req *dataprocp
 
 func (c *batchControllerGRPCClient) ListBatches(ctx context.Context, req *dataprocpb.ListBatchesRequest, opts ...gax.CallOption) *BatchIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBatches[0:len((*c.CallOptions).ListBatches):len((*c.CallOptions).ListBatches)], opts...)
 	it := &BatchIterator{}
@@ -322,6 +325,7 @@ func (c *batchControllerGRPCClient) ListBatches(ctx context.Context, req *datapr
 
 func (c *batchControllerGRPCClient) DeleteBatch(ctx context.Context, req *dataprocpb.DeleteBatchRequest, opts ...gax.CallOption) error {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBatch[0:len((*c.CallOptions).DeleteBatch):len((*c.CallOptions).DeleteBatch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

@@ -59,7 +59,15 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 				if i := strings.Index(titleParts[0], "("); i > 0 {
 					titleParts[0] = titleParts[0][:i]
 				}
-				titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], c.Package)
+
+				var breakChangeIndicator string
+				if strings.HasSuffix(titleParts[0], "!") {
+					// If the change is marked as breaking we need to move the
+					// bang to after the added scope.
+					titleParts[0] = titleParts[0][:len(titleParts[0])-1]
+					breakChangeIndicator = "!"
+				}
+				titleParts[0] = fmt.Sprintf("%s(%s)%s", titleParts[0], c.Package, breakChangeIndicator)
 			}
 			title = strings.Join(titleParts, ":")
 		}

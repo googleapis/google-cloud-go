@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -241,7 +241,7 @@ func (c *metricsScopesGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *metricsScopesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -253,6 +253,7 @@ func (c *metricsScopesGRPCClient) Close() error {
 
 func (c *metricsScopesGRPCClient) GetMetricsScope(ctx context.Context, req *metricsscopepb.GetMetricsScopeRequest, opts ...gax.CallOption) (*metricsscopepb.MetricsScope, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMetricsScope[0:len((*c.CallOptions).GetMetricsScope):len((*c.CallOptions).GetMetricsScope)], opts...)
 	var resp *metricsscopepb.MetricsScope
@@ -284,6 +285,7 @@ func (c *metricsScopesGRPCClient) ListMetricsScopesByMonitoredProject(ctx contex
 
 func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, req *metricsscopepb.CreateMonitoredProjectRequest, opts ...gax.CallOption) (*CreateMonitoredProjectOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMonitoredProject[0:len((*c.CallOptions).CreateMonitoredProject):len((*c.CallOptions).CreateMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -302,6 +304,7 @@ func (c *metricsScopesGRPCClient) CreateMonitoredProject(ctx context.Context, re
 
 func (c *metricsScopesGRPCClient) DeleteMonitoredProject(ctx context.Context, req *metricsscopepb.DeleteMonitoredProjectRequest, opts ...gax.CallOption) (*DeleteMonitoredProjectOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteMonitoredProject[0:len((*c.CallOptions).DeleteMonitoredProject):len((*c.CallOptions).DeleteMonitoredProject)], opts...)
 	var resp *longrunningpb.Operation

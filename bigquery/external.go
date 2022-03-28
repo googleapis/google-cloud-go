@@ -219,6 +219,10 @@ type CSVOptions struct {
 	// The number of rows at the top of a CSV file that BigQuery will skip when
 	// reading data.
 	SkipLeadingRows int64
+
+	// An optional custom string that will represent a NULL
+	// value in CSV import data.
+	NullMarker string
 }
 
 func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
@@ -229,6 +233,7 @@ func (o *CSVOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration)
 		FieldDelimiter:      o.FieldDelimiter,
 		Quote:               o.quote(),
 		SkipLeadingRows:     o.SkipLeadingRows,
+		NullMarker:          o.NullMarker,
 	}
 }
 
@@ -260,6 +265,7 @@ func bqToCSVOptions(q *bq.CsvOptions) *CSVOptions {
 		Encoding:            Encoding(q.Encoding),
 		FieldDelimiter:      q.FieldDelimiter,
 		SkipLeadingRows:     q.SkipLeadingRows,
+		NullMarker:          q.NullMarker,
 	}
 	o.setQuote(q.Quote)
 	return o

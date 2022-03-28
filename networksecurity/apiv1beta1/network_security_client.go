@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -123,6 +123,10 @@ type internalClient interface {
 
 // Client is a client for interacting with Network Security API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Network Security API provides resources to configure authentication and
+// authorization policies. Refer to per API resource documentation for more
+// information.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -314,6 +318,10 @@ type gRPCClient struct {
 
 // NewClient creates a new network security client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Network Security API provides resources to configure authentication and
+// authorization policies. Refer to per API resource documentation for more
+// information.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -371,7 +379,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -383,6 +391,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListAuthorizationPolicies(ctx context.Context, req *networksecuritypb.ListAuthorizationPoliciesRequest, opts ...gax.CallOption) *AuthorizationPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAuthorizationPolicies[0:len((*c.CallOptions).ListAuthorizationPolicies):len((*c.CallOptions).ListAuthorizationPolicies)], opts...)
 	it := &AuthorizationPolicyIterator{}
@@ -432,6 +441,7 @@ func (c *gRPCClient) GetAuthorizationPolicy(ctx context.Context, req *networksec
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAuthorizationPolicy[0:len((*c.CallOptions).GetAuthorizationPolicy):len((*c.CallOptions).GetAuthorizationPolicy)], opts...)
 	var resp *networksecuritypb.AuthorizationPolicy
@@ -453,6 +463,7 @@ func (c *gRPCClient) CreateAuthorizationPolicy(ctx context.Context, req *network
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAuthorizationPolicy[0:len((*c.CallOptions).CreateAuthorizationPolicy):len((*c.CallOptions).CreateAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -476,6 +487,7 @@ func (c *gRPCClient) UpdateAuthorizationPolicy(ctx context.Context, req *network
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "authorization_policy.name", url.QueryEscape(req.GetAuthorizationPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAuthorizationPolicy[0:len((*c.CallOptions).UpdateAuthorizationPolicy):len((*c.CallOptions).UpdateAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -499,6 +511,7 @@ func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAuthorizationPolicy[0:len((*c.CallOptions).DeleteAuthorizationPolicy):len((*c.CallOptions).DeleteAuthorizationPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -517,6 +530,7 @@ func (c *gRPCClient) DeleteAuthorizationPolicy(ctx context.Context, req *network
 
 func (c *gRPCClient) ListServerTlsPolicies(ctx context.Context, req *networksecuritypb.ListServerTlsPoliciesRequest, opts ...gax.CallOption) *ServerTlsPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListServerTlsPolicies[0:len((*c.CallOptions).ListServerTlsPolicies):len((*c.CallOptions).ListServerTlsPolicies)], opts...)
 	it := &ServerTlsPolicyIterator{}
@@ -566,6 +580,7 @@ func (c *gRPCClient) GetServerTlsPolicy(ctx context.Context, req *networksecurit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetServerTlsPolicy[0:len((*c.CallOptions).GetServerTlsPolicy):len((*c.CallOptions).GetServerTlsPolicy)], opts...)
 	var resp *networksecuritypb.ServerTlsPolicy
@@ -587,6 +602,7 @@ func (c *gRPCClient) CreateServerTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateServerTlsPolicy[0:len((*c.CallOptions).CreateServerTlsPolicy):len((*c.CallOptions).CreateServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -610,6 +626,7 @@ func (c *gRPCClient) UpdateServerTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "server_tls_policy.name", url.QueryEscape(req.GetServerTlsPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateServerTlsPolicy[0:len((*c.CallOptions).UpdateServerTlsPolicy):len((*c.CallOptions).UpdateServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -633,6 +650,7 @@ func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteServerTlsPolicy[0:len((*c.CallOptions).DeleteServerTlsPolicy):len((*c.CallOptions).DeleteServerTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -651,6 +669,7 @@ func (c *gRPCClient) DeleteServerTlsPolicy(ctx context.Context, req *networksecu
 
 func (c *gRPCClient) ListClientTlsPolicies(ctx context.Context, req *networksecuritypb.ListClientTlsPoliciesRequest, opts ...gax.CallOption) *ClientTlsPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListClientTlsPolicies[0:len((*c.CallOptions).ListClientTlsPolicies):len((*c.CallOptions).ListClientTlsPolicies)], opts...)
 	it := &ClientTlsPolicyIterator{}
@@ -700,6 +719,7 @@ func (c *gRPCClient) GetClientTlsPolicy(ctx context.Context, req *networksecurit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetClientTlsPolicy[0:len((*c.CallOptions).GetClientTlsPolicy):len((*c.CallOptions).GetClientTlsPolicy)], opts...)
 	var resp *networksecuritypb.ClientTlsPolicy
@@ -721,6 +741,7 @@ func (c *gRPCClient) CreateClientTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateClientTlsPolicy[0:len((*c.CallOptions).CreateClientTlsPolicy):len((*c.CallOptions).CreateClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -744,6 +765,7 @@ func (c *gRPCClient) UpdateClientTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "client_tls_policy.name", url.QueryEscape(req.GetClientTlsPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateClientTlsPolicy[0:len((*c.CallOptions).UpdateClientTlsPolicy):len((*c.CallOptions).UpdateClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -767,6 +789,7 @@ func (c *gRPCClient) DeleteClientTlsPolicy(ctx context.Context, req *networksecu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteClientTlsPolicy[0:len((*c.CallOptions).DeleteClientTlsPolicy):len((*c.CallOptions).DeleteClientTlsPolicy)], opts...)
 	var resp *longrunningpb.Operation

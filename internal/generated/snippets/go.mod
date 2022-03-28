@@ -2,132 +2,118 @@ module cloud.google.com/go/internal/generated
 
 go 1.16
 
-replace cloud.google.com/go/bigquery => ../../../bigquery
-
-replace cloud.google.com/go/bigtable => ../../../bigtable
-
-replace cloud.google.com/go/datastore => ../../../datastore
-
-replace cloud.google.com/go/firestore => ../../../firestore
-
-replace cloud.google.com/go => ../../..
-
-replace cloud.google.com/go/logging => ../../../logging
-
-replace cloud.google.com/go/pubsub => ../../../pubsub
-
-replace cloud.google.com/go/pubsublite => ../../../pubsublite
-
-replace cloud.google.com/go/spanner => ../../../spanner
-
-replace cloud.google.com/go/storage => ../../../storage
-
 require (
-	cloud.google.com/go v0.97.0
-	cloud.google.com/go/accessapproval v0.1.0
-	cloud.google.com/go/accesscontextmanager v0.1.0
-	cloud.google.com/go/aiplatform v0.1.0
-	cloud.google.com/go/analytics v0.1.0
-	cloud.google.com/go/apigateway v0.1.0
-	cloud.google.com/go/apigeeconnect v0.1.0
-	cloud.google.com/go/appengine v0.1.0
+	cloud.google.com/go v0.100.2
+	cloud.google.com/go/accessapproval v1.0.1
+	cloud.google.com/go/accesscontextmanager v0.1.1
+	cloud.google.com/go/aiplatform v1.2.0
+	cloud.google.com/go/analytics v0.3.0
+	cloud.google.com/go/apigateway v1.0.0
+	cloud.google.com/go/apigeeconnect v1.0.0
+	cloud.google.com/go/appengine v1.0.0
 	cloud.google.com/go/area120 v0.1.0
-	cloud.google.com/go/artifactregistry v0.1.0
-	cloud.google.com/go/asset v0.1.0
-	cloud.google.com/go/assuredworkloads v0.1.0
-	cloud.google.com/go/automl v0.1.0
-	cloud.google.com/go/bigquery v0.1.0
-	cloud.google.com/go/billing v0.1.0
-	cloud.google.com/go/binaryauthorization v0.1.0
-	cloud.google.com/go/channel v0.1.0
-	cloud.google.com/go/cloudbuild v0.1.0
-	cloud.google.com/go/clouddms v0.1.0
-	cloud.google.com/go/cloudtasks v0.1.0
-	cloud.google.com/go/contactcenterinsights v0.1.0
-	cloud.google.com/go/container v0.1.0
+	cloud.google.com/go/artifactregistry v1.0.1
+	cloud.google.com/go/asset v1.0.1
+	cloud.google.com/go/assuredworkloads v0.3.0
+	cloud.google.com/go/automl v1.0.0
+	cloud.google.com/go/bigquery v1.26.0
+	cloud.google.com/go/billing v1.0.0
+	cloud.google.com/go/binaryauthorization v0.2.0
+	cloud.google.com/go/certificatemanager v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/channel v1.1.0
+	cloud.google.com/go/cloudbuild v1.0.0
+	cloud.google.com/go/clouddms v1.0.0
+	cloud.google.com/go/cloudtasks v1.1.0
+	cloud.google.com/go/compute v1.5.0
+	cloud.google.com/go/contactcenterinsights v0.4.0
+	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
-	cloud.google.com/go/datacatalog v1.0.0
+	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/dataflow v0.1.0
-	cloud.google.com/go/datafusion v0.1.0
+	cloud.google.com/go/datafusion v1.0.0
 	cloud.google.com/go/datalabeling v0.1.0
-	cloud.google.com/go/dataproc v0.1.0
+	cloud.google.com/go/dataplex v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/dataproc v1.2.0
 	cloud.google.com/go/dataqna v0.1.0
-	cloud.google.com/go/datastore v0.1.0
-	cloud.google.com/go/datastream v0.1.0
-	cloud.google.com/go/deploy v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/dialogflow v0.1.0
-	cloud.google.com/go/dlp v0.1.0
-	cloud.google.com/go/documentai v0.1.0
-	cloud.google.com/go/domains v0.1.0
+	cloud.google.com/go/datastore v1.6.0
+	cloud.google.com/go/datastream v0.1.1
+	cloud.google.com/go/deploy v0.1.0
+	cloud.google.com/go/dialogflow v1.3.0
+	cloud.google.com/go/dlp v1.1.0
+	cloud.google.com/go/documentai v1.0.0
+	cloud.google.com/go/domains v0.2.0
 	cloud.google.com/go/errorreporting v0.1.0
-	cloud.google.com/go/essentialcontacts v0.1.0
-	cloud.google.com/go/eventarc v0.1.0
+	cloud.google.com/go/essentialcontacts v1.0.0
+	cloud.google.com/go/eventarc v1.0.0
 	cloud.google.com/go/filestore v0.1.0
-	cloud.google.com/go/firestore v0.1.0
-	cloud.google.com/go/functions v0.1.0
-	cloud.google.com/go/gaming v0.1.0
+	cloud.google.com/go/firestore v1.6.1
+	cloud.google.com/go/functions v1.1.0
+	cloud.google.com/go/gaming v1.0.0
 	cloud.google.com/go/gkeconnect v0.1.0
-	cloud.google.com/go/gkehub v0.1.0
-	cloud.google.com/go/gsuiteaddons v0.1.0
-	cloud.google.com/go/iap v0.1.0
-	cloud.google.com/go/ids v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/iot v0.1.0
-	cloud.google.com/go/kms v1.0.0
-	cloud.google.com/go/language v0.1.0
+	cloud.google.com/go/gkehub v0.2.0
+	cloud.google.com/go/gsuiteaddons v1.0.0
+	cloud.google.com/go/iam v0.3.0
+	cloud.google.com/go/iap v1.0.0
+	cloud.google.com/go/ids v0.1.0
+	cloud.google.com/go/iot v1.0.0
+	cloud.google.com/go/kms v1.4.0
+	cloud.google.com/go/language v1.0.0
 	cloud.google.com/go/lifesciences v0.1.0
-	cloud.google.com/go/logging v0.1.0
-	cloud.google.com/go/managedidentities v0.1.0
+	cloud.google.com/go/logging v1.4.2
+	cloud.google.com/go/managedidentities v1.0.0
 	cloud.google.com/go/mediatranslation v0.1.0
-	cloud.google.com/go/memcache v0.1.0
-	cloud.google.com/go/metastore v0.1.0
-	cloud.google.com/go/monitoring v0.1.0
-	cloud.google.com/go/networkconnectivity v0.1.0
-	cloud.google.com/go/networkmanagement v0.1.0
+	cloud.google.com/go/memcache v1.0.0
+	cloud.google.com/go/metastore v1.0.0
+	cloud.google.com/go/monitoring v1.2.0
+	cloud.google.com/go/networkconnectivity v0.2.0
+	cloud.google.com/go/networkmanagement v1.0.0
 	cloud.google.com/go/networksecurity v0.1.0
 	cloud.google.com/go/notebooks v0.1.0
+	cloud.google.com/go/optimization v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/orchestration v0.1.0
-	cloud.google.com/go/orgpolicy v0.1.0
-	cloud.google.com/go/osconfig v0.1.0
-	cloud.google.com/go/oslogin v0.1.0
+	cloud.google.com/go/orgpolicy v1.0.0
+	cloud.google.com/go/osconfig v1.2.0
+	cloud.google.com/go/oslogin v1.0.0
 	cloud.google.com/go/phishingprotection v0.1.0
-	cloud.google.com/go/policytroubleshooter v0.1.0
+	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.9.1
-	cloud.google.com/go/pubsublite v0.1.0
-	cloud.google.com/go/recaptchaenterprise v0.1.0
+	cloud.google.com/go/pubsub v1.19.0
+	cloud.google.com/go/pubsublite v1.2.1
+	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
-	cloud.google.com/go/recommender v0.1.0
-	cloud.google.com/go/redis v0.1.0
-	cloud.google.com/go/resourcemanager v0.1.0
-	cloud.google.com/go/resourcesettings v0.1.0
-	cloud.google.com/go/retail v0.1.0
-	cloud.google.com/go/scheduler v0.1.0
-	cloud.google.com/go/secretmanager v0.1.0
-	cloud.google.com/go/security v0.1.0
-	cloud.google.com/go/securitycenter v0.1.0
-	cloud.google.com/go/servicecontrol v0.1.0
-	cloud.google.com/go/servicedirectory v0.1.0
-	cloud.google.com/go/servicemanagement v0.1.0
-	cloud.google.com/go/serviceusage v0.1.0
-	cloud.google.com/go/shell v0.1.0
-	cloud.google.com/go/spanner v0.1.0
-	cloud.google.com/go/speech v0.1.0
-	cloud.google.com/go/storagetransfer v0.1.0
-	cloud.google.com/go/talent v0.1.0
-	cloud.google.com/go/texttospeech v0.1.0
-	cloud.google.com/go/tpu v0.1.0
-	cloud.google.com/go/trace v0.1.0
-	cloud.google.com/go/translate v0.1.0
-	cloud.google.com/go/video v0.1.0
-	cloud.google.com/go/videointelligence v0.1.0
-	cloud.google.com/go/vision v0.1.0
-	cloud.google.com/go/vmmigration v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/vpcaccess v0.1.0
-	cloud.google.com/go/webrisk v0.1.0
-	cloud.google.com/go/websecurityscanner v0.1.0
-	cloud.google.com/go/workflows v0.1.0
-	google.golang.org/api v0.61.0
-	google.golang.org/genproto v0.0.0-20211207154714-918901c715cf
+	cloud.google.com/go/recommender v1.0.0
+	cloud.google.com/go/redis v1.1.0
+	cloud.google.com/go/resourcemanager v1.0.0
+	cloud.google.com/go/resourcesettings v1.0.0
+	cloud.google.com/go/retail v1.0.0
+	cloud.google.com/go/scheduler v1.0.0
+	cloud.google.com/go/secretmanager v1.0.0
+	cloud.google.com/go/security v1.1.1
+	cloud.google.com/go/securitycenter v1.2.0
+	cloud.google.com/go/servicecontrol v1.1.0
+	cloud.google.com/go/servicedirectory v1.0.0
+	cloud.google.com/go/servicemanagement v1.0.0
+	cloud.google.com/go/serviceusage v1.0.0
+	cloud.google.com/go/shell v1.0.0
+	cloud.google.com/go/spanner v1.29.0
+	cloud.google.com/go/speech v1.1.0
+	cloud.google.com/go/storagetransfer v1.0.0
+	cloud.google.com/go/talent v0.3.0
+	cloud.google.com/go/texttospeech v1.1.0
+	cloud.google.com/go/tpu v1.0.0
+	cloud.google.com/go/trace v1.0.0
+	cloud.google.com/go/translate v1.0.0
+	cloud.google.com/go/video v1.0.1
+	cloud.google.com/go/videointelligence v1.0.0
+	cloud.google.com/go/vision v1.0.0
+	cloud.google.com/go/vmmigration v0.1.0
+	cloud.google.com/go/vpcaccess v1.0.0
+	cloud.google.com/go/webrisk v1.0.0
+	cloud.google.com/go/websecurityscanner v1.0.0
+	cloud.google.com/go/workflows v1.1.0
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	google.golang.org/api v0.73.0
+	google.golang.org/genproto v0.0.0-20220323144105-ec3c684e5b14
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -323,3 +309,33 @@ replace cloud.google.com/go/deploy => ../../../deploy
 replace cloud.google.com/go/ids => ../../../ids
 
 replace cloud.google.com/go/vmmigration => ../../../vmmigration
+
+replace cloud.google.com/go/iam => ../../../iam
+
+replace cloud.google.com/go/compute => ../../../compute
+
+replace cloud.google.com/go/bigquery => ../../../bigquery
+
+replace cloud.google.com/go/bigtable => ../../../bigtable
+
+replace cloud.google.com/go/datastore => ../../../datastore
+
+replace cloud.google.com/go/firestore => ../../../firestore
+
+replace cloud.google.com/go => ../../..
+
+replace cloud.google.com/go/logging => ../../../logging
+
+replace cloud.google.com/go/pubsub => ../../../pubsub
+
+replace cloud.google.com/go/pubsublite => ../../../pubsublite
+
+replace cloud.google.com/go/spanner => ../../../spanner
+
+replace cloud.google.com/go/storage => ../../../storage
+
+replace cloud.google.com/go/dataplex => ../../../dataplex
+
+replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
+
+replace cloud.google.com/go/optimization => ../../../optimization

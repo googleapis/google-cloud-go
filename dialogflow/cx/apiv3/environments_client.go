@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -418,7 +418,7 @@ func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -430,6 +430,7 @@ func (c *environmentsGRPCClient) Close() error {
 
 func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
@@ -479,6 +480,7 @@ func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *cxpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *cxpb.Environment
@@ -500,6 +502,7 @@ func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
@@ -523,6 +526,7 @@ func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
@@ -546,6 +550,7 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *cxp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -558,6 +563,7 @@ func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *cxp
 
 func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).LookupEnvironmentHistory[0:len((*c.CallOptions).LookupEnvironmentHistory):len((*c.CallOptions).LookupEnvironmentHistory)], opts...)
 	it := &EnvironmentIterator{}
@@ -607,6 +613,7 @@ func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RunContinuousTest[0:len((*c.CallOptions).RunContinuousTest):len((*c.CallOptions).RunContinuousTest)], opts...)
 	var resp *longrunningpb.Operation
@@ -625,6 +632,7 @@ func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxp
 
 func (c *environmentsGRPCClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListContinuousTestResults[0:len((*c.CallOptions).ListContinuousTestResults):len((*c.CallOptions).ListContinuousTestResults)], opts...)
 	it := &ContinuousTestResultIterator{}
@@ -674,6 +682,7 @@ func (c *environmentsGRPCClient) DeployFlow(ctx context.Context, req *cxpb.Deplo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeployFlow[0:len((*c.CallOptions).DeployFlow):len((*c.CallOptions).DeployFlow)], opts...)
 	var resp *longrunningpb.Operation

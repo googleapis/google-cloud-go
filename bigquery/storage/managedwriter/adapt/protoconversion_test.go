@@ -591,6 +591,36 @@ func TestNormalizeDescriptor(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "WithOneOf",
+			in:          (&testdata.WithOneOf{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_WithOneOf"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("int32_value"),
+						JsonName: proto.String("int32Value"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("string_value"),
+						JsonName: proto.String("stringValue"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("double_value"),
+						JsonName: proto.String("doubleValue"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_DOUBLE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {

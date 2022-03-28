@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -242,6 +242,31 @@ func ExampleDatabaseAdminClient_CreateBackup() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CreateBackupRequest.
 	}
 	op, err := c.CreateBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_CopyBackup() {
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.CopyBackupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CopyBackupRequest.
+	}
+	op, err := c.CopyBackup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

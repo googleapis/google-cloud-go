@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -311,7 +311,7 @@ func (c *bigQueryStorageGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *bigQueryStorageGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -328,6 +328,7 @@ func (c *bigQueryStorageGRPCClient) CreateReadSession(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "table_reference.project_id", url.QueryEscape(req.GetTableReference().GetProjectId()), "table_reference.dataset_id", url.QueryEscape(req.GetTableReference().GetDatasetId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReadSession[0:len((*c.CallOptions).CreateReadSession):len((*c.CallOptions).CreateReadSession)], opts...)
 	var resp *storagepb.ReadSession
@@ -344,6 +345,7 @@ func (c *bigQueryStorageGRPCClient) CreateReadSession(ctx context.Context, req *
 
 func (c *bigQueryStorageGRPCClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryStorage_ReadRowsClient, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_position.stream.name", url.QueryEscape(req.GetReadPosition().GetStream().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	var resp storagepb.BigQueryStorage_ReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -364,6 +366,7 @@ func (c *bigQueryStorageGRPCClient) BatchCreateReadSessionStreams(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session.name", url.QueryEscape(req.GetSession().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchCreateReadSessionStreams[0:len((*c.CallOptions).BatchCreateReadSessionStreams):len((*c.CallOptions).BatchCreateReadSessionStreams)], opts...)
 	var resp *storagepb.BatchCreateReadSessionStreamsResponse
@@ -385,6 +388,7 @@ func (c *bigQueryStorageGRPCClient) FinalizeStream(ctx context.Context, req *sto
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "stream.name", url.QueryEscape(req.GetStream().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FinalizeStream[0:len((*c.CallOptions).FinalizeStream):len((*c.CallOptions).FinalizeStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,6 +406,7 @@ func (c *bigQueryStorageGRPCClient) SplitReadStream(ctx context.Context, req *st
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "original_stream.name", url.QueryEscape(req.GetOriginalStream().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SplitReadStream[0:len((*c.CallOptions).SplitReadStream):len((*c.CallOptions).SplitReadStream)], opts...)
 	var resp *storagepb.SplitReadStreamResponse

@@ -35,6 +35,11 @@
                 "GetOSPolicyAssignment"
               ]
             },
+            "GetOSPolicyAssignmentReport": {
+              "methods": [
+                "GetOSPolicyAssignmentReport"
+              ]
+            },
             "GetVulnerabilityReport": {
               "methods": [
                 "GetVulnerabilityReport"
@@ -48,6 +53,11 @@
             "ListInventories": {
               "methods": [
                 "ListInventories"
+              ]
+            },
+            "ListOSPolicyAssignmentReports": {
+              "methods": [
+                "ListOSPolicyAssignmentReports"
               ]
             },
             "ListOSPolicyAssignmentRevisions": {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -343,7 +343,7 @@ func (c *documentProcessorGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -360,6 +360,7 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ProcessDocument[0:len((*c.CallOptions).ProcessDocument):len((*c.CallOptions).ProcessDocument)], opts...)
 	var resp *documentaipb.ProcessResponse
@@ -381,6 +382,7 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchProcessDocuments[0:len((*c.CallOptions).BatchProcessDocuments):len((*c.CallOptions).BatchProcessDocuments)], opts...)
 	var resp *longrunningpb.Operation
@@ -399,6 +401,7 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 
 func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FetchProcessorTypes[0:len((*c.CallOptions).FetchProcessorTypes):len((*c.CallOptions).FetchProcessorTypes)], opts...)
 	var resp *documentaipb.FetchProcessorTypesResponse
@@ -415,6 +418,7 @@ func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, r
 
 func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *documentaipb.ListProcessorsRequest, opts ...gax.CallOption) *ProcessorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListProcessors[0:len((*c.CallOptions).ListProcessors):len((*c.CallOptions).ListProcessors)], opts...)
 	it := &ProcessorIterator{}
@@ -459,6 +463,7 @@ func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *d
 
 func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateProcessor[0:len((*c.CallOptions).CreateProcessor):len((*c.CallOptions).CreateProcessor)], opts...)
 	var resp *documentaipb.Processor
@@ -475,6 +480,7 @@ func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *
 
 func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *documentaipb.DeleteProcessorRequest, opts ...gax.CallOption) (*DeleteProcessorOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteProcessor[0:len((*c.CallOptions).DeleteProcessor):len((*c.CallOptions).DeleteProcessor)], opts...)
 	var resp *longrunningpb.Operation
@@ -493,6 +499,7 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 
 func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *documentaipb.EnableProcessorRequest, opts ...gax.CallOption) (*EnableProcessorOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).EnableProcessor[0:len((*c.CallOptions).EnableProcessor):len((*c.CallOptions).EnableProcessor)], opts...)
 	var resp *longrunningpb.Operation
@@ -511,6 +518,7 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 
 func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req *documentaipb.DisableProcessorRequest, opts ...gax.CallOption) (*DisableProcessorOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DisableProcessor[0:len((*c.CallOptions).DisableProcessor):len((*c.CallOptions).DisableProcessor)], opts...)
 	var resp *longrunningpb.Operation
@@ -534,6 +542,7 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "human_review_config", url.QueryEscape(req.GetHumanReviewConfig())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReviewDocument[0:len((*c.CallOptions).ReviewDocument):len((*c.CallOptions).ReviewDocument)], opts...)
 	var resp *longrunningpb.Operation

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -385,7 +385,7 @@ func (c *workflowTemplateGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *workflowTemplateGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -402,6 +402,7 @@ func (c *workflowTemplateGRPCClient) CreateWorkflowTemplate(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateWorkflowTemplate[0:len((*c.CallOptions).CreateWorkflowTemplate):len((*c.CallOptions).CreateWorkflowTemplate)], opts...)
 	var resp *dataprocpb.WorkflowTemplate
@@ -423,6 +424,7 @@ func (c *workflowTemplateGRPCClient) GetWorkflowTemplate(ctx context.Context, re
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetWorkflowTemplate[0:len((*c.CallOptions).GetWorkflowTemplate):len((*c.CallOptions).GetWorkflowTemplate)], opts...)
 	var resp *dataprocpb.WorkflowTemplate
@@ -444,6 +446,7 @@ func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplate(ctx context.Con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).InstantiateWorkflowTemplate[0:len((*c.CallOptions).InstantiateWorkflowTemplate):len((*c.CallOptions).InstantiateWorkflowTemplate)], opts...)
 	var resp *longrunningpb.Operation
@@ -467,6 +470,7 @@ func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplate(ctx conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).InstantiateInlineWorkflowTemplate[0:len((*c.CallOptions).InstantiateInlineWorkflowTemplate):len((*c.CallOptions).InstantiateInlineWorkflowTemplate)], opts...)
 	var resp *longrunningpb.Operation
@@ -490,6 +494,7 @@ func (c *workflowTemplateGRPCClient) UpdateWorkflowTemplate(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "template.name", url.QueryEscape(req.GetTemplate().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateWorkflowTemplate[0:len((*c.CallOptions).UpdateWorkflowTemplate):len((*c.CallOptions).UpdateWorkflowTemplate)], opts...)
 	var resp *dataprocpb.WorkflowTemplate
@@ -506,6 +511,7 @@ func (c *workflowTemplateGRPCClient) UpdateWorkflowTemplate(ctx context.Context,
 
 func (c *workflowTemplateGRPCClient) ListWorkflowTemplates(ctx context.Context, req *dataprocpb.ListWorkflowTemplatesRequest, opts ...gax.CallOption) *WorkflowTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListWorkflowTemplates[0:len((*c.CallOptions).ListWorkflowTemplates):len((*c.CallOptions).ListWorkflowTemplates)], opts...)
 	it := &WorkflowTemplateIterator{}
@@ -555,6 +561,7 @@ func (c *workflowTemplateGRPCClient) DeleteWorkflowTemplate(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteWorkflowTemplate[0:len((*c.CallOptions).DeleteWorkflowTemplate):len((*c.CallOptions).DeleteWorkflowTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

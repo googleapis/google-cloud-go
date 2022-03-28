@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -746,7 +746,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -758,6 +758,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListSources(ctx context.Context, req *vmmigrationpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
@@ -807,6 +808,7 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *vmmigrationpb.GetSource
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSource[0:len((*c.CallOptions).GetSource):len((*c.CallOptions).GetSource)], opts...)
 	var resp *vmmigrationpb.Source
@@ -828,6 +830,7 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *vmmigrationpb.Create
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSource[0:len((*c.CallOptions).CreateSource):len((*c.CallOptions).CreateSource)], opts...)
 	var resp *longrunningpb.Operation
@@ -851,6 +854,7 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *vmmigrationpb.Update
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSource[0:len((*c.CallOptions).UpdateSource):len((*c.CallOptions).UpdateSource)], opts...)
 	var resp *longrunningpb.Operation
@@ -874,6 +878,7 @@ func (c *gRPCClient) DeleteSource(ctx context.Context, req *vmmigrationpb.Delete
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSource[0:len((*c.CallOptions).DeleteSource):len((*c.CallOptions).DeleteSource)], opts...)
 	var resp *longrunningpb.Operation
@@ -897,6 +902,7 @@ func (c *gRPCClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "source", url.QueryEscape(req.GetSource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FetchInventory[0:len((*c.CallOptions).FetchInventory):len((*c.CallOptions).FetchInventory)], opts...)
 	var resp *vmmigrationpb.FetchInventoryResponse
@@ -913,6 +919,7 @@ func (c *gRPCClient) FetchInventory(ctx context.Context, req *vmmigrationpb.Fetc
 
 func (c *gRPCClient) ListUtilizationReports(ctx context.Context, req *vmmigrationpb.ListUtilizationReportsRequest, opts ...gax.CallOption) *UtilizationReportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListUtilizationReports[0:len((*c.CallOptions).ListUtilizationReports):len((*c.CallOptions).ListUtilizationReports)], opts...)
 	it := &UtilizationReportIterator{}
@@ -962,6 +969,7 @@ func (c *gRPCClient) GetUtilizationReport(ctx context.Context, req *vmmigrationp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetUtilizationReport[0:len((*c.CallOptions).GetUtilizationReport):len((*c.CallOptions).GetUtilizationReport)], opts...)
 	var resp *vmmigrationpb.UtilizationReport
@@ -983,6 +991,7 @@ func (c *gRPCClient) CreateUtilizationReport(ctx context.Context, req *vmmigrati
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateUtilizationReport[0:len((*c.CallOptions).CreateUtilizationReport):len((*c.CallOptions).CreateUtilizationReport)], opts...)
 	var resp *longrunningpb.Operation
@@ -1006,6 +1015,7 @@ func (c *gRPCClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteUtilizationReport[0:len((*c.CallOptions).DeleteUtilizationReport):len((*c.CallOptions).DeleteUtilizationReport)], opts...)
 	var resp *longrunningpb.Operation
@@ -1024,6 +1034,7 @@ func (c *gRPCClient) DeleteUtilizationReport(ctx context.Context, req *vmmigrati
 
 func (c *gRPCClient) ListDatacenterConnectors(ctx context.Context, req *vmmigrationpb.ListDatacenterConnectorsRequest, opts ...gax.CallOption) *DatacenterConnectorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListDatacenterConnectors[0:len((*c.CallOptions).ListDatacenterConnectors):len((*c.CallOptions).ListDatacenterConnectors)], opts...)
 	it := &DatacenterConnectorIterator{}
@@ -1073,6 +1084,7 @@ func (c *gRPCClient) GetDatacenterConnector(ctx context.Context, req *vmmigratio
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetDatacenterConnector[0:len((*c.CallOptions).GetDatacenterConnector):len((*c.CallOptions).GetDatacenterConnector)], opts...)
 	var resp *vmmigrationpb.DatacenterConnector
@@ -1094,6 +1106,7 @@ func (c *gRPCClient) CreateDatacenterConnector(ctx context.Context, req *vmmigra
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateDatacenterConnector[0:len((*c.CallOptions).CreateDatacenterConnector):len((*c.CallOptions).CreateDatacenterConnector)], opts...)
 	var resp *longrunningpb.Operation
@@ -1117,6 +1130,7 @@ func (c *gRPCClient) DeleteDatacenterConnector(ctx context.Context, req *vmmigra
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteDatacenterConnector[0:len((*c.CallOptions).DeleteDatacenterConnector):len((*c.CallOptions).DeleteDatacenterConnector)], opts...)
 	var resp *longrunningpb.Operation
@@ -1140,6 +1154,7 @@ func (c *gRPCClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMigratingVm[0:len((*c.CallOptions).CreateMigratingVm):len((*c.CallOptions).CreateMigratingVm)], opts...)
 	var resp *longrunningpb.Operation
@@ -1158,6 +1173,7 @@ func (c *gRPCClient) CreateMigratingVm(ctx context.Context, req *vmmigrationpb.C
 
 func (c *gRPCClient) ListMigratingVms(ctx context.Context, req *vmmigrationpb.ListMigratingVmsRequest, opts ...gax.CallOption) *MigratingVmIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMigratingVms[0:len((*c.CallOptions).ListMigratingVms):len((*c.CallOptions).ListMigratingVms)], opts...)
 	it := &MigratingVmIterator{}
@@ -1207,6 +1223,7 @@ func (c *gRPCClient) GetMigratingVm(ctx context.Context, req *vmmigrationpb.GetM
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMigratingVm[0:len((*c.CallOptions).GetMigratingVm):len((*c.CallOptions).GetMigratingVm)], opts...)
 	var resp *vmmigrationpb.MigratingVm
@@ -1228,6 +1245,7 @@ func (c *gRPCClient) UpdateMigratingVm(ctx context.Context, req *vmmigrationpb.U
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm.name", url.QueryEscape(req.GetMigratingVm().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateMigratingVm[0:len((*c.CallOptions).UpdateMigratingVm):len((*c.CallOptions).UpdateMigratingVm)], opts...)
 	var resp *longrunningpb.Operation
@@ -1251,6 +1269,7 @@ func (c *gRPCClient) DeleteMigratingVm(ctx context.Context, req *vmmigrationpb.D
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteMigratingVm[0:len((*c.CallOptions).DeleteMigratingVm):len((*c.CallOptions).DeleteMigratingVm)], opts...)
 	var resp *longrunningpb.Operation
@@ -1274,6 +1293,7 @@ func (c *gRPCClient) StartMigration(ctx context.Context, req *vmmigrationpb.Star
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartMigration[0:len((*c.CallOptions).StartMigration):len((*c.CallOptions).StartMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1297,6 +1317,7 @@ func (c *gRPCClient) ResumeMigration(ctx context.Context, req *vmmigrationpb.Res
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ResumeMigration[0:len((*c.CallOptions).ResumeMigration):len((*c.CallOptions).ResumeMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1320,6 +1341,7 @@ func (c *gRPCClient) PauseMigration(ctx context.Context, req *vmmigrationpb.Paus
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PauseMigration[0:len((*c.CallOptions).PauseMigration):len((*c.CallOptions).PauseMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1343,6 +1365,7 @@ func (c *gRPCClient) FinalizeMigration(ctx context.Context, req *vmmigrationpb.F
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migrating_vm", url.QueryEscape(req.GetMigratingVm())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FinalizeMigration[0:len((*c.CallOptions).FinalizeMigration):len((*c.CallOptions).FinalizeMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1366,6 +1389,7 @@ func (c *gRPCClient) CreateCloneJob(ctx context.Context, req *vmmigrationpb.Crea
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCloneJob[0:len((*c.CallOptions).CreateCloneJob):len((*c.CallOptions).CreateCloneJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -1389,6 +1413,7 @@ func (c *gRPCClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelCloneJob[0:len((*c.CallOptions).CancelCloneJob):len((*c.CallOptions).CancelCloneJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -1407,6 +1432,7 @@ func (c *gRPCClient) CancelCloneJob(ctx context.Context, req *vmmigrationpb.Canc
 
 func (c *gRPCClient) ListCloneJobs(ctx context.Context, req *vmmigrationpb.ListCloneJobsRequest, opts ...gax.CallOption) *CloneJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCloneJobs[0:len((*c.CallOptions).ListCloneJobs):len((*c.CallOptions).ListCloneJobs)], opts...)
 	it := &CloneJobIterator{}
@@ -1456,6 +1482,7 @@ func (c *gRPCClient) GetCloneJob(ctx context.Context, req *vmmigrationpb.GetClon
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCloneJob[0:len((*c.CallOptions).GetCloneJob):len((*c.CallOptions).GetCloneJob)], opts...)
 	var resp *vmmigrationpb.CloneJob
@@ -1477,6 +1504,7 @@ func (c *gRPCClient) CreateCutoverJob(ctx context.Context, req *vmmigrationpb.Cr
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCutoverJob[0:len((*c.CallOptions).CreateCutoverJob):len((*c.CallOptions).CreateCutoverJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -1500,6 +1528,7 @@ func (c *gRPCClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelCutoverJob[0:len((*c.CallOptions).CancelCutoverJob):len((*c.CallOptions).CancelCutoverJob)], opts...)
 	var resp *longrunningpb.Operation
@@ -1518,6 +1547,7 @@ func (c *gRPCClient) CancelCutoverJob(ctx context.Context, req *vmmigrationpb.Ca
 
 func (c *gRPCClient) ListCutoverJobs(ctx context.Context, req *vmmigrationpb.ListCutoverJobsRequest, opts ...gax.CallOption) *CutoverJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCutoverJobs[0:len((*c.CallOptions).ListCutoverJobs):len((*c.CallOptions).ListCutoverJobs)], opts...)
 	it := &CutoverJobIterator{}
@@ -1567,6 +1597,7 @@ func (c *gRPCClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCutoverJob[0:len((*c.CallOptions).GetCutoverJob):len((*c.CallOptions).GetCutoverJob)], opts...)
 	var resp *vmmigrationpb.CutoverJob
@@ -1583,6 +1614,7 @@ func (c *gRPCClient) GetCutoverJob(ctx context.Context, req *vmmigrationpb.GetCu
 
 func (c *gRPCClient) ListGroups(ctx context.Context, req *vmmigrationpb.ListGroupsRequest, opts ...gax.CallOption) *GroupIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGroups[0:len((*c.CallOptions).ListGroups):len((*c.CallOptions).ListGroups)], opts...)
 	it := &GroupIterator{}
@@ -1632,6 +1664,7 @@ func (c *gRPCClient) GetGroup(ctx context.Context, req *vmmigrationpb.GetGroupRe
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGroup[0:len((*c.CallOptions).GetGroup):len((*c.CallOptions).GetGroup)], opts...)
 	var resp *vmmigrationpb.Group
@@ -1653,6 +1686,7 @@ func (c *gRPCClient) CreateGroup(ctx context.Context, req *vmmigrationpb.CreateG
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGroup[0:len((*c.CallOptions).CreateGroup):len((*c.CallOptions).CreateGroup)], opts...)
 	var resp *longrunningpb.Operation
@@ -1676,6 +1710,7 @@ func (c *gRPCClient) UpdateGroup(ctx context.Context, req *vmmigrationpb.UpdateG
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGroup[0:len((*c.CallOptions).UpdateGroup):len((*c.CallOptions).UpdateGroup)], opts...)
 	var resp *longrunningpb.Operation
@@ -1699,6 +1734,7 @@ func (c *gRPCClient) DeleteGroup(ctx context.Context, req *vmmigrationpb.DeleteG
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGroup[0:len((*c.CallOptions).DeleteGroup):len((*c.CallOptions).DeleteGroup)], opts...)
 	var resp *longrunningpb.Operation
@@ -1722,6 +1758,7 @@ func (c *gRPCClient) AddGroupMigration(ctx context.Context, req *vmmigrationpb.A
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group", url.QueryEscape(req.GetGroup())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddGroupMigration[0:len((*c.CallOptions).AddGroupMigration):len((*c.CallOptions).AddGroupMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1745,6 +1782,7 @@ func (c *gRPCClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group", url.QueryEscape(req.GetGroup())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).RemoveGroupMigration[0:len((*c.CallOptions).RemoveGroupMigration):len((*c.CallOptions).RemoveGroupMigration)], opts...)
 	var resp *longrunningpb.Operation
@@ -1763,6 +1801,7 @@ func (c *gRPCClient) RemoveGroupMigration(ctx context.Context, req *vmmigrationp
 
 func (c *gRPCClient) ListTargetProjects(ctx context.Context, req *vmmigrationpb.ListTargetProjectsRequest, opts ...gax.CallOption) *TargetProjectIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTargetProjects[0:len((*c.CallOptions).ListTargetProjects):len((*c.CallOptions).ListTargetProjects)], opts...)
 	it := &TargetProjectIterator{}
@@ -1812,6 +1851,7 @@ func (c *gRPCClient) GetTargetProject(ctx context.Context, req *vmmigrationpb.Ge
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTargetProject[0:len((*c.CallOptions).GetTargetProject):len((*c.CallOptions).GetTargetProject)], opts...)
 	var resp *vmmigrationpb.TargetProject
@@ -1833,6 +1873,7 @@ func (c *gRPCClient) CreateTargetProject(ctx context.Context, req *vmmigrationpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTargetProject[0:len((*c.CallOptions).CreateTargetProject):len((*c.CallOptions).CreateTargetProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -1856,6 +1897,7 @@ func (c *gRPCClient) UpdateTargetProject(ctx context.Context, req *vmmigrationpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "target_project.name", url.QueryEscape(req.GetTargetProject().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTargetProject[0:len((*c.CallOptions).UpdateTargetProject):len((*c.CallOptions).UpdateTargetProject)], opts...)
 	var resp *longrunningpb.Operation
@@ -1879,6 +1921,7 @@ func (c *gRPCClient) DeleteTargetProject(ctx context.Context, req *vmmigrationpb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTargetProject[0:len((*c.CallOptions).DeleteTargetProject):len((*c.CallOptions).DeleteTargetProject)], opts...)
 	var resp *longrunningpb.Operation

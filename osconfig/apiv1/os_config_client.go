@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,9 @@ type CallOptions struct {
 	GetPatchDeployment          []gax.CallOption
 	ListPatchDeployments        []gax.CallOption
 	DeletePatchDeployment       []gax.CallOption
+	UpdatePatchDeployment       []gax.CallOption
+	PausePatchDeployment        []gax.CallOption
+	ResumePatchDeployment       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -163,6 +166,39 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		UpdatePatchDeployment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PausePatchDeployment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ResumePatchDeployment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -180,6 +216,9 @@ type internalClient interface {
 	GetPatchDeployment(context.Context, *osconfigpb.GetPatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
 	ListPatchDeployments(context.Context, *osconfigpb.ListPatchDeploymentsRequest, ...gax.CallOption) *PatchDeploymentIterator
 	DeletePatchDeployment(context.Context, *osconfigpb.DeletePatchDeploymentRequest, ...gax.CallOption) error
+	UpdatePatchDeployment(context.Context, *osconfigpb.UpdatePatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
+	PausePatchDeployment(context.Context, *osconfigpb.PausePatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
+	ResumePatchDeployment(context.Context, *osconfigpb.ResumePatchDeploymentRequest, ...gax.CallOption) (*osconfigpb.PatchDeployment, error)
 }
 
 // Client is a client for interacting with OS Config API.
@@ -266,6 +305,23 @@ func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.Dele
 	return c.internalClient.DeletePatchDeployment(ctx, req, opts...)
 }
 
+// UpdatePatchDeployment update an OS Config patch deployment.
+func (c *Client) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.UpdatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	return c.internalClient.UpdatePatchDeployment(ctx, req, opts...)
+}
+
+// PausePatchDeployment change state of patch deployment to “PAUSED”.
+// Patch deployment in paused state doesn’t generate patch jobs.
+func (c *Client) PausePatchDeployment(ctx context.Context, req *osconfigpb.PausePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	return c.internalClient.PausePatchDeployment(ctx, req, opts...)
+}
+
+// ResumePatchDeployment change state of patch deployment back to “ACTIVE”.
+// Patch deployment in active state continues to generate patch jobs.
+func (c *Client) ResumePatchDeployment(ctx context.Context, req *osconfigpb.ResumePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	return c.internalClient.ResumePatchDeployment(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with OS Config API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -339,7 +395,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -356,6 +412,7 @@ func (c *gRPCClient) ExecutePatchJob(ctx context.Context, req *osconfigpb.Execut
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExecutePatchJob[0:len((*c.CallOptions).ExecutePatchJob):len((*c.CallOptions).ExecutePatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
@@ -377,6 +434,7 @@ func (c *gRPCClient) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJo
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPatchJob[0:len((*c.CallOptions).GetPatchJob):len((*c.CallOptions).GetPatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
@@ -398,6 +456,7 @@ func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelPatchJob[0:len((*c.CallOptions).CancelPatchJob):len((*c.CallOptions).CancelPatchJob)], opts...)
 	var resp *osconfigpb.PatchJob
@@ -414,6 +473,7 @@ func (c *gRPCClient) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelP
 
 func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJobsRequest, opts ...gax.CallOption) *PatchJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPatchJobs[0:len((*c.CallOptions).ListPatchJobs):len((*c.CallOptions).ListPatchJobs)], opts...)
 	it := &PatchJobIterator{}
@@ -458,6 +518,7 @@ func (c *gRPCClient) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatc
 
 func (c *gRPCClient) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigpb.ListPatchJobInstanceDetailsRequest, opts ...gax.CallOption) *PatchJobInstanceDetailsIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPatchJobInstanceDetails[0:len((*c.CallOptions).ListPatchJobInstanceDetails):len((*c.CallOptions).ListPatchJobInstanceDetails)], opts...)
 	it := &PatchJobInstanceDetailsIterator{}
@@ -507,6 +568,7 @@ func (c *gRPCClient) CreatePatchDeployment(ctx context.Context, req *osconfigpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreatePatchDeployment[0:len((*c.CallOptions).CreatePatchDeployment):len((*c.CallOptions).CreatePatchDeployment)], opts...)
 	var resp *osconfigpb.PatchDeployment
@@ -528,6 +590,7 @@ func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPatchDeployment[0:len((*c.CallOptions).GetPatchDeployment):len((*c.CallOptions).GetPatchDeployment)], opts...)
 	var resp *osconfigpb.PatchDeployment
@@ -544,6 +607,7 @@ func (c *gRPCClient) GetPatchDeployment(ctx context.Context, req *osconfigpb.Get
 
 func (c *gRPCClient) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListPatchDeploymentsRequest, opts ...gax.CallOption) *PatchDeploymentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListPatchDeployments[0:len((*c.CallOptions).ListPatchDeployments):len((*c.CallOptions).ListPatchDeployments)], opts...)
 	it := &PatchDeploymentIterator{}
@@ -593,6 +657,7 @@ func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeletePatchDeployment[0:len((*c.CallOptions).DeletePatchDeployment):len((*c.CallOptions).DeletePatchDeployment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -601,6 +666,72 @@ func (c *gRPCClient) DeletePatchDeployment(ctx context.Context, req *osconfigpb.
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) UpdatePatchDeployment(ctx context.Context, req *osconfigpb.UpdatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "patch_deployment.name", url.QueryEscape(req.GetPatchDeployment().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdatePatchDeployment[0:len((*c.CallOptions).UpdatePatchDeployment):len((*c.CallOptions).UpdatePatchDeployment)], opts...)
+	var resp *osconfigpb.PatchDeployment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdatePatchDeployment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) PausePatchDeployment(ctx context.Context, req *osconfigpb.PausePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).PausePatchDeployment[0:len((*c.CallOptions).PausePatchDeployment):len((*c.CallOptions).PausePatchDeployment)], opts...)
+	var resp *osconfigpb.PatchDeployment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.PausePatchDeployment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ResumePatchDeployment(ctx context.Context, req *osconfigpb.ResumePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ResumePatchDeployment[0:len((*c.CallOptions).ResumePatchDeployment):len((*c.CallOptions).ResumePatchDeployment)], opts...)
+	var resp *osconfigpb.PatchDeployment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ResumePatchDeployment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // PatchDeploymentIterator manages a stream of *osconfigpb.PatchDeployment.

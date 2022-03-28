@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,15 @@ func ExampleInstancesClient_AddAccessConfig() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAccessConfigInstanceRequest.
 	}
-	resp, err := c.AddAccessConfig(ctx, req)
+	op, err := c.AddAccessConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_AddResourcePolicies() {
@@ -68,12 +71,15 @@ func ExampleInstancesClient_AddResourcePolicies() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesInstanceRequest.
 	}
-	resp, err := c.AddResourcePolicies(ctx, req)
+	op, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_AggregatedList() {
@@ -114,12 +120,15 @@ func ExampleInstancesClient_AttachDisk() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachDiskInstanceRequest.
 	}
-	resp, err := c.AttachDisk(ctx, req)
+	op, err := c.AttachDisk(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_BulkInsert() {
@@ -134,12 +143,15 @@ func ExampleInstancesClient_BulkInsert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#BulkInsertInstanceRequest.
 	}
-	resp, err := c.BulkInsert(ctx, req)
+	op, err := c.BulkInsert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_Delete() {
@@ -154,12 +166,15 @@ func ExampleInstancesClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_DeleteAccessConfig() {
@@ -174,12 +189,15 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAccessConfigInstanceRequest.
 	}
-	resp, err := c.DeleteAccessConfig(ctx, req)
+	op, err := c.DeleteAccessConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_DetachDisk() {
@@ -194,12 +212,15 @@ func ExampleInstancesClient_DetachDisk() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachDiskInstanceRequest.
 	}
-	resp, err := c.DetachDisk(ctx, req)
+	op, err := c.DetachDisk(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_Get() {
@@ -354,12 +375,15 @@ func ExampleInstancesClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_List() {
@@ -426,12 +450,15 @@ func ExampleInstancesClient_RemoveResourcePolicies() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesInstanceRequest.
 	}
-	resp, err := c.RemoveResourcePolicies(ctx, req)
+	op, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_Reset() {
@@ -446,12 +473,38 @@ func ExampleInstancesClient_Reset() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResetInstanceRequest.
 	}
-	resp, err := c.Reset(ctx, req)
+	op, err := c.Reset(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInstancesClient_Resume() {
+	ctx := context.Background()
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.ResumeInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResumeInstanceRequest.
+	}
+	op, err := c.Resume(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SendDiagnosticInterrupt() {
@@ -486,12 +539,15 @@ func ExampleInstancesClient_SetDeletionProtection() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDeletionProtectionInstanceRequest.
 	}
-	resp, err := c.SetDeletionProtection(ctx, req)
+	op, err := c.SetDeletionProtection(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetDiskAutoDelete() {
@@ -506,12 +562,15 @@ func ExampleInstancesClient_SetDiskAutoDelete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDiskAutoDeleteInstanceRequest.
 	}
-	resp, err := c.SetDiskAutoDelete(ctx, req)
+	op, err := c.SetDiskAutoDelete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetIamPolicy() {
@@ -546,12 +605,15 @@ func ExampleInstancesClient_SetLabels() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsInstanceRequest.
 	}
-	resp, err := c.SetLabels(ctx, req)
+	op, err := c.SetLabels(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetMachineResources() {
@@ -566,12 +628,15 @@ func ExampleInstancesClient_SetMachineResources() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineResourcesInstanceRequest.
 	}
-	resp, err := c.SetMachineResources(ctx, req)
+	op, err := c.SetMachineResources(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetMachineType() {
@@ -586,12 +651,15 @@ func ExampleInstancesClient_SetMachineType() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineTypeInstanceRequest.
 	}
-	resp, err := c.SetMachineType(ctx, req)
+	op, err := c.SetMachineType(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetMetadata() {
@@ -606,12 +674,15 @@ func ExampleInstancesClient_SetMetadata() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMetadataInstanceRequest.
 	}
-	resp, err := c.SetMetadata(ctx, req)
+	op, err := c.SetMetadata(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetMinCpuPlatform() {
@@ -626,12 +697,15 @@ func ExampleInstancesClient_SetMinCpuPlatform() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMinCpuPlatformInstanceRequest.
 	}
-	resp, err := c.SetMinCpuPlatform(ctx, req)
+	op, err := c.SetMinCpuPlatform(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetScheduling() {
@@ -646,12 +720,15 @@ func ExampleInstancesClient_SetScheduling() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSchedulingInstanceRequest.
 	}
-	resp, err := c.SetScheduling(ctx, req)
+	op, err := c.SetScheduling(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetServiceAccount() {
@@ -666,12 +743,15 @@ func ExampleInstancesClient_SetServiceAccount() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetServiceAccountInstanceRequest.
 	}
-	resp, err := c.SetServiceAccount(ctx, req)
+	op, err := c.SetServiceAccount(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
@@ -686,12 +766,15 @@ func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetShieldedInstanceIntegrityPolicyInstanceRequest.
 	}
-	resp, err := c.SetShieldedInstanceIntegrityPolicy(ctx, req)
+	op, err := c.SetShieldedInstanceIntegrityPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SetTags() {
@@ -706,12 +789,15 @@ func ExampleInstancesClient_SetTags() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTagsInstanceRequest.
 	}
-	resp, err := c.SetTags(ctx, req)
+	op, err := c.SetTags(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_SimulateMaintenanceEvent() {
@@ -726,12 +812,15 @@ func ExampleInstancesClient_SimulateMaintenanceEvent() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SimulateMaintenanceEventInstanceRequest.
 	}
-	resp, err := c.SimulateMaintenanceEvent(ctx, req)
+	op, err := c.SimulateMaintenanceEvent(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_Start() {
@@ -746,12 +835,15 @@ func ExampleInstancesClient_Start() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartInstanceRequest.
 	}
-	resp, err := c.Start(ctx, req)
+	op, err := c.Start(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_StartWithEncryptionKey() {
@@ -766,12 +858,15 @@ func ExampleInstancesClient_StartWithEncryptionKey() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartWithEncryptionKeyInstanceRequest.
 	}
-	resp, err := c.StartWithEncryptionKey(ctx, req)
+	op, err := c.StartWithEncryptionKey(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_Stop() {
@@ -786,12 +881,38 @@ func ExampleInstancesClient_Stop() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StopInstanceRequest.
 	}
-	resp, err := c.Stop(ctx, req)
+	op, err := c.Stop(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInstancesClient_Suspend() {
+	ctx := context.Background()
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SuspendInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SuspendInstanceRequest.
+	}
+	op, err := c.Suspend(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_TestIamPermissions() {
@@ -826,12 +947,15 @@ func ExampleInstancesClient_Update() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateInstanceRequest.
 	}
-	resp, err := c.Update(ctx, req)
+	op, err := c.Update(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_UpdateAccessConfig() {
@@ -846,12 +970,15 @@ func ExampleInstancesClient_UpdateAccessConfig() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAccessConfigInstanceRequest.
 	}
-	resp, err := c.UpdateAccessConfig(ctx, req)
+	op, err := c.UpdateAccessConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_UpdateDisplayDevice() {
@@ -866,12 +993,15 @@ func ExampleInstancesClient_UpdateDisplayDevice() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateDisplayDeviceInstanceRequest.
 	}
-	resp, err := c.UpdateDisplayDevice(ctx, req)
+	op, err := c.UpdateDisplayDevice(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_UpdateNetworkInterface() {
@@ -886,12 +1016,15 @@ func ExampleInstancesClient_UpdateNetworkInterface() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateNetworkInterfaceInstanceRequest.
 	}
-	resp, err := c.UpdateNetworkInterface(ctx, req)
+	op, err := c.UpdateNetworkInterface(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
@@ -906,10 +1039,13 @@ func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateShieldedInstanceConfigInstanceRequest.
 	}
-	resp, err := c.UpdateShieldedInstanceConfig(ctx, req)
+	op, err := c.UpdateShieldedInstanceConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

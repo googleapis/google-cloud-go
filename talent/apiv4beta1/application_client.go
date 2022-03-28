@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -244,7 +244,7 @@ func (c *applicationGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *applicationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -261,6 +261,7 @@ func (c *applicationGRPCClient) CreateApplication(ctx context.Context, req *tale
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateApplication[0:len((*c.CallOptions).CreateApplication):len((*c.CallOptions).CreateApplication)], opts...)
 	var resp *talentpb.Application
@@ -282,6 +283,7 @@ func (c *applicationGRPCClient) GetApplication(ctx context.Context, req *talentp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetApplication[0:len((*c.CallOptions).GetApplication):len((*c.CallOptions).GetApplication)], opts...)
 	var resp *talentpb.Application
@@ -303,6 +305,7 @@ func (c *applicationGRPCClient) UpdateApplication(ctx context.Context, req *tale
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "application.name", url.QueryEscape(req.GetApplication().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateApplication[0:len((*c.CallOptions).UpdateApplication):len((*c.CallOptions).UpdateApplication)], opts...)
 	var resp *talentpb.Application
@@ -324,6 +327,7 @@ func (c *applicationGRPCClient) DeleteApplication(ctx context.Context, req *tale
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteApplication[0:len((*c.CallOptions).DeleteApplication):len((*c.CallOptions).DeleteApplication)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -336,6 +340,7 @@ func (c *applicationGRPCClient) DeleteApplication(ctx context.Context, req *tale
 
 func (c *applicationGRPCClient) ListApplications(ctx context.Context, req *talentpb.ListApplicationsRequest, opts ...gax.CallOption) *ApplicationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListApplications[0:len((*c.CallOptions).ListApplications):len((*c.CallOptions).ListApplications)], opts...)
 	it := &ApplicationIterator{}

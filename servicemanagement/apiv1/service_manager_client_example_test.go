@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -330,56 +330,6 @@ func ExampleServiceManagerClient_GenerateConfigReport() {
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#GenerateConfigReportRequest.
 	}
 	resp, err := c.GenerateConfigReport(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleServiceManagerClient_EnableService() {
-	ctx := context.Background()
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.EnableServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#EnableServiceRequest.
-	}
-	op, err := c.EnableService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleServiceManagerClient_DisableService() {
-	ctx := context.Background()
-	c, err := servicemanagement.NewServiceManagerClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &servicemanagementpb.DisableServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/api/servicemanagement/v1#DisableServiceRequest.
-	}
-	op, err := c.DisableService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

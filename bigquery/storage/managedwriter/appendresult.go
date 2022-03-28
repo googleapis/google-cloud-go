@@ -16,11 +16,11 @@ package managedwriter
 
 import (
 	"context"
+	"fmt"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/descriptorpb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // NoStreamOffset is a sentinel value for signalling we're not tracking
@@ -39,6 +39,9 @@ type AppendResult struct {
 
 	// the stream offset
 	offset int64
+
+	// retains the updated schema from backend response.  Used for schema change notification.
+	updatedSchema *storagepb.TableSchema
 }
 
 func newAppendResult(data [][]byte) *AppendResult {
@@ -60,6 +63,17 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 		return 0, ctx.Err()
 	case <-ar.Ready():
 		return ar.offset, ar.err
+	}
+}
+
+// UpdatedSchema returns the updated schema for a table if supplied by the backend as part
+// of the append response.  It blocks until the result is ready.
+func (ar *AppendResult) UpdatedSchema(ctx context.Context) (*storagepb.TableSchema, error) {
+	select {
+	case <-ctx.Done():
+		return nil, fmt.Errorf("context done")
+	case <-ar.Ready():
+		return ar.updatedSchema, nil
 	}
 }
 
@@ -112,25 +126,5 @@ func (pw *pendingWrite) markDone(startOffset int64, err error, fc *flowControlle
 	// encountering issues with flow control during enqueuing the initial request.
 	if fc != nil {
 		fc.release(pw.reqSize)
-	}
-}
-
-// AppendOption are options that can be passed when appending data with a managed stream instance.
-type AppendOption func(*pendingWrite)
-
-// UpdateSchemaDescriptor is used to update the descriptor message schema associated
-// with a given stream.
-func UpdateSchemaDescriptor(schema *descriptorpb.DescriptorProto) AppendOption {
-	return func(pw *pendingWrite) {
-		pw.newSchema = schema
-	}
-}
-
-// WithOffset sets an explicit offset value for this append request.
-func WithOffset(offset int64) AppendOption {
-	return func(pw *pendingWrite) {
-		pw.request.Offset = &wrapperspb.Int64Value{
-			Value: offset,
-		}
 	}
 }

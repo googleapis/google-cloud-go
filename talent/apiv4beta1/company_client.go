@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -243,7 +243,7 @@ func (c *companyGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *companyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -260,6 +260,7 @@ func (c *companyGRPCClient) CreateCompany(ctx context.Context, req *talentpb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateCompany[0:len((*c.CallOptions).CreateCompany):len((*c.CallOptions).CreateCompany)], opts...)
 	var resp *talentpb.Company
@@ -281,6 +282,7 @@ func (c *companyGRPCClient) GetCompany(ctx context.Context, req *talentpb.GetCom
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetCompany[0:len((*c.CallOptions).GetCompany):len((*c.CallOptions).GetCompany)], opts...)
 	var resp *talentpb.Company
@@ -302,6 +304,7 @@ func (c *companyGRPCClient) UpdateCompany(ctx context.Context, req *talentpb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "company.name", url.QueryEscape(req.GetCompany().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateCompany[0:len((*c.CallOptions).UpdateCompany):len((*c.CallOptions).UpdateCompany)], opts...)
 	var resp *talentpb.Company
@@ -323,6 +326,7 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteCompany[0:len((*c.CallOptions).DeleteCompany):len((*c.CallOptions).DeleteCompany)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -335,6 +339,7 @@ func (c *companyGRPCClient) DeleteCompany(ctx context.Context, req *talentpb.Del
 
 func (c *companyGRPCClient) ListCompanies(ctx context.Context, req *talentpb.ListCompaniesRequest, opts ...gax.CallOption) *CompanyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListCompanies[0:len((*c.CallOptions).ListCompanies):len((*c.CallOptions).ListCompanies)], opts...)
 	it := &CompanyIterator{}

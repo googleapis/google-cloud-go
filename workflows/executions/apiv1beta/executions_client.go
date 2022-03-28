@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -204,7 +204,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -216,6 +216,7 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
@@ -260,6 +261,7 @@ func (c *gRPCClient) ListExecutions(ctx context.Context, req *executionspb.ListE
 
 func (c *gRPCClient) CreateExecution(ctx context.Context, req *executionspb.CreateExecutionRequest, opts ...gax.CallOption) (*executionspb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateExecution[0:len((*c.CallOptions).CreateExecution):len((*c.CallOptions).CreateExecution)], opts...)
 	var resp *executionspb.Execution
@@ -276,6 +278,7 @@ func (c *gRPCClient) CreateExecution(ctx context.Context, req *executionspb.Crea
 
 func (c *gRPCClient) GetExecution(ctx context.Context, req *executionspb.GetExecutionRequest, opts ...gax.CallOption) (*executionspb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	var resp *executionspb.Execution
@@ -292,6 +295,7 @@ func (c *gRPCClient) GetExecution(ctx context.Context, req *executionspb.GetExec
 
 func (c *gRPCClient) CancelExecution(ctx context.Context, req *executionspb.CancelExecutionRequest, opts ...gax.CallOption) (*executionspb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CancelExecution[0:len((*c.CallOptions).CancelExecution):len((*c.CallOptions).CancelExecution)], opts...)
 	var resp *executionspb.Execution

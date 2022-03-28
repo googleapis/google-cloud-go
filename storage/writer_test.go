@@ -30,14 +30,13 @@ import (
 var testEncryptionKey = []byte("secret-key-that-is-32-bytes-long")
 
 func TestErrorOnObjectsInsertCall(t *testing.T) {
-	t.Skip("Should be re-enabled after https://github.com/googleapis/google-cloud-go/pull/5210")
 	t.Parallel()
 	ctx := context.Background()
 	const contents = "hello world"
 
 	doWrite := func(mt *mockTransport) *Writer {
 		client := mockClient(t, mt)
-		wc := client.Bucket("bucketname").Object("filename1").NewWriter(ctx)
+		wc := client.Bucket("bucketname").Object("filename1").If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		wc.ContentType = "text/plain"
 
 		// We can't check that the Write fails, since it depends on the write to the

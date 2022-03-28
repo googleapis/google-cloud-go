@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,15 +42,17 @@ var newCloudRedisClientHook clientHook
 
 // CloudRedisCallOptions contains the retry settings for each method of CloudRedisClient.
 type CloudRedisCallOptions struct {
-	ListInstances    []gax.CallOption
-	GetInstance      []gax.CallOption
-	CreateInstance   []gax.CallOption
-	UpdateInstance   []gax.CallOption
-	UpgradeInstance  []gax.CallOption
-	ImportInstance   []gax.CallOption
-	ExportInstance   []gax.CallOption
-	FailoverInstance []gax.CallOption
-	DeleteInstance   []gax.CallOption
+	ListInstances         []gax.CallOption
+	GetInstance           []gax.CallOption
+	GetInstanceAuthString []gax.CallOption
+	CreateInstance        []gax.CallOption
+	UpdateInstance        []gax.CallOption
+	UpgradeInstance       []gax.CallOption
+	ImportInstance        []gax.CallOption
+	ExportInstance        []gax.CallOption
+	FailoverInstance      []gax.CallOption
+	DeleteInstance        []gax.CallOption
+	RescheduleMaintenance []gax.CallOption
 }
 
 func defaultCloudRedisGRPCClientOptions() []option.ClientOption {
@@ -67,15 +69,17 @@ func defaultCloudRedisGRPCClientOptions() []option.ClientOption {
 
 func defaultCloudRedisCallOptions() *CloudRedisCallOptions {
 	return &CloudRedisCallOptions{
-		ListInstances:    []gax.CallOption{},
-		GetInstance:      []gax.CallOption{},
-		CreateInstance:   []gax.CallOption{},
-		UpdateInstance:   []gax.CallOption{},
-		UpgradeInstance:  []gax.CallOption{},
-		ImportInstance:   []gax.CallOption{},
-		ExportInstance:   []gax.CallOption{},
-		FailoverInstance: []gax.CallOption{},
-		DeleteInstance:   []gax.CallOption{},
+		ListInstances:         []gax.CallOption{},
+		GetInstance:           []gax.CallOption{},
+		GetInstanceAuthString: []gax.CallOption{},
+		CreateInstance:        []gax.CallOption{},
+		UpdateInstance:        []gax.CallOption{},
+		UpgradeInstance:       []gax.CallOption{},
+		ImportInstance:        []gax.CallOption{},
+		ExportInstance:        []gax.CallOption{},
+		FailoverInstance:      []gax.CallOption{},
+		DeleteInstance:        []gax.CallOption{},
+		RescheduleMaintenance: []gax.CallOption{},
 	}
 }
 
@@ -86,6 +90,7 @@ type internalCloudRedisClient interface {
 	Connection() *grpc.ClientConn
 	ListInstances(context.Context, *redispb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
 	GetInstance(context.Context, *redispb.GetInstanceRequest, ...gax.CallOption) (*redispb.Instance, error)
+	GetInstanceAuthString(context.Context, *redispb.GetInstanceAuthStringRequest, ...gax.CallOption) (*redispb.InstanceAuthString, error)
 	CreateInstance(context.Context, *redispb.CreateInstanceRequest, ...gax.CallOption) (*CreateInstanceOperation, error)
 	CreateInstanceOperation(name string) *CreateInstanceOperation
 	UpdateInstance(context.Context, *redispb.UpdateInstanceRequest, ...gax.CallOption) (*UpdateInstanceOperation, error)
@@ -100,6 +105,8 @@ type internalCloudRedisClient interface {
 	FailoverInstanceOperation(name string) *FailoverInstanceOperation
 	DeleteInstance(context.Context, *redispb.DeleteInstanceRequest, ...gax.CallOption) (*DeleteInstanceOperation, error)
 	DeleteInstanceOperation(name string) *DeleteInstanceOperation
+	RescheduleMaintenance(context.Context, *redispb.RescheduleMaintenanceRequest, ...gax.CallOption) (*RescheduleMaintenanceOperation, error)
+	RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation
 }
 
 // CloudRedisClient is a client for interacting with Google Cloud Memorystore for Redis API.
@@ -176,6 +183,13 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 // GetInstance gets the details of a specific Redis instance.
 func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
 	return c.internalClient.GetInstance(ctx, req, opts...)
+}
+
+// GetInstanceAuthString gets the AUTH string for a Redis instance. If AUTH is not enabled for the
+// instance the response will be empty. This information is not included in
+// the details returned to GetInstance.
+func (c *CloudRedisClient) GetInstanceAuthString(ctx context.Context, req *redispb.GetInstanceAuthStringRequest, opts ...gax.CallOption) (*redispb.InstanceAuthString, error) {
+	return c.internalClient.GetInstanceAuthString(ctx, req, opts...)
 }
 
 // CreateInstance creates a Redis instance based on the specified tier and memory size.
@@ -285,6 +299,18 @@ func (c *CloudRedisClient) DeleteInstanceOperation(name string) *DeleteInstanceO
 	return c.internalClient.DeleteInstanceOperation(name)
 }
 
+// RescheduleMaintenance reschedule maintenance for a given instance in a given project and
+// location.
+func (c *CloudRedisClient) RescheduleMaintenance(ctx context.Context, req *redispb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	return c.internalClient.RescheduleMaintenance(ctx, req, opts...)
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *CloudRedisClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	return c.internalClient.RescheduleMaintenanceOperation(name)
+}
+
 // cloudRedisGRPCClient is a client for interacting with Google Cloud Memorystore for Redis API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -390,7 +416,7 @@ func (c *cloudRedisGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *cloudRedisGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -402,6 +428,7 @@ func (c *cloudRedisGRPCClient) Close() error {
 
 func (c *cloudRedisGRPCClient) ListInstances(ctx context.Context, req *redispb.ListInstancesRequest, opts ...gax.CallOption) *InstanceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListInstances[0:len((*c.CallOptions).ListInstances):len((*c.CallOptions).ListInstances)], opts...)
 	it := &InstanceIterator{}
@@ -451,12 +478,35 @@ func (c *cloudRedisGRPCClient) GetInstance(ctx context.Context, req *redispb.Get
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetInstance[0:len((*c.CallOptions).GetInstance):len((*c.CallOptions).GetInstance)], opts...)
 	var resp *redispb.Instance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cloudRedisClient.GetInstance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudRedisGRPCClient) GetInstanceAuthString(ctx context.Context, req *redispb.GetInstanceAuthStringRequest, opts ...gax.CallOption) (*redispb.InstanceAuthString, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetInstanceAuthString[0:len((*c.CallOptions).GetInstanceAuthString):len((*c.CallOptions).GetInstanceAuthString)], opts...)
+	var resp *redispb.InstanceAuthString
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClient.GetInstanceAuthString(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -472,6 +522,7 @@ func (c *cloudRedisGRPCClient) CreateInstance(ctx context.Context, req *redispb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateInstance[0:len((*c.CallOptions).CreateInstance):len((*c.CallOptions).CreateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -495,6 +546,7 @@ func (c *cloudRedisGRPCClient) UpdateInstance(ctx context.Context, req *redispb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateInstance[0:len((*c.CallOptions).UpdateInstance):len((*c.CallOptions).UpdateInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -518,6 +570,7 @@ func (c *cloudRedisGRPCClient) UpgradeInstance(ctx context.Context, req *redispb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpgradeInstance[0:len((*c.CallOptions).UpgradeInstance):len((*c.CallOptions).UpgradeInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -541,6 +594,7 @@ func (c *cloudRedisGRPCClient) ImportInstance(ctx context.Context, req *redispb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ImportInstance[0:len((*c.CallOptions).ImportInstance):len((*c.CallOptions).ImportInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -564,6 +618,7 @@ func (c *cloudRedisGRPCClient) ExportInstance(ctx context.Context, req *redispb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportInstance[0:len((*c.CallOptions).ExportInstance):len((*c.CallOptions).ExportInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -587,6 +642,7 @@ func (c *cloudRedisGRPCClient) FailoverInstance(ctx context.Context, req *redisp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).FailoverInstance[0:len((*c.CallOptions).FailoverInstance):len((*c.CallOptions).FailoverInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -610,6 +666,7 @@ func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteInstance[0:len((*c.CallOptions).DeleteInstance):len((*c.CallOptions).DeleteInstance)], opts...)
 	var resp *longrunningpb.Operation
@@ -622,6 +679,25 @@ func (c *cloudRedisGRPCClient) DeleteInstance(ctx context.Context, req *redispb.
 		return nil, err
 	}
 	return &DeleteInstanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *cloudRedisGRPCClient) RescheduleMaintenance(ctx context.Context, req *redispb.RescheduleMaintenanceRequest, opts ...gax.CallOption) (*RescheduleMaintenanceOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RescheduleMaintenance[0:len((*c.CallOptions).RescheduleMaintenance):len((*c.CallOptions).RescheduleMaintenance)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClient.RescheduleMaintenance(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RescheduleMaintenanceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -957,6 +1033,75 @@ func (op *ImportInstanceOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ImportInstanceOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RescheduleMaintenanceOperation manages a long-running operation from RescheduleMaintenance.
+type RescheduleMaintenanceOperation struct {
+	lro *longrunning.Operation
+}
+
+// RescheduleMaintenanceOperation returns a new RescheduleMaintenanceOperation from a given name.
+// The name must be that of a previously created RescheduleMaintenanceOperation, possibly from a different process.
+func (c *cloudRedisGRPCClient) RescheduleMaintenanceOperation(name string) *RescheduleMaintenanceOperation {
+	return &RescheduleMaintenanceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RescheduleMaintenanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
+	var resp redispb.Instance
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RescheduleMaintenanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*redispb.Instance, error) {
+	var resp redispb.Instance
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RescheduleMaintenanceOperation) Metadata() (*anypb.Any, error) {
+	var meta anypb.Any
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RescheduleMaintenanceOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RescheduleMaintenanceOperation) Name() string {
 	return op.lro.Name()
 }
 

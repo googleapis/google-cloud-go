@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -432,7 +432,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -449,6 +449,7 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ExportAssets[0:len((*c.CallOptions).ExportAssets):len((*c.CallOptions).ExportAssets)], opts...)
 	var resp *longrunningpb.Operation
@@ -467,6 +468,7 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 
 func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &AssetIterator{}
@@ -516,6 +518,7 @@ func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.Bat
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchGetAssetsHistory[0:len((*c.CallOptions).BatchGetAssetsHistory):len((*c.CallOptions).BatchGetAssetsHistory)], opts...)
 	var resp *assetpb.BatchGetAssetsHistoryResponse
@@ -537,6 +540,7 @@ func (c *gRPCClient) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateFeed[0:len((*c.CallOptions).CreateFeed):len((*c.CallOptions).CreateFeed)], opts...)
 	var resp *assetpb.Feed
@@ -558,6 +562,7 @@ func (c *gRPCClient) GetFeed(ctx context.Context, req *assetpb.GetFeedRequest, o
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetFeed[0:len((*c.CallOptions).GetFeed):len((*c.CallOptions).GetFeed)], opts...)
 	var resp *assetpb.Feed
@@ -579,6 +584,7 @@ func (c *gRPCClient) ListFeeds(ctx context.Context, req *assetpb.ListFeedsReques
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListFeeds[0:len((*c.CallOptions).ListFeeds):len((*c.CallOptions).ListFeeds)], opts...)
 	var resp *assetpb.ListFeedsResponse
@@ -600,6 +606,7 @@ func (c *gRPCClient) UpdateFeed(ctx context.Context, req *assetpb.UpdateFeedRequ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "feed.name", url.QueryEscape(req.GetFeed().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateFeed[0:len((*c.CallOptions).UpdateFeed):len((*c.CallOptions).UpdateFeed)], opts...)
 	var resp *assetpb.Feed
@@ -621,6 +628,7 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteFeed[0:len((*c.CallOptions).DeleteFeed):len((*c.CallOptions).DeleteFeed)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -633,6 +641,7 @@ func (c *gRPCClient) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequ
 
 func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchAllResources[0:len((*c.CallOptions).SearchAllResources):len((*c.CallOptions).SearchAllResources)], opts...)
 	it := &ResourceSearchResultIterator{}
@@ -677,6 +686,7 @@ func (c *gRPCClient) SearchAllResources(ctx context.Context, req *assetpb.Search
 
 func (c *gRPCClient) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAllIamPoliciesRequest, opts ...gax.CallOption) *IamPolicySearchResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SearchAllIamPolicies[0:len((*c.CallOptions).SearchAllIamPolicies):len((*c.CallOptions).SearchAllIamPolicies)], opts...)
 	it := &IamPolicySearchResultIterator{}
@@ -726,6 +736,7 @@ func (c *gRPCClient) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeI
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AnalyzeIamPolicy[0:len((*c.CallOptions).AnalyzeIamPolicy):len((*c.CallOptions).AnalyzeIamPolicy)], opts...)
 	var resp *assetpb.AnalyzeIamPolicyResponse
@@ -747,6 +758,7 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AnalyzeIamPolicyLongrunning[0:len((*c.CallOptions).AnalyzeIamPolicyLongrunning):len((*c.CallOptions).AnalyzeIamPolicyLongrunning)], opts...)
 	var resp *longrunningpb.Operation
@@ -765,6 +777,7 @@ func (c *gRPCClient) AnalyzeIamPolicyLongrunning(ctx context.Context, req *asset
 
 func (c *gRPCClient) AnalyzeMove(ctx context.Context, req *assetpb.AnalyzeMoveRequest, opts ...gax.CallOption) (*assetpb.AnalyzeMoveResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AnalyzeMove[0:len((*c.CallOptions).AnalyzeMove):len((*c.CallOptions).AnalyzeMove)], opts...)
 	var resp *assetpb.AnalyzeMoveResponse

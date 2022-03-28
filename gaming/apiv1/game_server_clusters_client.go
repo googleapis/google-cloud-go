@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -331,7 +331,7 @@ func (c *gameServerClustersGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gameServerClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -343,6 +343,7 @@ func (c *gameServerClustersGRPCClient) Close() error {
 
 func (c *gameServerClustersGRPCClient) ListGameServerClusters(ctx context.Context, req *gamingpb.ListGameServerClustersRequest, opts ...gax.CallOption) *GameServerClusterIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGameServerClusters[0:len((*c.CallOptions).ListGameServerClusters):len((*c.CallOptions).ListGameServerClusters)], opts...)
 	it := &GameServerClusterIterator{}
@@ -392,6 +393,7 @@ func (c *gameServerClustersGRPCClient) GetGameServerCluster(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGameServerCluster[0:len((*c.CallOptions).GetGameServerCluster):len((*c.CallOptions).GetGameServerCluster)], opts...)
 	var resp *gamingpb.GameServerCluster
@@ -413,6 +415,7 @@ func (c *gameServerClustersGRPCClient) CreateGameServerCluster(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGameServerCluster[0:len((*c.CallOptions).CreateGameServerCluster):len((*c.CallOptions).CreateGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -436,6 +439,7 @@ func (c *gameServerClustersGRPCClient) PreviewCreateGameServerCluster(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PreviewCreateGameServerCluster[0:len((*c.CallOptions).PreviewCreateGameServerCluster):len((*c.CallOptions).PreviewCreateGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewCreateGameServerClusterResponse
@@ -457,6 +461,7 @@ func (c *gameServerClustersGRPCClient) DeleteGameServerCluster(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGameServerCluster[0:len((*c.CallOptions).DeleteGameServerCluster):len((*c.CallOptions).DeleteGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -480,6 +485,7 @@ func (c *gameServerClustersGRPCClient) PreviewDeleteGameServerCluster(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PreviewDeleteGameServerCluster[0:len((*c.CallOptions).PreviewDeleteGameServerCluster):len((*c.CallOptions).PreviewDeleteGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewDeleteGameServerClusterResponse
@@ -501,6 +507,7 @@ func (c *gameServerClustersGRPCClient) UpdateGameServerCluster(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGameServerCluster[0:len((*c.CallOptions).UpdateGameServerCluster):len((*c.CallOptions).UpdateGameServerCluster)], opts...)
 	var resp *longrunningpb.Operation
@@ -524,6 +531,7 @@ func (c *gameServerClustersGRPCClient) PreviewUpdateGameServerCluster(ctx contex
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_cluster.name", url.QueryEscape(req.GetGameServerCluster().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PreviewUpdateGameServerCluster[0:len((*c.CallOptions).PreviewUpdateGameServerCluster):len((*c.CallOptions).PreviewUpdateGameServerCluster)], opts...)
 	var resp *gamingpb.PreviewUpdateGameServerClusterResponse

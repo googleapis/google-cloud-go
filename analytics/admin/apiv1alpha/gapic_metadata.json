@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "AnalyticsAdminClient",
           "rpcs": {
+            "AcknowledgeUserDataCollection": {
+              "methods": [
+                "AcknowledgeUserDataCollection"
+              ]
+            },
             "ApproveDisplayVideo360AdvertiserLinkProposal": {
               "methods": [
                 "ApproveDisplayVideo360AdvertiserLinkProposal"
@@ -70,6 +75,11 @@
                 "CreateCustomMetric"
               ]
             },
+            "CreateDataStream": {
+              "methods": [
+                "CreateDataStream"
+              ]
+            },
             "CreateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "CreateDisplayVideo360AdvertiserLink"
@@ -105,24 +115,19 @@
                 "CreateUserLink"
               ]
             },
-            "CreateWebDataStream": {
-              "methods": [
-                "CreateWebDataStream"
-              ]
-            },
             "DeleteAccount": {
               "methods": [
                 "DeleteAccount"
               ]
             },
-            "DeleteAndroidAppDataStream": {
-              "methods": [
-                "DeleteAndroidAppDataStream"
-              ]
-            },
             "DeleteConversionEvent": {
               "methods": [
                 "DeleteConversionEvent"
+              ]
+            },
+            "DeleteDataStream": {
+              "methods": [
+                "DeleteDataStream"
               ]
             },
             "DeleteDisplayVideo360AdvertiserLink": {
@@ -145,11 +150,6 @@
                 "DeleteGoogleAdsLink"
               ]
             },
-            "DeleteIosAppDataStream": {
-              "methods": [
-                "DeleteIosAppDataStream"
-              ]
-            },
             "DeleteMeasurementProtocolSecret": {
               "methods": [
                 "DeleteMeasurementProtocolSecret"
@@ -165,19 +165,9 @@
                 "DeleteUserLink"
               ]
             },
-            "DeleteWebDataStream": {
-              "methods": [
-                "DeleteWebDataStream"
-              ]
-            },
             "GetAccount": {
               "methods": [
                 "GetAccount"
-              ]
-            },
-            "GetAndroidAppDataStream": {
-              "methods": [
-                "GetAndroidAppDataStream"
               ]
             },
             "GetConversionEvent": {
@@ -205,6 +195,11 @@
                 "GetDataSharingSettings"
               ]
             },
+            "GetDataStream": {
+              "methods": [
+                "GetDataStream"
+              ]
+            },
             "GetDisplayVideo360AdvertiserLink": {
               "methods": [
                 "GetDisplayVideo360AdvertiserLink"
@@ -215,11 +210,6 @@
                 "GetDisplayVideo360AdvertiserLinkProposal"
               ]
             },
-            "GetEnhancedMeasurementSettings": {
-              "methods": [
-                "GetEnhancedMeasurementSettings"
-              ]
-            },
             "GetGlobalSiteTag": {
               "methods": [
                 "GetGlobalSiteTag"
@@ -228,11 +218,6 @@
             "GetGoogleSignalsSettings": {
               "methods": [
                 "GetGoogleSignalsSettings"
-              ]
-            },
-            "GetIosAppDataStream": {
-              "methods": [
-                "GetIosAppDataStream"
               ]
             },
             "GetMeasurementProtocolSecret": {
@@ -250,11 +235,6 @@
                 "GetUserLink"
               ]
             },
-            "GetWebDataStream": {
-              "methods": [
-                "GetWebDataStream"
-              ]
-            },
             "ListAccountSummaries": {
               "methods": [
                 "ListAccountSummaries"
@@ -263,11 +243,6 @@
             "ListAccounts": {
               "methods": [
                 "ListAccounts"
-              ]
-            },
-            "ListAndroidAppDataStreams": {
-              "methods": [
-                "ListAndroidAppDataStreams"
               ]
             },
             "ListConversionEvents": {
@@ -283,6 +258,11 @@
             "ListCustomMetrics": {
               "methods": [
                 "ListCustomMetrics"
+              ]
+            },
+            "ListDataStreams": {
+              "methods": [
+                "ListDataStreams"
               ]
             },
             "ListDisplayVideo360AdvertiserLinkProposals": {
@@ -305,11 +285,6 @@
                 "ListGoogleAdsLinks"
               ]
             },
-            "ListIosAppDataStreams": {
-              "methods": [
-                "ListIosAppDataStreams"
-              ]
-            },
             "ListMeasurementProtocolSecrets": {
               "methods": [
                 "ListMeasurementProtocolSecrets"
@@ -323,11 +298,6 @@
             "ListUserLinks": {
               "methods": [
                 "ListUserLinks"
-              ]
-            },
-            "ListWebDataStreams": {
-              "methods": [
-                "ListWebDataStreams"
               ]
             },
             "ProvisionAccountTicket": {
@@ -345,11 +315,6 @@
                 "UpdateAccount"
               ]
             },
-            "UpdateAndroidAppDataStream": {
-              "methods": [
-                "UpdateAndroidAppDataStream"
-              ]
-            },
             "UpdateCustomDimension": {
               "methods": [
                 "UpdateCustomDimension"
@@ -365,14 +330,14 @@
                 "UpdateDataRetentionSettings"
               ]
             },
+            "UpdateDataStream": {
+              "methods": [
+                "UpdateDataStream"
+              ]
+            },
             "UpdateDisplayVideo360AdvertiserLink": {
               "methods": [
                 "UpdateDisplayVideo360AdvertiserLink"
-              ]
-            },
-            "UpdateEnhancedMeasurementSettings": {
-              "methods": [
-                "UpdateEnhancedMeasurementSettings"
               ]
             },
             "UpdateGoogleAdsLink": {
@@ -383,11 +348,6 @@
             "UpdateGoogleSignalsSettings": {
               "methods": [
                 "UpdateGoogleSignalsSettings"
-              ]
-            },
-            "UpdateIosAppDataStream": {
-              "methods": [
-                "UpdateIosAppDataStream"
               ]
             },
             "UpdateMeasurementProtocolSecret": {
@@ -403,11 +363,6 @@
             "UpdateUserLink": {
               "methods": [
                 "UpdateUserLink"
-              ]
-            },
-            "UpdateWebDataStream": {
-              "methods": [
-                "UpdateWebDataStream"
               ]
             }
           }

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,12 +48,15 @@ func ExampleFirewallPoliciesClient_AddAssociation() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAssociationFirewallPolicyRequest.
 	}
-	resp, err := c.AddAssociation(ctx, req)
+	op, err := c.AddAssociation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_AddRule() {
@@ -68,12 +71,15 @@ func ExampleFirewallPoliciesClient_AddRule() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleFirewallPolicyRequest.
 	}
-	resp, err := c.AddRule(ctx, req)
+	op, err := c.AddRule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_CloneRules() {
@@ -88,12 +94,15 @@ func ExampleFirewallPoliciesClient_CloneRules() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CloneRulesFirewallPolicyRequest.
 	}
-	resp, err := c.CloneRules(ctx, req)
+	op, err := c.CloneRules(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_Delete() {
@@ -108,12 +117,15 @@ func ExampleFirewallPoliciesClient_Delete() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteFirewallPolicyRequest.
 	}
-	resp, err := c.Delete(ctx, req)
+	op, err := c.Delete(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_Get() {
@@ -208,12 +220,15 @@ func ExampleFirewallPoliciesClient_Insert() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertFirewallPolicyRequest.
 	}
-	resp, err := c.Insert(ctx, req)
+	op, err := c.Insert(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_List() {
@@ -274,12 +289,15 @@ func ExampleFirewallPoliciesClient_Move() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#MoveFirewallPolicyRequest.
 	}
-	resp, err := c.Move(ctx, req)
+	op, err := c.Move(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_Patch() {
@@ -294,12 +312,15 @@ func ExampleFirewallPoliciesClient_Patch() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchFirewallPolicyRequest.
 	}
-	resp, err := c.Patch(ctx, req)
+	op, err := c.Patch(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_PatchRule() {
@@ -314,12 +335,15 @@ func ExampleFirewallPoliciesClient_PatchRule() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRuleFirewallPolicyRequest.
 	}
-	resp, err := c.PatchRule(ctx, req)
+	op, err := c.PatchRule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_RemoveAssociation() {
@@ -334,12 +358,15 @@ func ExampleFirewallPoliciesClient_RemoveAssociation() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveAssociationFirewallPolicyRequest.
 	}
-	resp, err := c.RemoveAssociation(ctx, req)
+	op, err := c.RemoveAssociation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_RemoveRule() {
@@ -354,12 +381,15 @@ func ExampleFirewallPoliciesClient_RemoveRule() {
 		// TODO: Fill request struct fields.
 		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveRuleFirewallPolicyRequest.
 	}
-	resp, err := c.RemoveRule(ctx, req)
+	op, err := c.RemoveRule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleFirewallPoliciesClient_SetIamPolicy() {

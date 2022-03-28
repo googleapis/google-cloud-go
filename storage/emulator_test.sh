@@ -19,24 +19,55 @@ set -eo pipefail
 # Display commands being run
 set -x
 
+# Only run on Go 1.17+
+min_minor_ver=17
+
+v=`go version | { read _ _ v _; echo ${v#go}; }`
+comps=(${v//./ })
+minor_ver=${comps[1]}
+
+if [ "$minor_ver" -lt "$min_minor_ver" ]; then
+    echo minor version $minor_ver, skipping
+    exit 0
+fi
+
 export STORAGE_EMULATOR_HOST="http://localhost:9000"
+export STORAGE_EMULATOR_HOST_GRPC="localhost:8888"
 
 DEFAULT_IMAGE_NAME='gcr.io/cloud-devrel-public-resources/storage-testbench'
 DEFAULT_IMAGE_TAG='latest'
 DOCKER_IMAGE=${DEFAULT_IMAGE_NAME}:${DEFAULT_IMAGE_TAG}
 CONTAINER_NAME=storage_testbench
 
-# Get the docker image for the testbench
-docker pull $DOCKER_IMAGE
-
-# Start the testbench
 # Note: --net=host makes the container bind directly to the Docker host’s network, 
 # with no network isolation. If we were to use port-mapping instead, reset connection errors 
 # would be captured differently and cause unexpected test behaviour.
 # The host networking driver works only on Linux hosts.
 # See more about using host networking: https://docs.docker.com/network/host/
-docker run --name $CONTAINER_NAME --rm --net=host $DOCKER_IMAGE &
+DOCKER_NETWORK="--net=host"
+# Note: We do not expect the RetryConformanceTest suite to pass on darwin due to
+# differences in the network errors emitted by the system.
+if [ `go env GOOS` == 'darwin' ]; then
+    DOCKER_NETWORK="-p 9000:9000 -p 8888:8888"
+fi
+
+# Get the docker image for the testbench
+docker pull $DOCKER_IMAGE
+
+# Start the testbench
+
+docker run --name $CONTAINER_NAME --rm -d $DOCKER_NETWORK $DOCKER_IMAGE
 echo "Running the Cloud Storage testbench: $STORAGE_EMULATOR_HOST"
+sleep 1
+
+# Stop the testbench & cleanup environment variables
+function cleanup() {
+    echo "Cleanup testbench"
+    docker stop $CONTAINER_NAME
+    unset STORAGE_EMULATOR_HOST;
+    unset STORAGE_EMULATOR_HOST_GRPC;
+}
+trap cleanup EXIT
 
 # Check that the server is running - retry several times to allow for start-up time
 response=$(curl -w "%{http_code}\n" $STORAGE_EMULATOR_HOST --retry-connrefused --retry 5 -o /dev/null) 
@@ -47,69 +78,15 @@ then
     exit 1
 fi
 
-# Stop the testbench & cleanup environment variables
-function cleanup() {
-    echo "Cleanup testbench"
-    docker stop $CONTAINER_NAME
-    unset STORAGE_EMULATOR_HOST;
-}
-trap cleanup EXIT
+# Start the gRPC server on port 8888.
+echo "Starting the gRPC server on port 8888"
+response=$(curl -w "%{http_code}\n" --retry 5 --retry-max-time 40 -o /dev/null "$STORAGE_EMULATOR_HOST/start_grpc?port=8888")
 
-# TODO: move to passing once fixed
-FAILING=(   "buckets.setIamPolicy"
-            "objects.insert"
-        )
-# TODO: remove regex once all tests are passing
-# Unfortunately, there is no simple way to skip specific tests (see https://github.com/golang/go/issues/41583)
-# Therefore, we have to simply run all the specific tests we know pass
-PASSING=(   "buckets.list"
-            "buckets.insert"
-            "buckets.get"
-            "buckets.delete"
-            "buckets.update"
-            "buckets.patch"
-            "buckets.getIamPolicy"
-            "buckets.testIamPermissions"
-            "buckets.lockRetentionPolicy"
-            "objects.copy"
-            "objects.get"
-            "objects.list"
-            "objects.delete"
-            "objects.update"
-            "objects.patch"
-            "objects.compose"
-            "objects.rewrite"
-            "serviceaccount.get"
-            "hmacKey.get"
-            "hmacKey.list"
-            "hmacKey.create"
-            "hmacKey.delete"
-            "hmacKey.update"
-            "notifications.list"
-            "notifications.create"
-            "notifications.get"
-            "notifications.delete"
-            "object_acl.insert"
-            "object_acl.get"
-            "object_acl.list"
-            "object_acl.patch"
-            "object_acl.update"
-            "object_acl.delete"
-            "default_object_acl.insert"
-            "default_object_acl.get"
-            "default_object_acl.list"
-            "default_object_acl.patch"
-            "default_object_acl.update"
-            "default_object_acl.delete"
-            "bucket_acl.insert"
-            "bucket_acl.get"
-            "bucket_acl.list"
-            "bucket_acl.patch"
-            "bucket_acl.update"
-            "bucket_acl.delete"
-        )
-TEMP=${PASSING[@]} 
-PASSING_REGEX=${TEMP// /|}
+if [[ $response != 200 ]]
+then
+    echo "Testbench gRPC server did not start correctly"
+    exit 1
+fi
 
 # Run tests
-go test -v -timeout 10m ./ -run="TestRetryConformance/($PASSING_REGEX)-" -short 2>&1 | tee -a sponge_log.log
+go test -v -timeout 10m ./ -run="^Test(RetryConformance|.*Emulated)$" -short 2>&1 | tee -a sponge_log.log

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -322,7 +322,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) Connection() *grpc.ClientCo
 // use by Google-written clients.
 func (c *binauthzManagementServiceV1Beta1GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -339,6 +339,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetPolicy(ctx context.Conte
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetPolicy[0:len((*c.CallOptions).GetPolicy):len((*c.CallOptions).GetPolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
@@ -360,6 +361,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdatePolicy(ctx context.Co
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdatePolicy[0:len((*c.CallOptions).UpdatePolicy):len((*c.CallOptions).UpdatePolicy)], opts...)
 	var resp *binaryauthorizationpb.Policy
@@ -381,6 +383,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) CreateAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAttestor[0:len((*c.CallOptions).CreateAttestor):len((*c.CallOptions).CreateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -402,6 +405,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) GetAttestor(ctx context.Con
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAttestor[0:len((*c.CallOptions).GetAttestor):len((*c.CallOptions).GetAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -423,6 +427,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdateAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "attestor.name", url.QueryEscape(req.GetAttestor().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAttestor[0:len((*c.CallOptions).UpdateAttestor):len((*c.CallOptions).UpdateAttestor)], opts...)
 	var resp *binaryauthorizationpb.Attestor
@@ -439,6 +444,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) UpdateAttestor(ctx context.
 
 func (c *binauthzManagementServiceV1Beta1GRPCClient) ListAttestors(ctx context.Context, req *binaryauthorizationpb.ListAttestorsRequest, opts ...gax.CallOption) *AttestorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAttestors[0:len((*c.CallOptions).ListAttestors):len((*c.CallOptions).ListAttestors)], opts...)
 	it := &AttestorIterator{}
@@ -488,6 +494,7 @@ func (c *binauthzManagementServiceV1Beta1GRPCClient) DeleteAttestor(ctx context.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAttestor[0:len((*c.CallOptions).DeleteAttestor):len((*c.CallOptions).DeleteAttestor)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

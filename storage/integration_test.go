@@ -88,11 +88,17 @@ var (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
+	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
 	if err := cleanup(); err != nil {
 		// Don't fail the test if cleanup fails.
 		log.Printf("Post-test cleanup failed: %v", err)
 	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
+	}
+
 	os.Exit(exit)
 }
 
@@ -781,6 +787,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -1067,7 +1074,7 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1084,11 +1091,11 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
@@ -1124,7 +1131,7 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		// As insurance attempt to delete the object, ignore the error if it
 		// doesn't exist, because it wasn't made.
@@ -1140,7 +1147,7 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 	content := make([]byte, w.ChunkSize)
 	_, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Cancel the Writer context before flushing.
 	// TODO: Add a test that writes at least a chunk before canceling part way through.
@@ -1174,7 +1181,7 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1193,11 +1200,11 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 	w.CRC32C = crc32c
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
@@ -1234,7 +1241,7 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	defer gc.Close()
 
 	name := uidSpace.New()
-	gobj := gc.Bucket(grpcBucketName).Object(name)
+	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		if err := gobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
@@ -1255,11 +1262,11 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	}
 	got, err := w.Write(content)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Write: %v", err)
 	}
 	// Flush the buffer to finish the upload.
 	if err := w.Close(); err != nil {
-		t.Fatal(err)
+		t.Fatalf("Writer.Close: %v", err)
 	}
 
 	want := len(content)
@@ -1341,6 +1348,7 @@ func TestIntegration_Objects(t *testing.T) {
 		"obj1",
 		"obj2",
 		"obj/with/slashes",
+		"obj/",
 	}
 	contents := make(map[string][]byte)
 
@@ -1387,6 +1395,43 @@ func TestIntegration_Objects(t *testing.T) {
 		}
 
 		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
+	t.Run("testObjectsIterateSelectedAttrsDelimiterIncludeTrailingDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/", IncludeTrailingDelimiter: true}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj/", "obj1", "obj2"}
 		if !cmp.Equal(sortedNames, gotNames) {
 			t.Errorf("names = %v, want %v", gotNames, sortedNames)
 		}
@@ -1872,7 +1917,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 	// verifying the returned results).
 	query := &Query{
 		Prefix:      "",
-		StartOffset: "obj/with/slashes",
+		StartOffset: "obj/",
 		EndOffset:   "obj2",
 	}
 	var selectedAttrs []string
@@ -2743,7 +2788,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// - (1a) must NOT have that permission on (3b).
 
 	ctx := context.Background()
-	h := testHelper{t}
 
 	// Start client with mainUserEmail creds
 	mainUserClient := testConfig(ctx, t)
@@ -2797,15 +2841,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		return -1
 	}
 
-	bucketName := uidSpace.New()
-	requesterPaysBucket := mainUserClient.Bucket(bucketName)
-
-	// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
-	h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
-	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-		t.Fatalf("set ACL: %v", err)
-	}
-	defer h.mustDeleteBucket(requesterPaysBucket)
+	// We hit bucket rate limits with these test, so we retry
+	mainUserClient.SetRetry(WithPolicy(RetryAlways))
+	otherUserClient.SetRetry(WithPolicy(RetryAlways))
 
 	for _, test := range []struct {
 		desc          string
@@ -2847,6 +2885,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
+			h := testHelper{t}
+			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+			defer cancel()
 
 			printTestCase := func() string {
 				user := mainUserEmail
@@ -2862,7 +2903,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 			checkforErrors := func(desc string, err error) {
 				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error\n\t\t%s \n\t\terror: %v", desc, printTestCase(), err)
+					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
 				} else if err == nil && !test.expectSuccess {
 					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
@@ -2870,6 +2911,18 @@ func TestIntegration_RequesterPays(t *testing.T) {
 						desc, printTestCase(), test.wantErrorCode, err)
 				}
 			}
+
+			bucketName := uidSpace.New()
+			requesterPaysBucket := mainUserClient.Bucket(bucketName)
+
+			// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
+			h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
+			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
+				t.Fatalf("set ACL: %v", err)
+			}
+			t.Cleanup(func() {
+				h.mustDeleteBucket(requesterPaysBucket)
+			})
 
 			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
 			// The later write we perform may fail so we always write to the object as the user
@@ -2895,7 +2948,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 				}
 			}
 
-			// Object operations
+			// Object operations (except for delete)
 			checkforErrors("write object", writeObject(ctx, bucket.Object(objectName), "text/plain", []byte("hello")))
 			_, err = readObject(ctx, bucket.Object(objectName))
 			checkforErrors("read object", err)
@@ -2905,15 +2958,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("update object", err)
 
 			// Bucket ACL operations
-			// Create another object for these to avoid object rate limits.
-			objectName2 := "acl-go-test" + uidSpace.New()
-			err = writeObject(ctx, bucket.Object(objectName2), "text/plain", []byte("hello"))
-			if err == nil {
-				// only delete the object if properly written to
-				defer h.mustDeleteObject(bucket.Object(objectName2))
-			}
-			checkforErrors("write object 2", err)
-
+			// We interleave buckets to get around the rate limit
 			entity := ACLEntity("domain-google.com")
 
 			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
@@ -2921,40 +2966,46 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("bucket acl list", err)
 			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
 
+			// Object ACL operations
+			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
+			_, err = bucket.Object(objectName).ACL().List(ctx)
+			checkforErrors("object acl list", err)
+			checkforErrors("object acl list", bucket.Object(objectName).ACL().Delete(ctx, entity))
+
 			// Default object ACL operations
+			// Once again, we interleave buckets to avoid rate limits
 			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
 			_, err = bucket.DefaultObjectACL().List(ctx)
 			checkforErrors("default object acl list", err)
 			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Object ACL operations
-			checkforErrors("object acl set", bucket.Object(objectName2).ACL().Set(ctx, entity, RoleReader))
-			_, err = bucket.Object(objectName2).ACL().List(ctx)
-			checkforErrors("object acl list", err)
-			checkforErrors("object acl list", bucket.Object(objectName2).ACL().Delete(ctx, entity))
-
-			// Copy and compose
+			// Copy
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
+			// Delete "copy" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("copy"))
+				})
+			}
+
+			// Compose
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
+			// Delete "compose" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("compose"))
+				})
+			}
 
 			// Delete object
-			err = bucket.Object(objectName).Delete(ctx)
-			if err != nil {
-				// test case may error, but we still want to delete the object
+			if err = bucket.Object(objectName).Delete(ctx); err != nil {
+				// We still want to delete object if the test errors
 				h.mustDeleteObject(requesterPaysBucket.Object(objectName))
 			}
 			checkforErrors("delete object", err)
 		})
-
-	}
-
-	// Clean up created objects
-	for _, obj := range []string{"copy", "compose"} {
-		if err := requesterPaysBucket.UserProject(mainProjectID).Object(obj).Delete(ctx); err != nil {
-			t.Fatalf("could not delete %q: %v", obj, err)
-		}
 	}
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -304,7 +304,7 @@ func (c *imageAnnotatorGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *imageAnnotatorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -321,6 +321,7 @@ func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
 	var resp *visionpb.BatchAnnotateImagesResponse
@@ -342,6 +343,7 @@ func (c *imageAnnotatorGRPCClient) BatchAnnotateFiles(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).BatchAnnotateFiles[0:len((*c.CallOptions).BatchAnnotateFiles):len((*c.CallOptions).BatchAnnotateFiles)], opts...)
 	var resp *visionpb.BatchAnnotateFilesResponse
@@ -363,6 +365,7 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateImages(ctx context.Context,
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AsyncBatchAnnotateImages[0:len((*c.CallOptions).AsyncBatchAnnotateImages):len((*c.CallOptions).AsyncBatchAnnotateImages)], opts...)
 	var resp *longrunningpb.Operation
@@ -386,6 +389,7 @@ func (c *imageAnnotatorGRPCClient) AsyncBatchAnnotateFiles(ctx context.Context, 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AsyncBatchAnnotateFiles[0:len((*c.CallOptions).AsyncBatchAnnotateFiles):len((*c.CallOptions).AsyncBatchAnnotateFiles)], opts...)
 	var resp *longrunningpb.Operation

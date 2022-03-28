@@ -1,7 +1,35 @@
 # Changes
 
-### [1.0.1](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.0...video/v1.0.1) (2021-10-18)
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.3.0...video/v1.4.0) (2022-03-14)
 
+
+### Features
+
+* **video/stitcher:** start generating apiv1 ([#5720](https://github.com/googleapis/google-cloud-go/issues/5720)) ([4ca8fea](https://github.com/googleapis/google-cloud-go/commit/4ca8fea35c1c5f3e2675c666e238bb1dc3561d52))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.2.0...video/v1.3.0) (2022-02-23)
+
+
+### Features
+
+* **video:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.1.0...video/v1.2.0) (2022-02-11)
+
+
+### Features
+
+* **video/transcoder:** remove apiv1beta1, turned down ([#5467](https://github.com/googleapis/google-cloud-go/issues/5467)) ([917d8d2](https://github.com/googleapis/google-cloud-go/commit/917d8d255906ea505cb674302870e031e5eff517))
+* **video:** add file for tracking version ([17b36ea](https://github.com/googleapis/google-cloud-go/commit/17b36ead42a96b1a01105122074e65164357519e))
+
+## [1.1.0](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.1...video/v1.1.0) (2022-01-25)
+
+
+### Features
+
+* **video:** start generating livestream apiv1 ([#5404](https://www.github.com/googleapis/google-cloud-go/issues/5404)) ([2b6770d](https://www.github.com/googleapis/google-cloud-go/commit/2b6770d762897c84e653973e989d95c0371b89ad))
+
+### [1.0.1](https://www.github.com/googleapis/google-cloud-go/compare/video/v1.0.0...video/v1.0.1) (2021-10-18)
 
 ### Bug Fixes
 

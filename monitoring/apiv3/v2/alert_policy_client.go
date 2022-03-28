@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -258,7 +258,7 @@ func (c *alertPolicyGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *alertPolicyGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -270,6 +270,7 @@ func (c *alertPolicyGRPCClient) Close() error {
 
 func (c *alertPolicyGRPCClient) ListAlertPolicies(ctx context.Context, req *monitoringpb.ListAlertPoliciesRequest, opts ...gax.CallOption) *AlertPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAlertPolicies[0:len((*c.CallOptions).ListAlertPolicies):len((*c.CallOptions).ListAlertPolicies)], opts...)
 	it := &AlertPolicyIterator{}
@@ -319,6 +320,7 @@ func (c *alertPolicyGRPCClient) GetAlertPolicy(ctx context.Context, req *monitor
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAlertPolicy[0:len((*c.CallOptions).GetAlertPolicy):len((*c.CallOptions).GetAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy
@@ -340,6 +342,7 @@ func (c *alertPolicyGRPCClient) CreateAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAlertPolicy[0:len((*c.CallOptions).CreateAlertPolicy):len((*c.CallOptions).CreateAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy
@@ -361,6 +364,7 @@ func (c *alertPolicyGRPCClient) DeleteAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAlertPolicy[0:len((*c.CallOptions).DeleteAlertPolicy):len((*c.CallOptions).DeleteAlertPolicy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -378,6 +382,7 @@ func (c *alertPolicyGRPCClient) UpdateAlertPolicy(ctx context.Context, req *moni
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "alert_policy.name", url.QueryEscape(req.GetAlertPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAlertPolicy[0:len((*c.CallOptions).UpdateAlertPolicy):len((*c.CallOptions).UpdateAlertPolicy)], opts...)
 	var resp *monitoringpb.AlertPolicy

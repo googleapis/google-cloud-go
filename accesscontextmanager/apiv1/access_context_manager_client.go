@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -626,7 +626,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -686,6 +686,7 @@ func (c *gRPCClient) GetAccessPolicy(ctx context.Context, req *accesscontextmana
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAccessPolicy[0:len((*c.CallOptions).GetAccessPolicy):len((*c.CallOptions).GetAccessPolicy)], opts...)
 	var resp *accesscontextmanagerpb.AccessPolicy
@@ -729,6 +730,7 @@ func (c *gRPCClient) UpdateAccessPolicy(ctx context.Context, req *accesscontextm
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAccessPolicy[0:len((*c.CallOptions).UpdateAccessPolicy):len((*c.CallOptions).UpdateAccessPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -752,6 +754,7 @@ func (c *gRPCClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAccessPolicy[0:len((*c.CallOptions).DeleteAccessPolicy):len((*c.CallOptions).DeleteAccessPolicy)], opts...)
 	var resp *longrunningpb.Operation
@@ -770,6 +773,7 @@ func (c *gRPCClient) DeleteAccessPolicy(ctx context.Context, req *accesscontextm
 
 func (c *gRPCClient) ListAccessLevels(ctx context.Context, req *accesscontextmanagerpb.ListAccessLevelsRequest, opts ...gax.CallOption) *AccessLevelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListAccessLevels[0:len((*c.CallOptions).ListAccessLevels):len((*c.CallOptions).ListAccessLevels)], opts...)
 	it := &AccessLevelIterator{}
@@ -819,6 +823,7 @@ func (c *gRPCClient) GetAccessLevel(ctx context.Context, req *accesscontextmanag
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetAccessLevel[0:len((*c.CallOptions).GetAccessLevel):len((*c.CallOptions).GetAccessLevel)], opts...)
 	var resp *accesscontextmanagerpb.AccessLevel
@@ -840,6 +845,7 @@ func (c *gRPCClient) CreateAccessLevel(ctx context.Context, req *accesscontextma
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateAccessLevel[0:len((*c.CallOptions).CreateAccessLevel):len((*c.CallOptions).CreateAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
@@ -863,6 +869,7 @@ func (c *gRPCClient) UpdateAccessLevel(ctx context.Context, req *accesscontextma
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "access_level.name", url.QueryEscape(req.GetAccessLevel().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateAccessLevel[0:len((*c.CallOptions).UpdateAccessLevel):len((*c.CallOptions).UpdateAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
@@ -886,6 +893,7 @@ func (c *gRPCClient) DeleteAccessLevel(ctx context.Context, req *accesscontextma
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteAccessLevel[0:len((*c.CallOptions).DeleteAccessLevel):len((*c.CallOptions).DeleteAccessLevel)], opts...)
 	var resp *longrunningpb.Operation
@@ -909,6 +917,7 @@ func (c *gRPCClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReplaceAccessLevels[0:len((*c.CallOptions).ReplaceAccessLevels):len((*c.CallOptions).ReplaceAccessLevels)], opts...)
 	var resp *longrunningpb.Operation
@@ -927,6 +936,7 @@ func (c *gRPCClient) ReplaceAccessLevels(ctx context.Context, req *accesscontext
 
 func (c *gRPCClient) ListServicePerimeters(ctx context.Context, req *accesscontextmanagerpb.ListServicePerimetersRequest, opts ...gax.CallOption) *ServicePerimeterIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListServicePerimeters[0:len((*c.CallOptions).ListServicePerimeters):len((*c.CallOptions).ListServicePerimeters)], opts...)
 	it := &ServicePerimeterIterator{}
@@ -976,6 +986,7 @@ func (c *gRPCClient) GetServicePerimeter(ctx context.Context, req *accesscontext
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetServicePerimeter[0:len((*c.CallOptions).GetServicePerimeter):len((*c.CallOptions).GetServicePerimeter)], opts...)
 	var resp *accesscontextmanagerpb.ServicePerimeter
@@ -997,6 +1008,7 @@ func (c *gRPCClient) CreateServicePerimeter(ctx context.Context, req *accesscont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateServicePerimeter[0:len((*c.CallOptions).CreateServicePerimeter):len((*c.CallOptions).CreateServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
@@ -1020,6 +1032,7 @@ func (c *gRPCClient) UpdateServicePerimeter(ctx context.Context, req *accesscont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_perimeter.name", url.QueryEscape(req.GetServicePerimeter().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateServicePerimeter[0:len((*c.CallOptions).UpdateServicePerimeter):len((*c.CallOptions).UpdateServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
@@ -1043,6 +1056,7 @@ func (c *gRPCClient) DeleteServicePerimeter(ctx context.Context, req *accesscont
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteServicePerimeter[0:len((*c.CallOptions).DeleteServicePerimeter):len((*c.CallOptions).DeleteServicePerimeter)], opts...)
 	var resp *longrunningpb.Operation
@@ -1066,6 +1080,7 @@ func (c *gRPCClient) ReplaceServicePerimeters(ctx context.Context, req *accessco
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ReplaceServicePerimeters[0:len((*c.CallOptions).ReplaceServicePerimeters):len((*c.CallOptions).ReplaceServicePerimeters)], opts...)
 	var resp *longrunningpb.Operation
@@ -1089,6 +1104,7 @@ func (c *gRPCClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CommitServicePerimeters[0:len((*c.CallOptions).CommitServicePerimeters):len((*c.CallOptions).CommitServicePerimeters)], opts...)
 	var resp *longrunningpb.Operation
@@ -1107,6 +1123,7 @@ func (c *gRPCClient) CommitServicePerimeters(ctx context.Context, req *accesscon
 
 func (c *gRPCClient) ListGcpUserAccessBindings(ctx context.Context, req *accesscontextmanagerpb.ListGcpUserAccessBindingsRequest, opts ...gax.CallOption) *GcpUserAccessBindingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListGcpUserAccessBindings[0:len((*c.CallOptions).ListGcpUserAccessBindings):len((*c.CallOptions).ListGcpUserAccessBindings)], opts...)
 	it := &GcpUserAccessBindingIterator{}
@@ -1156,6 +1173,7 @@ func (c *gRPCClient) GetGcpUserAccessBinding(ctx context.Context, req *accesscon
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetGcpUserAccessBinding[0:len((*c.CallOptions).GetGcpUserAccessBinding):len((*c.CallOptions).GetGcpUserAccessBinding)], opts...)
 	var resp *accesscontextmanagerpb.GcpUserAccessBinding
@@ -1177,6 +1195,7 @@ func (c *gRPCClient) CreateGcpUserAccessBinding(ctx context.Context, req *access
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateGcpUserAccessBinding[0:len((*c.CallOptions).CreateGcpUserAccessBinding):len((*c.CallOptions).CreateGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation
@@ -1200,6 +1219,7 @@ func (c *gRPCClient) UpdateGcpUserAccessBinding(ctx context.Context, req *access
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "gcp_user_access_binding.name", url.QueryEscape(req.GetGcpUserAccessBinding().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateGcpUserAccessBinding[0:len((*c.CallOptions).UpdateGcpUserAccessBinding):len((*c.CallOptions).UpdateGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation
@@ -1223,6 +1243,7 @@ func (c *gRPCClient) DeleteGcpUserAccessBinding(ctx context.Context, req *access
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteGcpUserAccessBinding[0:len((*c.CallOptions).DeleteGcpUserAccessBinding):len((*c.CallOptions).DeleteGcpUserAccessBinding)], opts...)
 	var resp *longrunningpb.Operation

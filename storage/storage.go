@@ -40,6 +40,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	"cloud.google.com/go/storage/internal"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
@@ -64,11 +65,14 @@ var (
 	ErrBucketNotExist = errors.New("storage: bucket doesn't exist")
 	// ErrObjectNotExist indicates that the object does not exist.
 	ErrObjectNotExist = errors.New("storage: object doesn't exist")
+	// errMethodNotSupported indicates that the method called is not currently supported by the client.
+	// TODO: Export this error when launching the transport-agnostic client.
+	errMethodNotSupported = errors.New("storage: method is not currently supported")
 	// errMethodNotValid indicates that given HTTP method is not valid.
 	errMethodNotValid = fmt.Errorf("storage: HTTP method should be one of %v", reflect.ValueOf(signedURLMethods).MapKeys())
 )
 
-var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", version.Repo)
+var userAgent = fmt.Sprintf("gcloud-golang-storage/%s", internal.Version)
 
 const (
 	// ScopeFullControl grants permissions to manage your
@@ -82,15 +86,9 @@ const (
 	// ScopeReadWrite grants permissions to manage your
 	// data in Google Cloud Storage.
 	ScopeReadWrite = raw.DevstorageReadWriteScope
-
-	// defaultConnPoolSize is the default number of connections
-	// to initialize in the GAPIC gRPC connection pool. A larger
-	// connection pool may be necessary for jobs that require
-	// high throughput and/or leverage many concurrent streams.
-	defaultConnPoolSize = 4
 )
 
-var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), version.Repo)
+var xGoogHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), internal.Version)
 
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogHeader)
@@ -227,14 +225,6 @@ func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, e
 	return c, nil
 }
 
-// defaultGRPCOptions returns a set of the default client options
-// for gRPC client initialization.
-func defaultGRPCOptions() []option.ClientOption {
-	return []option.ClientOption{
-		option.WithGRPCConnectionPool(defaultConnPoolSize),
-	}
-}
-
 // Close closes the Client.
 //
 // Close need not be called at program exit.
@@ -286,10 +276,18 @@ type bucketBoundHostname struct {
 }
 
 func (s pathStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return stripScheme(host)
+	}
+
 	return "storage.googleapis.com"
 }
 
 func (s virtualHostedStyle) host(bucket string) string {
+	if host := os.Getenv("STORAGE_EMULATOR_HOST"); host != "" {
+		return bucket + "." + stripScheme(host)
+	}
+
 	return bucket + ".storage.googleapis.com"
 }
 
@@ -335,6 +333,14 @@ func VirtualHostedStyle() URLStyle {
 // be set to true.
 func BucketBoundHostname(hostname string) URLStyle {
 	return bucketBoundHostname{hostname: hostname}
+}
+
+// Strips the scheme from a host if it contains it
+func stripScheme(host string) string {
+	if strings.Contains(host, "://") {
+		host = strings.SplitN(host, "://", 2)[1]
+	}
+	return host
 }
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
@@ -833,7 +839,7 @@ func signedURLV2(bucket, name string, opts *SignedURLOptions) (string, error) {
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
 	u.Scheme = "https"
-	u.Host = "storage.googleapis.com"
+	u.Host = PathStyle().host(bucket)
 	q := u.Query()
 	q.Set("GoogleAccessId", opts.GoogleAccessID)
 	q.Set("Expires", fmt.Sprintf("%d", opts.Expires.Unix()))
@@ -1303,6 +1309,9 @@ type ObjectAttrs struct {
 	// Composer. In those cases, if the SendCRC32C field in the Writer or Composer
 	// is set to is true, the uploaded data is rejected if its CRC32C hash does
 	// not match this field.
+	//
+	// Note: For a Writer, SendCRC32C must be set to true BEFORE the first call to
+	// Writer.Write() in order to send the checksum.
 	CRC32C uint32
 
 	// MediaLink is an URL to the object's content. This field is read-only.
@@ -1462,7 +1471,7 @@ func newObjectFromProto(o *storagepb.Object) *ObjectAttrs {
 		EventBasedHold:          o.GetEventBasedHold(),
 		TemporaryHold:           o.TemporaryHold,
 		RetentionExpirationTime: convertProtoTime(o.GetRetentionExpireTime()),
-		ACL:                     fromProtoToObjectACLRules(o.GetAcl()),
+		ACL:                     toObjectACLRulesFromProto(o.GetAcl()),
 		Owner:                   o.GetOwner().GetEntity(),
 		ContentEncoding:         o.ContentEncoding,
 		ContentDisposition:      o.ContentDisposition,
@@ -1565,6 +1574,14 @@ type Query struct {
 	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
 	// which may improve performance when listing many objects.
 	Projection Projection
+
+	// IncludeTrailingDelimiter controls how objects which end in a single
+	// instance of Delimiter (for example, if Query.Delimiter = "/" and the
+	// object name is "foo/bar/") are included in the results. By default, these
+	// objects only show up as prefixes. If IncludeTrailingDelimiter is set to
+	// true, they will also be included as objects and their metadata will be
+	// populated in the returned ObjectAttrs.
+	IncludeTrailingDelimiter bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1900,7 +1917,7 @@ func (ws *withPolicy) apply(config *retryConfig) {
 // By default, the following errors are retried (see invoke.go for the default
 // shouldRetry function):
 //
-// - HTTP responses with codes 429, 502, 503, and 504.
+// - HTTP responses with codes 408, 429, 502, 503, and 504.
 //
 // - Transient network errors such as connection reset and io.ErrUnexpectedEOF.
 //
@@ -2014,7 +2031,14 @@ func bucketResourceName(p, b string) string {
 // parseBucketName strips the leading resource path segment and returns the
 // bucket ID, which is the simple Bucket name typical of the v1 API.
 func parseBucketName(b string) string {
-	return strings.TrimPrefix(b, "projects/_/buckets/")
+	sep := strings.LastIndex(b, "/")
+	return b[sep+1:]
+}
+
+// toProjectResource accepts a project ID and formats it as a Project resource
+// name.
+func toProjectResource(project string) string {
+	return fmt.Sprintf("projects/%s", project)
 }
 
 // setConditionProtoField uses protobuf reflection to set named condition field

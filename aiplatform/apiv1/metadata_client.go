@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -510,7 +510,7 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -522,6 +522,7 @@ func (c *metadataGRPCClient) Close() error {
 
 func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aiplatformpb.CreateMetadataStoreRequest, opts ...gax.CallOption) (*CreateMetadataStoreOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMetadataStore[0:len((*c.CallOptions).CreateMetadataStore):len((*c.CallOptions).CreateMetadataStore)], opts...)
 	var resp *longrunningpb.Operation
@@ -540,6 +541,7 @@ func (c *metadataGRPCClient) CreateMetadataStore(ctx context.Context, req *aipla
 
 func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatformpb.GetMetadataStoreRequest, opts ...gax.CallOption) (*aiplatformpb.MetadataStore, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMetadataStore[0:len((*c.CallOptions).GetMetadataStore):len((*c.CallOptions).GetMetadataStore)], opts...)
 	var resp *aiplatformpb.MetadataStore
@@ -556,6 +558,7 @@ func (c *metadataGRPCClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 
 func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplatformpb.ListMetadataStoresRequest, opts ...gax.CallOption) *MetadataStoreIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMetadataStores[0:len((*c.CallOptions).ListMetadataStores):len((*c.CallOptions).ListMetadataStores)], opts...)
 	it := &MetadataStoreIterator{}
@@ -600,6 +603,7 @@ func (c *metadataGRPCClient) ListMetadataStores(ctx context.Context, req *aiplat
 
 func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aiplatformpb.DeleteMetadataStoreRequest, opts ...gax.CallOption) (*DeleteMetadataStoreOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteMetadataStore[0:len((*c.CallOptions).DeleteMetadataStore):len((*c.CallOptions).DeleteMetadataStore)], opts...)
 	var resp *longrunningpb.Operation
@@ -618,6 +622,7 @@ func (c *metadataGRPCClient) DeleteMetadataStore(ctx context.Context, req *aipla
 
 func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatformpb.CreateArtifactRequest, opts ...gax.CallOption) (*aiplatformpb.Artifact, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateArtifact[0:len((*c.CallOptions).CreateArtifact):len((*c.CallOptions).CreateArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
@@ -634,6 +639,7 @@ func (c *metadataGRPCClient) CreateArtifact(ctx context.Context, req *aiplatform
 
 func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.GetArtifactRequest, opts ...gax.CallOption) (*aiplatformpb.Artifact, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetArtifact[0:len((*c.CallOptions).GetArtifact):len((*c.CallOptions).GetArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
@@ -650,6 +656,7 @@ func (c *metadataGRPCClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 
 func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformpb.ListArtifactsRequest, opts ...gax.CallOption) *ArtifactIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListArtifacts[0:len((*c.CallOptions).ListArtifacts):len((*c.CallOptions).ListArtifacts)], opts...)
 	it := &ArtifactIterator{}
@@ -694,6 +701,7 @@ func (c *metadataGRPCClient) ListArtifacts(ctx context.Context, req *aiplatformp
 
 func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatformpb.UpdateArtifactRequest, opts ...gax.CallOption) (*aiplatformpb.Artifact, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "artifact.name", url.QueryEscape(req.GetArtifact().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateArtifact[0:len((*c.CallOptions).UpdateArtifact):len((*c.CallOptions).UpdateArtifact)], opts...)
 	var resp *aiplatformpb.Artifact
@@ -710,6 +718,7 @@ func (c *metadataGRPCClient) UpdateArtifact(ctx context.Context, req *aiplatform
 
 func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatformpb.DeleteArtifactRequest, opts ...gax.CallOption) (*DeleteArtifactOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteArtifact[0:len((*c.CallOptions).DeleteArtifact):len((*c.CallOptions).DeleteArtifact)], opts...)
 	var resp *longrunningpb.Operation
@@ -728,6 +737,7 @@ func (c *metadataGRPCClient) DeleteArtifact(ctx context.Context, req *aiplatform
 
 func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatformpb.PurgeArtifactsRequest, opts ...gax.CallOption) (*PurgeArtifactsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeArtifacts[0:len((*c.CallOptions).PurgeArtifacts):len((*c.CallOptions).PurgeArtifacts)], opts...)
 	var resp *longrunningpb.Operation
@@ -746,6 +756,7 @@ func (c *metadataGRPCClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 
 func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformpb.CreateContextRequest, opts ...gax.CallOption) (*aiplatformpb.Context, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateContext[0:len((*c.CallOptions).CreateContext):len((*c.CallOptions).CreateContext)], opts...)
 	var resp *aiplatformpb.Context
@@ -762,6 +773,7 @@ func (c *metadataGRPCClient) CreateContext(ctx context.Context, req *aiplatformp
 
 func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.GetContextRequest, opts ...gax.CallOption) (*aiplatformpb.Context, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetContext[0:len((*c.CallOptions).GetContext):len((*c.CallOptions).GetContext)], opts...)
 	var resp *aiplatformpb.Context
@@ -778,6 +790,7 @@ func (c *metadataGRPCClient) GetContext(ctx context.Context, req *aiplatformpb.G
 
 func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb.ListContextsRequest, opts ...gax.CallOption) *ContextIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListContexts[0:len((*c.CallOptions).ListContexts):len((*c.CallOptions).ListContexts)], opts...)
 	it := &ContextIterator{}
@@ -822,6 +835,7 @@ func (c *metadataGRPCClient) ListContexts(ctx context.Context, req *aiplatformpb
 
 func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformpb.UpdateContextRequest, opts ...gax.CallOption) (*aiplatformpb.Context, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context.name", url.QueryEscape(req.GetContext().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateContext[0:len((*c.CallOptions).UpdateContext):len((*c.CallOptions).UpdateContext)], opts...)
 	var resp *aiplatformpb.Context
@@ -838,6 +852,7 @@ func (c *metadataGRPCClient) UpdateContext(ctx context.Context, req *aiplatformp
 
 func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformpb.DeleteContextRequest, opts ...gax.CallOption) (*DeleteContextOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteContext[0:len((*c.CallOptions).DeleteContext):len((*c.CallOptions).DeleteContext)], opts...)
 	var resp *longrunningpb.Operation
@@ -856,6 +871,7 @@ func (c *metadataGRPCClient) DeleteContext(ctx context.Context, req *aiplatformp
 
 func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformpb.PurgeContextsRequest, opts ...gax.CallOption) (*PurgeContextsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeContexts[0:len((*c.CallOptions).PurgeContexts):len((*c.CallOptions).PurgeContexts)], opts...)
 	var resp *longrunningpb.Operation
@@ -874,6 +890,7 @@ func (c *metadataGRPCClient) PurgeContexts(ctx context.Context, req *aiplatformp
 
 func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Context, req *aiplatformpb.AddContextArtifactsAndExecutionsRequest, opts ...gax.CallOption) (*aiplatformpb.AddContextArtifactsAndExecutionsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddContextArtifactsAndExecutions[0:len((*c.CallOptions).AddContextArtifactsAndExecutions):len((*c.CallOptions).AddContextArtifactsAndExecutions)], opts...)
 	var resp *aiplatformpb.AddContextArtifactsAndExecutionsResponse
@@ -890,6 +907,7 @@ func (c *metadataGRPCClient) AddContextArtifactsAndExecutions(ctx context.Contex
 
 func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplatformpb.AddContextChildrenRequest, opts ...gax.CallOption) (*aiplatformpb.AddContextChildrenResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddContextChildren[0:len((*c.CallOptions).AddContextChildren):len((*c.CallOptions).AddContextChildren)], opts...)
 	var resp *aiplatformpb.AddContextChildrenResponse
@@ -906,6 +924,7 @@ func (c *metadataGRPCClient) AddContextChildren(ctx context.Context, req *aiplat
 
 func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, req *aiplatformpb.QueryContextLineageSubgraphRequest, opts ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).QueryContextLineageSubgraph[0:len((*c.CallOptions).QueryContextLineageSubgraph):len((*c.CallOptions).QueryContextLineageSubgraph)], opts...)
 	var resp *aiplatformpb.LineageSubgraph
@@ -922,6 +941,7 @@ func (c *metadataGRPCClient) QueryContextLineageSubgraph(ctx context.Context, re
 
 func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatformpb.CreateExecutionRequest, opts ...gax.CallOption) (*aiplatformpb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateExecution[0:len((*c.CallOptions).CreateExecution):len((*c.CallOptions).CreateExecution)], opts...)
 	var resp *aiplatformpb.Execution
@@ -938,6 +958,7 @@ func (c *metadataGRPCClient) CreateExecution(ctx context.Context, req *aiplatfor
 
 func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb.GetExecutionRequest, opts ...gax.CallOption) (*aiplatformpb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetExecution[0:len((*c.CallOptions).GetExecution):len((*c.CallOptions).GetExecution)], opts...)
 	var resp *aiplatformpb.Execution
@@ -954,6 +975,7 @@ func (c *metadataGRPCClient) GetExecution(ctx context.Context, req *aiplatformpb
 
 func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatformpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListExecutions[0:len((*c.CallOptions).ListExecutions):len((*c.CallOptions).ListExecutions)], opts...)
 	it := &ExecutionIterator{}
@@ -998,6 +1020,7 @@ func (c *metadataGRPCClient) ListExecutions(ctx context.Context, req *aiplatform
 
 func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatformpb.UpdateExecutionRequest, opts ...gax.CallOption) (*aiplatformpb.Execution, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "execution.name", url.QueryEscape(req.GetExecution().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateExecution[0:len((*c.CallOptions).UpdateExecution):len((*c.CallOptions).UpdateExecution)], opts...)
 	var resp *aiplatformpb.Execution
@@ -1014,6 +1037,7 @@ func (c *metadataGRPCClient) UpdateExecution(ctx context.Context, req *aiplatfor
 
 func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatformpb.DeleteExecutionRequest, opts ...gax.CallOption) (*DeleteExecutionOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteExecution[0:len((*c.CallOptions).DeleteExecution):len((*c.CallOptions).DeleteExecution)], opts...)
 	var resp *longrunningpb.Operation
@@ -1032,6 +1056,7 @@ func (c *metadataGRPCClient) DeleteExecution(ctx context.Context, req *aiplatfor
 
 func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatformpb.PurgeExecutionsRequest, opts ...gax.CallOption) (*PurgeExecutionsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).PurgeExecutions[0:len((*c.CallOptions).PurgeExecutions):len((*c.CallOptions).PurgeExecutions)], opts...)
 	var resp *longrunningpb.Operation
@@ -1050,6 +1075,7 @@ func (c *metadataGRPCClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 
 func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplatformpb.AddExecutionEventsRequest, opts ...gax.CallOption) (*aiplatformpb.AddExecutionEventsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).AddExecutionEvents[0:len((*c.CallOptions).AddExecutionEvents):len((*c.CallOptions).AddExecutionEvents)], opts...)
 	var resp *aiplatformpb.AddExecutionEventsResponse
@@ -1066,6 +1092,7 @@ func (c *metadataGRPCClient) AddExecutionEvents(ctx context.Context, req *aiplat
 
 func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context, req *aiplatformpb.QueryExecutionInputsAndOutputsRequest, opts ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).QueryExecutionInputsAndOutputs[0:len((*c.CallOptions).QueryExecutionInputsAndOutputs):len((*c.CallOptions).QueryExecutionInputsAndOutputs)], opts...)
 	var resp *aiplatformpb.LineageSubgraph
@@ -1082,6 +1109,7 @@ func (c *metadataGRPCClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 
 func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aiplatformpb.CreateMetadataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.MetadataSchema, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMetadataSchema[0:len((*c.CallOptions).CreateMetadataSchema):len((*c.CallOptions).CreateMetadataSchema)], opts...)
 	var resp *aiplatformpb.MetadataSchema
@@ -1098,6 +1126,7 @@ func (c *metadataGRPCClient) CreateMetadataSchema(ctx context.Context, req *aipl
 
 func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatformpb.GetMetadataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.MetadataSchema, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMetadataSchema[0:len((*c.CallOptions).GetMetadataSchema):len((*c.CallOptions).GetMetadataSchema)], opts...)
 	var resp *aiplatformpb.MetadataSchema
@@ -1114,6 +1143,7 @@ func (c *metadataGRPCClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 
 func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aiplatformpb.ListMetadataSchemasRequest, opts ...gax.CallOption) *MetadataSchemaIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMetadataSchemas[0:len((*c.CallOptions).ListMetadataSchemas):len((*c.CallOptions).ListMetadataSchemas)], opts...)
 	it := &MetadataSchemaIterator{}
@@ -1158,6 +1188,7 @@ func (c *metadataGRPCClient) ListMetadataSchemas(ctx context.Context, req *aipla
 
 func (c *metadataGRPCClient) QueryArtifactLineageSubgraph(ctx context.Context, req *aiplatformpb.QueryArtifactLineageSubgraphRequest, opts ...gax.CallOption) (*aiplatformpb.LineageSubgraph, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "artifact", url.QueryEscape(req.GetArtifact())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).QueryArtifactLineageSubgraph[0:len((*c.CallOptions).QueryArtifactLineageSubgraph):len((*c.CallOptions).QueryArtifactLineageSubgraph)], opts...)
 	var resp *aiplatformpb.LineageSubgraph

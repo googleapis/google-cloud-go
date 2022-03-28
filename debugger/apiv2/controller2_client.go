@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -279,7 +279,7 @@ func (c *controller2GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *controller2GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -316,6 +316,7 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
 	var resp *clouddebuggerpb.ListActiveBreakpointsResponse
@@ -337,6 +338,7 @@ func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req 
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
 	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse

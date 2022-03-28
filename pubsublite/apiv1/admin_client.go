@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -640,7 +640,7 @@ func (c *adminGRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *adminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -657,6 +657,7 @@ func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.Cre
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateTopic[0:len((*c.CallOptions).CreateTopic):len((*c.CallOptions).CreateTopic)], opts...)
 	var resp *pubsublitepb.Topic
@@ -678,6 +679,7 @@ func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTop
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTopic[0:len((*c.CallOptions).GetTopic):len((*c.CallOptions).GetTopic)], opts...)
 	var resp *pubsublitepb.Topic
@@ -699,6 +701,7 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetTopicPartitions[0:len((*c.CallOptions).GetTopicPartitions):len((*c.CallOptions).GetTopicPartitions)], opts...)
 	var resp *pubsublitepb.TopicPartitions
@@ -715,6 +718,7 @@ func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublit
 
 func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
@@ -764,6 +768,7 @@ func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.Upd
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateTopic[0:len((*c.CallOptions).UpdateTopic):len((*c.CallOptions).UpdateTopic)], opts...)
 	var resp *pubsublitepb.Topic
@@ -785,6 +790,7 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -797,6 +803,7 @@ func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.Del
 
 func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsublitepb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListTopicSubscriptions[0:len((*c.CallOptions).ListTopicSubscriptions):len((*c.CallOptions).ListTopicSubscriptions)], opts...)
 	it := &StringIterator{}
@@ -846,6 +853,7 @@ func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateSubscription[0:len((*c.CallOptions).CreateSubscription):len((*c.CallOptions).CreateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
@@ -867,6 +875,7 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
@@ -883,6 +892,7 @@ func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb
 
 func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
@@ -932,6 +942,7 @@ func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateSubscription[0:len((*c.CallOptions).UpdateSubscription):len((*c.CallOptions).UpdateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
@@ -953,6 +964,7 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -970,6 +982,7 @@ func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitep
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SeekSubscription[0:len((*c.CallOptions).SeekSubscription):len((*c.CallOptions).SeekSubscription)], opts...)
 	var resp *longrunningpb.Operation
@@ -993,6 +1006,7 @@ func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublite
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
 	var resp *pubsublitepb.Reservation
@@ -1014,6 +1028,7 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
 	var resp *pubsublitepb.Reservation
@@ -1030,6 +1045,7 @@ func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.
 
 func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
 	it := &ReservationIterator{}
@@ -1079,6 +1095,7 @@ func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublite
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
 	var resp *pubsublitepb.Reservation
@@ -1100,6 +1117,7 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1112,6 +1130,7 @@ func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublite
 
 func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsublitepb.ListReservationTopicsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListReservationTopics[0:len((*c.CallOptions).ListReservationTopics):len((*c.CallOptions).ListReservationTopics)], opts...)
 	it := &StringIterator{}

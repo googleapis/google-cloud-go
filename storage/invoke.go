@@ -17,11 +17,13 @@ package storage
 import (
 	"context"
 	"io"
+	"net"
 	"net/url"
 	"strings"
 
 	"cloud.google.com/go/internal"
 	gax "github.com/googleapis/gax-go/v2"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -55,35 +57,26 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	})
 }
 
-// runWithRetry calls the function until it returns nil or a non-retryable error, or
-// the context is done.
-func runWithRetry(ctx context.Context, call func() error) error {
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
-		err = call()
-		if err == nil {
-			return true, nil
-		}
-		if shouldRetry(err) {
-			return false, err
-		}
-		return true, err
-	})
-}
-
 func shouldRetry(err error) bool {
 	if err == nil {
 		return false
 	}
-	if err == io.ErrUnexpectedEOF {
+	if xerrors.Is(err, io.ErrUnexpectedEOF) {
 		return true
 	}
+
 	switch e := err.(type) {
+	case *net.OpError:
+		if strings.Contains(e.Error(), "use of closed network connection") {
+			// TODO: check against net.ErrClosed (go 1.16+) instead of string
+			return true
+		}
 	case *googleapi.Error:
-		// Retry on 429 and 5xx, according to
+		// Retry on 408, 429, and 5xx, according to
 		// https://cloud.google.com/storage/docs/exponential-backoff.
-		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
+		return e.Code == 408 || e.Code == 429 || (e.Code >= 500 && e.Code < 600)
 	case *url.Error:
-		// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
+		// Retry socket-level errors ECONNREFUSED and ECONNRESET (from syscall).
 		// Unfortunately the error type is unexported, so we resort to string
 		// matching.
 		retriable := []string{"connection refused", "connection reset"}

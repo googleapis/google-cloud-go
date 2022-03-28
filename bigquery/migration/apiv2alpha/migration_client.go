@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -278,7 +278,7 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -295,6 +295,7 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).CreateMigrationWorkflow[0:len((*c.CallOptions).CreateMigrationWorkflow):len((*c.CallOptions).CreateMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
@@ -316,6 +317,7 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMigrationWorkflow[0:len((*c.CallOptions).GetMigrationWorkflow):len((*c.CallOptions).GetMigrationWorkflow)], opts...)
 	var resp *migrationpb.MigrationWorkflow
@@ -332,6 +334,7 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 
 func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationpb.ListMigrationWorkflowsRequest, opts ...gax.CallOption) *MigrationWorkflowIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMigrationWorkflows[0:len((*c.CallOptions).ListMigrationWorkflows):len((*c.CallOptions).ListMigrationWorkflows)], opts...)
 	it := &MigrationWorkflowIterator{}
@@ -381,6 +384,7 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteMigrationWorkflow[0:len((*c.CallOptions).DeleteMigrationWorkflow):len((*c.CallOptions).DeleteMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -398,6 +402,7 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).StartMigrationWorkflow[0:len((*c.CallOptions).StartMigrationWorkflow):len((*c.CallOptions).StartMigrationWorkflow)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -415,6 +420,7 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetMigrationSubtask[0:len((*c.CallOptions).GetMigrationSubtask):len((*c.CallOptions).GetMigrationSubtask)], opts...)
 	var resp *migrationpb.MigrationSubtask
@@ -431,6 +437,7 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 
 func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb.ListMigrationSubtasksRequest, opts ...gax.CallOption) *MigrationSubtaskIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListMigrationSubtasks[0:len((*c.CallOptions).ListMigrationSubtasks):len((*c.CallOptions).ListMigrationSubtasks)], opts...)
 	it := &MigrationSubtaskIterator{}

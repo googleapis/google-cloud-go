@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2022 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -273,7 +273,7 @@ func (c *debugger2GRPCClient) Connection() *grpc.ClientConn {
 // use by Google-written clients.
 func (c *debugger2GRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
@@ -290,6 +290,7 @@ func (c *debugger2GRPCClient) SetBreakpoint(ctx context.Context, req *clouddebug
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).SetBreakpoint[0:len((*c.CallOptions).SetBreakpoint):len((*c.CallOptions).SetBreakpoint)], opts...)
 	var resp *clouddebuggerpb.SetBreakpointResponse
@@ -311,6 +312,7 @@ func (c *debugger2GRPCClient) GetBreakpoint(ctx context.Context, req *clouddebug
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint_id", url.QueryEscape(req.GetBreakpointId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).GetBreakpoint[0:len((*c.CallOptions).GetBreakpoint):len((*c.CallOptions).GetBreakpoint)], opts...)
 	var resp *clouddebuggerpb.GetBreakpointResponse
@@ -332,6 +334,7 @@ func (c *debugger2GRPCClient) DeleteBreakpoint(ctx context.Context, req *cloudde
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint_id", url.QueryEscape(req.GetBreakpointId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).DeleteBreakpoint[0:len((*c.CallOptions).DeleteBreakpoint):len((*c.CallOptions).DeleteBreakpoint)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,6 +352,7 @@ func (c *debugger2GRPCClient) ListBreakpoints(ctx context.Context, req *clouddeb
 		ctx = cctx
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListBreakpoints[0:len((*c.CallOptions).ListBreakpoints):len((*c.CallOptions).ListBreakpoints)], opts...)
 	var resp *clouddebuggerpb.ListBreakpointsResponse
