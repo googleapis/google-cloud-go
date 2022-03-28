@@ -537,10 +537,13 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 		DatasetId: t.DatasetID,
 		TableId:   t.TableID,
 	}
+
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
-	_, err = req.Do()
-	return err
+	return runWithRetry(ctx, func() (err error) {
+		_, err = req.Do()
+		return err
+	})
 }
 
 func (tm *TableMetadata) toBQ() (*bq.Table, error) {
