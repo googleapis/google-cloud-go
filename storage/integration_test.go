@@ -379,11 +379,9 @@ func TestIntegration_BucketLifecycle(t *testing.T) {
 	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
 		Lifecycle: wantLifecycle,
 	})
-
 	defer h.mustDeleteBucket(bucket)
 
 	attrs := h.mustBucketAttrs(bucket)
-
 	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 	}
