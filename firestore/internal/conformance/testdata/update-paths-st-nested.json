@@ -44,16 +44,13 @@
               }
             },
             {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
+              "updateTransforms":[
                   {
                     "fieldPath": "b.c",
                     "setToServerValue": "REQUEST_TIME"
                   }
                 ]
               }
-            }
           ]
         }
       }
