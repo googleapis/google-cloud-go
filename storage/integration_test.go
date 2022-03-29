@@ -787,6 +787,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -2919,7 +2920,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
 				t.Fatalf("set ACL: %v", err)
 			}
-			defer h.mustDeleteBucket(requesterPaysBucket)
+			t.Cleanup(func() {
+				h.mustDeleteBucket(requesterPaysBucket)
+			})
 
 			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
 			// The later write we perform may fail so we always write to the object as the user
@@ -2979,22 +2982,22 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			// Copy
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
-			// Delete created "copy" object
-			defer func() {
-				if err := bucket.Object("copy").Delete(ctx); err != nil {
-					t.Fatalf("could not delete copy: %v", err)
-				}
-			}()
+			// Delete "copy" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("copy"))
+				})
+			}
 
 			// Compose
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
-			// Delete created "compose" object
-			defer func() {
-				if err := bucket.Object("compose").Delete(ctx); err != nil {
-					t.Fatalf("could not delete compose: %v", err)
-				}
-			}()
+			// Delete "compose" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("compose"))
+				})
+			}
 
 			// Delete object
 			if err = bucket.Object(objectName).Delete(ctx); err != nil {
@@ -3003,9 +3006,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			}
 			checkforErrors("delete object", err)
 		})
-
 	}
-
 }
 
 func TestIntegration_Notifications(t *testing.T) {

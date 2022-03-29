@@ -23,6 +23,8 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -144,10 +146,52 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 // Bucket methods.
 
 func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.DeleteBucketRequest{
+		Name: bucketResourceName( /* project */ "_", bucket),
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.DeleteBucket", conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+
+	return run(ctx, func() error {
+		return c.raw.DeleteBucket(ctx, req, s.gax...)
+	}, s.retry, s.idempotent)
 }
+
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetBucketRequest{
+		Name: bucketResourceName( /* project */ "_", bucket),
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.GetBucket(ctx, req, s.gax...)
+
+		battrs = newBucketFromProto(res)
+
+		return err
+	}, s.retry, s.idempotent)
+
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return nil, ErrBucketNotExist
+	}
+
+	return battrs, err
 }
 func (c *grpcStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	return nil, errMethodNotSupported
