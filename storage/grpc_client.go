@@ -35,6 +35,11 @@ const (
 	//
 	// This is an experimental API and not intended for public use.
 	defaultConnPoolSize = 4
+
+	// globalProjectAlias is the project ID alias used for global buckets.
+	//
+	// This is only used for the gRPC API.
+	globalProjectAlias = "_"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -148,7 +153,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.DeleteBucketRequest{
-		Name: bucketResourceName( /* project */ "_", bucket),
+		Name: bucketResourceName(globalProjectAlias, bucket),
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.DeleteBucket", conds, req); err != nil {
 		return err
@@ -167,7 +172,7 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName( /* project */ "_", bucket),
+		Name: bucketResourceName(globalProjectAlias, bucket),
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -272,7 +277,7 @@ func (c *grpcStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
 	s := callSettings(c.settings, opts...)
 	req := &iampb.GetIamPolicyRequest{
-		Resource: bucketResourceName("_", resource),
+		Resource: bucketResourceName(globalProjectAlias, resource),
 		Options: &iampb.GetPolicyOptions{
 			RequestedPolicyVersion: version,
 		},
@@ -291,7 +296,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 	s := callSettings(c.settings, opts...)
 
 	req := &iampb.SetIamPolicyRequest{
-		Resource: bucketResourceName("_", resource),
+		Resource: bucketResourceName(globalProjectAlias, resource),
 		Policy:   policy,
 	}
 
@@ -304,7 +309,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
 	s := callSettings(c.settings, opts...)
 	req := &iampb.TestIamPermissionsRequest{
-		Resource:    bucketResourceName("_", resource),
+		Resource:    bucketResourceName(globalProjectAlias, resource),
 		Permissions: permissions,
 	}
 	var res *iampb.TestIamPermissionsResponse
