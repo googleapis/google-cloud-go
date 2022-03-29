@@ -646,6 +646,28 @@ func TestNormalizeDescriptor(t *testing.T) {
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
+						Name: proto.String("testdata_ExtEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("ExtEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("UNDEFINED"),
+										Number: proto.Int32(0),
+									},
+									{
+										Name:   proto.String("THING"),
+										Number: proto.Int32(1),
+									},
+									{
+										Name:   proto.String("OTHER_THING"),
+										Number: proto.Int32(2),
+									},
+								},
+							},
+						},
+					},
+					{
 						Name: proto.String("testdata_EnumMsgA"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
@@ -662,30 +684,6 @@ func TestNormalizeDescriptor(t *testing.T) {
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
 								TypeName: proto.String("testdata_ExtEnum_E.ExtEnum"),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-							},
-						},
-						NestedType: []*descriptorpb.DescriptorProto{
-							{
-								Name: proto.String("testdata_ExtEnum_E"),
-								EnumType: []*descriptorpb.EnumDescriptorProto{
-									{
-										Name: proto.String("ExtEnum"),
-										Value: []*descriptorpb.EnumValueDescriptorProto{
-											{
-												Name:   proto.String("UNDEFINED"),
-												Number: proto.Int32(0),
-											},
-											{
-												Name:   proto.String("THING"),
-												Number: proto.Int32(1),
-											},
-											{
-												Name:   proto.String("OTHER_THING"),
-												Number: proto.Int32(2),
-											},
-										},
-									},
-								},
 							},
 						},
 					},
