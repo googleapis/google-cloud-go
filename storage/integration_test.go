@@ -358,6 +358,51 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	h.mustDeleteBucket(b)
 }
 
+func TestIntegration_BucketLifecycle(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	wantLifecycle := Lifecycle{
+		Rules: []LifecycleRule{
+			{
+				Action:    LifecycleAction{Type: AbortIncompleteMPUAction},
+				Condition: LifecycleCondition{AgeInDays: 30},
+			},
+		},
+	}
+
+	bucket := client.Bucket(uidSpace.New())
+
+	// Create bucket with lifecycle rules
+	bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{
+		Lifecycle: wantLifecycle,
+	})
+
+	defer h.mustDeleteBucket(bucket)
+
+	attrs := h.mustBucketAttrs(bucket)
+
+	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+
+	// Remove lifecycle rules
+	ua := BucketAttrsToUpdate{Lifecycle: &Lifecycle{}}
+	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+	if !testutil.Equal(attrs.Lifecycle, Lifecycle{}) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, Lifecycle{})
+	}
+
+	// Update bucket with a lifecycle rule
+	ua = BucketAttrsToUpdate{Lifecycle: &wantLifecycle}
+	attrs = h.mustUpdateBucket(bucket, ua, attrs.MetaGeneration)
+	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
+		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+}
+
 func TestIntegration_BucketUpdate(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
