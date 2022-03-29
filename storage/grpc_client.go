@@ -275,6 +275,7 @@ func (c *grpcStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 // IAM methods.
 
 func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
 	s := callSettings(c.settings, opts...)
 	req := &iampb.GetIamPolicyRequest{
 		Resource: bucketResourceName(globalProjectAlias, resource),
@@ -293,6 +294,7 @@ func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 }
 
 func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error {
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
 	s := callSettings(c.settings, opts...)
 
 	req := &iampb.SetIamPolicyRequest{
@@ -307,6 +309,7 @@ func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 }
 
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
 	s := callSettings(c.settings, opts...)
 	req := &iampb.TestIamPermissionsRequest{
 		Resource:    bucketResourceName(globalProjectAlias, resource),
