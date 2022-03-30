@@ -231,6 +231,9 @@
         "retail": {
             "component": "retail"
         },
+        "run": {
+            "component": "run"
+        },
         "scheduler": {
             "component": "scheduler"
         },
