@@ -77,6 +77,11 @@
                 "AddFulfillmentPlaces"
               ]
             },
+            "AddLocalInventories": {
+              "methods": [
+                "AddLocalInventories"
+              ]
+            },
             "CreateProduct": {
               "methods": [
                 "CreateProduct"
@@ -105,6 +110,11 @@
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"
+              ]
+            },
+            "RemoveLocalInventories": {
+              "methods": [
+                "RemoveLocalInventories"
               ]
             },
             "SetInventory": {

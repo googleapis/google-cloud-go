@@ -590,10 +590,17 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 	return c.Run()
 }
 
+<<<<<<< HEAD
 func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
 		yamlPath := filepath.Join(googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+=======
+func (g *GapicGenerator) parseAPIShortnames(confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
+	shortnames := map[string]string{}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(g.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+>>>>>>> 8b3ba23d54e56e2c024741256b87e640cf27dbee
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
