@@ -120,7 +120,7 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 		}
 		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
 			Etag:     got.GetEtag(),
-			Bindings: []*iampb.Binding{{Role: "roles/viewer"}},
+			Bindings: []*iampb.Binding{{Role: "roles/viewer", Members: []string{"allUsers"}}},
 		})
 		if err != nil {
 			t.Errorf("%s: on SetIamPolicy %v", transport, err)
