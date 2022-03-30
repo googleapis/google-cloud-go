@@ -297,13 +297,57 @@ func (c *httpStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 // IAM methods.
 
 func (c *httpStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Buckets.GetIamPolicy(resource).OptionsRequestedPolicyVersion(int64(version))
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var rp *raw.Policy
+	err := run(ctx, func() error {
+		var err error
+		rp, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return iamFromStoragePolicy(rp), nil
 }
+
 func (c *httpStorageClient) SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	rp := iamToStoragePolicy(policy)
+	call := c.raw.Buckets.SetIamPolicy(resource, rp)
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+
+	return run(ctx, func() error {
+		_, err := call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Buckets.TestIamPermissions(resource, permissions)
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var res *raw.TestIamPermissionsResponse
+	err := run(ctx, func() error {
+		var err error
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return res.Permissions, nil
 }
 
 // HMAC Key methods.
