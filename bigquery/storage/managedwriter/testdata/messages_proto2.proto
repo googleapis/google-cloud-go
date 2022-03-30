@@ -63,3 +63,27 @@ message GithubArchiveMessageProto2 {
     optional string id = 8;
     optional string other = 9;
 }
+
+// ExtEnum is an externally define enum.
+enum ExtEnum {
+    UNDEFINED = 0;
+    THING = 1;
+    OTHER_THING = 2;
+}
+
+// ExternalEnumMessage demonstrates an externally defined enum
+// being present in two different submessages.
+message ExternalEnumMessage {
+    optional EnumMsgA msg_a = 1;
+    optional EnumMsgB msg_b = 2;
+}
+
+message EnumMsgA {
+    optional string foo = 1;
+    optional ExtEnum bar = 2;
+}
+
+message EnumMsgB {
+    optional ExtEnum baz = 1;
+}
+

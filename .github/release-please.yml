@@ -6,14 +6,59 @@ branches:
     handleGHRelease: true
     manifest: true
     manifestFile: .release-please-manifest-submodules.json
-    manifestConfig: release-please-config-submodules.json
-  - branch: main
-    handleGHRelease: true
-    manifest: true
-    manifestFile: .release-please-manifest-submodules.json
     manifestConfig: release-please-config-yoshi-submodules.json
   - branch: main
     handleGHRelease: true
     manifest: true
     manifestFile: bigquery/.release-please-manifest.json
     manifestConfig: bigquery/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: bigtable/.release-please-manifest.json
+    manifestConfig: bigtable/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: datastore/.release-please-manifest.json
+    manifestConfig: datastore/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: errorreporting/.release-please-manifest.json
+    manifestConfig: errorreporting/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: firestore/.release-please-manifest.json
+    manifestConfig: firestore/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: logging/.release-please-manifest.json
+    manifestConfig: logging/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: profiler/.release-please-manifest.json
+    manifestConfig: profiler/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: pubsub/.release-please-manifest.json
+    manifestConfig: pubsub/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: pubsublite/.release-please-manifest.json
+    manifestConfig: pubsublite/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: spanner/.release-please-manifest.json
+    manifestConfig: spanner/release-please-config.json
+  - branch: main
+    handleGHRelease: true
+    manifest: true
+    manifestFile: storage/.release-please-manifest.json
+    manifestConfig: storage/release-please-config.json

@@ -1,5 +1,13 @@
 # Changes
 
+### [1.30.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.0...bigquery/v1.30.1) (2022-03-30)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** correct enum processing in NormalizeDescriptor ([#5811](https://github.com/googleapis/google-cloud-go/issues/5811)) ([52cf48e](https://github.com/googleapis/google-cloud-go/commit/52cf48edff487352c2755de86e2ea069b1b29617))
+* **bigquery:** improve retry for table create ([#5807](https://github.com/googleapis/google-cloud-go/issues/5807)) ([f27d1dc](https://github.com/googleapis/google-cloud-go/commit/f27d1dc43acbd437f517c05d65c992644f3f3111))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.29.0...bigquery/v1.30.0) (2022-03-16)
 
 
