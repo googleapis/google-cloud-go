@@ -648,9 +648,9 @@ const (
 	SetStorageClassAction = "SetStorageClass"
 
 	// AbortIncompleteMPUAction is a lifecycle action that aborts an incomplete
-	// multipart upload when the multipart upload meets the condition specified
-	// in the lifecycle rule. The AgeInDays Lifecycle condition is the only
-	// allowed condition for this action. The age is measured from the time the
+	// multipart upload when the multipart upload meets the conditions specified
+	// in the lifecycle rule. The AgeInDays condition is the only allowed
+	// condition for this action. AgeInDays is measured from the time the
 	// multipart upload was created.
 	AbortIncompleteMPUAction = "AbortIncompleteMultipartUpload"
 )
