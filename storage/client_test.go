@@ -126,7 +126,7 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 			t.Errorf("%s: on SetIamPolicy %v", transport, err)
 			continue
 		}
-		want := []string{"storage-foo", "storage-bar"}
+		want := []string{"storage.foo", "storage.bar"}
 		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
 		if err != nil {
 			t.Errorf("%s: on TestIamPermissions %v", transport, err)
