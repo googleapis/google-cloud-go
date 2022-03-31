@@ -259,16 +259,6 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 	projectID := testutil.ProjID()
 
-	// the following are the attrs directly compared in tests
-	type testedAttrs struct {
-		StorageClass      string
-		VersioningEnabled bool
-		LocationType      string
-		Labels            map[string]string
-		Location          string
-		Lifecycle         Lifecycle
-	}
-
 	labels := map[string]string{
 		"l1":    "v1",
 		"empty": "",
@@ -310,6 +300,16 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				NumNewerVersions:        10,
 			},
 		}},
+	}
+
+	// testedAttrs are the bucket attrs directly compared in this test
+	type testedAttrs struct {
+		StorageClass      string
+		VersioningEnabled bool
+		LocationType      string
+		Labels            map[string]string
+		Location          string
+		Lifecycle         Lifecycle
 	}
 
 	for _, test := range []struct {
