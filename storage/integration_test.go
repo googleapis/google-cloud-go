@@ -256,7 +256,6 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	//h := testHelper{t}
 
 	projectID := testutil.ProjID()
 
