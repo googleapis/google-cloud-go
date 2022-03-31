@@ -570,7 +570,7 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // Google account or signing in. For more information about signed URLs, see
 // https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
 // If initializing a Storage Client, instead use the Bucket.SignedURL method
-// which uses the Client's credentials to sign the URL.
+// which uses the Client's credentials to handle authentication.
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
