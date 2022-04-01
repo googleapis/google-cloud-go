@@ -75,6 +75,7 @@
   "resourcemanager": "1.2.0",
   "resourcesettings": "1.2.0",
   "retail": "1.2.0",
+  "run": "0.0.0",
   "scheduler": "1.2.0",
   "secretmanager": "1.3.0",
   "security": "1.3.0",
