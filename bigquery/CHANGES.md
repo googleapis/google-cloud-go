@@ -1,5 +1,12 @@
 # Changes
 
+### [1.30.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.1...bigquery/v1.30.2) (2022-03-30)
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter/adapt:** fix enum append ([#5819](https://github.com/googleapis/google-cloud-go/issues/5819)) ([9eeaf0f](https://github.com/googleapis/google-cloud-go/commit/9eeaf0fe9de6e9583a6994e49f95ad524bc9e68e))
+
 ### [1.30.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.0...bigquery/v1.30.1) (2022-03-30)
 
 
