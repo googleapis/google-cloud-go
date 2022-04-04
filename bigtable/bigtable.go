@@ -261,7 +261,7 @@ func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Ro
 
 	// If ReadRows() returns a nil row, return an empty map
 	if r == nil {
-		return map[string]interface{}, nil
+		r = map[string][]ReadItem{}
 	}
 
 	return r, err
