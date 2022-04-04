@@ -1130,7 +1130,8 @@ func setupPolicyTag(ctx context.Context) (string, func(), error) {
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		Parent: fmt.Sprintf("projects/%s/locations/%s", testutil.ProjID(), location),
 		Taxonomy: &datacatalogpb.Taxonomy{
-			DisplayName: "google-cloud-go bigquery testing taxonomy",
+			// DisplayName must be unique across org.
+			DisplayName: fmt.Sprintf("google-cloud-go bigquery testing taxonomy %d", time.Now().UnixNano()),
 			Description: "Taxonomy created for google-cloud-go integration tests",
 			ActivatedPolicyTypes: []datacatalogpb.Taxonomy_PolicyType{
 				datacatalogpb.Taxonomy_FINE_GRAINED_ACCESS_CONTROL,
