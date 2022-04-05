@@ -4,12 +4,12 @@ go 1.17
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/internal/godocfx v0.0.0-20220323210225-d6dea462eec1
+	cloud.google.com/go/internal/godocfx v0.0.0-20220401221727-c6c8d2f3a235
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20220115235240-a14260e6f8a2
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20220328115105-d36c6a25d886
+	golang.org/x/sys v0.0.0-20220403205710-6acee93ad0eb
 	google.golang.org/genproto v0.0.0-20220304144024-325a89244dc8
 	google.golang.org/protobuf v1.28.0
 	gopkg.in/src-d/go-git.v4 v4.13.1

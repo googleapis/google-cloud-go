@@ -3490,8 +3490,16 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	// Backups can be slow, so use 1 hour timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Hour)
 	defer cancel()
-	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][backupDDLStatements])
+	client, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][backupDDLStatements])
 	defer cleanup()
+
+	// Set up 1 singer to have backup size greater than zero
+	singers := []*Mutation{
+		Insert("Singers", []string{"SingerId", "FirstName", "LastName"}, []interface{}{int64(1), "test", "test"}),
+	}
+	if _, err := client.Apply(ctx, singers, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
 
 	backupID := backupIDSpace.New()
 	backupName := fmt.Sprintf("projects/%s/instances/%s/backups/%s", testProjectID, testInstanceID, backupID)
