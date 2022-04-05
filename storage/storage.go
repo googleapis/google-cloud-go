@@ -196,7 +196,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 }
 
 // hybridClientOptions carries the set of client options for HTTP and gRPC clients.
-type hybridClientOptions struct {
+type HybridClientOptions struct {
 	HTTPOpts []option.ClientOption
 	GRPCOpts []option.ClientOption
 }
@@ -205,9 +205,9 @@ type hybridClientOptions struct {
 // for media upload and download operations.
 //
 // This is an experimental API and not intended for public use.
-func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
+func NewHybridClient(ctx context.Context, opts *HybridClientOptions) (*Client, error) {
 	if opts == nil {
-		opts = &hybridClientOptions{}
+		opts = &HybridClientOptions{}
 	}
 	opts.GRPCOpts = append(defaultGRPCOptions(), opts.GRPCOpts...)
 
