@@ -45,6 +45,9 @@
         "binaryauthorization": {
             "component": "binaryauthorization"
         },
+        "certificatemanager": {
+            "component": "certificatemanager"
+        },
         "channel": {
             "component": "channel"
         },
@@ -183,6 +186,9 @@
         "notebooks": {
             "component": "notebooks"
         },
+        "optimization": {
+            "component": "optimization"
+        },
         "orchestration": {
             "component": "orchestration"
         },
@@ -224,6 +230,9 @@
         },
         "retail": {
             "component": "retail"
+        },
+        "run": {
+            "component": "run"
         },
         "scheduler": {
             "component": "scheduler"

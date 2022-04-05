@@ -352,7 +352,7 @@ func normalizeDescriptorInternal(in protoreflect.MessageDescriptor, visitedTypes
 			} else {
 				enumDP := protodesc.ToEnumDescriptorProto(inField.Enum())
 				enumDP.Name = proto.String(enumName)
-				resultDP.NestedType = append(resultDP.NestedType, &descriptorpb.DescriptorProto{
+				root.NestedType = append(root.NestedType, &descriptorpb.DescriptorProto{
 					Name:     proto.String(enclosingTypeName),
 					EnumType: []*descriptorpb.EnumDescriptorProto{enumDP},
 				})

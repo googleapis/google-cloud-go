@@ -18,6 +18,7 @@ import (
 	"context"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,7 +43,8 @@ type storageClient interface {
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
 	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
-	ListBuckets(ctx context.Context, project string, opts ...storageOption) (BucketIterator, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error)
+	Close() error
 
 	// Bucket methods.
 
@@ -62,19 +64,19 @@ type storageClient interface {
 
 	DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (ACLRule, error)
+	UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error)
 
 	// Bucket ACL methods.
 
 	DeleteBucketACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error
 	ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error)
-	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+	UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
 
 	// Object ACL methods.
 
 	DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error
 	ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error)
-	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (ACLRule, error)
+	UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error)
 
 	// Media operations.
 
@@ -114,6 +116,43 @@ type settings struct {
 	// idempotent indicates if the call is idempotent or not when considering
 	// if the call should be retired or not.
 	idempotent bool
+
+	// clientOption is a set of option.ClientOption to be used during client
+	// transport initialization. See https://pkg.go.dev/google.golang.org/api/option
+	// for a list of supported options.
+	clientOption []option.ClientOption
+
+	// userProject is the user project that should be billed for the request.
+	userProject string
+}
+
+func initSettings(opts ...storageOption) *settings {
+	s := &settings{}
+	resolveOptions(s, opts...)
+	return s
+}
+
+func resolveOptions(s *settings, opts ...storageOption) {
+	for _, o := range opts {
+		o.Apply(s)
+	}
+}
+
+// callSettings is a helper for resolving storage options against the settings
+// in the context of an individual call. This is to ensure that client-level
+// default settings are not mutated by two different calls getting options.
+//
+// Example: s := callSettings(c.settings, opts...)
+func callSettings(defaults *settings, opts ...storageOption) *settings {
+	if defaults == nil {
+		return nil
+	}
+	// This does not make a deep copy of the pointer/slice fields, but all
+	// options replace the settings fields rather than modify their values in
+	// place.
+	cs := *defaults
+	resolveOptions(&cs, opts...)
+	return &cs
 }
 
 // storageOption is the transport-agnostic call option for the storageClient
@@ -151,6 +190,26 @@ type idempotentOption struct {
 }
 
 func (o *idempotentOption) Apply(s *settings) { s.idempotent = o.idempotency }
+
+func withClientOptions(opts ...option.ClientOption) storageOption {
+	return &clientOption{opts: opts}
+}
+
+type clientOption struct {
+	opts []option.ClientOption
+}
+
+func (o *clientOption) Apply(s *settings) { s.clientOption = o.opts }
+
+func withUserProject(project string) storageOption {
+	return &userProjectOption{project}
+}
+
+type userProjectOption struct {
+	project string
+}
+
+func (o *userProjectOption) Apply(s *settings) { s.userProject = o.project }
 
 type composeObjectRequest struct {
 	dstBucket     string
