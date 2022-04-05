@@ -20,7 +20,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"time"
 
@@ -58,7 +57,8 @@ func genBot(ctx context.Context, c botConfig) error {
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		return fmt.Errorf("there is already a re-generation in progress")
+		log.Println("there is already a re-generation in progress")
+		return nil
 	}
 	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
 		return err

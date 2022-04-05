@@ -343,6 +343,26 @@ func TestParseExpr(t *testing.T) {
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
 
+		// Conditional expressions
+		{`CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			Case{
+				Expr: ID("X"),
+				WhenClauses: []WhenClause{
+					{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+					{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+				},
+				ElseResult: Null,
+			},
+		},
+		{`CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			Case{
+				WhenClauses: []WhenClause{
+					{Cond: True, Result: StringLiteral("X")},
+					{Cond: False, Result: StringLiteral("Y")},
+				},
+			},
+		},
+
 		// String literal:
 		// Accept double quote and single quote.
 		{`"hello"`, StringLiteral("hello")},
