@@ -1,6 +1,6 @@
 module cloud.google.com/go/internal/gapicgen
 
-go 1.17
+go 1.18
 
 require (
 	cloud.google.com/go v0.100.2
