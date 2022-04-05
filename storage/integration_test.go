@@ -3469,10 +3469,10 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 		// as best effort and not guaranteed, so let's log problems deleting
 		// objects instead of failing.
 		if err := obj.Delete(context.Background()); err != nil {
-			t.Logf("%s: object delete: %v", loc(), err)
+			t.Logf("object delete: %v", err)
 		}
 		if err := bkt.Delete(context.Background()); err != nil {
-			t.Logf("%s: bucket delete: %v", loc(), err)
+			t.Logf("bucket delete: %v", err)
 		}
 	}()
 
