@@ -14,7 +14,7 @@ require (
 	cloud.google.com/go v0.100.2
 	cloud.google.com/go/datacatalog v1.3.0
 	cloud.google.com/go/iam v0.3.0
-	cloud.google.com/go/storage v1.10.0
+	cloud.google.com/go/storage v1.21.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.7
 	go.opencensus.io v0.23.0
