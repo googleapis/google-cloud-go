@@ -86,6 +86,7 @@ require (
 	cloud.google.com/go/resourcemanager v1.0.0
 	cloud.google.com/go/resourcesettings v1.0.0
 	cloud.google.com/go/retail v1.0.0
+	cloud.google.com/go/run v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/scheduler v1.0.0
 	cloud.google.com/go/secretmanager v1.0.0
 	cloud.google.com/go/security v1.1.1
@@ -112,8 +113,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.73.0
-	google.golang.org/genproto v0.0.0-20220329135034-5a5e19f58d62
+	google.golang.org/api v0.74.0
+	google.golang.org/genproto v0.0.0-20220401170504-314d38edb7de
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
@@ -339,3 +340,5 @@ replace cloud.google.com/go/dataplex => ../../../dataplex
 replace cloud.google.com/go/certificatemanager => ../../../certificatemanager
 
 replace cloud.google.com/go/optimization => ../../../optimization
+
+replace cloud.google.com/go/run => ../../../run
