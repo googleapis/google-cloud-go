@@ -25,7 +25,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	raw "google.golang.org/api/storage/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
@@ -266,7 +265,7 @@ func (w *Writer) Write(p []byte) (n int, err error) {
 		// Preserve existing functionality that when context is canceled, Write will return
 		// context.Canceled instead of "io: read/write on closed pipe". This hides the
 		// pipe implementation detail from users and makes Write seem as though it's an RPC.
-		if xerrors.Is(werr, context.Canceled) || xerrors.Is(werr, context.DeadlineExceeded) {
+		if errors.Is(werr, context.Canceled) || errors.Is(werr, context.DeadlineExceeded) {
 			return n, werr
 		}
 	}
