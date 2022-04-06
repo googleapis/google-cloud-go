@@ -199,6 +199,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "alpha",
 	},
 	{
+		InputDirectoryPath:    "google/cloud/bigquery/migration/v2",
+		Pkg:                   "migration",
+		ImportPath:            "cloud.google.com/go/bigquery/migration/apiv2",
+		GRPCServiceConfigPath: "bigquerymigration_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerymigration_v2.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
