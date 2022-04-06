@@ -104,26 +104,26 @@ func initializeClient(ctx context.Context, api benchmarkAPI) (*storage.Client, b
 	var client *storage.Client
 	var err error
 
-	if api == Random {
+	if api == random {
 		if rand.Intn(2) == 0 {
-			api = XML
+			api = xml
 		} else {
-			api = GRPC
+			api = grpc
 		}
 	}
 
 	switch api {
-	case XML, JSON:
+	case xml, json:
 		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
-		readAPI = JSON
-		writeAPI = XML
-	case GRPC:
+		readAPI = json
+		writeAPI = xml
+	case grpc:
 		client, err = storage.NewHybridClient(ctx, &storage.HybridClientOptions{
 			HTTPOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile)},
 			GRPCOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile)},
 		})
-		readAPI = GRPC
-		writeAPI = GRPC
+		readAPI = grpc
+		writeAPI = grpc
 	default:
 		log.Fatalf("%s API not supported.\n", opts.api)
 	}

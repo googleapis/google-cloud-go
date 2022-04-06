@@ -58,7 +58,7 @@ type benchmarkOptions struct {
 	concurrent    bool
 }
 
-func Init() {
+func initialize() {
 	flag.StringVar((*string)(&opts.api), "api", string(random), "api used to upload/download objects; JSON or XML values will use JSON to upload and XML to download")
 	flag.StringVar(&opts.region, "r", "US-WEST1", "region")
 	minSize := flag.Int64("min_size", 0, "minimum object size in kib")
@@ -95,7 +95,7 @@ func Init() {
 func main() {
 	start := time.Now()
 	fmt.Printf("Benchmarking started: %s\n", start)
-	Init()
+	initialize()
 
 	bucketName := randomBucketName(prefix)
 	cleanUp := createBenchmarkBucket(bucketName, opts)
