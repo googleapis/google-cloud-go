@@ -33,8 +33,8 @@ import (
 )
 
 const (
-	CODE_VERSION = 1.0
-	prefix       = "golang-grpc-test-" // prefix must be this for GRPC (for now)
+	codeVersion = 1.0                 // to keep track of which version of the code a benchmark ran on
+	prefix      = "golang-grpc-test-" // prefix must be this for GRPC (for now)
 )
 
 var opts = &benchmarkOptions{}
@@ -59,7 +59,7 @@ type benchmarkOptions struct {
 }
 
 func Init() {
-	flag.StringVar((*string)(&opts.api), "api", string(Random), "api used to upload/download objects; JSON or XML values will use JSON to upload and XML to download")
+	flag.StringVar((*string)(&opts.api), "api", string(random), "api used to upload/download objects; JSON or XML values will use JSON to upload and XML to download")
 	flag.StringVar(&opts.region, "r", "US-WEST1", "region")
 	minSize := flag.Int64("min_size", 0, "minimum object size in kib")
 	maxSize := flag.Int64("max_size", 16, "maximum object size in kib")
@@ -105,7 +105,7 @@ func main() {
 	fmt.Printf("Results file: %s\n", resultsFile)
 	fmt.Printf("Benchmarking bucket: %s\n", bucketName)
 	fmt.Printf("Benchmarking options: %+v\n", opts)
-	fmt.Printf("Code version: %0.2f\n", CODE_VERSION)
+	fmt.Printf("Code version: %0.2f\n", codeVersion)
 
 	// Create output file
 	file, err := os.Create(resultsFile)
@@ -191,7 +191,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	}
 
 	// Create contents to write
-	contents := randomString(appWriteBufferSize, ASCIIchars)
+	contents := randomString(appWriteBufferSize, asciiChars)
 	contentsReader := strings.NewReader(contents)
 
 	o := client.Bucket(bucketName).Object(objectName)
@@ -283,10 +283,10 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 type benchmarkAPI string
 
 const (
-	JSON   benchmarkAPI = "JSON"
-	XML    benchmarkAPI = "XML"
-	GRPC   benchmarkAPI = "GRPC"
-	Random benchmarkAPI = "RANDOM"
+	json   benchmarkAPI = "JSON"
+	xml    benchmarkAPI = "XML"
+	grpc   benchmarkAPI = "GRPC"
+	random benchmarkAPI = "RANDOM"
 )
 
 var csvHeaders = []string{

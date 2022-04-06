@@ -29,7 +29,7 @@ const (
 	alphabet                   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	lowercaseLettersAndNumbers = "abcdefghijklmnopqrstuvwxyz0123456789"
 	uppercaseLetters           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	ASCIIchars                 = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+	asciiChars                 = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 )
 
 // returns a value in range [min, max]
