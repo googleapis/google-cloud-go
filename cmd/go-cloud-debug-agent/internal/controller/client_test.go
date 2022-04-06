@@ -174,7 +174,7 @@ func TestDebugletControllerClientLibrary(t *testing.T) {
 	if err := validateLabels(c, opts); err != nil {
 		t.Fatalf("Invalid labels:\n%v", err)
 	}
-	if list, err = c.List(ctx); err != nil {
+	if _, err = c.List(ctx); err != nil {
 		t.Fatal("List:", err)
 	}
 	if m.registerCallsSeen != 1 {
@@ -189,21 +189,21 @@ func TestDebugletControllerClientLibrary(t *testing.T) {
 	if err = c.Update(ctx, list.Breakpoints[0].Id, &cd.Breakpoint{Id: testBreakpointID, IsFinalState: true}); err != nil {
 		t.Fatal("Update:", err)
 	}
-	if list, err = c.List(ctx); err != nil {
+	if _, err = c.List(ctx); err != nil {
 		t.Fatal("List:", err)
 	}
 	if m.registerCallsSeen != 1 {
 		t.Errorf("saw %d Register calls, want 1", m.registerCallsSeen)
 	}
 	// The next List call produces an error that should cause a Register call.
-	if list, err = c.List(ctx); err == nil {
+	if _, err = c.List(ctx); err == nil {
 		t.Fatal("List should have returned an error")
 	}
 	if m.registerCallsSeen != 2 {
 		t.Errorf("saw %d Register calls, want 2", m.registerCallsSeen)
 	}
 	// The next List call produces an error that should not cause a Register call.
-	if list, err = c.List(ctx); err == nil {
+	if _, err = c.List(ctx); err == nil {
 		t.Fatal("List should have returned an error")
 	}
 	if m.registerCallsSeen != 2 {

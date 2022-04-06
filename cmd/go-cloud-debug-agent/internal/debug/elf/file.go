@@ -1004,7 +1004,6 @@ func (f *File) applyRelocationsRISCV64(dst []byte, rels []byte) error {
 		sym := &symbols[symNo-1]
 		switch SymType(sym.Info & 0xf) {
 		case STT_SECTION, STT_NOTYPE:
-			break
 		default:
 			continue
 		}
@@ -1053,7 +1052,6 @@ func (f *File) applyRelocationss390x(dst []byte, rels []byte) error {
 		sym := &symbols[symNo-1]
 		switch SymType(sym.Info & 0xf) {
 		case STT_SECTION, STT_NOTYPE:
-			break
 		default:
 			continue
 		}

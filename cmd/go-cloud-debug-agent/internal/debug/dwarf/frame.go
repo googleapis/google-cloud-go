@@ -39,7 +39,7 @@ func (d *Data) PCToSPOffset(pc uint64) (offset int64, err error) {
 		return 0, fmt.Errorf("PCToSPOffset: no info section")
 	}
 	buf := makeBuf(d, &d.unit[0], "frame", 0, d.frame)
-	for len(buf.data) > 0 {
+	if len(buf.data) > 0 {
 		offset, err := m.evalCompilationUnit(&buf, pc)
 		if err != nil {
 			return 0, err
@@ -144,10 +144,10 @@ func (m *frameMachine) parseCIE(allBuf *buf) error {
 	if m.version >= 4 {
 		m.addressSize = b.uint8()
 		m.segmentSize = b.uint8()
-	} else {
-		// Unused. Gc generates version 3, so these values will not be
-		// set, but they are also not used so it's OK.
-	}
+	} // else {
+	// Unused. Gc generates version 3, so these values will not be
+	// set, but they are also not used so it's OK.
+	// }
 	m.codeAlignmentFactor = b.uint()
 	m.dataAlignmentFactor = b.int()
 	m.returnAddressRegister = int(b.uint())
@@ -232,7 +232,7 @@ func (m *frameMachine) run(b *buf, pc uint64) (int64, error) {
 			continue
 		case frameRestore: // (6.4.2.3)
 			// register in low bits
-			return 0, fmt.Errorf("unimplemented frameRestore(R%d)\n", op&0x3F)
+			return 0, fmt.Errorf("unimplemented frameRestore(R%d)", op&0x3F)
 		}
 
 		// The remaining ops do not have embedded operands.

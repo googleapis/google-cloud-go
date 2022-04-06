@@ -31,7 +31,6 @@ var (
 	testLine2   uint64 = 99
 	testLogPC   uint64 = 0x9abc
 	testLogLine uint64 = 43
-	testBadPC   uint64 = 0xdef0
 	testBadLine uint64 = 44
 	testBP             = &cd.Breakpoint{
 		Action:       "CAPTURE",

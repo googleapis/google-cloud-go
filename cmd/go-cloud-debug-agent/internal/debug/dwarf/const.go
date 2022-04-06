@@ -447,22 +447,22 @@ const (
 	opNe         = 0x2E
 	opLit0       = 0x30
 	/* OpLitN = OpLit0 + N for N = 0..31 */
-	opReg0 = 0x50
+	/* opReg0 = 0x50 */
 	/* OpRegN = OpReg0 + N for N = 0..31 */
-	opBreg0 = 0x70 /* 1 op, signed LEB128 constant */
+	/* opBreg0 = 0x70 */ /* 1 op, signed LEB128 constant */
 	/* OpBregN = OpBreg0 + N for N = 0..31 */
-	opRegx       = 0x90 /* 1 op, ULEB128 register */
-	opFbreg      = 0x91 /* 1 op, SLEB128 offset */
-	opBregx      = 0x92 /* 2 op, ULEB128 reg; SLEB128 off */
-	opPiece      = 0x93 /* 1 op, ULEB128 size of piece */
-	opDerefSize  = 0x94 /* 1-byte size of data retrieved */
-	opXderefSize = 0x95 /* 1-byte size of data retrieved */
-	opNop        = 0x96
+	/* opRegx       = 0x90 */ /* 1 op, ULEB128 register */
+	/* opFbreg      = 0x91 */ /* 1 op, SLEB128 offset */
+	/* opBregx      = 0x92 */ /* 2 op, ULEB128 reg; SLEB128 off */
+	/* opPiece      = 0x93 */ /* 1 op, ULEB128 size of piece */
+	/* opDerefSize  = 0x94 */ /* 1-byte size of data retrieved */
+	/* opXderefSize = 0x95 */ /* 1-byte size of data retrieved */
+	/* opNop        = 0x96 */
 	/* next four new in Dwarf v3 */
-	opPushObjAddr = 0x97
-	opCall2       = 0x98 /* 2-byte offset of DIE */
-	opCall4       = 0x99 /* 4-byte offset of DIE */
-	opCallRef     = 0x9A /* 4- or 8- byte offset of DIE */
+	/* opPushObjAddr = 0x97 */
+	/* opCall2       = 0x98 */ /* 2-byte offset of DIE */
+	/* opCall4       = 0x99 */ /* 4-byte offset of DIE */
+	/* opCallRef     = 0x9A */ /* 4- or 8- byte offset of DIE */
 	/* 0xE0-0xFF reserved for user-specific */
 )
 
