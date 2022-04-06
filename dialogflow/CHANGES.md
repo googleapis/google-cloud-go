@@ -1,5 +1,13 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.7.0...dialogflow/v1.8.0) (2022-04-06)
+
+
+### Features
+
+* **dialogflow/cx:** added support for locking an agent for changes feat: added data format specification for export agent ([81c4c91](https://github.com/googleapis/google-cloud-go/commit/81c4c9116178711059772f41bbf76d423ffebc95))
+* **dialogflow/cx:** added support for locking an agent for changes feat: added data format specification for export agent ([81c4c91](https://github.com/googleapis/google-cloud-go/commit/81c4c9116178711059772f41bbf76d423ffebc95))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.6.0...dialogflow/v1.7.0) (2022-03-14)
 
 

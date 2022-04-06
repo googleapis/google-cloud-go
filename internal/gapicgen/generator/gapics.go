@@ -34,8 +34,6 @@ import (
 )
 
 var (
-	//go:embed _CHANGES.md.txt
-	changesTmpl string
 	//go:embed _README.md.txt
 	readmeTmpl string
 	//go:embed _version.go.txt
@@ -691,16 +689,6 @@ func generateReadmeAndChanges(path, importPath, apiName string) error {
 		return err
 	}
 	defer changesFile.Close()
-	t2 := template.Must(template.New("changes").Parse(changesTmpl))
-	changesData := struct {
-		Package string
-	}{
-		Package: pkgName(importPath),
-	}
-	return t2.Execute(changesFile, changesData)
-}
-
-func pkgName(importPath string) string {
-	ss := strings.Split(importPath, "/")
-	return ss[len(ss)-1]
+	_, err = changesFile.WriteString("# Changes\n")
+	return err
 }
