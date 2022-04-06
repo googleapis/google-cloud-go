@@ -1760,9 +1760,9 @@ func toPublicAccessPreventionFromProto(b *storagepb.Bucket_IamConfig) PublicAcce
 		return PublicAccessPreventionUnknown
 	}
 	switch b.GetPublicAccessPrevention() {
-	case storagepb.Bucket_IamConfig_INHERITED, storagepb.Bucket_IamConfig_PUBLIC_ACCESS_PREVENTION_UNSPECIFIED:
+	case publicAccessPreventionInherited, publicAccessPreventionUnspecified:
 		return PublicAccessPreventionInherited
-	case storagepb.Bucket_IamConfig_ENFORCED:
+	case publicAccessPreventionEnforced:
 		return PublicAccessPreventionEnforced
 	default:
 		return PublicAccessPreventionUnknown
