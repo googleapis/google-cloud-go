@@ -199,6 +199,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "alpha",
 	},
 	{
+		InputDirectoryPath:    "google/cloud/bigquery/migration/v2",
+		Pkg:                   "migration",
+		ImportPath:            "cloud.google.com/go/bigquery/migration/apiv2",
+		GRPCServiceConfigPath: "bigquerymigration_grpc_service_config.json",
+		ApiServiceConfigPath:  "bigquerymigration_v2.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
 		InputDirectoryPath:    "google/cloud/bigquery/reservation/v1beta1",
 		Pkg:                   "reservation",
 		ImportPath:            "cloud.google.com/go/bigquery/reservation/apiv1beta1",
@@ -1381,6 +1389,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "cloudoptimization_grpc_service_config.json",
 		ApiServiceConfigPath:  "cloudoptimization_v1.yaml",
 		// GA after 2022/04/16
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/run/v2",
+		Pkg:                   "run",
+		ImportPath:            "cloud.google.com/go/run/apiv2",
+		GRPCServiceConfigPath: "run_grpc_service_config.json",
+		ApiServiceConfigPath:  "run_v2.yaml",
+		// GA after 2022/04/30
 		ReleaseLevel: "beta",
 	},
 
