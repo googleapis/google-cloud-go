@@ -25,6 +25,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"hash/crc32"
@@ -52,7 +53,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -1214,12 +1214,12 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 
 	// The next Write should return context.Canceled.
 	_, err = w.Write(content)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
 	}
 
@@ -1616,7 +1616,7 @@ func TestIntegration_Objects(t *testing.T) {
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); !ok {
+	if ok := errors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
 		if e.Code != 416 {
@@ -2894,7 +2894,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			return 0
 		}
 		var e *googleapi.Error
-		if ok := xerrors.As(err, &e); ok {
+		if ok := errors.As(err, &e); ok {
 			return e.Code
 		}
 		return -1
@@ -3153,7 +3153,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	errCode := func(err error) int {
 		var err2 *googleapi.Error
-		if ok := xerrors.As(err, &err2); !ok {
+		if ok := errors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
@@ -3335,12 +3335,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3521,16 +3521,17 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	h.mustWrite(obj.NewWriter(ctx), randomContents())
 
 	defer func() {
+		t.Helper()
 		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 		// RetentionPeriod of less than a day is explicitly called out
 		// as best effort and not guaranteed, so let's log problems deleting
 		// objects instead of failing.
 		if err := obj.Delete(context.Background()); err != nil {
-			t.Logf("%s: object delete: %v", loc(), err)
+			t.Logf("object delete: %v", err)
 		}
 		if err := bkt.Delete(context.Background()); err != nil {
-			t.Logf("%s: bucket delete: %v", loc(), err)
+			t.Logf("bucket delete: %v", err)
 		}
 	}()
 
@@ -3992,7 +3993,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if xerrors.Is(readErr, context.Canceled) {
+			if errors.Is(readErr, context.Canceled) {
 				return
 			}
 			break

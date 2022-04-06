@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net"
 	"net/url"
@@ -23,7 +24,6 @@ import (
 
 	"cloud.google.com/go/internal"
 	gax "github.com/googleapis/gax-go/v2"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -61,7 +61,7 @@ func shouldRetry(err error) bool {
 	if err == nil {
 		return false
 	}
-	if xerrors.Is(err, io.ErrUnexpectedEOF) {
+	if errors.Is(err, io.ErrUnexpectedEOF) {
 		return true
 	}
 
