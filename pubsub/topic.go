@@ -530,7 +530,7 @@ type PublishResult = ipubsub.PublishResult
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	opts := getPublishSpanAttributes(t.String(), msg)
 	ctx, span := t.tracer.Start(ctx, t.String()+" send", opts...)
-	ctx, span2 := t.tracer.Start(ctx, t.String()+" add to batch", opts...)
+	ctx, span2 := t.tracer.Start(ctx, t.String()+" waiting for publisher flow control", opts...)
 	defer span2.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {

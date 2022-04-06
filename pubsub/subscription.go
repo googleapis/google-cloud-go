@@ -939,6 +939,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 			defer wg.Wait()
 			defer cancel2()
 			for {
+				opts := getSubSpanAttributes(s.topicName, &Message{}, semconv.MessagingOperationReceive)
+				ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
+
 				var maxToPull int32 // maximum number of messages to pull
 				if po.synchronous {
 					if po.maxPrefetch < 0 {
@@ -968,6 +971,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
@@ -975,6 +979,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				if err != nil {
 					return err
 				}
+				receiveSpan.End()
 				// If context is done and messages have been pulled,
 				// nack them.
 				select {
@@ -985,11 +990,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
-				for i, msg := range msgs {
-					opts := getSubSpanAttributes("", msg, semconv.MessagingOperationReceive)
-					ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
 
+				for i, msg := range msgs {
 					msg := msg
+					fcSpanName := fmt.Sprintf("%s waiting for subscriber flow control", s.topicName)
+					ctx2, fcSpan := s.tracer.Start(ctx2, fcSpanName, opts...)
+					defer fcSpan.End()
 					// TODO(jba): call acquire closer to when the message is allocated.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
@@ -999,6 +1005,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
+					fcSpan.End()
 					ackh, _ := msgAckHandler(msg)
 					old := ackh.doneFunc
 					msgLen := len(msg.Data)
@@ -1016,19 +1023,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
-						if m.Attributes != nil && m.Attributes["googclient_traceparent"] != "" {
+						opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
+						if m.Attributes != nil && m.Attributes["gogclient_traceparent"] != "" {
 							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
 							link := trace.LinkFromContext(lctx)
-							opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
 							opts = append(opts, trace.WithLinks(link))
-							_, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
-							// End spans to ack handler doneFunc, which also handles flow control release.
-							old := ackh.doneFunc
-							ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
-								defer processSpan.End()
-								defer receiveSpan.End()
-								old(ackID, ack, receiveTime)
-							}
+						}
+						_, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
+						// End spans to ack handler doneFunc, which also handles flow control release.
+						old := ackh.doneFunc
+						ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+							defer processSpan.End()
+							old(ackID, ack, receiveTime)
 						}
 						defer wg.Done()
 						f(ctx2, msg.(*Message))
