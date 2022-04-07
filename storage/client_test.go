@@ -31,111 +31,96 @@ var emulatorClients map[string]storageClient
 func TestCreateBucketEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		got, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
-			t.Fatalf("%s, %v", transport, err)
+			t.Fatal(err)
 		}
 		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Fatalf("got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Fatalf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
 }
 
 func TestDeleteBucketEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		b := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		// Create the bucket that will be deleted.
 		_, err := client.CreateBucket(context.Background(), project, b)
 		if err != nil {
-			// Flag the error and continue so the Delete is skipped and the next
-			// transport can run its test.
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatalf("error on CreateBucket %v", err)
 		}
 		// Delete the bucket that was just created.
 		err = client.DeleteBucket(context.Background(), b.Name, nil)
 		if err != nil {
-			t.Errorf("%s: %v", transport, err)
+			t.Fatalf("error on DeleteBucket %v", err)
 		}
-	}
+	})
 }
 
 func TestGetBucketEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		// Create the bucket that will be retrieved.
 		_, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
-			// Flag the error and continue so the Get is skipped and the next
-			// transport can run its test.
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatalf("error on CreateBucket %v", err)
 		}
 		got, err := client.GetBucket(context.Background(), want.Name, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Fatalf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
 }
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		})
 		if err != nil {
-			t.Errorf("%s: on CreateBucket %v", transport, err)
-			continue
+			t.Fatalf("error on CreateBucket %v", err)
 		}
 		got, err := client.GetIamPolicy(context.Background(), battrs.Name, 0)
 		if err != nil {
-			t.Errorf("%s: on GetIamPolicy %v", transport, err)
-			continue
+			t.Fatalf("error on GetIamPolicy %v", err)
 		}
 		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
 			Etag:     got.GetEtag(),
 			Bindings: []*iampb.Binding{{Role: "roles/viewer", Members: []string{"allUsers"}}},
 		})
 		if err != nil {
-			t.Errorf("%s: on SetIamPolicy %v", transport, err)
-			continue
+			t.Fatalf("error on SetIamPolicy %v", err)
 		}
 		want := []string{"storage.foo", "storage.bar"}
 		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
 		if err != nil {
-			t.Errorf("%s: on TestIamPermissions %v", transport, err)
-			continue
+			t.Fatalf("error on TestIamPermissions %v", err)
 		}
 		if diff := cmp.Diff(perms, want); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Fatalf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
 }
 
 func initEmulatorClients() func() error {
@@ -168,6 +153,19 @@ func initEmulatorClients() func() error {
 			return gerr
 		}
 		return herr
+	}
+}
+
+// transportClienttest executes the given function with a sub-test, a project name
+// based on the transport, a unique bucket name also based on the transport, and
+// the transport-specific client to run the test with.
+func transportClientTest(t *testing.T, test func(*testing.T, string, string, storageClient)) {
+	for transport, client := range emulatorClients {
+		t.Run(transport, func(t *testing.T) {
+			project := fmt.Sprintf("%s-project", transport)
+			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
+			test(t, project, bucket, client)
+		})
 	}
 }
 

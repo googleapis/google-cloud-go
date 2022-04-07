@@ -123,13 +123,11 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:   toProjectResource(project),
-		Bucket:   b,
-		BucketId: b.GetName(),
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// PredefinedAcl: attrs.PredefinedACL,
-		// PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+		Parent:                     toProjectResource(project),
+		Bucket:                     b,
+		BucketId:                   b.GetName(),
+		PredefinedAcl:              attrs.PredefinedACL,
+		PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
 	}
 
 	var battrs *BucketAttrs
