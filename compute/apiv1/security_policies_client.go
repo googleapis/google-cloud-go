@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"sort"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -43,6 +44,7 @@ var newSecurityPoliciesClientHook clientHook
 // SecurityPoliciesCallOptions contains the retry settings for each method of SecurityPoliciesClient.
 type SecurityPoliciesCallOptions struct {
 	AddRule                         []gax.CallOption
+	AggregatedList                  []gax.CallOption
 	Delete                          []gax.CallOption
 	Get                             []gax.CallOption
 	GetRule                         []gax.CallOption
@@ -60,6 +62,7 @@ type internalSecurityPoliciesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddRule(context.Context, *computepb.AddRuleSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
+	AggregatedList(context.Context, *computepb.AggregatedListSecurityPoliciesRequest, ...gax.CallOption) *SecurityPoliciesScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteSecurityPolicyRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetSecurityPolicyRequest, ...gax.CallOption) (*computepb.SecurityPolicy, error)
 	GetRule(context.Context, *computepb.GetRuleSecurityPolicyRequest, ...gax.CallOption) (*computepb.SecurityPolicyRule, error)
@@ -108,6 +111,11 @@ func (c *SecurityPoliciesClient) Connection() *grpc.ClientConn {
 // AddRule inserts a rule into a security policy.
 func (c *SecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddRule(ctx, req, opts...)
+}
+
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+func (c *SecurityPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
+	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
 
 // Delete deletes the specified policy.
@@ -291,6 +299,106 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 		},
 	}
 	return op, nil
+}
+
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+func (c *securityPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
+	it := &SecurityPoliciesScopedListPairIterator{}
+	req = proto.Clone(req).(*computepb.AggregatedListSecurityPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]SecurityPoliciesScopedListPair, string, error) {
+		resp := &computepb.SecurityPoliciesAggregatedList{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/securityPolicies", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.IncludeAllScopes != nil {
+			params.Add("includeAllScopes", fmt.Sprintf("%v", req.GetIncludeAllScopes()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := ioutil.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return maybeUnknownEnum(err)
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+
+		elems := make([]SecurityPoliciesScopedListPair, 0, len(resp.GetItems()))
+		for k, v := range resp.GetItems() {
+			elems = append(elems, SecurityPoliciesScopedListPair{k, v})
+		}
+		sort.Slice(elems, func(i, j int) bool { return elems[i].Key < elems[j].Key })
+
+		return elems, resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // Delete deletes the specified policy.
@@ -852,9 +960,15 @@ func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 	return op, nil
 }
 
-// SecurityPolicyIterator manages a stream of *computepb.SecurityPolicy.
-type SecurityPolicyIterator struct {
-	items    []*computepb.SecurityPolicy
+// SecurityPoliciesScopedListPair is a holder type for string/*computepb.SecurityPoliciesScopedList map entries
+type SecurityPoliciesScopedListPair struct {
+	Key   string
+	Value *computepb.SecurityPoliciesScopedList
+}
+
+// SecurityPoliciesScopedListPairIterator manages a stream of SecurityPoliciesScopedListPair.
+type SecurityPoliciesScopedListPairIterator struct {
+	items    []SecurityPoliciesScopedListPair
 	pageInfo *iterator.PageInfo
 	nextFunc func() error
 
@@ -869,18 +983,18 @@ type SecurityPolicyIterator struct {
 	// InternalFetch returns results from a single call to the underlying RPC.
 	// The number of results is no greater than pageSize.
 	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.SecurityPolicy, nextPageToken string, err error)
+	InternalFetch func(pageSize int, pageToken string) (results []SecurityPoliciesScopedListPair, nextPageToken string, err error)
 }
 
 // PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SecurityPolicyIterator) PageInfo() *iterator.PageInfo {
+func (it *SecurityPoliciesScopedListPairIterator) PageInfo() *iterator.PageInfo {
 	return it.pageInfo
 }
 
 // Next returns the next result. Its second return value is iterator.Done if there are no more
 // results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SecurityPolicyIterator) Next() (*computepb.SecurityPolicy, error) {
-	var item *computepb.SecurityPolicy
+func (it *SecurityPoliciesScopedListPairIterator) Next() (SecurityPoliciesScopedListPair, error) {
+	var item SecurityPoliciesScopedListPair
 	if err := it.nextFunc(); err != nil {
 		return item, err
 	}
@@ -889,11 +1003,11 @@ func (it *SecurityPolicyIterator) Next() (*computepb.SecurityPolicy, error) {
 	return item, nil
 }
 
-func (it *SecurityPolicyIterator) bufLen() int {
+func (it *SecurityPoliciesScopedListPairIterator) bufLen() int {
 	return len(it.items)
 }
 
-func (it *SecurityPolicyIterator) takeBuf() interface{} {
+func (it *SecurityPoliciesScopedListPairIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
