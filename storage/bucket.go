@@ -920,11 +920,9 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 				Enabled: true,
 			}
 		}
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
-		// 	bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
-		// }
+		if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
+			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
+		}
 	}
 
 	return &storagepb.Bucket{
