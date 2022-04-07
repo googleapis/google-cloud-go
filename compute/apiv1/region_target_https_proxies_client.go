@@ -46,6 +46,7 @@ type RegionTargetHttpsProxiesCallOptions struct {
 	Get                []gax.CallOption
 	Insert             []gax.CallOption
 	List               []gax.CallOption
+	Patch              []gax.CallOption
 	SetSslCertificates []gax.CallOption
 	SetUrlMap          []gax.CallOption
 }
@@ -59,6 +60,7 @@ type internalRegionTargetHttpsProxiesClient interface {
 	Get(context.Context, *computepb.GetRegionTargetHttpsProxyRequest, ...gax.CallOption) (*computepb.TargetHttpsProxy, error)
 	Insert(context.Context, *computepb.InsertRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListRegionTargetHttpsProxiesRequest, ...gax.CallOption) *TargetHttpsProxyIterator
+	Patch(context.Context, *computepb.PatchRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetSslCertificates(context.Context, *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 	SetUrlMap(context.Context, *computepb.SetUrlMapRegionTargetHttpsProxyRequest, ...gax.CallOption) (*Operation, error)
 }
@@ -115,6 +117,11 @@ func (c *RegionTargetHttpsProxiesClient) Insert(ctx context.Context, req *comput
 // List retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
 func (c *RegionTargetHttpsProxiesClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxyIterator {
 	return c.internalClient.List(ctx, req, opts...)
+}
+
+// Patch patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+func (c *RegionTargetHttpsProxiesClient) Patch(ctx context.Context, req *computepb.PatchRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Patch(ctx, req, opts...)
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
@@ -464,6 +471,72 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Patch patches the specified regional TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
+func (c *regionTargetHttpsProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTargetHttpsProxyResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return maybeUnknownEnum(err)
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
