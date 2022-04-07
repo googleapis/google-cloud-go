@@ -39,10 +39,10 @@ func TestCreateBucketEmulated(t *testing.T) {
 		}
 		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Fatalf("got(-),want(+):\n%s", diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
-			t.Fatalf("got(-),want(+):\n%s", diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -55,12 +55,12 @@ func TestDeleteBucketEmulated(t *testing.T) {
 		// Create the bucket that will be deleted.
 		_, err := client.CreateBucket(context.Background(), project, b)
 		if err != nil {
-			t.Fatalf("error on CreateBucket %v", err)
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Delete the bucket that was just created.
 		err = client.DeleteBucket(context.Background(), b.Name, nil)
 		if err != nil {
-			t.Fatalf("error on DeleteBucket %v", err)
+			t.Fatalf("client.DeleteBucket: %v", err)
 		}
 	})
 }
@@ -73,14 +73,14 @@ func TestGetBucketEmulated(t *testing.T) {
 		// Create the bucket that will be retrieved.
 		_, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
-			t.Fatalf("error on CreateBucket %v", err)
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		got, err := client.GetBucket(context.Background(), want.Name, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Fatalf("got(-),want(+):\n%s", diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})
 }
@@ -91,26 +91,26 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 			Name: bucket,
 		})
 		if err != nil {
-			t.Fatalf("error on CreateBucket %v", err)
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		got, err := client.GetIamPolicy(context.Background(), battrs.Name, 0)
 		if err != nil {
-			t.Fatalf("error on GetIamPolicy %v", err)
+			t.Fatalf("client.GetIamPolicy: %v", err)
 		}
 		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
 			Etag:     got.GetEtag(),
 			Bindings: []*iampb.Binding{{Role: "roles/viewer", Members: []string{"allUsers"}}},
 		})
 		if err != nil {
-			t.Fatalf("error on SetIamPolicy %v", err)
+			t.Fatalf("client.SetIamPolicy: %v", err)
 		}
 		want := []string{"storage.foo", "storage.bar"}
 		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
 		if err != nil {
-			t.Fatalf("error on TestIamPermissions %v", err)
+			t.Fatalf("client.TestIamPermissions: %v", err)
 		}
 		if diff := cmp.Diff(perms, want); diff != "" {
-			t.Fatalf("got(-),want(+):\n%s", diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})
 }
