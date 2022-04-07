@@ -11,7 +11,6 @@ require (
 	github.com/yuin/goldmark v1.4.11
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.10
-	google.golang.org/genproto v0.0.0-20220407144326-9054f6ed7bac // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
 
