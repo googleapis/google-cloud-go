@@ -29,8 +29,6 @@ import (
 var emulatorClients map[string]storageClient
 
 func TestCreateBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
@@ -50,8 +48,6 @@ func TestCreateBucketEmulated(t *testing.T) {
 }
 
 func TestDeleteBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		b := &BucketAttrs{
 			Name: bucket,
@@ -70,8 +66,6 @@ func TestDeleteBucketEmulated(t *testing.T) {
 }
 
 func TestGetBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
 			Name: bucket,
@@ -92,8 +86,6 @@ func TestGetBucketEmulated(t *testing.T) {
 }
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
 			Name: bucket,
@@ -158,8 +150,11 @@ func initEmulatorClients() func() error {
 
 // transportClienttest executes the given function with a sub-test, a project name
 // based on the transport, a unique bucket name also based on the transport, and
-// the transport-specific client to run the test with.
+// the transport-specific client to run the test with. It also checks the environment
+// to ensure it is suitable for emulator-based tests, or skips.
 func transportClientTest(t *testing.T, test func(*testing.T, string, string, storageClient)) {
+	checkEmulatorEnvironment(t)
+
 	for transport, client := range emulatorClients {
 		t.Run(transport, func(t *testing.T) {
 			project := fmt.Sprintf("%s-project", transport)
