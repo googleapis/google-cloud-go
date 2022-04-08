@@ -1586,7 +1586,6 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 	ctx := context.Background()
 
 	testTable := dataset.Table(tableIDs.New())
-	t.Logf("testtable: %s", testTable.FullyQualifiedName())
 
 	origExtCfg := &ExternalDataConfig{
 		SourceFormat: Avro,
@@ -1631,7 +1630,7 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 
 	// Now, signal autodetect in another update.
 	// This should yield a new schema.
-	newMeta2, err := testTable.Update(ctx, TableMetadataToUpdate{ExternalDataConfig: newExtCfg}, newMeta.ETag, WithAutoDetectSchema(true))
+	newMeta2, err := testTable.Update(ctx, TableMetadataToUpdate{}, newMeta.ETag, WithAutoDetectSchema(true))
 	if err != nil {
 		t.Fatalf("Table.Update(%q) with autodetect: %v", testTable.FullyQualifiedName(), err)
 	}
