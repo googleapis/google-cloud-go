@@ -74,7 +74,7 @@ func (ai *apiInfo) ToSnippetMetadata() *metadata.Index {
 				Origin:      *metadata.Snippet_API_DEFINITION.Enum(),
 				ClientMethod: &metadata.ClientMethod{
 					ShortName:  methodShortName,
-					FullName:   fmt.Sprintf("%s.%s.%s", ai.protoPkg, strings.Title(ai.shortName), methodShortName),
+					FullName:   fmt.Sprintf("%s.%s.%s", ai.protoPkg, clientShortName, methodShortName),
 					Async:      false,
 					ResultType: method.result,
 					Client: &metadata.ServiceClient{
@@ -83,7 +83,7 @@ func (ai *apiInfo) ToSnippetMetadata() *metadata.Index {
 					},
 					Method: &metadata.Method{
 						ShortName: methodShortName,
-						FullName:  fmt.Sprintf("%s.%s.%s", ai.protoPkg, clientShortName, methodShortName),
+						FullName:  fmt.Sprintf("%s.%s.%s", ai.protoPkg, service.protoName, methodShortName),
 						Service: &metadata.Service{
 							ShortName: service.protoName,
 							FullName:  fmt.Sprintf("%s.%s", ai.protoPkg, service.protoName),

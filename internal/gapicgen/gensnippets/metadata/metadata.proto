@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file temporarily lives here and is sourced from internal usage. In the future
+// this file will be in genproto. Updates to this file for the time being are
+// manual. To regen this file run `go generate ./...` in this module.
 syntax = "proto3";
 
 package google.cloud.tools.snippetgen.snippetindex.v1;
