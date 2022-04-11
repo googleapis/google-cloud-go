@@ -322,7 +322,7 @@ func TestIntegration_JobFrom(t *testing.T) {
 
 }
 
-func TestIntegration_SnapshotAndRestore(t *testing.T) {
+func TestIntegration_SnapshotRestoreClone(t *testing.T) {
 
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -344,7 +344,7 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 		CONCAT("group", CAST(CAST(RAND()*10 AS INT64) AS STRING))
 		FROM
 		UNNEST(GENERATE_ARRAY(0,999))
-`, qualified)
+		`, qualified)
 	if _, _, err := runQuerySQL(ctx, sql); err != nil {
 		t.Fatalf("couldn't instantiate base table: %v", err)
 	}
@@ -403,7 +403,47 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 	if meta.NumRows != restoreMeta.NumRows {
 		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
 	}
+	if restoreMeta.Type != RegularTable {
+		t.Errorf("table type mismatch, got %s want %s", restoreMeta.Type, RegularTable)
+	}
 
+	// Create a clone of the snapshot.
+	cloneID := tableIDs.New()
+	cloner := dataset.Table(cloneID).CopierFrom(dataset.Table(snapshotID))
+	cloner.OperationType = CloneOperation
+
+	job, err = cloner.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run clone: %v", err)
+	}
+	err = wait(ctx, job)
+	if err != nil {
+		t.Fatalf("clone failed: %v", err)
+	}
+
+	cloneMeta, err := dataset.Table(cloneID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get restored table metadata: %v", err)
+	}
+	if meta.NumBytes != cloneMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, clone had %d bytes", meta.NumBytes, cloneMeta.NumBytes)
+	}
+	if meta.NumRows != cloneMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, clone had %d rows", meta.NumRows, cloneMeta.NumRows)
+	}
+	if cloneMeta.Type != RegularTable {
+		t.Errorf("table type mismatch, got %s want %s", cloneMeta.Type, RegularTable)
+	}
+	if cloneMeta.CloneDefinition == nil {
+		t.Errorf("expected CloneDefinition in (%q), was nil", cloneMeta.FullID)
+	}
+	if cloneMeta.CloneDefinition.BaseTableReference == nil {
+		t.Errorf("expected CloneDefinition.BaseTableReference, was nil")
+	}
+	wantBase := dataset.Table(snapshotID)
+	if !testutil.Equal(cloneMeta.CloneDefinition.BaseTableReference, wantBase, cmpopts.IgnoreUnexported(Table{})) {
+		t.Errorf("mismatch in CloneDefinition.BaseTableReference.  Got %s, want %s", cloneMeta.CloneDefinition.BaseTableReference.FullyQualifiedName(), wantBase.FullyQualifiedName())
+	}
 }
 
 func TestIntegration_HourTimePartitioning(t *testing.T) {
