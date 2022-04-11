@@ -179,6 +179,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/bigquery/migration/apiv2": {
+    "distribution_name": "cloud.google.com/go/bigquery/migration/apiv2",
+    "description": "BigQuery Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/migration/apiv2",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/bigquery/migration/apiv2alpha": {
     "distribution_name": "cloud.google.com/go/bigquery/migration/apiv2alpha",
     "description": "BigQuery Migration API",
@@ -953,6 +962,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/optimization/apiv1": {
+    "distribution_name": "cloud.google.com/go/optimization/apiv1",
+    "description": "Cloud Optimization API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/optimization/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/orchestration/airflow/service/apiv1": {
     "distribution_name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
     "description": "Cloud Composer API",
@@ -1213,6 +1231,15 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
     "release_level": "ga",
     "library_type": "OTHER"
+  },
+  "cloud.google.com/go/run/apiv2": {
+    "distribution_name": "cloud.google.com/go/run/apiv2",
+    "description": "Cloud Run Admin API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/run/latest/apiv2",
+    "release_level": "beta",
+    "library_type": ""
   },
   "cloud.google.com/go/scheduler/apiv1": {
     "distribution_name": "cloud.google.com/go/scheduler/apiv1",

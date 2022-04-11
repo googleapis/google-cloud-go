@@ -25,6 +25,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"hash/crc32"
@@ -52,7 +53,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -88,11 +88,17 @@ var (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
+	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
 	if err := cleanup(); err != nil {
 		// Don't fail the test if cleanup fails.
 		log.Printf("Post-test cleanup failed: %v", err)
 	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
+	}
+
 	os.Exit(exit)
 }
 
@@ -246,103 +252,162 @@ func config(ctx context.Context, scopes ...string) *Client {
 	return client
 }
 
-func TestIntegration_BucketMethods(t *testing.T) {
+func TestIntegration_BucketCreateDelete(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	h := testHelper{t}
 
 	projectID := testutil.ProjID()
-	newBucketName := uidSpace.New()
-	b := client.Bucket(newBucketName)
-	// Test Create and Delete.
-	h.mustCreate(b, projectID, nil)
-	attrs := h.mustBucketAttrs(b)
-	if got, want := attrs.MetaGeneration, int64(1); got != want {
-		t.Errorf("got metagen %d, want %d", got, want)
-	}
-	if got, want := attrs.StorageClass, "STANDARD"; got != want {
-		t.Errorf("got storage class %q, want %q", got, want)
-	}
-	if attrs.VersioningEnabled {
-		t.Error("got versioning enabled, wanted it disabled")
-	}
-	if attrs.LocationType == "" {
-		t.Error("got an empty LocationType")
-	}
-	if attrs.ProjectNumber == 0 {
-		t.Errorf("got a zero ProjectNumber")
-	}
-	h.mustDeleteBucket(b)
 
-	// Test Create and Delete with attributes.
 	labels := map[string]string{
 		"l1":    "v1",
 		"empty": "",
 	}
-	attrs = &BucketAttrs{
-		StorageClass:      "NEARLINE",
-		VersioningEnabled: true,
-		Labels:            labels,
-		Lifecycle: Lifecycle{
-			Rules: []LifecycleRule{{
-				Action: LifecycleAction{
-					Type:         SetStorageClassAction,
-					StorageClass: "NEARLINE",
-				},
-				Condition: LifecycleCondition{
-					AgeInDays:             10,
-					Liveness:              Archived,
-					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"STANDARD"},
-					NumNewerVersions:      3,
-				},
-			}, {
-				Action: LifecycleAction{
-					Type:         SetStorageClassAction,
-					StorageClass: "ARCHIVE",
-				},
-				Condition: LifecycleCondition{
-					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
-					DaysSinceCustomTime:   20,
-					Liveness:              Live,
-					MatchesStorageClasses: []string{"STANDARD"},
-				},
-			}, {
-				Action: LifecycleAction{
-					Type: DeleteAction,
-				},
-				Condition: LifecycleCondition{
-					DaysSinceNoncurrentTime: 30,
-					Liveness:                Live,
-					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses:   []string{"NEARLINE"},
-					NumNewerVersions:        10,
-				},
-			}},
+
+	lifecycle := Lifecycle{
+		Rules: []LifecycleRule{{
+			Action: LifecycleAction{
+				Type:         SetStorageClassAction,
+				StorageClass: "NEARLINE",
+			},
+			Condition: LifecycleCondition{
+				AgeInDays:             10,
+				Liveness:              Archived,
+				CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+				MatchesStorageClasses: []string{"STANDARD"},
+				NumNewerVersions:      3,
+			},
+		}, {
+			Action: LifecycleAction{
+				Type:         SetStorageClassAction,
+				StorageClass: "ARCHIVE",
+			},
+			Condition: LifecycleCondition{
+				CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				DaysSinceCustomTime:   20,
+				Liveness:              Live,
+				MatchesStorageClasses: []string{"STANDARD"},
+			},
+		}, {
+			Action: LifecycleAction{
+				Type: DeleteAction,
+			},
+			Condition: LifecycleCondition{
+				DaysSinceNoncurrentTime: 30,
+				Liveness:                Live,
+				NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+				MatchesStorageClasses:   []string{"NEARLINE"},
+				NumNewerVersions:        10,
+			},
+		}},
+	}
+
+	// testedAttrs are the bucket attrs directly compared in this test
+	type testedAttrs struct {
+		StorageClass      string
+		VersioningEnabled bool
+		LocationType      string
+		Labels            map[string]string
+		Location          string
+		Lifecycle         Lifecycle
+	}
+
+	for _, test := range []struct {
+		name      string
+		attrs     *BucketAttrs
+		wantAttrs testedAttrs
+	}{
+		{
+			name:  "no attrs",
+			attrs: nil,
+			wantAttrs: testedAttrs{
+				StorageClass:      "STANDARD",
+				VersioningEnabled: false,
+				LocationType:      "multi-region",
+				Location:          "US",
+			},
 		},
+		{
+			name: "with attrs",
+			attrs: &BucketAttrs{
+				StorageClass:      "NEARLINE",
+				VersioningEnabled: true,
+				Labels:            labels,
+				Lifecycle:         lifecycle,
+				Location:          "SOUTHAMERICA-EAST1",
+			},
+			wantAttrs: testedAttrs{
+				StorageClass:      "NEARLINE",
+				VersioningEnabled: true,
+				Labels:            labels,
+				Location:          "SOUTHAMERICA-EAST1",
+				LocationType:      "region",
+				Lifecycle:         lifecycle,
+			},
+		},
+		{
+			name: "dual-region",
+			attrs: &BucketAttrs{
+				Location: "US-EAST1+US-WEST1",
+			},
+			wantAttrs: testedAttrs{
+				Location:     "US-EAST1+US-WEST1",
+				LocationType: "dual-region",
+				StorageClass: "STANDARD",
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			newBucketName := uidSpace.New()
+			b := client.Bucket(newBucketName)
+
+			if err := b.Create(ctx, projectID, test.attrs); err != nil {
+				t.Fatalf("bucket create: %v", err)
+			}
+
+			gotAttrs, err := b.Attrs(ctx)
+			if err != nil {
+				t.Fatalf("bucket attrs: %v", err)
+			}
+
+			// All newly created buckets should conform to the following:
+			if gotAttrs.MetaGeneration != 1 {
+				t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
+			}
+			if gotAttrs.ProjectNumber == 0 {
+				t.Errorf("got a zero ProjectNumber")
+			}
+
+			// Test specific wanted bucket attrs
+			if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
+				t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
+			}
+			if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
+				t.Errorf("labels: got %v, want %v", got, want)
+			}
+			if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
+				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+			}
+			if gotAttrs.LocationType != test.wantAttrs.LocationType {
+				t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
+			}
+			if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
+				t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
+			}
+			if gotAttrs.Location != test.wantAttrs.Location {
+				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+			}
+
+			// Delete the bucket and check that the deletion was succesful
+			if err := b.Delete(ctx); err != nil {
+				t.Fatalf("bucket delete: %v", err)
+			}
+			_, err = b.Attrs(ctx)
+			if err != ErrBucketNotExist {
+				t.Fatalf("expected ErrBucketNotExist, got %v", err)
+			}
+		})
 	}
-	h.mustCreate(b, projectID, attrs)
-	attrs = h.mustBucketAttrs(b)
-	if got, want := attrs.MetaGeneration, int64(1); got != want {
-		t.Errorf("got metagen %d, want %d", got, want)
-	}
-	if got, want := attrs.StorageClass, "NEARLINE"; got != want {
-		t.Errorf("got storage class %q, want %q", got, want)
-	}
-	if !attrs.VersioningEnabled {
-		t.Error("got versioning disabled, wanted it enabled")
-	}
-	if got, want := attrs.Labels, labels; !testutil.Equal(got, want) {
-		t.Errorf("labels: got %v, want %v", got, want)
-	}
-	if attrs.LocationType == "" {
-		t.Error("got an empty LocationType")
-	}
-	if attrs.ProjectNumber == 0 {
-		t.Errorf("got a zero ProjectNumber")
-	}
-	h.mustDeleteBucket(b)
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
@@ -781,6 +846,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -1148,12 +1214,12 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 
 	// The next Write should return context.Canceled.
 	_, err = w.Write(content)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
 	}
 
@@ -1550,7 +1616,7 @@ func TestIntegration_Objects(t *testing.T) {
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); !ok {
+	if ok := errors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
 		if e.Code != 416 {
@@ -2828,7 +2894,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			return 0
 		}
 		var e *googleapi.Error
-		if ok := xerrors.As(err, &e); ok {
+		if ok := errors.As(err, &e); ok {
 			return e.Code
 		}
 		return -1
@@ -2879,7 +2945,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			h := testHelper{t}
-			ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
 			defer cancel()
 
 			printTestCase := func() string {
@@ -2896,7 +2962,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 			checkforErrors := func(desc string, err error) {
 				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error\n\t\t%s \n\t\terror: %v", desc, printTestCase(), err)
+					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
 				} else if err == nil && !test.expectSuccess {
 					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
@@ -2913,7 +2979,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
 				t.Fatalf("set ACL: %v", err)
 			}
-			defer h.mustDeleteBucket(requesterPaysBucket)
+			t.Cleanup(func() {
+				h.mustDeleteBucket(requesterPaysBucket)
+			})
 
 			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
 			// The later write we perform may fail so we always write to the object as the user
@@ -2970,26 +3038,24 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			checkforErrors("default object acl list", err)
 			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Copy and compose
+			// Copy
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
+			// Delete "copy" object, if created
 			if err == nil {
-				// Delete created "copy" object if created successfully
-				defer func() {
-					if err := bucket.Object("copy").Delete(ctx); err != nil {
-						t.Fatalf("could not delete copy: %v", err)
-					}
-				}()
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("copy"))
+				})
 			}
+
+			// Compose
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
+			// Delete "compose" object, if created
 			if err == nil {
-				// Delete created "compose" object if created successfully
-				defer func() {
-					if err := bucket.Object("compose").Delete(ctx); err != nil {
-						t.Fatalf("could not delete compose: %v", err)
-					}
-				}()
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("compose"))
+				})
 			}
 
 			// Delete object
@@ -2999,9 +3065,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			}
 			checkforErrors("delete object", err)
 		})
-
 	}
-
 }
 
 func TestIntegration_Notifications(t *testing.T) {
@@ -3089,7 +3153,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	errCode := func(err error) int {
 		var err2 *googleapi.Error
-		if ok := xerrors.As(err, &err2); !ok {
+		if ok := errors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
@@ -3271,12 +3335,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3457,16 +3521,17 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	h.mustWrite(obj.NewWriter(ctx), randomContents())
 
 	defer func() {
+		t.Helper()
 		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 		// RetentionPeriod of less than a day is explicitly called out
 		// as best effort and not guaranteed, so let's log problems deleting
 		// objects instead of failing.
 		if err := obj.Delete(context.Background()); err != nil {
-			t.Logf("%s: object delete: %v", loc(), err)
+			t.Logf("object delete: %v", err)
 		}
 		if err := bkt.Delete(context.Background()); err != nil {
-			t.Logf("%s: bucket delete: %v", loc(), err)
+			t.Logf("bucket delete: %v", err)
 		}
 	}()
 
@@ -3928,7 +3993,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if xerrors.Is(readErr, context.Canceled) {
+			if errors.Is(readErr, context.Canceled) {
 				return
 			}
 			break

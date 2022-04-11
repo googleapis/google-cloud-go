@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -23,6 +24,7 @@ import (
 	"strings"
 
 	"golang.org/x/oauth2/google"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
@@ -126,14 +128,51 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 	}, nil
 }
 
+func (c *httpStorageClient) Close() error {
+	c.hc.CloseIdleConnections()
+	return nil
+}
+
 // Top-level methods.
 
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
 	return "", errMethodNotSupported
 }
+
 func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	var bkt *raw.Bucket
+	if attrs != nil {
+		bkt = attrs.toRawBucket()
+	} else {
+		bkt = &raw.Bucket{}
+	}
+
+	// If there is lifecycle information but no location, explicitly set
+	// the location. This is a GCS quirk/bug.
+	if bkt.Location == "" && bkt.Lifecycle != nil {
+		bkt.Location = "US"
+	}
+	req := c.raw.Buckets.Insert(project, bkt)
+	setClientHeader(req.Header())
+	if attrs != nil && attrs.PredefinedACL != "" {
+		req.PredefinedAcl(attrs.PredefinedACL)
+	}
+	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
+	}
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		b, err := req.Context(ctx).Do()
+		if err != nil {
+			return err
+		}
+		battrs, err = newBucket(b)
+		return err
+	}, s.retry, s.idempotent)
+	return battrs, err
 }
+
 func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
 	return nil, errMethodNotSupported
 }
@@ -141,10 +180,45 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 // Bucket methods.
 
 func (c *httpStorageClient) DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Buckets.Delete(bucket)
+	setClientHeader(req.Header())
+	if err := applyBucketConds("httpStorageClient.DeleteBucket", conds, req); err != nil {
+		return err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+
+	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Buckets.Get(bucket).Projection("full")
+	setClientHeader(req.Header())
+	err := applyBucketConds("httpStorageClient.GetBucket", conds, req)
+	if err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+
+	var resp *raw.Bucket
+	err = run(ctx, func() error {
+		resp, err = req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return nil, ErrBucketNotExist
+	}
+	if err != nil {
+		return nil, err
+	}
+	return newBucket(resp)
 }
 func (c *httpStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	return nil, errMethodNotSupported
@@ -223,13 +297,57 @@ func (c *httpStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 // IAM methods.
 
 func (c *httpStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Buckets.GetIamPolicy(resource).OptionsRequestedPolicyVersion(int64(version))
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var rp *raw.Policy
+	err := run(ctx, func() error {
+		var err error
+		rp, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return iamFromStoragePolicy(rp), nil
 }
+
 func (c *httpStorageClient) SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	rp := iamToStoragePolicy(policy)
+	call := c.raw.Buckets.SetIamPolicy(resource, rp)
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+
+	return run(ctx, func() error {
+		_, err := call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
 }
+
 func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Buckets.TestIamPermissions(resource, permissions)
+	setClientHeader(call.Header())
+	if s.userProject != "" {
+		call.UserProject(s.userProject)
+	}
+	var res *raw.TestIamPermissionsResponse
+	err := run(ctx, func() error {
+		var err error
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return res.Permissions, nil
 }
 
 // HMAC Key methods.
