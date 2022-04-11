@@ -17,7 +17,7 @@
 set -x
 
 # Only run apidiff checks on latest (we only need it once).
-if [[ `go version` != *"go1.17"* ]]; then
+if [[ `go version` != *"go1.18"* ]]; then
     exit 0
 fi
 

@@ -35,6 +35,11 @@ const (
 	//
 	// This is an experimental API and not intended for public use.
 	defaultConnPoolSize = 4
+
+	// globalProjectAlias is the project ID alias used for global buckets.
+	//
+	// This is only used for the gRPC API.
+	globalProjectAlias = "_"
 )
 
 // defaultGRPCOptions returns a set of the default client options
@@ -118,13 +123,11 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:   toProjectResource(project),
-		Bucket:   b,
-		BucketId: b.GetName(),
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// PredefinedAcl: attrs.PredefinedACL,
-		// PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+		Parent:                     toProjectResource(project),
+		Bucket:                     b,
+		BucketId:                   b.GetName(),
+		PredefinedAcl:              attrs.PredefinedACL,
+		PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
 	}
 
 	var battrs *BucketAttrs
@@ -148,7 +151,7 @@ func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opt
 func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.DeleteBucketRequest{
-		Name: bucketResourceName( /* project */ "_", bucket),
+		Name: bucketResourceName(globalProjectAlias, bucket),
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.DeleteBucket", conds, req); err != nil {
 		return err
@@ -167,7 +170,7 @@ func (c *grpcStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetBucketRequest{
-		Name: bucketResourceName( /* project */ "_", bucket),
+		Name: bucketResourceName(globalProjectAlias, bucket),
 	}
 	if err := applyBucketCondsProto("grpcStorageClient.GetBucket", conds, req); err != nil {
 		return nil, err
@@ -270,13 +273,56 @@ func (c *grpcStorageClient) OpenWriter(ctx context.Context, w *Writer, opts ...s
 // IAM methods.
 
 func (c *grpcStorageClient) GetIamPolicy(ctx context.Context, resource string, version int32, opts ...storageOption) (*iampb.Policy, error) {
-	return nil, errMethodNotSupported
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
+	s := callSettings(c.settings, opts...)
+	req := &iampb.GetIamPolicyRequest{
+		Resource: bucketResourceName(globalProjectAlias, resource),
+		Options: &iampb.GetPolicyOptions{
+			RequestedPolicyVersion: version,
+		},
+	}
+	var rp *iampb.Policy
+	err := run(ctx, func() error {
+		var err error
+		rp, err = c.raw.GetIamPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+
+	return rp, err
 }
+
 func (c *grpcStorageClient) SetIamPolicy(ctx context.Context, resource string, policy *iampb.Policy, opts ...storageOption) error {
-	return errMethodNotSupported
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
+	s := callSettings(c.settings, opts...)
+
+	req := &iampb.SetIamPolicyRequest{
+		Resource: bucketResourceName(globalProjectAlias, resource),
+		Policy:   policy,
+	}
+
+	return run(ctx, func() error {
+		_, err := c.raw.SetIamPolicy(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
 }
+
 func (c *grpcStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
-	return nil, errMethodNotSupported
+	// TODO: Need a way to set UserProject, potentially in X-Goog-User-Project system parameter.
+	s := callSettings(c.settings, opts...)
+	req := &iampb.TestIamPermissionsRequest{
+		Resource:    bucketResourceName(globalProjectAlias, resource),
+		Permissions: permissions,
+	}
+	var res *iampb.TestIamPermissionsResponse
+	err := run(ctx, func() error {
+		var err error
+		res, err = c.raw.TestIamPermissions(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return res.Permissions, nil
 }
 
 // HMAC Key methods.
