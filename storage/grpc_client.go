@@ -112,7 +112,7 @@ func (c *grpcStorageClient) Close() error {
 func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetServiceAccountRequest{
-		Project: project,
+		Project: toProjectResource(project),
 	}
 	var resp *storagepb.ServiceAccount
 	err := run(ctx, func() error {
