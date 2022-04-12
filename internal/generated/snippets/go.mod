@@ -77,7 +77,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.1.0
 	cloud.google.com/go/policytroubleshooter v1.0.0
 	cloud.google.com/go/privatecatalog v0.1.0
-	cloud.google.com/go/pubsub v1.19.0
+	cloud.google.com/go/pubsub v1.20.0
 	cloud.google.com/go/pubsublite v1.2.1
 	cloud.google.com/go/recaptchaenterprise v1.1.0
 	cloud.google.com/go/recommendationengine v0.1.0
