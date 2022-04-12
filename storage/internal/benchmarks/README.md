@@ -11,9 +11,10 @@ This runs 1000 iterations on 0 to 2Gib files in the background, sending program 
 
 | Parameter | Description | Possible values | Default |
 | --------- | ----------- | --------------- |:-------:|
-| -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `RANDOM`: select an API at random  | `RANDOM` |
+| -api | which API to use | `JSON`: use JSON to upload and XML to download <br> `XML`: use JSON to upload and XML to download <br> `GRPC`: use GRPC <br> `MIXED`: select an API at random for each upload/download  | `MIXED` |
 | -r | bucket region for benchmarks | any GCS region | `US-WEST1` |
-| -c | whether to run benchmarks concurrently | `true` or `false` (present/not present) | `false` |
+| -conn_pool | GRPC connection pool size | any positive integer | 4 |
+| -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -creds | path to credentials file | any path | * |
 | -gc_f | whether to force garbage collection <br> at the beginning of each upload |  `true` or `false` (present/not present) | `false` |
 | -min_cs | minimum ChunkSize in kib | any positive integer | `16384` |
@@ -25,7 +26,11 @@ This runs 1000 iterations on 0 to 2Gib files in the background, sending program 
 | -max_samples | maximum number of objects to upload | any positive integer | `10 000` |
 | -o | file to output results to | any file path | `res.csv` |
 | -p | projectID | a project ID | * |
-| -q_read | download quantum | any positive integer | 16 |
-| -q_write | upload quantum | any positive integer | 16 |
+| -q_read | download quantum | any positive integer | 1 |
+| -q_write | upload quantum | any positive integer | 1 |
+| -min_r_size | minimum read size in bytes | any positive integer | 4000 |
+| -max_r_size | maximum read size in bytes | any positive integer | 4000 |
+| -min_w_size | minimum write size in bytes | any positive integer | 4000 |
+| -max_w_size | maximum write size in bytes | any positive integer | 4000 |
 
 \* required values

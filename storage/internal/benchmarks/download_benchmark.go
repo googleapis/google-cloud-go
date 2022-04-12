@@ -15,16 +15,28 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
 	"fmt"
+	"hash"
+	"hash/crc32"
 	"io"
 	"time"
 
 	"cloud.google.com/go/storage"
 )
 
-func downloadBenchmark(ctx context.Context, o *storage.ObjectHandle, objectSize int64) (elapsedTime time.Duration, err error) {
-	var bytesRead int64
+type downloadParams struct {
+	o             *storage.ObjectHandle
+	objectSize    int64
+	appBufferSize int
+	md5           bool
+	crc32c        bool
+}
+
+func downloadBenchmark(ctx context.Context, d downloadParams) (elapsedTime time.Duration, err error) {
+	bytesLeftToRead := d.objectSize
 	var objectReader *storage.Reader
 	start := time.Now()
 
@@ -35,22 +47,96 @@ func downloadBenchmark(ctx context.Context, o *storage.ObjectHandle, objectSize 
 
 		elapsedTime = time.Since(start)
 
-		readAllBytes := bytesRead == objectSize
+		readAllBytes := bytesLeftToRead == 0
 		if err == nil && !readAllBytes {
-			err = fmt.Errorf("Did not read all bytes. Read: %d, Expected to read: %d", bytesRead, objectSize)
+			err = fmt.Errorf("did not read all bytes; read: %d, expected to read: %d", d.objectSize-bytesLeftToRead, d.objectSize)
 		}
 	}()
 
-	objectReader, err = o.NewReader(ctx)
+	objectReader, err = d.o.NewReader(ctx)
 	if err != nil {
-		return elapsedTime, fmt.Errorf("NewReader on object %s/%s : %v", o.BucketName(), o.ObjectName(), err)
+		return elapsedTime, fmt.Errorf("NewReader on object %s/%s : %v", d.o.BucketName(), d.o.ObjectName(), err)
 	}
 
-	var read int64
-	if read, err = io.Copy(io.Discard, objectReader); err != nil {
-		return elapsedTime, fmt.Errorf("io.Copy: %v", err)
+	appBuffer := bytes.NewBuffer(make([]byte, 0, d.appBufferSize))
+	w := newDowloadWriter(appBuffer, d.md5, d.crc32c)
+
+	for bytesLeftToRead > 0 {
+		shouldRead := int64(d.appBufferSize)
+		if int64(d.appBufferSize) > bytesLeftToRead {
+			shouldRead = bytesLeftToRead
+		}
+
+		var read int64
+		if read, err = io.CopyN(w, objectReader, shouldRead); err != nil {
+			return elapsedTime, fmt.Errorf("io.Copy: %v", err)
+		}
+
+		bytesLeftToRead -= read
+
+		// Empty the buffer for re-use
+		appBuffer.Reset()
 	}
-	bytesRead += read
+
+	if d.md5 || d.crc32c {
+		attrs, aerr := d.o.Attrs(ctx)
+		if aerr != nil {
+			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", d.o.BucketName(), d.o.ObjectName(), err)
+		}
+
+		expectedCRCChecksum := attrs.CRC32C
+		expectedMD5Hash := attrs.MD5
+		err = w.verify(expectedMD5Hash, expectedCRCChecksum)
+	}
 
 	return elapsedTime, err
+}
+
+// downloadWriter takes care of verifying crc32c and md5 hashes
+type downloadWriter struct {
+	md5Hash hash.Hash
+	crcHash hash.Hash32
+	w       io.Writer
+	md5     bool
+	crc     bool
+}
+
+func (c *downloadWriter) verify(expectedMD5Hash []byte, expectedCRCChecksum uint32) (err error) {
+	if c.md5 {
+		if got := c.md5Hash.Sum([]byte{}); !bytes.Equal(got, expectedMD5Hash) {
+			return fmt.Errorf("md5 checksum does not match; \n\tgot: \t\t%d, \n\texpected: \t%d", got, expectedMD5Hash)
+		}
+	}
+	if c.crc {
+		if got := c.crcHash.Sum32(); got != expectedCRCChecksum {
+			return fmt.Errorf("crc checksum does not match; got: %d, expected: %d", got, expectedCRCChecksum)
+		}
+	}
+	return nil
+}
+
+func (c *downloadWriter) Write(p []byte) (n int, err error) {
+	n, err = c.w.Write(p)
+	if c.md5 {
+		c.md5Hash.Write(p)
+	}
+	if c.crc {
+		c.crcHash.Write(p)
+	}
+	return n, err
+}
+
+func newDowloadWriter(w io.Writer, hashMD5, hashCRC bool) *downloadWriter {
+	cw := &downloadWriter{w: w}
+
+	if hashMD5 {
+		cw.md5 = true
+		cw.md5Hash = md5.New()
+	}
+	if hashCRC {
+		cw.crc = true
+		cw.crcHash = crc32.New(crc32.MakeTable(crc32.Castagnoli))
+	}
+
+	return cw
 }

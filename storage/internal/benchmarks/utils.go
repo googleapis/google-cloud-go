@@ -18,24 +18,45 @@ import (
 	"context"
 	"log"
 	"math/rand"
+	"net"
+	"net/http"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
+	htransport "google.golang.org/api/transport/http"
 )
 
 const (
+	// TODO: use UUIDS
+	prefix                     = "golang-grpc-test-" // needs to be this for GRPC for now
 	alphabet                   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	lowercaseLettersAndNumbers = "abcdefghijklmnopqrstuvwxyz0123456789"
 	uppercaseLetters           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	asciiChars                 = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
+	ASCIIchars                 = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
 )
+
+func randomBool() bool {
+	return rand.Intn(2) == 0
+}
 
 // returns a value in range [min, max]
 // includes endpoints in possible values to return
-func randomValue(min, max int64) int64 {
+func randomInt64(min, max int64) int64 {
+	if min > max {
+		log.Fatalf("min cannot be larger than max; min: %d max: %d", min, max)
+	}
 	return rand.Int63n(max-min+1) + min
+}
+
+// returns a value in range [min, max]
+// includes endpoints in possible values to return
+func randomInt(min, max int) int {
+	if min > max {
+		log.Fatalf("min cannot be larger than max; min: %d max: %d", min, max)
+	}
+	return rand.Intn(max-min+1) + min
 }
 
 func randomBucketName(prefix string) string {
@@ -63,13 +84,12 @@ func randomObjectName() string {
 	return randomString(maxLen, lowercaseLettersAndNumbers+uppercaseLetters)
 }
 
-// random string between 1 and maxLen
+// random string of maxLen
 func randomString(maxLen int, allowedChars string) string {
 	var sb strings.Builder
-	length := rand.Intn(maxLen) + 1 // random length in (1 ... maxLen)
-	sb.Grow(length)
+	sb.Grow(maxLen)
 
-	for i := 0; i < length; i++ {
+	for i := 0; i < maxLen; i++ {
 		sb.WriteByte(allowedChars[rand.Intn(len(allowedChars))])
 	}
 	return sb.String()
@@ -99,28 +119,53 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	}
 }
 
-func initializeClient(ctx context.Context, api benchmarkAPI) (*storage.Client, benchmarkAPI, benchmarkAPI, error) {
+func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, readBufferSize int, connPoolSize int) (*storage.Client, benchmarkAPI, benchmarkAPI, error) {
 	var readAPI, writeAPI benchmarkAPI
 	var client *storage.Client
 	var err error
 
-	if api == random {
-		if rand.Intn(2) == 0 {
+	if api == mixed {
+		if randomBool() {
 			api = xml
 		} else {
 			api = grpc
 		}
 	}
 
+	dialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+
+	// These are the default parameters with write and read buffer sizes modified
+	base := &http.Transport{
+		Proxy:                 http.ProxyFromEnvironment,
+		DialContext:           dialer.DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+		WriteBufferSize:       int(writeBufferSize),
+		ReadBufferSize:        int(readBufferSize),
+	}
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
+		option.WithUserAgent("custom-user-agent"), option.WithCredentialsFile(credentialsFile))
+	if err != nil {
+		return nil, "", "", err
+	}
+
+	c := http.Client{Transport: trans}
+
 	switch api {
 	case xml, json:
-		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
+		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile), option.WithHTTPClient(&c))
 		readAPI = json
 		writeAPI = xml
 	case grpc:
 		client, err = storage.NewHybridClient(ctx, &storage.HybridClientOptions{
 			HTTPOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile)},
-			GRPCOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile)},
+			GRPCOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile), option.WithGRPCConnectionPool(connPoolSize)},
 		})
 		readAPI = grpc
 		writeAPI = grpc
