@@ -1,5 +1,17 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.19.0...pubsub/v1.20.0) (2022-04-11)
+
+
+### Features
+
+* **pubsub/pstest:** add topic retention support ([#4790](https://github.com/googleapis/google-cloud-go/issues/4790)) ([0a4ad6a](https://github.com/googleapis/google-cloud-go/commit/0a4ad6a72ddc379a94a88ec70ac678a227843cfd))
+
+
+### Bug Fixes
+
+* **pubsub:** ignore grpc errors in ack/modack ([#5796](https://github.com/googleapis/google-cloud-go/issues/5796)) ([4fb9aec](https://github.com/googleapis/google-cloud-go/commit/4fb9aecd2bc415c846e26eb960859e10e1af61f3))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.18.0...pubsub/v1.19.0) (2022-03-07)
 
 
