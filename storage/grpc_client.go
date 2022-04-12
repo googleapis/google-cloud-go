@@ -110,8 +110,20 @@ func (c *grpcStorageClient) Close() error {
 // Top-level methods.
 
 func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
-	return "", errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetServiceAccountRequest{
+		Project: project,
+	}
+	var resp *storagepb.ServiceAccount
+	err := run(ctx, func() error {
+		var err error
+		resp, err = c.raw.GetServiceAccount(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+
+	return resp.EmailAddress, err
 }
+
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
