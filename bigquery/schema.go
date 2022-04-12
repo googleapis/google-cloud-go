@@ -45,13 +45,14 @@ func (s Schema) Relax() Schema {
 	return out
 }
 
-// FormatJSONFields exposes the schema as a JSON array of
+// ToJSONFields exposes the schema as a JSON array of
 // TableFieldSchema objects: https://cloud.google.com/bigquery/docs/reference/rest/v2/tables#TableFieldSchema
 //
 // Generally this isn't needed for direct usage of this library, but is
 // provided for use cases where you're interacting with other tools
-// that consume the field definitions in this form such as the BQ CLI.
-func (s Schema) FormatJSONFields() ([]byte, error) {
+// that consume the underlying API representation directly such as the
+// BQ CLI tool.
+func (s Schema) ToJSONFields() ([]byte, error) {
 	var rawSchema []*bq.TableFieldSchema
 	for _, f := range s {
 		rawSchema = append(rawSchema, f.toBQ())

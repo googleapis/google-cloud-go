@@ -1234,7 +1234,7 @@ func TestSchemaFromJSON(t *testing.T) {
 	}
 }
 
-func TestFormatJSONFields(t *testing.T) {
+func TestSchemaToJSONFields(t *testing.T) {
 
 	// cmp option for comparing byte arrays without caring about whitespace.
 	// courtesy of https://github.com/google/go-cmp/issues/224
@@ -1286,7 +1286,7 @@ func TestFormatJSONFields(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		got, err := tc.inSchema.FormatJSONFields()
+		got, err := tc.inSchema.ToJSONFields()
 		if err != nil {
 			t.Errorf("%s: %v", tc.description, err)
 		}
