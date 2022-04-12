@@ -87,7 +87,8 @@ func TestGetBucketEmulated(t *testing.T) {
 
 func TestGetServiceAccountEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		_, err := client.GetServiceAccount(context.Background(), project)
+		p:= fmt.Sprintf("projects/%s", project)
+		_, err := client.GetServiceAccount(context.Background(), p)
 		if err != nil {
 			t.Fatalf("client.GetServiceAccount: %v", err)
 		}

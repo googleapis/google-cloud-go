@@ -120,7 +120,9 @@ func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project strin
 		resp, err = c.raw.GetServiceAccount(ctx, req, s.gax...)
 		return err
 	}, s.retry, s.idempotent)
-
+	if err != nil {
+		return "", err
+	}
 	return resp.EmailAddress, err
 }
 
