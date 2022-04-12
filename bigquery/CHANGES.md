@@ -1,5 +1,14 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.2...bigquery/v1.31.0) (2022-04-12)
+
+
+### Features
+
+* **bigquery/storage:** Deprecate format specific `row_count` field in Read API ([57896d1](https://github.com/googleapis/google-cloud-go/commit/57896d1491c04fa53d3f3e2344ef10c3d91c4b65))
+* **bigquery:** enhance SchemaFromJSON ([#5877](https://github.com/googleapis/google-cloud-go/issues/5877)) ([16289f0](https://github.com/googleapis/google-cloud-go/commit/16289f086ae15ea18c70d387b542796e099d4a09))
+* **bigquery:** support table cloning ([#5672](https://github.com/googleapis/google-cloud-go/issues/5672)) ([74c120a](https://github.com/googleapis/google-cloud-go/commit/74c120a81d2181d9809e5d3c0462bd859297d073))
+
 ### [1.30.2](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.1...bigquery/v1.30.2) (2022-03-30)
 
 
