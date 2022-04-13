@@ -32,10 +32,12 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const codeVersion = 2.3 // to keep track of which version of the code a benchmark ran on
+const codeVersion = 3.0 // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
-var projectID, credentialsFile, outputFile string
+var projectID = "brenna-test-320521"
+var credentialsFile = "brenna-test-key.json"
+var outputFile string
 
 var results chan benchmarkResult
 var workers chan struct{}
@@ -107,7 +109,6 @@ func main() {
 
 	bucketName := randomBucketName(prefix)
 	cleanUp := createBenchmarkBucket(bucketName, opts)
-	_ = cleanUp
 	defer cleanUp()
 
 	fmt.Printf("Results file: %s\n", outputFile)
@@ -174,9 +175,8 @@ type benchmarkResult struct {
 func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
-	// TODO: MD5/CRC32C
-	doMD5 := false
-	doCRC32C := false
+	doMD5 := randomBool()
+	doCRC32C := randomBool()
 
 	if opts.forceGC {
 		runtime.GC()
@@ -198,7 +198,10 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	}
 
 	// Create contents to write
-	contents := randomString(appWriteBufferSize, ASCIIchars)
+	err = generateRandomFile(objectName, objectSize)
+	if err != nil {
+		return fmt.Errorf("generateRandomFile: %v", err)
+	}
 
 	o := client.Bucket(bucketName).Object(objectName)
 	defer o.Delete(ctx)
@@ -210,17 +213,16 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	start := time.Now()
 
 	timeTaken, err := uploadBenchmark(ctx, uploadParams{
-		o:          o,
-		contents:   contents,
-		objectSize: objectSize,
-		chunkSize:  int(writeChunkSize),
-		md5:        doMD5,
-		crc32c:     doCRC32C,
+		o:         o,
+		fileName:  objectName,
+		chunkSize: int(writeChunkSize),
+		md5:       doMD5,
+		crc32c:    doCRC32C,
 	})
 	runtime.ReadMemStats(memStats)
 	results <- benchmarkResult{
 		objectSize:    objectSize,
-		appBufferSize: len(contents),
+		appBufferSize: appWriteBufferSize,
 		chunkSize:     int(writeChunkSize),
 		crc32Enabled:  doCRC32C,
 		md5Enabled:    doMD5,
@@ -236,6 +238,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		start:         start,
 		end:           start.Add(timeTaken),
 	}
+	os.Remove(objectName)
 	// Do not attempt to read from a failed upload
 	if err != nil {
 		return fmt.Errorf("failed upload: %v", err)
@@ -266,11 +269,10 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 
 		start := time.Now()
 		timeTaken, err := downloadBenchmark(ctx, downloadParams{
-			o:             o,
-			objectSize:    objectSize,
-			appBufferSize: appReadBufferSize,
-			md5:           doMD5,
-			crc32c:        doCRC32C,
+			o:          o,
+			objectSize: objectSize,
+			md5:        doMD5,
+			crc32c:     doCRC32C,
 		})
 		runtime.ReadMemStats(memStats)
 		results <- benchmarkResult{

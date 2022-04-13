@@ -17,143 +17,96 @@ package main
 import (
 	"context"
 	"crypto/md5"
-	"encoding/base64"
-	"encoding/binary"
 	"fmt"
 	"hash"
 	"hash/crc32"
 	"io"
-	"strings"
+	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
 )
 
 type uploadParams struct {
-	o          *storage.ObjectHandle
-	contents   string
-	objectSize int64
-	chunkSize  int
-	md5        bool
-	crc32c     bool
+	o         *storage.ObjectHandle
+	fileName  string
+	chunkSize int
+	md5       bool
+	crc32c    bool
 }
 
-func uploadBenchmark(ctx context.Context, u uploadParams) (time.Duration, error) {
-	elapsedTime := time.Duration(0)
+func uploadBenchmark(ctx context.Context, u uploadParams) (elapsedTime time.Duration, rerr error) {
 	start := time.Now()
+	defer func() {
+		elapsedTime = time.Since(start)
+	}()
 
-	u.o.If(storage.Conditions{
-		DoesNotExist: true,
-	})
-
-	objectWriter := u.o.NewWriter(ctx)
+	o := u.o.If(storage.Conditions{DoesNotExist: true})
+	objectWriter := o.NewWriter(ctx)
 	objectWriter.ChunkSize = u.chunkSize
 
-	if u.crc32c {
-		objectWriter.SendCRC32C = true
-	}
-
-	writer := newUploadWriter(objectWriter, u.md5, u.crc32c)
-
-	contentsReader := strings.NewReader(u.contents)
-
-	var written int64
-	for written < u.objectSize {
-		// stop timer here
-		elapsedTime += time.Since(start)
-		rewindReader(contentsReader, len(u.contents), u.objectSize-written)
-
-		// restart timer
-		start = time.Now()
-
-		w, err := io.Copy(writer, contentsReader)
-
-		if err != nil {
-			objectWriter.Close()
-			elapsedTime += time.Since(start)
-			return elapsedTime, fmt.Errorf("io.Copy after %d bytes: %v", written, err)
+	defer func() {
+		err := objectWriter.Close()
+		if rerr == nil {
+			rerr = err
 		}
+	}()
 
-		written += w
+	f, err := os.Open(u.fileName)
+	if err != nil {
+		return elapsedTime, fmt.Errorf("os.Open: %v", err)
 	}
+	defer f.Close()
 
-	if u.crc32c {
-		sum := writer.crcHash.Sum32()
-		objectWriter.CRC32C = sum
-
-		bytes := make([]byte, 4)
-		binary.BigEndian.PutUint32(bytes, sum)
-		s := base64.StdEncoding.EncodeToString(bytes)
-
-		fmt.Printf("sum: %s\n", s)
-		w, err := io.Copy(objectWriter, strings.NewReader(""))
-		if err != nil {
-			objectWriter.Close()
-			elapsedTime += time.Since(start)
-			return elapsedTime, fmt.Errorf("io.Copy after %d bytes: %v", written, err)
+	if u.crc32c || u.md5 {
+		w := newHashWriter(u.md5, u.crc32c)
+		if _, err = io.Copy(w, f); err != nil {
+			return elapsedTime, fmt.Errorf("io.Copy hash: %v", err)
 		}
-
-		written += w
+		w.applyToWriter(objectWriter)
+		f.Seek(0, 0)
 	}
 
-	if err := objectWriter.Close(); err != nil {
-		elapsedTime += time.Since(start)
-		return elapsedTime, fmt.Errorf("objsize %d Writer.Close: %v", u.objectSize, err)
+	if _, err = io.Copy(objectWriter, f); err != nil {
+		return elapsedTime, fmt.Errorf("io.Copy: %v", err)
 	}
-	elapsedTime += time.Since(start)
-	return elapsedTime, nil
+
+	return
 }
 
-// rewinds the ReadSeeker so we can copy more bytes
-func rewindReader(r io.ReadSeeker, readerLen int, bytesLeftToWrite int64) error {
-	if bytesLeftToWrite < int64(readerLen) {
-		// set forward so we only copy remaining bytes
-		_, err := r.Seek(-int64(bytesLeftToWrite), io.SeekEnd)
-		return err
-	}
-	_, err := r.Seek(0, io.SeekStart)
-
-	return err
-}
-
-// custom writer takes care of verifying crc32c and md5 hashes
-type uploadWriter struct {
+// hashWriter writes to md5 and crc32c hashes as applicable
+// we can then get the checksum of these hashes to apply to a storage.Writer and
+// make sure that GCS receives the same bytes as written to hashWriter
+type hashWriter struct {
 	md5Hash hash.Hash
 	crcHash hash.Hash32
-	w       *storage.Writer
 	md5     bool
 	crc     bool
 }
 
-// Uploads the wrong md5 hash on large objects and
-// doesn't always send the last crc32 sum to the object
-// not sure why
-func (u *uploadWriter) Write(p []byte) (n int, err error) {
+func (u *hashWriter) applyToWriter(w *storage.Writer) {
 	if u.md5 {
-		u.md5Hash.Write(p)
-		u.w.MD5 = u.md5Hash.Sum([]byte{})
+		w.MD5 = u.md5Hash.Sum(nil)
 	}
 	if u.crc {
-		a, _ := u.crcHash.Write(p)
-		fmt.Println("------")
-		fmt.Println(a)
-		sum := u.crcHash.Sum32()
-		//objectWriter.CRC32C = sum
-
-		bytes := make([]byte, 4)
-		binary.BigEndian.PutUint32(bytes, sum)
-		s := base64.StdEncoding.EncodeToString(bytes)
-		fmt.Println(s)
-		fmt.Println("------")
-		u.w.CRC32C = sum
+		w.SendCRC32C = true
+		w.CRC32C = u.crcHash.Sum32()
 	}
+}
 
-	n, err = u.w.Write(p)
+func (u *hashWriter) Write(p []byte) (n int, err error) {
+	if u.md5 {
+		n, err = u.md5Hash.Write(p)
+	}
+	if u.crc {
+		n, err = u.crcHash.Write(p)
+	}
+	fmt.Println(n)
 	return n, err
 }
 
-func newUploadWriter(w *storage.Writer, hashMD5, hashCRC bool) *uploadWriter {
-	uw := &uploadWriter{w: w}
+func newHashWriter(hashMD5, hashCRC bool) *hashWriter {
+	uw := &hashWriter{}
 
 	if hashMD5 {
 		uw.md5 = true

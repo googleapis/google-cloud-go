@@ -1,4 +1,5 @@
 # go-bench-gcs
+**This is not an officially supported Google product**
 
 ## Run example:
 This runs 1000 iterations on 0 to 2Gib files in the background, sending program output (errors and such) to `output.log`:

@@ -16,10 +16,14 @@ package main
 
 import (
 	"context"
+	crand "crypto/rand"
+	"fmt"
+	"io"
 	"log"
 	"math/rand"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -173,4 +177,16 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		log.Fatalf("%s API not supported.\n", opts.api)
 	}
 	return client, readAPI, writeAPI, err
+}
+
+func generateRandomFile(fileName string, size int64) error {
+	f, err := os.Create(fileName)
+	if err != nil {
+		return fmt.Errorf("error creating file: %v", err)
+	}
+	defer f.Close()
+
+	_, err = io.CopyN(f, crand.Reader, size)
+
+	return err
 }
