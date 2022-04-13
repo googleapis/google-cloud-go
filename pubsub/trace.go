@@ -259,12 +259,12 @@ func NewPubsubMessageCarrier(msg *Message) PubsubMessageCarrier {
 
 // Get retrieves a single value for a given key.
 func (c PubsubMessageCarrier) Get(key string) string {
-	return c.msg.Attributes["googclient_"+key]
+	return c.msg.Attributes["gogclient_"+key]
 }
 
 // Set sets an attribute.
 func (c PubsubMessageCarrier) Set(key, val string) {
-	c.msg.Attributes["googclient_"+key] = val
+	c.msg.Attributes["gogclient_"+key] = val
 }
 
 // Keys returns a slice of all keys in the carrier.

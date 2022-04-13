@@ -1025,7 +1025,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
 						opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
-						if m.Attributes != nil && m.Attributes["googclient_traceparent"] != "" {
+						if m.Attributes != nil && m.Attributes["gogclient_traceparent"] != "" {
 							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
 							link := trace.LinkFromContext(lctx)
 							opts = append(opts, trace.WithLinks(link))

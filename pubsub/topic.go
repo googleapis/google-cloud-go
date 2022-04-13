@@ -530,9 +530,11 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	otelctx := ctx
 	opts := getPublishSpanAttributes(t.String(), msg)
 	ctx, span := t.tracer.Start(ctx, t.String()+" send", opts...)
-	ctx, span2 := t.tracer.Start(ctx, t.String()+" waiting for publisher flow control", opts...)
+	// Discard this span's context since it is a child span. We only care about the main "send" span.
+	_, span2 := t.tracer.Start(ctx, t.String()+" waiting for publisher flow control", opts...)
 	defer span2.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
@@ -556,7 +558,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	})
 	span.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize))
 
-	t.initBundler()
+	t.initBundler(otelctx)
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
@@ -622,11 +624,13 @@ type bundledMessage struct {
 	size int
 	// pubSpan is the entire publish span (from user calling Publish to the publish RPC resolving).
 	pubSpan trace.Span
-	// batchSpan tracks how long a message is waiting to be published.
+	// batchSpan traces the message batching operation in publish scheduler.
 	batchSpan trace.Span
 }
 
-func (t *Topic) initBundler() {
+// The context passed into this method is only for keeping track of opentelemetry traces.
+// It is not used for cancellation.
+func (t *Topic) initBundler(otelctx context.Context) {
 	t.mu.RLock()
 	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
@@ -652,17 +656,17 @@ func (t *Topic) initBundler() {
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
-		ctx := context.TODO()
+		ctx2 := context.TODO()
 		if timeout != 0 {
 			var cancel func()
-			ctx, cancel = context.WithTimeout(ctx, timeout)
+			ctx2, cancel = context.WithTimeout(ctx2, timeout)
 			defer cancel()
 		}
 		bmsgs := bundle.([]*bundledMessage)
 		for _, m := range bmsgs {
 			m.batchSpan.End()
 		}
-		t.publishMessageBundle(ctx, bmsgs)
+		t.publishMessageBundle(otelctx, ctx2, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
@@ -698,13 +702,15 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
 }
 
-func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
+func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundledMessage) {
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
 	var orderingKey string
+
+	var ll []trace.Link
 	for i, bm := range bms {
 		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
@@ -712,12 +718,17 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		opts := getPublishSpanAttributes(t.String(), bm.msg)
-		_, span := t.tracer.Start(bm.ctx, t.String()+" publish RPC", opts...)
-		defer span.End()
+		l := trace.LinkFromContext(bm.ctx)
+		ll = append(ll, l)
 		defer bm.pubSpan.End()
 		bm.msg = nil // release bm.msg for GC
 	}
+
+	opts := getPublishSpanAttributes(t.String(), &Message{})
+	opts = append(opts, trace.WithLinks(ll...))
+	_, span := t.tracer.Start(otelctx, t.String()+" publish RPC", opts...)
+	defer span.End()
+
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
