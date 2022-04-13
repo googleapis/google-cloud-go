@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
@@ -1024,7 +1025,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
 						opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
-						if m.Attributes != nil && m.Attributes["gogclient_traceparent"] != "" {
+						if m.Attributes != nil && m.Attributes["googclient_traceparent"] != "" {
 							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
 							link := trace.LinkFromContext(lctx)
 							opts = append(opts, trace.WithLinks(link))
@@ -1033,6 +1034,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// End spans to ack handler doneFunc, which also handles flow control release.
 						old := ackh.doneFunc
 						ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+							if ack {
+								processSpan.SetAttributes(attribute.String("result", "ack"))
+							} else {
+								processSpan.SetAttributes(attribute.String("result", "nack"))
+							}
 							defer processSpan.End()
 							old(ackID, ack, receiveTime)
 						}

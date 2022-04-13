@@ -43,6 +43,8 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	otelcodes "go.opentelemetry.io/otel/codes"
 )
 
 const (
@@ -560,12 +562,16 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", errTopicStopped)
+		span.RecordError(errTopicStopped)
+		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 		return r
 	}
 
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
+		span.RecordError(errTopicStopped)
+		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 		return r
 	}
 	_, span3 := t.tracer.Start(ctx, t.String()+" waiting in batch")
@@ -581,6 +587,8 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
+		span.RecordError(errTopicStopped)
+		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 	}
 	return r
 }
@@ -744,6 +752,8 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
+			bm.pubSpan.RecordError(err)
+			bm.pubSpan.SetStatus(otelcodes.Error, err.Error())
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 			bm.pubSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
