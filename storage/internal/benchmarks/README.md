@@ -17,7 +17,7 @@ This runs 1000 iterations on 0 to 2Gib files in the background, sending program 
 | -conn_pool | GRPC connection pool size | any positive integer | 4 |
 | -workers | number of goroutines to run at once; set to 1 for no concurrency | any positive integer | `16` |
 | -creds | path to credentials file | any path | * |
-| -gc_f | whether to force garbage collection <br> at the beginning of each upload |  `true` or `false` (present/not present) | `false` |
+| -gc_f | whether to force garbage collection <br> before every write or read benchmark |  `true` or `false` (present/not present) | `false` |
 | -min_cs | minimum ChunkSize in kib | any positive integer | `16384` |
 | -max_cs | maximum ChunkSize in kib | any positive integer | `16384` |
 | -min_size | minimum object size in kib | any positive integer | `0` |

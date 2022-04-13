@@ -32,12 +32,10 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-const codeVersion = 3.0 // to keep track of which version of the code a benchmark ran on
+const codeVersion = 3.1 // to keep track of which version of the code a benchmark ran on
 
 var opts = &benchmarkOptions{}
-var projectID = "brenna-test-320521"
-var credentialsFile = "brenna-test-key.json"
-var outputFile string
+var projectID, credentialsFile, outputFile string
 
 var results chan benchmarkResult
 var workers chan struct{}
@@ -107,7 +105,7 @@ func main() {
 	fmt.Printf("Benchmarking started: %s\n", start)
 	Init()
 
-	bucketName := randomBucketName(prefix)
+	bucketName := randomName(bucketPrefix)
 	cleanUp := createBenchmarkBucket(bucketName, opts)
 	defer cleanUp()
 
@@ -169,7 +167,6 @@ type benchmarkResult struct {
 	heapAllocDiff uint64
 	mallocsDiff   uint64
 	start         time.Time
-	end           time.Time
 }
 
 func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string) error {
@@ -178,12 +175,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	doMD5 := randomBool()
 	doCRC32C := randomBool()
 
-	if opts.forceGC {
-		runtime.GC()
-		// debug.FreeOSMemory()
-	}
-
-	objectName := randomObjectName()
+	objectName := randomName("obj")
 	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
 
 	appWriteBufferSize := opts.writeQuantum * randomInt(opts.minWriteSize/opts.writeQuantum, opts.maxWriteSize/opts.writeQuantum)
@@ -207,12 +199,16 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	defer o.Delete(ctx)
 
 	// Upload
+	if opts.forceGC {
+		runtime.GC()
+		// debug.FreeOSMemory()
+	}
 	runtime.ReadMemStats(memStats)
 	prevHeapAlloc := memStats.HeapAlloc
 	prevMallocs := memStats.Mallocs
 	start := time.Now()
 
-	timeTaken, err := uploadBenchmark(ctx, uploadParams{
+	timeTaken, err := uploadBenchmark(ctx, uploadOpts{
 		o:         o,
 		fileName:  objectName,
 		chunkSize: int(writeChunkSize),
@@ -236,7 +232,6 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		heapAllocDiff: memStats.HeapAlloc - prevHeapAlloc,
 		mallocsDiff:   memStats.Mallocs - prevMallocs,
 		start:         start,
-		end:           start.Add(timeTaken),
 	}
 	os.Remove(objectName)
 	// Do not attempt to read from a failed upload
@@ -263,22 +258,25 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 
 	// Read.
 	for i := 0; i < 3; i++ {
+		if opts.forceGC {
+			runtime.GC()
+			// debug.FreeOSMemory()
+		}
 		runtime.ReadMemStats(memStats)
 		prevHeapAlloc = memStats.HeapAlloc
 		prevMallocs = memStats.Mallocs
 
 		start := time.Now()
-		timeTaken, err := downloadBenchmark(ctx, downloadParams{
+		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
 			o:          o,
 			objectSize: objectSize,
 			md5:        doMD5,
-			crc32c:     doCRC32C,
 		})
 		runtime.ReadMemStats(memStats)
 		results <- benchmarkResult{
 			objectSize:    objectSize,
 			appBufferSize: int(appReadBufferSize),
-			crc32Enabled:  doCRC32C,
+			crc32Enabled:  true, // internally verified for us
 			md5Enabled:    doMD5,
 			API:           writeAPI,
 			elapsedTime:   timeTaken,
@@ -291,7 +289,6 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 			heapAllocDiff: memStats.HeapAlloc - prevHeapAlloc,
 			mallocsDiff:   memStats.Mallocs - prevMallocs,
 			start:         start,
-			end:           start.Add(timeTaken),
 		}
 		// do not return error, continue to attempt to read
 		if err != nil {
@@ -348,7 +345,7 @@ func (br benchmarkResult) csv() []string {
 		strconv.FormatUint(br.heapAllocDiff, 10),
 		strconv.FormatUint(br.mallocsDiff, 10),
 		strconv.FormatInt(br.start.UnixNano(), 10),
-		strconv.FormatInt(br.end.UnixNano(), 10),
+		strconv.FormatInt(br.start.Add(br.elapsedTime).UnixNano(), 10),
 		strconv.Itoa(opts.numWorkers),
 		fmt.Sprintf("%.2f", codeVersion),
 	}

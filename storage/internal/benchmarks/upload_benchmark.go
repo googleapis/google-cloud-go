@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/storage"
 )
 
-type uploadParams struct {
+type uploadOpts struct {
 	o         *storage.ObjectHandle
 	fileName  string
 	chunkSize int
@@ -35,15 +35,15 @@ type uploadParams struct {
 	crc32c    bool
 }
 
-func uploadBenchmark(ctx context.Context, u uploadParams) (elapsedTime time.Duration, rerr error) {
+func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
 	start := time.Now()
 	defer func() {
 		elapsedTime = time.Since(start)
 	}()
 
-	o := u.o.If(storage.Conditions{DoesNotExist: true})
+	o := uopts.o.If(storage.Conditions{DoesNotExist: true})
 	objectWriter := o.NewWriter(ctx)
-	objectWriter.ChunkSize = u.chunkSize
+	objectWriter.ChunkSize = uopts.chunkSize
 
 	defer func() {
 		err := objectWriter.Close()
@@ -52,14 +52,14 @@ func uploadBenchmark(ctx context.Context, u uploadParams) (elapsedTime time.Dura
 		}
 	}()
 
-	f, err := os.Open(u.fileName)
+	f, err := os.Open(uopts.fileName)
 	if err != nil {
 		return elapsedTime, fmt.Errorf("os.Open: %v", err)
 	}
 	defer f.Close()
 
-	if u.crc32c || u.md5 {
-		w := newHashWriter(u.md5, u.crc32c)
+	if uopts.crc32c || uopts.md5 {
+		w := newHashWriter(uopts.md5, uopts.crc32c)
 		if _, err = io.Copy(w, f); err != nil {
 			return elapsedTime, fmt.Errorf("io.Copy hash: %v", err)
 		}
@@ -101,7 +101,7 @@ func (u *hashWriter) Write(p []byte) (n int, err error) {
 	if u.crc {
 		n, err = u.crcHash.Write(p)
 	}
-	fmt.Println(n)
+
 	return n, err
 }
 

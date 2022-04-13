@@ -28,18 +28,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/google/uuid"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
 )
 
-const (
-	// TODO: use UUIDS
-	prefix                     = "golang-grpc-test-" // needs to be this for GRPC for now
-	alphabet                   = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	lowercaseLettersAndNumbers = "abcdefghijklmnopqrstuvwxyz0123456789"
-	uppercaseLetters           = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	ASCIIchars                 = " !\"#$%&\\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
-)
+const bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
 
 func randomBool() bool {
 	return rand.Intn(2) == 0
@@ -63,39 +57,12 @@ func randomInt(min, max int) int {
 	return rand.Intn(max-min+1) + min
 }
 
-func randomBucketName(prefix string) string {
+func randomName(prefix string) string {
 	var sb strings.Builder
-	// The total length of the bucket name must be <= 63 characters
-	maxLen := 63
-	date := time.Now().Format("06-01-02-1504")
 
 	sb.WriteString(prefix)
 	sb.WriteRune('-')
-	sb.WriteString(date)
-	sb.WriteRune('_')
-
-	maxRandomChars := maxLen - sb.Len()
-	sb.WriteString(randomString(maxRandomChars, lowercaseLettersAndNumbers))
-
-	return sb.String()
-}
-
-func randomObjectName() string {
-	// GCS accepts object name up to 1024 characters, but 128 seems long enough to
-	// avoid collisions.
-	maxLen := 128
-
-	return randomString(maxLen, lowercaseLettersAndNumbers+uppercaseLetters)
-}
-
-// random string of maxLen
-func randomString(maxLen int, allowedChars string) string {
-	var sb strings.Builder
-	sb.Grow(maxLen)
-
-	for i := 0; i < maxLen; i++ {
-		sb.WriteByte(allowedChars[rand.Intn(len(allowedChars))])
-	}
+	sb.WriteString(uuid.New().String()) // 36 chars
 	return sb.String()
 }
 
@@ -153,8 +120,9 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		WriteBufferSize:       int(writeBufferSize),
 		ReadBufferSize:        int(readBufferSize),
 	}
-	trans, err := htransport.NewTransport(ctx, base, option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
-		option.WithUserAgent("custom-user-agent"), option.WithCredentialsFile(credentialsFile))
+	trans, err := htransport.NewTransport(ctx, base,
+		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
+		option.WithCredentialsFile(credentialsFile))
 	if err != nil {
 		return nil, "", "", err
 	}
@@ -163,7 +131,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 
 	switch api {
 	case xml, json:
-		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile), option.WithHTTPClient(&c))
+		client, err = storage.NewClient(ctx, option.WithHTTPClient(&c))
 		readAPI = json
 		writeAPI = xml
 	case grpc:
@@ -179,6 +147,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	return client, readAPI, writeAPI, err
 }
 
+// generateRandomFile creates a file on disk and fills it with size random bytes
 func generateRandomFile(fileName string, size int64) error {
 	f, err := os.Create(fileName)
 	if err != nil {
