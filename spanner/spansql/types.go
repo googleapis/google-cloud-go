@@ -692,6 +692,20 @@ func (Param) isBoolExpr()       {} // possibly bool
 func (Param) isExpr()           {}
 func (Param) isLiteralOrParam() {}
 
+type Case struct {
+	Expr        Expr
+	WhenClauses []WhenClause
+	ElseResult  Expr
+}
+
+func (Case) isBoolExpr() {} // possibly bool
+func (Case) isExpr()     {}
+
+type WhenClause struct {
+	Cond   Expr
+	Result Expr
+}
+
 type BoolLiteral bool
 
 const (

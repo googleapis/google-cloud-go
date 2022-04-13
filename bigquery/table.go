@@ -124,6 +124,10 @@ type TableMetadata struct {
 	// given snapshot table.
 	SnapshotDefinition *SnapshotDefinition
 
+	// CloneDefinition contains additional information about the provenance of a
+	// given cloned table.
+	CloneDefinition *CloneDefinition
+
 	// Contains information regarding this table's streaming buffer, if one is
 	// present. This field will be nil if the table is not being streamed to or if
 	// there is no data in the streaming buffer.
@@ -264,6 +268,42 @@ func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefini
 		sd.SnapshotTime = t
 	}
 	return sd
+}
+
+// CloneDefinition provides metadata related to the origin of a clone.
+type CloneDefinition struct {
+
+	// BaseTableReference describes the ID of the table that this clone
+	// came from.
+	BaseTableReference *Table
+
+	// CloneTime indicates when the base table was cloned.
+	CloneTime time.Time
+}
+
+func (cd *CloneDefinition) toBQ() *bq.CloneDefinition {
+	if cd == nil {
+		return nil
+	}
+	return &bq.CloneDefinition{
+		BaseTableReference: cd.BaseTableReference.toBQ(),
+		CloneTime:          cd.CloneTime.Format(time.RFC3339),
+	}
+}
+
+func bqToCloneDefinition(q *bq.CloneDefinition, c *Client) *CloneDefinition {
+	if q == nil {
+		return nil
+	}
+	cd := &CloneDefinition{
+		BaseTableReference: bqToTable(q.BaseTableReference, c),
+	}
+	// It's possible we could fail to populate CloneTime if we fail to parse
+	// the backend representation.
+	if t, err := time.Parse(time.RFC3339, q.CloneTime); err == nil {
+		cd.CloneTime = t
+	}
+	return cd
 }
 
 // TimePartitioningType defines the interval used to partition managed data.
@@ -580,6 +620,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.Clustering = tm.Clustering.toBQ()
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
 	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
+	t.CloneDefinition = tm.CloneDefinition.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -659,6 +700,7 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
+		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)

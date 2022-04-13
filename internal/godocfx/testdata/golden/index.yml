@@ -88,19 +88,23 @@ items:
     you read it. Here is how to express that:</p>\n<pre class=\"prettyprint\"><code>w
     = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)\n//
     Proceed with writing as above.\n</code></pre><h3>Signed URLs</h3>\n<p>You can
-    obtain a URL that lets anyone read or write an object for a limited time.\nYou
-    don't need to create a client to do this. See the documentation of\nSignedURL
+    obtain a URL that lets anyone read or write an object for a limited time.\nSigning
+    a URL requires credentials authorized to sign a URL. To use the same\nauthentication
+    that was used when instantiating the Storage client, use the\nBucketHandle.SignedURL
+    method.</p>\n<pre class=\"prettyprint\"><code>url, err := client.Bucket(bucketName).SignedURL(objectName,
+    opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</code></pre><p>You
+    can also sign a URL wihout creating a client. See the documentation of\nSignedURL
     for details.</p>\n<pre class=\"prettyprint\"><code>url, err := storage.SignedURL(bucketName,
     &quot;shared-object&quot;, opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</code></pre><h3>Post
     Policy V4 Signed Request</h3>\n<p>A type of signed request that allows uploads
     through HTML forms directly to Cloud Storage with\ntemporary permission. Conditions
     can be applied to restrict how the HTML form is used and exercised\nby a user.</p>\n<p>For
     more information, please see https://cloud.google.com/storage/docs/xml-api/post-object
-    as well\nas the documentation of GenerateSignedPostPolicyV4.</p>\n<pre class=\"prettyprint\"><code>pv4,
-    err := storage.GenerateSignedPostPolicyV4(bucketName, objectName, opts)\nif err
-    != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields; %v\\n&quot;,
-    pv4.URL, pv4.Fields)\n</code></pre><h3>Errors</h3>\n<p>Errors returned by this
-    client are often of the type googleapi.Error.\nThese errors can be introspected
+    as well\nas the documentation of BucketHandle.GenerateSignedPostPolicyV4.</p>\n<pre
+    class=\"prettyprint\"><code>pv4, err := client.Bucket(bucketName).GenerateSignedPostPolicyV4(objectName,
+    opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&quot;URL: %s\\nFields;
+    %v\\n&quot;, pv4.URL, pv4.Fields)\n</code></pre><h3>Errors</h3>\n<p>Errors returned
+    by this client are often of the type googleapi.Error.\nThese errors can be introspected
     for more information by using errors.As\nwith the richer googleapi.Error type.
     For example:</p>\n<pre class=\"prettyprint\"><code>var e &#42;googleapi.Error\nif
     ok := errors.As(err, &amp;e); ok {\n\t  if e.Code == 409 { ... }\n}\n</code></pre><p>See
@@ -2071,11 +2075,12 @@ items:
       polynomial. This field is read-only, except when used from a Writer or\n\t//
       Composer. In those cases, if the SendCRC32C field in the Writer or Composer\n\t//
       is set to is true, the uploaded data is rejected if its CRC32C hash does\n\t//
-      not match this field.\n\tCRC32C <a href=\"https://pkg.go.dev/builtin#uint32\">uint32</a>\n\n\t//
-      MediaLink is an URL to the object's content. This field is read-only.\n\tMediaLink
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Metadata represents
-      user-provided metadata, in key/value pairs.\n\t// It can be nil if no metadata
-      is provided.\n\tMetadata map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
+      not match this field.\n\t//\n\t// Note: For a Writer, SendCRC32C must be set
+      to true BEFORE the first call to\n\t// Writer.Write() in order to send the checksum.\n\tCRC32C
+      <a href=\"https://pkg.go.dev/builtin#uint32\">uint32</a>\n\n\t// MediaLink is
+      an URL to the object's content. This field is read-only.\n\tMediaLink <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Metadata represents user-provided metadata, in key/value pairs.\n\t// It can
+      be nil if no metadata is provided.\n\tMetadata map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
       href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Generation is
       the generation number of the object's content.\n\t// This field is read-only.\n\tGeneration
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Metageneration
@@ -2689,6 +2694,8 @@ items:
   summary: |
     GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
     The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
+    If initializing a Storage Client, instead use the Bucket.GenerateSignedPostPolicyV4
+    method which uses the Client's credentials to handle authentication.
   parent: cloud.google.com/go/storage.PostPolicyV4
   type: function
   langs:
@@ -2943,7 +2950,13 @@ items:
       between startOffset (inclusive) and endOffset (exclusive).\n\tEndOffset <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Projection defines the set of properties to return. It will default to ProjectionFull,\n\t//
       which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,\n\t//
-      which may improve performance when listing many objects.\n\tProjection <a href=\"#cloud_google_com_go_storage_Projection\">Projection</a>\n\t//
+      which may improve performance when listing many objects.\n\tProjection <a href=\"#cloud_google_com_go_storage_Projection\">Projection</a>\n\n\t//
+      IncludeTrailingDelimiter controls how objects which end in a single\n\t// instance
+      of Delimiter (for example, if Query.Delimiter = \"/\" and the\n\t// object name
+      is \"foo/bar/\") are included in the results. By default, these\n\t// objects
+      only show up as prefixes. If IncludeTrailingDelimiter is set to\n\t// true,
+      they will also be included as objects and their metadata will be\n\t// populated
+      in the returned ObjectAttrs.\n\tIncludeTrailingDelimiter <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Query.SetAttrSelection
   name: |
@@ -3480,11 +3493,13 @@ items:
     content: "type Writer struct {\n\t// ObjectAttrs are optional attributes to set
       on the object. Any attributes\n\t// must be initialized before the first Write
       call. Nil or zero-valued\n\t// attributes are ignored.\n\t<a href=\"#cloud_google_com_go_storage_ObjectAttrs\">ObjectAttrs</a>\n\n\t//
-      SendCRC specifies whether to transmit a CRC32C field. It should be set\n\t//
+      SendCRC32C specifies whether to transmit a CRC32C field. It should be set\n\t//
       to true in addition to setting the Writer's CRC32C field, because zero\n\t//
       is a valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C
       is sent, and the data written does not match the checksum,\n\t// the write will
-      be rejected.\n\tSendCRC32C <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      be rejected.\n\t//\n\t// Note: SendCRC32C must be set to true BEFORE the first
+      call to\n\t// Writer.Write() in order to send the checksum. If it is set after
+      that\n\t// point, the checksum will be ignored.\n\tSendCRC32C <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       ChunkSize controls the maximum number of bytes of the object that the\n\t//
       Writer will attempt to send to the server in a single request. Objects\n\t//
       smaller than the size will be sent in a single request, while larger\n\t// objects
@@ -3628,6 +3643,8 @@ items:
     access to a restricted resource for a limited time without needing a
     Google account or signing in. For more information about signed URLs, see
     https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+    If initializing a Storage Client, instead use the Bucket.SignedURL method
+    which uses the Client's credentials to handle authentication.
   parent: cloud.google.com/go/storage
   type: function
   langs:
