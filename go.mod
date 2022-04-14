@@ -3,6 +3,7 @@ module cloud.google.com/go
 go 1.15
 
 require (
+	cloud.google.com/go/cbt v0.0.0-20220323182412-0d77640e139e // indirect
 	cloud.google.com/go/compute v1.5.0
 	cloud.google.com/go/storage v1.22.0
 	github.com/golang/protobuf v1.5.2
