@@ -186,7 +186,7 @@ func (g *GapicGenerator) regenSnippets(ctx context.Context) error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := g.parseAPIShortnames(MicrogenGapicConfigs, ManualEntries)
+	apiShortnames, err := ParseAPIShortnames(g.googleapisDir, MicrogenGapicConfigs, ManualEntries)
 	if err != nil {
 		return err
 	}
@@ -588,10 +588,10 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 	return c.Run()
 }
 
-func (g *GapicGenerator) parseAPIShortnames(confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
+func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEntries []ManifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
+		yamlPath := filepath.Join(googleapisDir, conf.InputDirectoryPath, conf.ApiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err

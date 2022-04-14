@@ -671,6 +671,21 @@ func (p Param) addSQL(sb *strings.Builder) {
 	sb.WriteString(string(p))
 }
 
+func (c Case) SQL() string { return buildSQL(c) }
+func (c Case) addSQL(sb *strings.Builder) {
+	sb.WriteString("CASE ")
+	if c.Expr != nil {
+		fmt.Fprintf(sb, "%s ", c.Expr.SQL())
+	}
+	for _, w := range c.WhenClauses {
+		fmt.Fprintf(sb, "WHEN %s THEN %s ", w.Cond.SQL(), w.Result.SQL())
+	}
+	if c.ElseResult != nil {
+		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
+	}
+	sb.WriteString("END")
+}
+
 func (b BoolLiteral) SQL() string { return buildSQL(b) }
 func (b BoolLiteral) addSQL(sb *strings.Builder) {
 	if b {

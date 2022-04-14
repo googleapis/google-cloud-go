@@ -128,6 +128,29 @@ func ExampleRegionTargetHttpsProxiesClient_List() {
 	}
 }
 
+func ExampleRegionTargetHttpsProxiesClient_Patch() {
+	ctx := context.Background()
+	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.PatchRegionTargetHttpsProxyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRegionTargetHttpsProxyRequest.
+	}
+	op, err := c.Patch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 	ctx := context.Background()
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)

@@ -566,6 +566,38 @@ func TestSQL(t *testing.T) {
 			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A INNER JOIN Table3 USING (X)",
 			reparseQuery,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							Expr: ID("X"),
+							WhenClauses: []WhenClause{
+								{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+								{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+							},
+							ElseResult: Null,
+						}},
+				},
+			},
+			`SELECT CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						Case{
+							WhenClauses: []WhenClause{
+								{Cond: True, Result: StringLiteral("X")},
+								{Cond: False, Result: StringLiteral("Y")},
+							},
+						}},
+				},
+			},
+			`SELECT CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
