@@ -40,8 +40,15 @@ func randomBool() bool {
 	return rand.Intn(2) == 0
 }
 
-// returns a value in range [min, max]
-// includes endpoints in possible values to return
+// randomOf3 returns 2 negative and one positive bool, randomly assigning the
+// position of the positive return value.
+func randomOf3() (bool, bool, bool) {
+	r := rand.Intn(3)
+	return r == 0, r == 1, r == 2
+}
+
+// randomInt64 returns a value in the closed interval [min, max].
+// That is, the endpoints are possible return values.
 func randomInt64(min, max int64) int64 {
 	if min > max {
 		log.Fatalf("min cannot be larger than max; min: %d max: %d", min, max)
@@ -49,8 +56,8 @@ func randomInt64(min, max int64) int64 {
 	return rand.Int63n(max-min+1) + min
 }
 
-// returns a value in range [min, max]
-// includes endpoints in possible values to return
+// randomInt returns a value in the closed interval [min, max].
+// That is, the endpoints are possible return values.
 func randomInt(min, max int) int {
 	if min > max {
 		log.Fatalf("min cannot be larger than max; min: %d max: %d", min, max)

@@ -27,7 +27,6 @@ import (
 type downloadOpts struct {
 	o          *storage.ObjectHandle
 	objectSize int64
-	md5        bool
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
@@ -66,9 +65,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		}
 	}()
 
-	w := newHashWriter(f, dopts.md5, false) // crc32c checks are performed automatically
-
-	written, err := io.Copy(w, objectReader)
+	written, err := io.Copy(f, objectReader)
 	if err != nil {
 		rerr = fmt.Errorf("io.Copy: %v", err)
 		return
@@ -79,12 +76,5 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		return
 	}
 
-	if dopts.md5 {
-		attrs, aerr := dopts.o.Attrs(ctx)
-		if aerr != nil {
-			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", dopts.o.BucketName(), dopts.o.ObjectName(), err)
-		}
-		rerr = w.verify(attrs.MD5, 0)
-	}
 	return
 }

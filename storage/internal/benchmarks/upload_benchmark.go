@@ -15,8 +15,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/md5"
 	"fmt"
+	"hash"
+	"hash/crc32"
 	"io"
 	"os"
 	"time"
@@ -48,9 +52,9 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	}
 	defer f.Close()
 
-	w := newHashWriter(objectWriter, uopts.md5, uopts.crc32c)
+	mw, md5Hash, crc32cHash := generateUploadWriter(objectWriter, uopts.md5, uopts.crc32c)
 
-	if _, err = io.Copy(w, f); err != nil {
+	if _, err = io.Copy(mw, f); err != nil {
 		return elapsedTime, fmt.Errorf("io.Copy: %v", err)
 	}
 
@@ -64,8 +68,44 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 		if aerr != nil {
 			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
 		}
-		rerr = w.verify(attrs.MD5, attrs.CRC32C)
+
+		rerr = verifyHash(md5Hash, crc32cHash, attrs.MD5, attrs.CRC32C)
 	}
 
 	return
+}
+
+// generateUploadWriter selects the appropriate writer for an upload benchmark.
+// If one of hashMD5 or hashCRC is true, it returns a MultiWriter that writes to
+// the provided writer, as well as to the respective hash (also returned).
+// If neither is true, generateUploadWriter returns the provided writer and nil hashes.
+func generateUploadWriter(w io.Writer, hashMD5, hashCRC bool) (mw io.Writer, md5Hash hash.Hash, crc32cHash hash.Hash32) {
+	if hashMD5 {
+		md5Hash = md5.New()
+		mw = io.MultiWriter(w, md5Hash)
+		return
+	}
+	if hashCRC {
+		crc32cHash = crc32.New(crc32.MakeTable(crc32.Castagnoli))
+		mw = io.MultiWriter(w, crc32cHash)
+		return
+	}
+
+	return w, nil, nil
+}
+
+// verify checks the hashs against the given md5 and crc32c checksums. If a hash
+// is nil, the check is skipped.
+func verifyHash(md5Hash hash.Hash, crc32cHash hash.Hash32, expectedMD5Hash []byte, expectedCRCChecksum uint32) (err error) {
+	if md5Hash != nil {
+		if got := md5Hash.Sum(nil); !bytes.Equal(got, expectedMD5Hash) {
+			return fmt.Errorf("md5 checksum does not match; \n\tgot: \t\t%d, \n\texpected: \t%d", got, expectedMD5Hash)
+		}
+	}
+	if crc32cHash != nil {
+		if got := crc32cHash.Sum32(); got != expectedCRCChecksum {
+			return fmt.Errorf("crc checksum does not match; got: %d, expected: %d", got, expectedCRCChecksum)
+		}
+	}
+	return nil
 }

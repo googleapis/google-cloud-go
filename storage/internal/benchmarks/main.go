@@ -171,8 +171,7 @@ type benchmarkResult struct {
 func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
-	doMD5 := randomBool()
-	doCRC32C := randomBool()
+	_, doMD5, doCRC32C := randomOf3()
 
 	objectName := randomName("obj")
 	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
@@ -258,14 +257,13 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		timeTaken, err := downloadBenchmark(ctx, downloadOpts{
 			o:          o,
 			objectSize: objectSize,
-			md5:        doMD5,
 		})
 		runtime.ReadMemStats(memStats)
 		results <- benchmarkResult{
 			objectSize:    objectSize,
 			appBufferSize: int(appReadBufferSize),
-			crc32Enabled:  true, // internally verified for us
-			md5Enabled:    doMD5,
+			crc32Enabled:  true,  // internally verified for us
+			md5Enabled:    false, // we only need one integrity validation
 			API:           writeAPI,
 			elapsedTime:   timeTaken,
 			completed:     err == nil,
