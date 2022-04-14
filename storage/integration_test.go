@@ -230,7 +230,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newHybridClient(ctx, nil)
+	gc, err := newGRPCClient(ctx)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -1134,8 +1134,9 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1191,10 +1192,11 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		// As insurance attempt to delete the object, ignore the error if it
 		// doesn't exist, because it wasn't made.
-		gobj.Delete(ctx)
+		hobj.Delete(ctx)
 	}()
 
 	cctx, cancel := context.WithCancel(ctx)
@@ -1241,8 +1243,9 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1301,8 +1304,9 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1334,7 +1338,6 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	}
 
 	// Use HTTP client to read back the Object for verification.
-	hobj := hc.Bucket(grpcBucketName).Object(name)
 	hr, err := hobj.NewReader(ctx)
 	if err != nil {
 		t.Fatal(err)
