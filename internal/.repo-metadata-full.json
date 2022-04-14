@@ -170,6 +170,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/bigquery/dataexchange/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
+    "description": "Analytics Hub API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/dataexchange/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
