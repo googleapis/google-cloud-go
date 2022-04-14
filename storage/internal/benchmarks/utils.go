@@ -24,6 +24,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -66,7 +67,7 @@ func randomName(prefix string) string {
 	return sb.String()
 }
 
-// createBenchmarkBucket creates a bucket and returns a function to delete it
+// createBenchmarkBucket creates a bucket and returns a function to delete it.
 func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	ctx := context.Background()
 
@@ -147,7 +148,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	return client, readAPI, writeAPI, err
 }
 
-// generateRandomFile creates a file on disk and fills it with size random bytes
+// generateRandomFile creates a file on disk and fills it with size random bytes.
 func generateRandomFile(fileName string, size int64) error {
 	f, err := os.Create(fileName)
 	if err != nil {
@@ -158,4 +159,14 @@ func generateRandomFile(fileName string, size int64) error {
 	_, err = io.CopyN(f, crand.Reader, size)
 
 	return err
+}
+
+// If the option is specified, run a garbage collector before collecting
+// memory statistics and starting the timer on the benchmark. This can be
+// used to compare between running each benchmark "on a blank slate" vs organically.
+func forceGarbageCollection(run bool) {
+	if run {
+		runtime.GC()
+		// debug.FreeOSMemory()
+	}
 }

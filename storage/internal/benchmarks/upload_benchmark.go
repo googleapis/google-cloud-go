@@ -16,10 +16,7 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
 	"fmt"
-	"hash"
-	"hash/crc32"
 	"io"
 	"os"
 	"time"
@@ -45,77 +42,30 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	objectWriter := o.NewWriter(ctx)
 	objectWriter.ChunkSize = uopts.chunkSize
 
-	defer func() {
-		err := objectWriter.Close()
-		if rerr == nil {
-			rerr = err
-		}
-	}()
-
 	f, err := os.Open(uopts.fileName)
 	if err != nil {
 		return elapsedTime, fmt.Errorf("os.Open: %v", err)
 	}
 	defer f.Close()
 
-	if uopts.crc32c || uopts.md5 {
-		w := newHashWriter(uopts.md5, uopts.crc32c)
-		if _, err = io.Copy(w, f); err != nil {
-			return elapsedTime, fmt.Errorf("io.Copy hash: %v", err)
-		}
-		w.applyToWriter(objectWriter)
-		f.Seek(0, 0)
-	}
+	w := newHashWriter(objectWriter, uopts.md5, uopts.crc32c)
 
-	if _, err = io.Copy(objectWriter, f); err != nil {
+	if _, err = io.Copy(w, f); err != nil {
 		return elapsedTime, fmt.Errorf("io.Copy: %v", err)
 	}
 
+	err = objectWriter.Close()
+	if err != nil {
+		return elapsedTime, fmt.Errorf("writer.Close: %v", err)
+	}
+
+	if uopts.crc32c || uopts.md5 {
+		attrs, aerr := uopts.o.Attrs(ctx)
+		if aerr != nil {
+			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
+		}
+		rerr = w.verify(attrs.MD5, attrs.CRC32C)
+	}
+
 	return
-}
-
-// hashWriter writes to md5 and crc32c hashes as applicable
-// we can then get the checksum of these hashes to apply to a storage.Writer and
-// make sure that GCS receives the same bytes as written to hashWriter
-type hashWriter struct {
-	md5Hash hash.Hash
-	crcHash hash.Hash32
-	md5     bool
-	crc     bool
-}
-
-func (u *hashWriter) applyToWriter(w *storage.Writer) {
-	if u.md5 {
-		w.MD5 = u.md5Hash.Sum(nil)
-	}
-	if u.crc {
-		w.SendCRC32C = true
-		w.CRC32C = u.crcHash.Sum32()
-	}
-}
-
-func (u *hashWriter) Write(p []byte) (n int, err error) {
-	if u.md5 {
-		n, err = u.md5Hash.Write(p)
-	}
-	if u.crc {
-		n, err = u.crcHash.Write(p)
-	}
-
-	return n, err
-}
-
-func newHashWriter(hashMD5, hashCRC bool) *hashWriter {
-	uw := &hashWriter{}
-
-	if hashMD5 {
-		uw.md5 = true
-		uw.md5Hash = md5.New()
-	}
-	if hashCRC {
-		uw.crc = true
-		uw.crcHash = crc32.New(crc32.MakeTable(crc32.Castagnoli))
-	}
-
-	return uw
 }

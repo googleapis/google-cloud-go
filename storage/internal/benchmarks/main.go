@@ -17,7 +17,6 @@ package main
 import (
 	"context"
 	"encoding/csv"
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -199,15 +198,17 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	defer o.Delete(ctx)
 
 	// Upload
-	if opts.forceGC {
-		runtime.GC()
-		// debug.FreeOSMemory()
-	}
+
+	// If the option is specified, run a garbage collector before collecting
+	// memory statistics and starting the timer on the benchmark. This can be
+	// used to compare between running each benchmark "on a blank slate" vs organically.
+	forceGarbageCollection(opts.forceGC)
+
 	runtime.ReadMemStats(memStats)
 	prevHeapAlloc := memStats.HeapAlloc
 	prevMallocs := memStats.Mallocs
-	start := time.Now()
 
+	start := time.Now()
 	timeTaken, err := uploadBenchmark(ctx, uploadOpts{
 		o:         o,
 		fileName:  objectName,
@@ -240,28 +241,15 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	}
 
 	// Wait for the object to be available.
-	timedCtx, cancelTimedCtx := context.WithTimeout(ctx, time.Second*10)
+	timedCtx, cancelTimedCtx := context.WithTimeout(ctx, time.Second*3)
 	defer cancelTimedCtx()
-	for {
-		if _, err := o.Attrs(timedCtx); err != nil {
-			// keep trying if the object is not found, otherwise return err
-			if !errors.Is(err, storage.ErrObjectNotExist) {
-				return fmt.Errorf("object.Attrs: %v", err)
-			}
-
-		} else {
-			break
-		}
-		// give some time before checking again
-		time.Sleep(time.Millisecond * 100)
+	if _, err := o.Retryer(storage.WithPolicy(storage.RetryAlways)).Attrs(timedCtx); err != nil {
+		return fmt.Errorf("object.Attrs: %v", err)
 	}
 
 	// Read.
 	for i := 0; i < 3; i++ {
-		if opts.forceGC {
-			runtime.GC()
-			// debug.FreeOSMemory()
-		}
+		forceGarbageCollection(opts.forceGC)
 		runtime.ReadMemStats(memStats)
 		prevHeapAlloc = memStats.HeapAlloc
 		prevMallocs = memStats.Mallocs

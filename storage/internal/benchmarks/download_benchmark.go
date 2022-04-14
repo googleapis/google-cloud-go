@@ -15,11 +15,8 @@
 package main
 
 import (
-	"bytes"
 	"context"
-	"crypto/md5"
 	"fmt"
-	"hash"
 	"io"
 	"os"
 	"time"
@@ -69,7 +66,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		}
 	}()
 
-	w := newDowloadWriter(f, dopts.md5)
+	w := newHashWriter(f, dopts.md5, false) // crc32c checks are performed automatically
 
 	written, err := io.Copy(w, objectReader)
 	if err != nil {
@@ -87,42 +84,7 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 		if aerr != nil {
 			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", dopts.o.BucketName(), dopts.o.ObjectName(), err)
 		}
-		rerr = w.verify(attrs.MD5)
+		rerr = w.verify(attrs.MD5, 0)
 	}
 	return
-}
-
-// downloadWriter writes to given writer as well as md5 hash if applicable
-// we can then get the checksum of the hash to verify the written bytes
-type downloadWriter struct {
-	md5Hash hash.Hash
-	w       io.Writer
-	md5     bool
-}
-
-func (c *downloadWriter) verify(expectedMD5Hash []byte) (err error) {
-	if c.md5 {
-		if got := c.md5Hash.Sum(nil); !bytes.Equal(got, expectedMD5Hash) {
-			return fmt.Errorf("md5 checksum does not match; \n\tgot: \t\t%d, \n\texpected: \t%d", got, expectedMD5Hash)
-		}
-	}
-	return nil
-}
-
-func (c *downloadWriter) Write(p []byte) (n int, err error) {
-	n, err = c.w.Write(p)
-	if c.md5 {
-		c.md5Hash.Write(p)
-	}
-	return n, err
-}
-
-func newDowloadWriter(w io.Writer, hashMD5 bool) *downloadWriter {
-	cw := &downloadWriter{w: w}
-
-	if hashMD5 {
-		cw.md5 = true
-		cw.md5Hash = md5.New()
-	}
-	return cw
 }
