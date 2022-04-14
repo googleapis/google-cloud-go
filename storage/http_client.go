@@ -136,7 +136,18 @@ func (c *httpStorageClient) Close() error {
 // Top-level methods.
 
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
-	return "", errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.ServiceAccount.Get(project)
+	var res *raw.ServiceAccount
+	err := run(ctx, func() error {
+		var err error
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return "", err
+	}
+	return res.EmailAddress, nil
 }
 
 func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
