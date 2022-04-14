@@ -122,7 +122,6 @@ func TestRetryApply(t *testing.T) {
 	if err != nil {
 		t.Errorf("reading single value after conditional mutation: %v", err)
 	}
-
 	if row != nil {
 		t.Errorf("reading single value after conditional mutation: row not deleted")
 	}

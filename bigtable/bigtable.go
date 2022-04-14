@@ -258,7 +258,6 @@ func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Ro
 		r = rr
 		return true
 	}, opts...)
-
 	return r, err
 }
 
