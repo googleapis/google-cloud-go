@@ -251,18 +251,13 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
-// A missing row will return a zero-length map and a nil error.
+// A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
 	}, opts...)
-
-	// If ReadRows() returns a nil row, return an empty map
-	if r == nil {
-		r = map[string][]ReadItem{}
-	}
 
 	return r, err
 }
