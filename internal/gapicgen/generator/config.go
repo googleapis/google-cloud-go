@@ -621,6 +621,7 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		GRPCServiceConfigPath: "longrunning_grpc_service_config.json",
 		ApiServiceConfigPath:  "longrunning.yaml",
 		ReleaseLevel:          "alpha",
+		Transports:            []string{"grpc", "rest"},
 	},
 	{
 		InputDirectoryPath:    "google/devtools/containeranalysis/v1beta1",
