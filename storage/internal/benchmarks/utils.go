@@ -35,6 +35,7 @@ import (
 )
 
 const bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
+const objectPrefix = "benchmark-obj-"
 
 func randomBool() bool {
 	return rand.Intn(2) == 0
@@ -70,7 +71,7 @@ func randomName(prefix string) string {
 
 	sb.WriteString(prefix)
 	sb.WriteRune('-')
-	sb.WriteString(uuid.New().String()) // 36 chars
+	sb.WriteString(uuid.New().String())
 	return sb.String()
 }
 
@@ -155,17 +156,17 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	return client, readAPI, writeAPI, err
 }
 
-// generateRandomFile creates a file on disk and fills it with size random bytes.
-func generateRandomFile(fileName string, size int64) error {
-	f, err := os.Create(fileName)
+// generateRandomFile creates a temp file on disk and fills it with size random bytes.
+func generateRandomFile(size int64) (string, error) {
+	f, err := os.CreateTemp("", objectPrefix)
 	if err != nil {
-		return fmt.Errorf("error creating file: %v", err)
+		return "", fmt.Errorf("error creating file: %v", err)
 	}
 	defer f.Close()
 
 	_, err = io.CopyN(f, crand.Reader, size)
 
-	return err
+	return f.Name(), err
 }
 
 // If the option is specified, run a garbage collector before collecting

@@ -171,14 +171,11 @@ type benchmarkResult struct {
 func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string) error {
 	var memStats *runtime.MemStats = &runtime.MemStats{}
 
+	// Select randomized parameters
 	_, doMD5, doCRC32C := randomOf3()
-
-	objectName := randomName("obj")
 	objectSize := randomInt64(opts.minObjectSize, opts.maxObjectSize)
-
 	appWriteBufferSize := opts.writeQuantum * randomInt(opts.minWriteSize/opts.writeQuantum, opts.maxWriteSize/opts.writeQuantum)
 	appReadBufferSize := opts.readQuantum * randomInt(opts.minReadSize/opts.readQuantum, opts.maxReadSize/opts.readQuantum)
-
 	writeChunkSize := randomInt64(opts.minChunkSize, opts.maxChunkSize)
 
 	// Select client
@@ -187,8 +184,8 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 		return fmt.Errorf("NewClient: %v", err)
 	}
 
-	// Create contents to write
-	err = generateRandomFile(objectName, objectSize)
+	// Create contents
+	objectName, err := generateRandomFile(objectSize)
 	if err != nil {
 		return fmt.Errorf("generateRandomFile: %v", err)
 	}
