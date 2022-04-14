@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"github.com/googleapis/go-type-adapters/adapters"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iamcredentials/v1"
 	"google.golang.org/api/iterator"
@@ -187,7 +186,7 @@ func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error
 		return err
 	}, b.retry, true)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrBucketNotExist
 	}
 	if err != nil {
@@ -921,11 +920,9 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 				Enabled: true,
 			}
 		}
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
-		// 	bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
-		// }
+		if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
+			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
+		}
 	}
 
 	return &storagepb.Bucket{
@@ -1761,9 +1758,9 @@ func toPublicAccessPreventionFromProto(b *storagepb.Bucket_IamConfig) PublicAcce
 		return PublicAccessPreventionUnknown
 	}
 	switch b.GetPublicAccessPrevention() {
-	case storagepb.Bucket_IamConfig_INHERITED, storagepb.Bucket_IamConfig_PUBLIC_ACCESS_PREVENTION_UNSPECIFIED:
+	case publicAccessPreventionInherited, publicAccessPreventionUnspecified:
 		return PublicAccessPreventionInherited
-	case storagepb.Bucket_IamConfig_ENFORCED:
+	case publicAccessPreventionEnforced:
 		return PublicAccessPreventionEnforced
 	default:
 		return PublicAccessPreventionUnknown
@@ -1919,7 +1916,7 @@ func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) 
 	}, it.bucket.retry, true)
 	if err != nil {
 		var e *googleapi.Error
-		if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 			err = ErrBucketNotExist
 		}
 		return "", err
