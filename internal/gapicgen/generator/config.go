@@ -183,6 +183,14 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		ReleaseLevel:          "ga",
 	},
 	{
+		InputDirectoryPath:    "google/cloud/bigquery/dataexchange/v1beta1",
+		Pkg:                   "dataexchange",
+		ImportPath:            "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
+		GRPCServiceConfigPath: "analyticshub_grpc_service_config.json",
+		ApiServiceConfigPath:  "analyticshub_v1beta1.yaml",
+		ReleaseLevel:          "beta",
+	},
+	{
 		InputDirectoryPath:    "google/cloud/bigquery/datatransfer/v1",
 		Pkg:                   "datatransfer",
 		ImportPath:            "cloud.google.com/go/bigquery/datatransfer/apiv1",
