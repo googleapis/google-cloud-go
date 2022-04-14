@@ -23,11 +23,13 @@ import (
 	"flag"
 	"log"
 
+	"cloud.google.com/go/internal/gapicgen/generator"
 	"cloud.google.com/go/internal/gapicgen/gensnippets"
 )
 
 func main() {
 	outDir := flag.String("out", "internal/generated/snippets", "Output directory (default internal/generated/snippets)")
+	googleapisDir := flag.String("googleapis-dir", "", "Root directory of googleapis/googleapis")
 
 	flag.Parse()
 
@@ -35,8 +37,12 @@ func main() {
 	if flag.NArg() > 0 {
 		rootDir = flag.Arg(0)
 	}
-	// TODO(tbp): route proper api short names
-	if err := gensnippets.Generate(rootDir, *outDir, map[string]string{}); err != nil {
+	apiShortnames, err := generator.ParseAPIShortnames(*googleapisDir, generator.MicrogenGapicConfigs, generator.ManualEntries)
+	if err != nil {
+		log.Fatalf("unable to parse shortnames: %v", err)
+	}
+
+	if err := gensnippets.Generate(rootDir, *outDir, apiShortnames); err != nil {
 		log.Fatal(err)
 	}
 }
