@@ -59,6 +59,32 @@ func ExampleSecurityPoliciesClient_AddRule() {
 	}
 }
 
+func ExampleSecurityPoliciesClient_AggregatedList() {
+	ctx := context.Background()
+	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AggregatedListSecurityPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListSecurityPoliciesRequest.
+	}
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleSecurityPoliciesClient_Delete() {
 	ctx := context.Background()
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
