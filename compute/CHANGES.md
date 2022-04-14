@@ -1,5 +1,18 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.5.0...compute/v1.6.0) (2022-04-14)
+
+
+### Features
+
+* **compute:** update compute API to revision 20220322 ([#710](https://github.com/googleapis/google-cloud-go/issues/710)) ([bb5da6b](https://github.com/googleapis/google-cloud-go/commit/bb5da6b3c34079a01d18b766b67f626cff18d849))
+
+
+### Bug Fixes
+
+* **compute:** remove proto3_optional from parent_id ([#712](https://github.com/googleapis/google-cloud-go/issues/712)) ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+* **compute:** replace missing REQUIRED for parent_id ([#711](https://github.com/googleapis/google-cloud-go/issues/711)) ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.4.0...compute/v1.5.0) (2022-02-23)
 
 
