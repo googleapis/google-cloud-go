@@ -123,8 +123,7 @@ func TestRetryApply(t *testing.T) {
 		t.Errorf("reading single value after conditional mutation: %v", err)
 	}
 
-	wantRow := map[string][]ReadItem{}
-	if cmp.Equal(row, wantRow) {
+	if row != nil {
 		t.Errorf("reading single value after conditional mutation: row not deleted")
 	}
 
