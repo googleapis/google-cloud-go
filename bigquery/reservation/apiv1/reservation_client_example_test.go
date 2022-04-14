@@ -420,6 +420,26 @@ func ExampleClient_MoveAssignment() {
 	_ = resp
 }
 
+func ExampleClient_UpdateAssignment() {
+	ctx := context.Background()
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.UpdateAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateAssignmentRequest.
+	}
+	resp, err := c.UpdateAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetBiReservation() {
 	ctx := context.Background()
 	c, err := reservation.NewClient(ctx)
