@@ -201,12 +201,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
-// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
-type hybridClientOptions struct {
-	HTTPOpts []option.ClientOption
-	GRPCOpts []option.ClientOption
-}
-
 // newGRPCClient creates a new Storage client that initializes a gRPC-based
 // client. Calls that have not been implemented in gRPC will panic.
 //
