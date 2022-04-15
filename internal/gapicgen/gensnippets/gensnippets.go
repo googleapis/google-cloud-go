@@ -69,9 +69,6 @@ func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	trimPrefix := "cloud.google.com/go"
 	errs := []error{}
 	for _, dir := range dirs {
-		if !strings.Contains(dir, "secret") {
-			continue
-		}
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
