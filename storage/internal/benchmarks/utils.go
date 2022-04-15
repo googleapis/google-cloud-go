@@ -109,11 +109,11 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	var client *storage.Client
 	var err error
 
-	if api == mixed {
+	if api == mixedAPIs {
 		if randomBool() {
-			api = xmlApi
+			api = xmlAPI
 		} else {
-			api = grpcApi
+			api = grpcAPI
 		}
 	}
 
@@ -144,12 +144,12 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	c := http.Client{Transport: trans}
 
 	switch api {
-	case xmlApi, jsonApi:
+	case xmlAPI, jsonAPI:
 		clientMu.Lock()
 		client, err = storage.NewClient(ctx, option.WithHTTPClient(&c))
 		clientMu.Unlock()
-		readAPI, writeAPI = jsonApi, xmlApi
-	case grpcApi:
+		readAPI, writeAPI = jsonAPI, xmlAPI
+	case grpcAPI:
 		clientMu.Lock()
 		os.Setenv("STORAGE_USE_GRPC", "true")
 		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
@@ -158,7 +158,7 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 			option.WithGRPCConnectionPool(connPoolSize))
 		os.Unsetenv("STORAGE_USE_GRPC")
 		clientMu.Unlock()
-		readAPI, writeAPI = grpcApi, grpcApi
+		readAPI, writeAPI = grpcAPI, grpcAPI
 	default:
 		log.Fatalf("%s API not supported.\n", opts.api)
 	}
