@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/option"
 )
 
 const codeVersion = 3.1 // to keep track of which version of the code a benchmark ran on
@@ -196,7 +197,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	httpObjHandle := o
 	if writeAPI == grpcApi {
 		clientMu.Lock()
-		httpClient, err := storage.NewClient(ctx)
+		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
 		clientMu.Unlock()
 		if err != nil {
 			return fmt.Errorf("NewClient: %v", err)

@@ -26,6 +26,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
 )
 
 type uploadOpts struct {
@@ -66,7 +67,7 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	if uopts.crc32c || uopts.md5 {
 		// TODO: remove use of separate client once grpc is fully implemented
 		clientMu.Lock()
-		httpClient, err := storage.NewClient(ctx)
+		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
 		clientMu.Unlock()
 		if err != nil {
 			return elapsedTime, fmt.Errorf("NewClient: %v", err)
