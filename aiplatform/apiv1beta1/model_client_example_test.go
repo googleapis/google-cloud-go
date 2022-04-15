@@ -107,6 +107,32 @@ func ExampleModelClient_ListModels() {
 	}
 }
 
+func ExampleModelClient_ListModelVersions() {
+	ctx := context.Background()
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListModelVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#ListModelVersionsRequest.
+	}
+	it := c.ListModelVersions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleModelClient_UpdateModel() {
 	ctx := context.Background()
 	c, err := aiplatform.NewModelClient(ctx)
@@ -148,6 +174,49 @@ func ExampleModelClient_DeleteModel() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleModelClient_DeleteModelVersion() {
+	ctx := context.Background()
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeleteModelVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#DeleteModelVersionRequest.
+	}
+	op, err := c.DeleteModelVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleModelClient_MergeVersionAliases() {
+	ctx := context.Background()
+	c, err := aiplatform.NewModelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.MergeVersionAliasesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/aiplatform/v1beta1#MergeVersionAliasesRequest.
+	}
+	resp, err := c.MergeVersionAliases(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleModelClient_ExportModel() {

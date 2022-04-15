@@ -85,6 +85,15 @@ func TestGetBucketEmulated(t *testing.T) {
 	})
 }
 
+func TestGetServiceAccountEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		_, err := client.GetServiceAccount(context.Background(), project)
+		if err != nil {
+			t.Fatalf("client.GetServiceAccount: %v", err)
+		}
+	})
+}
+
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
