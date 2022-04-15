@@ -26,12 +26,14 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/google/uuid"
 	"google.golang.org/api/option"
 	htransport "google.golang.org/api/transport/http"
+	"google.golang.org/grpc"
 )
 
 const bucketPrefix = "golang-grpc-test-" // needs to be this for GRPC for now
@@ -99,6 +101,9 @@ func createBenchmarkBucket(bucketName string, opts *benchmarkOptions) func() {
 	}
 }
 
+// mutex on starting a client so that we can set an env variable for GRPC clients
+var clientMu sync.Mutex
+
 func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, readBufferSize int, connPoolSize int) (*storage.Client, benchmarkAPI, benchmarkAPI, error) {
 	var readAPI, writeAPI benchmarkAPI
 	var client *storage.Client
@@ -106,9 +111,9 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 
 	if api == mixed {
 		if randomBool() {
-			api = xml
+			api = xmlApi
 		} else {
-			api = grpc
+			api = grpcApi
 		}
 	}
 
@@ -126,8 +131,8 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 		IdleConnTimeout:       90 * time.Second,
 		TLSHandshakeTimeout:   10 * time.Second,
 		ExpectContinueTimeout: 1 * time.Second,
-		WriteBufferSize:       int(writeBufferSize),
-		ReadBufferSize:        int(readBufferSize),
+		WriteBufferSize:       writeBufferSize,
+		ReadBufferSize:        readBufferSize,
 	}
 	trans, err := htransport.NewTransport(ctx, base,
 		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"),
@@ -139,20 +144,25 @@ func initializeClient(ctx context.Context, api benchmarkAPI, writeBufferSize, re
 	c := http.Client{Transport: trans}
 
 	switch api {
-	case xml, json:
+	case xmlApi, jsonApi:
+		clientMu.Lock()
 		client, err = storage.NewClient(ctx, option.WithHTTPClient(&c))
-		readAPI = json
-		writeAPI = xml
-	case grpc:
-		client, err = storage.NewHybridClient(ctx, &storage.HybridClientOptions{
-			HTTPOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile)},
-			GRPCOpts: []option.ClientOption{option.WithCredentialsFile(credentialsFile), option.WithGRPCConnectionPool(connPoolSize)},
-		})
-		readAPI = grpc
-		writeAPI = grpc
+		clientMu.Unlock()
+		readAPI, writeAPI = jsonApi, xmlApi
+	case grpcApi:
+		clientMu.Lock()
+		os.Setenv("STORAGE_USE_GRPC", "true")
+		client, err = storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+			option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
+			option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
+			option.WithGRPCConnectionPool(connPoolSize))
+		os.Unsetenv("STORAGE_USE_GRPC")
+		clientMu.Unlock()
+		readAPI, writeAPI = grpcApi, grpcApi
 	default:
 		log.Fatalf("%s API not supported.\n", opts.api)
 	}
+
 	return client, readAPI, writeAPI, err
 }
 

@@ -191,7 +191,20 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	}
 
 	o := client.Bucket(bucketName).Object(objectName)
-	defer o.Delete(ctx)
+
+	// TODO: remove use of separate client once grpc is fully implemented
+	httpObjHandle := o
+	if writeAPI == grpcApi {
+		clientMu.Lock()
+		httpClient, err := storage.NewClient(ctx)
+		clientMu.Unlock()
+		if err != nil {
+			return fmt.Errorf("NewClient: %v", err)
+		}
+		defer httpClient.Close()
+		httpObjHandle = httpClient.Bucket(o.BucketName()).Object(o.ObjectName())
+	}
+	defer httpObjHandle.Delete(ctx)
 
 	// Upload
 
@@ -239,7 +252,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 	// Wait for the object to be available.
 	timedCtx, cancelTimedCtx := context.WithTimeout(ctx, time.Second*3)
 	defer cancelTimedCtx()
-	if _, err := o.Retryer(storage.WithPolicy(storage.RetryAlways)).Attrs(timedCtx); err != nil {
+	if _, err := httpObjHandle.Retryer(storage.WithPolicy(storage.RetryAlways)).Attrs(timedCtx); err != nil {
 		return fmt.Errorf("object.Attrs: %v", err)
 	}
 
@@ -285,10 +298,10 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 type benchmarkAPI string
 
 const (
-	json  benchmarkAPI = "JSON"
-	xml   benchmarkAPI = "XML"
-	grpc  benchmarkAPI = "GRPC"
-	mixed benchmarkAPI = "MIXED"
+	jsonApi benchmarkAPI = "JSON"
+	xmlApi  benchmarkAPI = "XML"
+	grpcApi benchmarkAPI = "GRPC"
+	mixed   benchmarkAPI = "MIXED"
 )
 
 var csvHeaders = []string{

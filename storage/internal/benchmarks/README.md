@@ -35,3 +35,8 @@ This runs 1000 iterations on 0 to 2Gib files in the background, sending program 
 | -max_w_size | maximum write size in bytes | any positive integer | 4000 |
 
 \* required values
+
+Note: while the default read/write size for HTTP clients is 4Kb 
+(the default for this benchmarking), the default for GRPC is 32Kb.
+If you want to capture performance using the defaults for GRPC, run the script 
+separately, setting the read and write sizes to 32KB.

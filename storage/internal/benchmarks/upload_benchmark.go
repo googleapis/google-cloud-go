@@ -64,7 +64,16 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	}
 
 	if uopts.crc32c || uopts.md5 {
-		attrs, aerr := uopts.o.Attrs(ctx)
+		// TODO: remove use of separate client once grpc is fully implemented
+		clientMu.Lock()
+		httpClient, err := storage.NewClient(ctx)
+		clientMu.Unlock()
+		if err != nil {
+			return elapsedTime, fmt.Errorf("NewClient: %v", err)
+		}
+		o := httpClient.Bucket(uopts.o.BucketName()).Object(uopts.o.ObjectName())
+
+		attrs, aerr := o.Attrs(ctx)
 		if aerr != nil {
 			return elapsedTime, fmt.Errorf("get attrs on object %s/%s : %v", uopts.o.BucketName(), uopts.o.ObjectName(), aerr)
 		}
