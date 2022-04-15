@@ -61,8 +61,8 @@ type benchmarkOptions struct {
 	connPoolSize  int
 }
 
-func Init() {
-	flag.StringVar((*string)(&opts.api), "api", string(mixed), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
+func parseFlags() {
+	flag.StringVar((*string)(&opts.api), "api", string(mixedAPIs), "api used to upload/download objects; JSON or XML values will use JSON to uplaod and XML to download")
 	flag.StringVar(&opts.region, "r", "US-WEST1", "region")
 	flag.DurationVar(&opts.timeout, "t", time.Hour, "timeout")
 	minSize := flag.Int64("min_size", 512, "minimum object size in kib")
@@ -96,14 +96,13 @@ func Init() {
 		fmt.Println("Must set a project ID. Use flag -p to specify it.")
 		os.Exit(1)
 	}
-
-	rand.Seed(time.Now().UnixNano())
 }
 
 func main() {
 	start := time.Now()
 	fmt.Printf("Benchmarking started: %s\n", start)
-	Init()
+	parseFlags()
+	rand.Seed(time.Now().UnixNano())
 
 	bucketName := randomName(bucketPrefix)
 	cleanUp := createBenchmarkBucket(bucketName, opts)
@@ -195,7 +194,7 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 
 	// TODO: remove use of separate client once grpc is fully implemented
 	httpObjHandle := o
-	if writeAPI == grpcApi {
+	if writeAPI == grpcAPI {
 		clientMu.Lock()
 		httpClient, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile))
 		clientMu.Unlock()
@@ -299,10 +298,10 @@ func benchmarkRun(ctx context.Context, opts *benchmarkOptions, bucketName string
 type benchmarkAPI string
 
 const (
-	jsonApi benchmarkAPI = "JSON"
-	xmlApi  benchmarkAPI = "XML"
-	grpcApi benchmarkAPI = "GRPC"
-	mixed   benchmarkAPI = "MIXED"
+	jsonAPI   benchmarkAPI = "JSON"
+	xmlAPI    benchmarkAPI = "XML"
+	grpcAPI   benchmarkAPI = "GRPC"
+	mixedAPIs benchmarkAPI = "MIXED"
 )
 
 var csvHeaders = []string{
