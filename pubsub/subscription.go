@@ -1003,6 +1003,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()
+						// If there are any errors with scheduling messages,
+						// nack them so they can be redelivered.
+						msg.Nack()
+						// Currently, only this error is returned by the receive scheduler.
+						if errors.Is(err, scheduler.ErrReceiveDraining) {
+							return nil
+						}
 						return err
 					}
 				}
