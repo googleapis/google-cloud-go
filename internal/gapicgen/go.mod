@@ -4,12 +4,12 @@ go 1.18
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/internal/godocfx v0.0.0-20220411222817-aa49b04693ce
+	cloud.google.com/go/internal/godocfx v0.0.0-20220415205706-b92a19223c5b
 	github.com/google/go-github/v35 v35.3.0
 	github.com/shurcooL/githubv4 v0.0.0-20220115235240-a14260e6f8a2
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/sys v0.0.0-20220412071739-889880a91fd5
+	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad
 	google.golang.org/genproto v0.0.0-20220405205423-9d709892a2bf
 	google.golang.org/protobuf v1.28.0
 	gopkg.in/src-d/go-git.v4 v4.13.1
