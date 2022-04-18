@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
+	otelcodes "go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
@@ -941,7 +942,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 			defer cancel2()
 			for {
 				opts := getSubSpanAttributes(s.topicName, &Message{}, semconv.MessagingOperationReceive)
-				ctx2, receiveSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
+				ctx2, rs := s.tracer.Start(ctx2, fmt.Sprintf("%s receive", s.topicName), opts...)
 
 				var maxToPull int32 // maximum number of messages to pull
 				if po.synchronous {
@@ -978,9 +979,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				}
 				if err != nil {
+					rs.RecordError(err)
+					rs.SetStatus(otelcodes.Error, err.Error())
 					return err
 				}
-				receiveSpan.End()
+				rs.End()
 				// If context is done and messages have been pulled,
 				// nack them.
 				select {
@@ -993,10 +996,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 
 				for i, msg := range msgs {
-					msg := msg
-					fcSpanName := fmt.Sprintf("%s waiting for subscriber flow control", s.topicName)
-					ctx2, fcSpan := s.tracer.Start(ctx2, fcSpanName, opts...)
-					defer fcSpan.End()
+					opts := getSubSpanAttributes(s.topicName, msg, semconv.MessagingOperationProcess)
+					if msg.Attributes != nil && msg.Attributes["gogclient_traceparent"] != "" {
+						lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(msg))
+						link := trace.LinkFromContext(lctx)
+						opts = append(opts, trace.WithLinks(link))
+					}
+					_, ps := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
+					ps.AddEvent("waiting for subscriber flow control")
+					var fcTimer time.Time
+					if ps.IsRecording() {
+						fcTimer = time.Now()
+					}
 					// TODO(jba): call acquire closer to when the message is allocated.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
@@ -1006,12 +1017,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					fcSpan.End()
+					ps.AddEvent("acquired subscriber flow control resources", trace.WithAttributes(attribute.Float64("elapsed_ms", float64(time.Since(fcTimer))/float64(time.Millisecond))))
 					ackh, _ := msgAckHandler(msg)
 					old := ackh.doneFunc
 					msgLen := len(msg.Data)
 					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 						defer fc.release(ctx, msgLen)
+						defer ps.End()
+						if ack {
+							ps.SetAttributes(attribute.String("result", "ack"))
+						} else {
+							ps.SetAttributes(attribute.String("result", "nack"))
+						}
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
@@ -1023,29 +1040,14 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
 					if err := sched.Add(key, msg, func(msg interface{}) {
-						m := msg.(*Message)
-						opts := getSubSpanAttributes("", m, semconv.MessagingOperationProcess)
-						if m.Attributes != nil && m.Attributes["gogclient_traceparent"] != "" {
-							lctx := otel.GetTextMapPropagator().Extract(ctx2, NewPubsubMessageCarrier(m))
-							link := trace.LinkFromContext(lctx)
-							opts = append(opts, trace.WithLinks(link))
-						}
-						_, processSpan := s.tracer.Start(ctx2, fmt.Sprintf("%s process", s.topicName), opts...)
-						// End spans to ack handler doneFunc, which also handles flow control release.
-						old := ackh.doneFunc
-						ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
-							if ack {
-								processSpan.SetAttributes(attribute.String("result", "ack"))
-							} else {
-								processSpan.SetAttributes(attribute.String("result", "nack"))
-							}
-							defer processSpan.End()
-							old(ackID, ack, receiveTime)
-						}
 						defer wg.Done()
+						rs.AddEvent("started handling provided callback")
 						f(ctx2, msg.(*Message))
+						rs.AddEvent("finished handling provided callback")
 					}); err != nil {
 						wg.Done()
+						ps.RecordError(err)
+						ps.SetStatus(otelcodes.Error, err.Error())
 						return err
 					}
 				}

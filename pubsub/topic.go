@@ -33,6 +33,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -533,9 +534,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	otelctx := ctx
 	opts := getPublishSpanAttributes(t.String(), msg)
 	ctx, span := t.tracer.Start(ctx, t.String()+" send", opts...)
-	// Discard this span's context since it is a child span. We only care about the main "send" span.
-	_, span2 := t.tracer.Start(ctx, t.String()+" waiting for publisher flow control", opts...)
-	defer span2.End()
+	span.AddEvent("waiting for publisher flow control")
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
@@ -576,22 +575,24 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 		return r
 	}
-	_, span3 := t.tracer.Start(ctx, t.String()+" waiting in batch")
+	span.AddEvent("acquired publisher flow control resources")
 
 	bmsg := &bundledMessage{
-		ctx:       ctx,
-		msg:       msg,
-		res:       r,
-		size:      msgSize,
-		pubSpan:   span,
-		batchSpan: span3,
+		ctx:  ctx,
+		msg:  msg,
+		res:  r,
+		size: msgSize,
+		span: span,
 	}
+
 	if err := t.scheduler.Add(msg.OrderingKey, bmsg, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 		span.RecordError(errTopicStopped)
 		span.SetStatus(otelcodes.Error, errTopicStopped.Error())
 	}
+	span.AddEvent("added to batch")
+
 	return r
 }
 
@@ -622,8 +623,8 @@ type bundledMessage struct {
 	msg  *Message
 	res  *PublishResult
 	size int
-	// pubSpan is the entire publish span (from user calling Publish to the publish RPC resolving).
-	pubSpan trace.Span
+	// span is the entire publish span (from user calling Publish to the publish RPC resolving).
+	span trace.Span
 	// batchSpan traces the message batching operation in publish scheduler.
 	batchSpan trace.Span
 }
@@ -664,7 +665,7 @@ func (t *Topic) initBundler(otelctx context.Context) {
 		}
 		bmsgs := bundle.([]*bundledMessage)
 		for _, m := range bmsgs {
-			m.batchSpan.End()
+			m.span.AddEvent("removed from batch")
 		}
 		t.publishMessageBundle(otelctx, ctx2, bmsgs)
 	})
@@ -707,27 +708,25 @@ func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundle
 	if err != nil {
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
-	pbMsgs := make([]*pb.PubsubMessage, len(bms))
+	numMsgs := len(bms)
+	pbMsgs := make([]*pb.PubsubMessage, numMsgs)
 	var orderingKey string
-
-	var ll []trace.Link
+	if numMsgs != 0 {
+		// extract the ordering key for this batch. since
+		// messages in the same batch share the same ordering
+		// key, it doesn't matter which we read from.
+		orderingKey = bms[0].msg.OrderingKey
+	}
 	for i, bm := range bms {
-		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		l := trace.LinkFromContext(bm.ctx)
-		ll = append(ll, l)
-		defer bm.pubSpan.End()
+		bm.span.AddEvent("starting publish RPC", trace.WithAttributes(attribute.Int("num_messages_in_batch", numMsgs)))
+		defer bm.span.End()
 		bm.msg = nil // release bm.msg for GC
 	}
-
-	opts := getPublishSpanAttributes(t.String(), &Message{})
-	opts = append(opts, trace.WithLinks(ll...))
-	_, span := t.tracer.Start(otelctx, t.String()+" publish RPC", opts...)
-	defer span.End()
 
 	var res *pb.PublishResponse
 	start := time.Now()
@@ -763,11 +762,12 @@ func (t *Topic) publishMessageBundle(otelctx, ctx context.Context, bms []*bundle
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
-			bm.pubSpan.RecordError(err)
-			bm.pubSpan.SetStatus(otelcodes.Error, err.Error())
+			bm.span.RecordError(err)
+			bm.span.SetStatus(otelcodes.Error, err.Error())
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
-			bm.pubSpan.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			bm.span.SetAttributes(semconv.MessagingMessageIDKey.String(res.MessageIds[i]))
+			bm.span.AddEvent("received publish rpc results")
 		}
 	}
 }
