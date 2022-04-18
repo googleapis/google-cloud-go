@@ -19,10 +19,12 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -120,6 +122,41 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 		}
 		if diff := cmp.Diff(perms, want); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
+func TestListBucketsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		prefix := time.Now().Nanosecond()
+		want := []*BucketAttrs{
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+		}
+		// Create the buckets that will be listed.
+		for _, b := range want {
+			_, err := client.CreateBucket(context.Background(), project, b)
+			if err != nil {
+				t.Fatalf("client.CreateBucket: %v", err)
+			}
+		}
+
+		it := client.ListBuckets(context.Background(), project)
+		it.Prefix = strconv.Itoa(prefix)
+		var err error
+		var b *BucketAttrs
+		for i := 0; err == nil; i++ {
+			b, err = it.Next()
+			if err != nil {
+				continue
+			}
+			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+				break
+			}
+		}
+		if err != iterator.Done {
+			t.Fatal(err)
 		}
 	})
 }
