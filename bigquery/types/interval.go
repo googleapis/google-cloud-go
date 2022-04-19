@@ -22,18 +22,23 @@ import (
 )
 
 // IntervalValue is a go type for representing BigQuery INTERVAL values.
-// Intervals use the following equivalences:
-// 1 Year == 12 Months
-// 1 Month == 30 Days
-// 1 Day = 24 Hours
-// 1 Hour = 60 Minutes
-// 1 Hour = 60 Seconds
+// Intervals are encoded in three parts:
+// * Years and Months
+// * Days
+// * Time (Hours/Mins/Seconds/Fractional Seconds).
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 type IntervalValue struct {
+	// In canonical form, Years and Months share a consistent sign and reduced
+	// to avoid large month values.
 	Years  int32
 	Months int32
 
+	// In canonical form, Days are independent of the other parts and can have it's
+	// own sign.  There is no attempt to reduce larger Day values into the Y-M part.
 	Days int32
 
+	// In canonical form, the time parts all share a consistent sign and are reduced.
 	Hours      int32
 	Minutes    int32
 	Seconds    int32
@@ -90,16 +95,28 @@ func ParseInterval(value string) (*IntervalValue, error) {
 			iVal.Years = v
 		case monthsPart:
 			iVal.Months = v
+			if iVal.Years < 0 {
+				iVal.Months = -v
+			}
 		case daysPart:
 			iVal.Days = v
 		case hoursPart:
 			iVal.Hours = v
 		case minutesPart:
 			iVal.Minutes = v
+			if iVal.Hours < 0 {
+				iVal.Minutes = -v
+			}
 		case secondsPart:
 			iVal.Seconds = v
+			if iVal.Hours < 0 {
+				iVal.Seconds = -v
+			}
 		case subsecsPart:
 			iVal.SubSeconds = v
+			if iVal.Hours < 0 {
+				iVal.SubSeconds = -v
+			}
 		default:
 			return nil, fmt.Errorf("encountered invalid part %s during parse", part)
 		}

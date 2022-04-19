@@ -43,8 +43,8 @@ func TestParseInterval(t *testing.T) {
 			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 777},
 		},
 		{
-			inputStr:     "-1-2 -3 -4:5:6",
-			wantInterval: &IntervalValue{Years: -1, Months: 2, Days: -3, Hours: -4, Minutes: 5, Seconds: 6, SubSeconds: 0},
+			inputStr:     "-1-2 3 -4:5:6",
+			wantInterval: &IntervalValue{Years: -1, Months: -2, Days: 3, Hours: -4, Minutes: -5, Seconds: -6, SubSeconds: 0},
 		},
 	}
 
