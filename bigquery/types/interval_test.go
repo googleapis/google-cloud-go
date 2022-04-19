@@ -102,6 +102,18 @@ func TestCanonicalInterval(t *testing.T) {
 			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 1000, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
 			wantString:    "0-0 1000 0:0:0",
 		},
+		{
+			description:   "time reduced",
+			input:         &IntervalValue{Minutes: 181, Seconds: 61, SubSeconds: 5},
+			wantCanonical: &IntervalValue{Hours: 3, Minutes: 2, Seconds: 1, SubSeconds: 5},
+			wantString:    "0-0 0 3:2:1.5",
+		},
+		{
+			description:   "subseconds simplified",
+			input:         &IntervalValue{SubSeconds: 500},
+			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 5},
+			wantString:    "0-0 0 0:0:0.5",
+		},
 	}
 
 	for _, tc := range testcases {

@@ -17,6 +17,7 @@ package types
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 )
@@ -27,7 +28,10 @@ import (
 // * Days
 // * Time (Hours/Mins/Seconds/Fractional Seconds).
 //
-// It is EXPERIMENTAL and subject to change or removal without notice.
+// More information about BigQuery INTERVAL types can be found at:
+// https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#interval_type
+//
+// IntervalValue is EXPERIMENTAL and subject to change or removal without notice.
 type IntervalValue struct {
 	// In canonical form, Years and Months share a consistent sign and reduced
 	// to avoid large month values.
@@ -39,9 +43,10 @@ type IntervalValue struct {
 	Days int32
 
 	// In canonical form, the time parts all share a consistent sign and are reduced.
-	Hours      int32
-	Minutes    int32
-	Seconds    int32
+	Hours   int32
+	Minutes int32
+	Seconds int32
+	// This represents fractional seconds.  Ex: 0.34 seconds = 34 SubSeconds.
 	SubSeconds int32
 }
 
@@ -200,8 +205,12 @@ func (iv *IntervalValue) ToDuration() time.Duration {
 	return time.Duration(0)
 }
 
-// Canonicalize returns a normalized IntervalValue, where signs for elements in the
-// Y-M and H:M:S.F are made consistent and values are normalized.
+// Canonicalize returns an IntervalValue where signs for elements in the
+// Y-M and H:M:S.F are consistent and values are normalized/reduced.
+//
+// Canonical form enables more consistent comparison of the encoded
+// interval.  For example, encoding an interval with 12 months is equivalent
+// to an interval of 1 year.
 func (iv *IntervalValue) Canonicalize() *IntervalValue {
 	newIV := &IntervalValue{iv.Years, iv.Months, iv.Days, iv.Hours, iv.Minutes, iv.Seconds, iv.SubSeconds}
 	// canonicalize Y-M part
@@ -210,34 +219,29 @@ func (iv *IntervalValue) Canonicalize() *IntervalValue {
 	totalMonths = totalMonths - (newIV.Years * 12)
 	newIV.Months = totalMonths % 12
 
-	// TODO: do we canonicalize days?
+	// No canonicalization for the Days part.
 
-	// canonicalize time part
+	// canonicalize time part by switching to Nanos.
 	totalNanos := int64(iv.Hours)*3600*1e9 +
 		int64(iv.Minutes)*60*1e9 +
 		int64(iv.Seconds)*1e9
-	switch {
-	case iv.SubSeconds < 1000:
-		// millis
-		totalNanos = totalNanos + int64(iv.SubSeconds)*1e6
-	case iv.SubSeconds >= 1000 && iv.SubSeconds < 1e6:
-		// micros
-		totalNanos = totalNanos + int64(iv.SubSeconds)*1000
-	case iv.SubSeconds >= 1e6 && iv.SubSeconds < 1e9:
-		// nanos
-		totalNanos = totalNanos + int64(iv.SubSeconds)
-	default:
-		// TODO do we truncate, error, etc if our fraction is too long?
+
+	if iv.SubSeconds != 0 {
+		totalNanos = totalNanos + (1e9 * int64(iv.SubSeconds) / denom(int(math.Log10(float64(iv.SubSeconds)))+1))
 	}
 	// Reduce to parts.
-	newIV.Hours = int32(totalNanos / 3600 / 1e9)
+	newIV.Hours = int32(totalNanos / 60 / 60 / 1e9)
 	totalNanos = totalNanos - (int64(newIV.Hours) * 3600 * 1e9)
 	newIV.Minutes = int32(totalNanos / 60 / 1e9)
 	totalNanos = totalNanos - (int64(newIV.Minutes) * 60 * 1e9)
 	newIV.Seconds = int32(totalNanos / 1e9)
 	totalNanos = totalNanos - (int64(newIV.Seconds) * 1e9)
-	// TODO: discard trailing zeros
 	newIV.SubSeconds = int32(totalNanos)
+	if newIV.SubSeconds != 0 {
+		for newIV.SubSeconds%10 == 0 {
+			newIV.SubSeconds = newIV.SubSeconds / 10
+		}
+	}
 	return newIV
 }
 
@@ -250,6 +254,9 @@ func (iv *IntervalValue) isCanonical() bool {
 		int32abs(iv.Hours) > 24 ||
 		int32abs(iv.Minutes) > 60 ||
 		int32abs(iv.Seconds) > 60 {
+		return false
+	}
+	if int32abs(iv.SubSeconds)%10 == 0 {
 		return false
 	}
 	// TODO: validate boundarys like 10k years?
@@ -277,4 +284,15 @@ func sameSign(nums ...int32) bool {
 		return false
 	}
 	return true
+}
+
+func denom(digits int) int64 {
+	if digits == 0 {
+		return 1
+	}
+	result := int64(10)
+	for i := 2; i <= digits; i++ {
+		result *= 10
+	}
+	return result
 }
