@@ -45,7 +45,7 @@ const (
 	userAgent = "gcloud-golang/0.1"
 
 	instancePathPrefix = "instance/attributes/"
-	projectPathPrefix = "project/attributes/"
+	projectPathPrefix  = "project/attributes/"
 )
 
 // NotDefinedError is returned when requested metadata is not defined.
@@ -145,7 +145,7 @@ func (c *client) get(suffix string) (string, error) {
 }
 
 // IsMetadataActive returns activity status of the local metadata server.
-// true is returned if the metadata server active or false otherwise. 
+// true is returned if the metadata server active or false otherwise.
 func IsMetadataActive() bool {
 	_, err := defaultClient.get("")
 	return err == nil
@@ -183,13 +183,26 @@ func pathLastValue(val string, err error) (string, error) {
 }
 
 func ProjectID() (string, error) {
-	return ProjectAttributeValue("project-id")
+	return defaultClient.get("project/project-id")
 }
 
-func Region() (string, error) {
-	return pathLastValue(InstanceAttributeValue("region"))
+func InstanceID() (string, error) {
+	return defaultClient.get("instance/id")
 }
 
-func Zone() (string, error) {
-	return pathLastValue(InstanceAttributeValue("zone"))
+func InstanceRegion() (string, error) {
+	return pathLastValue(defaultClient.get("instance/region"))
 }
+
+func InstanceZone() (string, error) {
+	return pathLastValue(defaultClient.get("instance/zone"))
+}
+
+func InstancePreempted() (string, error) {
+	return pathLastValue(defaultClient.get("instance/preempted"))
+}
+
+func InstanceCPUPlatform() (string, error) {
+	return pathLastValue(defaultClient.get("instance/cpu-platform"))
+}
+

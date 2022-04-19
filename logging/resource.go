@@ -77,7 +77,7 @@ func detectAppEngineResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	zone, _ := metadata.Zone()
+	zone, _ := metadata.InstanceZone()
 	return &mrpb.MonitoredResource{
 		Type: "gae_app",
 		Labels: map[string]string{
@@ -103,7 +103,7 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	region, _ := metadata.Region()
+	region, _ := metadata.InstanceRegion()
 	// Newer functions runtimes store name in K_SERVICE.
 	functionName, exists := os.LookupEnv("K_SERVICE")
 	if !exists {
@@ -132,7 +132,7 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	region, _ := metadata.Region()
+	region, _ := metadata.InstanceRegion()
 	return &mrpb.MonitoredResource{
 		Type: "cloud_run_revision",
 		Labels: map[string]string{
@@ -161,7 +161,7 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	zone, _ := metadata.Zone()
+	zone, _ := metadata.InstanceZone()
 	clusterName, _ := metadata.InstanceAttributeValue("cluster-name")
 	namespaceBytes, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err == nil {
@@ -196,9 +196,10 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 }
 
 func isComputeEngine() bool {
-	preempted, _ := metadata.InstanceAttributeValue("preempted")
-	platform, _ := metadata.InstanceAttributeValue("cpu-platform")
+	preempted, _ := metadata.InstancePreempted()
+	platform, _ := metadata.InstanceCPUPlatform()
 	gae_app_bucket, _ := metadata.InstanceAttributeValue("gae_app_bucket")
+
 	return preempted != "" && platform != "" && gae_app_bucket == ""
 }
 
@@ -207,8 +208,8 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	id, _ := metadata.InstanceAttributeValue("id")
-	zone, _ := metadata.Zone()
+	id, _ := metadata.InstanceID()
+	zone, _ := metadata.InstanceZone()
 	return &mrpb.MonitoredResource{
 		Type: "gce_instance",
 		Labels: map[string]string{
