@@ -555,8 +555,10 @@ type ReceiveSettings struct {
 
 	// Synchronous switches the underlying receiving mechanism to unary Pull.
 	// When Synchronous is false, the more performant StreamingPull is used.
-	// When in Synchronous mode, NumGoroutines is set to 1 and only one outstanding
-	// RPC will be made to poll messages.
+	// StreamingPull also has the benefit of subscriber affinity when using
+	// ordered delivery.
+	// When Synchronous is true, NumGoroutines is set to 1 and only one Pull
+	// RPC will be made to poll messages at a time.
 	// The default is false.
 	//
 	// Deprecated.
