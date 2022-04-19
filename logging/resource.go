@@ -229,22 +229,32 @@ func systemProductName() (string, bool) {
 	return strings.TrimSpace(string(slurp)), err == nil
 }
 
-func monitoredResource(parent string) *mrpb.MonitoredResource {
+var resourceInfo = map[string]struct{ rtype, label string }{
+	"organizations":   {"organization", "organization_id"},
+	"folders":         {"folder", "folder_id"},
+	"projects":        {"global", "project_id"},
+	"billingAccounts": {"billing_account", "account_id"},
+}
+func globalResource(parent string) *mrpb.MonitoredResource {
 	parts := strings.SplitN(parent, "/", 2)
-	switch len(parts) {
-	case 1: return globalResource(parent)
-	case 2: return globalResource(parts[1])
+	if len(parts) == 1 {
+		return &mrpb.MonitoredResource{
+			Type: "global",
+			Labels: map[string]string {
+				"project_id": parent,
+			},
+		}
+	}
+	info, ok := resourceInfo[parts[0]]
+	if ok {
+		return &mrpb.MonitoredResource{
+			Type: info.rtype,
+			Labels: map[string]string {
+				info.label: parts[1],
+			},
+		}
+	}		
 	// this behavior is unexpected and should not happened
 	// since we cannot panic returning undefined resource
-	default: return &mrpb.MonitoredResource{Type: "global"}
-	}
-}
-
-func globalResource(projectID string) *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "global",
-		Labels: map[string]string{
-			"project_id": projectID,
-		},
-	}
+	return &mrpb.MonitoredResource{Type: "global"}
 }

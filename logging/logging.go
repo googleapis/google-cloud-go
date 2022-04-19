@@ -201,7 +201,7 @@ func (c *Client) Ping(ctx context.Context) error {
 	}
 	_, err = c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  internal.LogPath(c.parent, "ping"),
-		Resource: monitoredResource(c.parent),
+		Resource: globalResource(c.parent),
 		Entries:  []*logpb.LogEntry{ent},
 	})
 	return err
@@ -357,7 +357,7 @@ func (c contextFunc) set(l *Logger) { l.ctxFunc = c }
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	r := detectResource()
 	if r == nil {
-		r = monitoredResource(c.parent)
+		r = globalResource(c.parent)
 	}
 	l := &Logger{
 		client:         c,

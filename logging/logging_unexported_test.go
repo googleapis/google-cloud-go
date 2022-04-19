@@ -302,7 +302,7 @@ func TestMonitoredResource(t *testing.T) {
 		{
 			"projects/P",
 			&mrpb.MonitoredResource{
-				Type:   "project",
+				Type:   "global",
 				Labels: map[string]string{"project_id": "P"},
 			},
 		},
@@ -332,7 +332,6 @@ func TestMonitoredResource(t *testing.T) {
 			"unknown/X",
 			&mrpb.MonitoredResource{
 				Type:   "global",
-				Labels: map[string]string{"project_id": "X"},
 			},
 		},
 		{
@@ -343,7 +342,7 @@ func TestMonitoredResource(t *testing.T) {
 			},
 		},
 	} {
-		got := monitoredResource(test.parent)
+		got := globalResource(test.parent)
 		if !testutil.Equal(got, test.want) {
 			t.Errorf("%q: got %+v, want %+v", test.parent, got, test.want)
 		}
