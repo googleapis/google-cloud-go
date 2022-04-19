@@ -818,8 +818,9 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		}
 		verifyDirectPathRemoteAddress(testEnv, t)
 		var wantItems []ReadItem
-		for _, _ := range ss {
-			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: bulk, Timestamp: 1000, Value: []byte("1")})
+		for _, val := range ss {
+			c := fmt.Sprintf("%s:%s", bulk, val)
+			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: c, Timestamp: 1000, Value: []byte("1")})
 		}
 		wantRow := Row{bulk: wantItems}
 		if !testutil.Equal(row, wantRow) {
