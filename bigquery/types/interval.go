@@ -22,17 +22,20 @@ import (
 )
 
 // IntervalValue is a go type for representing BigQuery INTERVAL values.
+// Intervals use the following equivalences:
+// 1 Year == 12 Months
+// 1 Month == 30 Days
+// 1 Day = 24 Hours
+// 1 Hour = 60 Minutes
+// 1 Hour = 60 Seconds
 type IntervalValue struct {
-	// Years and Months shares a single common sign.
 	Years  int32
 	Months int32
 
-	// Days can be signed independently.
 	Days int32
 
-	// The time parts also share a single common sign.
 	Hours      int32
-	Mins       int32
+	Minutes    int32
 	Seconds    int32
 	SubSeconds int32
 }
@@ -40,11 +43,14 @@ type IntervalValue struct {
 // String returns string representation of the interval value using the canonical format.
 // The canonical format is as follows:
 // [sign]Y-M [sign]D [sign]H:M:S[.F]
-func (it *IntervalValue) String() string {
-	// TODO: we need to normalize mixed sign values in the y-m group, and the h:m:s.f group.
-	out := fmt.Sprintf("%d-%d %d %d:%d:%d", it.Years, it.Months, it.Days, it.Hours, it.Mins, it.Seconds)
-	if it.SubSeconds != 0 {
-		out = fmt.Sprintf("%s.%d", out, it.SubSeconds)
+func (iv *IntervalValue) String() string {
+	src := iv
+	if !iv.isCanonical() {
+		src = iv.Canonicalize()
+	}
+	out := fmt.Sprintf("%d-%d %d %d:%d:%d", src.Years, int32abs(src.Months), src.Days, src.Hours, int32abs(src.Minutes), int32abs(src.Seconds))
+	if src.SubSeconds != 0 {
+		out = fmt.Sprintf("%s.%d", out, int32abs(src.SubSeconds))
 	}
 	return out
 }
@@ -89,7 +95,7 @@ func ParseInterval(value string) (*IntervalValue, error) {
 		case hoursPart:
 			iVal.Hours = v
 		case minutesPart:
-			iVal.Mins = v
+			iVal.Minutes = v
 		case secondsPart:
 			iVal.Seconds = v
 		case subsecsPart:
@@ -173,6 +179,85 @@ func FromDuration(in time.Duration) (*IntervalValue, error) {
 }
 
 // ToDuration converts an interval to a time.Duration value.
-func (it *IntervalValue) ToDuration() time.Duration {
+func (iv *IntervalValue) ToDuration() time.Duration {
 	return time.Duration(0)
+}
+
+// Canonicalize returns a normalized IntervalValue, where signs for elements in the
+// Y-M and H:M:S.F are made consistent and values are normalized.
+func (iv *IntervalValue) Canonicalize() *IntervalValue {
+	newIV := &IntervalValue{iv.Years, iv.Months, iv.Days, iv.Hours, iv.Minutes, iv.Seconds, iv.SubSeconds}
+	// canonicalize Y-M part
+	totalMonths := iv.Years*12 + iv.Months
+	newIV.Years = totalMonths / 12
+	totalMonths = totalMonths - (newIV.Years * 12)
+	newIV.Months = totalMonths % 12
+
+	// TODO: do we canonicalize days?
+
+	// canonicalize time part
+	totalNanos := int64(iv.Hours)*3600*1e9 +
+		int64(iv.Minutes)*60*1e9 +
+		int64(iv.Seconds)*1e9
+	switch {
+	case iv.SubSeconds < 1000:
+		// millis
+		totalNanos = totalNanos + int64(iv.SubSeconds)*1e6
+	case iv.SubSeconds >= 1000 && iv.SubSeconds < 1e6:
+		// micros
+		totalNanos = totalNanos + int64(iv.SubSeconds)*1000
+	case iv.SubSeconds >= 1e6 && iv.SubSeconds < 1e9:
+		// nanos
+		totalNanos = totalNanos + int64(iv.SubSeconds)
+	default:
+		// TODO do we truncate, error, etc if our fraction is too long?
+	}
+	// Reduce to parts.
+	newIV.Hours = int32(totalNanos / 3600 / 1e9)
+	totalNanos = totalNanos - (int64(newIV.Hours) * 3600 * 1e9)
+	newIV.Minutes = int32(totalNanos / 60 / 1e9)
+	totalNanos = totalNanos - (int64(newIV.Minutes) * 60 * 1e9)
+	newIV.Seconds = int32(totalNanos / 1e9)
+	totalNanos = totalNanos - (int64(newIV.Seconds) * 1e9)
+	// TODO: discard trailing zeros
+	newIV.SubSeconds = int32(totalNanos)
+	return newIV
+}
+
+func (iv *IntervalValue) isCanonical() bool {
+	if !sameSign(iv.Years, iv.Months) ||
+		!sameSign(iv.Hours, iv.Minutes) {
+		return false
+	}
+	if int32abs(iv.Months) > 12 ||
+		int32abs(iv.Hours) > 24 ||
+		int32abs(iv.Minutes) > 60 ||
+		int32abs(iv.Seconds) > 60 {
+		return false
+	}
+	// TODO: validate boundarys like 10k years?
+	return true
+}
+
+func int32abs(x int32) int32 {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func sameSign(nums ...int32) bool {
+	var pos, neg int
+	for _, n := range nums {
+		if n > 0 {
+			pos = pos + 1
+		}
+		if n < 0 {
+			neg = neg + 1
+		}
+	}
+	if pos > 0 && neg > 0 {
+		return false
+	}
+	return true
 }

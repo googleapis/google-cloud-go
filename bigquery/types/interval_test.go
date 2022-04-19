@@ -36,15 +36,15 @@ func TestParseInterval(t *testing.T) {
 		},
 		{
 			inputStr:     "1-2 3 4:5:6",
-			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Mins: 5, Seconds: 6, SubSeconds: 0},
+			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
 		},
 		{
 			inputStr:     "1-2 3 4:5:6.777",
-			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Mins: 5, Seconds: 6, SubSeconds: 777},
+			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 777},
 		},
 		{
 			inputStr:     "-1-2 -3 -4:5:6",
-			wantInterval: &IntervalValue{Years: -1, Months: 2, Days: -3, Hours: -4, Mins: 5, Seconds: 6, SubSeconds: 0},
+			wantInterval: &IntervalValue{Years: -1, Months: 2, Days: -3, Hours: -4, Minutes: 5, Seconds: 6, SubSeconds: 0},
 		},
 	}
 
@@ -61,6 +61,59 @@ func TestParseInterval(t *testing.T) {
 		}
 		if diff := testutil.Diff(gotInterval, tc.wantInterval); diff != "" {
 			t.Errorf("input %s: got=-, want=+:\n%s", tc.inputStr, diff)
+		}
+	}
+}
+
+func TestCanonicalInterval(t *testing.T) {
+	testcases := []struct {
+		description   string
+		input         *IntervalValue
+		wantCanonical *IntervalValue
+		wantString    string
+	}{
+		{
+			description:   "already canonical",
+			input:         &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
+			wantCanonical: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
+			wantString:    "1-2 3 4:5:6",
+		},
+		{
+			description:   "mixed Y-M",
+			input:         &IntervalValue{Years: -1, Months: 28},
+			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantString:    "1-4 0 0:0:0",
+		},
+		{
+			description:   "mixed Y-M",
+			input:         &IntervalValue{Years: -1, Months: 28},
+			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantString:    "1-4 0 0:0:0",
+		},
+		{
+			description:   "big month Y-M",
+			input:         &IntervalValue{Years: 0, Months: -13},
+			wantCanonical: &IntervalValue{Years: -1, Months: -1, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantString:    "-1-1 0 0:0:0",
+		},
+		{
+			description:   "big days not normalized",
+			input:         &IntervalValue{Days: 1000},
+			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 1000, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantString:    "0-0 1000 0:0:0",
+		},
+	}
+
+	for _, tc := range testcases {
+		gotCanonical := tc.input.Canonicalize()
+
+		if diff := testutil.Diff(gotCanonical, tc.wantCanonical); diff != "" {
+			t.Errorf("%s: got=-, want=+:\n%s", tc.description, diff)
+		}
+
+		gotStr := tc.input.String()
+		if gotStr != tc.wantString {
+			t.Errorf("%s mismatched strings. got %s want %s", tc.description, gotStr, tc.wantString)
 		}
 	}
 }
