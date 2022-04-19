@@ -242,6 +242,8 @@ const (
 	// BigNumericFieldType is a numeric field type that supports values of larger precision
 	// and scale than the NumericFieldType.
 	BigNumericFieldType FieldType = "BIGNUMERIC"
+	// IntervalFieldType is a representation of a duration or an amount of time.
+	IntervalFieldType FieldType = "INTERVAL"
 )
 
 var (
@@ -260,6 +262,7 @@ var (
 		NumericFieldType:    true,
 		GeographyFieldType:  true,
 		BigNumericFieldType: true,
+		IntervalFieldType:   true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
