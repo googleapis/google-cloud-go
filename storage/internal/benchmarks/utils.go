@@ -188,3 +188,52 @@ func forceGarbageCollection(run bool) {
 		// debug.FreeOSMemory()
 	}
 }
+
+func generateDefaultTransportWithBufferSizes(writeBufferSize, readBufferSize int) *http.Transport {
+	dialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 30 * time.Second,
+	}
+
+	// These are the default parameters with write and read buffer sizes modified
+	return &http.Transport{
+		Proxy:                 http.ProxyFromEnvironment,
+		DialContext:           dialer.DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+		WriteBufferSize:       writeBufferSize,
+		ReadBufferSize:        readBufferSize,
+	}
+}
+
+func initGRPCClient(ctx context.Context, writeBufferSize, readBufferSize int) (*storage.Client, error) {
+	clientMu.Lock()
+	os.Setenv("STORAGE_USE_GRPC", "true")
+	c, err := storage.NewClient(ctx, option.WithCredentialsFile(credentialsFile),
+		option.WithGRPCDialOption(grpc.WithReadBufferSize(readBufferSize)),
+		option.WithGRPCDialOption(grpc.WithWriteBufferSize(writeBufferSize)),
+		option.WithGRPCConnectionPool(opts.connPoolSize))
+	os.Unsetenv("STORAGE_USE_GRPC")
+	clientMu.Unlock()
+	return c, err
+}
+
+func initHTTPClient(ctx context.Context, writeBufferSize, readBufferSize int) (*storage.Client, error) {
+	base := generateDefaultTransportWithBufferSizes(writeBufferSize, readBufferSize)
+	trans, err := htransport.NewTransport(ctx, base, option.WithCredentialsFile(credentialsFile),
+		option.WithScopes("https://www.googleapis.com/auth/devstorage.full_control"))
+	if err != nil {
+		return nil, err
+	}
+
+	c := http.Client{Transport: trans}
+
+	clientMu.Lock()
+	client, err := storage.NewClient(ctx, option.WithHTTPClient(&c))
+	clientMu.Unlock()
+
+	return client, err
+}
