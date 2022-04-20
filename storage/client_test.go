@@ -145,7 +145,7 @@ func TestListBucketsEmulated(t *testing.T) {
 		it.Prefix = strconv.Itoa(prefix)
 		var err error
 		var b *BucketAttrs
-		for i := 0; err == nil; i++ {
+		for i := 0; err == nil && i <= len(want); i++ {
 			b, err = it.Next()
 			if err != nil {
 				continue
