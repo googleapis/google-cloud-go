@@ -231,9 +231,33 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	}
 	return newBucket(resp)
 }
-func (c *httpStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	rb := uattrs.toRawBucket()
+	req := c.raw.Buckets.Patch(bucket, rb).Projection("full")
+	setClientHeader(req.Header())
+	err := applyBucketConds("httpStorageClient.UpdateBucket", conds, req)
+	if err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	if uattrs != nil && uattrs.PredefinedACL != "" {
+		req.PredefinedAcl(uattrs.PredefinedACL)
+	}
+	if uattrs != nil && uattrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
+	}
+
+	var rawBucket *raw.Bucket
+	err = run(ctx, func() error {
+		rawBucket, err = req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	return newBucket(rawBucket)
 }
+
 func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }

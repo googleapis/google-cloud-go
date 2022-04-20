@@ -85,6 +85,34 @@ func TestGetBucketEmulated(t *testing.T) {
 	})
 }
 
+func TestUpdateBucketEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		want := &BucketAttrs{
+			Name: bucket,
+		}
+		// Create the bucket that will be updated.
+		_, err := client.CreateBucket(context.Background(), project, want)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		ua := &BucketAttrsToUpdate{
+			RPO: RPOAsyncTurbo,
+		}
+		got, err := client.UpdateBucket(context.Background(), bucket, ua, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		want.RPO = RPOAsyncTurbo
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestGetServiceAccountEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		_, err := client.GetServiceAccount(context.Background(), project)
