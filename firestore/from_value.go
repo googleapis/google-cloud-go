@@ -51,6 +51,17 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		return nil
 	}
 
+	// Handle interface first
+	if v.Type().Implements(typeOfFirestoreConverter.Elem()) {
+		converter := v.Interface().(*FirestoreConverter)
+		value, err := createFromProtoValue(vproto, c)
+		if err != nil {
+			return err
+		}
+
+		return (*converter).FromFirestore(value)
+	}
+
 	// Handle special types first.
 	switch v.Type() {
 	case typeOfByteSlice:

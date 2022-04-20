@@ -15,6 +15,7 @@
 package firestore
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"testing"
@@ -432,5 +433,55 @@ func TestIsEmpty(t *testing.T) {
 		if isEmptyValue(reflect.ValueOf(n)) {
 			t.Errorf("%v (%T): want false, got true", n, n)
 		}
+	}
+}
+
+type testStruct3 struct {
+	A string
+	B int
+	C bool
+}
+
+func (t *testStruct3) ToFirestore() (interface{}, error) {
+	return map[string]interface{}{
+		"A": t.A,
+		"B": t.B,
+		"C": t.C,
+	}, nil
+}
+
+func (t *testStruct3) FromFirestore(v interface{}) error {
+	val, ok := v.(map[string]interface{})
+	if !ok {
+		return errors.New("v is not a map[string]interface{}")
+	}
+
+	t.A = val["A"].(string)
+	t.B = int(val["B"].(int64))
+	t.C = val["C"].(bool)
+
+	return nil
+}
+
+func TestToValueInterfaceConverter(t *testing.T) {
+	s := testStruct3{
+		A: "A",
+		B: 26,
+		C: true,
+	}
+
+	got, _, err := toProtoValue(reflect.ValueOf(s))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := mapval(map[string]*pb.Value{
+		"A": strval("A"),
+		"B": intval(26),
+		"C": boolval(true),
+	})
+
+	if !testEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }

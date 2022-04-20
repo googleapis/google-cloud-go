@@ -30,11 +30,12 @@ import (
 var nullValue = &pb.Value{ValueType: &pb.Value_NullValue{}}
 
 var (
-	typeOfByteSlice      = reflect.TypeOf([]byte{})
-	typeOfGoTime         = reflect.TypeOf(time.Time{})
-	typeOfLatLng         = reflect.TypeOf((*latlng.LatLng)(nil))
-	typeOfDocumentRef    = reflect.TypeOf((*DocumentRef)(nil))
-	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfByteSlice          = reflect.TypeOf([]byte{})
+	typeOfGoTime             = reflect.TypeOf(time.Time{})
+	typeOfLatLng             = reflect.TypeOf((*latlng.LatLng)(nil))
+	typeOfDocumentRef        = reflect.TypeOf((*DocumentRef)(nil))
+	typeOfProtoTimestamp     = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfFirestoreConverter = reflect.TypeOf((*FirestoreConverter)(nil))
 )
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
@@ -86,6 +87,33 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_ReferenceValue{x.Path}}, false, nil
+
+	case *FirestoreConverter:
+		if x == nil {
+			// gRPC doesn't like nil oneofs. Use NullValue.
+			return nullValue, false, nil
+		}
+
+		value, err := (*x).ToFirestore()
+		if err != nil {
+			return nil, false, fmt.Errorf("firestore: cannot convert type %s to value using FirestoreConverter. error: %v", v.Type(), err)
+		}
+
+		return toProtoValue(reflect.ValueOf(value))
+
+	case FirestoreConverter:
+		if x == nil {
+			// gRPC doesn't like nil oneofs. Use NullValue.
+			return nullValue, false, nil
+		}
+
+		value, err := x.ToFirestore()
+		if err != nil {
+			return nil, false, fmt.Errorf("firestore: cannot convert type %s to value using FirestoreConverter. error: %v", v.Type(), err)
+		}
+
+		return toProtoValue(reflect.ValueOf(value))
+
 		// Do not add bool, string, int, etc. to this switch; leave them in the
 		// reflect-based switch below. Moving them here would drop support for
 		// types whose underlying types are those primitives.

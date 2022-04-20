@@ -572,3 +572,29 @@ func TestTypeString(t *testing.T) {
 		}
 	}
 }
+
+func TestFromValueInterfaceConverter(t *testing.T) {
+	got := &testStruct3{}
+
+	in := mapval(map[string]*pb.Value{
+		"A": strval("A"),
+		"B": intval(26),
+		"C": boolval(true),
+	})
+
+	err := setFromProtoValue(got, in, nil)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &testStruct3{
+		A: "A",
+		B: 26,
+		C: true,
+	}
+
+	if !testEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+}
