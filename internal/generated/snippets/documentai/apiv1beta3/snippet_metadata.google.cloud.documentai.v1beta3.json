@@ -1,0 +1,429 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/documentai/apiv1beta3",
+    "version": "1.4.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.documentai.v1beta3",
+        "version": "v1beta3"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_BatchProcessDocuments_sync",
+      "title": "documentai BatchProcessDocuments Sample",
+      "description": "BatchProcessDocuments lRO endpoint to batch process many documents. The output is written\nto Cloud Storage as JSON in the [Document] format.",
+      "file": "DocumentProcessorClient/BatchProcessDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchProcessDocuments",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.BatchProcessDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.BatchProcessRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchProcessDocumentsOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "BatchProcessDocuments",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.BatchProcessDocuments",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_CreateProcessor_sync",
+      "title": "documentai CreateProcessor Sample",
+      "description": "CreateProcessor creates a processor from the type processor that the user chose.\nThe processor will be at “ENABLED” state by default after its creation.",
+      "file": "DocumentProcessorClient/CreateProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateProcessor",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.CreateProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.CreateProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.Processor",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "CreateProcessor",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.CreateProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_DeleteProcessor_sync",
+      "title": "documentai DeleteProcessor Sample",
+      "description": "DeleteProcessor deletes the processor, unloads all deployed model artifacts if it was\nenabled and then deletes all artifacts associated with this processor.",
+      "file": "DocumentProcessorClient/DeleteProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProcessor",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.DeleteProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DeleteProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DeleteProcessor",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.DeleteProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_DisableProcessor_sync",
+      "title": "documentai DisableProcessor Sample",
+      "description": "DisableProcessor disables a processor",
+      "file": "DocumentProcessorClient/DisableProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableProcessor",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.DisableProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.DisableProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisableProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "DisableProcessor",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.DisableProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_EnableProcessor_sync",
+      "title": "documentai EnableProcessor Sample",
+      "description": "EnableProcessor enables a processor",
+      "file": "DocumentProcessorClient/EnableProcessor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableProcessor",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.EnableProcessor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.EnableProcessorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EnableProcessorOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "EnableProcessor",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.EnableProcessor",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_FetchProcessorTypes_sync",
+      "title": "documentai FetchProcessorTypes Sample",
+      "description": "FetchProcessorTypes fetches processor types.",
+      "file": "DocumentProcessorClient/FetchProcessorTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchProcessorTypes",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.FetchProcessorTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.FetchProcessorTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.FetchProcessorTypesResponse",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "FetchProcessorTypes",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.FetchProcessorTypes",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_ListProcessors_sync",
+      "title": "documentai ListProcessors Sample",
+      "description": "ListProcessors lists all processors which belong to this project.",
+      "file": "DocumentProcessorClient/ListProcessors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProcessors",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.ListProcessors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ListProcessorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProcessorIterator",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ListProcessors",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ListProcessors",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_ProcessDocument_sync",
+      "title": "documentai ProcessDocument Sample",
+      "description": "ProcessDocument processes a single document.",
+      "file": "DocumentProcessorClient/ProcessDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProcessDocument",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.ProcessDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ProcessRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.ProcessResponse",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ProcessDocument",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ProcessDocument",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1beta3_generated_DocumentProcessorService_ReviewDocument_sync",
+      "title": "documentai ReviewDocument Sample",
+      "description": "ReviewDocument send a document for Human Review. The input document should be processed by\nthe specified processor.",
+      "file": "DocumentProcessorClient/ReviewDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReviewDocument",
+        "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient.ReviewDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ReviewDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReviewDocumentOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ReviewDocument",
+          "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService.ReviewDocument",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1beta3.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+    "version": "0.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkeconnect.gateway.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "connectgateway_v1beta1_generated_GatewayService_DeleteResource_sync",
+      "title": "connectgateway DeleteResource Sample",
+      "description": "DeleteResource deleteResource performs an HTTP DELETE on the Kubernetes API Server.",
+      "file": "Client/DeleteResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteResource",
+        "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client.DeleteResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "httpbodypb.HttpBody",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "DeleteResource",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService.DeleteResource",
+          "service": {
+            "shortName": "GatewayService",
+            "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectgateway_v1beta1_generated_GatewayService_GetResource_sync",
+      "title": "connectgateway GetResource Sample",
+      "description": "GetResource getResource performs an HTTP GET request on the Kubernetes API Server.",
+      "file": "Client/GetResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetResource",
+        "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client.GetResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "httpbodypb.HttpBody",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "GetResource",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService.GetResource",
+          "service": {
+            "shortName": "GatewayService",
+            "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectgateway_v1beta1_generated_GatewayService_PatchResource_sync",
+      "title": "connectgateway PatchResource Sample",
+      "description": "PatchResource patchResource performs an HTTP PATCH on the Kubernetes API Server.",
+      "file": "Client/PatchResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PatchResource",
+        "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client.PatchResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "httpbodypb.HttpBody",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PatchResource",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService.PatchResource",
+          "service": {
+            "shortName": "GatewayService",
+            "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectgateway_v1beta1_generated_GatewayService_PostResource_sync",
+      "title": "connectgateway PostResource Sample",
+      "description": "PostResource postResource performs an HTTP POST on the Kubernetes API Server.",
+      "file": "Client/PostResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PostResource",
+        "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client.PostResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "httpbodypb.HttpBody",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PostResource",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService.PostResource",
+          "service": {
+            "shortName": "GatewayService",
+            "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "connectgateway_v1beta1_generated_GatewayService_PutResource_sync",
+      "title": "connectgateway PutResource Sample",
+      "description": "PutResource putResource performs an HTTP PUT on the Kubernetes API Server.",
+      "file": "Client/PutResource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PutResource",
+        "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client.PutResource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "httpbodypb.HttpBody",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "httpbodypb.HttpBody",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.Client"
+        },
+        "method": {
+          "shortName": "PutResource",
+          "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService.PutResource",
+          "service": {
+            "shortName": "GatewayService",
+            "fullName": "google.cloud.gkeconnect.gateway.v1beta1.GatewayService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
