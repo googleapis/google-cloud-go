@@ -114,7 +114,7 @@ require (
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	google.golang.org/api v0.74.0
-	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4
+	google.golang.org/genproto v0.0.0-20220420195807-44278fea765b
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
