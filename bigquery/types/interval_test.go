@@ -16,6 +16,7 @@ package types
 
 import (
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 )
@@ -130,6 +131,49 @@ func TestCanonicalInterval(t *testing.T) {
 		gotStr := tc.input.String()
 		if gotStr != tc.wantString {
 			t.Errorf("%s mismatched strings. got %s want %s", tc.description, gotStr, tc.wantString)
+		}
+	}
+}
+
+func TestIntervalDuration(t *testing.T) {
+	testcases := []struct {
+		description   string
+		inputInterval *IntervalValue
+		wantDuration  time.Duration
+		wantInterval  *IntervalValue
+	}{
+		{
+			description:   "hour",
+			inputInterval: &IntervalValue{Hours: 1},
+			wantDuration:  time.Duration(time.Hour),
+			wantInterval:  &IntervalValue{Hours: 1},
+		},
+		{
+			description:   "minute oversized",
+			inputInterval: &IntervalValue{Minutes: 62},
+			wantDuration:  time.Duration(62 * time.Minute),
+			wantInterval:  &IntervalValue{Hours: 1, Minutes: 2},
+		},
+		{
+			description:   "other parts",
+			inputInterval: &IntervalValue{Months: 1, Days: 2},
+			wantDuration:  time.Duration(32 * 24 * time.Hour),
+			wantInterval:  &IntervalValue{Hours: 32 * 24},
+		},
+	}
+
+	for _, tc := range testcases {
+		gotDuration := tc.inputInterval.ToDuration()
+
+		// interval -> duration
+		if gotDuration != tc.wantDuration {
+			t.Errorf("%s: mismatched duration, got %v want %v", tc.description, gotDuration, tc.wantDuration)
+		}
+
+		// duration -> interval (canonical)
+		gotInterval := IntervalValueFromDuration(gotDuration)
+		if diff := testutil.Diff(gotInterval, tc.wantInterval); diff != "" {
+			t.Errorf("%s: got=-, want=+:\n%s", tc.description, diff)
 		}
 	}
 }
