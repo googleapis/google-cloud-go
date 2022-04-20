@@ -14,6 +14,11 @@
               "methods": [
                 "PublishChannelConnectionEvents"
               ]
+            },
+            "PublishEvents": {
+              "methods": [
+                "PublishEvents"
+              ]
             }
           }
         }

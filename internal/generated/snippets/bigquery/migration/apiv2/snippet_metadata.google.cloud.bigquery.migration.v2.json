@@ -1,0 +1,335 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/migration/apiv2",
+    "version": "1.31.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.migration.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_CreateMigrationWorkflow_sync",
+      "title": "bigquerymigration CreateMigrationWorkflow Sample",
+      "description": "CreateMigrationWorkflow creates a migration workflow.",
+      "file": "Client/CreateMigrationWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMigrationWorkflow",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.CreateMigrationWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.CreateMigrationWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "migrationpb.MigrationWorkflow",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "CreateMigrationWorkflow",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.CreateMigrationWorkflow",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_DeleteMigrationWorkflow_sync",
+      "title": "bigquerymigration DeleteMigrationWorkflow Sample",
+      "description": "DeleteMigrationWorkflow deletes a migration workflow by name.",
+      "file": "Client/DeleteMigrationWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMigrationWorkflow",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.DeleteMigrationWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.DeleteMigrationWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteMigrationWorkflow",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.DeleteMigrationWorkflow",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_GetMigrationSubtask_sync",
+      "title": "bigquerymigration GetMigrationSubtask Sample",
+      "description": "GetMigrationSubtask gets a previously created migration subtask.",
+      "file": "Client/GetMigrationSubtask/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMigrationSubtask",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.GetMigrationSubtask",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.GetMigrationSubtaskRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "migrationpb.MigrationSubtask",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "GetMigrationSubtask",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.GetMigrationSubtask",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_GetMigrationWorkflow_sync",
+      "title": "bigquerymigration GetMigrationWorkflow Sample",
+      "description": "GetMigrationWorkflow gets a previously created migration workflow.",
+      "file": "Client/GetMigrationWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMigrationWorkflow",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.GetMigrationWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.GetMigrationWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "migrationpb.MigrationWorkflow",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "GetMigrationWorkflow",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.GetMigrationWorkflow",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_ListMigrationSubtasks_sync",
+      "title": "bigquerymigration ListMigrationSubtasks Sample",
+      "description": "ListMigrationSubtasks lists previously created migration subtasks.",
+      "file": "Client/ListMigrationSubtasks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMigrationSubtasks",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.ListMigrationSubtasks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.ListMigrationSubtasksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MigrationSubtaskIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "ListMigrationSubtasks",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.ListMigrationSubtasks",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_ListMigrationWorkflows_sync",
+      "title": "bigquerymigration ListMigrationWorkflows Sample",
+      "description": "ListMigrationWorkflows lists previously created migration workflow.",
+      "file": "Client/ListMigrationWorkflows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMigrationWorkflows",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.ListMigrationWorkflows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.ListMigrationWorkflowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MigrationWorkflowIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "ListMigrationWorkflows",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.ListMigrationWorkflows",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerymigration_v2_generated_MigrationService_StartMigrationWorkflow_sync",
+      "title": "bigquerymigration StartMigrationWorkflow Sample",
+      "description": "StartMigrationWorkflow starts a previously created migration workflow. I.e., the state transitions\nfrom DRAFT to RUNNING. This is a no-op if the state is already RUNNING.\nAn error will be signaled if the state is anything other than DRAFT or\nRUNNING.",
+      "file": "Client/StartMigrationWorkflow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartMigrationWorkflow",
+        "fullName": "google.cloud.bigquery.migration.v2.Client.StartMigrationWorkflow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "migrationpb.StartMigrationWorkflowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.migration.v2.Client"
+        },
+        "method": {
+          "shortName": "StartMigrationWorkflow",
+          "fullName": "google.cloud.bigquery.migration.v2.MigrationService.StartMigrationWorkflow",
+          "service": {
+            "shortName": "MigrationService",
+            "fullName": "google.cloud.bigquery.migration.v2.MigrationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
