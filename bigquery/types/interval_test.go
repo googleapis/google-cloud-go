@@ -36,15 +36,19 @@ func TestParseInterval(t *testing.T) {
 		},
 		{
 			inputStr:     "1-2 3 4:5:6",
-			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
+			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSecondNanos: 0},
 		},
 		{
-			inputStr:     "1-2 3 4:5:6.777",
-			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 777},
+			inputStr:     "1-2 3 4:5:6.5",
+			wantInterval: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSecondNanos: 500000000},
 		},
 		{
-			inputStr:     "-1-2 3 -4:5:6",
-			wantInterval: &IntervalValue{Years: -1, Months: -2, Days: 3, Hours: -4, Minutes: -5, Seconds: -6, SubSeconds: 0},
+			inputStr:     "-1-2 3 -4:5:6.123",
+			wantInterval: &IntervalValue{Years: -1, Months: -2, Days: 3, Hours: -4, Minutes: -5, Seconds: -6, SubSecondNanos: -123000000},
+		},
+		{
+			inputStr:     "0-0 0 1:1:1.000000001",
+			wantInterval: &IntervalValue{Hours: 1, Minutes: 1, Seconds: 1, SubSecondNanos: 1},
 		},
 	}
 
@@ -74,45 +78,45 @@ func TestCanonicalInterval(t *testing.T) {
 	}{
 		{
 			description:   "already canonical",
-			input:         &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
-			wantCanonical: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSeconds: 0},
+			input:         &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSecondNanos: 0},
+			wantCanonical: &IntervalValue{Years: 1, Months: 2, Days: 3, Hours: 4, Minutes: 5, Seconds: 6, SubSecondNanos: 0},
 			wantString:    "1-2 3 4:5:6",
 		},
 		{
 			description:   "mixed Y-M",
 			input:         &IntervalValue{Years: -1, Months: 28},
-			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSecondNanos: 0},
 			wantString:    "1-4 0 0:0:0",
 		},
 		{
 			description:   "mixed Y-M",
 			input:         &IntervalValue{Years: -1, Months: 28},
-			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantCanonical: &IntervalValue{Years: 1, Months: 4, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSecondNanos: 0},
 			wantString:    "1-4 0 0:0:0",
 		},
 		{
 			description:   "big month Y-M",
 			input:         &IntervalValue{Years: 0, Months: -13},
-			wantCanonical: &IntervalValue{Years: -1, Months: -1, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantCanonical: &IntervalValue{Years: -1, Months: -1, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSecondNanos: 0},
 			wantString:    "-1-1 0 0:0:0",
 		},
 		{
 			description:   "big days not normalized",
 			input:         &IntervalValue{Days: 1000},
-			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 1000, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 0},
+			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 1000, Hours: 0, Minutes: 0, Seconds: 0, SubSecondNanos: 0},
 			wantString:    "0-0 1000 0:0:0",
 		},
 		{
 			description:   "time reduced",
-			input:         &IntervalValue{Minutes: 181, Seconds: 61, SubSeconds: 5},
-			wantCanonical: &IntervalValue{Hours: 3, Minutes: 2, Seconds: 1, SubSeconds: 5},
-			wantString:    "0-0 0 3:2:1.5",
+			input:         &IntervalValue{Minutes: 181, Seconds: 61, SubSecondNanos: 5},
+			wantCanonical: &IntervalValue{Hours: 3, Minutes: 2, Seconds: 1, SubSecondNanos: 5},
+			wantString:    "0-0 0 3:2:1.000000005",
 		},
 		{
-			description:   "subseconds simplified",
-			input:         &IntervalValue{SubSeconds: 500},
-			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 0, Hours: 0, Minutes: 0, Seconds: 0, SubSeconds: 5},
-			wantString:    "0-0 0 0:0:0.5",
+			description:   "subseconds oversized",
+			input:         &IntervalValue{SubSecondNanos: 1900000000},
+			wantCanonical: &IntervalValue{Years: 0, Months: 0, Days: 0, Hours: 0, Minutes: 0, Seconds: 1, SubSecondNanos: 900000000},
+			wantString:    "0-0 0 0:0:1.9",
 		},
 	}
 

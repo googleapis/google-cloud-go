@@ -17,7 +17,6 @@ package types
 import (
 	"bytes"
 	"fmt"
-	"math"
 	"strconv"
 	"time"
 )
@@ -46,8 +45,8 @@ type IntervalValue struct {
 	Hours   int32
 	Minutes int32
 	Seconds int32
-	// This represents fractional seconds.  Ex: 0.34 seconds = 34 SubSeconds.
-	SubSeconds int32
+	// This represents the fractional seconds as nanoseconds.
+	SubSecondNanos int32
 }
 
 // String returns string representation of the interval value using the canonical format.
@@ -59,8 +58,12 @@ func (iv *IntervalValue) String() string {
 		src = iv.Canonicalize()
 	}
 	out := fmt.Sprintf("%d-%d %d %d:%d:%d", src.Years, int32abs(src.Months), src.Days, src.Hours, int32abs(src.Minutes), int32abs(src.Seconds))
-	if src.SubSeconds != 0 {
-		out = fmt.Sprintf("%s.%d", out, int32abs(src.SubSeconds))
+	if src.SubSecondNanos != 0 {
+		mantStr := fmt.Sprintf("%09d", src.SubSecondNanos)
+		for len(mantStr) > 0 && mantStr[len(mantStr)-1:] == "0" {
+			mantStr = mantStr[0 : len(mantStr)-1]
+		}
+		out = fmt.Sprintf("%s.%s", out, mantStr)
 	}
 	return out
 }
@@ -118,9 +121,9 @@ func ParseInterval(value string) (*IntervalValue, error) {
 				iVal.Seconds = -v
 			}
 		case subsecsPart:
-			iVal.SubSeconds = v
+			iVal.SubSecondNanos = v
 			if iVal.Hours < 0 {
-				iVal.SubSeconds = -v
+				iVal.SubSecondNanos = -v
 			}
 		default:
 			return nil, fmt.Errorf("encountered invalid part %s during parse", part)
@@ -180,11 +183,17 @@ func getNumVal(part intervalPart, s string) (string, int32, error) {
 
 	if len(captured) == 0 {
 		if part == subsecsPart {
-			// Subseconds is optional, treat no value as zero.
 			return s, 0, nil
 		}
-		// Otherwise this is an error.
-		return "", 0, fmt.Errorf("no value captured for part %s", part.String())
+		return "", 0, fmt.Errorf("no value parsed for part %s", part.String())
+	}
+	// special case: subsecs is a mantissa, convert it to nanos
+	if part == subsecsPart {
+		parsed, err := strconv.ParseFloat(fmt.Sprintf("0.%s", captured), 64)
+		if err != nil {
+			return "", 0, fmt.Errorf("couldn't parse %s as %s", captured, part.String())
+		}
+		return s, int32(parsed * 1e9), nil
 	}
 	parsed, err := strconv.ParseInt(captured, 10, 32)
 	if err != nil {
@@ -193,16 +202,35 @@ func getNumVal(part intervalPart, s string) (string, int32, error) {
 	return s, int32(parsed), nil
 }
 
-// FromDuration converts a time.Duration to an IntervalType representation.
-// TODO: nanos
-// TODO: do we need an error return?
-func FromDuration(in time.Duration) (*IntervalValue, error) {
-	return nil, fmt.Errorf("Unimplemented")
+// IntervalValueFromDuration converts a time.Duration to an IntervalType representation.
+func IntervalValueFromDuration(in time.Duration) *IntervalValue {
+	nanos := in.Nanoseconds()
+	out := &IntervalValue{}
+	out.Hours = int32(nanos / 3600 / 1e9)
+	nanos = nanos - (int64(out.Hours) * 3600 * 1e9)
+	out.Minutes = int32(nanos / 60 / 1e9)
+	nanos = nanos - (int64(out.Minutes) * 60 * 1e9)
+	out.Seconds = int32(nanos / 1e9)
+	nanos = nanos - (int64(out.Seconds) * 1e9)
+	out.SubSecondNanos = int32(nanos)
+	return out
 }
 
 // ToDuration converts an interval to a time.Duration value.
 func (iv *IntervalValue) ToDuration() time.Duration {
-	return time.Duration(0)
+	var accum int64
+	accum = 12*int64(iv.Years) + int64(iv.Months)
+	// widen to days
+	accum = accum*30 + int64(iv.Days)
+	// hours
+	accum = accum*24 + int64(iv.Hours)
+	// minutes
+	accum = accum*60 + int64(iv.Minutes)
+	// seconds
+	accum = accum*60 + int64(iv.Seconds)
+	// subsecs
+	accum = accum*1e9 + int64(iv.SubSecondNanos*1e9)
+	return time.Duration(accum)
 }
 
 // Canonicalize returns an IntervalValue where signs for elements in the
@@ -212,7 +240,7 @@ func (iv *IntervalValue) ToDuration() time.Duration {
 // interval.  For example, encoding an interval with 12 months is equivalent
 // to an interval of 1 year.
 func (iv *IntervalValue) Canonicalize() *IntervalValue {
-	newIV := &IntervalValue{iv.Years, iv.Months, iv.Days, iv.Hours, iv.Minutes, iv.Seconds, iv.SubSeconds}
+	newIV := &IntervalValue{iv.Years, iv.Months, iv.Days, iv.Hours, iv.Minutes, iv.Seconds, iv.SubSecondNanos}
 	// canonicalize Y-M part
 	totalMonths := iv.Years*12 + iv.Months
 	newIV.Years = totalMonths / 12
@@ -224,11 +252,9 @@ func (iv *IntervalValue) Canonicalize() *IntervalValue {
 	// canonicalize time part by switching to Nanos.
 	totalNanos := int64(iv.Hours)*3600*1e9 +
 		int64(iv.Minutes)*60*1e9 +
-		int64(iv.Seconds)*1e9
+		int64(iv.Seconds)*1e9 +
+		int64(iv.SubSecondNanos)
 
-	if iv.SubSeconds != 0 {
-		totalNanos = totalNanos + (1e9 * int64(iv.SubSeconds) / denom(int(math.Log10(float64(iv.SubSeconds)))+1))
-	}
 	// Reduce to parts.
 	newIV.Hours = int32(totalNanos / 60 / 60 / 1e9)
 	totalNanos = totalNanos - (int64(newIV.Hours) * 3600 * 1e9)
@@ -236,30 +262,22 @@ func (iv *IntervalValue) Canonicalize() *IntervalValue {
 	totalNanos = totalNanos - (int64(newIV.Minutes) * 60 * 1e9)
 	newIV.Seconds = int32(totalNanos / 1e9)
 	totalNanos = totalNanos - (int64(newIV.Seconds) * 1e9)
-	newIV.SubSeconds = int32(totalNanos)
-	if newIV.SubSeconds != 0 {
-		for newIV.SubSeconds%10 == 0 {
-			newIV.SubSeconds = newIV.SubSeconds / 10
-		}
-	}
+	newIV.SubSecondNanos = int32(totalNanos)
 	return newIV
 }
-
 func (iv *IntervalValue) isCanonical() bool {
 	if !sameSign(iv.Years, iv.Months) ||
 		!sameSign(iv.Hours, iv.Minutes) {
 		return false
 	}
+	// We allow large days and hours values, because they are within different parts.
 	if int32abs(iv.Months) > 12 ||
-		int32abs(iv.Hours) > 24 ||
 		int32abs(iv.Minutes) > 60 ||
-		int32abs(iv.Seconds) > 60 {
+		int32abs(iv.Seconds) > 60 ||
+		int32abs(iv.SubSecondNanos) > 1e9 {
 		return false
 	}
-	if int32abs(iv.SubSeconds)%10 == 0 {
-		return false
-	}
-	// TODO: validate boundarys like 10k years?
+	// TODO: We don't currently validate that each part represents value smaller than 10k years.
 	return true
 }
 
@@ -284,15 +302,4 @@ func sameSign(nums ...int32) bool {
 		return false
 	}
 	return true
-}
-
-func denom(digits int) int64 {
-	if digits == 0 {
-		return 1
-	}
-	result := int64(10)
-	for i := 2; i <= digits; i++ {
-		result *= 10
-	}
-	return result
 }
