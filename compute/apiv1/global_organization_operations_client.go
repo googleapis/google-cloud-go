@@ -171,7 +171,10 @@ func (c *globalOrganizationOperationsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified Operations resource.
 func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.DeleteGlobalOrganizationOperationResponse, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
 	params := url.Values{}
@@ -182,10 +185,15 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "operation", url.QueryEscape(req.GetOperation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.DeleteGlobalOrganizationOperationResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -222,7 +230,10 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOrganizationOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations/%v", req.GetOperation())
 
 	params := url.Values{}
@@ -233,10 +244,15 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "operation", url.QueryEscape(req.GetOperation())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -286,7 +302,10 @@ func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/locations/global/operations")
 
 		params := url.Values{}
@@ -314,6 +333,9 @@ func (c *globalOrganizationOperationsRESTClient) List(ctx context.Context, req *
 		// Build HTTP headers from client and context metadata.
 		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err

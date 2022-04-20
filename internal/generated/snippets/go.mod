@@ -24,7 +24,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.5.0
+	cloud.google.com/go/compute v1.6.0
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
