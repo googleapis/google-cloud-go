@@ -25,6 +25,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const (
@@ -210,8 +211,62 @@ func (c *grpcStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 
 	return battrs, err
 }
-func (c *grpcStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	b := uattrs.toProtoBucket()
+	b.Name = bucketResourceName(globalProjectAlias, bucket)
+	req := &storagepb.UpdateBucketRequest{
+		Bucket:                     b,
+		PredefinedAcl:              uattrs.PredefinedACL,
+		PredefinedDefaultObjectAcl: uattrs.PredefinedDefaultObjectACL,
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.UpdateBucket", conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+
+	var paths []string
+	fieldMask := &fieldmaskpb.FieldMask{
+		Paths: paths,
+	}
+	if uattrs.CORS != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "Cors")
+	}
+	if uattrs.DefaultEventBasedHold != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "DefaultEventBasedHold")
+	}
+	if uattrs.Lifecycle != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "Lifecycle")
+	}
+	if uattrs.PredefinedACL != "" {
+		fieldMask.Paths = append(fieldMask.Paths, "ACL")
+	}
+	if uattrs.PredefinedDefaultObjectACL != "" {
+		fieldMask.Paths = append(fieldMask.Paths, "DefaultObjectACL")
+	}
+	if uattrs.StorageClass != "" {
+		fieldMask.Paths = append(fieldMask.Paths, "StorageClass")
+	}
+	if uattrs.RPO != RPOUnknown {
+		fieldMask.Paths = append(fieldMask.Paths, "rpo")
+	}
+	if uattrs.setLabels != nil || uattrs.deleteLabels != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "labels")
+	}
+	req.UpdateMask = fieldMask
+
+	var battrs *BucketAttrs
+	err := run(ctx, func() error {
+		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
+		battrs = newBucketFromProto(res)
+		return err
+	}, s.retry, s.idempotent)
+
+	return battrs, err
 }
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
