@@ -19,6 +19,7 @@ import (
 	"os"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
@@ -216,8 +217,54 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttr
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }
-func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
+	s := callSettings(c.settings, opts...)
+	it := &ObjectIterator{
+		ctx: ctx,
+	}
+	if q != nil {
+		it.query = *q
+	}
+	req := &storagepb.ListObjectsRequest{
+		Parent:             bucketResourceName(globalProjectAlias, bucket),
+		Prefix:             it.query.Prefix,
+		Delimiter:          it.query.Delimiter,
+		Versions:           it.query.Versions,
+		LexicographicStart: it.query.StartOffset,
+		LexicographicEnd:   it.query.EndOffset,
+		// TODO(noahietz): Convert a projection to a FieldMask.
+		// ReadMask: q.Projection,
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{UserProject: s.userProject}
+	}
+	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		var objects []*storagepb.Object
+		err = run(it.ctx, func() error {
+			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
+				err = ErrBucketNotExist
+			}
+			return "", err
+		}
+
+		for _, obj := range objects {
+			b := newObjectFromProto(obj)
+			it.items = append(it.items, b)
+		}
+
+		return token, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.items) },
+		func() interface{} { b := it.items; it.items = nil; return b })
+
+	return it
 }
 
 // Object metadata methods.
