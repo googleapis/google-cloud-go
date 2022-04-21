@@ -703,7 +703,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "ts"); err != nil {
+	ts := uid.NewSpace("ts", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, tableName, ts); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -711,7 +712,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	nonsense := []byte("lorem ipsum dolor sit amet, ")
 	fill(bigBytes, nonsense)
 	mut := NewMutation()
-	mut.Set("ts", "col", 1000, bigBytes)
+	mut.Set(ts, "col", 1000, bigBytes)
 	if err := table.Apply(ctx, "bigrow", mut); err != nil {
 		t.Fatalf("Big write: %v", err)
 	}
@@ -721,8 +722,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatalf("Big read: %v", err)
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
-	wantRow := Row{"ts": []ReadItem{
-		{Row: "bigrow", Column: "ts:col", Timestamp: 1000, Value: bigBytes},
+	wantRow := Row{ts: []ReadItem{
+		{Row: "bigrow", Column: fmt.Sprintf("%s:col", ts), Timestamp: 1000, Value: bigBytes},
 	}}
 	if !testutil.Equal(r, wantRow) {
 		t.Fatalf("Big read returned incorrect bytes: %v", r)
@@ -735,7 +736,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	sem := make(chan int, 50) // do up to 50 mutations at a time.
 	for i := 0; i < 1000; i++ {
 		mut := NewMutation()
-		mut.Set("ts", "big-scan", 1000, medBytes)
+		mut.Set(ts, "big-scan", 1000, medBytes)
 		row := fmt.Sprintf("row-%d", i)
 		wg.Add(1)
 		go func() {
@@ -781,7 +782,8 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 
 	// Test bulk mutations
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "bulk"); err != nil {
+	bulk := uid.NewSpace("bulk", &uid.Options{Short: true}).New()
+	if err := adminClient.CreateColumnFamily(ctx, tableName, bulk); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	bulkData := map[string][]string{
@@ -794,7 +796,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	for row, ss := range bulkData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("bulk", name, 1000, []byte("1"))
+			mut.Set(bulk, name, 1000, []byte("1"))
 		}
 		rowKeys = append(rowKeys, row)
 		muts = append(muts, mut)
@@ -817,9 +819,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		verifyDirectPathRemoteAddress(testEnv, t)
 		var wantItems []ReadItem
 		for _, val := range ss {
-			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Timestamp: 1000, Value: []byte("1")})
+			c := fmt.Sprintf("%s:%s", bulk, val)
+			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: c, Timestamp: 1000, Value: []byte("1")})
 		}
-		wantRow := Row{"bulk": wantItems}
+		wantRow := Row{bulk: wantItems}
 		if !testutil.Equal(row, wantRow) {
 			t.Fatalf("Read row mismatch.\n got %#v\nwant %#v", row, wantRow)
 		}
