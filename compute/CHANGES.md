@@ -1,5 +1,12 @@
 # Changes
 
+### [1.6.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.6.0...compute/v1.6.1) (2022-04-21)
+
+
+### Bug Fixes
+
+* **compute:** revert proto3_optional, required removal on parent_id ([#714](https://github.com/googleapis/google-cloud-go/issues/714)) ([d4ea7dd](https://github.com/googleapis/google-cloud-go/commit/d4ea7dd68bf2b858481727afd8a8830e31a9fe55))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.5.0...compute/v1.6.0) (2022-04-14)
 
 

@@ -1,0 +1,382 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/connection/apiv1",
+    "version": "1.31.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.connection.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_CreateConnection_sync",
+      "title": "bigqueryconnection CreateConnection Sample",
+      "description": "CreateConnection creates a new connection.",
+      "file": "Client/CreateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConnection",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.CreateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectionpb.CreateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "connectionpb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateConnection",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.CreateConnection",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_DeleteConnection_sync",
+      "title": "bigqueryconnection DeleteConnection Sample",
+      "description": "DeleteConnection deletes connection and associated credential.",
+      "file": "Client/DeleteConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConnection",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.DeleteConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectionpb.DeleteConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteConnection",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.DeleteConnection",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_GetConnection_sync",
+      "title": "bigqueryconnection GetConnection Sample",
+      "description": "GetConnection returns specified connection.",
+      "file": "Client/GetConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConnection",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.GetConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectionpb.GetConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "connectionpb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "GetConnection",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.GetConnection",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_GetIamPolicy_sync",
+      "title": "bigqueryconnection GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource.\nReturns an empty policy if the resource exists and does not have a policy\nset.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.GetIamPolicy",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_ListConnections_sync",
+      "title": "bigqueryconnection ListConnections Sample",
+      "description": "ListConnections returns a list of connections in the given project.",
+      "file": "Client/ListConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConnections",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.ListConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectionpb.ListConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConnectionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "ListConnections",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.ListConnections",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_SetIamPolicy_sync",
+      "title": "bigqueryconnection SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any\nexisting policy.\n\nCan return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.SetIamPolicy",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_TestIamPermissions_sync",
+      "title": "bigqueryconnection TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.\nIf the resource does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.\n\nNote: This operation is designed to be used for building permission-aware\nUIs and command-line tools, not for authorization checking. This operation\nmay “fail open” without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.TestIamPermissions",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigqueryconnection_v1_generated_ConnectionService_UpdateConnection_sync",
+      "title": "bigqueryconnection UpdateConnection Sample",
+      "description": "UpdateConnection updates the specified connection. For security reasons, also resets\ncredential if connection properties are in the update field mask.",
+      "file": "Client/UpdateConnection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConnection",
+        "fullName": "google.cloud.bigquery.connection.v1.Client.UpdateConnection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "connectionpb.UpdateConnectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "connectionpb.Connection",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.bigquery.connection.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateConnection",
+          "fullName": "google.cloud.bigquery.connection.v1.ConnectionService.UpdateConnection",
+          "service": {
+            "shortName": "ConnectionService",
+            "fullName": "google.cloud.bigquery.connection.v1.ConnectionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

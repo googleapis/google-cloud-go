@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/documentai/apiv1",
+    "version": "1.4.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.documentai.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_BatchProcessDocuments_sync",
+      "title": "documentai BatchProcessDocuments Sample",
+      "description": "BatchProcessDocuments lRO endpoint to batch process many documents. The output is written\nto Cloud Storage as JSON in the [Document] format.",
+      "file": "DocumentProcessorClient/BatchProcessDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchProcessDocuments",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.BatchProcessDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.BatchProcessRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchProcessDocumentsOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "BatchProcessDocuments",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ProcessDocument_sync",
+      "title": "documentai ProcessDocument Sample",
+      "description": "ProcessDocument processes a single document.",
+      "file": "DocumentProcessorClient/ProcessDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProcessDocument",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ProcessDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ProcessRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "documentaipb.ProcessResponse",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ProcessDocument",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "documentai_v1_generated_DocumentProcessorService_ReviewDocument_sync",
+      "title": "documentai ReviewDocument Sample",
+      "description": "ReviewDocument send a document for Human Review. The input document should be processed by\nthe specified processor.",
+      "file": "DocumentProcessorClient/ReviewDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReviewDocument",
+        "fullName": "google.cloud.documentai.v1.DocumentProcessorClient.ReviewDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "documentaipb.ReviewDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReviewDocumentOperation",
+        "client": {
+          "shortName": "DocumentProcessorClient",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorClient"
+        },
+        "method": {
+          "shortName": "ReviewDocument",
+          "fullName": "google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument",
+          "service": {
+            "shortName": "DocumentProcessorService",
+            "fullName": "google.cloud.documentai.v1.DocumentProcessorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,567 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/billing/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.billing.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_CreateBillingAccount_sync",
+      "title": "cloudbilling CreateBillingAccount Sample",
+      "description": "CreateBillingAccount creates a billing account.\nThis method can only be used to create\nbilling subaccounts (at https: //cloud.google.com/billing/docs/concepts)\nby GCP resellers.\nWhen creating a subaccount, the current authenticated user must have the\nbilling.accounts.update IAM permission on the master account, which is\ntypically given to billing account\nadministrators (at https: //cloud.google.com/billing/docs/how-to/billing-access).\nThis method will return an error if the master account has not been\nprovisioned as a reseller account.",
+      "file": "CloudBillingClient/CreateBillingAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBillingAccount",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.CreateBillingAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.CreateBillingAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "billingpb.BillingAccount",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "CreateBillingAccount",
+          "fullName": "google.cloud.billing.v1.CloudBilling.CreateBillingAccount",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_GetBillingAccount_sync",
+      "title": "cloudbilling GetBillingAccount Sample",
+      "description": "GetBillingAccount gets information about a billing account. The current authenticated user\nmust be a viewer of the billing\naccount (at https: //cloud.google.com/billing/docs/how-to/billing-access).",
+      "file": "CloudBillingClient/GetBillingAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBillingAccount",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.GetBillingAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.GetBillingAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "billingpb.BillingAccount",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "GetBillingAccount",
+          "fullName": "google.cloud.billing.v1.CloudBilling.GetBillingAccount",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_GetIamPolicy_sync",
+      "title": "cloudbilling GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a billing account.\nThe caller must have the billing.accounts.getIamPolicy permission on the\naccount, which is often given to billing account\nviewers (at https: //cloud.google.com/billing/docs/how-to/billing-access).",
+      "file": "CloudBillingClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.billing.v1.CloudBilling.GetIamPolicy",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_GetProjectBillingInfo_sync",
+      "title": "cloudbilling GetProjectBillingInfo Sample",
+      "description": "GetProjectBillingInfo gets the billing information for a project. The current authenticated user\nmust have permission to view the\nproject (at https: //cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo).",
+      "file": "CloudBillingClient/GetProjectBillingInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProjectBillingInfo",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.GetProjectBillingInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.GetProjectBillingInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "billingpb.ProjectBillingInfo",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "GetProjectBillingInfo",
+          "fullName": "google.cloud.billing.v1.CloudBilling.GetProjectBillingInfo",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_ListBillingAccounts_sync",
+      "title": "cloudbilling ListBillingAccounts Sample",
+      "description": "ListBillingAccounts lists the billing accounts that the current authenticated user has\npermission to\nview (at https: //cloud.google.com/billing/docs/how-to/billing-access).",
+      "file": "CloudBillingClient/ListBillingAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBillingAccounts",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.ListBillingAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.ListBillingAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BillingAccountIterator",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "ListBillingAccounts",
+          "fullName": "google.cloud.billing.v1.CloudBilling.ListBillingAccounts",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_ListProjectBillingInfo_sync",
+      "title": "cloudbilling ListProjectBillingInfo Sample",
+      "description": "ListProjectBillingInfo lists the projects associated with a billing account. The current\nauthenticated user must have the billing.resourceAssociations.list IAM\npermission, which is often given to billing account\nviewers (at https: //cloud.google.com/billing/docs/how-to/billing-access).",
+      "file": "CloudBillingClient/ListProjectBillingInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProjectBillingInfo",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.ListProjectBillingInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.ListProjectBillingInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProjectBillingInfoIterator",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "ListProjectBillingInfo",
+          "fullName": "google.cloud.billing.v1.CloudBilling.ListProjectBillingInfo",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_SetIamPolicy_sync",
+      "title": "cloudbilling SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy for a billing account. Replaces any existing\npolicy.\nThe caller must have the billing.accounts.setIamPolicy permission on the\naccount, which is often given to billing account\nadministrators (at https: //cloud.google.com/billing/docs/how-to/billing-access).",
+      "file": "CloudBillingClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.billing.v1.CloudBilling.SetIamPolicy",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_TestIamPermissions_sync",
+      "title": "cloudbilling TestIamPermissions Sample",
+      "description": "TestIamPermissions tests the access control policy for a billing account. This method takes\nthe resource and a set of permissions as input and returns the subset of\nthe input permissions that the caller is allowed for that resource.",
+      "file": "CloudBillingClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.billing.v1.CloudBilling.TestIamPermissions",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_UpdateBillingAccount_sync",
+      "title": "cloudbilling UpdateBillingAccount Sample",
+      "description": "UpdateBillingAccount updates a billing account’s fields.\nCurrently the only field that can be edited is display_name.\nThe current authenticated user must have the billing.accounts.update\nIAM permission, which is typically given to the\nadministrator (at https: //cloud.google.com/billing/docs/how-to/billing-access)\nof the billing account.",
+      "file": "CloudBillingClient/UpdateBillingAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBillingAccount",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.UpdateBillingAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.UpdateBillingAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "billingpb.BillingAccount",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "UpdateBillingAccount",
+          "fullName": "google.cloud.billing.v1.CloudBilling.UpdateBillingAccount",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudBilling_UpdateProjectBillingInfo_sync",
+      "title": "cloudbilling UpdateProjectBillingInfo Sample",
+      "description": "UpdateProjectBillingInfo sets or updates the billing account associated with a project. You specify\nthe new billing account by setting the billing_account_name in the\nProjectBillingInfo resource to the resource name of a billing account.\nAssociating a project with an open billing account enables billing on the\nproject and allows charges for resource usage. If the project already had a\nbilling account, this method changes the billing account used for resource\nusage charges.\n\nNote: Incurred charges that have not yet been reported in the transaction\nhistory of the GCP Console might be billed to the new billing\naccount, even if the charge occurred before the new billing account was\nassigned to the project.\n\nThe current authenticated user must have ownership privileges for both the\nproject (at https: //cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo) and the billing\naccount (at https: //cloud.google.com/billing/docs/how-to/billing-access).\n\nYou can disable billing on the project by setting the\nbilling_account_name field to empty. This action disassociates the\ncurrent billing account from the project. Any billable activity of your\nin-use services will stop, and your application could stop functioning as\nexpected. Any unbilled charges to date will be billed to the previously\nassociated account. The current authenticated user must be either an owner\nof the project or an owner of the billing account for the project.\n\nNote that associating a project with a closed billing account will have\nmuch the same effect as disabling billing on the project: any paid\nresources used by the project will be shut down. Thus, unless you wish to\ndisable billing, you should always call this method with the name of an\nopen billing account.",
+      "file": "CloudBillingClient/UpdateProjectBillingInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProjectBillingInfo",
+        "fullName": "google.cloud.billing.v1.CloudBillingClient.UpdateProjectBillingInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.UpdateProjectBillingInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "billingpb.ProjectBillingInfo",
+        "client": {
+          "shortName": "CloudBillingClient",
+          "fullName": "google.cloud.billing.v1.CloudBillingClient"
+        },
+        "method": {
+          "shortName": "UpdateProjectBillingInfo",
+          "fullName": "google.cloud.billing.v1.CloudBilling.UpdateProjectBillingInfo",
+          "service": {
+            "shortName": "CloudBilling",
+            "fullName": "google.cloud.billing.v1.CloudBilling"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudCatalog_ListServices_sync",
+      "title": "cloudbilling ListServices Sample",
+      "description": "ListServices lists all public cloud services.",
+      "file": "CloudCatalogClient/ListServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListServices",
+        "fullName": "google.cloud.billing.v1.CloudCatalogClient.ListServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.ListServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ServiceIterator",
+        "client": {
+          "shortName": "CloudCatalogClient",
+          "fullName": "google.cloud.billing.v1.CloudCatalogClient"
+        },
+        "method": {
+          "shortName": "ListServices",
+          "fullName": "google.cloud.billing.v1.CloudCatalog.ListServices",
+          "service": {
+            "shortName": "CloudCatalog",
+            "fullName": "google.cloud.billing.v1.CloudCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudbilling_v1_generated_CloudCatalog_ListSkus_sync",
+      "title": "cloudbilling ListSkus Sample",
+      "description": "ListSkus lists all publicly available SKUs for a given cloud service.",
+      "file": "CloudCatalogClient/ListSkus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSkus",
+        "fullName": "google.cloud.billing.v1.CloudCatalogClient.ListSkus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "billingpb.ListSkusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SkuIterator",
+        "client": {
+          "shortName": "CloudCatalogClient",
+          "fullName": "google.cloud.billing.v1.CloudCatalogClient"
+        },
+        "method": {
+          "shortName": "ListSkus",
+          "fullName": "google.cloud.billing.v1.CloudCatalog.ListSkus",
+          "service": {
+            "shortName": "CloudCatalog",
+            "fullName": "google.cloud.billing.v1.CloudCatalog"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
