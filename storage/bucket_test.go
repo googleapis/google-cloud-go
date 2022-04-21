@@ -101,6 +101,16 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
+					AgeInDays:        10,
+					MatchesPrefix:    []string{"testPrefix"},
+					MatchesSuffix:    []string{"testSuffix"},
+					NumNewerVersions: 3,
+				},
+			}, {
+				Action: LifecycleAction{
+					Type: DeleteAction,
+				},
+				Condition: LifecycleCondition{
 					Liveness: Archived,
 				},
 			}},
@@ -177,7 +187,19 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 						MatchesStorageClass:     []string{"NEARLINE"},
 						NumNewerVersions:        10,
 					},
-				}, {
+				},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						Age:              10,
+						MatchesPrefix:    []string{"testPrefix"},
+						MatchesSuffix:    []string{"testSuffix"},
+						NumNewerVersions: 3,
+					},
+				},
+				{
 					Action: &raw.BucketLifecycleRuleAction{
 						Type: DeleteAction,
 					},
