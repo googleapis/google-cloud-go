@@ -22,7 +22,7 @@ import (
 )
 
 // IntervalValue is a go type for representing BigQuery INTERVAL values.
-// Intervals are encoded in three parts:
+// Intervals are represented using three distinct parts:
 // * Years and Months
 // * Days
 // * Time (Hours/Mins/Seconds/Fractional Seconds).
@@ -51,10 +51,13 @@ type IntervalValue struct {
 
 // String returns string representation of the interval value using the canonical format.
 // The canonical format is as follows:
+//
 // [sign]Y-M [sign]D [sign]H:M:S[.F]
 func (iv *IntervalValue) String() string {
+	// Don't canonicalize the current value.  Instead, if it's not canonical,
+	// compute the canonical form and use that.
 	src := iv
-	if !iv.isCanonical() {
+	if !iv.IsCanonical() {
 		src = iv.Canonicalize()
 	}
 	out := fmt.Sprintf("%d-%d %d %d:%d:%d", src.Years, int32abs(src.Months), src.Days, src.Hours, int32abs(src.Minutes), int32abs(src.Seconds))
@@ -68,6 +71,7 @@ func (iv *IntervalValue) String() string {
 	return out
 }
 
+// intervalPart is used for parsing string representations.
 type intervalPart int
 
 const (
@@ -88,9 +92,10 @@ func (i intervalPart) String() string {
 	return knownParts[i]
 }
 
+// canonicalParts indicates the parse order for canonical format.
 var canonicalParts = []intervalPart{yearsPart, monthsPart, daysPart, hoursPart, minutesPart, secondsPart, subsecsPart}
 
-// ParseInterval parses an interval in it's canonical string format into the IntervalType it represents.
+// ParseInterval parses an interval in canonical string format and returns the IntervalValue it represents.
 func ParseInterval(value string) (*IntervalValue, error) {
 	iVal := &IntervalValue{}
 	for _, part := range canonicalParts {
@@ -203,6 +208,9 @@ func getNumVal(part intervalPart, s string) (string, int32, error) {
 }
 
 // IntervalValueFromDuration converts a time.Duration to an IntervalType representation.
+//
+// The converted duration only leverages the hours/minutes/seconds part of the interval,
+// the other parts representing days, months, and years are not used.
 func IntervalValueFromDuration(in time.Duration) *IntervalValue {
 	nanos := in.Nanoseconds()
 	out := &IntervalValue{}
@@ -217,6 +225,11 @@ func IntervalValueFromDuration(in time.Duration) *IntervalValue {
 }
 
 // ToDuration converts an interval to a time.Duration value.
+//
+// For the purposes of conversion:
+// Years are normalized to 12 months.
+// Months are normalized to 30 days.
+// Days are normalized to 24 hours.
 func (iv *IntervalValue) ToDuration() time.Duration {
 	var accum int64
 	accum = 12*int64(iv.Years) + int64(iv.Months)
@@ -265,7 +278,10 @@ func (iv *IntervalValue) Canonicalize() *IntervalValue {
 	newIV.SubSecondNanos = int32(totalNanos)
 	return newIV
 }
-func (iv *IntervalValue) isCanonical() bool {
+
+// IsCanonical evaluates whether the current representation is in canonical
+// form.
+func (iv *IntervalValue) IsCanonical() bool {
 	if !sameSign(iv.Years, iv.Months) ||
 		!sameSign(iv.Hours, iv.Minutes) {
 		return false
