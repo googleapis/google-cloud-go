@@ -181,7 +181,6 @@ func TestListObjectsEmulated(t *testing.T) {
 }
 
 func TestListObjectsWithPrefixEmulated(t *testing.T) {
-
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		// Populate test data.
 		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
@@ -224,6 +223,44 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 				continue
 			}
 			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+        t.Errorf("got(-),want(+):\n%s", diff)
+				break
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+	})
+}
+
+func TestListBucketsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		prefix := time.Now().Nanosecond()
+		want := []*BucketAttrs{
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%s-%d", bucket, time.Now().Nanosecond())},
+		}
+		// Create the buckets that will be listed.
+		for _, b := range want {
+			_, err := client.CreateBucket(context.Background(), project, b)
+			if err != nil {
+				t.Fatalf("client.CreateBucket: %v", err)
+			}
+		}
+
+		it := client.ListBuckets(context.Background(), project)
+		it.Prefix = strconv.Itoa(prefix)
+		// Drop the non-prefixed bucket from the expected results.
+		want = want[:2]
+		var err error
+		var b *BucketAttrs
+		for i := 0; err == nil && i <= len(want); i++ {
+			b, err = it.Next()
+			if err != nil {
+				break
+			}
+			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
 				break
 			}

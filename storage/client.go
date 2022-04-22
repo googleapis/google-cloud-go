@@ -43,7 +43,7 @@ type storageClient interface {
 
 	GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error)
 	CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error)
-	ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error)
+	ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator
 	Close() error
 
 	// Bucket methods.
