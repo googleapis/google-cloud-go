@@ -132,6 +132,7 @@ func TestListBucketsEmulated(t *testing.T) {
 		want := []*BucketAttrs{
 			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
 			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%s-%d", bucket, time.Now().Nanosecond())},
 		}
 		// Create the buckets that will be listed.
 		for _, b := range want {
@@ -143,12 +144,14 @@ func TestListBucketsEmulated(t *testing.T) {
 
 		it := client.ListBuckets(context.Background(), project)
 		it.Prefix = strconv.Itoa(prefix)
+		// Drop the non-prefixed bucket from the expected results.
+		want = want[:2]
 		var err error
 		var b *BucketAttrs
 		for i := 0; err == nil && i <= len(want); i++ {
 			b, err = it.Next()
 			if err != nil {
-				continue
+				break
 			}
 			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
