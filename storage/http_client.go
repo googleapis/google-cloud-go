@@ -25,6 +25,7 @@ import (
 
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
@@ -184,8 +185,46 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, at
 	return battrs, err
 }
 
-func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator {
+	s := callSettings(c.settings, opts...)
+	it := &BucketIterator{
+		ctx:       ctx,
+		projectID: project,
+	}
+
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		req := c.raw.Buckets.List(it.projectID)
+		setClientHeader(req.Header())
+		req.Projection("full")
+		req.Prefix(it.Prefix)
+		req.PageToken(pageToken)
+		if pageSize > 0 {
+			req.MaxResults(int64(pageSize))
+		}
+		var resp *raw.Buckets
+		err = run(it.ctx, func() error {
+			resp, err = req.Context(it.ctx).Do()
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			return "", err
+		}
+		for _, item := range resp.Items {
+			b, err := newBucket(item)
+			if err != nil {
+				return "", err
+			}
+			it.buckets = append(it.buckets, b)
+		}
+		return resp.NextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.buckets) },
+		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+
+	return it
 }
 
 // Bucket methods.
