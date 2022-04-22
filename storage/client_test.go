@@ -164,18 +164,23 @@ func TestListObjectsEmulated(t *testing.T) {
 		// Simple list, no query.
 		it := client.ListObjects(context.Background(), bucket, nil)
 		var o *ObjectAttrs
+		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
 			o, err = it.Next()
 			if err != nil {
-				continue
+				break
 			}
+			got++
 			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
-				break
 			}
 		}
 		if err != iterator.Done {
 			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
 		}
 	})
 }
@@ -217,18 +222,24 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 		// Query with Prefix.
 		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
 		var o *ObjectAttrs
-		for i := 0; err == nil && i <= len(want); i++ {
+		var got int
+		want = want[:2]
+		for i := 0; i <= len(want); i++ {
 			o, err = it.Next()
 			if err != nil {
-				continue
-			}
-			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
-        t.Errorf("got(-),want(+):\n%s", diff)
 				break
+			}
+			got++
+			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
 			}
 		}
 		if err != iterator.Done {
 			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
 		}
 	})
 }
@@ -255,18 +266,23 @@ func TestListBucketsEmulated(t *testing.T) {
 		want = want[:2]
 		var err error
 		var b *BucketAttrs
+		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
 			b, err = it.Next()
 			if err != nil {
 				break
 			}
+			got++
 			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
-				break
 			}
 		}
 		if err != iterator.Done {
 			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d buckets, but got %d", expected, got)
 		}
 	})
 }
