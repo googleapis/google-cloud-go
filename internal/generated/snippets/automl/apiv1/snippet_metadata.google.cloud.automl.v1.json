@@ -1,0 +1,935 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/automl/apiv1",
+    "version": "1.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.automl.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "automl_v1_generated_AutoMl_CreateDataset_sync",
+      "title": "automl CreateDataset Sample",
+      "description": "CreateDataset creates a dataset.",
+      "file": "Client/CreateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataset",
+        "fullName": "google.cloud.automl.v1.Client.CreateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.CreateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDatasetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateDataset",
+          "fullName": "google.cloud.automl.v1.AutoMl.CreateDataset",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_CreateModel_sync",
+      "title": "automl CreateModel Sample",
+      "description": "CreateModel creates a model.\nReturns a Model in the response\nfield when it completes.\nWhen you create a model, several model evaluations are created for it: \na global evaluation, and one evaluation for each annotation spec.",
+      "file": "Client/CreateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateModel",
+        "fullName": "google.cloud.automl.v1.Client.CreateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.CreateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.CreateModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_DeleteDataset_sync",
+      "title": "automl DeleteDataset Sample",
+      "description": "DeleteDataset deletes a dataset and all of its contents.\nReturns empty response in the\nresponse field when it completes,\nand delete_details in the\nmetadata field.",
+      "file": "Client/DeleteDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataset",
+        "fullName": "google.cloud.automl.v1.Client.DeleteDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.DeleteDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDatasetOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteDataset",
+          "fullName": "google.cloud.automl.v1.AutoMl.DeleteDataset",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_DeleteModel_sync",
+      "title": "automl DeleteModel Sample",
+      "description": "DeleteModel deletes a model.\nReturns google.protobuf.Empty in the\nresponse field when it completes,\nand delete_details in the\nmetadata field.",
+      "file": "Client/DeleteModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModel",
+        "fullName": "google.cloud.automl.v1.Client.DeleteModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.DeleteModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.DeleteModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_DeployModel_sync",
+      "title": "automl DeployModel Sample",
+      "description": "DeployModel deploys a model. If a model is already deployed, deploying it with the\nsame parameters has no effect. Deploying with different parametrs\n(as e.g. changing\nnode_number)\nwill reset the deployment state without pausing the model’s availability.\n\nOnly applicable for Text Classification, Image Object Detection , Tables, and Image Segmentation; all other domains manage\ndeployment automatically.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "file": "Client/DeployModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeployModel",
+        "fullName": "google.cloud.automl.v1.Client.DeployModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.DeployModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeployModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "DeployModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.DeployModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ExportData_sync",
+      "title": "automl ExportData Sample",
+      "description": "ExportData exports dataset’s data to the provided output location.\nReturns an empty response in the\nresponse field when it completes.",
+      "file": "Client/ExportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportData",
+        "fullName": "google.cloud.automl.v1.Client.ExportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ExportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportData",
+          "fullName": "google.cloud.automl.v1.AutoMl.ExportData",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ExportModel_sync",
+      "title": "automl ExportModel Sample",
+      "description": "ExportModel exports a trained, “export-able”, model to a user specified Google Cloud\nStorage location. A model is considered export-able if and only if it has\nan export format defined for it in\nModelExportOutputConfig.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "file": "Client/ExportModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportModel",
+        "fullName": "google.cloud.automl.v1.Client.ExportModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ExportModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.ExportModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_GetAnnotationSpec_sync",
+      "title": "automl GetAnnotationSpec Sample",
+      "description": "GetAnnotationSpec gets an annotation spec.",
+      "file": "Client/GetAnnotationSpec/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnnotationSpec",
+        "fullName": "google.cloud.automl.v1.Client.GetAnnotationSpec",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.GetAnnotationSpecRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.AnnotationSpec",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAnnotationSpec",
+          "fullName": "google.cloud.automl.v1.AutoMl.GetAnnotationSpec",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_GetDataset_sync",
+      "title": "automl GetDataset Sample",
+      "description": "GetDataset gets a dataset.",
+      "file": "Client/GetDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataset",
+        "fullName": "google.cloud.automl.v1.Client.GetDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.GetDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDataset",
+          "fullName": "google.cloud.automl.v1.AutoMl.GetDataset",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_GetModel_sync",
+      "title": "automl GetModel Sample",
+      "description": "GetModel gets a model.",
+      "file": "Client/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.cloud.automl.v1.Client.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.Model",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.GetModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_GetModelEvaluation_sync",
+      "title": "automl GetModelEvaluation Sample",
+      "description": "GetModelEvaluation gets a model evaluation.",
+      "file": "Client/GetModelEvaluation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModelEvaluation",
+        "fullName": "google.cloud.automl.v1.Client.GetModelEvaluation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.GetModelEvaluationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.ModelEvaluation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "GetModelEvaluation",
+          "fullName": "google.cloud.automl.v1.AutoMl.GetModelEvaluation",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ImportData_sync",
+      "title": "automl ImportData Sample",
+      "description": "ImportData imports data into a dataset.\nFor Tables this method can only be called on an empty Dataset.\n\nFor Tables: \n\n  A\n  schema_inference_version\n  parameter must be explicitly set.\n  Returns an empty response in the\n  response field when it completes.",
+      "file": "Client/ImportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportData",
+        "fullName": "google.cloud.automl.v1.Client.ImportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ImportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ImportData",
+          "fullName": "google.cloud.automl.v1.AutoMl.ImportData",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ListDatasets_sync",
+      "title": "automl ListDatasets Sample",
+      "description": "ListDatasets lists datasets in a project.",
+      "file": "Client/ListDatasets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatasets",
+        "fullName": "google.cloud.automl.v1.Client.ListDatasets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ListDatasetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatasetIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDatasets",
+          "fullName": "google.cloud.automl.v1.AutoMl.ListDatasets",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ListModelEvaluations_sync",
+      "title": "automl ListModelEvaluations Sample",
+      "description": "ListModelEvaluations lists model evaluations.",
+      "file": "Client/ListModelEvaluations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModelEvaluations",
+        "fullName": "google.cloud.automl.v1.Client.ListModelEvaluations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ListModelEvaluationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelEvaluationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ListModelEvaluations",
+          "fullName": "google.cloud.automl.v1.AutoMl.ListModelEvaluations",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_ListModels_sync",
+      "title": "automl ListModels Sample",
+      "description": "ListModels lists models.",
+      "file": "Client/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.cloud.automl.v1.Client.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.cloud.automl.v1.AutoMl.ListModels",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_UndeployModel_sync",
+      "title": "automl UndeployModel Sample",
+      "description": "UndeployModel undeploys a model. If the model is not deployed this method has no effect.\n\nOnly applicable for Text Classification, Image Object Detection and Tables;\nall other domains manage deployment automatically.\n\nReturns an empty response in the\nresponse field when it completes.",
+      "file": "Client/UndeployModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeployModel",
+        "fullName": "google.cloud.automl.v1.Client.UndeployModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.UndeployModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UndeployModelOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "UndeployModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.UndeployModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_UpdateDataset_sync",
+      "title": "automl UpdateDataset Sample",
+      "description": "UpdateDataset updates a dataset.",
+      "file": "Client/UpdateDataset/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataset",
+        "fullName": "google.cloud.automl.v1.Client.UpdateDataset",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.UpdateDatasetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.Dataset",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDataset",
+          "fullName": "google.cloud.automl.v1.AutoMl.UpdateDataset",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_AutoMl_UpdateModel_sync",
+      "title": "automl UpdateModel Sample",
+      "description": "UpdateModel updates a model.",
+      "file": "Client/UpdateModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateModel",
+        "fullName": "google.cloud.automl.v1.Client.UpdateModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.UpdateModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.Model",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.automl.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateModel",
+          "fullName": "google.cloud.automl.v1.AutoMl.UpdateModel",
+          "service": {
+            "shortName": "AutoMl",
+            "fullName": "google.cloud.automl.v1.AutoMl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_PredictionService_BatchPredict_sync",
+      "title": "automl BatchPredict Sample",
+      "description": "BatchPredict perform a batch prediction. Unlike the online Predict, batch\nprediction result won’t be immediately available in the response. Instead,\na long running operation object is returned. User can poll the operation\nresult via GetOperation\nmethod. Once the operation is done, BatchPredictResult is returned in\nthe response field.\nAvailable for following ML scenarios: \n\n  AutoML Vision Classification\n\n  AutoML Vision Object Detection\n\n  AutoML Video Intelligence Classification\n\n  AutoML Video Intelligence Object Tracking * AutoML Natural Language Classification\n\n  AutoML Natural Language Entity Extraction\n\n  AutoML Natural Language Sentiment Analysis\n\n  AutoML Tables",
+      "file": "PredictionClient/BatchPredict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchPredict",
+        "fullName": "google.cloud.automl.v1.PredictionClient.BatchPredict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.BatchPredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchPredictOperation",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.automl.v1.PredictionClient"
+        },
+        "method": {
+          "shortName": "BatchPredict",
+          "fullName": "google.cloud.automl.v1.PredictionService.BatchPredict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.automl.v1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "automl_v1_generated_PredictionService_Predict_sync",
+      "title": "automl Predict Sample",
+      "description": "Predict perform an online prediction. The prediction result is directly\nreturned in the response.\nAvailable for following ML scenarios, and their expected request payloads: \n\nAutoML Vision Classification\n\n  An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.\n\nAutoML Vision Object Detection\n\n  An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.\n\nAutoML Natural Language Classification\n\n  A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in\n  .PDF, .TIF or .TIFF format with size upto 2MB.\n\nAutoML Natural Language Entity Extraction\n\n  A TextSnippet up to 10,000 characters, UTF-8 NFC encoded or a document\n  in .PDF, .TIF or .TIFF format with size upto 20MB.\n\nAutoML Natural Language Sentiment Analysis\n\n  A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in\n  .PDF, .TIF or .TIFF format with size upto 2MB.\n\nAutoML Translation\n\n  A TextSnippet up to 25,000 characters, UTF-8 encoded.\n\nAutoML Tables\n\n  A row with column values matching\n  the columns of the model, up to 5MB. Not available for FORECASTING\n  prediction_type.",
+      "file": "PredictionClient/Predict/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Predict",
+        "fullName": "google.cloud.automl.v1.PredictionClient.Predict",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "automlpb.PredictRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "automlpb.PredictResponse",
+        "client": {
+          "shortName": "PredictionClient",
+          "fullName": "google.cloud.automl.v1.PredictionClient"
+        },
+        "method": {
+          "shortName": "Predict",
+          "fullName": "google.cloud.automl.v1.PredictionService.Predict",
+          "service": {
+            "shortName": "PredictionService",
+            "fullName": "google.cloud.automl.v1.PredictionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

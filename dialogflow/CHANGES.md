@@ -1,5 +1,12 @@
 # Changes
 
+### [1.8.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.8.0...dialogflow/v1.8.1) (2022-04-20)
+
+
+### Bug Fixes
+
+* **dialogflow:** correct broken ConversationModelEvaluation resource pattern ([689cad9](https://github.com/googleapis/google-cloud-go/commit/689cad94fdcf54cebd22aecfcdad4d8b44f58df9))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.7.0...dialogflow/v1.8.0) (2022-04-06)
 
 
