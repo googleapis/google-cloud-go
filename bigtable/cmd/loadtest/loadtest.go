@@ -33,8 +33,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"cloud.google.com/go/bigtable/internal/stat"
+	"cloud.google.com/go/cbt"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 )
@@ -49,21 +49,21 @@ var (
 	reqCount   = flag.Int("req_count", 100, "number of concurrent requests")
 	appProfile = flag.String("app_profile", "", "The application profile to use.")
 
-	config      *cbtconfig.Config
+	config      *cbt.Config
 	client      *bigtable.Client
 	adminClient *bigtable.AdminClient
 )
 
 func main() {
 	var err error
-	config, err = cbtconfig.Load()
+	config, err = cbt.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 	config.RegisterFlags()
 
 	flag.Parse()
-	if err := config.CheckFlags(cbtconfig.ProjectAndInstanceRequired); err != nil {
+	if err := config.CheckFlags(cbt.ProjectAndInstanceRequired); err != nil {
 		log.Fatal(err)
 	}
 	if config.Creds != "" {

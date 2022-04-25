@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.100.2
-	cloud.google.com/go/bigquery v1.30.2
+	cloud.google.com/go/bigquery v1.31.0
 	cloud.google.com/go/datastore v1.6.0
 	cloud.google.com/go/storage v1.22.0
 	github.com/google/go-cmp v0.5.7
