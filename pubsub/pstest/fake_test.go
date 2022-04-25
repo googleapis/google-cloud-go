@@ -1074,6 +1074,35 @@ func TestUpdateFilter(t *testing.T) {
 	}
 }
 
+func TestUpdateEnableExactlyOnceDelivery(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds:        sub.AckDeadlineSeconds,
+		Name:                      sub.Name,
+		Topic:                     top.Name,
+		EnableExactlyOnceDelivery: true,
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"enable_exactly_once_delivery"}},
+	})
+
+	if got, want := updated.EnableExactlyOnceDelivery, update.EnableExactlyOnceDelivery; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 // Test Create, Get, List, and Delete methods for schema client.
 // Updating a schema is not available at this moment.
 func TestSchemaAdminClient(t *testing.T) {
