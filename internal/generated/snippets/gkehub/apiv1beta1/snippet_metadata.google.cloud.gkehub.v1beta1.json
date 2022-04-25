@@ -1,0 +1,383 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/gkehub/apiv1beta1",
+    "version": "0.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.gkehub.v1beta1",
+        "version": "v1beta1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_CreateMembership_sync",
+      "title": "gkehub CreateMembership Sample",
+      "description": "CreateMembership creates a new Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo register other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster).",
+      "file": "GkeHubMembershipClient/CreateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.CreateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.CreateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "CreateMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.CreateMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync",
+      "title": "gkehub DeleteMembership Sample",
+      "description": "DeleteMembership removes a Membership.\n\nThis is currently only supported for GKE clusters on Google Cloud.\nTo unregister other clusters, follow the instructions at\nhttps: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster (at https: //cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster).",
+      "file": "GkeHubMembershipClient/DeleteMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.DeleteMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.DeleteMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "DeleteMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.DeleteMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GenerateConnectManifest_sync",
+      "title": "gkehub GenerateConnectManifest Sample",
+      "description": "GenerateConnectManifest generates the manifest for deployment of the GKE connect agent.\n\nThis method is used internally by Google-provided libraries.\nMost clients should not need to call this method directly.",
+      "file": "GkeHubMembershipClient/GenerateConnectManifest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateConnectManifest",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GenerateConnectManifest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GenerateConnectManifestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.GenerateConnectManifestResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GenerateConnectManifest",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GenerateConnectManifest",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GenerateExclusivityManifest_sync",
+      "title": "gkehub GenerateExclusivityManifest Sample",
+      "description": "GenerateExclusivityManifest generateExclusivityManifest generates the manifests to update the\nexclusivity artifacts in the cluster if needed.\n\nExclusivity artifacts include the Membership custom resource definition\n(CRD) and the singleton Membership custom resource (CR). Combined with\nValidateExclusivity, exclusivity artifacts guarantee that a Kubernetes\ncluster is only registered to a single GKE Hub.\n\nThe Membership CRD is versioned, and may require conversion when the GKE\nHub API server begins serving a newer version of the CRD and\ncorresponding CR. The response will be the converted CRD and CR if there\nare any differences between the versions.",
+      "file": "GkeHubMembershipClient/GenerateExclusivityManifest/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateExclusivityManifest",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GenerateExclusivityManifest",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GenerateExclusivityManifestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.GenerateExclusivityManifestResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GenerateExclusivityManifest",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GenerateExclusivityManifest",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_GetMembership_sync",
+      "title": "gkehub GetMembership Sample",
+      "description": "GetMembership gets the details of a Membership.",
+      "file": "GkeHubMembershipClient/GetMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.GetMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.GetMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.Membership",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "GetMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.GetMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ListMemberships_sync",
+      "title": "gkehub ListMemberships Sample",
+      "description": "ListMemberships lists Memberships in a given project and location.",
+      "file": "GkeHubMembershipClient/ListMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMemberships",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ListMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ListMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MembershipIterator",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ListMemberships",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ListMemberships",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_UpdateMembership_sync",
+      "title": "gkehub UpdateMembership Sample",
+      "description": "UpdateMembership updates an existing Membership.",
+      "file": "GkeHubMembershipClient/UpdateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMembership",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.UpdateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.UpdateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateMembershipOperation",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "UpdateMembership",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.UpdateMembership",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkehub_v1beta1_generated_GkeHubMembershipService_ValidateExclusivity_sync",
+      "title": "gkehub ValidateExclusivity Sample",
+      "description": "ValidateExclusivity validateExclusivity validates the state of exclusivity in the cluster.\nThe validation does not depend on an existing Hub membership resource.",
+      "file": "GkeHubMembershipClient/ValidateExclusivity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateExclusivity",
+        "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient.ValidateExclusivity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkehubpb.ValidateExclusivityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "gkehubpb.ValidateExclusivityResponse",
+        "client": {
+          "shortName": "GkeHubMembershipClient",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipClient"
+        },
+        "method": {
+          "shortName": "ValidateExclusivity",
+          "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService.ValidateExclusivity",
+          "service": {
+            "shortName": "GkeHubMembershipService",
+            "fullName": "google.cloud.gkehub.v1beta1.GkeHubMembershipService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
