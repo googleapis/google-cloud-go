@@ -133,6 +133,11 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, rootDir,
 	if err != nil {
 		return []error{err}
 	}
+	if apiInfo == nil {
+		// There was no gapic_metadata.json, skip processing examples for
+		// non gapic lib.
+		return nil
+	}
 
 	regionTags := apiInfo.RegionTags()
 	if len(regionTags) == 0 {

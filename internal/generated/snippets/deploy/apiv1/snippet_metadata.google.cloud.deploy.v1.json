@@ -1,0 +1,843 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/deploy/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.deploy.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ApproveRollout_sync",
+      "title": "clouddeploy ApproveRollout Sample",
+      "description": "ApproveRollout approves a Rollout.",
+      "file": "CloudDeployClient/ApproveRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveRollout",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ApproveRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ApproveRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.ApproveRolloutResponse",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ApproveRollout",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ApproveRollout",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateDeliveryPipeline_sync",
+      "title": "clouddeploy CreateDeliveryPipeline Sample",
+      "description": "CreateDeliveryPipeline creates a new DeliveryPipeline in a given project and location.",
+      "file": "CloudDeployClient/CreateDeliveryPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDeliveryPipeline",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateDeliveryPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateDeliveryPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateDeliveryPipelineOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateDeliveryPipeline",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateRelease_sync",
+      "title": "clouddeploy CreateRelease Sample",
+      "description": "CreateRelease creates a new Release in a given project and location.",
+      "file": "CloudDeployClient/CreateRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRelease",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateReleaseOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateRelease",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateRelease",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateRollout_sync",
+      "title": "clouddeploy CreateRollout Sample",
+      "description": "CreateRollout creates a new Rollout in a given project and location.",
+      "file": "CloudDeployClient/CreateRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRollout",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRolloutOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateRollout",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateRollout",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_CreateTarget_sync",
+      "title": "clouddeploy CreateTarget Sample",
+      "description": "CreateTarget creates a new Target in a given project and location.",
+      "file": "CloudDeployClient/CreateTarget/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTarget",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.CreateTarget",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.CreateTargetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTargetOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "CreateTarget",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.CreateTarget",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_DeleteDeliveryPipeline_sync",
+      "title": "clouddeploy DeleteDeliveryPipeline Sample",
+      "description": "DeleteDeliveryPipeline deletes a single DeliveryPipeline.",
+      "file": "CloudDeployClient/DeleteDeliveryPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDeliveryPipeline",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.DeleteDeliveryPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.DeleteDeliveryPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteDeliveryPipelineOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "DeleteDeliveryPipeline",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_DeleteTarget_sync",
+      "title": "clouddeploy DeleteTarget Sample",
+      "description": "DeleteTarget deletes a single Target.",
+      "file": "CloudDeployClient/DeleteTarget/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTarget",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.DeleteTarget",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.DeleteTargetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteTargetOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "DeleteTarget",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.DeleteTarget",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetConfig_sync",
+      "title": "clouddeploy GetConfig Sample",
+      "description": "GetConfig gets the configuration for a location.",
+      "file": "CloudDeployClient/GetConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConfig",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.Config",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetConfig",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetConfig",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetDeliveryPipeline_sync",
+      "title": "clouddeploy GetDeliveryPipeline Sample",
+      "description": "GetDeliveryPipeline gets details of a single DeliveryPipeline.",
+      "file": "CloudDeployClient/GetDeliveryPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDeliveryPipeline",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetDeliveryPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetDeliveryPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.DeliveryPipeline",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetDeliveryPipeline",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetRelease_sync",
+      "title": "clouddeploy GetRelease Sample",
+      "description": "GetRelease gets details of a single Release.",
+      "file": "CloudDeployClient/GetRelease/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRelease",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetRelease",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetReleaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.Release",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetRelease",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetRelease",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetRollout_sync",
+      "title": "clouddeploy GetRollout Sample",
+      "description": "GetRollout gets details of a single Rollout.",
+      "file": "CloudDeployClient/GetRollout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRollout",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetRollout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetRolloutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.Rollout",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetRollout",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetRollout",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_GetTarget_sync",
+      "title": "clouddeploy GetTarget Sample",
+      "description": "GetTarget gets details of a single Target.",
+      "file": "CloudDeployClient/GetTarget/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTarget",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.GetTarget",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.GetTargetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "deploypb.Target",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "GetTarget",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.GetTarget",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListDeliveryPipelines_sync",
+      "title": "clouddeploy ListDeliveryPipelines Sample",
+      "description": "ListDeliveryPipelines lists DeliveryPipelines in a given project and location.",
+      "file": "CloudDeployClient/ListDeliveryPipelines/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDeliveryPipelines",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListDeliveryPipelines",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListDeliveryPipelinesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeliveryPipelineIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListDeliveryPipelines",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListDeliveryPipelines",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListReleases_sync",
+      "title": "clouddeploy ListReleases Sample",
+      "description": "ListReleases lists Releases in a given project and location.",
+      "file": "CloudDeployClient/ListReleases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReleases",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListReleases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListReleasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReleaseIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListReleases",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListReleases",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListRollouts_sync",
+      "title": "clouddeploy ListRollouts Sample",
+      "description": "ListRollouts lists Rollouts in a given project and location.",
+      "file": "CloudDeployClient/ListRollouts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRollouts",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListRollouts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListRolloutsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RolloutIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListRollouts",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListRollouts",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_ListTargets_sync",
+      "title": "clouddeploy ListTargets Sample",
+      "description": "ListTargets lists Targets in a given project and location.",
+      "file": "CloudDeployClient/ListTargets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTargets",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.ListTargets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.ListTargetsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TargetIterator",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "ListTargets",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.ListTargets",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_UpdateDeliveryPipeline_sync",
+      "title": "clouddeploy UpdateDeliveryPipeline Sample",
+      "description": "UpdateDeliveryPipeline updates the parameters of a single DeliveryPipeline.",
+      "file": "CloudDeployClient/UpdateDeliveryPipeline/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeliveryPipeline",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.UpdateDeliveryPipeline",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.UpdateDeliveryPipelineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeliveryPipelineOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "UpdateDeliveryPipeline",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateDeliveryPipeline",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "clouddeploy_v1_generated_CloudDeploy_UpdateTarget_sync",
+      "title": "clouddeploy UpdateTarget Sample",
+      "description": "UpdateTarget updates the parameters of a single Target.",
+      "file": "CloudDeployClient/UpdateTarget/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTarget",
+        "fullName": "google.cloud.deploy.v1.CloudDeployClient.UpdateTarget",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "deploypb.UpdateTargetRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateTargetOperation",
+        "client": {
+          "shortName": "CloudDeployClient",
+          "fullName": "google.cloud.deploy.v1.CloudDeployClient"
+        },
+        "method": {
+          "shortName": "UpdateTarget",
+          "fullName": "google.cloud.deploy.v1.CloudDeploy.UpdateTarget",
+          "service": {
+            "shortName": "CloudDeploy",
+            "fullName": "google.cloud.deploy.v1.CloudDeploy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
