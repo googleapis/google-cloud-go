@@ -32,7 +32,6 @@ import (
 	"cloud.google.com/go/pubsublite/internal/wire"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -585,12 +584,12 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 
 		wantErr := context.Canceled
 		result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("cancel_publisher_context")})
-		if _, gotErr := result.Get(ctx); !xerrors.Is(gotErr, wantErr) {
+		if _, gotErr := result.Get(ctx); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Publish() got err: %v, want err: %v", gotErr, wantErr)
 		}
 
 		publisher.Stop()
-		if gotErr := xerrors.Unwrap(publisher.Error()); !xerrors.Is(gotErr, wantErr) {
+		if gotErr := publisher.Error(); !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Error() got err: %v, want err: %v", gotErr, wantErr)
 		}
 	})
@@ -604,12 +603,12 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		cctx, cancel := context.WithCancel(context.Background())
 		subscriber := subscriberClient(cctx, t, recvSettings, subscriptionPath)
 
-		subsErr := subscriber.Receive(context.Background(), func(ctx context.Context, got *pubsub.Message) {
+		gotErr := subscriber.Receive(context.Background(), func(ctx context.Context, got *pubsub.Message) {
 			got.Ack()
 			cancel()
 		})
 
-		if gotErr, wantErr := xerrors.Unwrap(subsErr), context.Canceled; !xerrors.Is(gotErr, wantErr) {
+		if wantErr := context.Canceled; !test.ErrorEqual(gotErr, wantErr) {
 			t.Errorf("Receive() got err: %v, want err: %v", gotErr, wantErr)
 		}
 	})
@@ -620,7 +619,6 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 	t.Run("IncreasePartitions", func(t *testing.T) {
 		// Create the publisher client with the initial single partition.
 		const pollPeriod = 10 * time.Second
-		const configPropagationDelay = 30 * time.Second
 		pubSettings := DefaultPublishSettings
 		pubSettings.configPollPeriod = pollPeriod // Poll updates more frequently
 		publisher := publisherClient(context.Background(), t, pubSettings, topicPath)
@@ -636,7 +634,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		}
 
 		// Wait for the new config to propagate.
-		time.Sleep(configPropagationDelay)
+		time.Sleep(3 * pollPeriod)
 
 		// Publish 2 messages, which should be routed to different partitions
 		// (round robin).

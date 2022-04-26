@@ -20,7 +20,6 @@ import (
 	"net/url"
 	"time"
 
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -103,9 +102,6 @@ func isRetryableRecvError(err error) bool {
 }
 
 func isRetryableStreamError(err error, isEligible func(codes.Code) bool) bool {
-	if xerrors.Is(err, context.Canceled) {
-		return false
-	}
 	s, ok := status.FromError(err)
 	if !ok {
 		// Includes io.EOF, normal stream close.
