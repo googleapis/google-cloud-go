@@ -86,7 +86,7 @@ func isRetryableSendCode(code codes.Code) bool {
 func isRetryableRecvCode(code codes.Code) bool {
 	switch code {
 	// Consistent with https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/ErrorCodes.java
-	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown:
+	case codes.Aborted, codes.DeadlineExceeded, codes.Internal, codes.ResourceExhausted, codes.Unavailable, codes.Unknown, codes.Cancelled:
 		return true
 	default:
 		return false
