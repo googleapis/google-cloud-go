@@ -986,7 +986,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
 // specified by sppb.Type.
-func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeOptions) error {
+func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -1891,7 +1891,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		if err != nil {
 			return err
 		}
-		s := DecodeSetting{
+		s := decodeSetting{
 			Lenient: false,
 		}
 		for _, opt := range opts {
@@ -3049,19 +3049,19 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	return se
 }
 
-// DecodeSetting contains all the settings for decoding from spanner struct
-type DecodeSetting struct {
+// decodeSetting contains all the settings for decoding from spanner struct
+type decodeSetting struct {
 	Lenient bool
 }
 
-// DecodeOptions is the interface to change decode struct settings
-type DecodeOptions interface {
-	Apply(s *DecodeSetting)
+// decodeOptions is the interface to change decode struct settings
+type decodeOptions interface {
+	Apply(s *decodeSetting)
 }
 
 type withLenient struct{ lenient bool }
 
-func (w withLenient) Apply(s *DecodeSetting) {
+func (w withLenient) Apply(s *decodeSetting) {
 	s.Lenient = w.lenient
 }
 
@@ -3109,7 +3109,7 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 			// We don't allow duplicated field name.
 			return errDupSpannerField(f.Name, ty)
 		}
-		opts := []DecodeOptions{withLenient{lenient: lenient}}
+		opts := []decodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
 		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
