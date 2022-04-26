@@ -29,7 +29,6 @@ import (
 	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/gensnippets"
-	"cloud.google.com/go/internal/gapicgen/git"
 	"gopkg.in/yaml.v2"
 )
 
@@ -615,33 +614,6 @@ func ParseAPIShortnames(googleapisDir string, confs []*MicrogenConfig, manualEnt
 		shortnames[manual.DistributionName] = p
 	}
 	return shortnames, nil
-}
-
-func (g *GapicGenerator) findModifiedDirs() ([]string, error) {
-	log.Println("finding modifiled directories")
-	files, err := git.FindModifiedAndUntrackedFiles(g.googleCloudDir)
-	if err != nil {
-		return nil, err
-	}
-	dirs := map[string]bool{}
-	for _, file := range files {
-		dir := filepath.Dir(filepath.Join(g.googleCloudDir, file))
-		dirs[dir] = true
-	}
-
-	// Add modified dirs from genproto. Sometimes only a request struct will be
-	// updated, in these cases we should still make modifications the
-	// corresponding gapic directories.
-	for _, pkg := range g.modifiedPkgs {
-		dir := filepath.Join(g.googleCloudDir, pkg)
-		dirs[dir] = true
-	}
-
-	var dirList []string
-	for dir := range dirs {
-		dirList = append(dirList, dir)
-	}
-	return dirList, nil
 }
 
 func docURL(cloudDir, importPath string) (string, error) {
