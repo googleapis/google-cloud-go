@@ -955,10 +955,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		for k, v := range ua.setLabels {
 			labels[k] = v
 		}
-		// TODO: handle deleteLabels
-		// for l := range ua.deleteLabels {
-		// 	// set label to null value
-		// }
+		// TODO(cathyo): Handle deleteLabels.
 	}
 
 	var v *storagepb.Bucket_Versioning

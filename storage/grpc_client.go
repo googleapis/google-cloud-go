@@ -234,22 +234,43 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		Paths: paths,
 	}
 	if uattrs.CORS != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "Cors")
+		fieldMask.Paths = append(fieldMask.Paths, "cors")
 	}
 	if uattrs.DefaultEventBasedHold != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "DefaultEventBasedHold")
+		fieldMask.Paths = append(fieldMask.Paths, "default_event_based_hold")
+	}
+	if uattrs.RetentionPolicy != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "retention_policy")
+	}
+	if uattrs.VersioningEnabled != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "versioning")
+	}
+	if uattrs.RequesterPays != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "billing")
+	}
+	if uattrs.BucketPolicyOnly != nil || uattrs.UniformBucketLevelAccess != nil || uattrs.PublicAccessPrevention != PublicAccessPreventionUnknown {
+		fieldMask.Paths = append(fieldMask.Paths, "iam_config")
+	}
+	if uattrs.Encryption != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "encryption")
 	}
 	if uattrs.Lifecycle != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "Lifecycle")
+		fieldMask.Paths = append(fieldMask.Paths, "lifecycle")
+	}
+	if uattrs.Logging != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "logging")
+	}
+	if uattrs.Website != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "website")
 	}
 	if uattrs.PredefinedACL != "" {
-		fieldMask.Paths = append(fieldMask.Paths, "ACL")
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	if uattrs.PredefinedDefaultObjectACL != "" {
-		fieldMask.Paths = append(fieldMask.Paths, "DefaultObjectACL")
+		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
 	if uattrs.StorageClass != "" {
-		fieldMask.Paths = append(fieldMask.Paths, "StorageClass")
+		fieldMask.Paths = append(fieldMask.Paths, "storage_class")
 	}
 	if uattrs.RPO != RPOUnknown {
 		fieldMask.Paths = append(fieldMask.Paths, "rpo")

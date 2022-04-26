@@ -87,27 +87,85 @@ func TestGetBucketEmulated(t *testing.T) {
 
 func TestUpdateBucketEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		want := &BucketAttrs{
+		bkt := &BucketAttrs{
 			Name: bucket,
 		}
 		// Create the bucket that will be updated.
-		_, err := client.CreateBucket(context.Background(), project, want)
+		_, err := client.CreateBucket(context.Background(), project, bkt)
 		if err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 
 		ua := &BucketAttrsToUpdate{
-			RPO: RPOAsyncTurbo,
+			VersioningEnabled:     false,
+			RequesterPays:         false,
+			DefaultEventBasedHold: false,
+			Encryption:            &BucketEncryption{DefaultKMSKeyName: "key2"},
+			Lifecycle: &Lifecycle{
+				Rules: []LifecycleRule{
+					{
+						Action:    LifecycleAction{Type: "Delete"},
+						Condition: LifecycleCondition{AgeInDays: 30},
+					},
+				},
+			},
+			Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+			Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+			StorageClass: "NEARLINE",
+			RPO:          RPOAsyncTurbo,
 		}
+		want := &BucketAttrs{
+			Name:                  bucket,
+			VersioningEnabled:     false,
+			RequesterPays:         false,
+			DefaultEventBasedHold: false,
+			Encryption:            &BucketEncryption{DefaultKMSKeyName: "key2"},
+			Lifecycle: Lifecycle{
+				Rules: []LifecycleRule{
+					{
+						Action:    LifecycleAction{Type: "Delete"},
+						Condition: LifecycleCondition{AgeInDays: 30},
+					},
+				},
+			},
+			Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+			Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+			StorageClass: "NEARLINE",
+			RPO:          RPOAsyncTurbo,
+		}
+
 		got, err := client.UpdateBucket(context.Background(), bucket, ua, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
 			t.Fatal(err)
 		}
-		want.RPO = RPOAsyncTurbo
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
 		}
+		if diff := cmp.Diff(got.VersioningEnabled, want.VersioningEnabled); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.RequesterPays, want.RequesterPays); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.DefaultEventBasedHold, want.DefaultEventBasedHold); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Encryption, want.Encryption); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Lifecycle, want.Lifecycle); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Logging, want.Logging); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Website, want.Website); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
 		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.StorageClass, want.StorageClass); diff != "" {
 			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 	})
