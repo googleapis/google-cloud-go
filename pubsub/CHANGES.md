@@ -1,5 +1,18 @@
 # Changes
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.20.0...pubsub/v1.21.0) (2022-04-26)
+
+
+### Features
+
+* **pubsub:** deprecate synchronous mode ([#5910](https://github.com/googleapis/google-cloud-go/issues/5910)) ([bda5179](https://github.com/googleapis/google-cloud-go/commit/bda5179fa240b1468cd1043128493f634be28986))
+
+
+### Bug Fixes
+
+* **pubsub:** enable updating enable_exactly_once_delivery in fake pubsub ([#5940](https://github.com/googleapis/google-cloud-go/issues/5940)) ([ee44bf6](https://github.com/googleapis/google-cloud-go/commit/ee44bf646af1c38ed0943a997051b0225e22a6bf))
+* **pubsub:** nack messages properly with error from receive scheduler ([#5909](https://github.com/googleapis/google-cloud-go/issues/5909)) ([80edea4](https://github.com/googleapis/google-cloud-go/commit/80edea40dd722efb3c15cd3de3f24e0e7ad08ed7))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.19.0...pubsub/v1.20.0) (2022-04-11)
 
 
