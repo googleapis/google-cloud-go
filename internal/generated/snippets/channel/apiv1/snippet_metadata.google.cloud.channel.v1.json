@@ -334,6 +334,52 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel CreateChannelPartnerRepricingConfig Sample",
+      "description": "CreateChannelPartnerRepricingConfig creates a ChannelPartnerRepricingConfig. Call this method to set\nmodifications for a specific ChannelPartner’s bill. You can only create\nconfigs if the RepricingConfig.effective_invoice_month is a future\nmonth. If needed, you can create a config for the current month, with some\nrestrictions.\n\nWhen creating a config for a future month, make sure there are no existing\nconfigs for that\nRepricingConfig.effective_invoice_month.\n\nThe following restrictions are for creating configs in the current month.\n\n  This functionality is reserved for recovering from an erroneous config,\n  and should not be used for regular business cases.\n\n  The new config will not modify exports used with other configs.\n  Changes to the config may be immediate, but may take up to 24 hours.\n\n  There is a limit of ten configs for any ChannelPartner or\n  RepricingConfig.effective_invoice_month.\n\n  The contained ChannelPartnerRepricingConfig.repricing_config vaule\n  must be different from the value used in the current config for a\n  ChannelPartner.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  INVALID_ARGUMENT: Missing or invalid required parameters in the\n  request. Also displays if the updated config is for the current month or\n  past months.\n\n  NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n  or is not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated ChannelPartnerRepricingConfig resource,\notherwise returns an error.",
+      "file": "CloudChannelClient/CreateChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomer_sync",
       "title": "cloudchannel CreateCustomer Sample",
       "description": "CreateCustomer creates a new Customer resource under the reseller or distributor\naccount.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The reseller account making the request is different\n  from the reseller account in the API request.\n\n  INVALID_ARGUMENT: \n\n    Required request parameters are missing or invalid.\n\n    Domain field value doesn’t match the primary email domain.\n\nReturn value: \nThe newly created Customer resource.",
@@ -364,6 +410,52 @@
         "method": {
           "shortName": "CreateCustomer",
           "fullName": "google.cloud.channel.v1.CloudChannelService.CreateCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_CreateCustomerRepricingConfig_sync",
+      "title": "cloudchannel CreateCustomerRepricingConfig Sample",
+      "description": "CreateCustomerRepricingConfig creates a CustomerRepricingConfig. Call this method to set modifications\nfor a specific customer’s bill. You can only create configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. If needed, you can create a config for the current month,\nwith some restrictions.\n\nWhen creating a config for a future month, make sure there are no existing\nconfigs for that\nRepricingConfig.effective_invoice_month.\n\nThe following restrictions are for creating configs in the current month.\n\n  This functionality is reserved for recovering from an erroneous config,\n  and should not be used for regular business cases.\n\n  The new config will not modify exports used with other configs.\n  Changes to the config may be immediate, but may take up to 24 hours.\n\n  There is a limit of ten configs for any\n  RepricingConfig.EntitlementGranularity.entitlement\n  or RepricingConfig.effective_invoice_month.\n\n  The contained CustomerRepricingConfig.repricing_config vaule must be\n  different from the value used in the current config for a\n  RepricingConfig.EntitlementGranularity.entitlement.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  INVALID_ARGUMENT: Missing or invalid required parameters in the\n  request. Also displays if the updated config is for the current month or\n  past months.\n\n  NOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n  not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated CustomerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/CreateCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.CreateCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.CreateCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "CreateCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.CreateCustomerRepricingConfig",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
@@ -426,6 +518,51 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel DeleteChannelPartnerRepricingConfig Sample",
+      "description": "DeleteChannelPartnerRepricingConfig deletes the given ChannelPartnerRepricingConfig permanently. You can\nonly delete configs if their RepricingConfig.effective_invoice_month is\nset to a date after the current month.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The account making the request does not own\n  this customer.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  FAILED_PRECONDITION: The ChannelPartnerRepricingConfig is active or\n  in the past.\n\n  NOT_FOUND: No ChannelPartnerRepricingConfig found for the name in the\n  request.",
+      "file": "CloudChannelClient/DeleteChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.DeleteChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomer_sync",
       "title": "cloudchannel DeleteCustomer Sample",
       "description": "DeleteCustomer deletes the given Customer permanently.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The account making the request does not own\n  this customer.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  FAILED_PRECONDITION: The customer has existing entitlements.\n\n  NOT_FOUND: No Customer resource found for the name in the request.",
@@ -455,6 +592,51 @@
         "method": {
           "shortName": "DeleteCustomer",
           "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_DeleteCustomerRepricingConfig_sync",
+      "title": "cloudchannel DeleteCustomerRepricingConfig Sample",
+      "description": "DeleteCustomerRepricingConfig deletes the given CustomerRepricingConfig permanently. You can only\ndelete configs if their RepricingConfig.effective_invoice_month is set\nto a date after the current month.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The account making the request does not own\n  this customer.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  FAILED_PRECONDITION: The CustomerRepricingConfig is active or in the\n  past.\n\n  NOT_FOUND: No CustomerRepricingConfig found for the name in the\n  request.",
+      "file": "CloudChannelClient/DeleteCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.DeleteCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.DeleteCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "DeleteCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.DeleteCustomerRepricingConfig",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
@@ -517,6 +699,52 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel GetChannelPartnerRepricingConfig Sample",
+      "description": "GetChannelPartnerRepricingConfig gets information about how a Distributor modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  NOT_FOUND: The ChannelPartnerRepricingConfig was not found.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the ChannelPartnerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/GetChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomer_sync",
       "title": "cloudchannel GetCustomer Sample",
       "description": "GetCustomer returns the requested Customer resource.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The reseller account making the request is different\n  from the reseller account in the API request.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  NOT_FOUND: The customer resource doesn’t exist. Usually the result of an\n  invalid name parameter.\n\nReturn value: \nThe Customer resource.",
@@ -547,6 +775,52 @@
         "method": {
           "shortName": "GetCustomer",
           "fullName": "google.cloud.channel.v1.CloudChannelService.GetCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_GetCustomerRepricingConfig_sync",
+      "title": "cloudchannel GetCustomerRepricingConfig Sample",
+      "description": "GetCustomerRepricingConfig gets information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  NOT_FOUND: The CustomerRepricingConfig was not found.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the CustomerRepricingConfig resource, otherwise returns\nan error.",
+      "file": "CloudChannelClient/GetCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.GetCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.GetCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "GetCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.GetCustomerRepricingConfig",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
@@ -685,6 +959,98 @@
         "method": {
           "shortName": "ListChannelPartnerLinks",
           "fullName": "google.cloud.channel.v1.CloudChannelService.ListChannelPartnerLinks",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListChannelPartnerRepricingConfigs_sync",
+      "title": "cloudchannel ListChannelPartnerRepricingConfigs Sample",
+      "description": "ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a ChannelPartner.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n  or is not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the ChannelPartnerRepricingConfig resources.\nThe data for each resource is displayed in the ascending order of: \n\n  channel partner ID\n\n  RepricingConfig.effective_invoice_month\n\n  ChannelPartnerRepricingConfig.update_time\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListChannelPartnerRepricingConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChannelPartnerRepricingConfigs",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListChannelPartnerRepricingConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListChannelPartnerRepricingConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChannelPartnerRepricingConfigIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListChannelPartnerRepricingConfigs",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListChannelPartnerRepricingConfigs",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_ListCustomerRepricingConfigs_sync",
+      "title": "cloudchannel ListCustomerRepricingConfigs Sample",
+      "description": "ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending\nit to a Customer.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  NOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n  not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the CustomerRepricingConfig resources. The\ndata for each resource is displayed in the ascending order of: \n\n  customer ID\n\n  RepricingConfig.EntitlementGranularity.entitlement\n\n  RepricingConfig.effective_invoice_month\n\n  CustomerRepricingConfig.update_time\n\nIf unsuccessful, returns an error.",
+      "file": "CloudChannelClient/ListCustomerRepricingConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomerRepricingConfigs",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.ListCustomerRepricingConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.ListCustomerRepricingConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomerRepricingConfigIterator",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "ListCustomerRepricingConfigs",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.ListCustomerRepricingConfigs",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
@@ -1575,6 +1941,52 @@
       ]
     },
     {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateChannelPartnerRepricingConfig_sync",
+      "title": "cloudchannel UpdateChannelPartnerRepricingConfig Sample",
+      "description": "UpdateChannelPartnerRepricingConfig updates a ChannelPartnerRepricingConfig. Call this method to set\nmodifications for a specific ChannelPartner’s bill. This method overwrites\nthe existing CustomerRepricingConfig.\n\nYou can only update configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. To make changes to configs for the current month, use\nCreateChannelPartnerRepricingConfig, taking note of its restrictions.\nYou cannot update the RepricingConfig.effective_invoice_month.\n\nWhen updating a config in the future: \n\n  This config must already exist.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  INVALID_ARGUMENT: Missing or invalid required parameters in the\n  request. Also displays if the updated config is for the current month or\n  past months.\n\n  NOT_FOUND: The ChannelPartnerRepricingConfig specified does not exist\n  or is not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated ChannelPartnerRepricingConfig resource,\notherwise returns an error.",
+      "file": "CloudChannelClient/UpdateChannelPartnerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateChannelPartnerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateChannelPartnerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateChannelPartnerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.ChannelPartnerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateChannelPartnerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateChannelPartnerRepricingConfig",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomer_sync",
       "title": "cloudchannel UpdateCustomer Sample",
       "description": "UpdateCustomer updates an existing Customer resource for the reseller or\ndistributor.\n\nPossible error codes: \n\n  PERMISSION_DENIED: The reseller account making the request is different\n  from the reseller account in the API request.\n\n  INVALID_ARGUMENT: Required request parameters are missing or invalid.\n\n  NOT_FOUND: No Customer resource found for the name in the request.\n\nReturn value: \nThe updated Customer resource.",
@@ -1605,6 +2017,52 @@
         "method": {
           "shortName": "UpdateCustomer",
           "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateCustomer",
+          "service": {
+            "shortName": "CloudChannelService",
+            "fullName": "google.cloud.channel.v1.CloudChannelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudchannel_v1_generated_CloudChannelService_UpdateCustomerRepricingConfig_sync",
+      "title": "cloudchannel UpdateCustomerRepricingConfig Sample",
+      "description": "UpdateCustomerRepricingConfig updates a CustomerRepricingConfig. Call this method to set modifications\nfor a specific customer’s bill. This method overwrites the existing\nCustomerRepricingConfig.\n\nYou can only update configs if the\nRepricingConfig.effective_invoice_month is a\nfuture month. To make changes to configs for the current month, use\nCreateCustomerRepricingConfig, taking note of its restrictions. You\ncannot update the RepricingConfig.effective_invoice_month.\n\nWhen updating a config in the future: \n\n  This config must already exist.\n\nPossible Error Codes: \n\n  PERMISSION_DENIED: If the account making the request and the account\n  being queried are different.\n\n  INVALID_ARGUMENT: Missing or invalid required parameters in the\n  request. Also displays if the updated config is for the current month or\n  past months.\n\n  NOT_FOUND: The CustomerRepricingConfig specified does not exist or is\n  not associated with the given account.\n\n  INTERNAL: Any non-user error related to technical issues in the\n  backend. In this case, contact Cloud Channel support.\n\nReturn Value: \nIf successful, the updated CustomerRepricingConfig resource, otherwise\nreturns an error.",
+      "file": "CloudChannelClient/UpdateCustomerRepricingConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomerRepricingConfig",
+        "fullName": "google.cloud.channel.v1.CloudChannelClient.UpdateCustomerRepricingConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "channelpb.UpdateCustomerRepricingConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "channelpb.CustomerRepricingConfig",
+        "client": {
+          "shortName": "CloudChannelClient",
+          "fullName": "google.cloud.channel.v1.CloudChannelClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomerRepricingConfig",
+          "fullName": "google.cloud.channel.v1.CloudChannelService.UpdateCustomerRepricingConfig",
           "service": {
             "shortName": "CloudChannelService",
             "fullName": "google.cloud.channel.v1.CloudChannelService"
