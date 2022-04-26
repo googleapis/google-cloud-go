@@ -986,7 +986,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
 // specified by sppb.Type.
-func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...bool) error {
+func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -1891,12 +1891,13 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...bool) e
 		if err != nil {
 			return err
 		}
-		lenient := false
-		if len(opts) > 0 {
-			// first bool option is to check if struct array decode should be lenient.
-			lenient = opts[0]
+		s := DecodeSetting{
+			Lenient: false,
 		}
-		if err = decodeStructArray(t.ArrayElementType.StructType, x, p, lenient); err != nil {
+		for _, opt := range opts {
+			opt.Apply(&s)
+		}
+		if err = decodeStructArray(t.ArrayElementType.StructType, x, p, s.Lenient); err != nil {
 			return err
 		}
 	}
@@ -3048,6 +3049,22 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	return se
 }
 
+// DecodeSetting contains all the settings for decoding from spanner struct
+type DecodeSetting struct {
+	Lenient bool
+}
+
+// DecodeOptions is the interface to change decode struct settings
+type DecodeOptions interface {
+	Apply(s *DecodeSetting)
+}
+
+type withLenient struct{ lenient bool }
+
+func (w withLenient) Apply(s *DecodeSetting) {
+	s.Lenient = w.lenient
+}
+
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
 // ptr, according to
 // the structural information given in sppb.StructType ty.
@@ -3092,8 +3109,9 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 			// We don't allow duplicated field name.
 			return errDupSpannerField(f.Name, ty)
 		}
+		opts := []DecodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
-		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), lenient); err != nil {
+		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
 		}
 		// Mark field f.Name as processed.
