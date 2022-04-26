@@ -29,6 +29,7 @@ import (
 )
 
 var emulatorClients map[string]storageClient
+var veneerClient *Client
 
 func TestCreateBucketEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
@@ -126,6 +127,123 @@ func TestGetSetTestIamPolicyEmulated(t *testing.T) {
 	})
 }
 
+func TestListObjectsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := []*ObjectAttrs{
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+			},
+		}
+		for _, obj := range want {
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		// Simple list, no query.
+		it := client.ListObjects(context.Background(), bucket, nil)
+		var o *ObjectAttrs
+		var got int
+		for i := 0; err == nil && i <= len(want); i++ {
+			o, err = it.Next()
+			if err != nil {
+				break
+			}
+			got++
+			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
+		}
+	})
+}
+
+func TestListObjectsWithPrefixEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := []*ObjectAttrs{
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+			},
+		}
+		for _, obj := range want {
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		// Query with Prefix.
+		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
+		var o *ObjectAttrs
+		var got int
+		want = want[:2]
+		for i := 0; i <= len(want); i++ {
+			o, err = it.Next()
+			if err != nil {
+				break
+			}
+			got++
+			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
+		}
+	})
+}
+
 func TestListBucketsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		prefix := time.Now().Nanosecond()
@@ -155,11 +273,10 @@ func TestListBucketsEmulated(t *testing.T) {
 			}
 			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
-				break
 			}
 		}
 		if err != iterator.Done {
-			t.Fatal(err)
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
 		}
 	})
 }
@@ -169,13 +286,14 @@ func initEmulatorClients() func() error {
 	if !isEmulatorEnvironmentSet() {
 		return noopCloser
 	}
+	ctx := context.Background()
 
-	grpcClient, err := newGRPCStorageClient(context.Background())
+	grpcClient, err := newGRPCStorageClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
 		return noopCloser
 	}
-	httpClient, err := newHTTPStorageClient(context.Background())
+	httpClient, err := newHTTPStorageClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
 		return noopCloser
@@ -186,14 +304,23 @@ func initEmulatorClients() func() error {
 		"grpc": grpcClient,
 	}
 
+	veneerClient, err = NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Error setting up Veneer client for emulator tests: %v", err)
+		return noopCloser
+	}
+
 	return func() error {
 		gerr := grpcClient.Close()
 		herr := httpClient.Close()
+		verr := veneerClient.Close()
 
 		if gerr != nil {
 			return gerr
+		} else if herr != nil {
+			return herr
 		}
-		return herr
+		return verr
 	}
 }
 
