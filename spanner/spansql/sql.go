@@ -173,11 +173,11 @@ func (sco SetColumnOptions) SQL() string {
 	return "SET " + sco.Options.SQL()
 }
 
-func (sco SetDefault) SQL() string {
-	return "SET DEFAULT (" + sco.Default.SQL() + ")"
+func (sd SetDefault) SQL() string {
+	return "SET DEFAULT (" + sd.Default.SQL() + ")"
 }
 
-func (sco DropDefault) SQL() string {
+func (dp DropDefault) SQL() string {
 	return "DROP DEFAULT"
 }
 
