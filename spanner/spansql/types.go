@@ -235,13 +235,22 @@ type ColumnAlteration interface {
 
 func (SetColumnType) isColumnAlteration()    {}
 func (SetColumnOptions) isColumnAlteration() {}
+func (SetDefault) isColumnAlteration()       {}
+func (DropDefault) isColumnAlteration()      {}
 
 type SetColumnType struct {
 	Type    Type
 	NotNull bool
+	Default Expr
 }
 
 type SetColumnOptions struct{ Options ColumnOptions }
+
+type SetDefault struct {
+	Default Expr
+}
+
+type DropDefault struct{}
 
 type OnDelete int
 
@@ -320,6 +329,7 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Default   Expr // set if this column has a default value
 	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
