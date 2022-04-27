@@ -986,7 +986,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
 // specified by sppb.Type.
-func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
+func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -1891,7 +1891,13 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		if err != nil {
 			return err
 		}
-		if err = decodeStructArray(t.ArrayElementType.StructType, x, p); err != nil {
+		s := decodeSetting{
+			Lenient: false,
+		}
+		for _, opt := range opts {
+			opt.Apply(&s)
+		}
+		if err = decodeStructArray(t.ArrayElementType.StructType, x, p, s.Lenient); err != nil {
 			return err
 		}
 	}
@@ -3043,6 +3049,22 @@ func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	return se
 }
 
+// decodeSetting contains all the settings for decoding from spanner struct
+type decodeSetting struct {
+	Lenient bool
+}
+
+// decodeOptions is the interface to change decode struct settings
+type decodeOptions interface {
+	Apply(s *decodeSetting)
+}
+
+type withLenient struct{ lenient bool }
+
+func (w withLenient) Apply(s *decodeSetting) {
+	s.Lenient = w.lenient
+}
+
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
 // ptr, according to
 // the structural information given in sppb.StructType ty.
@@ -3087,8 +3109,9 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 			// We don't allow duplicated field name.
 			return errDupSpannerField(f.Name, ty)
 		}
+		opts := []decodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
-		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface()); err != nil {
+		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
 		}
 		// Mark field f.Name as processed.
@@ -3113,7 +3136,7 @@ func isPtrStructPtrSlice(t reflect.Type) bool {
 // decodeStructArray decodes proto3.ListValue pb into struct slice referenced by
 // pointer ptr, according to the
 // structural information given in a sppb.StructType.
-func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) error {
+func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
 	if pb == nil {
 		return errNilListValue("STRUCT")
 	}
@@ -3139,7 +3162,7 @@ func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Decode proto3.ListValue l into struct referenced by s.Interface().
-		if err = decodeStruct(ty, l, s.Interface(), false); err != nil {
+		if err = decodeStruct(ty, l, s.Interface(), lenient); err != nil {
 			return errDecodeArrayElement(i, pv, "STRUCT", err)
 		}
 		// Append the decoded struct back into the slice.
