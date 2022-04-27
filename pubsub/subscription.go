@@ -553,12 +553,20 @@ type ReceiveSettings struct {
 	// processed concurrently, set MaxOutstandingMessages.
 	NumGoroutines int
 
-	// If Synchronous is true, then no more than MaxOutstandingMessages will be in
-	// memory at one time. (In contrast, when Synchronous is false, more than
-	// MaxOutstandingMessages may have been received from the service and in memory
-	// before being processed.) MaxOutstandingBytes still refers to the total bytes
-	// processed, rather than in memory. NumGoroutines is ignored.
+	// Synchronous switches the underlying receiving mechanism to unary Pull.
+	// When Synchronous is false, the more performant StreamingPull is used.
+	// StreamingPull also has the benefit of subscriber affinity when using
+	// ordered delivery.
+	// When Synchronous is true, NumGoroutines is set to 1 and only one Pull
+	// RPC will be made to poll messages at a time.
 	// The default is false.
+	//
+	// Deprecated.
+	// Previously, users might use Synchronous mode since StreamingPull had a limitation
+	// where MaxOutstandingMessages was not always respected with large batches of
+	// small messsages. With server side flow control, this is no longer an issue
+	// and we recommend switching to the default StreamingPull mode by setting
+	// Synchronous to false.
 	Synchronous bool
 }
 
