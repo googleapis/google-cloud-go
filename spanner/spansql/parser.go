@@ -1528,7 +1528,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [AS ( expression ) STORED] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [{DEFAULT ( expression ) | AS ( expression ) STORED}] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -1545,6 +1545,16 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		cd.NotNull = true
+	}
+
+	if p.eat("DEFAULT", "(") {
+		cd.Default, err = p.parseExpr()
+		if err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect(")"); err != nil {
+			return ColumnDef{}, err
+		}
 	}
 
 	if p.eat("AS", "(") {
@@ -1573,8 +1583,28 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 	debugf("parseColumnAlteration: %v", p)
 	/*
-		{ data_type } [ NOT NULL ] | SET [ options_def ]
+		{
+			data_type [ NOT NULL ] [ DEFAULT ( expression ) ]
+			| SET  ( options_def )
+			| SET  DEFAULT ( expression )
+			| DROP DEFAULT
+		}
 	*/
+
+	if p.eat("SET", "DEFAULT", "(") {
+		d, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		return SetDefault{Default: d}, nil
+	}
+
+	if p.eat("DROP", "DEFAULT") {
+		return DropDefault{}, nil
+	}
 
 	if p.eat("SET") {
 		co, err := p.parseColumnOptions()
@@ -1592,6 +1622,16 @@ func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		sct.NotNull = true
+	}
+
+	if p.eat("DEFAULT", "(") {
+		sct.Default, err = p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
 	}
 
 	return sct, nil
@@ -2913,6 +2953,13 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		// TODO: Check IsKeyWord(tok.value), and return a good error?
 	}
 
+	// Handle conditional expressions.
+	switch {
+	case tok.caseEqual("CASE"):
+		p.back()
+		return p.parseCaseExpr()
+	}
+
 	// Handle typed literals.
 	switch {
 	case tok.caseEqual("ARRAY") || tok.value == "[":
@@ -2948,6 +2995,72 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return pe[0], nil // identifier
 	}
 	return pe, nil
+}
+
+func (p *parser) parseCaseExpr() (Case, *parseError) {
+	if err := p.expect("CASE"); err != nil {
+		return Case{}, err
+	}
+
+	var expr Expr
+	if !p.sniff("WHEN") {
+		var err *parseError
+		expr, err = p.parseExpr()
+		if err != nil {
+			return Case{}, err
+		}
+	}
+
+	when, err := p.parseWhenClause()
+	if err != nil {
+		return Case{}, err
+	}
+	whens := []WhenClause{when}
+	for p.sniff("WHEN") {
+		when, err := p.parseWhenClause()
+		if err != nil {
+			return Case{}, err
+		}
+		whens = append(whens, when)
+	}
+
+	var elseResult Expr
+	if p.sniff("ELSE") {
+		p.eat("ELSE")
+		var err *parseError
+		elseResult, err = p.parseExpr()
+		if err != nil {
+			return Case{}, err
+		}
+	}
+
+	if err := p.expect("END"); err != nil {
+		return Case{}, err
+	}
+
+	return Case{
+		Expr:        expr,
+		WhenClauses: whens,
+		ElseResult:  elseResult,
+	}, nil
+}
+
+func (p *parser) parseWhenClause() (WhenClause, *parseError) {
+	if err := p.expect("WHEN"); err != nil {
+		return WhenClause{}, err
+	}
+	cond, err := p.parseExpr()
+	if err != nil {
+		return WhenClause{}, err
+	}
+	if err := p.expect("THEN"); err != nil {
+		return WhenClause{}, err
+	}
+	result, err := p.parseExpr()
+	if err != nil {
+		return WhenClause{}, err
+	}
+	return WhenClause{Cond: cond, Result: result}, nil
 }
 
 func (p *parser) parseArrayLit() (Array, *parseError) {

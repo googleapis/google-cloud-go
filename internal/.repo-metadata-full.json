@@ -170,6 +170,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/bigquery/dataexchange/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
+    "description": "Analytics Hub API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/dataexchange/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
@@ -177,6 +186,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/datatransfer/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/bigquery/migration/apiv2": {
+    "distribution_name": "cloud.google.com/go/bigquery/migration/apiv2",
+    "description": "BigQuery Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/migration/apiv2",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/bigquery/migration/apiv2alpha": {
@@ -1222,6 +1240,15 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
     "release_level": "ga",
     "library_type": "OTHER"
+  },
+  "cloud.google.com/go/run/apiv2": {
+    "distribution_name": "cloud.google.com/go/run/apiv2",
+    "description": "Cloud Run Admin API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/run/latest/apiv2",
+    "release_level": "beta",
+    "library_type": ""
   },
   "cloud.google.com/go/scheduler/apiv1": {
     "distribution_name": "cloud.google.com/go/scheduler/apiv1",

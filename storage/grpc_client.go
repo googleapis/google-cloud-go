@@ -19,6 +19,7 @@ import (
 	"os"
 
 	gapic "cloud.google.com/go/storage/internal/apiv2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
@@ -110,8 +111,22 @@ func (c *grpcStorageClient) Close() error {
 // Top-level methods.
 
 func (c *grpcStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
-	return "", errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.GetServiceAccountRequest{
+		Project: toProjectResource(project),
+	}
+	var resp *storagepb.ServiceAccount
+	err := run(ctx, func() error {
+		var err error
+		resp, err = c.raw.GetServiceAccount(ctx, req, s.gax...)
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return "", err
+	}
+	return resp.EmailAddress, err
 }
+
 func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	b := attrs.toProtoBucket()
@@ -123,13 +138,11 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	}
 
 	req := &storagepb.CreateBucketRequest{
-		Parent:   toProjectResource(project),
-		Bucket:   b,
-		BucketId: b.GetName(),
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// PredefinedAcl: attrs.PredefinedACL,
-		// PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
+		Parent:                     toProjectResource(project),
+		Bucket:                     b,
+		BucketId:                   b.GetName(),
+		PredefinedAcl:              attrs.PredefinedACL,
+		PredefinedDefaultObjectAcl: attrs.PredefinedDefaultObjectACL,
 	}
 
 	var battrs *BucketAttrs
@@ -144,8 +157,52 @@ func (c *grpcStorageClient) CreateBucket(ctx context.Context, project string, at
 	return battrs, err
 }
 
-func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator {
+	s := callSettings(c.settings, opts...)
+	it := &BucketIterator{
+		ctx:       ctx,
+		projectID: project,
+	}
+
+	var gitr *gapic.BucketIterator
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		// Initialize GAPIC-based iterator when pageToken is empty, which
+		// indicates that this fetch call is attempting to get the first page.
+		//
+		// Note: Initializing the GAPIC-based iterator lazily is necessary to
+		// capture the BucketIterator.Prefix set by the user *after* the
+		// BucketIterator is returned to them from the veneer.
+		if pageToken == "" {
+			req := &storagepb.ListBucketsRequest{
+				Parent: toProjectResource(it.projectID),
+				Prefix: it.Prefix,
+			}
+			gitr = c.raw.ListBuckets(it.ctx, req, s.gax...)
+		}
+
+		var buckets []*storagepb.Bucket
+		var next string
+		err = run(it.ctx, func() error {
+			buckets, next, err = gitr.InternalFetch(pageSize, pageToken)
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			return "", err
+		}
+
+		for _, bkt := range buckets {
+			b := newBucketFromProto(bkt)
+			it.buckets = append(it.buckets, b)
+		}
+
+		return next, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.buckets) },
+		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+
+	return it
 }
 
 // Bucket methods.
@@ -204,8 +261,54 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttr
 func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }
-func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error) {
-	return nil, errMethodNotSupported
+func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
+	s := callSettings(c.settings, opts...)
+	it := &ObjectIterator{
+		ctx: ctx,
+	}
+	if q != nil {
+		it.query = *q
+	}
+	req := &storagepb.ListObjectsRequest{
+		Parent:             bucketResourceName(globalProjectAlias, bucket),
+		Prefix:             it.query.Prefix,
+		Delimiter:          it.query.Delimiter,
+		Versions:           it.query.Versions,
+		LexicographicStart: it.query.StartOffset,
+		LexicographicEnd:   it.query.EndOffset,
+		// TODO(noahietz): Convert a projection to a FieldMask.
+		// ReadMask: q.Projection,
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{UserProject: s.userProject}
+	}
+	gitr := c.raw.ListObjects(it.ctx, req, s.gax...)
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		var objects []*storagepb.Object
+		err = run(it.ctx, func() error {
+			objects, token, err = gitr.InternalFetch(pageSize, pageToken)
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
+				err = ErrBucketNotExist
+			}
+			return "", err
+		}
+
+		for _, obj := range objects {
+			b := newObjectFromProto(obj)
+			it.items = append(it.items, b)
+		}
+
+		return token, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.items) },
+		func() interface{} { b := it.items; it.items = nil; return b })
+
+	return it
 }
 
 // Object metadata methods.

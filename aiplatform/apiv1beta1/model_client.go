@@ -44,8 +44,11 @@ type ModelCallOptions struct {
 	UploadModel               []gax.CallOption
 	GetModel                  []gax.CallOption
 	ListModels                []gax.CallOption
+	ListModelVersions         []gax.CallOption
 	UpdateModel               []gax.CallOption
 	DeleteModel               []gax.CallOption
+	DeleteModelVersion        []gax.CallOption
+	MergeVersionAliases       []gax.CallOption
 	ExportModel               []gax.CallOption
 	ImportModelEvaluation     []gax.CallOption
 	GetModelEvaluation        []gax.CallOption
@@ -71,8 +74,11 @@ func defaultModelCallOptions() *ModelCallOptions {
 		UploadModel:               []gax.CallOption{},
 		GetModel:                  []gax.CallOption{},
 		ListModels:                []gax.CallOption{},
+		ListModelVersions:         []gax.CallOption{},
 		UpdateModel:               []gax.CallOption{},
 		DeleteModel:               []gax.CallOption{},
+		DeleteModelVersion:        []gax.CallOption{},
+		MergeVersionAliases:       []gax.CallOption{},
 		ExportModel:               []gax.CallOption{},
 		ImportModelEvaluation:     []gax.CallOption{},
 		GetModelEvaluation:        []gax.CallOption{},
@@ -91,9 +97,13 @@ type internalModelClient interface {
 	UploadModelOperation(name string) *UploadModelOperation
 	GetModel(context.Context, *aiplatformpb.GetModelRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	ListModels(context.Context, *aiplatformpb.ListModelsRequest, ...gax.CallOption) *ModelIterator
+	ListModelVersions(context.Context, *aiplatformpb.ListModelVersionsRequest, ...gax.CallOption) *ModelIterator
 	UpdateModel(context.Context, *aiplatformpb.UpdateModelRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	DeleteModel(context.Context, *aiplatformpb.DeleteModelRequest, ...gax.CallOption) (*DeleteModelOperation, error)
 	DeleteModelOperation(name string) *DeleteModelOperation
+	DeleteModelVersion(context.Context, *aiplatformpb.DeleteModelVersionRequest, ...gax.CallOption) (*DeleteModelVersionOperation, error)
+	DeleteModelVersionOperation(name string) *DeleteModelVersionOperation
+	MergeVersionAliases(context.Context, *aiplatformpb.MergeVersionAliasesRequest, ...gax.CallOption) (*aiplatformpb.Model, error)
 	ExportModel(context.Context, *aiplatformpb.ExportModelRequest, ...gax.CallOption) (*ExportModelOperation, error)
 	ExportModelOperation(name string) *ExportModelOperation
 	ImportModelEvaluation(context.Context, *aiplatformpb.ImportModelEvaluationRequest, ...gax.CallOption) (*aiplatformpb.ModelEvaluation, error)
@@ -163,6 +173,11 @@ func (c *ModelClient) ListModels(ctx context.Context, req *aiplatformpb.ListMode
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
 
+// ListModelVersions lists versions of the specified model.
+func (c *ModelClient) ListModelVersions(ctx context.Context, req *aiplatformpb.ListModelVersionsRequest, opts ...gax.CallOption) *ModelIterator {
+	return c.internalClient.ListModelVersions(ctx, req, opts...)
+}
+
 // UpdateModel updates a Model.
 func (c *ModelClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
 	return c.internalClient.UpdateModel(ctx, req, opts...)
@@ -181,6 +196,26 @@ func (c *ModelClient) DeleteModel(ctx context.Context, req *aiplatformpb.DeleteM
 // The name must be that of a previously created DeleteModelOperation, possibly from a different process.
 func (c *ModelClient) DeleteModelOperation(name string) *DeleteModelOperation {
 	return c.internalClient.DeleteModelOperation(name)
+}
+
+// DeleteModelVersion deletes a Model version.
+//
+// Model version can only be deleted if there are no DeployedModels
+// created from it. Deleting the only version in the Model is not allowed. Use
+// DeleteModel for deleting the Model instead.
+func (c *ModelClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
+	return c.internalClient.DeleteModelVersion(ctx, req, opts...)
+}
+
+// DeleteModelVersionOperation returns a new DeleteModelVersionOperation from a given name.
+// The name must be that of a previously created DeleteModelVersionOperation, possibly from a different process.
+func (c *ModelClient) DeleteModelVersionOperation(name string) *DeleteModelVersionOperation {
+	return c.internalClient.DeleteModelVersionOperation(name)
+}
+
+// MergeVersionAliases merges a set of aliases for a Model version.
+func (c *ModelClient) MergeVersionAliases(ctx context.Context, req *aiplatformpb.MergeVersionAliasesRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
+	return c.internalClient.MergeVersionAliases(ctx, req, opts...)
 }
 
 // ExportModel exports a trained, exportable Model to a location specified by the
@@ -408,6 +443,51 @@ func (c *modelGRPCClient) ListModels(ctx context.Context, req *aiplatformpb.List
 	return it
 }
 
+func (c *modelGRPCClient) ListModelVersions(ctx context.Context, req *aiplatformpb.ListModelVersionsRequest, opts ...gax.CallOption) *ModelIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListModelVersions[0:len((*c.CallOptions).ListModelVersions):len((*c.CallOptions).ListModelVersions)], opts...)
+	it := &ModelIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListModelVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.Model, string, error) {
+		resp := &aiplatformpb.ListModelVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.modelClient.ListModelVersions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetModels(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *modelGRPCClient) UpdateModel(ctx context.Context, req *aiplatformpb.UpdateModelRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
@@ -452,6 +532,42 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *aiplatformpb.Del
 	return &DeleteModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *modelGRPCClient) DeleteModelVersion(ctx context.Context, req *aiplatformpb.DeleteModelVersionRequest, opts ...gax.CallOption) (*DeleteModelVersionOperation, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteModelVersion[0:len((*c.CallOptions).DeleteModelVersion):len((*c.CallOptions).DeleteModelVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.DeleteModelVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteModelVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *modelGRPCClient) MergeVersionAliases(ctx context.Context, req *aiplatformpb.MergeVersionAliasesRequest, opts ...gax.CallOption) (*aiplatformpb.Model, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).MergeVersionAliases[0:len((*c.CallOptions).MergeVersionAliases):len((*c.CallOptions).MergeVersionAliases)], opts...)
+	var resp *aiplatformpb.Model
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.modelClient.MergeVersionAliases(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *modelGRPCClient) ExportModel(ctx context.Context, req *aiplatformpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
@@ -684,6 +800,64 @@ func (op *DeleteModelOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteModelOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteModelVersionOperation manages a long-running operation from DeleteModelVersion.
+type DeleteModelVersionOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteModelVersionOperation returns a new DeleteModelVersionOperation from a given name.
+// The name must be that of a previously created DeleteModelVersionOperation, possibly from a different process.
+func (c *modelGRPCClient) DeleteModelVersionOperation(name string) *DeleteModelVersionOperation {
+	return &DeleteModelVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteModelVersionOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteModelVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteModelVersionOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteModelVersionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteModelVersionOperation) Name() string {
 	return op.lro.Name()
 }
 

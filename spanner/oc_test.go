@@ -34,6 +34,7 @@ import (
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -50,6 +51,7 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	skipForPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
@@ -95,6 +97,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(v)
 	defer te.Unregister()
 

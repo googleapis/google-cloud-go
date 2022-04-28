@@ -19,123 +19,266 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/iterator"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 var emulatorClients map[string]storageClient
+var veneerClient *Client
 
 func TestCreateBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		got, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
-			t.Fatalf("%s, %v", transport, err)
+			t.Fatal(err)
 		}
 		want.Location = "US"
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
 		if diff := cmp.Diff(got.Location, want.Location); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
 }
 
 func TestDeleteBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		b := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		// Create the bucket that will be deleted.
 		_, err := client.CreateBucket(context.Background(), project, b)
 		if err != nil {
-			// Flag the error and continue so the Delete is skipped and the next
-			// transport can run its test.
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		// Delete the bucket that was just created.
 		err = client.DeleteBucket(context.Background(), b.Name, nil)
 		if err != nil {
-			t.Errorf("%s: %v", transport, err)
+			t.Fatalf("client.DeleteBucket: %v", err)
 		}
-	}
+	})
 }
 
 func TestGetBucketEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		want := &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		}
 		// Create the bucket that will be retrieved.
 		_, err := client.CreateBucket(context.Background(), project, want)
 		if err != nil {
-			// Flag the error and continue so the Get is skipped and the next
-			// transport can run its test.
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		got, err := client.GetBucket(context.Background(), want.Name, &BucketConditions{MetagenerationMatch: 1})
 		if err != nil {
-			t.Errorf("%s: %v", transport, err)
-			continue
+			t.Fatal(err)
 		}
 		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
+}
+
+func TestGetServiceAccountEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		_, err := client.GetServiceAccount(context.Background(), project)
+		if err != nil {
+			t.Fatalf("client.GetServiceAccount: %v", err)
+		}
+	})
 }
 
 func TestGetSetTestIamPolicyEmulated(t *testing.T) {
-	checkEmulatorEnvironment(t)
-
-	for transport, client := range emulatorClients {
-		project := fmt.Sprintf("%s-project", transport)
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		battrs, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
-			Name: fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond()),
+			Name: bucket,
 		})
 		if err != nil {
-			t.Errorf("%s: on CreateBucket %v", transport, err)
-			continue
+			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		got, err := client.GetIamPolicy(context.Background(), battrs.Name, 0)
 		if err != nil {
-			t.Errorf("%s: on GetIamPolicy %v", transport, err)
-			continue
+			t.Fatalf("client.GetIamPolicy: %v", err)
 		}
 		err = client.SetIamPolicy(context.Background(), battrs.Name, &iampb.Policy{
 			Etag:     got.GetEtag(),
 			Bindings: []*iampb.Binding{{Role: "roles/viewer", Members: []string{"allUsers"}}},
 		})
 		if err != nil {
-			t.Errorf("%s: on SetIamPolicy %v", transport, err)
-			continue
+			t.Fatalf("client.SetIamPolicy: %v", err)
 		}
 		want := []string{"storage.foo", "storage.bar"}
 		perms, err := client.TestIamPermissions(context.Background(), battrs.Name, want)
 		if err != nil {
-			t.Errorf("%s: on TestIamPermissions %v", transport, err)
-			continue
+			t.Fatalf("client.TestIamPermissions: %v", err)
 		}
 		if diff := cmp.Diff(perms, want); diff != "" {
-			t.Errorf("%s: got(-),want(+):\n%s", transport, diff)
+			t.Errorf("got(-),want(+):\n%s", diff)
 		}
-	}
+	})
+}
+
+func TestListObjectsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := []*ObjectAttrs{
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+			},
+		}
+		for _, obj := range want {
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		// Simple list, no query.
+		it := client.ListObjects(context.Background(), bucket, nil)
+		var o *ObjectAttrs
+		var got int
+		for i := 0; err == nil && i <= len(want); i++ {
+			o, err = it.Next()
+			if err != nil {
+				break
+			}
+			got++
+			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
+		}
+	})
+}
+
+func TestListObjectsWithPrefixEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		// Populate test data.
+		_, err := client.CreateBucket(context.Background(), project, &BucketAttrs{
+			Name: bucket,
+		})
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		prefix := time.Now().Nanosecond()
+		want := []*ObjectAttrs{
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			},
+			{
+				Bucket: bucket,
+				Name:   fmt.Sprintf("object-%d", time.Now().Nanosecond()),
+			},
+		}
+		for _, obj := range want {
+			w := veneerClient.Bucket(bucket).Object(obj.Name).NewWriter(context.Background())
+			if _, err := w.Write(randomBytesToWrite); err != nil {
+				t.Fatalf("failed to populate test data: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("closing object: %v", err)
+			}
+		}
+
+		// Query with Prefix.
+		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
+		var o *ObjectAttrs
+		var got int
+		want = want[:2]
+		for i := 0; i <= len(want); i++ {
+			o, err = it.Next()
+			if err != nil {
+				break
+			}
+			got++
+			if diff := cmp.Diff(o.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d objects, but got %d", expected, got)
+		}
+	})
+}
+
+func TestListBucketsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		prefix := time.Now().Nanosecond()
+		want := []*BucketAttrs{
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%d-%s-%d", prefix, bucket, time.Now().Nanosecond())},
+			{Name: fmt.Sprintf("%s-%d", bucket, time.Now().Nanosecond())},
+		}
+		// Create the buckets that will be listed.
+		for _, b := range want {
+			_, err := client.CreateBucket(context.Background(), project, b)
+			if err != nil {
+				t.Fatalf("client.CreateBucket: %v", err)
+			}
+		}
+
+		it := client.ListBuckets(context.Background(), project)
+		it.Prefix = strconv.Itoa(prefix)
+		// Drop the non-prefixed bucket from the expected results.
+		want = want[:2]
+		var err error
+		var b *BucketAttrs
+		for i := 0; err == nil && i <= len(want); i++ {
+			b, err = it.Next()
+			if err != nil {
+				break
+			}
+			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
+			}
+		}
+		if err != iterator.Done {
+			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+	})
 }
 
 func initEmulatorClients() func() error {
@@ -143,13 +286,14 @@ func initEmulatorClients() func() error {
 	if !isEmulatorEnvironmentSet() {
 		return noopCloser
 	}
+	ctx := context.Background()
 
-	grpcClient, err := newGRPCStorageClient(context.Background())
+	grpcClient, err := newGRPCStorageClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up gRPC client for emulator tests: %v", err)
 		return noopCloser
 	}
-	httpClient, err := newHTTPStorageClient(context.Background())
+	httpClient, err := newHTTPStorageClient(ctx)
 	if err != nil {
 		log.Fatalf("Error setting up HTTP client for emulator tests: %v", err)
 		return noopCloser
@@ -160,14 +304,39 @@ func initEmulatorClients() func() error {
 		"grpc": grpcClient,
 	}
 
+	veneerClient, err = NewClient(ctx)
+	if err != nil {
+		log.Fatalf("Error setting up Veneer client for emulator tests: %v", err)
+		return noopCloser
+	}
+
 	return func() error {
 		gerr := grpcClient.Close()
 		herr := httpClient.Close()
+		verr := veneerClient.Close()
 
 		if gerr != nil {
 			return gerr
+		} else if herr != nil {
+			return herr
 		}
-		return herr
+		return verr
+	}
+}
+
+// transportClienttest executes the given function with a sub-test, a project name
+// based on the transport, a unique bucket name also based on the transport, and
+// the transport-specific client to run the test with. It also checks the environment
+// to ensure it is suitable for emulator-based tests, or skips.
+func transportClientTest(t *testing.T, test func(*testing.T, string, string, storageClient)) {
+	checkEmulatorEnvironment(t)
+
+	for transport, client := range emulatorClients {
+		t.Run(transport, func(t *testing.T) {
+			project := fmt.Sprintf("%s-project", transport)
+			bucket := fmt.Sprintf("%s-bucket-%d", transport, time.Now().Nanosecond())
+			test(t, project, bucket, client)
+		})
 	}
 }
 
