@@ -266,17 +266,23 @@ func TestListBucketsEmulated(t *testing.T) {
 		want = want[:2]
 		var err error
 		var b *BucketAttrs
+		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
 			b, err = it.Next()
 			if err != nil {
 				break
 			}
+			got++
 			if diff := cmp.Diff(b.Name, want[i].Name); diff != "" {
 				t.Errorf("got(-),want(+):\n%s", diff)
 			}
 		}
 		if err != iterator.Done {
 			t.Fatalf("expected %q but got %q", iterator.Done, err)
+		}
+		expected := len(want)
+		if got != expected {
+			t.Errorf("expected to get %d buckets, but got %d", expected, got)
 		}
 	})
 }
