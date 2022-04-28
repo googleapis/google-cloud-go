@@ -25,6 +25,7 @@ import (
 
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
@@ -136,7 +137,18 @@ func (c *httpStorageClient) Close() error {
 // Top-level methods.
 
 func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project string, opts ...storageOption) (string, error) {
-	return "", errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	call := c.raw.Projects.ServiceAccount.Get(project)
+	var res *raw.ServiceAccount
+	err := run(ctx, func() error {
+		var err error
+		res, err = call.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return "", err
+	}
+	return res.EmailAddress, nil
 }
 
 func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
@@ -173,8 +185,46 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project string, at
 	return battrs, err
 }
 
-func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) (*BucketIterator, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opts ...storageOption) *BucketIterator {
+	s := callSettings(c.settings, opts...)
+	it := &BucketIterator{
+		ctx:       ctx,
+		projectID: project,
+	}
+
+	fetch := func(pageSize int, pageToken string) (token string, err error) {
+		req := c.raw.Buckets.List(it.projectID)
+		setClientHeader(req.Header())
+		req.Projection("full")
+		req.Prefix(it.Prefix)
+		req.PageToken(pageToken)
+		if pageSize > 0 {
+			req.MaxResults(int64(pageSize))
+		}
+		var resp *raw.Buckets
+		err = run(it.ctx, func() error {
+			resp, err = req.Context(it.ctx).Do()
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			return "", err
+		}
+		for _, item := range resp.Items {
+			b, err := newBucket(item)
+			if err != nil {
+				return "", err
+			}
+			it.buckets = append(it.buckets, b)
+		}
+		return resp.NextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.buckets) },
+		func() interface{} { b := it.buckets; it.buckets = nil; return b })
+
+	return it
 }
 
 // Bucket methods.
@@ -226,8 +276,65 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttr
 func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }
-func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) (*ObjectIterator, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
+	s := callSettings(c.settings, opts...)
+	it := &ObjectIterator{
+		ctx: ctx,
+	}
+	if q != nil {
+		it.query = *q
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		req := c.raw.Objects.List(bucket)
+		setClientHeader(req.Header())
+		projection := it.query.Projection
+		if projection == ProjectionDefault {
+			projection = ProjectionFull
+		}
+		req.Projection(projection.String())
+		req.Delimiter(it.query.Delimiter)
+		req.Prefix(it.query.Prefix)
+		req.StartOffset(it.query.StartOffset)
+		req.EndOffset(it.query.EndOffset)
+		req.Versions(it.query.Versions)
+		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
+		if len(it.query.fieldSelection) > 0 {
+			req.Fields("nextPageToken", googleapi.Field(it.query.fieldSelection))
+		}
+		req.PageToken(pageToken)
+		if s.userProject != "" {
+			req.UserProject(s.userProject)
+		}
+		if pageSize > 0 {
+			req.MaxResults(int64(pageSize))
+		}
+		var resp *raw.Objects
+		var err error
+		err = run(it.ctx, func() error {
+			resp, err = req.Context(it.ctx).Do()
+			return err
+		}, s.retry, s.idempotent)
+		if err != nil {
+			var e *googleapi.Error
+			if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+				err = ErrBucketNotExist
+			}
+			return "", err
+		}
+		for _, item := range resp.Items {
+			it.items = append(it.items, newObject(item))
+		}
+		for _, prefix := range resp.Prefixes {
+			it.items = append(it.items, &ObjectAttrs{Prefix: prefix})
+		}
+		return resp.NextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(
+		fetch,
+		func() int { return len(it.items) },
+		func() interface{} { b := it.items; it.items = nil; return b })
+
+	return it
 }
 
 // Object metadata methods.

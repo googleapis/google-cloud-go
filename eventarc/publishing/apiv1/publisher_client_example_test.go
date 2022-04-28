@@ -54,3 +54,23 @@ func ExamplePublisherClient_PublishChannelConnectionEvents() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExamplePublisherClient_PublishEvents() {
+	ctx := context.Background()
+	c, err := publishing.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &publisherpb.PublishEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1#PublishEventsRequest.
+	}
+	resp, err := c.PublishEvents(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

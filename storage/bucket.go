@@ -920,11 +920,9 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 				Enabled: true,
 			}
 		}
-		// TODO(noahdietz): This will be switched to a string.
-		//
-		// if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
-		// 	bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
-		// }
+		if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
+			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
+		}
 	}
 
 	return &storagepb.Bucket{
@@ -1986,6 +1984,9 @@ func (it *BucketIterator) Next() (*BucketAttrs, error) {
 // Note: This method is not safe for concurrent operations without explicit synchronization.
 func (it *BucketIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
+// TODO: When the transport-agnostic client interface is integrated into the Veneer,
+// this method should be removed, and the iterator should be initialized by the
+// transport-specific client implementations.
 func (it *BucketIterator) fetch(pageSize int, pageToken string) (token string, err error) {
 	req := it.client.raw.Buckets.List(it.projectID)
 	setClientHeader(req.Header())
