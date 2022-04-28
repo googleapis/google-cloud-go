@@ -51,6 +51,7 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	skipForPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
