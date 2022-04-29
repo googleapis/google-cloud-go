@@ -290,13 +290,12 @@ func TestListBucketsEmulated(t *testing.T) {
 func TestListBucketACLsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
-		want := &BucketAttrs{
+		attrs := &BucketAttrs{
 			Name:          bucket,
 			PredefinedACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		_, err := client.CreateBucket(ctx, project, want)
-		if err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 
@@ -313,13 +312,12 @@ func TestListBucketACLsEmulated(t *testing.T) {
 func TestListDefaultObjectACLsEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		ctx := context.Background()
-		want := &BucketAttrs{
+		attrs := &BucketAttrs{
 			Name:                       bucket,
 			PredefinedDefaultObjectACL: "publicRead",
 		}
 		// Create the bucket that will be retrieved.
-		_, err := client.CreateBucket(ctx, project, want)
-		if err != nil {
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 

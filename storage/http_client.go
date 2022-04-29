@@ -355,6 +355,7 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
 	return errMethodNotSupported
 }
+
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
 	s := callSettings(c.settings, opts...)
 	var acls *raw.ObjectAccessControls
@@ -394,6 +395,9 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	}
 	return toBucketACLRules(acls.Items), nil
 }
+
+// configureACLCall sets the context, user project and headers on the apiary library call.
+// This will panic if the call does not have the correct methods.
 func configureACLCall(ctx context.Context, userProject string, call interface{ Header() http.Header }) {
 	vc := reflect.ValueOf(call)
 	vc.MethodByName("Context").Call([]reflect.Value{reflect.ValueOf(ctx)})
