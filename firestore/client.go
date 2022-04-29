@@ -289,9 +289,18 @@ func (c *Client) Collections(ctx context.Context) *CollectionIterator {
 	return it
 }
 
+// Deprecated: The WriteBatch API has been replaced with the transaction and
+// the bulk writer API. For atomic transaction operations, use `Transaction`.
+// For bulk read and write operations, use `BulkWriter`.
+//
 // Batch returns a WriteBatch.
 func (c *Client) Batch() *WriteBatch {
 	return &WriteBatch{c: c}
+}
+
+// BulkWriter returns a BulkWriter instance.
+func (c *Client) BulkWriter() *BulkWriter {
+	return &BulkWriter{c: c, status: OPEN}
 }
 
 // commit calls the Commit RPC outside of a transaction.
