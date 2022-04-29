@@ -945,6 +945,75 @@ func (b *BucketAttrs) toProtoBucket() *storagepb.Bucket {
 	}
 }
 
+func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
+	if ua == nil {
+		return &storagepb.Bucket{}
+	}
+
+	// TODO(cathyo): Handle labels. Pending b/230510191.
+
+	var v *storagepb.Bucket_Versioning
+	if ua.VersioningEnabled != nil {
+		v = &storagepb.Bucket_Versioning{Enabled: optional.ToBool(ua.VersioningEnabled)}
+	}
+	var bb *storagepb.Bucket_Billing
+	if ua.RequesterPays != nil {
+		bb = &storage.Bucket_Billing{RequesterPays: optional.ToBool(ua.RequesterPays)}
+	}
+	var bktIAM *storagepb.Bucket_IamConfig
+	var ublaEnabled bool
+	var bktPolicyOnlyEnabled bool
+	if ua.UniformBucketLevelAccess != nil {
+		ublaEnabled = optional.ToBool(ua.UniformBucketLevelAccess.Enabled)
+	}
+	if ua.BucketPolicyOnly != nil {
+		bktPolicyOnlyEnabled = optional.ToBool(ua.BucketPolicyOnly.Enabled)
+	}
+	if ublaEnabled || bktPolicyOnlyEnabled {
+		bktIAM.UniformBucketLevelAccess = &storagepb.Bucket_IamConfig_UniformBucketLevelAccess{
+			Enabled: true,
+		}
+	}
+	if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
+		bktIAM.PublicAccessPrevention = ua.PublicAccessPrevention.String()
+	}
+	var defaultHold bool
+	if ua.DefaultEventBasedHold != nil {
+		defaultHold = optional.ToBool(ua.DefaultEventBasedHold)
+	}
+	var lifecycle Lifecycle
+	if ua.Lifecycle != nil {
+		lifecycle = *ua.Lifecycle
+	}
+	var bktACL []*storagepb.BucketAccessControl
+	if ua.PredefinedACL != "" {
+		// Clear ACL or the call will fail.
+		bktACL = nil
+	}
+	var bktDefaultObjectACL []*storagepb.ObjectAccessControl
+	if ua.PredefinedDefaultObjectACL != "" {
+		// Clear ACLs or the call will fail.
+		bktDefaultObjectACL = nil
+	}
+
+	return &storagepb.Bucket{
+		StorageClass:          ua.StorageClass,
+		Acl:                   bktACL,
+		DefaultObjectAcl:      bktDefaultObjectACL,
+		DefaultEventBasedHold: defaultHold,
+		Versioning:            v,
+		Billing:               bb,
+		Lifecycle:             toProtoLifecycle(lifecycle),
+		RetentionPolicy:       ua.RetentionPolicy.toProtoRetentionPolicy(),
+		Cors:                  toProtoCORS(ua.CORS),
+		Encryption:            ua.Encryption.toProtoBucketEncryption(),
+		Logging:               ua.Logging.toProtoBucketLogging(),
+		Website:               ua.Website.toProtoBucketWebsite(),
+		IamConfig:             bktIAM,
+		Rpo:                   ua.RPO.String(),
+	}
+}
+
 // CORS is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
 type CORS struct {
 	// MaxAge is the value to return in the Access-Control-Max-Age
