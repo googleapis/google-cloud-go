@@ -23,6 +23,7 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - more literal types
+- DEFAULT
 - expressions that return null for generated columns
 - generated columns referencing other generated columns
 - checking dependencies on a generated column before deleting a column

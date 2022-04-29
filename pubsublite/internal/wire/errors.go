@@ -16,8 +16,6 @@ package wire
 import (
 	"errors"
 	"fmt"
-
-	"golang.org/x/xerrors"
 )
 
 // Errors exported from this package.
@@ -51,7 +49,7 @@ var (
 
 func wrapError(context, resource string, err error) error {
 	if err != nil {
-		return xerrors.Errorf("%s(%s): %w", context, resource, err)
+		return fmt.Errorf("%s(%s): %w", context, resource, err)
 	}
 	return err
 }
