@@ -286,6 +286,28 @@ func TestListBucketsEmulated(t *testing.T) {
 		}
 	})
 }
+func TestListBucketACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		want := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		_, err := client.CreateBucket(ctx, project, want)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		acls, err := client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if want, got := len(acls), 2; want != got {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
 
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
