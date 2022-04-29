@@ -255,6 +255,9 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		rawBucket, err = req.Context(ctx).Do()
 		return err
 	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
 	return newBucket(rawBucket)
 }
 

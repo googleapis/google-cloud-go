@@ -950,13 +950,7 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		return &storagepb.Bucket{}
 	}
 
-	var labels map[string]string
-	if ua.setLabels != nil || ua.deleteLabels != nil {
-		for k, v := range ua.setLabels {
-			labels[k] = v
-		}
-		// TODO(cathyo): Handle deleteLabels.
-	}
+	// TODO(cathyo): Handle labels. Pending b/230510191.
 
 	var v *storagepb.Bucket_Versioning
 	if ua.VersioningEnabled != nil {
@@ -1008,7 +1002,6 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		DefaultObjectAcl:      bktDefaultObjectACL,
 		DefaultEventBasedHold: defaultHold,
 		Versioning:            v,
-		Labels:                labels,
 		Billing:               bb,
 		Lifecycle:             toProtoLifecycle(lifecycle),
 		RetentionPolicy:       ua.RetentionPolicy.toProtoRetentionPolicy(),

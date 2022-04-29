@@ -275,9 +275,7 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.RPO != RPOUnknown {
 		fieldMask.Paths = append(fieldMask.Paths, "rpo")
 	}
-	if uattrs.setLabels != nil || uattrs.deleteLabels != nil {
-		fieldMask.Paths = append(fieldMask.Paths, "labels")
-	}
+	// TODO(cathyo): Handle labels. Pending b/230510191.
 	req.UpdateMask = fieldMask
 
 	var battrs *BucketAttrs
