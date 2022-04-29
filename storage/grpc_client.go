@@ -329,7 +329,11 @@ func (c *grpcStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	return errMethodNotSupported
 }
 func (c *grpcStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return attrs.DefaultObjectACL, nil
 }
 func (c *grpcStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported

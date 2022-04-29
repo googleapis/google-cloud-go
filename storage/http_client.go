@@ -356,7 +356,19 @@ func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket s
 	return errMethodNotSupported
 }
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	var acls *raw.ObjectAccessControls
+	var err error
+	err = run(ctx, func() error {
+		req := c.raw.DefaultObjectAccessControls.List(bucket)
+		configureACLCall(ctx, s.userProject, req)
+		acls, err = req.Do()
+		return err
+	}, s.retry, true)
+	if err != nil {
+		return nil, err
+	}
+	return toObjectACLRules(acls.Items), nil
 }
 func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
