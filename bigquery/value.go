@@ -25,7 +25,6 @@ import (
 	"strings"
 	"time"
 
-	"cloud.google.com/go/bigquery/types"
 	"cloud.google.com/go/civil"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -737,11 +736,11 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 			return BigNumericString(v.Interface().(*big.Rat))
 		})
 	case IntervalFieldType:
-		if r, ok := v.Interface().(*types.IntervalValue); ok && r == nil {
+		if r, ok := v.Interface().(*IntervalValue); ok && r == nil {
 			return nil
 		}
 		return formatUploadValue(v, fs, func(v reflect.Value) string {
-			return IntervalString(v.Interface().(*types.IntervalValue))
+			return IntervalString(v.Interface().(*IntervalValue))
 		})
 	default:
 		if !fs.Repeated || v.Len() > 0 {
@@ -831,7 +830,7 @@ func BigNumericString(r *big.Rat) string {
 
 // IntervalString returns a string  representing an *IntervalValue in a format compatible with
 // BigQuery SQL.  It returns an interval literal in canonical format.
-func IntervalString(iv *types.IntervalValue) string {
+func IntervalString(iv *IntervalValue) string {
 	return iv.String()
 }
 
@@ -962,7 +961,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case GeographyFieldType:
 		return val, nil
 	case IntervalFieldType:
-		i, err := types.ParseInterval(val)
+		i, err := ParseInterval(val)
 		if err != nil {
 			return nil, fmt.Errorf("bigquery: invalid INTERVAL value %q", val)
 		}

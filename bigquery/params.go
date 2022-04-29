@@ -23,7 +23,6 @@ import (
 	"regexp"
 	"time"
 
-	"cloud.google.com/go/bigquery/types"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
 	bq "google.golang.org/api/bigquery/v2"
@@ -87,7 +86,7 @@ var (
 	typeOfDateTime      = reflect.TypeOf(civil.DateTime{})
 	typeOfGoTime        = reflect.TypeOf(time.Time{})
 	typeOfRat           = reflect.TypeOf(&big.Rat{})
-	typeOfIntervalValue = reflect.TypeOf(&types.IntervalValue{})
+	typeOfIntervalValue = reflect.TypeOf(&IntervalValue{})
 )
 
 // A QueryParameter is a parameter to a query.
@@ -109,7 +108,7 @@ type QueryParameter struct {
 	// []byte: BYTES
 	// time.Time: TIMESTAMP
 	// *big.Rat: NUMERIC
-	// types.IntervalValue: INTERVAL
+	// *IntervalValue: INTERVAL
 	// Arrays and slices of the above.
 	// Structs of the above. Only the exported fields are used.
 	//
@@ -307,7 +306,7 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
 	case typeOfIntervalValue:
-		res.Value = IntervalString(v.Interface().(*types.IntervalValue))
+		res.Value = IntervalString(v.Interface().(*IntervalValue))
 		return res, nil
 	}
 	switch t.Kind() {
