@@ -162,10 +162,14 @@ func newLRO(initState *lropb.Operation) *lro {
 	}
 }
 
-func (l *lro) noWait() {
+// noWait causes the LRO to stop the artificial delay when applying the operation.
+// It returns whether this was the first invocation of this method.
+func (l *lro) noWait() bool {
 	if atomic.CompareAndSwapInt32(&l.waitatom, 0, 1) {
 		close(l.waitc)
+		return true
 	}
+	return false
 }
 
 func (l *lro) State() *lropb.Operation {
@@ -247,7 +251,11 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	}
 
 	// Someone is waiting on this LRO. Disable sleeping in its Run method.
-	lro.noWait()
+	if lro.noWait() {
+		// The sleeping has been canceled for the first time.
+		// Have a slight pause to give the LRO a chance to complete.
+		time.Sleep(50 * time.Millisecond)
+	}
 
 	return lro.State(), nil
 }

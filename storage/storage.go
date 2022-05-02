@@ -44,7 +44,6 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -122,6 +121,13 @@ type Client struct {
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+
+	// Use the experimental gRPC client if the env var is set.
+	// This is an experimental API and not intended for public use.
+	if withGRPC := os.Getenv("STORAGE_USE_GRPC"); withGRPC != "" {
+		return newGRPCClient(ctx, opts...)
+	}
+
 	var creds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
@@ -195,34 +201,18 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
-// hybridClientOptions carries the set of client options for HTTP and gRPC clients.
-type hybridClientOptions struct {
-	HTTPOpts []option.ClientOption
-	GRPCOpts []option.ClientOption
-}
-
-// newHybridClient creates a new Storage client that initializes a gRPC-based client
-// for media upload and download operations.
+// newGRPCClient creates a new Storage client that initializes a gRPC-based
+// client. Calls that have not been implemented in gRPC will panic.
 //
 // This is an experimental API and not intended for public use.
-func newHybridClient(ctx context.Context, opts *hybridClientOptions) (*Client, error) {
-	if opts == nil {
-		opts = &hybridClientOptions{}
-	}
-	opts.GRPCOpts = append(defaultGRPCOptions(), opts.GRPCOpts...)
-
-	c, err := NewClient(ctx, opts.HTTPOpts...)
+func newGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	opts = append(defaultGRPCOptions(), opts...)
+	g, err := gapic.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	g, err := gapic.NewClient(ctx, opts.GRPCOpts...)
-	if err != nil {
-		return nil, err
-	}
-	c.gc = g
-
-	return c, nil
+	return &Client{gc: g}, nil
 }
 
 // Close closes the Client.
@@ -569,6 +559,8 @@ func v4SanitizeHeaders(hdrs []string) []string {
 // access to a restricted resource for a limited time without needing a
 // Google account or signing in. For more information about signed URLs, see
 // https://cloud.google.com/storage/docs/accesscontrol#signed_urls_query_string_authentication
+// If initializing a Storage Client, instead use the Bucket.SignedURL method
+// which uses the Client's credentials to handle authentication.
 func SignedURL(bucket, object string, opts *SignedURLOptions) (string, error) {
 	now := utcNow()
 	if err := validateOptions(opts, now); err != nil {
@@ -926,7 +918,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	setClientHeader(call.Header())
 	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -1031,7 +1023,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	}
 	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
 	}
 	if err != nil {
@@ -1101,7 +1093,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	}
 	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); ok && e.Code == http.StatusNotFound {
+	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
 	}
 	return err
@@ -1126,6 +1118,9 @@ func (o *ObjectHandle) ReadCompressed(compressed bool) *ObjectHandle {
 // ObjectAttrs field before the first call to Write. If no ContentType
 // attribute is specified, the content type will be automatically sniffed
 // using net/http.DetectContentType.
+//
+// Note that each Writer allocates an internal buffer of size Writer.ChunkSize.
+// See the ChunkSize docs for more information.
 //
 // It is the caller's responsibility to call Close when writing is done. To
 // stop writing without saving the data, cancel the context.
