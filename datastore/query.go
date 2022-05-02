@@ -38,6 +38,9 @@ const (
 	equal
 	greaterEq
 	greaterThan
+	in
+	notIn
+	notEqual
 
 	keyFieldName = "__key__"
 )
@@ -48,6 +51,9 @@ var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	equal:       pb.PropertyFilter_EQUAL,
 	greaterEq:   pb.PropertyFilter_GREATER_THAN_OR_EQUAL,
 	greaterThan: pb.PropertyFilter_GREATER_THAN,
+	in:          pb.PropertyFilter_IN,
+	notIn:       pb.PropertyFilter_NOT_IN,
+	notEqual:    pb.PropertyFilter_NOT_EQUAL,
 }
 
 // filter is a conditional filter on query results.
@@ -172,7 +178,8 @@ func (q *Query) Transaction(t *Transaction) *Query {
 
 // Filter returns a derivative query with a field-based filter.
 // The filterStr argument must be a field name followed by optional space,
-// followed by an operator, one of ">", "<", ">=", "<=", or "=".
+// followed by an operator, one of ">", "<", ">=", "<=", "=", "in", "not-in",
+// and "!=".
 // Fields are compared against the provided value using the operator.
 // Multiple filters are AND'ed together.
 // Field names which contain spaces, quote marks, or operator characters
@@ -180,13 +187,13 @@ func (q *Query) Transaction(t *Transaction) *Query {
 // or the fmt package's %q verb.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	q = q.clone()
-	filterStr = strings.TrimSpace(filterStr)
+	filterStr = strings.ToLower(strings.TrimSpace(filterStr))
 	if filterStr == "" {
 		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
 		return q
 	}
 	f := filter{
-		FieldName: strings.TrimRight(filterStr, " ><=!"),
+		FieldName: strings.TrimRight(filterStr, " ><=!not-in"),
 		Value:     value,
 	}
 	switch op := strings.TrimSpace(filterStr[len(f.FieldName):]); op {
@@ -200,6 +207,12 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 		f.Op = greaterThan
 	case "=":
 		f.Op = equal
+	case "in":
+		f.Op = in
+	case "not-in":
+		f.Op = notIn
+	case "!=":
+		f.Op = notEqual
 	default:
 		q.err = fmt.Errorf("datastore: invalid operator %q in filter %q", op, filterStr)
 		return q
