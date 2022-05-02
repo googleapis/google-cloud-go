@@ -15,6 +15,7 @@ package pscompat_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -22,7 +23,6 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
 	"golang.org/x/sync/errgroup"
-	"golang.org/x/xerrors"
 )
 
 func ExamplePublisherClient_Publish() {
@@ -145,7 +145,7 @@ func ExamplePublisherClient_Publish_errorHandling() {
 				// created to republish failed messages.
 				fmt.Printf("Publish error: %v\n", err)
 				// Oversized messages cannot be published.
-				if !xerrors.Is(err, pscompat.ErrOversizedMessage) {
+				if !errors.Is(err, pscompat.ErrOversizedMessage) {
 					mu.Lock()
 					toRepublish = append(toRepublish, msg)
 					mu.Unlock()
@@ -159,9 +159,9 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	if err := g.Wait(); err != nil {
 		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
 		switch {
-		case xerrors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
+		case errors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
 			// TODO: Create a new publisher client to republish failed messages.
-		case xerrors.Is(publisher.Error(), pscompat.ErrOverflow):
+		case errors.Is(publisher.Error(), pscompat.ErrOverflow):
 			// TODO: Create a new publisher client to republish failed messages.
 			// Throttle publishing. Note that backend unavailability can also cause
 			// buffer overflow before the ErrBackendUnavailable error.
@@ -217,7 +217,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 		})
 		if err != nil {
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
-			if xerrors.Is(err, pscompat.ErrBackendUnavailable) {
+			if errors.Is(err, pscompat.ErrBackendUnavailable) {
 				// TODO: Alert if necessary. Receive can be retried.
 			} else {
 				// TODO: Handle fatal error.
