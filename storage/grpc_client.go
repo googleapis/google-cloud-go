@@ -425,8 +425,40 @@ func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	}
 	return attrs.ACL, nil
 }
+
 func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	// Set acl in proto bucket and make UpdateBucket request
+	b := &storagepb.Bucket{
+		Name: bucketResourceName(globalProjectAlias, bucket),
+		Acl: []*storagepb.BucketAccessControl{
+			{
+				Entity: string(entity),
+				Role:   string(role),
+			},
+		},
+	}
+	req := &storagepb.UpdateBucketRequest{
+		Bucket: b,
+		UpdateMask: &fieldmaskpb.FieldMask{
+			Paths: []string{"acl"},
+		},
+	}
+	if err := applyBucketCondsProto("grpcStorageClient.UpdateBucket", nil, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.CommonRequestParams = &storagepb.CommonRequestParams{
+			UserProject: toProjectResource(s.userProject),
+		}
+	}
+	var aclRule ACLRule
+	err := run(ctx, func() error {
+		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
+		aclRule = toBucketACLRuleFromProto(res.Acl[len(res.Acl)-1])
+		return err
+	}, s.retry, s.idempotent)
+	return &aclRule, err
 }
 
 // Object ACL methods.
