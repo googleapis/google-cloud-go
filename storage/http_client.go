@@ -423,6 +423,28 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	return toBucketACLRules(acls.Items), nil
 }
 
+func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
+	s := callSettings(c.settings, opts...)
+	acl := &raw.BucketAccessControl{
+		Bucket: bucket,
+		Entity: string(entity),
+		Role:   string(role),
+	}
+	var aclRule ACLRule
+	var err error
+	err = run(ctx, func() error {
+		req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
+		configureACLCall(ctx, s.userProject, req)
+		acl, err = req.Do()
+		aclRule = toBucketACLRule(acl)
+		return err
+	}, s.retry, true)
+	if err != nil {
+		return nil, err
+	}
+	return &aclRule, nil
+}
+
 // configureACLCall sets the context, user project and headers on the apiary library call.
 // This will panic if the call does not have the correct methods.
 func configureACLCall(ctx context.Context, userProject string, call interface{ Header() http.Header }) {
@@ -432,10 +454,6 @@ func configureACLCall(ctx context.Context, userProject string, call interface{ H
 		vc.MethodByName("UserProject").Call([]reflect.Value{reflect.ValueOf(userProject)})
 	}
 	setClientHeader(call.Header())
-}
-
-func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	return nil, errMethodNotSupported
 }
 
 // Object ACL methods.
