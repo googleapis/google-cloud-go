@@ -190,7 +190,7 @@ func (q *Query) Transaction(t *Transaction) *Query {
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	// TODO( #5977 ): Add better string parsing (or something)
 	q = q.clone()
-	filterStr = strings.ToLower(strings.TrimSpace(filterStr))
+	filterStr = strings.TrimSpace(filterStr)
 	if filterStr == "" {
 		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
 		return q
@@ -208,12 +208,12 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
-func (q *Query) FilterWithArgs(fieldName, operation string, val interface{}) *Query {
+func (q *Query) FilterWithArgs(fieldName, operation string, value interface{}) *Query {
 	q = q.clone()
 
 	f := filter{
 		FieldName: fieldName,
-		Value:     val,
+		Value:     value,
 	}
 
 	switch o := strings.TrimSpace(strings.ToLower(operation)); o {
