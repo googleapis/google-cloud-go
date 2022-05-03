@@ -1619,6 +1619,83 @@ func TestIntegration_IteratorSource(t *testing.T) {
 	}
 }
 
+func TestIntegration_ExternalAutodetect(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	testTable := dataset.Table(tableIDs.New())
+
+	origExtCfg := &ExternalDataConfig{
+		SourceFormat: Avro,
+		SourceURIs:   []string{"gs://cloud-samples-data/bigquery/autodetect-samples/original*.avro"},
+	}
+
+	err := testTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: origExtCfg,
+	})
+	if err != nil {
+		t.Fatalf("Table.Create(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+
+	origMeta, err := testTable.Metadata(ctx)
+	if err != nil {
+		t.Fatalf("Table.Metadata(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+
+	wantSchema := Schema{
+		{Name: "stringfield", Type: "STRING"},
+		{Name: "int64field", Type: "INTEGER"},
+	}
+	if diff := testutil.Diff(origMeta.Schema, wantSchema); diff != "" {
+		t.Fatalf("orig schema, got=-, want=+\n%s", diff)
+	}
+
+	// Now, point at the new files, but don't signal autodetect.
+	newExtCfg := &ExternalDataConfig{
+		SourceFormat: Avro,
+		SourceURIs:   []string{"gs://cloud-samples-data/bigquery/autodetect-samples/widened*.avro"},
+	}
+
+	newMeta, err := testTable.Update(ctx, TableMetadataToUpdate{
+		ExternalDataConfig: newExtCfg,
+	}, origMeta.ETag)
+	if err != nil {
+		t.Fatalf("Table.Update(%q): %v", testTable.FullyQualifiedName(), err)
+	}
+	if diff := testutil.Diff(newMeta.Schema, wantSchema); diff != "" {
+		t.Fatalf("new schema, got=-, want=+\n%s", diff)
+	}
+
+	// Now, signal autodetect in another update.
+	// This should yield a new schema.
+	newMeta2, err := testTable.Update(ctx, TableMetadataToUpdate{}, newMeta.ETag, WithAutoDetectSchema(true))
+	if err != nil {
+		t.Fatalf("Table.Update(%q) with autodetect: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	wantSchema2 := Schema{
+		{Name: "stringfield", Type: "STRING"},
+		{Name: "int64field", Type: "INTEGER"},
+		{Name: "otherfield", Type: "INTEGER"},
+	}
+	if diff := testutil.Diff(newMeta2.Schema, wantSchema2); diff != "" {
+		t.Errorf("new schema after autodetect, got=-, want=+\n%s", diff)
+	}
+
+	id, _ := testTable.Identifier(StandardSQLID)
+	q := client.Query(fmt.Sprintf("SELECT * FROM %s", id))
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query read: %v", err)
+	}
+	wantRows := [][]Value{
+		{"bar", int64(32), int64(314)},
+	}
+	checkReadAndTotalRows(t, "row check", it, wantRows)
+}
+
 func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
