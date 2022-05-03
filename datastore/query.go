@@ -176,7 +176,7 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
-// DEPRECATED. Use the FilterWithArgs() method instead, which supports more
+// Deprecated. Use the FilterWithArgs() method instead, which supports more
 // more operations.
 //
 // Filter returns a derivative query with a field-based filter.
