@@ -176,27 +176,47 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
+// DEPRECATED. Use the FilterWithArgs() method instead, which supports more
+// more operations.
+//
 // Filter returns a derivative query with a field-based filter.
 // The filterStr argument must be a field name followed by optional space,
-// followed by an operator, one of ">", "<", ">=", "<=", "=", "in", "not-in",
-// and "!=".
+// followed by an operator, one of ">", "<", ">=", "<=", "=", and "!=".
 // Fields are compared against the provided value using the operator.
 // Multiple filters are AND'ed together.
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
+	// TODO( #5977 ): Add better string parsing (or something)
 	q = q.clone()
 	filterStr = strings.ToLower(strings.TrimSpace(filterStr))
 	if filterStr == "" {
 		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
 		return q
 	}
+	f := strings.TrimRight(filterStr, " ><=!")
+	op := strings.TrimSpace(filterStr[len(f):])
+	return q.FilterWithArgs(f, op, value)
+}
+
+// FilterWithArgs returns a derivative query with a field-based filter.
+// The operation parameter takes the following strings: ">", "<", ">=", "<=",
+// "=", "!=", "in", and "not-in".
+// Fields are compared against the provided value using the operator.
+// Multiple filters are AND'ed together.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
+func (q *Query) FilterWithArgs(fieldName, operation string, val interface{}) *Query {
+	q = q.clone()
+
 	f := filter{
-		FieldName: strings.TrimRight(filterStr, " ><=!not-in"),
-		Value:     value,
+		FieldName: fieldName,
+		Value:     val,
 	}
-	switch op := strings.TrimSpace(filterStr[len(f.FieldName):]); op {
+
+	switch o := strings.TrimSpace(strings.ToLower(operation)); o {
 	case "<=":
 		f.Op = lessEq
 	case ">=":
@@ -214,7 +234,7 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	case "!=":
 		f.Op = notEqual
 	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter %q", op, filterStr)
+		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operation)
 		return q
 	}
 	var err error

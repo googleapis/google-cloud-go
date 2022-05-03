@@ -412,13 +412,13 @@ func TestFilterParser(t *testing.T) {
 		{"x!=", true, "x", notEqual},
 		{"x !=", true, "x", notEqual},
 		{" x  !=  ", true, "x", notEqual},
-		{"x IN", true, "x", in},
-		{"x in", true, "x", in},
-		{"x NOT-IN", true, "x", notIn},
-		{"x not-in", true, "x", notIn},
-		{"ins not-in", true, "ins", notIn},
-		{"in not-in", true, "in", notIn},
 		// Invalid ops.
+		{"x IN", false, "", 0},
+		{"x in", false, "", 0},
+		{"x NOT-IN", false, "", 0},
+		{"x not-in", false, "", 0},
+		{"ins not-in", false, "", 0},
+		{"in not-in", false, "", 0},
 		{"x EQ", false, "", 0},
 		{"x lt", false, "", 0},
 		{"x <>", false, "", 0},
@@ -455,6 +455,86 @@ func TestFilterParser(t *testing.T) {
 		if got != want {
 			t.Errorf("%q: got %v, want %v", tc.filterStr, got, want)
 			continue
+		}
+	}
+}
+
+func TestFilterWithArgs(t *testing.T) {
+	testCases := []struct {
+		f      string
+		o      string
+		wantOK bool
+		wantOp operator
+	}{
+		// Supported ops.
+		{"x", "<", true, lessThan},
+		{"  x  ", "  <  ", true, lessThan},
+		{"x", "<=", true, lessEq},
+		{"x", "=", true, equal},
+		{"x", ">=", true, greaterEq},
+		{"x", ">", true, greaterThan},
+		{"in", ">", true, greaterThan},
+		{"x", "!=", true, notEqual},
+		{"x", "IN", true, in},
+		{"x", "in", true, in},
+		{"in", "in", true, in},
+		{"x", "NOT-IN", true, notIn},
+		{"x", "not-in", true, notIn},
+		{"ins", "not-in", true, notIn},
+		{"in", "not-in", true, notIn},
+		// Invalid ops.
+		{"x", "EQ", false, 0},
+		{"x", "lt", false, 0},
+		{"x", "<>", false, 0},
+		{"x", ">>", false, 0},
+		{"x", "==", false, 0},
+		{"x", "=<", false, 0},
+		{"x", "=>", false, 0},
+		{"x", "!", false, 0},
+		// Quoted and interesting field names.
+		{"x > y", "=", true, equal},
+		{`" x`, "=", false, 0},
+		{"` x \"", "=", false, 0},
+	}
+	for _, tc := range testCases {
+		q := NewQuery("foo").FilterWithArgs(tc.f, tc.o, 42)
+		if ok := q.err == nil; ok != tc.wantOK {
+			t.Errorf("%q %q: ok=%t, want %t", tc.f, tc.o, ok, tc.wantOK)
+			continue
+		}
+		if !tc.wantOK {
+			continue
+		}
+		if len(q.filter) != 1 {
+			t.Errorf("%q: len=%d, want %d", tc.f, len(q.filter), 1)
+			continue
+		}
+		got, want := q.filter[0], filter{tc.f, tc.wantOp, 42}
+		if got != want {
+			t.Errorf("%q %q: got %v, want %v", tc.f, tc.o, got, want)
+			continue
+		}
+	}
+}
+
+func TestUnquote(t *testing.T) {
+	testCases := []struct {
+		input string
+		want  string
+	}{
+		{`" x "`, ` x `},
+		{`"\" \\\"x \""`, `" \"x "`},
+	}
+
+	for _, tc := range testCases {
+		got, err := unquote(tc.input)
+
+		if err != nil {
+			t.Errorf("error parsing field name: %v", err)
+		}
+
+		if got != tc.want {
+			t.Errorf("field name parsing error: \nwant %v,\ngot %v", tc.want, got)
 		}
 	}
 }
