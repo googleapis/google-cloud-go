@@ -176,10 +176,11 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
-// Deprecated. Use the FilterWithArgs() method instead, which supports more
-// more operations.
-//
 // Filter returns a derivative query with a field-based filter.
+//
+// DEPRECATED. Use the FilterWithArgs() method instead, which supports the same
+// set of operations (and more).
+//
 // The filterStr argument must be a field name followed by optional space,
 // followed by an operator, one of ">", "<", ">=", "<=", "=", and "!=".
 // Fields are compared against the provided value using the operator.
