@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"reflect"
 	"strings"
 
 	"golang.org/x/oauth2/google"
@@ -270,9 +271,36 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	}
 	return newBucket(resp)
 }
-func (c *httpStorageClient) UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
-	return nil, errMethodNotSupported
+func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	rb := uattrs.toRawBucket()
+	req := c.raw.Buckets.Patch(bucket, rb).Projection("full")
+	setClientHeader(req.Header())
+	err := applyBucketConds("httpStorageClient.UpdateBucket", conds, req)
+	if err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	if uattrs != nil && uattrs.PredefinedACL != "" {
+		req.PredefinedAcl(uattrs.PredefinedACL)
+	}
+	if uattrs != nil && uattrs.PredefinedDefaultObjectACL != "" {
+		req.PredefinedDefaultObjectAcl(uattrs.PredefinedDefaultObjectACL)
+	}
+
+	var rawBucket *raw.Bucket
+	err = run(ctx, func() error {
+		rawBucket, err = req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
+	if err != nil {
+		return nil, err
+	}
+	return newBucket(rawBucket)
 }
+
 func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
 	return errMethodNotSupported
 }
@@ -354,8 +382,21 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
 	return errMethodNotSupported
 }
+
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	var acls *raw.ObjectAccessControls
+	var err error
+	err = run(ctx, func() error {
+		req := c.raw.DefaultObjectAccessControls.List(bucket)
+		configureACLCall(ctx, s.userProject, req)
+		acls, err = req.Do()
+		return err
+	}, s.retry, true)
+	if err != nil {
+		return nil, err
+	}
+	return toObjectACLRules(acls.Items), nil
 }
 func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
@@ -367,8 +408,32 @@ func (c *httpStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	return errMethodNotSupported
 }
 func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
-	return nil, errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+	var acls *raw.BucketAccessControls
+	var err error
+	err = run(ctx, func() error {
+		req := c.raw.BucketAccessControls.List(bucket)
+		configureACLCall(ctx, s.userProject, req)
+		acls, err = req.Do()
+		return err
+	}, s.retry, true)
+	if err != nil {
+		return nil, err
+	}
+	return toBucketACLRules(acls.Items), nil
 }
+
+// configureACLCall sets the context, user project and headers on the apiary library call.
+// This will panic if the call does not have the correct methods.
+func configureACLCall(ctx context.Context, userProject string, call interface{ Header() http.Header }) {
+	vc := reflect.ValueOf(call)
+	vc.MethodByName("Context").Call([]reflect.Value{reflect.ValueOf(ctx)})
+	if userProject != "" {
+		vc.MethodByName("UserProject").Call([]reflect.Value{reflect.ValueOf(userProject)})
+	}
+	setClientHeader(call.Header())
+}
+
 func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
 	return nil, errMethodNotSupported
 }
