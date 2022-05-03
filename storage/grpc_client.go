@@ -314,6 +314,12 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.PredefinedDefaultObjectACL != "" {
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
+	if uattrs.acl != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "acl")
+	}
+	if uattrs.defaultObjectACL != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
+	}
 	if uattrs.StorageClass != "" {
 		fieldMask.Paths = append(fieldMask.Paths, "storage_class")
 	}
@@ -427,37 +433,20 @@ func (c *grpcStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 }
 
 func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, entity ACLEntity, role ACLRole, opts ...storageOption) (*ACLRule, error) {
-	s := callSettings(c.settings, opts...)
-	// Set acl in proto bucket and make UpdateBucket request
-	b := &storagepb.Bucket{
-		Name: bucketResourceName(globalProjectAlias, bucket),
-		Acl: []*storagepb.BucketAccessControl{
-			{
-				Entity: string(entity),
-				Role:   string(role),
-			},
-		},
-	}
-	req := &storagepb.UpdateBucketRequest{
-		Bucket: b,
-		UpdateMask: &fieldmaskpb.FieldMask{
-			Paths: []string{"acl"},
-		},
-	}
-	if err := applyBucketCondsProto("grpcStorageClient.UpdateBucket", nil, req); err != nil {
+	// Get the existing acl from BucketAttrs
+	attrs, err := c.GetBucket(ctx, bucket, nil, opts...)
+	if err != nil {
 		return nil, err
 	}
-	if s.userProject != "" {
-		req.CommonRequestParams = &storagepb.CommonRequestParams{
-			UserProject: toProjectResource(s.userProject),
-		}
+	var acl []ACLRule
+	acl = append(attrs.ACL, ACLRule{Entity: entity, Role: role})
+	// Set acl in BucketAttrsToUpdate
+	uattrs := &BucketAttrsToUpdate{acl: acl}
+	b, err := c.UpdateBucket(ctx, bucket, uattrs, nil, opts...)
+	if err != nil {
+		return nil, err
 	}
-	var aclRule ACLRule
-	err := run(ctx, func() error {
-		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
-		aclRule = toBucketACLRuleFromProto(res.Acl[len(res.Acl)-1])
-		return err
-	}, s.retry, s.idempotent)
+	aclRule := b.ACL[len(b.ACL)-1]
 	return &aclRule, err
 }
 

@@ -986,11 +986,17 @@ func (ua *BucketAttrsToUpdate) toProtoBucket() *storagepb.Bucket {
 		lifecycle = *ua.Lifecycle
 	}
 	var bktACL []*storagepb.BucketAccessControl
+	if ua.acl != nil {
+		bktACL = toProtoBucketACL(ua.acl)
+	}
 	if ua.PredefinedACL != "" {
 		// Clear ACL or the call will fail.
 		bktACL = nil
 	}
 	var bktDefaultObjectACL []*storagepb.ObjectAccessControl
+	if ua.defaultObjectACL != nil {
+		bktDefaultObjectACL = toProtoObjectACL(ua.defaultObjectACL)
+	}
 	if ua.PredefinedDefaultObjectACL != "" {
 		// Clear ACLs or the call will fail.
 		bktDefaultObjectACL = nil
@@ -1125,6 +1131,13 @@ type BucketAttrsToUpdate struct {
 	// See https://cloud.google.com/storage/docs/managing-turbo-replication for
 	// more information.
 	RPO RPO
+
+	// acl is the list of access control rules on the bucket.
+	acl []ACLRule
+
+	// defaultObjectACL is the list of access controls to
+	// apply to new objects when no object ACL is provided.
+	defaultObjectACL []ACLRule
 
 	setLabels    map[string]string
 	deleteLabels map[string]bool
