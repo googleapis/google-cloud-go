@@ -1675,8 +1675,6 @@ func TestIntegration_ExternalAutodetect(t *testing.T) {
 		t.Fatalf("Table.Update(%q) with autodetect: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	t.Logf("uris: %v", newMeta2.ExternalDataConfig.SourceURIs)
-
 	wantSchema2 := Schema{
 		{Name: "stringfield", Type: "STRING"},
 		{Name: "int64field", Type: "INTEGER"},
