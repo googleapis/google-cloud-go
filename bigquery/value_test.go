@@ -38,6 +38,7 @@ func TestConvertBasicValues(t *testing.T) {
 		{Type: NumericFieldType},
 		{Type: BigNumericFieldType},
 		{Type: GeographyFieldType},
+		{Type: JSONFieldType},
 	}
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
@@ -49,6 +50,7 @@ func TestConvertBasicValues(t *testing.T) {
 			{V: "123.123456789"},
 			{V: "99999999999999999999999999999999999999.99999999999999999999999999999999999999"},
 			{V: testGeography},
+			{V: "{\"alpha\": \"beta\"}"},
 		},
 	}
 	got, err := convertRow(row, schema)
@@ -58,7 +60,7 @@ func TestConvertBasicValues(t *testing.T) {
 
 	bigRatVal := new(big.Rat)
 	bigRatVal.SetString("99999999999999999999999999999999999999.99999999999999999999999999999999999999")
-	want := []Value{"a", int64(1), 1.2, true, []byte("foo"), big.NewRat(123123456789, 1e9), bigRatVal, testGeography}
+	want := []Value{"a", int64(1), 1.2, true, []byte("foo"), big.NewRat(123123456789, 1e9), bigRatVal, testGeography, "{\"alpha\": \"beta\"}"}
 	if !testutil.Equal(got, want) {
 		t.Errorf("converting basic values: got:\n%v\nwant:\n%v", got, want)
 	}
