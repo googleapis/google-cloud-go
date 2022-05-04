@@ -1,5 +1,12 @@
 # Changes
 
+### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.3.0...recaptchaenterprise/v1.3.1) (2022-05-03)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** remove key management API feat: introduced Reason, PasswordLeakVerification, AccountDefenderAssessment ([380529e](https://github.com/googleapis/google-cloud-go/commit/380529ef939c7019458b2dda2b789770376aff19))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v1.2.0...recaptchaenterprise/v1.3.0) (2022-02-23)
 
 

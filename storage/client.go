@@ -50,7 +50,7 @@ type storageClient interface {
 
 	DeleteBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
 	GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
-	UpdateBucket(ctx context.Context, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
+	UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
 	LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
 	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator
 
