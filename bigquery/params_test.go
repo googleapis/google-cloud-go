@@ -119,7 +119,7 @@ var scalarTests = []struct {
 	{&IntervalValue{Years: 1, Months: 2, Days: 3}, false, "1-2 3 0:0:0", intervalParamType, &IntervalValue{Years: 1, Months: 2, Days: 3}},
 	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
-	{NullJSON{Valid: true, JSONVal: "{\"alpha\": \"beta\"}"}, true, "", jsonParamType, "{\"alpha\": \"beta\"}"},
+	{NullJSON{Valid: true, JSONVal: "{\"alpha\": \"beta\"}"}, false, "{\"alpha\": \"beta\"}", jsonParamType, "{\"alpha\": \"beta\"}"},
 	{NullJSON{Valid: false}, true, "", jsonParamType, NullJSON{Valid: false}},
 }
 
