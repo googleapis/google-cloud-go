@@ -89,6 +89,12 @@ func TestRoutineTypeConversions(t *testing.T) {
 						{Name: "field", Type: &bq.StandardSqlDataType{TypeKind: "FLOAT64"}},
 					},
 				},
+				RemoteFunctionOptions: &bq.RemoteFunctionOptions{
+					Endpoint:           "endpoint",
+					Connection:         "connection",
+					MaxBatchingRows:    33,
+					UserDefinedContext: map[string]string{"foo": "bar"},
+				},
 			},
 			&RoutineMetadata{
 				CreationTime:     aTime,
@@ -104,6 +110,12 @@ func TestRoutineTypeConversions(t *testing.T) {
 					Columns: []*StandardSQLField{
 						{Name: "field", Type: &StandardSQLDataType{TypeKind: "FLOAT64"}},
 					},
+				},
+				RemoteFunctionOptions: &RemoteFunctionOptions{
+					Endpoint:           "endpoint",
+					Connection:         "connection",
+					MaxBatchingRows:    33,
+					UserDefinedContext: map[string]string{"foo": "bar"},
 				},
 			}},
 		{"body_and_libs", "FromRoutineMetadataToUpdate",

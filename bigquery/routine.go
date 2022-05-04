@@ -173,7 +173,11 @@ type RoutineMetadata struct {
 	// Language of the routine, such as SQL or JAVASCRIPT.
 	Language string
 	// The list of arguments for the the routine.
-	Arguments  []*RoutineArgument
+	Arguments []*RoutineArgument
+
+	// Contains additional information for remote functions.
+	RemoteFunctionOptions *RemoteFunctionOptions
+
 	ReturnType *StandardSQLDataType
 
 	// Set only if the routine type is TABLE_VALUED_FUNCTION.
@@ -223,6 +227,10 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	}
 	r.Arguments = args
 	r.ImportedLibraries = rm.ImportedLibraries
+	rfo, err := rm.RemoteFunctionOptions.toBQ()
+	if err != nil {
+		r.RemoteFunctionOptions = rfo
+	}
 	if !rm.CreationTime.IsZero() {
 		return nil, errors.New("cannot set CreationTime on create")
 	}
@@ -233,6 +241,65 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 		return nil, errors.New("cannot set ETag on create")
 	}
 	return r, nil
+}
+
+type RemoteFunctionOptions struct {
+
+	// Fully qualified name of the user-provided connection object which holds
+	// the authentication information to send requests to the remote service.
+	// Format:
+	// projects/{project_id}/locations/{location_id}/connections/{connection_id}
+	Connection string
+
+	// Max number of rows in each batch sent to the remote service.
+	// If absent or if 0, it means no limit.
+	MaxBatchingRows int64
+
+	// Endpoint of the user-provided remote service (e.g. a function url in
+	// Google Cloud Functions).
+	Endpoint string
+
+	// User-defined context as a set of key/value pairs,
+	// which will be sent as function invocation context together with
+	// batched arguments in the requests to the remote service. The total
+	// number of bytes of keys and values must be less than 8KB.
+	UserDefinedContext map[string]string
+}
+
+func (rfo *RemoteFunctionOptions) toBQ() (*bq.RemoteFunctionOptions, error) {
+	if rfo == nil {
+		return nil, nil
+	}
+	r := &bq.RemoteFunctionOptions{
+		Connection:      rfo.Connection,
+		Endpoint:        rfo.Endpoint,
+		MaxBatchingRows: rfo.MaxBatchingRows,
+	}
+	if rfo.UserDefinedContext != nil {
+		r.UserDefinedContext = make(map[string]string)
+		for k, v := range rfo.UserDefinedContext {
+			r.UserDefinedContext[k] = v
+		}
+	}
+	return r, nil
+}
+
+func bqToRemoteFunctionOptions(in *bq.RemoteFunctionOptions) (*RemoteFunctionOptions, error) {
+	if in == nil {
+		return nil, nil
+	}
+	rfo := &RemoteFunctionOptions{
+		Connection:      in.Connection,
+		Endpoint:        in.Endpoint,
+		MaxBatchingRows: in.MaxBatchingRows,
+	}
+	if in.UserDefinedContext != nil {
+		rfo.UserDefinedContext = make(map[string]string)
+		for k, v := range in.UserDefinedContext {
+			rfo.UserDefinedContext[k] = v
+		}
+	}
+	return rfo, nil
 }
 
 // RoutineArgument represents an argument supplied to a routine such as a UDF or
@@ -432,6 +499,11 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		return nil, err
 	}
 	meta.ReturnType = ret
+	rfo, err := bqToRemoteFunctionOptions(r.RemoteFunctionOptions)
+	if err != nil {
+		return nil, err
+	}
+	meta.RemoteFunctionOptions = rfo
 	tt, err := bqToStandardSQLTableType(r.ReturnTableType)
 	if err != nil {
 		return nil, err
