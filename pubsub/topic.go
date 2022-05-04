@@ -105,7 +105,7 @@ type PublishSettings struct {
 	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
+	// Deprecated: Set `Topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -628,9 +628,7 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
-	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
-		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
-	}
+	fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
