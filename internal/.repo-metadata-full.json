@@ -296,6 +296,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/binaryauthorization/apiv1": {
+    "distribution_name": "cloud.google.com/go/binaryauthorization/apiv1",
+    "description": "Binary Authorization API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/binaryauthorization/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/binaryauthorization/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/binaryauthorization/apiv1beta1",
     "description": "Binary Authorization API",

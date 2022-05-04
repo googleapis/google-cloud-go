@@ -1418,6 +1418,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/06/04
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/binaryauthorization/v1",
+		Pkg:                   "binaryauthorization",
+		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1",
+		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
+		ApiServiceConfigPath:  "binaryauthorization_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
