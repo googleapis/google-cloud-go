@@ -1427,6 +1427,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/06/05
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/datastream/v1",
+		Pkg:                   "datastream",
+		ImportPath:            "cloud.google.com/go/datastream/apiv1",
+		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
+		ApiServiceConfigPath:  "datastream_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
