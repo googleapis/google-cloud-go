@@ -1,0 +1,65 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package internal
+
+import (
+	"net"
+	"net/http"
+	"os"
+	"strings"
+	"time"
+
+	"cloud.google.com/go/compute/metadata"
+)
+
+// ResourceAtttributesGetter declares interface to lookup environment variables and metadata attributes
+type ResourceAtttributesGetter interface {
+	EnvVar(name string) (string, bool)
+	Metadata(path string) (string, bool)
+}
+
+var getter ResourceAtttributesGetter = 
+	&defaultResourceLooker{
+		metaClient: metadata.NewClient(&http.Client{
+			Transport: &http.Transport{
+				Dial: (&net.Dialer{
+					Timeout:   1 * time.Second,
+					KeepAlive: 10 * time.Second,
+				}).Dial,
+			},
+})}
+
+// ResourceAttributes provides read-only access to the ResourceAtttributesGetter interface implementation
+func ResourceAttributes() ResourceAtttributesGetter {
+	return getter
+}
+
+type defaultResourceLooker struct {
+	metaClient *metadata.Client
+}
+
+// EnvVar uses os.LookupEnv() to lookup for environment variable by name 
+func (l *defaultResourceLooker) EnvVar(name string) (string, bool) {
+	return os.LookupEnv(name)
+}
+
+// Metadata uses metadata package Client.Get() to lookup for metadata attributes by path
+func (l *defaultResourceLooker) Metadata(path string) (string, bool) {
+	val, err := l.metaClient.Get(path)
+	if err != nil {
+		return val, false
+	}
+	return strings.TrimSpace(val), true
+}
