@@ -190,7 +190,6 @@ func (q *Query) Transaction(t *Transaction) *Query {
 // or the fmt package's %q verb.
 func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	// TODO( #5977 ): Add better string parsing (or something)
-	q = q.clone()
 	filterStr = strings.TrimSpace(filterStr)
 	if filterStr == "" {
 		q.err = fmt.Errorf("datastore: invalid filter %q", filterStr)
@@ -217,7 +216,7 @@ func (q *Query) FilterWithArgs(fieldName, operation string, value interface{}) *
 		Value:     value,
 	}
 
-	switch o := strings.TrimSpace(strings.ToLower(operation)); o {
+	switch o := strings.TrimSpace(operation); o {
 	case "<=":
 		f.Op = lessEq
 	case ">=":
