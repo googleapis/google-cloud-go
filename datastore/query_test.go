@@ -459,7 +459,7 @@ func TestFilterParser(t *testing.T) {
 	}
 }
 
-func TestFilterWithArgs(t *testing.T) {
+func TestFilterField(t *testing.T) {
 	testCases := []struct {
 		f      string
 		o      string
