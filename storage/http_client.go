@@ -438,7 +438,7 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 		acl, err = req.Do()
 		aclRule = toBucketACLRule(acl)
 		return err
-	}, s.retry, true)
+	}, s.retry, false)
 	if err != nil {
 		return nil, err
 	}

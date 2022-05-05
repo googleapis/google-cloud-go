@@ -1133,10 +1133,14 @@ type BucketAttrsToUpdate struct {
 	RPO RPO
 
 	// acl is the list of access control rules on the bucket.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
 	acl []ACLRule
 
 	// defaultObjectACL is the list of access controls to
 	// apply to new objects when no object ACL is provided.
+	// It is unexported and only used internally by the gRPC client.
+	// Library users should use ACLHandle methods directly.
 	defaultObjectACL []ACLRule
 
 	setLabels    map[string]string
