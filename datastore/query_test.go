@@ -391,60 +391,61 @@ func TestQueriesAreImmutable(t *testing.T) {
 	}
 }
 
-func TestFilterParser(t *testing.T) {
-	testCases := []struct {
-		filterStr     string
-		wantOK        bool
-		wantFieldName string
-		wantOp        operator
-	}{
-		// Supported ops.
-		{"x<", true, "x", lessThan},
-		{"x <", true, "x", lessThan},
-		{"x  <", true, "x", lessThan},
-		{"   x   <  ", true, "x", lessThan},
-		{"x <=", true, "x", lessEq},
-		{"x =", true, "x", equal},
-		{"x >=", true, "x", greaterEq},
-		{"x >", true, "x", greaterThan},
-		{"in >", true, "in", greaterThan},
-		{"in>", true, "in", greaterThan},
-		{"x!=", true, "x", notEqual},
-		{"x !=", true, "x", notEqual},
-		{" x  !=  ", true, "x", notEqual},
-		// Invalid ops.
-		{"x IN", false, "", 0},
-		{"x in", false, "", 0},
-		{"x NOT-IN", false, "", 0},
-		{"x not-in", false, "", 0},
-		{"ins not-in", false, "", 0},
-		{"in not-in", false, "", 0},
-		{"x EQ", false, "", 0},
-		{"x lt", false, "", 0},
-		{"x <>", false, "", 0},
-		{"x >>", false, "", 0},
-		{"x ==", false, "", 0},
-		{"x =<", false, "", 0},
-		{"x =>", false, "", 0},
-		{"x !", false, "", 0},
-		{"x ", false, "", 0},
-		{"x", false, "", 0},
-		// Quoted and interesting field names.
-		{"x > y =", true, "x > y", equal},
-		{"` x ` =", true, " x ", equal},
-		{`" x " =`, true, " x ", equal},
-		{`" \"x " =`, true, ` "x `, equal},
-		{`" x =`, false, "", 0},
-		{`" x ="`, false, "", 0},
-		{"` x \" =", false, "", 0},
+type testFilterCase struct {
+	filterStr     string
+	fieldName     string
+	operator      string
+	wantOp        operator
+	wantFieldName string
+}
+
+var (
+	// Supported ops both filters.
+	filterTestCases = []testFilterCase{
+		{"x<", "x", "<", lessThan, "x"},
+		{"x <", "x", "<", lessThan, "x"},
+		{"x  <", "x", "<", lessThan, "x"},
+		{"   x   <  ", "x", "<", lessThan, "x"},
+		{"x <=", "x", "<=", lessEq, "x"},
+		{"x =", "x", "=", equal, "x"},
+		{"x >=", "x", ">=", greaterEq, "x"},
+		{"x >", "x", ">", greaterThan, "x"},
+		{"in >", "in", ">", greaterThan, "in"},
+		{"in>", "in", ">", greaterThan, "in"},
+		{"x!=", "x", "!=", notEqual, "x"},
+		{"x !=", "x", "!=", notEqual, "x"},
+		{" x  !=  ", "x", "!=", notEqual, "x"},
 	}
-	for _, tc := range testCases {
+	// Supported in FilterField only.
+	filterFieldTestCases = []testFilterCase{
+		{"x in", "x", "in", in, "x"},
+		{"x not-in", "x", "not-in", notIn, "x"},
+		{"ins in", "ins", "in", in, "ins"},
+		{"in not-in", "in", "not-in", notIn, "in"},
+	}
+	// Operators not supported in either filter method
+	filterUnsupported = []testFilterCase{
+		{"x IN", "x", "IN", 0, ""},
+		{"x NOT-IN", "x", "NOT-IN", 0, ""},
+		{"x EQ", "x", "EQ", 0, ""},
+		{"x lt", "x", "lt", 0, ""},
+		{"x <>", "x", "<>", 0, ""},
+		{"x >>", "x", ">>", 0, ""},
+		{"x ==", "x", "==", 0, ""},
+		{"x =<", "x", "=<", 0, ""},
+		{"x =>", "x", "=>", 0, ""},
+		{"x !", "x", "!", 0, ""},
+		{"x ", "x", "", 0, ""},
+		{"x", "x", "", 0, ""},
+	}
+)
+
+func TestFilterParser(t *testing.T) {
+	// Success cases
+	for _, tc := range filterTestCases {
 		q := NewQuery("foo").Filter(tc.filterStr, 42)
-		if ok := q.err == nil; ok != tc.wantOK {
-			t.Errorf("%q: ok=%t, want %t", tc.filterStr, ok, tc.wantOK)
-			continue
-		}
-		if !tc.wantOK {
+		if q.err != nil {
+			t.Errorf("%q: error=%v", tc.filterStr, q.err)
 			continue
 		}
 		if len(q.filter) != 1 {
@@ -457,62 +458,38 @@ func TestFilterParser(t *testing.T) {
 			continue
 		}
 	}
+	// Failure cases
+	failureTestCases := append(filterFieldTestCases, filterUnsupported...)
+	for _, tc := range failureTestCases {
+		q := NewQuery("foo").Filter(tc.filterStr, 42)
+		if q.err == nil {
+			t.Errorf("%q: should have thrown error", tc.filterStr)
+		}
+	}
 }
 
 func TestFilterField(t *testing.T) {
-	testCases := []struct {
-		f      string
-		o      string
-		wantOK bool
-		wantOp operator
-	}{
-		// Supported ops.
-		{"x", "<", true, lessThan},
-		{"  x  ", "  <  ", true, lessThan},
-		{"x", "<=", true, lessEq},
-		{"x", "=", true, equal},
-		{"x", ">=", true, greaterEq},
-		{"x", ">", true, greaterThan},
-		{"in", ">", true, greaterThan},
-		{"x", "!=", true, notEqual},
-		{"x", "in", true, in},
-		{"in", "in", true, in},
-		{"x", "not-in", true, notIn},
-		{"ins", "not-in", true, notIn},
-		{"in", "not-in", true, notIn},
-		// Invalid ops.
-		{"x", "IN", false, 0},
-		{"x", "NOT-IN", false, 0},
-		{"x", "EQ", false, 0},
-		{"x", "lt", false, 0},
-		{"x", "<>", false, 0},
-		{"x", ">>", false, 0},
-		{"x", "==", false, 0},
-		{"x", "=<", false, 0},
-		{"x", "=>", false, 0},
-		{"x", "!", false, 0},
-		// Quoted and interesting field names.
-		{"x > y", "=", true, equal},
-		{`" x`, "=", false, 0},
-		{"` x \"", "=", false, 0},
-	}
-	for _, tc := range testCases {
-		q := NewQuery("foo").FilterField(tc.f, tc.o, 42)
-		if ok := q.err == nil; ok != tc.wantOK {
-			t.Errorf("%q %q: ok=%t, want %t", tc.f, tc.o, ok, tc.wantOK)
-			continue
-		}
-		if !tc.wantOK {
+	successTestCases := append(filterTestCases, filterFieldTestCases...)
+	for _, tc := range successTestCases {
+		q := NewQuery("foo").FilterField(tc.fieldName, tc.operator, 42)
+		if q.err != nil {
+			t.Errorf("%q %q: error: %v", tc.fieldName, tc.operator, q.err)
 			continue
 		}
 		if len(q.filter) != 1 {
-			t.Errorf("%q: len=%d, want %d", tc.f, len(q.filter), 1)
+			t.Errorf("%q: len=%d, want %d", tc.fieldName, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], filter{tc.f, tc.wantOp, 42}
+		got, want := q.filter[0], filter{tc.fieldName, tc.wantOp, 42}
 		if got != want {
-			t.Errorf("%q %q: got %v, want %v", tc.f, tc.o, got, want)
+			t.Errorf("%q %q: got %v, want %v", tc.fieldName, tc.operator, got, want)
 			continue
+		}
+	}
+	for _, tc := range filterUnsupported {
+		q := NewQuery("foo").Filter(tc.filterStr, 42)
+		if q.err == nil {
+			t.Errorf("%q: should have thrown error", tc.filterStr)
 		}
 	}
 }
