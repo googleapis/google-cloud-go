@@ -116,6 +116,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/assuredworkloads/apiv1": {
+    "distribution_name": "cloud.google.com/go/assuredworkloads/apiv1",
+    "description": "Assured Workloads API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/assuredworkloads/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/assuredworkloads/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
     "description": "Assured Workloads API",
@@ -284,6 +293,15 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/billing/latest/budgets/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
+  "cloud.google.com/go/binaryauthorization/apiv1": {
+    "distribution_name": "cloud.google.com/go/binaryauthorization/apiv1",
+    "description": "Binary Authorization API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/binaryauthorization/latest/apiv1",
     "release_level": "beta",
     "library_type": ""
   },
@@ -492,6 +510,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest/admin/apiv1",
     "release_level": "alpha",
+    "library_type": ""
+  },
+  "cloud.google.com/go/datastream/apiv1": {
+    "distribution_name": "cloud.google.com/go/datastream/apiv1",
+    "description": "Datastream API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastream/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/datastream/apiv1alpha1": {
