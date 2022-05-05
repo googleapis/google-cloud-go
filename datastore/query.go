@@ -178,7 +178,7 @@ func (q *Query) Transaction(t *Transaction) *Query {
 
 // Filter returns a derivative query with a field-based filter.
 //
-// DEPRECATED. Use the FilterWithArgs() method instead, which supports the same
+// Deprecated: Use the FilterField method instead, which supports the same
 // set of operations (and more).
 //
 // The filterStr argument must be a field name followed by optional space,
