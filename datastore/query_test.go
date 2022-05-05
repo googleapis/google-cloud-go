@@ -497,7 +497,7 @@ func TestFilterWithArgs(t *testing.T) {
 		{"` x \"", "=", false, 0},
 	}
 	for _, tc := range testCases {
-		q := NewQuery("foo").FilterWithArgs(tc.f, tc.o, 42)
+		q := NewQuery("foo").FilterField(tc.f, tc.o, 42)
 		if ok := q.err == nil; ok != tc.wantOK {
 			t.Errorf("%q %q: ok=%t, want %t", tc.f, tc.o, ok, tc.wantOK)
 			continue

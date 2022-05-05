@@ -197,10 +197,10 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 	}
 	f := strings.TrimRight(filterStr, " ><=!")
 	op := strings.TrimSpace(filterStr[len(f):])
-	return q.FilterWithArgs(f, op, value)
+	return q.FilterField(f, op, value)
 }
 
-// FilterWithArgs returns a derivative query with a field-based filter.
+// FilterField returns a derivative query with a field-based filter.
 // The operation parameter takes the following strings: ">", "<", ">=", "<=",
 // "=", "!=", "in", and "not-in".
 // Fields are compared against the provided value using the operator.
@@ -208,7 +208,7 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
-func (q *Query) FilterWithArgs(fieldName, operation string, value interface{}) *Query {
+func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
 	q = q.clone()
 
 	f := filter{
@@ -216,7 +216,7 @@ func (q *Query) FilterWithArgs(fieldName, operation string, value interface{}) *
 		Value:     value,
 	}
 
-	switch o := strings.TrimSpace(operation); o {
+	switch o := strings.TrimSpace(operator); o {
 	case "<=":
 		f.Op = lessEq
 	case ">=":
@@ -234,7 +234,7 @@ func (q *Query) FilterWithArgs(fieldName, operation string, value interface{}) *
 	case "!=":
 		f.Op = notEqual
 	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operation)
+		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operator)
 		return q
 	}
 	var err error
