@@ -1445,6 +1445,15 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/06/05
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/workflows/v1",
+		Pkg:                   "workflows",
+		ImportPath:            "cloud.google.com/go/workflows/apiv1",
+		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
+		ApiServiceConfigPath:  "workflows_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
