@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.16
 
 require (
-	cloud.google.com/go v0.100.2
+	cloud.google.com/go v0.101.1
 	cloud.google.com/go/accessapproval v1.0.1
 	cloud.google.com/go/accesscontextmanager v0.1.1
 	cloud.google.com/go/aiplatform v1.2.0
@@ -24,7 +24,7 @@ require (
 	cloud.google.com/go/cloudbuild v1.0.0
 	cloud.google.com/go/clouddms v1.0.0
 	cloud.google.com/go/cloudtasks v1.1.0
-	cloud.google.com/go/compute v1.6.0
+	cloud.google.com/go/compute v1.6.1
 	cloud.google.com/go/contactcenterinsights v0.4.0
 	cloud.google.com/go/container v1.0.0
 	cloud.google.com/go/containeranalysis v0.1.0
@@ -113,8 +113,8 @@ require (
 	cloud.google.com/go/websecurityscanner v1.0.0
 	cloud.google.com/go/workflows v1.1.0
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.77.0
-	google.golang.org/genproto v0.0.0-20220502173005-c8bf987b8c21
+	google.golang.org/api v0.78.0
+	google.golang.org/genproto v0.0.0-20220505152158-f39f71e6c8f3
 )
 
 replace cloud.google.com/go/storagetransfer => ../../../storagetransfer
