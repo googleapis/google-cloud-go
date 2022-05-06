@@ -1,5 +1,13 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.31.0...bigquery/v1.32.0) (2022-05-06)
+
+
+### Features
+
+* **bigquery:** add interval support ([#5907](https://github.com/googleapis/google-cloud-go/issues/5907)) ([9e979c9](https://github.com/googleapis/google-cloud-go/commit/9e979c9718df1de440d440e4c3e20bb3cb8c5aa1))
+* **bigquery:** expose connections and schema autodetect modifier ([#5739](https://github.com/googleapis/google-cloud-go/issues/5739)) ([c72e34f](https://github.com/googleapis/google-cloud-go/commit/c72e34fd79990eedaa56ed9e5121ab1a7fc4e2da))
+
 ## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.30.2...bigquery/v1.31.0) (2022-04-12)
 
 
