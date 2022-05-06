@@ -989,6 +989,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/notebooks/apiv1": {
+    "distribution_name": "cloud.google.com/go/notebooks/apiv1",
+    "description": "Notebooks API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/notebooks/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/notebooks/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/notebooks/apiv1beta1",
     "description": "Notebooks API",
@@ -1671,6 +1680,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/websecurityscanner/latest/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/workflows/apiv1": {
+    "distribution_name": "cloud.google.com/go/workflows/apiv1",
+    "description": "Workflows API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workflows/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/workflows/apiv1beta": {
