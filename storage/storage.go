@@ -916,7 +916,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	}
 	var obj *raw.Object
 	setClientHeader(call.Header())
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, true, call)
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1021,7 +1021,7 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 	if o.conds != nil && o.conds.MetagenerationMatch != 0 {
 		isIdempotent = true
 	}
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent)
+	err = run(ctx, func() error { obj, err = call.Do(); return err }, o.retry, isIdempotent, call)
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -1091,7 +1091,7 @@ func (o *ObjectHandle) Delete(ctx context.Context) error {
 	if (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0 {
 		isIdempotent = true
 	}
-	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent)
+	err := run(ctx, func() error { return call.Do() }, o.retry, isIdempotent, call)
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -2009,7 +2009,7 @@ func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, 
 	err = run(ctx, func() error {
 		res, err = r.Context(ctx).Do()
 		return err
-	}, c.retry, true)
+	}, c.retry, true, r)
 	if err != nil {
 		return "", err
 	}

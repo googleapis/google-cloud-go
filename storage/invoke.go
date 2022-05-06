@@ -17,12 +17,15 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"net/url"
 	"strings"
 
 	"cloud.google.com/go/internal"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
@@ -34,7 +37,7 @@ var defaultRetry *retryConfig = &retryConfig{}
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
-func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool) error {
+func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool, req interface{ Header() http.Header }) error {
 	if retry == nil {
 		retry = defaultRetry
 	}
@@ -51,10 +54,24 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 	if retry.shouldRetry != nil {
 		errorFunc = retry.shouldRetry
 	}
+
+	attempts := 0
+	invocationID := uuid.New().String()
+
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
+		attempts++
+		if req != nil {
+			setRetryHeader(req, invocationID, attempts)
+		}
 		err = call()
 		return !errorFunc(err), err
 	})
+}
+
+func setRetryHeader(req interface{ Header() http.Header }, invocationID string, attempts int) {
+	header := req.Header()
+	gapicHeaderVal := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
+	header.Set("x-goog-api-client", gapicHeaderVal)
 }
 
 func shouldRetry(err error) bool {
