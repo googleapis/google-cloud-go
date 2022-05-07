@@ -2478,6 +2478,8 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 
 func TestIntegration_QueryWithRoles(t *testing.T) {
 	t.Parallel()
+	// Database roles are not currently available in PG dialect
+	skipForPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2576,6 +2578,8 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 func TestIntegration_ReadWithRoles(t *testing.T) {
 	t.Parallel()
+	// Database roles are not currently available in PG dialect
+	skipForPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2673,6 +2677,8 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 func TestIntegration_DMLWithRoles(t *testing.T) {
 	t.Parallel()
+	// Database roles are not currently available in PG dialect
+	skipForPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2757,6 +2763,8 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
 	t.Parallel()
+	// Database roles are not currently available in PG dialect
+	skipForPGTest(t)
 
 	// Set up testing environment.
 	var (
@@ -2774,8 +2782,8 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			) PRIMARY KEY (SingerId)`,
 		`CREATE ROLE singers_writer`,
 		`CREATE ROLE singers_unauthorized`,
-		`GRANT UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
-		`GRANT UPDATE(FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
+		`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
 	}
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
