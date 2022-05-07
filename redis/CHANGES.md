@@ -1,5 +1,13 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.4.0...redis/v1.5.0) (2022-03-28)
+
+
+### Features
+
+* **redis:** [Cloud Memorystore for Redis] Support Maintenance Window ([58ee787](https://github.com/googleapis/google-cloud-go/commit/58ee7873f4dc7953980eeae889a8758336064a35))
+* **redis:** add support for AUTH functionality feat: add support for TLS functionality feat: add secondary_ip_range field ([58ee787](https://github.com/googleapis/google-cloud-go/commit/58ee7873f4dc7953980eeae889a8758336064a35))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.3.0...redis/v1.4.0) (2022-02-23)
 
 

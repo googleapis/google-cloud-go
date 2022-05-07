@@ -1,5 +1,12 @@
 # Changes
 
+### [1.3.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.3.0...speech/v1.3.1) (2022-04-14)
+
+
+### Bug Fixes
+
+* **speech:** use full link in comment to fix JSDoc broken link ([19a9ef2](https://github.com/googleapis/google-cloud-go/commit/19a9ef2d9b8d77d3bc3e4c11c7f1f3e47700edd4))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.2.0...speech/v1.3.0) (2022-02-23)
 
 

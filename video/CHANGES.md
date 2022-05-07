@@ -1,5 +1,12 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.3.0...video/v1.4.0) (2022-03-14)
+
+
+### Features
+
+* **video/stitcher:** start generating apiv1 ([#5720](https://github.com/googleapis/google-cloud-go/issues/5720)) ([4ca8fea](https://github.com/googleapis/google-cloud-go/commit/4ca8fea35c1c5f3e2675c666e238bb1dc3561d52))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.2.0...video/v1.3.0) (2022-02-23)
 
 

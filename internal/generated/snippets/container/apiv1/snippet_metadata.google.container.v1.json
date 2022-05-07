@@ -1,0 +1,1486 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/container/apiv1",
+    "version": "1.2.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.container.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CancelOperation_sync",
+      "title": "container CancelOperation Sample",
+      "description": "CancelOperation cancels the specified operation.",
+      "file": "ClusterManagerClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.container.v1.ClusterManagerClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.container.v1.ClusterManager.CancelOperation",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CompleteIPRotation_sync",
+      "title": "container CompleteIPRotation Sample",
+      "description": "CompleteIPRotation completes master IP rotation.",
+      "file": "ClusterManagerClient/CompleteIPRotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CompleteIPRotation",
+        "fullName": "google.container.v1.ClusterManagerClient.CompleteIPRotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CompleteIPRotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CompleteIPRotation",
+          "fullName": "google.container.v1.ClusterManager.CompleteIPRotation",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CreateCluster_sync",
+      "title": "container CreateCluster Sample",
+      "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project’s\ndefault\nnetwork (at https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project’s global metadata indicating\nwhich CIDR range the cluster is using.",
+      "file": "ClusterManagerClient/CreateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCluster",
+        "fullName": "google.container.v1.ClusterManagerClient.CreateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CreateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CreateCluster",
+          "fullName": "google.container.v1.ClusterManager.CreateCluster",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CreateNodePool_sync",
+      "title": "container CreateNodePool Sample",
+      "description": "CreateNodePool creates a node pool for a cluster.",
+      "file": "ClusterManagerClient/CreateNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNodePool",
+        "fullName": "google.container.v1.ClusterManagerClient.CreateNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CreateNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CreateNodePool",
+          "fullName": "google.container.v1.ClusterManager.CreateNodePool",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_DeleteCluster_sync",
+      "title": "container DeleteCluster Sample",
+      "description": "DeleteCluster deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren’t present\nwhen the cluster was initially created.",
+      "file": "ClusterManagerClient/DeleteCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCluster",
+        "fullName": "google.container.v1.ClusterManagerClient.DeleteCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.DeleteClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "DeleteCluster",
+          "fullName": "google.container.v1.ClusterManager.DeleteCluster",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_DeleteNodePool_sync",
+      "title": "container DeleteNodePool Sample",
+      "description": "DeleteNodePool deletes a node pool from a cluster.",
+      "file": "ClusterManagerClient/DeleteNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNodePool",
+        "fullName": "google.container.v1.ClusterManagerClient.DeleteNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.DeleteNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "DeleteNodePool",
+          "fullName": "google.container.v1.ClusterManager.DeleteNodePool",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_GetCluster_sync",
+      "title": "container GetCluster Sample",
+      "description": "GetCluster gets the details of a specific cluster.",
+      "file": "ClusterManagerClient/GetCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCluster",
+        "fullName": "google.container.v1.ClusterManagerClient.GetCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.GetClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Cluster",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "GetCluster",
+          "fullName": "google.container.v1.ClusterManager.GetCluster",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_GetJSONWebKeys_sync",
+      "title": "container GetJSONWebKeys Sample",
+      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters.",
+      "file": "ClusterManagerClient/GetJSONWebKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetJSONWebKeys",
+        "fullName": "google.container.v1.ClusterManagerClient.GetJSONWebKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.GetJSONWebKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.GetJSONWebKeysResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "GetJSONWebKeys",
+          "fullName": "google.container.v1.ClusterManager.GetJSONWebKeys",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_GetNodePool_sync",
+      "title": "container GetNodePool Sample",
+      "description": "GetNodePool retrieves the requested node pool.",
+      "file": "ClusterManagerClient/GetNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNodePool",
+        "fullName": "google.container.v1.ClusterManagerClient.GetNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.GetNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.NodePool",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "GetNodePool",
+          "fullName": "google.container.v1.ClusterManager.GetNodePool",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_GetOperation_sync",
+      "title": "container GetOperation Sample",
+      "description": "GetOperation gets the specified operation.",
+      "file": "ClusterManagerClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.container.v1.ClusterManagerClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.container.v1.ClusterManager.GetOperation",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_GetServerConfig_sync",
+      "title": "container GetServerConfig Sample",
+      "description": "GetServerConfig returns configuration info about the Google Kubernetes Engine service.",
+      "file": "ClusterManagerClient/GetServerConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServerConfig",
+        "fullName": "google.container.v1.ClusterManagerClient.GetServerConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.GetServerConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.ServerConfig",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "GetServerConfig",
+          "fullName": "google.container.v1.ClusterManager.GetServerConfig",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_ListClusters_sync",
+      "title": "container ListClusters Sample",
+      "description": "ListClusters lists all clusters owned by a project in either the specified zone or all\nzones.",
+      "file": "ClusterManagerClient/ListClusters/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListClusters",
+        "fullName": "google.container.v1.ClusterManagerClient.ListClusters",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.ListClustersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.ListClustersResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "ListClusters",
+          "fullName": "google.container.v1.ClusterManager.ListClusters",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_ListNodePools_sync",
+      "title": "container ListNodePools Sample",
+      "description": "ListNodePools lists the node pools for a cluster.",
+      "file": "ClusterManagerClient/ListNodePools/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNodePools",
+        "fullName": "google.container.v1.ClusterManagerClient.ListNodePools",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.ListNodePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.ListNodePoolsResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "ListNodePools",
+          "fullName": "google.container.v1.ClusterManager.ListNodePools",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_ListOperations_sync",
+      "title": "container ListOperations Sample",
+      "description": "ListOperations lists all operations in a project in a specific zone or all zones.",
+      "file": "ClusterManagerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.container.v1.ClusterManagerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.ListOperationsResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.container.v1.ClusterManager.ListOperations",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_ListUsableSubnetworks_sync",
+      "title": "container ListUsableSubnetworks Sample",
+      "description": "ListUsableSubnetworks lists subnetworks that are usable for creating clusters in a project.",
+      "file": "ClusterManagerClient/ListUsableSubnetworks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsableSubnetworks",
+        "fullName": "google.container.v1.ClusterManagerClient.ListUsableSubnetworks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.ListUsableSubnetworksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UsableSubnetworkIterator",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "ListUsableSubnetworks",
+          "fullName": "google.container.v1.ClusterManager.ListUsableSubnetworks",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_RollbackNodePoolUpgrade_sync",
+      "title": "container RollbackNodePoolUpgrade Sample",
+      "description": "RollbackNodePoolUpgrade rolls back a previously Aborted or Failed NodePool upgrade.\nThis makes no changes if the last upgrade successfully completed.",
+      "file": "ClusterManagerClient/RollbackNodePoolUpgrade/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RollbackNodePoolUpgrade",
+        "fullName": "google.container.v1.ClusterManagerClient.RollbackNodePoolUpgrade",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.RollbackNodePoolUpgradeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "RollbackNodePoolUpgrade",
+          "fullName": "google.container.v1.ClusterManager.RollbackNodePoolUpgrade",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetAddonsConfig_sync",
+      "title": "container SetAddonsConfig Sample",
+      "description": "SetAddonsConfig sets the addons for a specific cluster.",
+      "file": "ClusterManagerClient/SetAddonsConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetAddonsConfig",
+        "fullName": "google.container.v1.ClusterManagerClient.SetAddonsConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetAddonsConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetAddonsConfig",
+          "fullName": "google.container.v1.ClusterManager.SetAddonsConfig",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetLabels_sync",
+      "title": "container SetLabels Sample",
+      "description": "SetLabels sets labels on a cluster.",
+      "file": "ClusterManagerClient/SetLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLabels",
+        "fullName": "google.container.v1.ClusterManagerClient.SetLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetLabels",
+          "fullName": "google.container.v1.ClusterManager.SetLabels",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetLegacyAbac_sync",
+      "title": "container SetLegacyAbac Sample",
+      "description": "SetLegacyAbac enables or disables the ABAC authorization mechanism on a cluster.",
+      "file": "ClusterManagerClient/SetLegacyAbac/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLegacyAbac",
+        "fullName": "google.container.v1.ClusterManagerClient.SetLegacyAbac",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetLegacyAbacRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetLegacyAbac",
+          "fullName": "google.container.v1.ClusterManager.SetLegacyAbac",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetLocations_sync",
+      "title": "container SetLocations Sample",
+      "description": "SetLocations sets the locations for a specific cluster.\nDeprecated. Use\nprojects.locations.clusters.update (at https: //cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)\ninstead.\n\nDeprecated: SetLocations may be removed in a future version.",
+      "file": "ClusterManagerClient/SetLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLocations",
+        "fullName": "google.container.v1.ClusterManagerClient.SetLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetLocations",
+          "fullName": "google.container.v1.ClusterManager.SetLocations",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetLoggingService_sync",
+      "title": "container SetLoggingService Sample",
+      "description": "SetLoggingService sets the logging service for a specific cluster.",
+      "file": "ClusterManagerClient/SetLoggingService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetLoggingService",
+        "fullName": "google.container.v1.ClusterManagerClient.SetLoggingService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetLoggingServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetLoggingService",
+          "fullName": "google.container.v1.ClusterManager.SetLoggingService",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetMaintenancePolicy_sync",
+      "title": "container SetMaintenancePolicy Sample",
+      "description": "SetMaintenancePolicy sets the maintenance policy for a cluster.",
+      "file": "ClusterManagerClient/SetMaintenancePolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetMaintenancePolicy",
+        "fullName": "google.container.v1.ClusterManagerClient.SetMaintenancePolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetMaintenancePolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetMaintenancePolicy",
+          "fullName": "google.container.v1.ClusterManager.SetMaintenancePolicy",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetMasterAuth_sync",
+      "title": "container SetMasterAuth Sample",
+      "description": "SetMasterAuth sets master auth materials. Currently supports changing the admin password\nor a specific cluster, either via password generation or explicitly setting\nthe password.",
+      "file": "ClusterManagerClient/SetMasterAuth/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetMasterAuth",
+        "fullName": "google.container.v1.ClusterManagerClient.SetMasterAuth",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetMasterAuthRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetMasterAuth",
+          "fullName": "google.container.v1.ClusterManager.SetMasterAuth",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetMonitoringService_sync",
+      "title": "container SetMonitoringService Sample",
+      "description": "SetMonitoringService sets the monitoring service for a specific cluster.",
+      "file": "ClusterManagerClient/SetMonitoringService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetMonitoringService",
+        "fullName": "google.container.v1.ClusterManagerClient.SetMonitoringService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetMonitoringServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetMonitoringService",
+          "fullName": "google.container.v1.ClusterManager.SetMonitoringService",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetNetworkPolicy_sync",
+      "title": "container SetNetworkPolicy Sample",
+      "description": "SetNetworkPolicy enables or disables Network Policy for a cluster.",
+      "file": "ClusterManagerClient/SetNetworkPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetNetworkPolicy",
+        "fullName": "google.container.v1.ClusterManagerClient.SetNetworkPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetNetworkPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetNetworkPolicy",
+          "fullName": "google.container.v1.ClusterManager.SetNetworkPolicy",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetNodePoolAutoscaling_sync",
+      "title": "container SetNodePoolAutoscaling Sample",
+      "description": "SetNodePoolAutoscaling sets the autoscaling settings for the specified node pool.",
+      "file": "ClusterManagerClient/SetNodePoolAutoscaling/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetNodePoolAutoscaling",
+        "fullName": "google.container.v1.ClusterManagerClient.SetNodePoolAutoscaling",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetNodePoolAutoscalingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetNodePoolAutoscaling",
+          "fullName": "google.container.v1.ClusterManager.SetNodePoolAutoscaling",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetNodePoolManagement_sync",
+      "title": "container SetNodePoolManagement Sample",
+      "description": "SetNodePoolManagement sets the NodeManagement options for a node pool.",
+      "file": "ClusterManagerClient/SetNodePoolManagement/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetNodePoolManagement",
+        "fullName": "google.container.v1.ClusterManagerClient.SetNodePoolManagement",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetNodePoolManagementRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetNodePoolManagement",
+          "fullName": "google.container.v1.ClusterManager.SetNodePoolManagement",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_SetNodePoolSize_sync",
+      "title": "container SetNodePoolSize Sample",
+      "description": "SetNodePoolSize sets the size for a specific node pool. The new size will be used for all\nreplicas, including future replicas created by modifying\nNodePool.locations.",
+      "file": "ClusterManagerClient/SetNodePoolSize/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetNodePoolSize",
+        "fullName": "google.container.v1.ClusterManagerClient.SetNodePoolSize",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.SetNodePoolSizeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "SetNodePoolSize",
+          "fullName": "google.container.v1.ClusterManager.SetNodePoolSize",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_StartIPRotation_sync",
+      "title": "container StartIPRotation Sample",
+      "description": "StartIPRotation starts master IP rotation.",
+      "file": "ClusterManagerClient/StartIPRotation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StartIPRotation",
+        "fullName": "google.container.v1.ClusterManagerClient.StartIPRotation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.StartIPRotationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "StartIPRotation",
+          "fullName": "google.container.v1.ClusterManager.StartIPRotation",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_UpdateCluster_sync",
+      "title": "container UpdateCluster Sample",
+      "description": "UpdateCluster updates the settings of a specific cluster.",
+      "file": "ClusterManagerClient/UpdateCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCluster",
+        "fullName": "google.container.v1.ClusterManagerClient.UpdateCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.UpdateClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "UpdateCluster",
+          "fullName": "google.container.v1.ClusterManager.UpdateCluster",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_UpdateMaster_sync",
+      "title": "container UpdateMaster Sample",
+      "description": "UpdateMaster updates the master for a specific cluster.",
+      "file": "ClusterManagerClient/UpdateMaster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMaster",
+        "fullName": "google.container.v1.ClusterManagerClient.UpdateMaster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.UpdateMasterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "UpdateMaster",
+          "fullName": "google.container.v1.ClusterManager.UpdateMaster",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_UpdateNodePool_sync",
+      "title": "container UpdateNodePool Sample",
+      "description": "UpdateNodePool updates the version and/or image type for the specified node pool.",
+      "file": "ClusterManagerClient/UpdateNodePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNodePool",
+        "fullName": "google.container.v1.ClusterManagerClient.UpdateNodePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.UpdateNodePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "containerpb.Operation",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "UpdateNodePool",
+          "fullName": "google.container.v1.ClusterManager.UpdateNodePool",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

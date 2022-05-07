@@ -1,5 +1,12 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.4.0...eventarc/v1.5.0) (2022-04-20)
+
+
+### Features
+
+* **eventarc/publishing:** Add publishing methods for channel resources ([689cad9](https://github.com/googleapis/google-cloud-go/commit/689cad94fdcf54cebd22aecfcdad4d8b44f58df9))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.3.0...eventarc/v1.4.0) (2022-02-23)
 
 

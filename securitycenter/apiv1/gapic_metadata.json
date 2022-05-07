@@ -15,6 +15,11 @@
                 "BulkMuteFindings"
               ]
             },
+            "CreateBigQueryExport": {
+              "methods": [
+                "CreateBigQueryExport"
+              ]
+            },
             "CreateFinding": {
               "methods": [
                 "CreateFinding"
@@ -35,6 +40,11 @@
                 "CreateSource"
               ]
             },
+            "DeleteBigQueryExport": {
+              "methods": [
+                "DeleteBigQueryExport"
+              ]
+            },
             "DeleteMuteConfig": {
               "methods": [
                 "DeleteMuteConfig"
@@ -43,6 +53,11 @@
             "DeleteNotificationConfig": {
               "methods": [
                 "DeleteNotificationConfig"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
               ]
             },
             "GetIamPolicy": {
@@ -83,6 +98,11 @@
             "ListAssets": {
               "methods": [
                 "ListAssets"
+              ]
+            },
+            "ListBigQueryExports": {
+              "methods": [
+                "ListBigQueryExports"
               ]
             },
             "ListFindings": {
@@ -128,6 +148,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
               ]
             },
             "UpdateExternalSystem": {

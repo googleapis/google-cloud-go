@@ -139,3 +139,53 @@ func ExampleConversationProfilesClient_DeleteConversationProfile() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleConversationProfilesClient_SetSuggestionFeatureConfig() {
+	ctx := context.Background()
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.SetSuggestionFeatureConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#SetSuggestionFeatureConfigRequest.
+	}
+	op, err := c.SetSuggestionFeatureConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConversationProfilesClient_ClearSuggestionFeatureConfig() {
+	ctx := context.Background()
+	c, err := dialogflow.NewConversationProfilesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.ClearSuggestionFeatureConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dialogflow/v2#ClearSuggestionFeatureConfigRequest.
+	}
+	op, err := c.ClearSuggestionFeatureConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

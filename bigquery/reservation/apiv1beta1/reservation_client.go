@@ -235,6 +235,7 @@ type internalClient interface {
 // Client is a client for interacting with BigQuery Reservation API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -250,6 +251,8 @@ type internalClient interface {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -526,6 +529,7 @@ type gRPCClient struct {
 // NewClient creates a new reservation service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
+// Deprecated: Please use the v1 api instead.
 // This API allows users to manage their flat-rate BigQuery reservations.
 //
 // A reservation provides computational resource guarantees, in the form of
@@ -541,6 +545,8 @@ type gRPCClient struct {
 // commitment resource exists as a child resource of the admin project and
 // location, e.g.:
 // projects/myproject/locations/US/capacityCommitments/id.
+//
+// Deprecated: ReservationService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {

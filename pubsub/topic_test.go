@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -553,10 +554,9 @@ func TestPublishFlowControl_Block(t *testing.T) {
 	publishSingleMessage(ctx, topic, "AA")
 	publishSingleMessage(ctx, topic, "AA")
 
-	// Sendinga third message blocks because the messages are outstanding
-	var publish3Completed, response3Sent sync.WaitGroup
+	// Sending a third message blocks because the messages are outstanding.
+	var publish3Completed sync.WaitGroup
 	publish3Completed.Add(1)
-	response3Sent.Add(1)
 	go func() {
 		publishSingleMessage(ctx, topic, "AAAAAA")
 		publish3Completed.Done()
@@ -568,6 +568,8 @@ func TestPublishFlowControl_Block(t *testing.T) {
 		sendResponse2.Done()
 	}()
 
+	// Sending a fourth message blocks because although only one message has been sent,
+	// the third message claimed the tokens for outstanding bytes.
 	var publish4Completed sync.WaitGroup
 	publish4Completed.Add(1)
 
@@ -579,9 +581,33 @@ func TestPublishFlowControl_Block(t *testing.T) {
 
 	publish3Completed.Wait()
 	addSingleResponse(srv, "3")
-	response3Sent.Done()
+	addSingleResponse(srv, "4")
 
 	publish4Completed.Wait()
+}
+
+func TestInvalidUTF8(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "invalid-utf8-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	res := topic.Publish(ctx, &Message{
+		Data: []byte("foo"),
+		Attributes: map[string]string{
+			"attr": "a\xc5z",
+		},
+	})
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	_, err = res.Get(ctx)
+	if err == nil || !strings.Contains(err.Error(), "string field contains invalid UTF-8") {
+		t.Fatalf("expected invalid UTF-8 error, got: %v", err)
+	}
 }
 
 // publishSingleMessage publishes a single message to a topic.

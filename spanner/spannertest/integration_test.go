@@ -948,6 +948,15 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		// From https://cloud.google.com/spanner/docs/query-syntax#group-by-clause_1:
 		{
+			`SELECT LastName FROM PlayerStats GROUP BY LastName`,
+			nil,
+			[][]interface{}{
+				{"Adams"},
+				{"Buchanan"},
+				{"Coolidge"},
+			},
+		},
+		{
 			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
 			// but nothing documented seems to guarantee that.
 			`SELECT LastName, SUM(PointsScored) FROM PlayerStats GROUP BY LastName`,

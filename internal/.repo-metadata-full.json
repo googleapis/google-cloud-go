@@ -26,6 +26,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/aiplatform/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/aiplatform/apiv1beta1",
+    "description": "Vertex AI API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/aiplatform/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
     "description": "Google Analytics Admin API",
@@ -107,6 +116,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/assuredworkloads/apiv1": {
+    "distribution_name": "cloud.google.com/go/assuredworkloads/apiv1",
+    "description": "Assured Workloads API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/assuredworkloads/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/assuredworkloads/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/assuredworkloads/apiv1beta1",
     "description": "Assured Workloads API",
@@ -161,6 +179,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/bigquery/dataexchange/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/bigquery/dataexchange/apiv1beta1",
+    "description": "Analytics Hub API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/dataexchange/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/bigquery/datatransfer/apiv1": {
     "distribution_name": "cloud.google.com/go/bigquery/datatransfer/apiv1",
     "description": "BigQuery Data Transfer API",
@@ -168,6 +195,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/datatransfer/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/bigquery/migration/apiv2": {
+    "distribution_name": "cloud.google.com/go/bigquery/migration/apiv2",
+    "description": "BigQuery Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/bigquery/latest/migration/apiv2",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/bigquery/migration/apiv2alpha": {
@@ -260,12 +296,30 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/binaryauthorization/apiv1": {
+    "distribution_name": "cloud.google.com/go/binaryauthorization/apiv1",
+    "description": "Binary Authorization API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/binaryauthorization/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/binaryauthorization/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/binaryauthorization/apiv1beta1",
     "description": "Binary Authorization API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/binaryauthorization/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
+  "cloud.google.com/go/certificatemanager/apiv1": {
+    "distribution_name": "cloud.google.com/go/certificatemanager/apiv1",
+    "description": "Certificate Manager API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/certificatemanager/latest/apiv1",
     "release_level": "beta",
     "library_type": ""
   },
@@ -456,6 +510,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastore/latest/admin/apiv1",
     "release_level": "alpha",
+    "library_type": ""
+  },
+  "cloud.google.com/go/datastream/apiv1": {
+    "distribution_name": "cloud.google.com/go/datastream/apiv1",
+    "description": "Datastream API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/datastream/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/datastream/apiv1alpha1": {
@@ -926,12 +989,30 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/notebooks/apiv1": {
+    "distribution_name": "cloud.google.com/go/notebooks/apiv1",
+    "description": "Notebooks API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/notebooks/latest/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/notebooks/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/notebooks/apiv1beta1",
     "description": "Notebooks API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/notebooks/latest/apiv1beta1",
+    "release_level": "beta",
+    "library_type": ""
+  },
+  "cloud.google.com/go/optimization/apiv1": {
+    "distribution_name": "cloud.google.com/go/optimization/apiv1",
+    "description": "Cloud Optimization API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/optimization/latest/apiv1",
     "release_level": "beta",
     "library_type": ""
   },
@@ -1195,6 +1276,15 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/rpcreplay",
     "release_level": "ga",
     "library_type": "OTHER"
+  },
+  "cloud.google.com/go/run/apiv2": {
+    "distribution_name": "cloud.google.com/go/run/apiv2",
+    "description": "Cloud Run Admin API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/run/latest/apiv2",
+    "release_level": "beta",
+    "library_type": ""
   },
   "cloud.google.com/go/scheduler/apiv1": {
     "distribution_name": "cloud.google.com/go/scheduler/apiv1",
@@ -1493,6 +1583,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/video/stitcher/apiv1": {
+    "distribution_name": "cloud.google.com/go/video/stitcher/apiv1",
+    "description": "Video Stitcher API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/video/latest/stitcher/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/video/transcoder/apiv1": {
     "distribution_name": "cloud.google.com/go/video/transcoder/apiv1",
     "description": "Transcoder API",
@@ -1581,6 +1680,15 @@
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/websecurityscanner/latest/apiv1",
     "release_level": "ga",
+    "library_type": ""
+  },
+  "cloud.google.com/go/workflows/apiv1": {
+    "distribution_name": "cloud.google.com/go/workflows/apiv1",
+    "description": "Workflows API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workflows/latest/apiv1",
+    "release_level": "beta",
     "library_type": ""
   },
   "cloud.google.com/go/workflows/apiv1beta": {

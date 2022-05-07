@@ -1,5 +1,51 @@
 # Changes
 
+### [1.21.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.21.0...pubsub/v1.21.1) (2022-05-04)
+
+
+### Bug Fixes
+
+* **pubsub:** mark ignore option default for publish flow control ([#5983](https://github.com/googleapis/google-cloud-go/issues/5983)) ([3f41531](https://github.com/googleapis/google-cloud-go/commit/3f41531579b7a55acea66fec8362e9134125c8a0))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.20.0...pubsub/v1.21.0) (2022-04-26)
+
+
+### Features
+
+* **pubsub:** deprecate synchronous mode ([#5910](https://github.com/googleapis/google-cloud-go/issues/5910)) ([bda5179](https://github.com/googleapis/google-cloud-go/commit/bda5179fa240b1468cd1043128493f634be28986))
+
+
+### Bug Fixes
+
+* **pubsub:** enable updating enable_exactly_once_delivery in fake pubsub ([#5940](https://github.com/googleapis/google-cloud-go/issues/5940)) ([ee44bf6](https://github.com/googleapis/google-cloud-go/commit/ee44bf646af1c38ed0943a997051b0225e22a6bf))
+* **pubsub:** nack messages properly with error from receive scheduler ([#5909](https://github.com/googleapis/google-cloud-go/issues/5909)) ([80edea4](https://github.com/googleapis/google-cloud-go/commit/80edea40dd722efb3c15cd3de3f24e0e7ad08ed7))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.19.0...pubsub/v1.20.0) (2022-04-11)
+
+
+### Features
+
+* **pubsub/pstest:** add topic retention support ([#4790](https://github.com/googleapis/google-cloud-go/issues/4790)) ([0a4ad6a](https://github.com/googleapis/google-cloud-go/commit/0a4ad6a72ddc379a94a88ec70ac678a227843cfd))
+
+
+### Bug Fixes
+
+* **pubsub:** ignore grpc errors in ack/modack ([#5796](https://github.com/googleapis/google-cloud-go/issues/5796)) ([4fb9aec](https://github.com/googleapis/google-cloud-go/commit/4fb9aecd2bc415c846e26eb960859e10e1af61f3))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.18.0...pubsub/v1.19.0) (2022-03-07)
+
+
+### Features
+
+* **pubsub:** add better version metadata to calls ([d1ad921](https://github.com/googleapis/google-cloud-go/commit/d1ad921d0322e7ce728ca9d255a3cf0437d26add))
+* **pubsub:** set versionClient to module version ([55f0d92](https://github.com/googleapis/google-cloud-go/commit/55f0d92bf112f14b024b4ab0076c9875a17423c9))
+
+
+### Bug Fixes
+
+* **pubsub:** prevent infinite retry with publishing invalid utf-8 chars ([#5728](https://github.com/googleapis/google-cloud-go/issues/5728)) ([0a4dab9](https://github.com/googleapis/google-cloud-go/commit/0a4dab9043db81342dc41bd496d35fd4a7b08ad5))
+* **pubsub:** removing misspelled field, add correctly spelled field ([4a223de](https://github.com/googleapis/google-cloud-go/commit/4a223de8eab072d95818c761e41fb3f3f6ac728c))
+
 ## [1.18.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.17.1...pubsub/v1.18.0) (2022-02-08)
 
 

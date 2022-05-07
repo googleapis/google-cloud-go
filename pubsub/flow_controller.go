@@ -27,10 +27,10 @@ import (
 type LimitExceededBehavior int
 
 const (
-	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
-	FlowControlBlock LimitExceededBehavior = iota
 	// FlowControlIgnore disables flow control.
-	FlowControlIgnore
+	FlowControlIgnore LimitExceededBehavior = iota
+	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
+	FlowControlBlock
 	// FlowControlSignalError signals an error to the caller of acquire.
 	FlowControlSignalError
 )
@@ -47,7 +47,7 @@ type FlowControlSettings struct {
 
 	// LimitExceededBehavior configures the behavior when trying to publish
 	// additional messages while the flow controller is full. The available options
-	// include Block (default), Ignore (disable), and SignalError (publish
+	// are Ignore (disable, default), Block, and SignalError (publish
 	// results will return an error).
 	LimitExceededBehavior LimitExceededBehavior
 }

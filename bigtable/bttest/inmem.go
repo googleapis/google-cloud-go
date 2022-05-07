@@ -912,6 +912,10 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 	return res, nil
 }
 
+func (s *server) PingAndWarm(ctx context.Context, req *btpb.PingAndWarmRequest) (*btpb.PingAndWarmResponse, error) {
+	return &btpb.PingAndWarmResponse{}, nil
+}
+
 // applyMutations applies a sequence of mutations to a row.
 // fam should be a snapshot of the keys of tbl.families.
 // It assumes r.mu is locked.

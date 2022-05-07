@@ -5,6 +5,7 @@
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/logging)
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/main/logging)
 
+For an interactive tutorial on using the client library in a Go application, click [Guide Me](https://console.cloud.google.com/?walkthrough_id=logging__logging-go).
 ### Example Usage
 
 First create a `logging.Client` to use throughout your application:

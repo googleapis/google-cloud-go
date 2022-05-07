@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.5.0...analytics/v0.6.0) (2022-03-14)
+
+
+### Features
+
+* **analytics/admin:** remove `WebDataStream`, `IosAppDataStream`, `AndroidAppDataStream` resources and corresponding operations, as they are replaced by the `DataStream` resource feat: add `restricted_metric_type` field to the `CustomMetric` resource feat!: move the `GlobalSiteTag` resource from the property level to the data stream level ([3f17f9f](https://github.com/googleapis/google-cloud-go/commit/3f17f9fb741bc426800ca68f29de66fbc8751df1))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.4.0...analytics/v0.5.0) (2022-02-23)
 
 

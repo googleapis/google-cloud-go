@@ -106,7 +106,7 @@ func TestFromProtoToObjectACLRules(t *testing.T) {
 			},
 		},
 	} {
-		got := fromProtoToObjectACLRules(tst.acls)
+		got := toObjectACLRulesFromProto(tst.acls)
 		if diff := testutil.Diff(got, tst.want); diff != "" {
 			t.Errorf("#%d: got(-),want(+):\n%s", i, diff)
 		}

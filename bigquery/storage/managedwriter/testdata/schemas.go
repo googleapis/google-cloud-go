@@ -113,4 +113,22 @@ var (
 			},
 		},
 	}
+
+	ExternalEnumMessageSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "msg_a",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "foo", Type: bigquery.StringFieldType},
+				{Name: "bar", Type: bigquery.IntegerFieldType},
+			},
+		},
+		{
+			Name: "msg_b",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "baz", Type: bigquery.IntegerFieldType},
+			},
+		},
+	}
 )

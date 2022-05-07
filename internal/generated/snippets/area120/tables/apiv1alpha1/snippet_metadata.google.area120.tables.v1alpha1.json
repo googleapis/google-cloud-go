@@ -1,0 +1,565 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/area120/tables/apiv1alpha1",
+    "version": "0.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.area120.tables.v1alpha1",
+        "version": "v1alpha1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_BatchCreateRows_sync",
+      "title": "area120tables BatchCreateRows Sample",
+      "description": "BatchCreateRows creates multiple rows.",
+      "file": "Client/BatchCreateRows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateRows",
+        "fullName": "google.area120.tables.v1alpha1.Client.BatchCreateRows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.BatchCreateRowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.BatchCreateRowsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "BatchCreateRows",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.BatchCreateRows",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_BatchDeleteRows_sync",
+      "title": "area120tables BatchDeleteRows Sample",
+      "description": "BatchDeleteRows deletes multiple rows.",
+      "file": "Client/BatchDeleteRows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteRows",
+        "fullName": "google.area120.tables.v1alpha1.Client.BatchDeleteRows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.BatchDeleteRowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "BatchDeleteRows",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.BatchDeleteRows",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_BatchUpdateRows_sync",
+      "title": "area120tables BatchUpdateRows Sample",
+      "description": "BatchUpdateRows updates multiple rows.",
+      "file": "Client/BatchUpdateRows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateRows",
+        "fullName": "google.area120.tables.v1alpha1.Client.BatchUpdateRows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.BatchUpdateRowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.BatchUpdateRowsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "BatchUpdateRows",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.BatchUpdateRows",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_CreateRow_sync",
+      "title": "area120tables CreateRow Sample",
+      "description": "CreateRow creates a row.",
+      "file": "Client/CreateRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRow",
+        "fullName": "google.area120.tables.v1alpha1.Client.CreateRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.CreateRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.Row",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "CreateRow",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.CreateRow",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_DeleteRow_sync",
+      "title": "area120tables DeleteRow Sample",
+      "description": "DeleteRow deletes a row.",
+      "file": "Client/DeleteRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRow",
+        "fullName": "google.area120.tables.v1alpha1.Client.DeleteRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.DeleteRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRow",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.DeleteRow",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_GetRow_sync",
+      "title": "area120tables GetRow Sample",
+      "description": "GetRow gets a row. Returns NOT_FOUND if the row does not exist in the table.",
+      "file": "Client/GetRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRow",
+        "fullName": "google.area120.tables.v1alpha1.Client.GetRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.GetRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.Row",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "GetRow",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.GetRow",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_GetTable_sync",
+      "title": "area120tables GetTable Sample",
+      "description": "GetTable gets a table. Returns NOT_FOUND if the table does not exist.",
+      "file": "Client/GetTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTable",
+        "fullName": "google.area120.tables.v1alpha1.Client.GetTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.GetTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.Table",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "GetTable",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.GetTable",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_GetWorkspace_sync",
+      "title": "area120tables GetWorkspace Sample",
+      "description": "GetWorkspace gets a workspace. Returns NOT_FOUND if the workspace does not exist.",
+      "file": "Client/GetWorkspace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkspace",
+        "fullName": "google.area120.tables.v1alpha1.Client.GetWorkspace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.GetWorkspaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.Workspace",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "GetWorkspace",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.GetWorkspace",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_ListRows_sync",
+      "title": "area120tables ListRows Sample",
+      "description": "ListRows lists rows in a table. Returns NOT_FOUND if the table does not exist.",
+      "file": "Client/ListRows/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRows",
+        "fullName": "google.area120.tables.v1alpha1.Client.ListRows",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.ListRowsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RowIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "ListRows",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.ListRows",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_ListTables_sync",
+      "title": "area120tables ListTables Sample",
+      "description": "ListTables lists tables for the user.",
+      "file": "Client/ListTables/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTables",
+        "fullName": "google.area120.tables.v1alpha1.Client.ListTables",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.ListTablesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TableIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "ListTables",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.ListTables",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_ListWorkspaces_sync",
+      "title": "area120tables ListWorkspaces Sample",
+      "description": "ListWorkspaces lists workspaces for the user.",
+      "file": "Client/ListWorkspaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkspaces",
+        "fullName": "google.area120.tables.v1alpha1.Client.ListWorkspaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.ListWorkspacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkspaceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "ListWorkspaces",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.ListWorkspaces",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "area120tables_v1alpha1_generated_TablesService_UpdateRow_sync",
+      "title": "area120tables UpdateRow Sample",
+      "description": "UpdateRow updates a row.",
+      "file": "Client/UpdateRow/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRow",
+        "fullName": "google.area120.tables.v1alpha1.Client.UpdateRow",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "tablespb.UpdateRowRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "tablespb.Row",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.area120.tables.v1alpha1.Client"
+        },
+        "method": {
+          "shortName": "UpdateRow",
+          "fullName": "google.area120.tables.v1alpha1.TablesService.UpdateRow",
+          "service": {
+            "shortName": "TablesService",
+            "fullName": "google.area120.tables.v1alpha1.TablesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

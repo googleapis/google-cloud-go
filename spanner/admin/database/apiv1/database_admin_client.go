@@ -53,6 +53,7 @@ type DatabaseAdminCallOptions struct {
 	GetIamPolicy           []gax.CallOption
 	TestIamPermissions     []gax.CallOption
 	CreateBackup           []gax.CallOption
+	CopyBackup             []gax.CallOption
 	GetBackup              []gax.CallOption
 	UpdateBackup           []gax.CallOption
 	DeleteBackup           []gax.CallOption
@@ -152,6 +153,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 		},
 		TestIamPermissions: []gax.CallOption{},
 		CreateBackup:       []gax.CallOption{},
+		CopyBackup:         []gax.CallOption{},
 		GetBackup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -246,6 +248,8 @@ type internalDatabaseAdminClient interface {
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 	CreateBackup(context.Context, *databasepb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
 	CreateBackupOperation(name string) *CreateBackupOperation
+	CopyBackup(context.Context, *databasepb.CopyBackupRequest, ...gax.CallOption) (*CopyBackupOperation, error)
+	CopyBackupOperation(name string) *CopyBackupOperation
 	GetBackup(context.Context, *databasepb.GetBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
 	UpdateBackup(context.Context, *databasepb.UpdateBackupRequest, ...gax.CallOption) (*databasepb.Backup, error)
 	DeleteBackup(context.Context, *databasepb.DeleteBackupRequest, ...gax.CallOption) error
@@ -423,6 +427,28 @@ func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *DatabaseAdminClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return c.internalClient.CreateBackupOperation(name)
+}
+
+// CopyBackup starts copying a Cloud Spanner Backup.
+// The returned backup [long-running operation][google.longrunning.Operation]
+// will have a name of the format
+// projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
+// and can be used to track copying of the backup. The operation is associated
+// with the destination backup.
+// The metadata field type is
+// CopyBackupMetadata.
+// The response field type is
+// Backup, if successful. Cancelling the returned operation will stop the
+// copying and delete the backup.
+// Concurrent CopyBackup requests can run on the same source backup.
+func (c *DatabaseAdminClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
+	return c.internalClient.CopyBackup(ctx, req, opts...)
+}
+
+// CopyBackupOperation returns a new CopyBackupOperation from a given name.
+// The name must be that of a previously created CopyBackupOperation, possibly from a different process.
+func (c *DatabaseAdminClient) CopyBackupOperation(name string) *CopyBackupOperation {
+	return c.internalClient.CopyBackupOperation(name)
 }
 
 // GetBackup gets metadata on a pending or completed Backup.
@@ -851,6 +877,30 @@ func (c *databaseAdminGRPCClient) CreateBackup(ctx context.Context, req *databas
 	}, nil
 }
 
+func (c *databaseAdminGRPCClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CopyBackup[0:len((*c.CallOptions).CopyBackup):len((*c.CallOptions).CopyBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.databaseAdminClient.CopyBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CopyBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *databaseAdminGRPCClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -1070,6 +1120,75 @@ func (c *databaseAdminGRPCClient) ListBackupOperations(ctx context.Context, req 
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CopyBackupOperation manages a long-running operation from CopyBackup.
+type CopyBackupOperation struct {
+	lro *longrunning.Operation
+}
+
+// CopyBackupOperation returns a new CopyBackupOperation from a given name.
+// The name must be that of a previously created CopyBackupOperation, possibly from a different process.
+func (c *databaseAdminGRPCClient) CopyBackupOperation(name string) *CopyBackupOperation {
+	return &CopyBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CopyBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	var resp databasepb.Backup
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CopyBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*databasepb.Backup, error) {
+	var resp databasepb.Backup
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CopyBackupOperation) Metadata() (*databasepb.CopyBackupMetadata, error) {
+	var meta databasepb.CopyBackupMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CopyBackupOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CopyBackupOperation) Name() string {
+	return op.lro.Name()
 }
 
 // CreateBackupOperation manages a long-running operation from CreateBackup.

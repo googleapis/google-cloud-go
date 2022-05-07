@@ -1,0 +1,3269 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/analytics/admin/apiv1alpha",
+    "version": "0.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.analytics.admin.v1alpha",
+        "version": "v1alpha"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_AcknowledgeUserDataCollection_sync",
+      "title": "analyticsadmin AcknowledgeUserDataCollection Sample",
+      "description": "AcknowledgeUserDataCollection acknowledges the terms of user data collection for the specified property.\n\nThis acknowledgement must be completed (either in the Google Analytics UI\nor via this API) before MeasurementProtocolSecret resources may be created.",
+      "file": "AnalyticsAdminClient/AcknowledgeUserDataCollection/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AcknowledgeUserDataCollection",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.AcknowledgeUserDataCollection",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.AcknowledgeUserDataCollectionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.AcknowledgeUserDataCollectionResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "AcknowledgeUserDataCollection",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.AcknowledgeUserDataCollection",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ApproveDisplayVideo360AdvertiserLinkProposal_sync",
+      "title": "analyticsadmin ApproveDisplayVideo360AdvertiserLinkProposal Sample",
+      "description": "ApproveDisplayVideo360AdvertiserLinkProposal approves a DisplayVideo360AdvertiserLinkProposal.\nThe DisplayVideo360AdvertiserLinkProposal will be deleted and a new\nDisplayVideo360AdvertiserLink will be created.",
+      "file": "AnalyticsAdminClient/ApproveDisplayVideo360AdvertiserLinkProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ApproveDisplayVideo360AdvertiserLinkProposal",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ApproveDisplayVideo360AdvertiserLinkProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ApproveDisplayVideo360AdvertiserLinkProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ApproveDisplayVideo360AdvertiserLinkProposalResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ApproveDisplayVideo360AdvertiserLinkProposal",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ApproveDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ArchiveCustomDimension_sync",
+      "title": "analyticsadmin ArchiveCustomDimension Sample",
+      "description": "ArchiveCustomDimension archives a CustomDimension on a property.",
+      "file": "AnalyticsAdminClient/ArchiveCustomDimension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ArchiveCustomDimension",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ArchiveCustomDimension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ArchiveCustomDimensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ArchiveCustomDimension",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomDimension",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ArchiveCustomMetric_sync",
+      "title": "analyticsadmin ArchiveCustomMetric Sample",
+      "description": "ArchiveCustomMetric archives a CustomMetric on a property.",
+      "file": "AnalyticsAdminClient/ArchiveCustomMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ArchiveCustomMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ArchiveCustomMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ArchiveCustomMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ArchiveCustomMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ArchiveCustomMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_AuditUserLinks_sync",
+      "title": "analyticsadmin AuditUserLinks Sample",
+      "description": "AuditUserLinks lists all user links on an account or property, including implicit ones\nthat come from effective permissions granted by groups or organization\nadmin roles.\n\nIf a returned user link does not have direct permissions, they cannot\nbe removed from the account or property directly with the DeleteUserLink\ncommand. They have to be removed from the group/etc that gives them\npermissions, which is currently only usable/discoverable in the GA or GMP\nUIs.",
+      "file": "AnalyticsAdminClient/AuditUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AuditUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.AuditUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.AuditUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AuditUserLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "AuditUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.AuditUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchCreateUserLinks_sync",
+      "title": "analyticsadmin BatchCreateUserLinks Sample",
+      "description": "BatchCreateUserLinks creates information about multiple users’ links to an account or property.\n\nThis method is transactional. If any UserLink cannot be created, none of\nthe UserLinks will be created.",
+      "file": "AnalyticsAdminClient/BatchCreateUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchCreateUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchCreateUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchCreateUserLinksResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchCreateUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchCreateUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteUserLinks_sync",
+      "title": "analyticsadmin BatchDeleteUserLinks Sample",
+      "description": "BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.",
+      "file": "AnalyticsAdminClient/BatchDeleteUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchDeleteUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchDeleteUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchDeleteUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchGetUserLinks_sync",
+      "title": "analyticsadmin BatchGetUserLinks Sample",
+      "description": "BatchGetUserLinks gets information about multiple users’ links to an account or property.",
+      "file": "AnalyticsAdminClient/BatchGetUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchGetUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchGetUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchGetUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchGetUserLinksResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchGetUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchGetUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchUpdateUserLinks_sync",
+      "title": "analyticsadmin BatchUpdateUserLinks Sample",
+      "description": "BatchUpdateUserLinks updates information about multiple users’ links to an account or property.",
+      "file": "AnalyticsAdminClient/BatchUpdateUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.BatchUpdateUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BatchUpdateUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.BatchUpdateUserLinksResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.BatchUpdateUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CancelDisplayVideo360AdvertiserLinkProposal_sync",
+      "title": "analyticsadmin CancelDisplayVideo360AdvertiserLinkProposal Sample",
+      "description": "CancelDisplayVideo360AdvertiserLinkProposal cancels a DisplayVideo360AdvertiserLinkProposal.\nCancelling can mean either: \n\n  Declining a proposal initiated from Display & Video 360\n\n  Withdrawing a proposal initiated from Google Analytics\n  After being cancelled, a proposal will eventually be deleted automatically.",
+      "file": "AnalyticsAdminClient/CancelDisplayVideo360AdvertiserLinkProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelDisplayVideo360AdvertiserLinkProposal",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CancelDisplayVideo360AdvertiserLinkProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CancelDisplayVideo360AdvertiserLinkProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CancelDisplayVideo360AdvertiserLinkProposal",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CancelDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateConversionEvent_sync",
+      "title": "analyticsadmin CreateConversionEvent Sample",
+      "description": "CreateConversionEvent creates a conversion event with the specified attributes.",
+      "file": "AnalyticsAdminClient/CreateConversionEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversionEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateConversionEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateConversionEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ConversionEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateConversionEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateConversionEvent",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateCustomDimension_sync",
+      "title": "analyticsadmin CreateCustomDimension Sample",
+      "description": "CreateCustomDimension creates a CustomDimension.",
+      "file": "AnalyticsAdminClient/CreateCustomDimension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomDimension",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateCustomDimension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateCustomDimensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomDimension",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateCustomDimension",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomDimension",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateCustomMetric_sync",
+      "title": "analyticsadmin CreateCustomMetric Sample",
+      "description": "CreateCustomMetric creates a CustomMetric.",
+      "file": "AnalyticsAdminClient/CreateCustomMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCustomMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateCustomMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateCustomMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateCustomMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateCustomMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateDataStream_sync",
+      "title": "analyticsadmin CreateDataStream Sample",
+      "description": "CreateDataStream creates a DataStream.",
+      "file": "AnalyticsAdminClient/CreateDataStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataStream",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateDataStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateDataStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataStream",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateDataStream",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDataStream",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateDisplayVideo360AdvertiserLink_sync",
+      "title": "analyticsadmin CreateDisplayVideo360AdvertiserLink Sample",
+      "description": "CreateDisplayVideo360AdvertiserLink creates a DisplayVideo360AdvertiserLink.\nThis can only be utilized by users who have proper authorization both on\nthe Google Analytics property and on the Display & Video 360 advertiser.\nUsers who do not have access to the Display & Video 360 advertiser should\ninstead seek to create a DisplayVideo360LinkProposal.",
+      "file": "AnalyticsAdminClient/CreateDisplayVideo360AdvertiserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDisplayVideo360AdvertiserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateDisplayVideo360AdvertiserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateDisplayVideo360AdvertiserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateDisplayVideo360AdvertiserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateDisplayVideo360AdvertiserLinkProposal_sync",
+      "title": "analyticsadmin CreateDisplayVideo360AdvertiserLinkProposal Sample",
+      "description": "CreateDisplayVideo360AdvertiserLinkProposal creates a DisplayVideo360AdvertiserLinkProposal.",
+      "file": "AnalyticsAdminClient/CreateDisplayVideo360AdvertiserLinkProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDisplayVideo360AdvertiserLinkProposal",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateDisplayVideo360AdvertiserLinkProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateDisplayVideo360AdvertiserLinkProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateDisplayVideo360AdvertiserLinkProposal",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateFirebaseLink_sync",
+      "title": "analyticsadmin CreateFirebaseLink Sample",
+      "description": "CreateFirebaseLink creates a FirebaseLink.\n\nProperties can have at most one FirebaseLink.",
+      "file": "AnalyticsAdminClient/CreateFirebaseLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFirebaseLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateFirebaseLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateFirebaseLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.FirebaseLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateFirebaseLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateFirebaseLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateGoogleAdsLink_sync",
+      "title": "analyticsadmin CreateGoogleAdsLink Sample",
+      "description": "CreateGoogleAdsLink creates a GoogleAdsLink.",
+      "file": "AnalyticsAdminClient/CreateGoogleAdsLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateGoogleAdsLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateGoogleAdsLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateGoogleAdsLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.GoogleAdsLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateGoogleAdsLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateGoogleAdsLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateMeasurementProtocolSecret_sync",
+      "title": "analyticsadmin CreateMeasurementProtocolSecret Sample",
+      "description": "CreateMeasurementProtocolSecret creates a measurement protocol secret.",
+      "file": "AnalyticsAdminClient/CreateMeasurementProtocolSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMeasurementProtocolSecret",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateMeasurementProtocolSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateMeasurementProtocolSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.MeasurementProtocolSecret",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateMeasurementProtocolSecret",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateMeasurementProtocolSecret",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateProperty_sync",
+      "title": "analyticsadmin CreateProperty Sample",
+      "description": "CreateProperty creates an “GA4” property with the specified location and attributes.",
+      "file": "AnalyticsAdminClient/CreateProperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateProperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateProperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreatePropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Property",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateProperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_CreateUserLink_sync",
+      "title": "analyticsadmin CreateUserLink Sample",
+      "description": "CreateUserLink creates a user link on an account or property.\n\nIf the user with the specified email already has permissions on the\naccount or property, then the user’s existing permissions will be unioned\nwith the permissions specified in the new UserLink.",
+      "file": "AnalyticsAdminClient/CreateUserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.CreateUserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateUserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.UserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "CreateUserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.CreateUserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteAccount_sync",
+      "title": "analyticsadmin DeleteAccount Sample",
+      "description": "DeleteAccount marks target Account as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted accounts.\nHowever, they can be restored using the Trash Can UI.\n\nIf the accounts are not restored before the expiration time, the account\nand all child resources (eg: Properties, GoogleAdsLinks, Streams,\nUserLinks) will be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found.",
+      "file": "AnalyticsAdminClient/DeleteAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAccount",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteAccount",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteAccount",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteConversionEvent_sync",
+      "title": "analyticsadmin DeleteConversionEvent Sample",
+      "description": "DeleteConversionEvent deletes a conversion event in a property.",
+      "file": "AnalyticsAdminClient/DeleteConversionEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversionEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteConversionEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteConversionEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteConversionEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteConversionEvent",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteDataStream_sync",
+      "title": "analyticsadmin DeleteDataStream Sample",
+      "description": "DeleteDataStream deletes a DataStream on a property.",
+      "file": "AnalyticsAdminClient/DeleteDataStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataStream",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteDataStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteDataStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteDataStream",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDataStream",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteDisplayVideo360AdvertiserLink_sync",
+      "title": "analyticsadmin DeleteDisplayVideo360AdvertiserLink Sample",
+      "description": "DeleteDisplayVideo360AdvertiserLink deletes a DisplayVideo360AdvertiserLink on a property.",
+      "file": "AnalyticsAdminClient/DeleteDisplayVideo360AdvertiserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDisplayVideo360AdvertiserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteDisplayVideo360AdvertiserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteDisplayVideo360AdvertiserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteDisplayVideo360AdvertiserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteDisplayVideo360AdvertiserLinkProposal_sync",
+      "title": "analyticsadmin DeleteDisplayVideo360AdvertiserLinkProposal Sample",
+      "description": "DeleteDisplayVideo360AdvertiserLinkProposal deletes a DisplayVideo360AdvertiserLinkProposal on a property.\nThis can only be used on cancelled proposals.",
+      "file": "AnalyticsAdminClient/DeleteDisplayVideo360AdvertiserLinkProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDisplayVideo360AdvertiserLinkProposal",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteDisplayVideo360AdvertiserLinkProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteDisplayVideo360AdvertiserLinkProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteDisplayVideo360AdvertiserLinkProposal",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteFirebaseLink_sync",
+      "title": "analyticsadmin DeleteFirebaseLink Sample",
+      "description": "DeleteFirebaseLink deletes a FirebaseLink on a property",
+      "file": "AnalyticsAdminClient/DeleteFirebaseLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFirebaseLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteFirebaseLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteFirebaseLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteFirebaseLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteFirebaseLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteGoogleAdsLink_sync",
+      "title": "analyticsadmin DeleteGoogleAdsLink Sample",
+      "description": "DeleteGoogleAdsLink deletes a GoogleAdsLink on a property",
+      "file": "AnalyticsAdminClient/DeleteGoogleAdsLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteGoogleAdsLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteGoogleAdsLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteGoogleAdsLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteGoogleAdsLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteGoogleAdsLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteMeasurementProtocolSecret_sync",
+      "title": "analyticsadmin DeleteMeasurementProtocolSecret Sample",
+      "description": "DeleteMeasurementProtocolSecret deletes target MeasurementProtocolSecret.",
+      "file": "AnalyticsAdminClient/DeleteMeasurementProtocolSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMeasurementProtocolSecret",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteMeasurementProtocolSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteMeasurementProtocolSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteMeasurementProtocolSecret",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteMeasurementProtocolSecret",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync",
+      "title": "analyticsadmin DeleteProperty Sample",
+      "description": "DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.\n\nThis API does not have a method to restore soft-deleted properties.\nHowever, they can be restored using the Trash Can UI.\n\nIf the properties are not restored before the expiration time, the Property\nand all child resources (eg: GoogleAdsLinks, Streams, UserLinks)\nwill be permanently purged.\nhttps: //support.google.com/analytics/answer/6154772 (at https: //support.google.com/analytics/answer/6154772)\n\nReturns an error if the target is not found, or is not an GA4 Property.",
+      "file": "AnalyticsAdminClient/DeleteProperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteProperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeletePropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Property",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteProperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteUserLink_sync",
+      "title": "analyticsadmin DeleteUserLink Sample",
+      "description": "DeleteUserLink deletes a user link on an account or property.",
+      "file": "AnalyticsAdminClient/DeleteUserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.DeleteUserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteUserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteUserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.DeleteUserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 45,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetAccount_sync",
+      "title": "analyticsadmin GetAccount Sample",
+      "description": "GetAccount lookup for a single Account.",
+      "file": "AnalyticsAdminClient/GetAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccount",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Account",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetAccount",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetAccount",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetConversionEvent_sync",
+      "title": "analyticsadmin GetConversionEvent Sample",
+      "description": "GetConversionEvent retrieve a single conversion event.",
+      "file": "AnalyticsAdminClient/GetConversionEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversionEvent",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetConversionEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetConversionEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ConversionEvent",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetConversionEvent",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetConversionEvent",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetCustomDimension_sync",
+      "title": "analyticsadmin GetCustomDimension Sample",
+      "description": "GetCustomDimension lookup for a single CustomDimension.",
+      "file": "AnalyticsAdminClient/GetCustomDimension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomDimension",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetCustomDimension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetCustomDimensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomDimension",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetCustomDimension",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomDimension",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetCustomMetric_sync",
+      "title": "analyticsadmin GetCustomMetric Sample",
+      "description": "GetCustomMetric lookup for a single CustomMetric.",
+      "file": "AnalyticsAdminClient/GetCustomMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetCustomMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetCustomMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetCustomMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetCustomMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataRetentionSettings_sync",
+      "title": "analyticsadmin GetDataRetentionSettings Sample",
+      "description": "GetDataRetentionSettings returns the singleton data retention settings for this property.",
+      "file": "AnalyticsAdminClient/GetDataRetentionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataRetentionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDataRetentionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDataRetentionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataRetentionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDataRetentionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataRetentionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataSharingSettings_sync",
+      "title": "analyticsadmin GetDataSharingSettings Sample",
+      "description": "GetDataSharingSettings get data sharing settings on an account.\nData sharing settings are singletons.",
+      "file": "AnalyticsAdminClient/GetDataSharingSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataSharingSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDataSharingSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDataSharingSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataSharingSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDataSharingSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataSharingSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDataStream_sync",
+      "title": "analyticsadmin GetDataStream Sample",
+      "description": "GetDataStream lookup for a single DataStream.",
+      "file": "AnalyticsAdminClient/GetDataStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataStream",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDataStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDataStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataStream",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDataStream",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDataStream",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDisplayVideo360AdvertiserLink_sync",
+      "title": "analyticsadmin GetDisplayVideo360AdvertiserLink Sample",
+      "description": "GetDisplayVideo360AdvertiserLink look up a single DisplayVideo360AdvertiserLink",
+      "file": "AnalyticsAdminClient/GetDisplayVideo360AdvertiserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDisplayVideo360AdvertiserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDisplayVideo360AdvertiserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDisplayVideo360AdvertiserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDisplayVideo360AdvertiserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetDisplayVideo360AdvertiserLinkProposal_sync",
+      "title": "analyticsadmin GetDisplayVideo360AdvertiserLinkProposal Sample",
+      "description": "GetDisplayVideo360AdvertiserLinkProposal lookup for a single DisplayVideo360AdvertiserLinkProposal.",
+      "file": "AnalyticsAdminClient/GetDisplayVideo360AdvertiserLinkProposal/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDisplayVideo360AdvertiserLinkProposal",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetDisplayVideo360AdvertiserLinkProposal",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetDisplayVideo360AdvertiserLinkProposalRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLinkProposal",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetDisplayVideo360AdvertiserLinkProposal",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetDisplayVideo360AdvertiserLinkProposal",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetGlobalSiteTag_sync",
+      "title": "analyticsadmin GetGlobalSiteTag Sample",
+      "description": "GetGlobalSiteTag returns the Site Tag for the specified web stream.\nSite Tags are immutable singletons.",
+      "file": "AnalyticsAdminClient/GetGlobalSiteTag/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGlobalSiteTag",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetGlobalSiteTag",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetGlobalSiteTagRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.GlobalSiteTag",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetGlobalSiteTag",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetGlobalSiteTag",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetGoogleSignalsSettings_sync",
+      "title": "analyticsadmin GetGoogleSignalsSettings Sample",
+      "description": "GetGoogleSignalsSettings lookup for Google Signals settings for a property.",
+      "file": "AnalyticsAdminClient/GetGoogleSignalsSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetGoogleSignalsSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetGoogleSignalsSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetGoogleSignalsSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.GoogleSignalsSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetGoogleSignalsSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetGoogleSignalsSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetMeasurementProtocolSecret_sync",
+      "title": "analyticsadmin GetMeasurementProtocolSecret Sample",
+      "description": "GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.",
+      "file": "AnalyticsAdminClient/GetMeasurementProtocolSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMeasurementProtocolSecret",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetMeasurementProtocolSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetMeasurementProtocolSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.MeasurementProtocolSecret",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetMeasurementProtocolSecret",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetMeasurementProtocolSecret",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetProperty_sync",
+      "title": "analyticsadmin GetProperty Sample",
+      "description": "GetProperty lookup for a single “GA4” Property.",
+      "file": "AnalyticsAdminClient/GetProperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetProperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetPropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Property",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetProperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetUserLink_sync",
+      "title": "analyticsadmin GetUserLink Sample",
+      "description": "GetUserLink gets information about a user’s link to an account or property.",
+      "file": "AnalyticsAdminClient/GetUserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.GetUserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetUserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.UserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "GetUserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.GetUserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccountSummaries_sync",
+      "title": "analyticsadmin ListAccountSummaries Sample",
+      "description": "ListAccountSummaries returns summaries of all accounts accessible by the caller.",
+      "file": "AnalyticsAdminClient/ListAccountSummaries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccountSummaries",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListAccountSummaries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAccountSummariesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountSummaryIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListAccountSummaries",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccountSummaries",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync",
+      "title": "analyticsadmin ListAccounts Sample",
+      "description": "ListAccounts returns all accounts accessible by the caller.\n\nNote that these accounts might not currently have GA4 properties.\nSoft-deleted (ie: “trashed”) accounts are excluded by default.\nReturns an empty list if no relevant accounts are found.",
+      "file": "AnalyticsAdminClient/ListAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccounts",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListAccounts",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListAccounts",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListConversionEvents_sync",
+      "title": "analyticsadmin ListConversionEvents Sample",
+      "description": "ListConversionEvents returns a list of conversion events in the specified parent property.\n\nReturns an empty list if no conversion events are found.",
+      "file": "AnalyticsAdminClient/ListConversionEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversionEvents",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListConversionEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListConversionEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversionEventIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListConversionEvents",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListConversionEvents",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListCustomDimensions_sync",
+      "title": "analyticsadmin ListCustomDimensions Sample",
+      "description": "ListCustomDimensions lists CustomDimensions on a property.",
+      "file": "AnalyticsAdminClient/ListCustomDimensions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomDimensions",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListCustomDimensions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListCustomDimensionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomDimensionIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListCustomDimensions",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomDimensions",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListCustomMetrics_sync",
+      "title": "analyticsadmin ListCustomMetrics Sample",
+      "description": "ListCustomMetrics lists CustomMetrics on a property.",
+      "file": "AnalyticsAdminClient/ListCustomMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomMetrics",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListCustomMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListCustomMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomMetricIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListCustomMetrics",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListCustomMetrics",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListDataStreams_sync",
+      "title": "analyticsadmin ListDataStreams Sample",
+      "description": "ListDataStreams lists DataStreams on a property.",
+      "file": "AnalyticsAdminClient/ListDataStreams/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataStreams",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListDataStreams",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListDataStreamsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataStreamIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListDataStreams",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListDataStreams",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListDisplayVideo360AdvertiserLinkProposals_sync",
+      "title": "analyticsadmin ListDisplayVideo360AdvertiserLinkProposals Sample",
+      "description": "ListDisplayVideo360AdvertiserLinkProposals lists DisplayVideo360AdvertiserLinkProposals on a property.",
+      "file": "AnalyticsAdminClient/ListDisplayVideo360AdvertiserLinkProposals/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDisplayVideo360AdvertiserLinkProposals",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListDisplayVideo360AdvertiserLinkProposals",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListDisplayVideo360AdvertiserLinkProposalsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisplayVideo360AdvertiserLinkProposalIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListDisplayVideo360AdvertiserLinkProposals",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinkProposals",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListDisplayVideo360AdvertiserLinks_sync",
+      "title": "analyticsadmin ListDisplayVideo360AdvertiserLinks Sample",
+      "description": "ListDisplayVideo360AdvertiserLinks lists all DisplayVideo360AdvertiserLinks on a property.",
+      "file": "AnalyticsAdminClient/ListDisplayVideo360AdvertiserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDisplayVideo360AdvertiserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListDisplayVideo360AdvertiserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListDisplayVideo360AdvertiserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DisplayVideo360AdvertiserLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListDisplayVideo360AdvertiserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListDisplayVideo360AdvertiserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListFirebaseLinks_sync",
+      "title": "analyticsadmin ListFirebaseLinks Sample",
+      "description": "ListFirebaseLinks lists FirebaseLinks on a property.\nProperties can have at most one FirebaseLink.",
+      "file": "AnalyticsAdminClient/ListFirebaseLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFirebaseLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListFirebaseLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListFirebaseLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FirebaseLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListFirebaseLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListFirebaseLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListGoogleAdsLinks_sync",
+      "title": "analyticsadmin ListGoogleAdsLinks Sample",
+      "description": "ListGoogleAdsLinks lists GoogleAdsLinks on a property.",
+      "file": "AnalyticsAdminClient/ListGoogleAdsLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListGoogleAdsLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListGoogleAdsLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListGoogleAdsLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GoogleAdsLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListGoogleAdsLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListGoogleAdsLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListMeasurementProtocolSecrets_sync",
+      "title": "analyticsadmin ListMeasurementProtocolSecrets Sample",
+      "description": "ListMeasurementProtocolSecrets returns child MeasurementProtocolSecrets under the specified parent\nProperty.",
+      "file": "AnalyticsAdminClient/ListMeasurementProtocolSecrets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMeasurementProtocolSecrets",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListMeasurementProtocolSecrets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListMeasurementProtocolSecretsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MeasurementProtocolSecretIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListMeasurementProtocolSecrets",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListMeasurementProtocolSecrets",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListProperties_sync",
+      "title": "analyticsadmin ListProperties Sample",
+      "description": "ListProperties returns child Properties under the specified parent Account.\n\nOnly “GA4” properties will be returned.\nProperties will be excluded if the caller does not have access.\nSoft-deleted (ie: “trashed”) properties are excluded by default.\nReturns an empty list if no relevant properties are found.",
+      "file": "AnalyticsAdminClient/ListProperties/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProperties",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListProperties",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListPropertiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PropertyIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListProperties",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListProperties",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListUserLinks_sync",
+      "title": "analyticsadmin ListUserLinks Sample",
+      "description": "ListUserLinks lists all user links on an account or property.",
+      "file": "AnalyticsAdminClient/ListUserLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserLinks",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ListUserLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListUserLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserLinkIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ListUserLinks",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ListUserLinks",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_ProvisionAccountTicket_sync",
+      "title": "analyticsadmin ProvisionAccountTicket Sample",
+      "description": "ProvisionAccountTicket requests a ticket for creating an account.",
+      "file": "AnalyticsAdminClient/ProvisionAccountTicket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ProvisionAccountTicket",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.ProvisionAccountTicket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ProvisionAccountTicketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.ProvisionAccountTicketResponse",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "ProvisionAccountTicket",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.ProvisionAccountTicket",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_SearchChangeHistoryEvents_sync",
+      "title": "analyticsadmin SearchChangeHistoryEvents Sample",
+      "description": "SearchChangeHistoryEvents searches through all changes to an account or its children given the\nspecified set of filters.",
+      "file": "AnalyticsAdminClient/SearchChangeHistoryEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchChangeHistoryEvents",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.SearchChangeHistoryEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.SearchChangeHistoryEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChangeHistoryEventIterator",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "SearchChangeHistoryEvents",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.SearchChangeHistoryEvents",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateAccount_sync",
+      "title": "analyticsadmin UpdateAccount Sample",
+      "description": "UpdateAccount updates an account.",
+      "file": "AnalyticsAdminClient/UpdateAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccount",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Account",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAccount",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateAccount",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateCustomDimension_sync",
+      "title": "analyticsadmin UpdateCustomDimension Sample",
+      "description": "UpdateCustomDimension updates a CustomDimension on a property.",
+      "file": "AnalyticsAdminClient/UpdateCustomDimension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomDimension",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateCustomDimension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateCustomDimensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomDimension",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomDimension",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomDimension",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateCustomMetric_sync",
+      "title": "analyticsadmin UpdateCustomMetric Sample",
+      "description": "UpdateCustomMetric updates a CustomMetric on a property.",
+      "file": "AnalyticsAdminClient/UpdateCustomMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCustomMetric",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateCustomMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateCustomMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.CustomMetric",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateCustomMetric",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateCustomMetric",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateDataRetentionSettings_sync",
+      "title": "analyticsadmin UpdateDataRetentionSettings Sample",
+      "description": "UpdateDataRetentionSettings updates the singleton data retention settings for this property.",
+      "file": "AnalyticsAdminClient/UpdateDataRetentionSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataRetentionSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateDataRetentionSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateDataRetentionSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataRetentionSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDataRetentionSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataRetentionSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateDataStream_sync",
+      "title": "analyticsadmin UpdateDataStream Sample",
+      "description": "UpdateDataStream updates a DataStream on a property.",
+      "file": "AnalyticsAdminClient/UpdateDataStream/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataStream",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateDataStream",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateDataStreamRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DataStream",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDataStream",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDataStream",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateDisplayVideo360AdvertiserLink_sync",
+      "title": "analyticsadmin UpdateDisplayVideo360AdvertiserLink Sample",
+      "description": "UpdateDisplayVideo360AdvertiserLink updates a DisplayVideo360AdvertiserLink on a property.",
+      "file": "AnalyticsAdminClient/UpdateDisplayVideo360AdvertiserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDisplayVideo360AdvertiserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateDisplayVideo360AdvertiserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateDisplayVideo360AdvertiserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.DisplayVideo360AdvertiserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateDisplayVideo360AdvertiserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateDisplayVideo360AdvertiserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateGoogleAdsLink_sync",
+      "title": "analyticsadmin UpdateGoogleAdsLink Sample",
+      "description": "UpdateGoogleAdsLink updates a GoogleAdsLink on a property",
+      "file": "AnalyticsAdminClient/UpdateGoogleAdsLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGoogleAdsLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateGoogleAdsLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateGoogleAdsLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.GoogleAdsLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateGoogleAdsLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleAdsLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateGoogleSignalsSettings_sync",
+      "title": "analyticsadmin UpdateGoogleSignalsSettings Sample",
+      "description": "UpdateGoogleSignalsSettings updates Google Signals settings for a property.",
+      "file": "AnalyticsAdminClient/UpdateGoogleSignalsSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateGoogleSignalsSettings",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateGoogleSignalsSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateGoogleSignalsSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.GoogleSignalsSettings",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateGoogleSignalsSettings",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateGoogleSignalsSettings",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateMeasurementProtocolSecret_sync",
+      "title": "analyticsadmin UpdateMeasurementProtocolSecret Sample",
+      "description": "UpdateMeasurementProtocolSecret updates a measurement protocol secret.",
+      "file": "AnalyticsAdminClient/UpdateMeasurementProtocolSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMeasurementProtocolSecret",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateMeasurementProtocolSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateMeasurementProtocolSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.MeasurementProtocolSecret",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateMeasurementProtocolSecret",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateMeasurementProtocolSecret",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateProperty_sync",
+      "title": "analyticsadmin UpdateProperty Sample",
+      "description": "UpdateProperty updates a property.",
+      "file": "AnalyticsAdminClient/UpdateProperty/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProperty",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateProperty",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdatePropertyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.Property",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateProperty",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateProperty",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateUserLink_sync",
+      "title": "analyticsadmin UpdateUserLink Sample",
+      "description": "UpdateUserLink updates a user link on an account or property.",
+      "file": "AnalyticsAdminClient/UpdateUserLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUserLink",
+        "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient.UpdateUserLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateUserLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "adminpb.UserLink",
+        "client": {
+          "shortName": "AnalyticsAdminClient",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateUserLink",
+          "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService.UpdateUserLink",
+          "service": {
+            "shortName": "AnalyticsAdminService",
+            "fullName": "google.analytics.admin.v1alpha.AnalyticsAdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

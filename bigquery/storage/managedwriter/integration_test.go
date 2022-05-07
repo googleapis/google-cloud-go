@@ -730,6 +730,25 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 			descriptor := (mesg).ProtoReflect().Descriptor()
 			testProtoNormalization(ctx, t, mwClient, bqClient, dataset, schema, descriptor, b)
 		})
+		t.Run("WithExternalEnum", func(t *testing.T) {
+			t.Parallel()
+			schema := testdata.ExternalEnumMessageSchema
+			mesg := &testdata.ExternalEnumMessage{
+				MsgA: &testdata.EnumMsgA{
+					Foo: proto.String("foo"),
+					Bar: testdata.ExtEnum_THING.Enum(),
+				},
+				MsgB: &testdata.EnumMsgB{
+					Baz: testdata.ExtEnum_OTHER_THING.Enum(),
+				},
+			}
+			b, err := proto.Marshal(mesg)
+			if err != nil {
+				t.Fatalf("proto.Marshal: %v", err)
+			}
+			descriptor := (mesg).ProtoReflect().Descriptor()
+			testProtoNormalization(ctx, t, mwClient, bqClient, dataset, schema, descriptor, b)
+		})
 	})
 }
 

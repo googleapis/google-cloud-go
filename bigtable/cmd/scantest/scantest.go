@@ -34,8 +34,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigtable"
-	"cloud.google.com/go/bigtable/internal/cbtconfig"
 	"cloud.google.com/go/bigtable/internal/stat"
+	"cloud.google.com/go/cbt"
 )
 
 var (
@@ -43,7 +43,7 @@ var (
 	numScans = flag.Int("concurrent_scans", 1, "number of concurrent scans")
 	rowLimit = flag.Int("row_limit", 10000, "max number of records per scan")
 
-	config *cbtconfig.Config
+	config *cbt.Config
 	client *bigtable.Client
 )
 
@@ -54,14 +54,14 @@ func main() {
 	}
 
 	var err error
-	config, err = cbtconfig.Load()
+	config, err = cbt.Load()
 	if err != nil {
 		log.Fatal(err)
 	}
 	config.RegisterFlags()
 
 	flag.Parse()
-	if err := config.CheckFlags(cbtconfig.ProjectAndInstanceRequired); err != nil {
+	if err := config.CheckFlags(cbt.ProjectAndInstanceRequired); err != nil {
 		log.Fatal(err)
 	}
 	if config.Creds != "" {

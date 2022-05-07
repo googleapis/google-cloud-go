@@ -15,6 +15,7 @@ package storage_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +26,6 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
-	"golang.org/x/xerrors"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/googleapi"
@@ -161,8 +161,7 @@ func TestIndefiniteRetries(t *testing.T) {
 		t.Fatalf("Test took longer than %s to return", maxWait)
 	case err := <-closeDone:
 		var ge *googleapi.Error
-		ok := xerrors.As(err, &ge)
-		if !ok {
+		if !errors.As(err, &ge) {
 			t.Fatalf("Got error (%v) of type %T, expected *googleapi.Error", err, err)
 		}
 		if ge.Code != http.StatusTooManyRequests {

@@ -254,6 +254,31 @@ func ExampleDatabaseAdminClient_CreateBackup() {
 	_ = resp
 }
 
+func ExampleDatabaseAdminClient_CopyBackup() {
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.CopyBackupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/spanner/admin/database/v1#CopyBackupRequest.
+	}
+	op, err := c.CopyBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDatabaseAdminClient_GetBackup() {
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)

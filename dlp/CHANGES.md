@@ -1,5 +1,13 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.3.0...dlp/v1.4.0) (2022-04-06)
+
+
+### Features
+
+* **dlp:** add DataProfilePubSubMessage supporting pub/sub integration ([57896d1](https://github.com/googleapis/google-cloud-go/commit/57896d1491c04fa53d3f3e2344ef10c3d91c4b65))
+* **dlp:** new Bytes and File types: POWERPOINT and EXCEL ([81c4c91](https://github.com/googleapis/google-cloud-go/commit/81c4c9116178711059772f41bbf76d423ffebc95))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.2.0...dlp/v1.3.0) (2022-02-23)
 
 

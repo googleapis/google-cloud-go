@@ -25,6 +25,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"hash/crc32"
@@ -52,7 +53,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -88,11 +88,17 @@ var (
 
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTest()
+	cleanupEmulatorClients := initEmulatorClients()
 	exit := m.Run()
 	if err := cleanup(); err != nil {
 		// Don't fail the test if cleanup fails.
 		log.Printf("Post-test cleanup failed: %v", err)
 	}
+	if err := cleanupEmulatorClients(); err != nil {
+		// Don't fail the test if cleanup fails.
+		log.Printf("Post-test cleanup failed for emulator clients: %v", err)
+	}
+
 	os.Exit(exit)
 }
 
@@ -224,7 +230,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T) (gc *Client) {
 		t.Skip("Integration tests skipped in short mode")
 	}
 
-	gc, err := newHybridClient(ctx, nil)
+	gc, err := newGRPCClient(ctx)
 	if err != nil {
 		t.Fatalf("newHybridClient: %v", err)
 	}
@@ -246,103 +252,162 @@ func config(ctx context.Context, scopes ...string) *Client {
 	return client
 }
 
-func TestIntegration_BucketMethods(t *testing.T) {
+func TestIntegration_BucketCreateDelete(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	h := testHelper{t}
 
 	projectID := testutil.ProjID()
-	newBucketName := uidSpace.New()
-	b := client.Bucket(newBucketName)
-	// Test Create and Delete.
-	h.mustCreate(b, projectID, nil)
-	attrs := h.mustBucketAttrs(b)
-	if got, want := attrs.MetaGeneration, int64(1); got != want {
-		t.Errorf("got metagen %d, want %d", got, want)
-	}
-	if got, want := attrs.StorageClass, "STANDARD"; got != want {
-		t.Errorf("got storage class %q, want %q", got, want)
-	}
-	if attrs.VersioningEnabled {
-		t.Error("got versioning enabled, wanted it disabled")
-	}
-	if attrs.LocationType == "" {
-		t.Error("got an empty LocationType")
-	}
-	if attrs.ProjectNumber == 0 {
-		t.Errorf("got a zero ProjectNumber")
-	}
-	h.mustDeleteBucket(b)
 
-	// Test Create and Delete with attributes.
 	labels := map[string]string{
 		"l1":    "v1",
 		"empty": "",
 	}
-	attrs = &BucketAttrs{
-		StorageClass:      "NEARLINE",
-		VersioningEnabled: true,
-		Labels:            labels,
-		Lifecycle: Lifecycle{
-			Rules: []LifecycleRule{{
-				Action: LifecycleAction{
-					Type:         SetStorageClassAction,
-					StorageClass: "NEARLINE",
-				},
-				Condition: LifecycleCondition{
-					AgeInDays:             10,
-					Liveness:              Archived,
-					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"STANDARD"},
-					NumNewerVersions:      3,
-				},
-			}, {
-				Action: LifecycleAction{
-					Type:         SetStorageClassAction,
-					StorageClass: "ARCHIVE",
-				},
-				Condition: LifecycleCondition{
-					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
-					DaysSinceCustomTime:   20,
-					Liveness:              Live,
-					MatchesStorageClasses: []string{"STANDARD"},
-				},
-			}, {
-				Action: LifecycleAction{
-					Type: DeleteAction,
-				},
-				Condition: LifecycleCondition{
-					DaysSinceNoncurrentTime: 30,
-					Liveness:                Live,
-					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses:   []string{"NEARLINE"},
-					NumNewerVersions:        10,
-				},
-			}},
+
+	lifecycle := Lifecycle{
+		Rules: []LifecycleRule{{
+			Action: LifecycleAction{
+				Type:         SetStorageClassAction,
+				StorageClass: "NEARLINE",
+			},
+			Condition: LifecycleCondition{
+				AgeInDays:             10,
+				Liveness:              Archived,
+				CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+				MatchesStorageClasses: []string{"STANDARD"},
+				NumNewerVersions:      3,
+			},
+		}, {
+			Action: LifecycleAction{
+				Type:         SetStorageClassAction,
+				StorageClass: "ARCHIVE",
+			},
+			Condition: LifecycleCondition{
+				CustomTimeBefore:      time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC),
+				DaysSinceCustomTime:   20,
+				Liveness:              Live,
+				MatchesStorageClasses: []string{"STANDARD"},
+			},
+		}, {
+			Action: LifecycleAction{
+				Type: DeleteAction,
+			},
+			Condition: LifecycleCondition{
+				DaysSinceNoncurrentTime: 30,
+				Liveness:                Live,
+				NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+				MatchesStorageClasses:   []string{"NEARLINE"},
+				NumNewerVersions:        10,
+			},
+		}},
+	}
+
+	// testedAttrs are the bucket attrs directly compared in this test
+	type testedAttrs struct {
+		StorageClass      string
+		VersioningEnabled bool
+		LocationType      string
+		Labels            map[string]string
+		Location          string
+		Lifecycle         Lifecycle
+	}
+
+	for _, test := range []struct {
+		name      string
+		attrs     *BucketAttrs
+		wantAttrs testedAttrs
+	}{
+		{
+			name:  "no attrs",
+			attrs: nil,
+			wantAttrs: testedAttrs{
+				StorageClass:      "STANDARD",
+				VersioningEnabled: false,
+				LocationType:      "multi-region",
+				Location:          "US",
+			},
 		},
+		{
+			name: "with attrs",
+			attrs: &BucketAttrs{
+				StorageClass:      "NEARLINE",
+				VersioningEnabled: true,
+				Labels:            labels,
+				Lifecycle:         lifecycle,
+				Location:          "SOUTHAMERICA-EAST1",
+			},
+			wantAttrs: testedAttrs{
+				StorageClass:      "NEARLINE",
+				VersioningEnabled: true,
+				Labels:            labels,
+				Location:          "SOUTHAMERICA-EAST1",
+				LocationType:      "region",
+				Lifecycle:         lifecycle,
+			},
+		},
+		{
+			name: "dual-region",
+			attrs: &BucketAttrs{
+				Location: "US-EAST1+US-WEST1",
+			},
+			wantAttrs: testedAttrs{
+				Location:     "US-EAST1+US-WEST1",
+				LocationType: "dual-region",
+				StorageClass: "STANDARD",
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			newBucketName := uidSpace.New()
+			b := client.Bucket(newBucketName)
+
+			if err := b.Create(ctx, projectID, test.attrs); err != nil {
+				t.Fatalf("bucket create: %v", err)
+			}
+
+			gotAttrs, err := b.Attrs(ctx)
+			if err != nil {
+				t.Fatalf("bucket attrs: %v", err)
+			}
+
+			// All newly created buckets should conform to the following:
+			if gotAttrs.MetaGeneration != 1 {
+				t.Errorf("metageneration: got %d, should be 1", gotAttrs.MetaGeneration)
+			}
+			if gotAttrs.ProjectNumber == 0 {
+				t.Errorf("got a zero ProjectNumber")
+			}
+
+			// Test specific wanted bucket attrs
+			if gotAttrs.VersioningEnabled != test.wantAttrs.VersioningEnabled {
+				t.Errorf("versioning enabled: got %t, want %t", gotAttrs.VersioningEnabled, test.wantAttrs.VersioningEnabled)
+			}
+			if got, want := gotAttrs.Labels, test.wantAttrs.Labels; !testutil.Equal(got, want) {
+				t.Errorf("labels: got %v, want %v", got, want)
+			}
+			if got, want := gotAttrs.Lifecycle, test.wantAttrs.Lifecycle; !testutil.Equal(got, want) {
+				t.Errorf("lifecycle: \ngot\t%v\nwant\t%v", got, want)
+			}
+			if gotAttrs.LocationType != test.wantAttrs.LocationType {
+				t.Errorf("location type: got %s, want %s", gotAttrs.LocationType, test.wantAttrs.LocationType)
+			}
+			if gotAttrs.StorageClass != test.wantAttrs.StorageClass {
+				t.Errorf("storage class: got %s, want %s", gotAttrs.StorageClass, test.wantAttrs.StorageClass)
+			}
+			if gotAttrs.Location != test.wantAttrs.Location {
+				t.Errorf("location: got %s, want %s", gotAttrs.Location, test.wantAttrs.Location)
+			}
+
+			// Delete the bucket and check that the deletion was succesful
+			if err := b.Delete(ctx); err != nil {
+				t.Fatalf("bucket delete: %v", err)
+			}
+			_, err = b.Attrs(ctx)
+			if err != ErrBucketNotExist {
+				t.Fatalf("expected ErrBucketNotExist, got %v", err)
+			}
+		})
 	}
-	h.mustCreate(b, projectID, attrs)
-	attrs = h.mustBucketAttrs(b)
-	if got, want := attrs.MetaGeneration, int64(1); got != want {
-		t.Errorf("got metagen %d, want %d", got, want)
-	}
-	if got, want := attrs.StorageClass, "NEARLINE"; got != want {
-		t.Errorf("got storage class %q, want %q", got, want)
-	}
-	if !attrs.VersioningEnabled {
-		t.Error("got versioning disabled, wanted it enabled")
-	}
-	if got, want := attrs.Labels, labels; !testutil.Equal(got, want) {
-		t.Errorf("labels: got %v, want %v", got, want)
-	}
-	if attrs.LocationType == "" {
-		t.Error("got an empty LocationType")
-	}
-	if attrs.ProjectNumber == 0 {
-		t.Errorf("got a zero ProjectNumber")
-	}
-	h.mustDeleteBucket(b)
 }
 
 func TestIntegration_BucketUpdate(t *testing.T) {
@@ -781,6 +846,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 }
 
 func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	t.Skip("Test takes upwards of 40 minutes to run. See https://github.com/googleapis/google-cloud-go/issues/5786")
 	ctx := context.Background()
 
 	// Create an HTTP client to upload test data and a gRPC client to test with.
@@ -1068,8 +1134,9 @@ func TestIntegration_SimpleWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1125,10 +1192,11 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
 		// As insurance attempt to delete the object, ignore the error if it
 		// doesn't exist, because it wasn't made.
-		gobj.Delete(ctx)
+		hobj.Delete(ctx)
 	}()
 
 	cctx, cancel := context.WithCancel(ctx)
@@ -1148,12 +1216,12 @@ func TestIntegration_CancelWriteGRPC(t *testing.T) {
 
 	// The next Write should return context.Canceled.
 	_, err = w.Write(content)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Write: got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("On Close: got %v, wanted context.Canceled", err)
 	}
 
@@ -1175,8 +1243,9 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1235,8 +1304,9 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 
 	name := uidSpace.New()
 	gobj := gc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
+	hobj := hc.Bucket(grpcBucketName).Object(name).Retryer(WithPolicy(RetryAlways))
 	defer func() {
-		if err := gobj.Delete(ctx); err != nil {
+		if err := hobj.Delete(ctx); err != nil {
 			log.Printf("failed to delete test object: %v", err)
 		}
 	}()
@@ -1268,7 +1338,6 @@ func TestIntegration_MultiChunkWriteGRPC(t *testing.T) {
 	}
 
 	// Use HTTP client to read back the Object for verification.
-	hobj := hc.Bucket(grpcBucketName).Object(name)
 	hr, err := hobj.NewReader(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -1341,6 +1410,7 @@ func TestIntegration_Objects(t *testing.T) {
 		"obj1",
 		"obj2",
 		"obj/with/slashes",
+		"obj/",
 	}
 	contents := make(map[string][]byte)
 
@@ -1387,6 +1457,43 @@ func TestIntegration_Objects(t *testing.T) {
 		}
 
 		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
+	t.Run("testObjectsIterateSelectedAttrsDelimiterIncludeTrailingDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/", IncludeTrailingDelimiter: true}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj/", "obj1", "obj2"}
 		if !cmp.Equal(sortedNames, gotNames) {
 			t.Errorf("names = %v, want %v", gotNames, sortedNames)
 		}
@@ -1512,7 +1619,7 @@ func TestIntegration_Objects(t *testing.T) {
 	realLen := len(contents[objName])
 	_, err := bkt.Object(objName).NewRangeReader(ctx, int64(realLen*2), 10)
 	var e *googleapi.Error
-	if ok := xerrors.As(err, &e); !ok {
+	if ok := errors.As(err, &e); !ok {
 		t.Error("NewRangeReader did not return a googleapi.Error")
 	} else {
 		if e.Code != 416 {
@@ -1872,7 +1979,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 	// verifying the returned results).
 	query := &Query{
 		Prefix:      "",
-		StartOffset: "obj/with/slashes",
+		StartOffset: "obj/",
 		EndOffset:   "obj2",
 	}
 	var selectedAttrs []string
@@ -2743,7 +2850,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// - (1a) must NOT have that permission on (3b).
 
 	ctx := context.Background()
-	h := testHelper{t}
 
 	// Start client with mainUserEmail creds
 	mainUserClient := testConfig(ctx, t)
@@ -2791,30 +2897,15 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			return 0
 		}
 		var e *googleapi.Error
-		if ok := xerrors.As(err, &e); ok {
+		if ok := errors.As(err, &e); ok {
 			return e.Code
 		}
 		return -1
 	}
 
-	bucketName := uidSpace.New()
-	requesterPaysBucket := mainUserClient.Bucket(bucketName)
-	bucketName2 := uidSpace.New()
-	requesterPaysBucket2 := mainUserClient.Bucket(bucketName2)
-
-	// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
-	h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
-	if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-		t.Fatalf("set ACL: %v", err)
-	}
-	defer h.mustDeleteBucket(requesterPaysBucket)
-
-	// Create a second requester-pays bucket to avoid rate limits.
-	h.mustCreate(requesterPaysBucket2, mainProjectID, &BucketAttrs{RequesterPays: true})
-	if err := requesterPaysBucket2.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
-		t.Fatalf("set ACL: %v", err)
-	}
-	defer h.mustDeleteBucket(requesterPaysBucket2)
+	// We hit bucket rate limits with these test, so we retry
+	mainUserClient.SetRetry(WithPolicy(RetryAlways))
+	otherUserClient.SetRetry(WithPolicy(RetryAlways))
 
 	for _, test := range []struct {
 		desc          string
@@ -2857,6 +2948,9 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			h := testHelper{t}
+			ctx, cancel := context.WithTimeout(ctx, 20*time.Second)
+			defer cancel()
+
 			printTestCase := func() string {
 				user := mainUserEmail
 				if test.client == otherUserClient {
@@ -2871,7 +2965,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 			checkforErrors := func(desc string, err error) {
 				if err != nil && test.expectSuccess {
-					t.Errorf("%s: got unexpected error\n\t\t%s \n\t\terror: %v", desc, printTestCase(), err)
+					t.Errorf("%s: got unexpected error:%v\n\t\t%s", desc, err, printTestCase())
 				} else if err == nil && !test.expectSuccess {
 					t.Errorf("%s: got unexpected success\n\t\t%s", desc, printTestCase())
 				} else if !test.expectSuccess && test.wantErrorCode != 0 && errCode(err) != test.wantErrorCode {
@@ -2879,6 +2973,18 @@ func TestIntegration_RequesterPays(t *testing.T) {
 						desc, printTestCase(), test.wantErrorCode, err)
 				}
 			}
+
+			bucketName := uidSpace.New()
+			requesterPaysBucket := mainUserClient.Bucket(bucketName)
+
+			// Create a requester-pays bucket. The bucket is contained in the project mainProjectID
+			h.mustCreate(requesterPaysBucket, mainProjectID, &BucketAttrs{RequesterPays: true})
+			if err := requesterPaysBucket.ACL().Set(ctx, ACLEntity("user-"+otherUserEmail), RoleOwner); err != nil {
+				t.Fatalf("set ACL: %v", err)
+			}
+			t.Cleanup(func() {
+				h.mustDeleteBucket(requesterPaysBucket)
+			})
 
 			// Make sure the object exists, so we don't get confused by ErrObjectNotExist.
 			// The later write we perform may fail so we always write to the object as the user
@@ -2893,11 +2999,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			bucket := test.client.Bucket(bucketName)
 			if test.userProject != nil {
 				bucket = bucket.UserProject(*test.userProject)
-			}
-			// Create another bucket to avoid the per bucket update rate limit
-			bucket2 := test.client.Bucket(bucketName2)
-			if test.userProject != nil {
-				bucket2 = bucket2.UserProject(*test.userProject)
 			}
 
 			// Get bucket attrs
@@ -2922,10 +3023,10 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			// We interleave buckets to get around the rate limit
 			entity := ACLEntity("domain-google.com")
 
-			checkforErrors("bucket acl set", bucket2.ACL().Set(ctx, entity, RoleReader))
+			checkforErrors("bucket acl set", bucket.ACL().Set(ctx, entity, RoleReader))
 			_, err = bucket.ACL().List(ctx)
 			checkforErrors("bucket acl list", err)
-			checkforErrors("bucket acl delete", bucket2.ACL().Delete(ctx, entity))
+			checkforErrors("bucket acl delete", bucket.ACL().Delete(ctx, entity))
 
 			// Object ACL operations
 			checkforErrors("object acl set", bucket.Object(objectName).ACL().Set(ctx, entity, RoleReader))
@@ -2936,15 +3037,29 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			// Default object ACL operations
 			// Once again, we interleave buckets to avoid rate limits
 			checkforErrors("default object acl set", bucket.DefaultObjectACL().Set(ctx, entity, RoleReader))
-			_, err = bucket2.DefaultObjectACL().List(ctx)
+			_, err = bucket.DefaultObjectACL().List(ctx)
 			checkforErrors("default object acl list", err)
 			checkforErrors("default object acl delete", bucket.DefaultObjectACL().Delete(ctx, entity))
 
-			// Copy and compose
+			// Copy
 			_, err = bucket.Object("copy").CopierFrom(bucket.Object(objectName)).Run(ctx)
 			checkforErrors("copy", err)
+			// Delete "copy" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("copy"))
+				})
+			}
+
+			// Compose
 			_, err = bucket.Object("compose").ComposerFrom(bucket.Object(objectName), bucket.Object("copy")).Run(ctx)
 			checkforErrors("compose", err)
+			// Delete "compose" object, if created
+			if err == nil {
+				t.Cleanup(func() {
+					h.mustDeleteObject(bucket.Object("compose"))
+				})
+			}
 
 			// Delete object
 			if err = bucket.Object(objectName).Delete(ctx); err != nil {
@@ -2953,14 +3068,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 			}
 			checkforErrors("delete object", err)
 		})
-
-	}
-
-	// Clean up created objects for copy and compose
-	for _, obj := range []string{"copy", "compose"} {
-		if err := requesterPaysBucket.UserProject(mainProjectID).Object(obj).Delete(ctx); err != nil {
-			t.Fatalf("could not delete %q: %v", obj, err)
-		}
 	}
 }
 
@@ -3049,7 +3156,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	errCode := func(err error) int {
 		var err2 *googleapi.Error
-		if ok := xerrors.As(err, &err2); !ok {
+		if ok := errors.As(err, &err2); !ok {
 			return -1
 		}
 		return err2.Code
@@ -3231,12 +3338,12 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if !xerrors.Is(err, context.Canceled) {
+	if !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }
@@ -3417,16 +3524,17 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	h.mustWrite(obj.NewWriter(ctx), randomContents())
 
 	defer func() {
+		t.Helper()
 		h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 		// RetentionPeriod of less than a day is explicitly called out
 		// as best effort and not guaranteed, so let's log problems deleting
 		// objects instead of failing.
 		if err := obj.Delete(context.Background()); err != nil {
-			t.Logf("%s: object delete: %v", loc(), err)
+			t.Logf("object delete: %v", err)
 		}
 		if err := bkt.Delete(context.Background()); err != nil {
-			t.Logf("%s: bucket delete: %v", loc(), err)
+			t.Logf("bucket delete: %v", err)
 		}
 	}()
 
@@ -3888,7 +3996,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		buf := make([]byte, 1000)
 		_, readErr = r.Read(buf)
 		if readErr != nil {
-			if xerrors.Is(readErr, context.Canceled) {
+			if errors.Is(readErr, context.Canceled) {
 				return
 			}
 			break

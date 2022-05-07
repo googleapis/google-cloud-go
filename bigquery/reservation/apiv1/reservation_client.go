@@ -57,6 +57,7 @@ type CallOptions struct {
 	SearchAssignments        []gax.CallOption
 	SearchAllAssignments     []gax.CallOption
 	MoveAssignment           []gax.CallOption
+	UpdateAssignment         []gax.CallOption
 	GetBiReservation         []gax.CallOption
 	UpdateBiReservation      []gax.CallOption
 }
@@ -192,6 +193,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		SearchAllAssignments: []gax.CallOption{},
 		MoveAssignment:       []gax.CallOption{},
+		UpdateAssignment:     []gax.CallOption{},
 		GetBiReservation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -231,6 +233,7 @@ type internalClient interface {
 	SearchAssignments(context.Context, *reservationpb.SearchAssignmentsRequest, ...gax.CallOption) *AssignmentIterator
 	SearchAllAssignments(context.Context, *reservationpb.SearchAllAssignmentsRequest, ...gax.CallOption) *AssignmentIterator
 	MoveAssignment(context.Context, *reservationpb.MoveAssignmentRequest, ...gax.CallOption) (*reservationpb.Assignment, error)
+	UpdateAssignment(context.Context, *reservationpb.UpdateAssignmentRequest, ...gax.CallOption) (*reservationpb.Assignment, error)
 	GetBiReservation(context.Context, *reservationpb.GetBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
 	UpdateBiReservation(context.Context, *reservationpb.UpdateBiReservationRequest, ...gax.CallOption) (*reservationpb.BiReservation, error)
 }
@@ -350,7 +353,7 @@ func (c *Client) UpdateCapacityCommitment(ctx context.Context, req *reservationp
 //
 // For example, in order to downgrade from 10000 slots to 8000, you might
 // split a 10000 capacity commitment into commitments of 2000 and 8000. Then,
-// you would change the plan of the first one to FLEX and then delete it.
+// you delete the first one after the commitment end time passes.
 func (c *Client) SplitCapacityCommitment(ctx context.Context, req *reservationpb.SplitCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.SplitCapacityCommitmentResponse, error) {
 	return c.internalClient.SplitCapacityCommitment(ctx, req, opts...)
 }
@@ -454,8 +457,8 @@ func (c *Client) DeleteAssignment(ctx context.Context, req *reservationpb.Delete
 	return c.internalClient.DeleteAssignment(ctx, req, opts...)
 }
 
-// SearchAssignments deprecated: Looks up assignments for a specified resource for a particular region.
-// If the request is about a project:
+// SearchAssignments deprecated: Looks up assignments for a specified resource for a particular
+// region. If the request is about a project:
 //
 // Assignments created on the project will be returned if they exist.
 //
@@ -522,6 +525,13 @@ func (c *Client) SearchAllAssignments(ctx context.Context, req *reservationpb.Se
 // associated reservation.
 func (c *Client) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
 	return c.internalClient.MoveAssignment(ctx, req, opts...)
+}
+
+// UpdateAssignment updates an existing assignment.
+//
+// Only the priority field can be updated.
+func (c *Client) UpdateAssignment(ctx context.Context, req *reservationpb.UpdateAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	return c.internalClient.UpdateAssignment(ctx, req, opts...)
 }
 
 // GetBiReservation retrieves a BI reservation.
@@ -1126,6 +1136,23 @@ func (c *gRPCClient) MoveAssignment(ctx context.Context, req *reservationpb.Move
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.MoveAssignment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAssignment(ctx context.Context, req *reservationpb.UpdateAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "assignment.name", url.QueryEscape(req.GetAssignment().GetName())))
+
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateAssignment[0:len((*c.CallOptions).UpdateAssignment):len((*c.CallOptions).UpdateAssignment)], opts...)
+	var resp *reservationpb.Assignment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateAssignment(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

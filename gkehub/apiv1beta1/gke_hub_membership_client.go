@@ -179,7 +179,8 @@ type internalGkeHubMembershipClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
 // GKE Hub is currently only available in the global region.
 //
@@ -331,7 +332,8 @@ type gkeHubMembershipGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The GKE Hub MembershipService handles the registration of many Kubernetes
-// clusters to Google Cloud, represented with the Membership resource.
+// clusters to Google Cloud, represented with the
+// Membership resource.
 //
 // GKE Hub is currently only available in the global region.
 //

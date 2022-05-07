@@ -201,10 +201,6 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 //   UserEventService will only join events with products from branch
 //   {newBranch}.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -212,10 +208,6 @@ func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetD
 // GetDefaultBranch get which branch is currently default branch set by
 // CatalogService.SetDefaultBranch
 // method under a specified parent catalog.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	return c.internalClient.GetDefaultBranch(ctx, req, opts...)
 }

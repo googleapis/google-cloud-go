@@ -48,9 +48,6 @@ var (
 
 	// BufferedStream is a form of checkpointed stream, that allows
 	// you to advance the offset of visible rows via Flush operations.
-	//
-	// NOTE: Buffered Streams are currently in limited preview, and as such
-	// methods like FlushRows() may yield errors for non-enrolled projects.
 	BufferedStream StreamType = "BUFFERED"
 
 	// PendingStream is a stream in which no data is made visible to

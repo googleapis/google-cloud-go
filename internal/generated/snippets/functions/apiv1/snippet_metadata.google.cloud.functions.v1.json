@@ -1,0 +1,521 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/functions/apiv1",
+    "version": "1.3.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.functions.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_CallFunction_sync",
+      "title": "cloudfunctions CallFunction Sample",
+      "description": "CallFunction synchronously invokes a deployed Cloud Function. To be used for testing\npurposes as very limited traffic is allowed. For more information on\nthe actual limits, refer to\nRate Limits (at https: //cloud.google.com/functions/quotas#rate_limits).",
+      "file": "CloudFunctionsClient/CallFunction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CallFunction",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.CallFunction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.CallFunctionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "functionspb.CallFunctionResponse",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "CallFunction",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.CallFunction",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_CreateFunction_sync",
+      "title": "cloudfunctions CreateFunction Sample",
+      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\nALREADY_EXISTS error.",
+      "file": "CloudFunctionsClient/CreateFunction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFunction",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.CreateFunction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.CreateFunctionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateFunctionOperation",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "CreateFunction",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.CreateFunction",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_DeleteFunction_sync",
+      "title": "cloudfunctions DeleteFunction Sample",
+      "description": "DeleteFunction deletes a function with the given name from the specified project. If the\ngiven function is used by some trigger, the trigger will be updated to\nremove this function.",
+      "file": "CloudFunctionsClient/DeleteFunction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFunction",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.DeleteFunction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.DeleteFunctionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteFunctionOperation",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "DeleteFunction",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.DeleteFunction",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 50,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateDownloadUrl_sync",
+      "title": "cloudfunctions GenerateDownloadUrl Sample",
+      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\nminutes after generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls)",
+      "file": "CloudFunctionsClient/GenerateDownloadUrl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateDownloadUrl",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.GenerateDownloadUrl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.GenerateDownloadUrlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "functionspb.GenerateDownloadUrlResponse",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "GenerateDownloadUrl",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.GenerateDownloadUrl",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateUploadUrl_sync",
+      "title": "cloudfunctions GenerateUploadUrl Sample",
+      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls).\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n  Source file type should be a zip file.\n\n  Source file size should not exceed 100MB limit.\n\n  No credentials should be attached - the signed URLs provide access to the\n  target bucket using internal service identity; if credentials were\n  attached, the identity from the credentials would be used, but that\n  identity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n  content-type: application/zip\n\n  x-goog-content-length-range: 0,104857600\n\nAnd this header SHOULD NOT be specified: \n\n  Authorization: Bearer YOUR_TOKEN",
+      "file": "CloudFunctionsClient/GenerateUploadUrl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateUploadUrl",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.GenerateUploadUrl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.GenerateUploadUrlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "functionspb.GenerateUploadUrlResponse",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "GenerateUploadUrl",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.GenerateUploadUrl",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GetFunction_sync",
+      "title": "cloudfunctions GetFunction Sample",
+      "description": "GetFunction returns a function with the given name from the requested project.",
+      "file": "CloudFunctionsClient/GetFunction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFunction",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.GetFunction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.GetFunctionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "functionspb.CloudFunction",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "GetFunction",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.GetFunction",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GetIamPolicy_sync",
+      "title": "cloudfunctions GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM access control policy for a function.\nReturns an empty policy if the function exists and does not have a policy\nset.",
+      "file": "CloudFunctionsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.GetIamPolicy",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_ListFunctions_sync",
+      "title": "cloudfunctions ListFunctions Sample",
+      "description": "ListFunctions returns a list of functions that belong to the requested project.",
+      "file": "CloudFunctionsClient/ListFunctions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFunctions",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.ListFunctions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.ListFunctionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CloudFunctionIterator",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "ListFunctions",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.ListFunctions",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 54,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_SetIamPolicy_sync",
+      "title": "cloudfunctions SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM access control policy on the specified function.\nReplaces any existing policy.",
+      "file": "CloudFunctionsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.Policy",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.SetIamPolicy",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_TestIamPermissions_sync",
+      "title": "cloudfunctions TestIamPermissions Sample",
+      "description": "TestIamPermissions tests the specified permissions against the IAM access control policy\nfor a function.\nIf the function does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
+      "file": "CloudFunctionsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.TestIamPermissions",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 47,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_UpdateFunction_sync",
+      "title": "cloudfunctions UpdateFunction Sample",
+      "description": "UpdateFunction updates existing function.",
+      "file": "CloudFunctionsClient/UpdateFunction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFunction",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.UpdateFunction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "functionspb.UpdateFunctionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateFunctionOperation",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "UpdateFunction",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsService.UpdateFunction",
+          "service": {
+            "shortName": "CloudFunctionsService",
+            "fullName": "google.cloud.functions.v1.CloudFunctionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 52,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -162,12 +162,23 @@ func (sct SetColumnType) SQL() string {
 	if sct.NotNull {
 		str += " NOT NULL"
 	}
+	if sct.Default != nil {
+		str += " DEFAULT (" + sct.Default.SQL() + ")"
+	}
 	return str
 }
 
 func (sco SetColumnOptions) SQL() string {
 	// TODO: not clear what to do for no options.
 	return "SET " + sco.Options.SQL()
+}
+
+func (sd SetDefault) SQL() string {
+	return "SET DEFAULT (" + sd.Default.SQL() + ")"
+}
+
+func (dp DropDefault) SQL() string {
+	return "DROP DEFAULT"
 }
 
 func (co ColumnOptions) SQL() string {
@@ -253,6 +264,9 @@ func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
+	}
+	if cd.Default != nil {
+		str += " DEFAULT (" + cd.Default.SQL() + ")"
 	}
 	if cd.Generated != nil {
 		str += " AS (" + cd.Generated.SQL() + ") STORED"
@@ -669,6 +683,21 @@ func (p Param) SQL() string { return buildSQL(p) }
 func (p Param) addSQL(sb *strings.Builder) {
 	sb.WriteString("@")
 	sb.WriteString(string(p))
+}
+
+func (c Case) SQL() string { return buildSQL(c) }
+func (c Case) addSQL(sb *strings.Builder) {
+	sb.WriteString("CASE ")
+	if c.Expr != nil {
+		fmt.Fprintf(sb, "%s ", c.Expr.SQL())
+	}
+	for _, w := range c.WhenClauses {
+		fmt.Fprintf(sb, "WHEN %s THEN %s ", w.Cond.SQL(), w.Result.SQL())
+	}
+	if c.ElseResult != nil {
+		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
+	}
+	sb.WriteString("END")
 }
 
 func (b BoolLiteral) SQL() string { return buildSQL(b) }

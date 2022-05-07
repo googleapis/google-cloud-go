@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/uid"
@@ -138,6 +139,16 @@ type QueryConfig struct {
 
 	// ConnectionProperties are optional key-values settings.
 	ConnectionProperties []*ConnectionProperty
+
+	// Sets a best-effort deadline on a specific job.  If job execution exceeds this
+	// timeout, BigQuery may attempt to cancel this work automatically.
+	//
+	// This deadline cannot be adjusted or removed once the job is created.  Consider
+	// using Job.Cancel in situations where you need more dynamic behavior.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	JobTimeout time.Duration
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -209,11 +220,15 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		}
 		qconf.ConnectionProperties = bqcp
 	}
-	return &bq.JobConfiguration{
+	jc := &bq.JobConfiguration{
 		Labels: qc.Labels,
 		DryRun: qc.DryRun,
 		Query:  qconf,
-	}, nil
+	}
+	if qc.JobTimeout > 0 {
+		jc.JobTimeoutMs = qc.JobTimeout.Milliseconds()
+	}
+	return jc, nil
 }
 
 func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
@@ -221,6 +236,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 	qc := &QueryConfig{
 		Labels:                      q.Labels,
 		DryRun:                      q.DryRun,
+		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
 		Q:                           qq.Query,
 		CreateDisposition:           TableCreateDisposition(qq.CreateDisposition),
 		WriteDisposition:            TableWriteDisposition(qq.WriteDisposition),
@@ -352,6 +368,9 @@ func (q *Query) newJob() (*bq.Job, error) {
 // is used in place of the jobs.insert path as this path does not expose a job
 // object.
 func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
+	if q.QueryConfig.DryRun {
+		return nil, errors.New("bigquery: cannot evaluate Query.Read() for dry-run queries")
+	}
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Query.Run")
 	defer func() { trace.EndSpan(ctx, err) }()
 	queryRequest, err := q.probeFastPath()
@@ -417,6 +436,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.Clustering != nil ||
 		q.QueryConfig.DestinationEncryptionConfig != nil ||
 		q.QueryConfig.SchemaUpdateOptions != nil ||
+		q.QueryConfig.JobTimeout != 0 ||
 		// User has defined the jobID generation behavior
 		q.JobIDConfig.JobID != "" {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
