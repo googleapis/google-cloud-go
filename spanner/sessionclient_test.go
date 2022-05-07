@@ -153,7 +153,7 @@ func TestCreateSessionWithDatabaseRole(t *testing.T) {
 	// Make sure that there is always only one session in the pool.
 	sc := SessionPoolConfig{
 		MinOpened: 0,
-		MaxOpened: 100,
+		MaxOpened: 1,
 	}
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc, DatabaseRole: "test"})
 	defer teardown()

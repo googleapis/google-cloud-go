@@ -116,6 +116,8 @@ type ClientConfig struct {
 	// override the default values.
 	CallOptions *vkit.CallOptions
 
+	// DatabaseRole specifies the role to be assumed for all operations on the
+	// database by this client.
 	DatabaseRole string
 
 	// logger is the logger to use for this client. If it is nil, all logging

@@ -975,7 +975,7 @@ func TestClient_SessionContainsDatabaseRole(t *testing.T) {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
 		if uint64(sp.idleList.Len()) != 1 {
-			return fmt.Errorf("num open sessions mismatch.\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+			return fmt.Errorf("num open sessions mismatch.\nGot: %d\nWant: %d", sp.numOpened, sp.MinOpened)
 		}
 		return nil
 	})

@@ -2483,12 +2483,12 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 
 	// Set up testing environment.
 	var (
-		row                 *Row
-		client, client2     *Client
-		iter                *RowIterator
-		err                 error
-		id                  int64
-		firstName, lastName string
+		row                    *Row
+		client, clientWithRole *Client
+		iter                   *RowIterator
+		err                    error
+		id                     int64
+		firstName, lastName    string
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2501,8 +2501,13 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			) PRIMARY KEY (SingerId)`,
 		`CREATE ROLE singers_reader`,
 		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_reader_revoked`,
+		`CREATE ROLE dropped`,
 		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
 		`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader_revoked`,
+		`REVOKE SELECT(LastName) ON TABLE Singers FROM ROLE singers_reader_revoked`,
+		`DROP ROLE dropped`,
 	}
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -2521,11 +2526,11 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		iter = client2.Single().Query(ctx, queryStmt)
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Query(ctx, queryStmt)
 		defer iter.Stop()
 
 		row, err = iter.Next()
@@ -2555,15 +2560,23 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			"Role singers_unauthorized does not have required privileges on table Singers.",
 		},
 		{
+			"singers_reader_revoked",
+			"Role singers_reader_revoked does not have required privileges on table Singers.",
+		},
+		{
 			"nonexistent",
 			"Role not found: nonexistent.",
 		},
+		{
+			"dropped",
+			"Role not found: dropped.",
+		},
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		iter = client2.Single().Query(ctx, queryStmt)
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Query(ctx, queryStmt)
 		defer iter.Stop()
 
 		_, err = iter.Next()
@@ -2583,12 +2596,12 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 
 	// Set up testing environment.
 	var (
-		row                 *Row
-		client, client2     *Client
-		iter                *RowIterator
-		err                 error
-		id                  int64
-		firstName, lastName string
+		row                    *Row
+		client, clientWithRole *Client
+		iter                   *RowIterator
+		err                    error
+		id                     int64
+		firstName, lastName    string
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2601,8 +2614,13 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			) PRIMARY KEY (SingerId)`,
 		`CREATE ROLE singers_reader`,
 		`CREATE ROLE singers_unauthorized`,
+		`CREATE ROLE singers_reader_revoked`,
+		`CREATE ROLE dropped`,
 		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader`,
 		`GRANT SELECT(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+		`GRANT SELECT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_reader_revoked`,
+		`REVOKE SELECT(LastName) ON TABLE Singers FROM ROLE singers_reader_revoked`,
+		`DROP ROLE dropped`,
 	}
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -2620,11 +2638,11 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		iter = client2.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
 		defer iter.Stop()
 
 		row, err = iter.Next()
@@ -2654,15 +2672,23 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			"Role singers_unauthorized does not have required privileges on table Singers.",
 		},
 		{
+			"singers_reader_revoked",
+			"Role singers_reader_revoked does not have required privileges on table Singers.",
+		},
+		{
 			"nonexistent",
 			"Role not found: nonexistent.",
 		},
+		{
+			"dropped",
+			"Role not found: dropped.",
+		},
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		iter = client2.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
+		defer clientWithRole.Close()
+		iter = clientWithRole.Single().Read(ctx, "Singers", AllKeys(), singerColumns)
 		defer iter.Stop()
 
 		_, err = iter.Next()
@@ -2682,8 +2708,8 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 
 	// Set up testing environment.
 	var (
-		client, client2 *Client
-		err             error
+		client, clientWithRole *Client
+		err                    error
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2694,10 +2720,14 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 				LastName	STRING(1024),
 				SingerInfo	BYTES(MAX)
 			) PRIMARY KEY (SingerId)`,
-		`CREATE ROLE singers_writer`,
+		`CREATE ROLE singers_updater`,
 		`CREATE ROLE singers_unauthorized`,
-		`GRANT SELECT(SingerId), UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
+		`CREATE ROLE singers_creator`,
+		`CREATE ROLE singers_deleter`,
+		`GRANT SELECT(SingerId), UPDATE(FirstName, LastName) ON TABLE Singers TO ROLE singers_updater`,
 		`GRANT SELECT(SingerId), UPDATE(FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+		`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_creator`,
+		`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO ROLE singers_deleter`,
 	}
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -2714,13 +2744,13 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 	// A request with sufficient privileges should update the row
 	for _, dbRole := range []string{
 		"",
-		"singers_writer",
+		"singers_updater",
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		_, err = client2.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
 			_, err := txn.Update(ctx, updateStmt)
 			return err
 		})
@@ -2743,11 +2773,11 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		_, err = client2.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
 			_, err := txn.Update(ctx, updateStmt)
 			return err
 		})
@@ -2759,6 +2789,56 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			t.Fatal(msg)
 		}
 	}
+
+	// A request with sufficient privileges should insert the row
+	getInsertStmt := func(vals []interface{}) Statement {
+		sql := fmt.Sprintf(`INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (%d, "%s", "%s")`, vals...)
+		return Statement{SQL: sql}
+	}
+	for _, test := range []struct {
+		dbRole string
+		vals   []interface{}
+	}{
+		{
+			"",
+			[]interface{}{2, "Catalina", "Smith"},
+		},
+		{
+			"singers_creator",
+			[]interface{}{3, "Alice", "Trentor"},
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, getInsertStmt(test.vals))
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not insert row. Got error %v", err)
+		}
+	}
+
+	// A request with sufficient privileges should delete the row
+	deleteStmt := Statement{SQL: `DELETE FROM Singers WHERE TRUE`}
+	for _, dbRole := range []string{
+		"",
+		"singers_deleter",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.ReadWriteTransaction(ctx, func(ctx context.Context, txn *ReadWriteTransaction) error {
+			_, err := txn.Update(ctx, deleteStmt)
+			return err
+		})
+		if err != nil {
+			t.Fatalf("Could not delete row. Got error %v", err)
+		}
+	}
 }
 
 func TestIntegration_MutationWithRoles(t *testing.T) {
@@ -2768,8 +2848,8 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 
 	// Set up testing environment.
 	var (
-		client, client2 *Client
-		err             error
+		client, clientWithRole *Client
+		err                    error
 	)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -2780,10 +2860,14 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 				LastName	STRING(1024),
 				SingerInfo	BYTES(MAX)
 			) PRIMARY KEY (SingerId)`,
-		`CREATE ROLE singers_writer`,
+		`CREATE ROLE singers_updater`,
 		`CREATE ROLE singers_unauthorized`,
-		`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_writer`,
+		`CREATE ROLE singers_creator`,
+		`CREATE ROLE singers_deleter`,
+		`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_updater`,
 		`GRANT SELECT(SingerId), UPDATE(SingerId, FirstName) ON TABLE Singers TO ROLE singers_unauthorized`,
+		`GRANT INSERT(SingerId, FirstName, LastName) ON TABLE Singers TO ROLE singers_creator`,
+		`GRANT SELECT(SingerId), DELETE ON TABLE Singers TO ROLE singers_deleter`,
 	}
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -2799,13 +2883,13 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 	// A request with sufficient privileges should update the row
 	for _, dbRole := range []string{
 		"",
-		"singers_writer",
+		"singers_updater",
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		_, err = client2.Apply(ctx, []*Mutation{
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
 			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
 		})
 		if err != nil {
@@ -2827,11 +2911,11 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		if client2, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 			t.Fatal(err)
 		}
-		defer client2.Close()
-		_, err = client2.Apply(ctx, []*Mutation{
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
 			Update("Singers", singerColumns, []interface{}{1, "Mark", "Richards"}),
 		})
 
@@ -2840,6 +2924,49 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 		}
 		if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
 			t.Fatal(msg)
+		}
+	}
+
+	// A request with sufficient privileges should insert the row
+	for _, test := range []struct {
+		dbRole string
+		vals   []interface{}
+	}{
+		{
+			"",
+			[]interface{}{2, "Catalina", "Smith"},
+		},
+		{
+			"singers_creator",
+			[]interface{}{3, "Alice", "Trentor"},
+		},
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Insert("Singers", singerColumns, test.vals),
+		})
+		if err != nil {
+			t.Fatalf("Could not insert row. Got error %v", err)
+		}
+	}
+
+	// A request with sufficient privileges should delete the row
+	for _, dbRole := range []string{
+		"",
+		"singers_deleter",
+	} {
+		if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
+			t.Fatal(err)
+		}
+		defer clientWithRole.Close()
+		_, err = clientWithRole.Apply(ctx, []*Mutation{
+			Delete("Singers", Key{1}),
+		})
+		if err != nil {
+			t.Fatalf("Could not delete row. Got error %v", err)
 		}
 	}
 }
