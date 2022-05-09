@@ -309,15 +309,19 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 		fieldMask.Paths = append(fieldMask.Paths, "website")
 	}
 	if uattrs.PredefinedACL != "" {
+		// In cases where PredefinedACL is set, Acl is cleared.
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	if uattrs.PredefinedDefaultObjectACL != "" {
+		// In cases where PredefinedDefaultObjectACL is set, DefaultObjectAcl is cleared.
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
 	if uattrs.acl != nil {
+		// In cases where acl is set by UpdateBucketACL method.
 		fieldMask.Paths = append(fieldMask.Paths, "acl")
 	}
 	if uattrs.defaultObjectACL != nil {
+		// In cases where defaultObjectACL is set by UpdateBucketACL method.
 		fieldMask.Paths = append(fieldMask.Paths, "default_object_acl")
 	}
 	if uattrs.StorageClass != "" {
@@ -440,14 +444,14 @@ func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 		return nil, err
 	}
 	var acl []ACLRule
-	acl = append(attrs.ACL, ACLRule{Entity: entity, Role: role})
+	aclRule := ACLRule{Entity: entity, Role: role}
+	acl = append(attrs.ACL, aclRule)
 	uattrs := &BucketAttrsToUpdate{acl: acl}
 	// Call UpdateBucket with a MetagenerationMatch precondition set.
-	b, err := c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
+	_, err = c.UpdateBucket(ctx, bucket, uattrs, &BucketConditions{MetagenerationMatch: attrs.MetaGeneration}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	aclRule := b.ACL[len(b.ACL)-1]
 	return &aclRule, err
 }
 
