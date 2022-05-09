@@ -86,6 +86,7 @@ const (
 	ScopeReadWrite = raw.DevstorageReadWriteScope
 )
 
+// TODO: remove this once header with invocation ID is applied to all methods.
 func setClientHeader(headers http.Header) {
 	headers.Set("x-goog-api-client", xGoogDefaultHeader)
 }
