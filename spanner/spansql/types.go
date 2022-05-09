@@ -771,6 +771,12 @@ type TimestampLiteral time.Time
 
 func (TimestampLiteral) isExpr() {}
 
+// JSONLiteral represents a JSON literal
+// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+type JSONLiteral []byte
+
+func (JSONLiteral) isExpr() {}
+
 type StarExpr int
 
 // Star represents a "*" in an expression.
