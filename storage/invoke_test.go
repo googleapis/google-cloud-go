@@ -181,7 +181,7 @@ func TestInvoke(t *testing.T) {
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
-			wantHeader := fmt.Sprintf("gccl-invocation-id/.{36} gccl-attempt-count/%v", counter)
+			wantHeader := fmt.Sprintf("gccl-invocation-id/.{36} gccl-attempt-count/%v gl-go/.* gccl/", counter)
 			gotHeader := req.Header()["X-Goog-Api-Client"][0]
 			match, err := regexp.MatchString(wantHeader, gotHeader)
 			if err != nil {

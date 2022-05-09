@@ -25,6 +25,8 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/version"
+	sinternal "cloud.google.com/go/storage/internal"
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -33,6 +35,7 @@ import (
 )
 
 var defaultRetry *retryConfig = &retryConfig{}
+var xGoogDefaultHeader = fmt.Sprintf("gl-go/%s gccl/%s", version.Go(), sinternal.Version)
 
 // run determines whether a retry is necessary based on the config and
 // idempotency information. It then calls the function with or without retries
@@ -72,8 +75,9 @@ func setRetryHeader(req interface{ Header() http.Header }, invocationID string, 
 		return
 	}
 	header := req.Header()
-	gapicHeaderVal := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
-	header.Set("x-goog-api-client", gapicHeaderVal)
+	invocationHeader := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
+	xGoogHeader := strings.Join([]string{invocationHeader, xGoogDefaultHeader}, " ")
+	header.Set("x-goog-api-client", xGoogHeader)
 }
 
 func shouldRetry(err error) bool {
