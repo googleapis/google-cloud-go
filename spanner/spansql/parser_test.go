@@ -427,6 +427,9 @@ func TestParseExpr(t *testing.T) {
 		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
 		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
 		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		// JSON literals:
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+		{`JSON '{"a": 1}'`, JSONLiteral(`{"a": 1}`)},
 
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
