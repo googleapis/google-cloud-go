@@ -33,11 +33,13 @@ const (
 	PolicyType_Intersection
 )
 
+type PolicyType = int
+
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
 	proto() *bttdpb.GcRule
-	PolicyType() int
+	PolicyType() PolicyType
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
@@ -65,7 +67,7 @@ func (ip intersectionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (intersectionPolicy) PolicyType() int {
+func (intersectionPolicy) PolicyType() PolicyType {
 	return PolicyType_Intersection
 }
 
@@ -94,7 +96,7 @@ func (up unionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (unionPolicy) PolicyType() int {
+func (unionPolicy) PolicyType() PolicyType {
 	return PolicyType_Union
 }
 
@@ -110,7 +112,7 @@ func (mvp maxVersionsPolicy) proto() *bttdpb.GcRule {
 	return &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: int32(mvp)}}
 }
 
-func (maxVersionsPolicy) PolicyType() int {
+func (maxVersionsPolicy) PolicyType() PolicyType {
 	return PolicyType_MaxVersion
 }
 
@@ -151,7 +153,7 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (maxAgePolicy) PolicyType() int {
+func (maxAgePolicy) PolicyType() PolicyType {
 	return PolicyType_MaxAge
 }
 
@@ -161,7 +163,7 @@ func (n noGCPolicy) String() string { return "" }
 
 func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
 
-func (n noGCPolicy) PolicyType() int {
+func (n noGCPolicy) PolicyType() PolicyType {
 	return PolicyType_None
 }
 
@@ -213,7 +215,7 @@ func joinRules(rules []*bttdpb.GcRule, sep string) string {
 	return "(" + strings.Join(chunks, sep) + ")"
 }
 
-func fromRuleToPolicy(rules []*bttdpb.GcRule, mode int) GCPolicy {
+func fromRuleToPolicy(rules []*bttdpb.GcRule, mode PolicyType) GCPolicy {
 	sub := []GCPolicy{}
 	for _, r := range rules {
 		p := GCRuleToPolicy(r)
