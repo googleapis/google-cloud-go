@@ -1,5 +1,12 @@
 # Changes
 
+### [1.21.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.21.0...pubsub/v1.21.1) (2022-05-04)
+
+
+### Bug Fixes
+
+* **pubsub:** mark ignore option default for publish flow control ([#5983](https://github.com/googleapis/google-cloud-go/issues/5983)) ([3f41531](https://github.com/googleapis/google-cloud-go/commit/3f41531579b7a55acea66fec8362e9134125c8a0))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.20.0...pubsub/v1.21.0) (2022-04-26)
 
 

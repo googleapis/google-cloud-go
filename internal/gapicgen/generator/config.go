@@ -1409,6 +1409,51 @@ var MicrogenGapicConfigs = []*MicrogenConfig{
 		// GA after 2022/04/30
 		ReleaseLevel: "beta",
 	},
+	{
+		InputDirectoryPath:    "google/cloud/assuredworkloads/v1",
+		Pkg:                   "assuredworkloads",
+		ImportPath:            "cloud.google.com/go/assuredworkloads/apiv1",
+		GRPCServiceConfigPath: "assuredworkloads_grpc_service_config.json",
+		ApiServiceConfigPath:  "assuredworkloads_v1.yaml",
+		// GA after 2022/06/04
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/binaryauthorization/v1",
+		Pkg:                   "binaryauthorization",
+		ImportPath:            "cloud.google.com/go/binaryauthorization/apiv1",
+		GRPCServiceConfigPath: "binaryauthorization_grpc_service_config.json",
+		ApiServiceConfigPath:  "binaryauthorization_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/datastream/v1",
+		Pkg:                   "datastream",
+		ImportPath:            "cloud.google.com/go/datastream/apiv1",
+		GRPCServiceConfigPath: "datastream_grpc_service_config.json",
+		ApiServiceConfigPath:  "datastream_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/notebooks/v1",
+		Pkg:                   "notebooks",
+		ImportPath:            "cloud.google.com/go/notebooks/apiv1",
+		GRPCServiceConfigPath: "notebooks_grpc_service_config.json",
+		ApiServiceConfigPath:  "notebooks_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
+	{
+		InputDirectoryPath:    "google/cloud/workflows/v1",
+		Pkg:                   "workflows",
+		ImportPath:            "cloud.google.com/go/workflows/apiv1",
+		GRPCServiceConfigPath: "workflows_grpc_service_config.json",
+		ApiServiceConfigPath:  "workflows_v1.yaml",
+		// GA after 2022/06/05
+		ReleaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

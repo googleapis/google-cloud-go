@@ -88,6 +88,92 @@ func TestGetBucketEmulated(t *testing.T) {
 	})
 }
 
+func TestUpdateBucketEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		bkt := &BucketAttrs{
+			Name: bucket,
+		}
+		// Create the bucket that will be updated.
+		_, err := client.CreateBucket(context.Background(), project, bkt)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		ua := &BucketAttrsToUpdate{
+			VersioningEnabled:     false,
+			RequesterPays:         false,
+			DefaultEventBasedHold: false,
+			Encryption:            &BucketEncryption{DefaultKMSKeyName: "key2"},
+			Lifecycle: &Lifecycle{
+				Rules: []LifecycleRule{
+					{
+						Action:    LifecycleAction{Type: "Delete"},
+						Condition: LifecycleCondition{AgeInDays: 30},
+					},
+				},
+			},
+			Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+			Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+			StorageClass: "NEARLINE",
+			RPO:          RPOAsyncTurbo,
+		}
+		want := &BucketAttrs{
+			Name:                  bucket,
+			VersioningEnabled:     false,
+			RequesterPays:         false,
+			DefaultEventBasedHold: false,
+			Encryption:            &BucketEncryption{DefaultKMSKeyName: "key2"},
+			Lifecycle: Lifecycle{
+				Rules: []LifecycleRule{
+					{
+						Action:    LifecycleAction{Type: "Delete"},
+						Condition: LifecycleCondition{AgeInDays: 30},
+					},
+				},
+			},
+			Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+			Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+			StorageClass: "NEARLINE",
+			RPO:          RPOAsyncTurbo,
+		}
+
+		got, err := client.UpdateBucket(context.Background(), bucket, ua, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if diff := cmp.Diff(got.Name, want.Name); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.VersioningEnabled, want.VersioningEnabled); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.RequesterPays, want.RequesterPays); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.DefaultEventBasedHold, want.DefaultEventBasedHold); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Encryption, want.Encryption); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Lifecycle, want.Lifecycle); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Logging, want.Logging); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Website, want.Website); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.RPO, want.RPO); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.StorageClass, want.StorageClass); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+	})
+}
+
 func TestGetServiceAccountEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
 		_, err := client.GetServiceAccount(context.Background(), project)
@@ -283,6 +369,50 @@ func TestListBucketsEmulated(t *testing.T) {
 		expected := len(want)
 		if got != expected {
 			t.Errorf("expected to get %d buckets, but got %d", expected, got)
+		}
+	})
+}
+
+func TestListBucketACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		acls, err := client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if want, got := len(acls), 2; want != got {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
+func TestListDefaultObjectACLsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:                       bucket,
+			PredefinedDefaultObjectACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if want, got := len(acls), 2; want != got {
+			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
 		}
 	})
 }
