@@ -44,3 +44,26 @@ func TestGcRuleToString(t *testing.T) {
 		}
 	}
 }
+
+func TestGCRuleToPolicy(t *testing.T) {
+	var tc = []struct {
+		proto *bttdpb.GcRule
+		want  string
+	}{
+		{MaxAgePolicy(72 * time.Hour).proto(), "age() > 3d"},
+		{MaxVersionsPolicy(5).proto(), "versions() > 5"},
+		{IntersectionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).proto(),
+			"(age() > 5h && versions() > 4)"},
+		{UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)).proto(),
+			"(age() > 5h || versions() > 4)"},
+		{IntersectionPolicy(UnionPolicy(MaxAgePolicy(5*time.Hour), MaxVersionsPolicy(4)), MaxVersionsPolicy(8)).proto(),
+			"((age() > 5h || versions() > 4) && versions() > 8)"},
+	}
+
+	for _, test := range tc {
+		got := GCRuleToPolicy(test.proto)
+		if got.String() != test.want {
+			t.Errorf("got gc rule %v, want: %v", got, test.want)
+		}
+	}
+}

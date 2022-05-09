@@ -25,10 +25,19 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
+const (
+	PolicyType_None = iota
+	PolicyType_MaxAge
+	PolicyType_MaxVersion
+	PolicyType_Union
+	PolicyType_Intersection
+)
+
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
 	proto() *bttdpb.GcRule
+	PolicyType() int
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
@@ -56,6 +65,10 @@ func (ip intersectionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
+func (intersectionPolicy) PolicyType() int {
+	return PolicyType_Intersection
+}
+
 // UnionPolicy returns a GC policy that applies when any of its sub-policies apply.
 func UnionPolicy(sub ...GCPolicy) GCPolicy { return unionPolicy{sub} }
 
@@ -81,6 +94,10 @@ func (up unionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
+func (unionPolicy) PolicyType() int {
+	return PolicyType_Union
+}
+
 // MaxVersionsPolicy returns a GC policy that applies to all versions of a cell
 // except for the most recent n.
 func MaxVersionsPolicy(n int) GCPolicy { return maxVersionsPolicy(n) }
@@ -91,6 +108,10 @@ func (mvp maxVersionsPolicy) String() string { return fmt.Sprintf("versions() > 
 
 func (mvp maxVersionsPolicy) proto() *bttdpb.GcRule {
 	return &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: int32(mvp)}}
+}
+
+func (maxVersionsPolicy) PolicyType() int {
+	return PolicyType_MaxVersion
 }
 
 // MaxAgePolicy returns a GC policy that applies to all cells
@@ -130,11 +151,19 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 	}
 }
 
+func (maxAgePolicy) PolicyType() int {
+	return PolicyType_MaxAge
+}
+
 type noGCPolicy struct{}
 
 func (n noGCPolicy) String() string { return "" }
 
 func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
+
+func (n noGCPolicy) PolicyType() int {
+	return PolicyType_None
+}
 
 // NoGcPolicy applies to all cells setting maxage and maxversions to nil implies no gc policies
 func NoGcPolicy() GCPolicy { return noGCPolicy{} }
@@ -158,10 +187,47 @@ func GCRuleToString(rule *bttdpb.GcRule) string {
 	}
 }
 
+func GCRuleToPolicy(rule *bttdpb.GcRule) GCPolicy {
+	if rule == nil {
+		return NoGcPolicy()
+	}
+	switch r := rule.Rule.(type) {
+	case *bttdpb.GcRule_Intersection_:
+		return fromRuleToPolicy(r.Intersection.Rules, PolicyType_Intersection)
+	case *bttdpb.GcRule_Union_:
+		return fromRuleToPolicy(r.Union.Rules, PolicyType_Union)
+	case *bttdpb.GcRule_MaxAge:
+		return MaxAgePolicy(time.Duration(r.MaxAge.Seconds) * time.Second)
+	case *bttdpb.GcRule_MaxNumVersions:
+		return MaxVersionsPolicy(int(r.MaxNumVersions))
+	default:
+		return NoGcPolicy()
+	}
+}
+
 func joinRules(rules []*bttdpb.GcRule, sep string) string {
 	var chunks []string
 	for _, r := range rules {
 		chunks = append(chunks, GCRuleToString(r))
 	}
 	return "(" + strings.Join(chunks, sep) + ")"
+}
+
+func fromRuleToPolicy(rules []*bttdpb.GcRule, mode int) GCPolicy {
+	sub := []GCPolicy{}
+	for _, r := range rules {
+		p := GCRuleToPolicy(r)
+		if p.String() != "" {
+			sub = append(sub, GCRuleToPolicy(r))
+		}
+	}
+
+	switch mode {
+	case PolicyType_Union:
+		return unionPolicy{sub: sub}
+	case PolicyType_Intersection:
+		return intersectionPolicy{sub: sub}
+	default:
+		return NoGcPolicy()
+	}
 }
