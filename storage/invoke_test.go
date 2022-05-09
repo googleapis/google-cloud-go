@@ -17,9 +17,12 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net"
+	"net/http"
 	"net/url"
+	"regexp"
 	"testing"
 
 	"golang.org/x/xerrors"
@@ -171,14 +174,32 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
-			got := run(ctx, call, test.retry, test.isIdempotentValue)
+			req := &fakeApiaryRequest{header: http.Header{}}
+			got := run(ctx, call, test.retry, test.isIdempotentValue, req)
 			if test.expectFinalErr && got != test.finalErr {
 				s.Errorf("got %v, want %v", got, test.finalErr)
 			} else if !test.expectFinalErr && got != test.initialErr {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
+			wantHeader := fmt.Sprintf("gccl-invocation-id/.{36} gccl-attempt-count/%v", counter)
+			gotHeader := req.Header()["X-Goog-Api-Client"][0]
+			match, err := regexp.MatchString(wantHeader, gotHeader)
+			if err != nil {
+				s.Fatalf("compiling regexp: %v", err)
+			}
+			if !match {
+				s.Errorf("X-Goog-Api-Client header not matched\ngot %v\nwant regex matching %v", gotHeader, wantHeader)
+			}
 		})
 	}
+}
+
+type fakeApiaryRequest struct {
+	header http.Header
+}
+
+func (f *fakeApiaryRequest) Header() http.Header {
+	return f.header
 }
 
 func TestShouldRetry(t *testing.T) {

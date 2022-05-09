@@ -38,10 +38,14 @@ var defaultRetry *retryConfig = &retryConfig{}
 // idempotency information. It then calls the function with or without retries
 // as appropriate, using the configured settings.
 func run(ctx context.Context, call func() error, retry *retryConfig, isIdempotent bool, req interface{ Header() http.Header }) error {
+	attempts := 1
+	invocationID := uuid.New().String()
+
 	if retry == nil {
 		retry = defaultRetry
 	}
 	if (retry.policy == RetryIdempotent && !isIdempotent) || retry.policy == RetryNever {
+		setRetryHeader(req, invocationID, attempts)
 		return call()
 	}
 	bo := gax.Backoff{}
@@ -55,20 +59,18 @@ func run(ctx context.Context, call func() error, retry *retryConfig, isIdempoten
 		errorFunc = retry.shouldRetry
 	}
 
-	attempts := 0
-	invocationID := uuid.New().String()
-
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
-		attempts++
-		if req != nil {
-			setRetryHeader(req, invocationID, attempts)
-		}
+		setRetryHeader(req, invocationID, attempts)
 		err = call()
+		attempts++
 		return !errorFunc(err), err
 	})
 }
 
 func setRetryHeader(req interface{ Header() http.Header }, invocationID string, attempts int) {
+	if req == nil {
+		return
+	}
 	header := req.Header()
 	gapicHeaderVal := fmt.Sprintf("gccl-invocation-id/%v gccl-attempt-count/%v", invocationID, attempts)
 	header.Set("x-goog-api-client", gapicHeaderVal)
