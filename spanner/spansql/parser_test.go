@@ -915,6 +915,29 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 			}},
+		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			&DDL{Filename: "filename", List: []DDLStmt{
+				&AlterDatabase{
+					Name: "dbname",
+					Alteration: SetDatabaseOptions{
+						Options: DatabaseOptions{
+							OptimizerVersion:       func(i int) *int { return &i }(2),
+							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+						},
+					},
+					Position: line(1),
+				},
+				&CreateTable{Name: "users", Columns: []ColumnDef{
+					{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
+				},
+					PrimaryKey: []KeyPart{
+						{Column: "UserId"},
+					},
+					Position: line(1),
+				},
+			},
+			}},
 		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
 			&DDL{Filename: "filename", List: []DDLStmt{
 				&AlterDatabase{
