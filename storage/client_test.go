@@ -417,6 +417,49 @@ func TestListDefaultObjectACLsEmulated(t *testing.T) {
 	})
 }
 
+func TestUpdateBucketACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "authenticatedRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		var listAcls []ACLRule
+		var err error
+		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
+		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(listAcls), 2; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", listAcls, want)
+		}
+		entity := AllUsers
+		role := RoleReader
+		want := &ACLRule{Entity: entity, Role: role}
+		got, err := client.UpdateBucketACL(ctx, bucket, entity, role)
+		if err != nil {
+			t.Fatalf("client.UpdateBucketACL: %v", err)
+		}
+		if diff := cmp.Diff(got.Entity, want.Entity); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		if diff := cmp.Diff(got.Role, want.Role); diff != "" {
+			t.Errorf("got(-),want(+):\n%s", diff)
+		}
+		// Assert bucket now has three BucketACL entities, including existing ACLs.
+		if listAcls, err = client.ListBucketACLs(ctx, bucket); err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(listAcls), 3; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", listAcls, want)
+		}
+	})
+}
+
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {
