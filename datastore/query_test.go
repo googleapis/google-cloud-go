@@ -400,6 +400,12 @@ type testFilterCase struct {
 }
 
 var (
+	/*
+		// Quoted and interesting field names.
+
+
+	*/
+
 	// Supported ops both filters.
 	filterTestCases = []testFilterCase{
 		{"x<", "x", "<", lessThan, "x"},
@@ -415,6 +421,10 @@ var (
 		{"x!=", "x", "!=", notEqual, "x"},
 		{"x !=", "x", "!=", notEqual, "x"},
 		{" x  !=  ", "x", "!=", notEqual, "x"},
+		{"x > y =", "x > y", "=", equal, "x > y"},
+		{"` x ` =", " x ", "=", equal, " x "},
+		{`" x " =`, " x ", "=", equal, " x "},
+		{`" \"x " =`, ` "x `, "=", equal, ` "x `},
 	}
 	// Supported in FilterField only.
 	filterFieldTestCases = []testFilterCase{
@@ -437,6 +447,9 @@ var (
 		{"x !", "x", "!", 0, ""},
 		{"x ", "x", "", 0, ""},
 		{"x", "x", "", 0, ""},
+		{`" x =`, `" x`, "=", 0, ""},
+		{`" x ="`, `" x `, `="`, 0, ""},
+		{"` x \" =", "` x \"", "=", 0, ""},
 	}
 )
 
