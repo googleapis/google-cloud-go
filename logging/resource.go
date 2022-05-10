@@ -34,10 +34,13 @@ type commonResource struct{ *mrpb.MonitoredResource }
 
 func (r commonResource) set(l *Logger) { l.commonResource = r.MonitoredResource }
 
-var detectedResource struct {
+var detectedResource = struct {
 	pb    *mrpb.MonitoredResource
 	attrs internal.ResourceAtttributesGetter
-	once  sync.Once
+	once  *sync.Once
+}{
+	attrs: internal.ResourceAttributes(),
+	once:  new(sync.Once),
 }
 
 func metadataProjectId() (string, bool) {
@@ -190,7 +193,7 @@ func isComputeEngine() bool {
 	_, preemptedOK := detectedResource.attrs.Metadata("instance/preempted")
 	_, platformOK := detectedResource.attrs.Metadata("instance/cpu-platform")
 	_, appBucketOK := detectedResource.attrs.Metadata("instance/attributes/gae_app_bucket")
-	return preemptedOK && platformOK && appBucketOK
+	return preemptedOK && platformOK && !appBucketOK
 }
 
 func detectComputeEngineResource() *mrpb.MonitoredResource {
@@ -212,7 +215,6 @@ func detectComputeEngineResource() *mrpb.MonitoredResource {
 
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
-		detectedResource.attrs = internal.ResourceAttributes()
 		if isMetadataActive() {
 			name, _ := systemProductName()
 			switch {

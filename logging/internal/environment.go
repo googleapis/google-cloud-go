@@ -30,34 +30,33 @@ type ResourceAtttributesGetter interface {
 	Metadata(path string) (string, bool)
 }
 
-var getter ResourceAtttributesGetter = 
-	&defaultResourceLooker{
-		metaClient: metadata.NewClient(&http.Client{
-			Transport: &http.Transport{
-				Dial: (&net.Dialer{
-					Timeout:   1 * time.Second,
-					KeepAlive: 10 * time.Second,
-				}).Dial,
-			},
-})}
+var getter ResourceAtttributesGetter = &defaultResourceGetter{
+	metaClient: metadata.NewClient(&http.Client{
+		Transport: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout:   1 * time.Second,
+				KeepAlive: 10 * time.Second,
+			}).Dial,
+		},
+	})}
 
 // ResourceAttributes provides read-only access to the ResourceAtttributesGetter interface implementation
 func ResourceAttributes() ResourceAtttributesGetter {
 	return getter
 }
 
-type defaultResourceLooker struct {
+type defaultResourceGetter struct {
 	metaClient *metadata.Client
 }
 
-// EnvVar uses os.LookupEnv() to lookup for environment variable by name 
-func (l *defaultResourceLooker) EnvVar(name string) (string, bool) {
+// EnvVar uses os.LookupEnv() to lookup for environment variable by name
+func (g *defaultResourceGetter) EnvVar(name string) (string, bool) {
 	return os.LookupEnv(name)
 }
 
 // Metadata uses metadata package Client.Get() to lookup for metadata attributes by path
-func (l *defaultResourceLooker) Metadata(path string) (string, bool) {
-	val, err := l.metaClient.Get(path)
+func (g *defaultResourceGetter) Metadata(path string) (string, bool) {
+	val, err := g.metaClient.Get(path)
 	if err != nil {
 		return val, false
 	}
