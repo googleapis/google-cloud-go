@@ -15,6 +15,7 @@
 package logging
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
@@ -47,6 +48,7 @@ const (
 type fakeResourceGetter struct {
 	envVars  map[string]string
 	metaVars map[string]string
+	fsPaths  map[string]string
 }
 
 func (g *fakeResourceGetter) EnvVar(name string) (string, bool) {
@@ -59,12 +61,21 @@ func (g *fakeResourceGetter) Metadata(path string) (string, bool) {
 	return v, ok
 }
 
+func (g *fakeResourceGetter) ReadAll(path string) (string, error) {
+	v, ok := g.fsPaths[path]
+	if !ok {
+		return "", fmt.Errorf("Cannot read from %s", path)
+	}
+	return v, nil
+}
+
 // setupDetectResource resets sync.Once on detectResource and enforces mocked resource attribute getter
-func setupDetectedResource(envVars, metaVars map[string]string) {
+func setupDetectedResource(envVars, metaVars, fsPaths map[string]string) {
 	detectedResource.once = new(sync.Once)
 	detectedResource.attrs = &fakeResourceGetter{
 		envVars:  envVars,
 		metaVars: metaVars,
+		fsPaths:  fsPaths,
 	}
 	detectedResource.pb = nil
 }
@@ -74,6 +85,7 @@ func TestResourceDetection(t *testing.T) {
 		name     string
 		envVars  map[string]string
 		metaVars map[string]string
+		fsPaths  map[string]string
 		want     *mrpb.MonitoredResource
 	}{
 		{
@@ -120,6 +132,23 @@ func TestResourceDetection(t *testing.T) {
 		},
 		{
 			name:     "detect GKE resource",
+			envVars:  map[string]string{"HOSTNAME": podName},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
+			fsPaths:  map[string]string{"/var/run/secrets/kubernetes.io/serviceaccount/namespace": namespaceName},
+			want: &mrpb.MonitoredResource{
+				Type: "k8s_container",
+				Labels: map[string]string{
+					"cluster_name":   clusterName,
+					"location":       zoneID,
+					"project_id":     projectID,
+					"pod_name":       podName,
+					"namespace_name": namespaceName,
+					"container_name": "",
+				},
+			},
+		},
+		{
+			name:     "detect GKE resource with custom container and namespace config",
 			envVars:  map[string]string{"HOSTNAME": podName, "CONTAINER_NAME": containerName, "NAMESPACE_NAME": namespaceName},
 			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/cluster-name": clusterName},
 			want: &mrpb.MonitoredResource{
@@ -148,6 +177,51 @@ func TestResourceDetection(t *testing.T) {
 			},
 		},
 		{
+			name:     "detect GAE resource by product name",
+			envVars:  map[string]string{},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/zone": qualifiedZoneName, "instance/attributes/gae_app_bucket": there},
+			fsPaths:  map[string]string{"/sys/class/dmi/id/product_name": "Google App Engine"},
+			want: &mrpb.MonitoredResource{
+				Type: "gae_app",
+				Labels: map[string]string{
+					"project_id": projectID,
+					"module_id":  "",
+					"version_id": "",
+					"zone":       zoneID,
+				},
+			},
+		},
+		{
+			name:     "detect Cloud Function resource by product name",
+			envVars:  map[string]string{},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName},
+			fsPaths:  map[string]string{"/sys/class/dmi/id/product_name": "Google Cloud Functions"},
+			want: &mrpb.MonitoredResource{
+				Type: "cloud_function",
+				Labels: map[string]string{
+					"project_id":    projectID,
+					"region":        regionID,
+					"function_name": "",
+				},
+			},
+		},
+		{
+			name:     "detect Cloud Run resource by product name",
+			envVars:  map[string]string{},
+			metaVars: map[string]string{"": there, "project/project-id": projectID, "instance/region": qualifiedRegionName},
+			fsPaths:  map[string]string{"/sys/class/dmi/id/product_name": "Google Cloud Run"},
+			want: &mrpb.MonitoredResource{
+				Type: "cloud_run_revision",
+				Labels: map[string]string{
+					"project_id":         projectID,
+					"location":           regionID,
+					"service_name":       "",
+					"revision_name":      "",
+					"configuration_name": "",
+				},
+			},
+		},
+		{
 			name:     "unknown resource detection",
 			envVars:  map[string]string{},
 			metaVars: map[string]string{"": there, "project/project-id": projectID},
@@ -163,10 +237,10 @@ func TestResourceDetection(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			setupDetectedResource(tc.envVars, tc.metaVars)
+			setupDetectedResource(tc.envVars, tc.metaVars, tc.fsPaths)
 			got := detectResource()
-			if !cmp.Equal(got, tc.want, cmpopts.IgnoreUnexported(mrpb.MonitoredResource{})) {
-				t.Fatalf("got %v, want %v", got, tc.want)
+			if diff := cmp.Diff(got, tc.want, cmpopts.IgnoreUnexported(mrpb.MonitoredResource{})); diff != "" {
+				t.Errorf("got(-),want(+):\n%s", diff)
 			}
 		})
 	}

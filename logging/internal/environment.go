@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -28,6 +29,7 @@ import (
 type ResourceAtttributesGetter interface {
 	EnvVar(name string) (string, bool)
 	Metadata(path string) (string, bool)
+	ReadAll(path string) (string, error)
 }
 
 var getter ResourceAtttributesGetter = &defaultResourceGetter{
@@ -61,4 +63,13 @@ func (g *defaultResourceGetter) Metadata(path string) (string, bool) {
 		return val, false
 	}
 	return strings.TrimSpace(val), true
+}
+
+// ReadAll read all content of the file as a string
+func (g *defaultResourceGetter) ReadAll(path string) (string, error) {
+	bytes, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
 }

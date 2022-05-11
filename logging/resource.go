@@ -15,7 +15,6 @@
 package logging
 
 import (
-	"io/ioutil"
 	"runtime"
 	"strings"
 	"sync"
@@ -163,11 +162,8 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	}
 	zone, _ := metadataZone()
 	clusterName, _ := detectedResource.attrs.Metadata("instance/attributes/cluster-name")
-	namespaceBytes, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
-	namespaceName := ""
-	if err == nil {
-		namespaceName = string(namespaceBytes)
-	} else {
+	namespaceName, err := detectedResource.attrs.ReadAll("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	if err != nil {
 		// if automountServiceAccountToken is disabled allow to customize
 		// the namespace via environment
 		namespaceName, _ = detectedResource.attrs.EnvVar("NAMESPACE_NAME")
@@ -249,8 +245,8 @@ func systemProductName() (string, bool) {
 		// We don't have any non-Linux clues available, at least yet.
 		return "", false
 	}
-	slurp, err := ioutil.ReadFile("/sys/class/dmi/id/product_name")
-	return strings.TrimSpace(string(slurp)), err == nil
+	slurp, err := detectedResource.attrs.ReadAll("/sys/class/dmi/id/product_name")
+	return strings.TrimSpace(slurp), err == nil
 }
 
 var resourceInfo = map[string]struct{ rtype, label string }{
