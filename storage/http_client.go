@@ -302,7 +302,23 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 }
 
 func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error {
-	return errMethodNotSupported
+	s := callSettings(c.settings, opts...)
+
+	var metageneration int64
+	if conds != nil {
+		metageneration = conds.MetagenerationMatch
+	}
+	req := c.raw.Buckets.LockRetentionPolicy(bucket, metageneration)
+
+	setClientHeader(req.Header())
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+
+	return run(ctx, func() error {
+		_, err := req.Context(ctx).Do()
+		return err
+	}, s.retry, s.idempotent)
 }
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)

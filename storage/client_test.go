@@ -503,6 +503,34 @@ func initEmulatorClients() func() error {
 	}
 }
 
+func TestLockBucketRetentionPolicyEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		b := &BucketAttrs{
+			Name: bucket,
+			RetentionPolicy: &RetentionPolicy{
+				RetentionPeriod: time.Minute,
+			},
+		}
+		// Create the bucket that will be locked.
+		_, err := client.CreateBucket(context.Background(), project, b)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Lock the bucket's retention policy.
+		err = client.LockBucketRetentionPolicy(context.Background(), b.Name, &BucketConditions{MetagenerationMatch: 1})
+		if err != nil {
+			t.Fatalf("client.LockBucketRetentionPolicy: %v", err)
+		}
+		got, err := client.GetBucket(context.Background(), bucket, nil)
+		if err != nil {
+			t.Fatalf("client.GetBucket: %v", err)
+		}
+		if !got.RetentionPolicy.IsLocked {
+			t.Error("Expected bucket retention policy to be locked, but was not.")
+		}
+	})
+}
+
 // transportClienttest executes the given function with a sub-test, a project name
 // based on the transport, a unique bucket name also based on the transport, and
 // the transport-specific client to run the test with. It also checks the environment
