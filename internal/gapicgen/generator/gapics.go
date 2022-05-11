@@ -564,6 +564,7 @@ func (g *GapicGenerator) manifest(confs []*MicrogenConfig) (map[string]ManifestE
 			ClientLibraryType: "generated",
 			DocsURL:           docURL,
 			ReleaseLevel:      conf.ReleaseLevel,
+			LibraryType:       GapicAutoLibraryType,
 		}
 		entries[conf.ImportPath] = entry
 	}
