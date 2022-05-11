@@ -42,7 +42,7 @@ var detectedResource = struct {
 	once:  new(sync.Once),
 }
 
-func metadataProjectId() (string, bool) {
+func metadataProjectID() (string, bool) {
 	return detectedResource.attrs.Metadata("project/project-id")
 }
 
@@ -71,7 +71,7 @@ func isAppEngine() bool {
 }
 
 func detectAppEngineResource() *mrpb.MonitoredResource {
-	projectID, ok := metadataProjectId()
+	projectID, ok := metadataProjectID()
 	if !ok {
 		return nil
 	}
@@ -102,7 +102,7 @@ func isCloudFunction() bool {
 }
 
 func detectCloudFunction() *mrpb.MonitoredResource {
-	projectID, ok := metadataProjectId()
+	projectID, ok := metadataProjectID()
 	if !ok {
 		return nil
 	}
@@ -127,7 +127,7 @@ func isCloudRun() bool {
 }
 
 func detectCloudRunResource() *mrpb.MonitoredResource {
-	projectID, ok := metadataProjectId()
+	projectID, ok := metadataProjectID()
 	if !ok {
 		return nil
 	}
@@ -156,7 +156,7 @@ func isKubernetesEngine() bool {
 }
 
 func detectKubernetesResource() *mrpb.MonitoredResource {
-	projectID, ok := metadataProjectId()
+	projectID, ok := metadataProjectID()
 	if !ok {
 		return nil
 	}
@@ -193,7 +193,7 @@ func isComputeEngine() bool {
 }
 
 func detectComputeEngineResource() *mrpb.MonitoredResource {
-	projectID, ok := metadataProjectId()
+	projectID, ok := metadataProjectID()
 	if !ok {
 		return nil
 	}
