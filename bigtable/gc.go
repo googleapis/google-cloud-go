@@ -71,10 +71,6 @@ func (ip intersectionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (intersectionPolicy) PolicyType() PolicyType {
-	return PolicyTypeIntersection
-}
-
 // UnionPolicy returns a GC policy that applies when any of its sub-policies apply.
 func UnionPolicy(sub ...GCPolicy) GCPolicy { return unionPolicy{sub} }
 
@@ -100,10 +96,6 @@ func (up unionPolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (unionPolicy) PolicyType() PolicyType {
-	return PolicyTypeUnion
-}
-
 // MaxVersionsPolicy returns a GC policy that applies to all versions of a cell
 // except for the most recent n.
 func MaxVersionsPolicy(n int) GCPolicy { return maxVersionsPolicy(n) }
@@ -114,10 +106,6 @@ func (mvp maxVersionsPolicy) String() string { return fmt.Sprintf("versions() > 
 
 func (mvp maxVersionsPolicy) proto() *bttdpb.GcRule {
 	return &bttdpb.GcRule{Rule: &bttdpb.GcRule_MaxNumVersions{MaxNumVersions: int32(mvp)}}
-}
-
-func (maxVersionsPolicy) PolicyType() PolicyType {
-	return PolicyTypeMaxVersion
 }
 
 // MaxAgePolicy returns a GC policy that applies to all cells
@@ -157,19 +145,11 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 	}
 }
 
-func (maxAgePolicy) PolicyType() PolicyType {
-	return PolicyTypeMaxAge
-}
-
 type noGCPolicy struct{}
 
 func (n noGCPolicy) String() string { return "" }
 
 func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
-
-func (n noGCPolicy) PolicyType() PolicyType {
-	return PolicyTypeNone
-}
 
 // NoGcPolicy applies to all cells setting maxage and maxversions to nil implies no gc policies
 func NoGcPolicy() GCPolicy { return noGCPolicy{} }
