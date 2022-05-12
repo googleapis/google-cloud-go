@@ -312,7 +312,7 @@ type TableInfo struct {
 type FamilyInfo struct {
 	Name           string
 	GCPolicy       string
-	GCPolicyObject GCPolicy
+	TypedGCPolicy  TypedGCPolicy
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -351,7 +351,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		ti.FamilyInfos = append(ti.FamilyInfos, FamilyInfo{
 			Name:           name,
 			GCPolicy:       GCRuleToString(fam.GcRule),
-			GCPolicyObject: GCRuleToPolicy(fam.GcRule),
+			TypedGCPolicy:  fromPolicyToTypedPolicy(gcRuleToPolicy(fam.GcRule)),
 		})
 	}
 	return ti, nil

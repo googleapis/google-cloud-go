@@ -61,7 +61,7 @@ func TestGCRuleToPolicy(t *testing.T) {
 	}
 
 	for _, test := range tc {
-		got := GCRuleToPolicy(test.proto)
+		got := gcRuleToPolicy(test.proto)
 		if got.String() != test.want {
 			t.Errorf("got gc rule %v, want: %v", got, test.want)
 		}

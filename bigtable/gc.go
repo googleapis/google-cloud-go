@@ -25,21 +25,25 @@ import (
 	bttdpb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
 
-const (
-	PolicyType_None = iota
-	PolicyType_MaxAge
-	PolicyType_MaxVersion
-	PolicyType_Union
-	PolicyType_Intersection
-)
-
 type PolicyType = int
+
+const (
+	PolicyTypeNone PolicyType = iota
+	PolicyTypeMaxAge
+	PolicyTypeMaxVersion
+	PolicyTypeUnion
+	PolicyTypeIntersection
+)
 
 // A GCPolicy represents a rule that determines which cells are eligible for garbage collection.
 type GCPolicy interface {
 	String() string
 	proto() *bttdpb.GcRule
-	PolicyType() PolicyType
+}
+
+type TypedGCPolicy struct {
+	GCPolicy
+	PolicyType PolicyType
 }
 
 // IntersectionPolicy returns a GC policy that only applies when all its sub-policies apply.
@@ -68,7 +72,7 @@ func (ip intersectionPolicy) proto() *bttdpb.GcRule {
 }
 
 func (intersectionPolicy) PolicyType() PolicyType {
-	return PolicyType_Intersection
+	return PolicyTypeIntersection
 }
 
 // UnionPolicy returns a GC policy that applies when any of its sub-policies apply.
@@ -97,7 +101,7 @@ func (up unionPolicy) proto() *bttdpb.GcRule {
 }
 
 func (unionPolicy) PolicyType() PolicyType {
-	return PolicyType_Union
+	return PolicyTypeUnion
 }
 
 // MaxVersionsPolicy returns a GC policy that applies to all versions of a cell
@@ -113,7 +117,7 @@ func (mvp maxVersionsPolicy) proto() *bttdpb.GcRule {
 }
 
 func (maxVersionsPolicy) PolicyType() PolicyType {
-	return PolicyType_MaxVersion
+	return PolicyTypeMaxVersion
 }
 
 // MaxAgePolicy returns a GC policy that applies to all cells
@@ -154,7 +158,7 @@ func (ma maxAgePolicy) proto() *bttdpb.GcRule {
 }
 
 func (maxAgePolicy) PolicyType() PolicyType {
-	return PolicyType_MaxAge
+	return PolicyTypeMaxAge
 }
 
 type noGCPolicy struct{}
@@ -164,7 +168,7 @@ func (n noGCPolicy) String() string { return "" }
 func (n noGCPolicy) proto() *bttdpb.GcRule { return &bttdpb.GcRule{Rule: nil} }
 
 func (n noGCPolicy) PolicyType() PolicyType {
-	return PolicyType_None
+	return PolicyTypeNone
 }
 
 // NoGcPolicy applies to all cells setting maxage and maxversions to nil implies no gc policies
@@ -189,15 +193,15 @@ func GCRuleToString(rule *bttdpb.GcRule) string {
 	}
 }
 
-func GCRuleToPolicy(rule *bttdpb.GcRule) GCPolicy {
+func gcRuleToPolicy(rule *bttdpb.GcRule) GCPolicy {
 	if rule == nil {
 		return NoGcPolicy()
 	}
 	switch r := rule.Rule.(type) {
 	case *bttdpb.GcRule_Intersection_:
-		return fromRuleToPolicy(r.Intersection.Rules, PolicyType_Intersection)
+		return compoundRuleToPolicy(r.Intersection.Rules, PolicyTypeIntersection)
 	case *bttdpb.GcRule_Union_:
-		return fromRuleToPolicy(r.Union.Rules, PolicyType_Union)
+		return compoundRuleToPolicy(r.Union.Rules, PolicyTypeUnion)
 	case *bttdpb.GcRule_MaxAge:
 		return MaxAgePolicy(time.Duration(r.MaxAge.Seconds) * time.Second)
 	case *bttdpb.GcRule_MaxNumVersions:
@@ -215,21 +219,36 @@ func joinRules(rules []*bttdpb.GcRule, sep string) string {
 	return "(" + strings.Join(chunks, sep) + ")"
 }
 
-func fromRuleToPolicy(rules []*bttdpb.GcRule, mode PolicyType) GCPolicy {
+func compoundRuleToPolicy(rules []*bttdpb.GcRule, mode PolicyType) GCPolicy {
 	sub := []GCPolicy{}
 	for _, r := range rules {
-		p := GCRuleToPolicy(r)
+		p := gcRuleToPolicy(r)
 		if p.String() != "" {
-			sub = append(sub, GCRuleToPolicy(r))
+			sub = append(sub, gcRuleToPolicy(r))
 		}
 	}
 
 	switch mode {
-	case PolicyType_Union:
+	case PolicyTypeUnion:
 		return unionPolicy{sub: sub}
-	case PolicyType_Intersection:
+	case PolicyTypeIntersection:
 		return intersectionPolicy{sub: sub}
 	default:
 		return NoGcPolicy()
+	}
+}
+
+func fromPolicyToTypedPolicy(gcPolicy GCPolicy) TypedGCPolicy {
+	switch gcPolicy.proto().Rule.(type) {
+	case *bttdpb.GcRule_Intersection_:
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeIntersection}
+	case *bttdpb.GcRule_Union_:
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeUnion}
+	case *bttdpb.GcRule_MaxAge:
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxAge}
+	case *bttdpb.GcRule_MaxNumVersions:
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeMaxVersion}
+	default:
+		return TypedGCPolicy{GCPolicy: gcPolicy, PolicyType: PolicyTypeNone}
 	}
 }
