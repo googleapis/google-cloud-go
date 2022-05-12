@@ -21,7 +21,7 @@ However, a `v1+` module may have breaking changes in two scenarios:
 
 ## Google Cloud Samples
 
-To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples).
+To browse ready to use code samples check [Google Cloud Samples](https://cloud.google.com/docs/samples?l=go).
 
 ## Go Version Support
 
