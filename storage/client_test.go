@@ -460,6 +460,74 @@ func TestUpdateBucketACLEmulated(t *testing.T) {
 	})
 }
 
+func TestDeleteBucketACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:          bucket,
+			PredefinedACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two BucketACL entities, including project owner and predefinedACL.
+		acls, err := client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one BucketACL with AllUsers entity.
+		if err := client.DeleteBucketACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteBucketACL: %v", err)
+		}
+		// Assert bucket has one BucketACL.
+		acls, err = client.ListBucketACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListBucketACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListBucketACLs: got %v, want %v items", acls, want)
+		}
+	})
+}
+
+func TestDeleteDefaultObjectACLEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		attrs := &BucketAttrs{
+			Name:                       bucket,
+			PredefinedDefaultObjectACL: "publicRead",
+		}
+		// Create the bucket that will be retrieved.
+		if _, err := client.CreateBucket(ctx, project, attrs); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		// Assert bucket has two DefaultObjectACL entities, including project owner and PredefinedDefaultObjectACL.
+		acls, err := client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 2; got != want {
+			t.Errorf("ListDefaultObjectACLs: got %v, want %v items", acls, want)
+		}
+		// Delete one DefaultObjectACL with AllUsers entity.
+		if err := client.DeleteDefaultObjectACL(ctx, bucket, AllUsers); err != nil {
+			t.Fatalf("client.DeleteDefaultObjectACL: %v", err)
+		}
+		// Assert bucket has one DefaultObjectACL entity.
+		acls, err = client.ListDefaultObjectACLs(ctx, bucket)
+		if err != nil {
+			t.Fatalf("client.ListDefaultObjectACLs: %v", err)
+		}
+		if got, want := len(acls), 1; got != want {
+			t.Errorf("ListDefaultObjectACLs: %v got %v, want %v items", len(acls), acls, want)
+		}
+	})
+}
+
 func initEmulatorClients() func() error {
 	noopCloser := func() error { return nil }
 	if !isEmulatorEnvironmentSet() {
