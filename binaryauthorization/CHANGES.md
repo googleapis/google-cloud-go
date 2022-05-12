@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.4.0...binaryauthorization/v0.5.0) (2022-05-09)
+
+
+### Features
+
+* **binaryauthorization:** start generating apiv1 ([#5999](https://github.com/googleapis/google-cloud-go/issues/5999)) ([45c701b](https://github.com/googleapis/google-cloud-go/commit/45c701bbc1f83891c7606b644cc0b8ca1a768956)), refs [#5955](https://github.com/googleapis/google-cloud-go/issues/5955)
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/binaryauthorization/v0.3.0...binaryauthorization/v0.4.0) (2022-02-23)
 
 
