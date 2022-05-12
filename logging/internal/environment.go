@@ -25,11 +25,11 @@ import (
 	"cloud.google.com/go/compute/metadata"
 )
 
-// ResourceAtttributesGetter declares interface to lookup environment variables and metadata attributes
+// ResourceAtttributesGetter abstracts environment lookup methods to query for environment variables, metadata attributes and file content.
 type ResourceAtttributesGetter interface {
-	EnvVar(name string) (string, bool)
-	Metadata(path string) (string, bool)
-	ReadAll(path string) (string, error)
+	EnvVar(name string) string
+	Metadata(path string) string
+	ReadAll(path string) string
 }
 
 var getter ResourceAtttributesGetter = &defaultResourceGetter{
@@ -42,7 +42,7 @@ var getter ResourceAtttributesGetter = &defaultResourceGetter{
 		},
 	})}
 
-// ResourceAttributes provides read-only access to the ResourceAtttributesGetter interface implementation
+// ResourceAttributes provides read-only access to the ResourceAtttributesGetter interface implementation.
 func ResourceAttributes() ResourceAtttributesGetter {
 	return getter
 }
@@ -51,25 +51,25 @@ type defaultResourceGetter struct {
 	metaClient *metadata.Client
 }
 
-// EnvVar uses os.LookupEnv() to lookup for environment variable by name
-func (g *defaultResourceGetter) EnvVar(name string) (string, bool) {
-	return os.LookupEnv(name)
+// EnvVar uses os.LookupEnv() to lookup for environment variable by name.
+func (g *defaultResourceGetter) EnvVar(name string) string {
+	return os.Getenv(name)
 }
 
-// Metadata uses metadata package Client.Get() to lookup for metadata attributes by path
-func (g *defaultResourceGetter) Metadata(path string) (string, bool) {
+// Metadata uses metadata package Client.Get() to lookup for metadata attributes by path.
+func (g *defaultResourceGetter) Metadata(path string) string {
 	val, err := g.metaClient.Get(path)
 	if err != nil {
-		return val, false
+		return ""
 	}
-	return strings.TrimSpace(val), true
+	return strings.TrimSpace(val)
 }
 
-// ReadAll read all content of the file as a string
-func (g *defaultResourceGetter) ReadAll(path string) (string, error) {
+// ReadAll reads all content of the file as a string.
+func (g *defaultResourceGetter) ReadAll(path string) string {
 	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
-		return "", err
+		return ""
 	}
-	return string(bytes), nil
+	return string(bytes)
 }

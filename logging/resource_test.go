@@ -15,7 +15,6 @@
 package logging
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 
@@ -25,7 +24,7 @@ import (
 )
 
 const (
-	there               = "non-empty-value"
+	there               = "anyvalue"
 	projectID           = "test-project"
 	zoneID              = "test-region-zone"
 	regionID            = "test-region"
@@ -51,22 +50,31 @@ type fakeResourceGetter struct {
 	fsPaths  map[string]string
 }
 
-func (g *fakeResourceGetter) EnvVar(name string) (string, bool) {
-	v, ok := g.envVars[name]
-	return v, ok
-}
-
-func (g *fakeResourceGetter) Metadata(path string) (string, bool) {
-	v, ok := g.metaVars[path]
-	return v, ok
-}
-
-func (g *fakeResourceGetter) ReadAll(path string) (string, error) {
-	v, ok := g.fsPaths[path]
-	if !ok {
-		return "", fmt.Errorf("Cannot read from %s", path)
+func (g *fakeResourceGetter) EnvVar(name string) string {
+	if g.envVars != nil {
+		if v, ok := g.envVars[name]; ok {
+			return v
+		}
 	}
-	return v, nil
+	return ""
+}
+
+func (g *fakeResourceGetter) Metadata(path string) string {
+	if g.metaVars != nil {
+		if v, ok := g.metaVars[path]; ok {
+			return v
+		}
+	}
+	return ""
+}
+
+func (g *fakeResourceGetter) ReadAll(path string) string {
+	if g.fsPaths != nil {
+		if v, ok := g.fsPaths[path]; ok {
+			return v
+		}
+	}
+	return ""
 }
 
 // setupDetectResource resets sync.Once on detectResource and enforces mocked resource attribute getter
