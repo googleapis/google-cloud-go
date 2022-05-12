@@ -560,6 +560,11 @@ func TestSQL(t *testing.T) {
 			reparseExpr,
 		},
 		{
+			JSONLiteral(`{"a": 1}`),
+			`JSON '{"a": 1}'`,
+			reparseExpr,
+		},
+		{
 			Query{
 				Select: Select{
 					List: []Expr{
