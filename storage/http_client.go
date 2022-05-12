@@ -310,11 +310,6 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	}
 	req := c.raw.Buckets.LockRetentionPolicy(bucket, metageneration)
 
-	setClientHeader(req.Header())
-	if s.userProject != "" {
-		req.UserProject(s.userProject)
-	}
-
 	return run(ctx, func() error {
 		_, err := req.Context(ctx).Do()
 		return err
