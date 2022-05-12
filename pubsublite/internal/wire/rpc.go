@@ -210,12 +210,16 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
-	options := append(streamClientOptions(region), opts...)
+	options := append(streamClientOptions(region),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(pslinternal.MaxSendRecvBytes))))
+	options = append(options, opts...)
 	return vkit.NewPublisherClient(ctx, options...)
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
-	options := append(streamClientOptions(region), opts...)
+	options := append(streamClientOptions(region),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(pslinternal.MaxSendRecvBytes))))
+	options = append(options, opts...)
 	return vkit.NewSubscriberClient(ctx, options...)
 }
 

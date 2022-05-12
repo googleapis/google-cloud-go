@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/pubsublite/internal"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -53,7 +54,9 @@ type Server struct {
 
 // NewServer creates a new mock Pub/Sub Lite server.
 func NewServer() (*Server, error) {
-	srv, err := testutil.NewServer()
+	srv, err := testutil.NewServer(
+		grpc.MaxRecvMsgSize(internal.MaxSendRecvBytes),
+		grpc.MaxSendMsgSize(internal.MaxSendRecvBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +73,9 @@ func NewServer() (*Server, error) {
 
 // ClientConn creates a client connection to the gRPC test server.
 func (s *Server) ClientConn() option.ClientOption {
-	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure())
+	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(internal.MaxSendRecvBytes)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(internal.MaxSendRecvBytes)))
 	if err != nil {
 		log.Fatal(err)
 	}
